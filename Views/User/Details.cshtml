@@ -1,0 +1,82 @@
+﻿@model Shnexy.ViewModels.User.UserDetailsVM
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h2>User:@Html.DisplayFor(model => model.Name)</h2>
+	<hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <h4>Currently Waiting as Consumer In These Queues:</h4>
+        <table class="table">
+            @{
+                foreach (var queue in Model.ConsumerFor)
+                {
+                    <tr>
+                        <th>
+                            @queue.Topic.Name;
+                        </th>
+                        <th>
+                            @Html.ActionLink("Leave", "Leave", "Queue", new { QueueId = queue.Id, UserId = Model.Id, Type = "CONSUMER", }, null) |
+
+                        </th>
+                    </tr>
+                }
+            }
+        </table>
+
+        <h4>Currently Waiting as Producer In These Queues:</h4>
+        <table class="table">
+            @{
+                foreach (var queue in Model.ProducerFor)
+                {
+                    <tr>
+                        <th>
+                            @queue.Topic.Name;
+                        </th>
+                        <th>
+                            @Html.ActionLink("Leave", "Leave", "Queue", new { QueueId = queue.Id, UserId = Model.Id, Type = "PRODUCER", }, null) |
+
+                        </th>
+                    </tr>
+                }
+             }
+        </table>
+
+        <h4>Available Queues</h4>
+        <table class="table">
+            @{
+                foreach (var queue in Model.AvailableFor)
+                {
+                    <tr>
+                        <th>
+                            @queue.Topic.Name;
+                        </th>
+                        <th>
+                            @Html.ActionLink("Join", "Join", "Queue", new { QueueId = queue.Id, UserId = Model.Id, Type = "PRODUCER", }, null) |
+
+                        </th>
+                    </tr>
+                }
+            }
+        </table>
+
+
+</dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+@Html.ActionLink("Start Call", "CallPage", new { })
