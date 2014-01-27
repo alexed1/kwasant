@@ -25,6 +25,7 @@ namespace Shnexy
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
+                      "~/Content/justified-nav.css",
                       "~/Content/site.css"));
         }
     }
