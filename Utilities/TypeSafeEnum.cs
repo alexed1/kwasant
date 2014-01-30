@@ -86,4 +86,24 @@ namespace Shnexy.Utilities
       
 
     }
+
+    public sealed class Method : EnumBase<Method, int>
+    {
+        public static readonly Method GET = new Method(1, "GET");
+        public static readonly Method POST = new Method(2, "POST");
+        public static readonly Method PUT = new Method(2, "PUT");
+
+        private Method(int Value, String Name) : base(Value, Name) { }
+        public new static IEnumerable<Method> All
+        {
+            get
+            { return EnumBase<Method, int>.All; }
+        }
+
+        public static explicit operator Method(string str)
+        { return Parse(str); }
+
+
+
+    }
 }
