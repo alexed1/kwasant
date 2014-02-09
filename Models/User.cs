@@ -11,8 +11,10 @@ namespace Shnexy.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        
+      
 
-        private ShnexyDBContext db = new ShnexyDBContext();
+        private ShnexyDbContext db = new ShnexyDbContext();
 
 
 
@@ -25,8 +27,13 @@ namespace Shnexy.Models
     }
 
 
-    public class ShnexyDBContext : DbContext
+    public class ShnexyDbContext : DbContext
     {
+
+        static ShnexyDbContext()
+        {
+            //Database.SetInitializer(new DropCreateDatabaseIfModelChanges<ShnexyDbContext>());
+        }
         public DbSet<User> Users { get; set; }
 
         public DbSet<Message> Messages { get; set; }

@@ -8,11 +8,13 @@ namespace Shnexy.Models
 {
     public class Message
     {
-        [Key]
-        int Id;
-        string Body;
-        ICollection<int> RecipientList;
-        int SenderId;
+
+
+
+        public int Id { get; set; }
+        public string Body { get; set; }
+        public ICollection<int> RecipientList { get; set; }
+        public int SenderId { get; set; }
 
 
     }

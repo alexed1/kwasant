@@ -12,7 +12,7 @@ namespace Shnexy.Controllers
 {
     public class UserController : Controller
     {
-        private ShnexyDBContext db = new ShnexyDBContext();
+        private ShnexyDbContext db = new ShnexyDbContext();
 
         // GET: /User/
         public ActionResult Index()

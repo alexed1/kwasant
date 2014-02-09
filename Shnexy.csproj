@@ -165,45 +165,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201401222314154_InitialCreate.cs" />
-    <Compile Include="Migrations\201401222314154_InitialCreate.Designer.cs">
-      <DependentUpon>201401222314154_InitialCreate.cs</DependentUpon>
+    <Compile Include="Migrations\201402092248127_Initial.cs" />
+    <Compile Include="Migrations\201402092248127_Initial.Designer.cs">
+      <DependentUpon>201402092248127_Initial.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201401230715479_addTopic.cs" />
-    <Compile Include="Migrations\201401230715479_addTopic.Designer.cs">
-      <DependentUpon>201401230715479_addTopic.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201401230722252_topic_tweak.cs" />
-    <Compile Include="Migrations\201401230722252_topic_tweak.Designer.cs">
-      <DependentUpon>201401230722252_topic_tweak.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201401230728128_topic_tweak2.cs" />
-    <Compile Include="Migrations\201401230728128_topic_tweak2.Designer.cs">
-      <DependentUpon>201401230728128_topic_tweak2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201401240217119_topic_tweak3.cs" />
-    <Compile Include="Migrations\201401240217119_topic_tweak3.Designer.cs">
-      <DependentUpon>201401240217119_topic_tweak3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201401240218403_topic_tweak4.cs" />
-    <Compile Include="Migrations\201401240218403_topic_tweak4.Designer.cs">
-      <DependentUpon>201401240218403_topic_tweak4.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201401240227582_topic_twea5.cs" />
-    <Compile Include="Migrations\201401240227582_topic_twea5.Designer.cs">
-      <DependentUpon>201401240227582_topic_twea5.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201401241745288_tweaknext.cs" />
-    <Compile Include="Migrations\201401241745288_tweaknext.Designer.cs">
-      <DependentUpon>201401241745288_tweaknext.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201401241834563_tweaknext2.cs" />
-    <Compile Include="Migrations\201401241834563_tweaknext2.Designer.cs">
-      <DependentUpon>201401241834563_tweaknext2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201401241839101_tweaknext3.cs" />
-    <Compile Include="Migrations\201401241839101_tweaknext3.Designer.cs">
-      <DependentUpon>201401241839101_tweaknext3.cs</DependentUpon>
+    <Compile Include="Migrations\201402092257000_tweak.cs" />
+    <Compile Include="Migrations\201402092257000_tweak.Designer.cs">
+      <DependentUpon>201402092257000_tweak.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -295,35 +263,11 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201401222314154_InitialCreate.resx">
-      <DependentUpon>201401222314154_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201402092248127_Initial.resx">
+      <DependentUpon>201402092248127_Initial.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201401230715479_addTopic.resx">
-      <DependentUpon>201401230715479_addTopic.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201401230722252_topic_tweak.resx">
-      <DependentUpon>201401230722252_topic_tweak.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201401230728128_topic_tweak2.resx">
-      <DependentUpon>201401230728128_topic_tweak2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201401240217119_topic_tweak3.resx">
-      <DependentUpon>201401240217119_topic_tweak3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201401240218403_topic_tweak4.resx">
-      <DependentUpon>201401240218403_topic_tweak4.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201401240227582_topic_twea5.resx">
-      <DependentUpon>201401240227582_topic_twea5.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201401241745288_tweaknext.resx">
-      <DependentUpon>201401241745288_tweaknext.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201401241834563_tweaknext2.resx">
-      <DependentUpon>201401241834563_tweaknext2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201401241839101_tweaknext3.resx">
-      <DependentUpon>201401241839101_tweaknext3.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201402092257000_tweak.resx">
+      <DependentUpon>201402092257000_tweak.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -4,16 +4,17 @@ namespace shnexy.Migrations
     using System.Data.Entity;
     using System.Data.Entity.Migrations;
     using System.Linq;
+    using Shnexy.Models;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Shnexy.Models.ShnexyDBContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<Shnexy.Models.ShnexyDbContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-            ContextKey = "Shnexy.Models.ShnexyDBContext";
+            ContextKey = "Shnexy.Models.ShnexyDbContext";
         }
 
-        protected override void Seed(Shnexy.Models.ShnexyDBContext context)
+        protected override void Seed(Shnexy.Models.ShnexyDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 
@@ -27,6 +28,11 @@ namespace shnexy.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
+
+            context.Services.AddOrUpdate(
+                p => p.Name,
+                new Service { Name = "WhatsApp" }
+                );
         }
     }
 }

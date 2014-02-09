@@ -7,13 +7,13 @@ namespace shnexy.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.0.0-20911")]
-    public sealed partial class tweaknext2 : IMigrationMetadata
+    public sealed partial class tweak : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(tweaknext2));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(tweak));
         
         string IMigrationMetadata.Id
         {
-            get { return "201401241834563_tweaknext2"; }
+            get { return "201402092257000_tweak"; }
         }
         
         string IMigrationMetadata.Source
