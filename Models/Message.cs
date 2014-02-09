@@ -6,12 +6,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Shnexy.Models
 {
-    public class Topic
+    public class Message
     {
         [Key]
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public List<int> parentIdList;
+        int Id;
+        string Body;
+        ICollection<int> RecipientList;
+        int SenderId;
 
 
     }

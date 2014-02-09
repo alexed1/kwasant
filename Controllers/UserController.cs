@@ -7,7 +7,6 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Shnexy.Models;
-using Shnexy.ViewModels.User;
 
 namespace Shnexy.Controllers
 {
@@ -22,40 +21,19 @@ namespace Shnexy.Controllers
         }
 
         // GET: /User/Details/5
-        //Load data into viewmodel
-        //Create lists for producer, consumer, and available tables
-        public ActionResult Details(int id)
+        public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = new User();
-            user = user.Get(id);
-            
+            User user = db.Users.Find(id);
             if (user == null)
             {
                 return HttpNotFound();
             }
-
-            UserDetailsVM curVM = new UserDetailsVM();
-            curVM.Name = user.Name;
-            curVM.Id = user.Id;
-            curVM.ProducerFor = user.GetProducerQueues();
-            curVM.ConsumerFor = user.GetConsumerQueues();
-            curVM.AvailableFor = user.GetAvailableQueues(curVM.ConsumerFor, curVM.ProducerFor);
-
-            return View(curVM);
+            return View(user);
         }
-
-
-        public ActionResult CallPage()
-        {
-            return View();
-        }
-
-
-
 
         // GET: /User/Create
         public ActionResult Create()

@@ -10,9 +10,7 @@ namespace Shnexy.ViewModels.User
     {
         public string Name;
         public int Id;
-        public List<Queue> ProducerFor;
-        public List<Queue> ConsumerFor;
-        public List<Queue> AvailableFor;
+       
         
     }
 }

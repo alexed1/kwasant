@@ -161,9 +161,6 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\QueueController.cs" />
-    <Compile Include="Controllers\ShnessonController.cs" />
-    <Compile Include="Controllers\TopicController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -210,12 +207,11 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\Call.cs" />
-    <Compile Include="Models\CallRequest.cs" />
-    <Compile Include="Models\Shnesson.cs" />
-    <Compile Include="Models\Topic.cs" />
     <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="Models\Queue.cs" />
+    <Compile Include="Models\Message.cs" />
+    <Compile Include="Models\Profile.cs" />
+    <Compile Include="Models\Registration.cs" />
+    <Compile Include="Models\Service.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\APIManagement\Packagers\Shnexy\ShnexyPackager.cs" />
@@ -227,7 +223,6 @@
     <Compile Include="Utilities\Enumerations.cs" />
     <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Utilities\TypeSafeEnum.cs" />
-    <Compile Include="ViewModels\ShowQueuesVM.cs" />
     <Compile Include="ViewModels\User\UserDetailsVM.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -242,6 +237,7 @@
     <Content Include="Scripts\bootstrap-slider.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <None Include="Properties\PublishProfiles\shnexy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -279,25 +275,16 @@
     <Content Include="Views\Account\Manage.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\User\Create.cshtml" />
     <Content Include="Views\User\Delete.cshtml" />
     <Content Include="Views\User\Details.cshtml" />
     <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
-    <Content Include="Views\Admin\Index.cshtml" />
-    <Content Include="Views\Queue\Create.cshtml" />
-    <Content Include="Views\Queue\Delete.cshtml" />
-    <Content Include="Views\Queue\Details.cshtml" />
-    <Content Include="Views\Queue\Edit.cshtml" />
-    <Content Include="Views\Queue\Index.cshtml" />
-    <Content Include="Views\Topic\Create.cshtml" />
-    <Content Include="Views\Topic\Delete.cshtml" />
-    <Content Include="Views\Topic\Details.cshtml" />
-    <Content Include="Views\Topic\Edit.cshtml" />
-    <Content Include="Views\Topic\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="archive\" />
     <Folder Include="Views\Session\" />
   </ItemGroup>
   <ItemGroup>

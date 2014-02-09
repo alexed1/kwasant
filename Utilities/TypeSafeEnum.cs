@@ -29,7 +29,9 @@ namespace Shnexy.Utilities
 
         #region Static tools
         static private readonly Dictionary<string, EnumBase<E, T>> mapping;
-        static EnumBase() { mapping = new Dictionary<string, EnumBase<E, T>>(); }
+        static EnumBase() {
+            mapping = new Dictionary<string, EnumBase<E, T>>(); 
+        }
         protected static E Parse(string name)
         {
             EnumBase<E, T> result;
@@ -46,7 +48,10 @@ namespace Shnexy.Utilities
         // initialization will be explicit, promising the mapping dictionary
         // will never be empty when this method is called.
         protected static IEnumerable<E> All
-        { get { return mapping.Values.AsEnumerable().Cast<E>(); } }
+        { get {
+                return mapping.Values.AsEnumerable().Cast<E>();
+              } 
+        }
         #endregion
     }
 
@@ -75,15 +80,37 @@ namespace Shnexy.Utilities
 
         private ParticipantType(int Value, String Name) : base(Value, Name) { }
         public new static IEnumerable<ParticipantType> All
-        {
-            get
-            { return EnumBase<ParticipantType, int>.All; }
-        }
+        {get { return EnumBase<ParticipantType, int>.All; }}
 
         public static explicit operator ParticipantType(string str)
         { return Parse(str); }
 
       
+
+    }
+
+    public sealed class ParticipantType2
+    {
+        private readonly String name;
+        private readonly int value;
+
+
+        public static readonly ParticipantType2 PRODUCER = new ParticipantType2(1, "PRODUCER");
+        public static readonly ParticipantType2 CONSUMER = new ParticipantType2(2, "CONSUMER");
+
+
+        private ParticipantType2(int value, String name)
+        {
+            this.name = name;
+            this.value = value;
+
+        }
+
+        public override String ToString(){
+            return name;
+        }
+
+
 
     }
 
