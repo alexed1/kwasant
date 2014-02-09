@@ -5,6 +5,7 @@ namespace shnexy.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
     using Shnexy.Models;
+    using System.Collections.Generic;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Shnexy.Models.ShnexyDbContext>
     {
@@ -33,6 +34,32 @@ namespace shnexy.Migrations
                 p => p.Name,
                 new Service { Name = "WhatsApp" }
                 );
+
+            var users = new List<User>
+            {
+                new User { Name = "Katie" },
+                new User { Name = "Alex" }
+
+            };
+
+            users.ForEach(u => context.Users.AddOrUpdate(p => p.Name, u));
+            context.SaveChanges();
+
+            //create an empty Profile for each user
+            var profiles = new List<Profile>();
+            
+            foreach (var user in users)
+                {
+                    profiles.Add(new Profile { UserId = user.Id });
+                }
+            
+
+            profiles.ForEach(p => context.Profiles.AddOrUpdate(u => u.UserId, p));
+            context.SaveChanges();
+
+
+
+
         }
     }
 }

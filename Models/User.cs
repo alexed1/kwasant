@@ -16,7 +16,11 @@ namespace Shnexy.Models
 
         private ShnexyDbContext db = new ShnexyDbContext();
 
+        public User ()
+        {
+           
 
+        }
 
         public User Get(int userId)
         {

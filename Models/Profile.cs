@@ -11,6 +11,7 @@ namespace Shnexy.Models
     {
 
         public int Id { get; set; }
+        public int UserId { get; set; }
         public ICollection<Registration> Registrations;
 
     }
