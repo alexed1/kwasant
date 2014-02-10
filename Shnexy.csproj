@@ -177,11 +177,34 @@
     <Compile Include="Migrations\201402092325334_tweak22.Designer.cs">
       <DependentUpon>201402092325334_tweak22.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201402100107253_Addresses.cs" />
+    <Compile Include="Migrations\201402100107253_Addresses.Designer.cs">
+      <DependentUpon>201402100107253_Addresses.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402100127401_Registrations.cs" />
+    <Compile Include="Migrations\201402100127401_Registrations.Designer.cs">
+      <DependentUpon>201402100127401_Registrations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402100210157_tweaks4.cs" />
+    <Compile Include="Migrations\201402100210157_tweaks4.Designer.cs">
+      <DependentUpon>201402100210157_tweaks4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402100331395_next.cs" />
+    <Compile Include="Migrations\201402100331395_next.Designer.cs">
+      <DependentUpon>201402100331395_next.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402100334387_next1.cs" />
+    <Compile Include="Migrations\201402100334387_next1.Designer.cs">
+      <DependentUpon>201402100334387_next1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Address.cs" />
+    <Compile Include="Models\Engine.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\Profile.cs" />
+    <Compile Include="Models\Queue.cs" />
     <Compile Include="Models\Registration.cs" />
     <Compile Include="Models\Service.cs" />
     <Compile Include="Models\User.cs" />
@@ -275,6 +298,21 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201402092325334_tweak22.resx">
       <DependentUpon>201402092325334_tweak22.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402100107253_Addresses.resx">
+      <DependentUpon>201402100107253_Addresses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402100127401_Registrations.resx">
+      <DependentUpon>201402100127401_Registrations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402100210157_tweaks4.resx">
+      <DependentUpon>201402100210157_tweaks4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402100331395_next.resx">
+      <DependentUpon>201402100331395_next.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402100334387_next1.resx">
+      <DependentUpon>201402100334387_next1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

@@ -89,17 +89,17 @@ namespace Shnexy.Utilities
 
     }
 
-    public sealed class ParticipantType2
+    public sealed class MessageState
     {
         private readonly String name;
         private readonly int value;
 
 
-        public static readonly ParticipantType2 PRODUCER = new ParticipantType2(1, "PRODUCER");
-        public static readonly ParticipantType2 CONSUMER = new ParticipantType2(2, "CONSUMER");
+        public static readonly MessageState UNSENT = new MessageState(1, "UNSENT");
+        public static readonly MessageState SENT = new MessageState(2, "SENT");
 
 
-        private ParticipantType2(int value, String name)
+        private MessageState(int value, String name)
         {
             this.name = name;
             this.value = value;

@@ -36,7 +36,7 @@ namespace Shnexy.Models
 
         static ShnexyDbContext()
         {
-            //Database.SetInitializer(new DropCreateDatabaseIfModelChanges<ShnexyDbContext>());
+           // Database.SetInitializer(new DropCreateDatabaseAlways<ShnexyDbContext>());
         }
         public DbSet<User> Users { get; set; }
 
@@ -45,5 +45,9 @@ namespace Shnexy.Models
 
         public DbSet<Service> Services { get; set; }
         public DbSet<Profile> Profiles { get; set; }
+
+        public DbSet<Address> Addresses { get; set; }
+
+        public DbSet<Queue> Queues { get; set; }
     }
 }

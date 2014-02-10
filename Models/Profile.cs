@@ -12,7 +12,12 @@ namespace Shnexy.Models
 
         public int Id { get; set; }
         public int UserId { get; set; }
-        public ICollection<Registration> Registrations;
-
+        public ICollection<Registration> Registrations { get; set; }
+        public Profile()
+        {
+            Registrations = new List<Registration> { };
+        }
     }
+
+   
 }

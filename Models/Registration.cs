@@ -10,7 +10,24 @@ namespace Shnexy.Models
     {
         public int Id { get; set; }
         public int ServiceId;
-        public string name;
-        public string password;
+        public string Name;
+        public string Password;
+
+
+
+        public Registration(int serviceId, string name, string password)
+        {
+
+            ServiceId = serviceId;
+            Name = name;
+            Password = password;
+
+        }
+
+
+
+
+
+
     }
 }
