@@ -1,0 +1,15 @@
+D:\dev\WhatsAPINet\WhatsAppPort\bin\Debug\WhatsAppPort.exe.config
+D:\dev\WhatsAPINet\WhatsAppPort\bin\Debug\WhatsAppPort.exe
+D:\dev\WhatsAPINet\WhatsAppPort\bin\Debug\WhatsAppPort.pdb
+D:\dev\WhatsAPINet\WhatsAppPort\bin\Debug\WhatsAppApi.dll
+D:\dev\WhatsAPINet\WhatsAppPort\bin\Debug\WhatsAppApi.pdb
+D:\dev\WhatsAPINet\WhatsAppPort\obj\x86\Debug\WhatsAppPort.csprojResolveAssemblyReference.cache
+D:\dev\WhatsAPINet\WhatsAppPort\obj\x86\Debug\WhatsAppPort.frmForm.resources
+D:\dev\WhatsAPINet\WhatsAppPort\obj\x86\Debug\WhatsAppPort.frmAddUser.resources
+D:\dev\WhatsAPINet\WhatsAppPort\obj\x86\Debug\WhatsAppPort.frmLogin.resources
+D:\dev\WhatsAPINet\WhatsAppPort\obj\x86\Debug\WhatsAppPort.frmRegister.resources
+D:\dev\WhatsAPINet\WhatsAppPort\obj\x86\Debug\WhatsAppPort.frmUserChat.resources
+D:\dev\WhatsAPINet\WhatsAppPort\obj\x86\Debug\WhatsAppPort.Properties.Resources.resources
+D:\dev\WhatsAPINet\WhatsAppPort\obj\x86\Debug\WhatsAppPort.csproj.GenerateResource.Cache
+D:\dev\WhatsAPINet\WhatsAppPort\obj\x86\Debug\WhatsAppPort.exe
+D:\dev\WhatsAPINet\WhatsAppPort\obj\x86\Debug\WhatsAppPort.pdb

@@ -30,7 +30,9 @@ namespace Shnexy.Models
         public void Send()
         {
 
-            Debug.WriteLine("Sending Message");
+            //validate message
+            //build a list of the relevant queues by examining the envelopes of the recipients
+            //for each queue, call Queue#Enqueue(messageId)
            
         }
     }

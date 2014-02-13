@@ -1,0 +1,8 @@
+D:\dev\WhatsAPINet\WhatsTest\bin\Debug\WhatsTest.exe.config
+D:\dev\WhatsAPINet\WhatsTest\bin\Debug\WhatsTest.exe
+D:\dev\WhatsAPINet\WhatsTest\bin\Debug\WhatsTest.pdb
+D:\dev\WhatsAPINet\WhatsTest\bin\Debug\WhatsAppApi.dll
+D:\dev\WhatsAPINet\WhatsTest\bin\Debug\WhatsAppApi.pdb
+D:\dev\WhatsAPINet\WhatsTest\obj\x86\Debug\WhatsTest.csprojResolveAssemblyReference.cache
+D:\dev\WhatsAPINet\WhatsTest\obj\x86\Debug\WhatsTest.exe
+D:\dev\WhatsAPINet\WhatsTest\obj\x86\Debug\WhatsTest.pdb

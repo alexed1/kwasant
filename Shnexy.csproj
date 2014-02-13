@@ -49,6 +49,7 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -161,6 +162,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MessageController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -209,14 +211,84 @@
     <Compile Include="Models\Service.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\ShnexyDbContext.cs" />
     <Compile Include="Services\APIManagement\Packagers\Shnexy\ShnexyPackager.cs" />
     <Compile Include="Services\APIManagement\Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Services\APIManagement\Transmitters\Restful\RestfulCall.cs" />
     <Compile Include="Services\APIManagement\Transmitters\Restful\RestfulResponse.cs" />
     <Compile Include="Services\APIManagement\Transmitters\Restful\RestfulTransmitter.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Account\WhatsUser.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Account\WhatsUserManager.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\AccountInfo.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\BinTreeNodeReader.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\BinTreeNodeWriter.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\ContactSync.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\DecodeHelper.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\DisconnectedException.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\Encryption.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\Func.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\IncompleteMessageException.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\KeyValue.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\MediaUploader.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\ProtocolTreeNode.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\RC4.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Helper\TicketManager.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Parser\FMessage.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Parser\FMessageVisitor.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Parser\GroupSetting.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Parser\PhoneNumber.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Properties\Resources.Designer.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Register\WaToken.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Register\WhatsRegisterV2.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Response\CorruptStreamException.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Response\MessageRecvResponse.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Response\WhatsEventHandler.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Response\WhatsParser.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Settings\WhatsConstants.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\WhatsApp.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\WhatsNetwork.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppApi\WhatsSendHandler.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmAddUser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmAddUser.Designer.cs">
+      <DependentUpon>frmAddUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmForm.Designer.cs">
+      <DependentUpon>frmForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmLogin.Designer.cs">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmRegister.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmRegister.Designer.cs">
+      <DependentUpon>frmRegister.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmUserChat.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmUserChat.Designer.cs">
+      <DependentUpon>frmUserChat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\Program.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\Properties\Resources.Designer.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\Properties\Settings.Designer.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\User.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\WhatsMessageHandler.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsAppPort\WhatSocket.cs" />
+    <Compile Include="Services\ChatProviders\WhatsApp\WhatsTest\Program.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\Enumerations.cs" />
     <Compile Include="Utilities\Extensions.cs" />
+    <Compile Include="Utilities\PersistableIntCollection.cs" />
     <Compile Include="Utilities\TypeSafeEnum.cs" />
     <Compile Include="ViewModels\User\UserDetailsVM.cs" />
   </ItemGroup>
@@ -245,7 +317,33 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppApi\bin\Debug\WhatsAppApi.dll" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppApi\bin\Debug\WhatsAppApi.pdb" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\WhatsAppApi.csproj.FileListAbsolute.txt" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\WhatsAppApi.dll" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\WhatsAppApi.pdb" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppApi\WhatsAppApi.csproj" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\bin\Debug\WhatsAppApi.dll" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\bin\Debug\WhatsAppApi.pdb" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\bin\Debug\WhatsAppPort.exe" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\bin\Debug\WhatsAppPort.pdb" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\bin\Debug\WhatsAppPort.vshost.exe" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\WhatsAppPort.csproj.FileListAbsolute.txt" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\WhatsAppPort.exe" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\WhatsAppPort.pdb" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\WhatsAppPort.csproj" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\bin\Debug\WhatsAppApi.dll" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\bin\Debug\WhatsAppApi.pdb" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\bin\Debug\WhatsTest.exe" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\bin\Debug\WhatsTest.pdb" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\bin\Debug\WhatsTest.vshost.exe" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\obj\x86\Debug\WhatsTest.csproj.FileListAbsolute.txt" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\obj\x86\Debug\WhatsTest.exe" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\obj\x86\Debug\WhatsTest.pdb" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\WhatsTest.csproj" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -276,10 +374,37 @@
     <Content Include="Views\User\Details.cshtml" />
     <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\WhatsAppApi.csproj.GenerateResource.Cache" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\WhatsAppApi.csprojResolveAssemblyReference.cache" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Parser\countries.csv" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\app.config" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\bin\Debug\WhatsTest.exe.config" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\bin\Debug\WhatsTest.vshost.exe.config" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\bin\Debug\WhatsTest.vshost.exe.manifest" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\obj\x86\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsTest\obj\x86\Debug\WhatsTest.csprojResolveAssemblyReference.cache" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\app.config" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\bin\Debug\WhatsAppPort.exe.config" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\bin\Debug\WhatsAppPort.vshost.exe.config" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\bin\Debug\WhatsAppPort.vshost.exe.manifest" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\WhatsAppPort.csproj.GenerateResource.Cache" />
+    <Content Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\WhatsAppPort.csprojResolveAssemblyReference.cache" />
+    <None Include="Services\ChatProviders\WhatsApp\WhatsAppPort\Properties\Settings.settings" />
+    <Content Include="Views\Message\Create.cshtml" />
+    <Content Include="Views\Message\Delete.cshtml" />
+    <Content Include="Views\Message\Details.cshtml" />
+    <Content Include="Views\Message\Edit.cshtml" />
+    <Content Include="Views\Message\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
+    <Folder Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\TempPE\" />
+    <Folder Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\TempPE\" />
+    <Folder Include="Services\ChatProviders\WhatsApp\WhatsTest\obj\x86\Debug\TempPE\" />
+    <Folder Include="Services\ChatProviders\WhatsApp\WhatsTest\Properties\" />
     <Folder Include="Views\Session\" />
   </ItemGroup>
   <ItemGroup>
@@ -314,6 +439,30 @@
     <EmbeddedResource Include="Migrations\201402100334387_next1.resx">
       <DependentUpon>201402100334387_next1.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\WhatsAppApi.Properties.Resources.resources" />
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Properties\Resources.resx" />
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmAddUser.resx">
+      <DependentUpon>frmAddUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmForm.resx">
+      <DependentUpon>frmForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmLogin.resx">
+      <DependentUpon>frmLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmRegister.resx">
+      <DependentUpon>frmRegister.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppPort\frmUserChat.resx">
+      <DependentUpon>frmUserChat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\WhatsAppPort.frmAddUser.resources" />
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\WhatsAppPort.frmForm.resources" />
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\WhatsAppPort.frmLogin.resources" />
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\WhatsAppPort.frmRegister.resources" />
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\WhatsAppPort.frmUserChat.resources" />
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\WhatsAppPort.Properties.Resources.resources" />
+    <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppPort\Properties\Resources.resx" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
