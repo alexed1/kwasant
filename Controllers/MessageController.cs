@@ -9,35 +9,31 @@ namespace Shnexy.Controllers
 {
     public class MessageController : Controller
     {
-        private ShnexyDbContext db = new ShnexyDbContext();
+        private readonly IMessageRepository repo;
+        public MessageController()
+        {
+            //this.messageRepository = new MessageRepository(new ShnexyDbContext());
+
+        }
+
+        public MessageController(IMessageRepository messageRepository)
+        {
+            repo = messageRepository;
+        }
 
         // GET: /Message/
-        [HttpPost, ActionName("Send")]
-        [ValidateAntiForgeryToken]
-        public ActionResult Send()
-        {
-            Message message = new Message();
-            message.Body = "Hello, World";
-            message.Send();
-            return RedirectToAction("Index");
-        }
         public ActionResult Index()
         {
-            return View(db.Messages.ToList());
+            var messages = repo.GetMessages();
+            return View(messages);
         }
 
         // GET: /Message/Details/5
-        public ActionResult Details(int? id)
+        public ViewResult Details(int id)
         {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Message message = db.Messages.Find(id);
-            if (message == null)
-            {
-                return HttpNotFound();
-            }
+
+            Message message = repo.GetMessageById(id); // db.Messages.Find(id);
+
             return View(message);
         }
 
@@ -52,12 +48,12 @@ namespace Shnexy.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include="Id,Body")] Message message)
+        public ActionResult Create([Bind(Include = "Id,ServiceName")] Message message)
         {
             if (ModelState.IsValid)
             {
-                db.Messages.Add(message);
-                db.SaveChanges();
+                repo.InsertMessage(message); //db.Messages.Add(message);
+                repo.Save(); //db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -65,13 +61,13 @@ namespace Shnexy.Controllers
         }
 
         // GET: /Message/Edit/5
-        public ActionResult Edit(int? id)
+        public ActionResult Edit(int id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Message message = db.Messages.Find(id);
+            Message message = repo.GetMessageById(id); // db.Messages.Find(id);
             if (message == null)
             {
                 return HttpNotFound();
@@ -84,25 +80,25 @@ namespace Shnexy.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include="Id,Body")] Message message)
+        public ActionResult Edit([Bind(Include = "Id,ServiceName")] Message message)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(message).State = EntityState.Modified;
-                db.SaveChanges();
+                repo.UpdateMessage(message); // db.Entry(message).State = EntityState.Modified;
+                repo.Save(); // db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(message);
         }
 
         // GET: /Message/Delete/5
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Message message = db.Messages.Find(id);
+            Message message = repo.GetMessageById(id);  //db.Messages.Find(id);
             if (message == null)
             {
                 return HttpNotFound();
@@ -115,9 +111,9 @@ namespace Shnexy.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Message message = db.Messages.Find(id);
-            db.Messages.Remove(message);
-            db.SaveChanges();
+            Message message = repo.GetMessageById(id);  //db.Messages.Find(id);
+            repo.DeleteMessage(id); // db.Messages.Remove(message);
+            repo.Save(); // db.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -125,7 +121,7 @@ namespace Shnexy.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                repo.Dispose(); // db.Dispose();
             }
             base.Dispose(disposing);
         }

@@ -5,6 +5,7 @@ using System.Web;
 using System.ComponentModel.DataAnnotations;
 using Shnexy.Utilities;
 using System.Diagnostics;
+using Shnexy.DataAccessLayer;
 
 namespace Shnexy.Models
 {
@@ -19,6 +20,8 @@ namespace Shnexy.Models
         public Address Sender { get; set; }
         public MessageState State;
 
+        private UnitOfWork unitOfWork = new UnitOfWork();
+
         public Message ()
         {
 
@@ -31,8 +34,25 @@ namespace Shnexy.Models
         {
 
             //validate message
+
             //build a list of the relevant queues by examining the envelopes of the recipients
+            ICollection<String> targetQueues = new List<String>();
+            foreach(var address in RecipientList)
+            {
+                //look at the service name of the address
+                if (!targetQueues.Contains(address.ServiceName))
+                {
+                    targetQueues.Add(address.ServiceName);
+                }
+            }
+
             //for each queue, call Queue#Enqueue(messageId)
+            foreach(String queueName in targetQueues)
+            {
+                Queue queue = unitOfWork.QueueRepository.Get(q => q.ServiceName == queueName).First();
+                queue.Enqueue(this.Id);               
+            }
+            unitOfWork.Save();
            
         }
     }

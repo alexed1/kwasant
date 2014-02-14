@@ -7,6 +7,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Data.Entity;
 using Shnexy.DataAccessLayer;
+using Shnexy.DataAccessLayer.StructureMap;
 
 namespace Shnexy
 {
@@ -18,6 +19,10 @@ namespace Shnexy
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            // StructureMap Dependencies configuration
+            StructureMapBootStrapper.ConfigureDependencies();
+            ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
 
             Database.SetInitializer(new ShnexyInitializer());
 

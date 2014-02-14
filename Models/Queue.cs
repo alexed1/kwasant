@@ -5,6 +5,7 @@ using System.Web;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections;
 using Shnexy.Utilities;
+using Shnexy.DataAccessLayer;
 
 namespace Shnexy.Models
 {
@@ -14,6 +15,8 @@ namespace Shnexy.Models
         //public string Name { get; set; }
         public virtual PersistableIntCollection MessageList { get; set; }
         public string ServiceName { get; set; }
+
+        private UnitOfWork unitOfWork = new UnitOfWork();
 
 
         public Queue()
@@ -26,6 +29,8 @@ namespace Shnexy.Models
         public void Enqueue (int MessageId)
         {
             MessageList.Add(MessageId);
+            unitOfWork.QueueRepository.Update(this);
+            unitOfWork.Save();
             
         }
     }
