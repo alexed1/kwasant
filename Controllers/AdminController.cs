@@ -15,9 +15,9 @@ namespace Shnexy.Controllers
         // GET: /Admin/
         public ActionResult Index()
         {
-            var configuration = new Configuration();
-            var migrator = new DbMigrator(configuration);
-            migrator.Update();
+            //var configuration = new Configuration();
+            //var migrator = new DbMigrator(configuration);
+           // migrator.Update();
 
             var engine = new Engine();
             engine.ProcessQueues();

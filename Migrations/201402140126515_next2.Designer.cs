@@ -7,13 +7,13 @@ namespace shnexy.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.0.0-20911")]
-    public sealed partial class Addresses : IMigrationMetadata
+    public sealed partial class next2 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Addresses));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(next2));
         
         string IMigrationMetadata.Id
         {
-            get { return "201402100107253_Addresses"; }
+            get { return "201402140126515_next2"; }
         }
         
         string IMigrationMetadata.Source

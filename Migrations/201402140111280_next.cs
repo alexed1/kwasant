@@ -3,16 +3,16 @@ namespace shnexy.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class tweak22 : DbMigration
+    public partial class next : DbMigration
     {
         public override void Up()
         {
-            AddColumn("dbo.Profiles", "UserId", c => c.Int(nullable: false));
+            AddColumn("dbo.Addresses", "foo", c => c.String());
         }
         
         public override void Down()
         {
-            DropColumn("dbo.Profiles", "UserId");
+            DropColumn("dbo.Addresses", "foo");
         }
     }
 }

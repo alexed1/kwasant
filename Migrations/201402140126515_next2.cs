@@ -3,16 +3,16 @@ namespace shnexy.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class next : DbMigration
+    public partial class next2 : DbMigration
     {
         public override void Up()
         {
-            AddColumn("dbo.Queues", "List_SerializedValue", c => c.String());
+            AddColumn("dbo.Users", "foobar", c => c.String());
         }
         
         public override void Down()
         {
-            DropColumn("dbo.Queues", "List_SerializedValue");
+            DropColumn("dbo.Users", "foobar");
         }
     }
 }

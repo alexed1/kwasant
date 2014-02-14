@@ -7,15 +7,15 @@ namespace shnexy.Migrations
     using Shnexy.Models;
     using System.Collections.Generic;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Shnexy.Models.ShnexyDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<Shnexy.DataAccessLayer.ShnexyDbContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-            ContextKey = "Shnexy.Models.ShnexyDbContext";
+            ContextKey = "Shnexy.DataAccessLayer.ShnexyDbContext";
         }
 
-        protected override void Seed(Shnexy.Models.ShnexyDbContext context)
+        protected override void Seed(Shnexy.DataAccessLayer.ShnexyDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 
@@ -81,7 +81,7 @@ namespace shnexy.Migrations
 
             //create a message aimed at the 4158067915 address
             Message message = new Message();
-            message.RecipientList.Add(address806);
+            //message.RecipientList.Add(address806);
             message.Sender = address871;
             message.Body = "Watson, Come here, please! ";
             
@@ -91,14 +91,20 @@ namespace shnexy.Migrations
            
             context.SaveChanges();
 
-            List<Queue> queues = new List<Queue>();
+           // List<Queue> queues = new List<Queue>();
 
-            Queue queue = new Queue();
-            queue.ServiceName = "WhatsApp";
-            queue.MessageList.Add(message.Id);
-            queues.Add(queue);
+            var queues = new List<Queue>
+            {
+                new Queue{ServiceName="WhatsApp"},
+                new Queue{ServiceName="WeChat"}
+
+            };
+              //queue.MessageList.Add(message.Id);
+            //queues.Add(queue);
             queues.ForEach(m => context.Queues.AddOrUpdate(u => u.ServiceName, m));
             context.SaveChanges();
+
+            
         }
     }
 }

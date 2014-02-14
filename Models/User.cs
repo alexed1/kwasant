@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Data.Entity;
 using Shnexy.Utilities;
+using Shnexy.DataAccessLayer;
 
 namespace Shnexy.Models
 {
@@ -11,7 +12,7 @@ namespace Shnexy.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        
+        public string foobar { get; set; }
       
 
         private ShnexyDbContext db = new ShnexyDbContext();

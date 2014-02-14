@@ -163,41 +163,27 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MessageController.cs" />
+    <Compile Include="Controllers\QueueController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="DataAccessLayer\GenericRepository.cs" />
+    <Compile Include="DataAccessLayer\IQueueRepository.cs" />
+    <Compile Include="DataAccessLayer\QueueRepository.cs" />
+    <Compile Include="DataAccessLayer\ShnexyInitializer.cs" />
+    <Compile Include="DataAccessLayer\UnitOfWork.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201402092248127_Initial.cs" />
-    <Compile Include="Migrations\201402092248127_Initial.Designer.cs">
-      <DependentUpon>201402092248127_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201402130740231_Initial.cs" />
+    <Compile Include="Migrations\201402130740231_Initial.Designer.cs">
+      <DependentUpon>201402130740231_Initial.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201402092257000_tweak.cs" />
-    <Compile Include="Migrations\201402092257000_tweak.Designer.cs">
-      <DependentUpon>201402092257000_tweak.cs</DependentUpon>
+    <Compile Include="Migrations\201402140111280_next.cs" />
+    <Compile Include="Migrations\201402140111280_next.Designer.cs">
+      <DependentUpon>201402140111280_next.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201402092325334_tweak22.cs" />
-    <Compile Include="Migrations\201402092325334_tweak22.Designer.cs">
-      <DependentUpon>201402092325334_tweak22.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402100107253_Addresses.cs" />
-    <Compile Include="Migrations\201402100107253_Addresses.Designer.cs">
-      <DependentUpon>201402100107253_Addresses.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402100127401_Registrations.cs" />
-    <Compile Include="Migrations\201402100127401_Registrations.Designer.cs">
-      <DependentUpon>201402100127401_Registrations.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402100210157_tweaks4.cs" />
-    <Compile Include="Migrations\201402100210157_tweaks4.Designer.cs">
-      <DependentUpon>201402100210157_tweaks4.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402100331395_next.cs" />
-    <Compile Include="Migrations\201402100331395_next.Designer.cs">
-      <DependentUpon>201402100331395_next.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402100334387_next1.cs" />
-    <Compile Include="Migrations\201402100334387_next1.Designer.cs">
-      <DependentUpon>201402100334387_next1.cs</DependentUpon>
+    <Compile Include="Migrations\201402140126515_next2.cs" />
+    <Compile Include="Migrations\201402140126515_next2.Designer.cs">
+      <DependentUpon>201402140126515_next2.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -211,7 +197,7 @@
     <Compile Include="Models\Service.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\ShnexyDbContext.cs" />
+    <Compile Include="DataAccessLayer\ShnexyDbContext.cs" />
     <Compile Include="Services\APIManagement\Packagers\Shnexy\ShnexyPackager.cs" />
     <Compile Include="Services\APIManagement\Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Services\APIManagement\Transmitters\Restful\RestfulCall.cs" />
@@ -397,6 +383,11 @@
     <Content Include="Views\Message\Details.cshtml" />
     <Content Include="Views\Message\Edit.cshtml" />
     <Content Include="Views\Message\Index.cshtml" />
+    <Content Include="Views\Queue\Create.cshtml" />
+    <Content Include="Views\Queue\Delete.cshtml" />
+    <Content Include="Views\Queue\Details.cshtml" />
+    <Content Include="Views\Queue\Edit.cshtml" />
+    <Content Include="Views\Queue\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -415,29 +406,14 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201402092248127_Initial.resx">
-      <DependentUpon>201402092248127_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201402130740231_Initial.resx">
+      <DependentUpon>201402130740231_Initial.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402092257000_tweak.resx">
-      <DependentUpon>201402092257000_tweak.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201402140111280_next.resx">
+      <DependentUpon>201402140111280_next.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402092325334_tweak22.resx">
-      <DependentUpon>201402092325334_tweak22.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402100107253_Addresses.resx">
-      <DependentUpon>201402100107253_Addresses.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402100127401_Registrations.resx">
-      <DependentUpon>201402100127401_Registrations.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402100210157_tweaks4.resx">
-      <DependentUpon>201402100210157_tweaks4.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402100331395_next.resx">
-      <DependentUpon>201402100331395_next.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402100334387_next1.resx">
-      <DependentUpon>201402100334387_next1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201402140126515_next2.resx">
+      <DependentUpon>201402140126515_next2.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\WhatsAppApi.Properties.Resources.resources" />
     <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Properties\Resources.resx" />

@@ -5,14 +5,14 @@ using System.Linq;
 using System.Web;
 using Shnexy.Models;
 
-namespace Shnexy.Repositories
+namespace Shnexy.DataAccessLayer
 {
 
 
     public class ShnexyDbContext : DbContext
     {
 
-        static ShnexyDbContext()
+        public ShnexyDbContext() : base("ShnexyDbContext")
         {
             // Database.SetInitializer(new DropCreateDatabaseAlways<ShnexyDbContext>());
         }
