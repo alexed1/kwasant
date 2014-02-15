@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections;
 using Shnexy.Utilities;
 using Shnexy.DataAccessLayer;
+using Shnexy.DataAccessLayer.Interfaces;
 
 namespace Shnexy.Models
 {
@@ -16,12 +17,16 @@ namespace Shnexy.Models
         public virtual PersistableIntCollection MessageList { get; set; }
         public string ServiceName { get; set; }
 
-        private UnitOfWork unitOfWork = new UnitOfWork();
-
+       // private UnitOfWork unitOfWork = new UnitOfWork();
+        private IQueueRepository queueRepo;
 
         public Queue()
         {
-
+            queueRepo = new QueueRepository(new UnitOfWork(new ShnexyDbContext()));
+        }
+        public Queue(IQueueRepository queueRepository)
+        {
+            queueRepo = queueRepository;
             MessageList = new PersistableIntCollection { };
         }
 
@@ -29,8 +34,8 @@ namespace Shnexy.Models
         public void Enqueue (int MessageId)
         {
             MessageList.Add(MessageId);
-            unitOfWork.QueueRepository.Update(this);
-            unitOfWork.Save();
+            queueRepo.Update(this);
+            queueRepo.Save(this);
             
         }
     }

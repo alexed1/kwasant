@@ -20,17 +20,27 @@ namespace Shnexy.Models
         public Address Sender { get; set; }
         public MessageState State;
 
-        private UnitOfWork unitOfWork = new UnitOfWork();
+        private IMessageRepository messageRepo;
+        private IQueueRepository queueRepo;
 
-        public Message ()
+
+
+        public Message()
         {
+            messageRepo = new MessageRepository(new UnitOfWork(new ShnexyDbContext()));
+            
+        }
+        public Message (IMessageRepository messageRepository)
+        {
+
+            messageRepo = messageRepository;
 
             RecipientList = new List<Address> { };
             State = MessageState.UNSENT;
         }
 
 
-        public void Send()
+        public void Send(IQueueRepository queueRepo)
         {
 
             //validate message
@@ -49,10 +59,10 @@ namespace Shnexy.Models
             //for each queue, call Queue#Enqueue(messageId)
             foreach(String queueName in targetQueues)
             {
-                Queue queue = unitOfWork.QueueRepository.Get(q => q.ServiceName == queueName).First();
+                Queue queue = queueRepo.GetQuery().Where(q => q.ServiceName == queueName).First();
                 queue.Enqueue(this.Id);               
             }
-            unitOfWork.Save();
+            messageRepo.Save();
            
         }
     }

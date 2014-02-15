@@ -178,7 +178,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="App_Start\StructuremapMvc.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -187,6 +186,7 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\GenericRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IMessageRepository.cs" />
+    <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IQueueRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IUnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Repositories\MessageRepository.cs" />
@@ -210,6 +210,10 @@
     <Compile Include="Migrations\201402140126515_next2.cs" />
     <Compile Include="Migrations\201402140126515_next2.Designer.cs">
       <DependentUpon>201402140126515_next2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402150610155_uow.cs" />
+    <Compile Include="Migrations\201402150610155_uow.Designer.cs">
+      <DependentUpon>201402150610155_uow.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -440,6 +444,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201402140126515_next2.resx">
       <DependentUpon>201402140126515_next2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402150610155_uow.resx">
+      <DependentUpon>201402150610155_uow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\WhatsAppApi.Properties.Resources.resources" />
     <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Properties\Resources.resx" />

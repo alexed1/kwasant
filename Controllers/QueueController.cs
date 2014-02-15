@@ -17,7 +17,7 @@ namespace Shnexy.Controllers
 
         public QueueController()
         {
-            this.queueRepository = new QueueRepository(new ShnexyDbContext());
+           // this.queueRepository = new QueueRepository(new ShnexyDbContext());
 
         }
 
@@ -29,7 +29,7 @@ namespace Shnexy.Controllers
         // GET: /Queue/
         public ActionResult Index()
         {
-            var queues = queueRepository.GetQueues();
+            var queues = queueRepository.GetQuery();
             return View(queues);
         }
 
@@ -37,7 +37,7 @@ namespace Shnexy.Controllers
         public ViewResult Details(int id)
         {
            
-            Queue queue = queueRepository.GetQueueById(id); // db.Queues.Find(id);
+            Queue queue = queueRepository.GetByKey(id); // db.Queues.Find(id);
            
             return View(queue);
         }
@@ -57,8 +57,8 @@ namespace Shnexy.Controllers
         {
             if (ModelState.IsValid)
             {
-                queueRepository.InsertQueue(queue); //db.Queues.Add(queue);
-                queueRepository.Save(); //db.SaveChanges();
+                queueRepository.Add(queue); //db.Queues.Add(queue);
+                queueRepository.Save(queue); //db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -72,7 +72,7 @@ namespace Shnexy.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Queue queue = queueRepository.GetQueueById(id); // db.Queues.Find(id);
+            Queue queue = queueRepository.GetByKey(id); // db.Queues.Find(id);
             if (queue == null)
             {
                 return HttpNotFound();
@@ -89,8 +89,8 @@ namespace Shnexy.Controllers
         {
             if (ModelState.IsValid)
             {
-                queueRepository.UpdateQueue(queue); // db.Entry(queue).State = EntityState.Modified;
-                queueRepository.Save(); // db.SaveChanges();
+                queueRepository.Update(queue); // db.Entry(queue).State = EntityState.Modified;
+                queueRepository.Save(queue); // db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(queue);
@@ -103,7 +103,7 @@ namespace Shnexy.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Queue queue = queueRepository.GetQueueById(id);  //db.Queues.Find(id);
+            Queue queue = queueRepository.GetByKey(id);  //db.Queues.Find(id);
             if (queue == null)
             {
                 return HttpNotFound();
@@ -116,9 +116,10 @@ namespace Shnexy.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Queue queue = queueRepository.GetQueueById(id);  //db.Queues.Find(id);
-            queueRepository.DeleteQueue(id); // db.Queues.Remove(queue);
-            queueRepository.Save(); // db.SaveChanges();
+            Queue queue = queueRepository.GetByKey(id);  //db.Queues.Find(id);
+            queueRepository.Remove(queue); // db.Queues.Remove(queue);
+            //queueRepository.Save(queue); // db.SaveChanges();
+
             return RedirectToAction("Index");
         }
 

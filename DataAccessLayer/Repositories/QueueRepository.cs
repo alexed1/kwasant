@@ -4,69 +4,71 @@ using System.Linq;
 using System.Web;
 using Shnexy.Models;
 using System.Data.Entity;
+using Shnexy.DataAccessLayer.Interfaces;
 
 namespace Shnexy.DataAccessLayer
 {
-    public class QueueRepository : IQueueRepository, IDisposable
+    public class QueueRepository : GenericRepository<Queue>, IQueueRepository
     {
         
-        private ShnexyDbContext context;
+        //private ShnexyDbContext context;
 
-        public QueueRepository(ShnexyDbContext context)
+        public QueueRepository(IUnitOfWork uow) : base(uow)
         {
-            this.context = context;
+            
         }
 
-        public IEnumerable<Queue> GetQueues()
-        {
-            return context.Queues.ToList();
-        }
+        //public IEnumerable<Queue> GetQueues()
+        //{
 
-        public Queue GetQueueById(int id)
-        {
-            return context.Queues.Find(id);
-        }
+        //    return dbSet.ToList();
+        //}
 
-        public void InsertQueue(Queue queue)
-        {
-            context.Queues.Add(queue);
-        }
+        //public Queue GetQueueById(int id)
+        //{
+        //    return context.Queues.Find(id);
+        //}
 
-        public void DeleteQueue(int queueID)
-        {
-            Queue queue = context.Queues.Find(queueID);
-            context.Queues.Remove(queue);
-        }
+        //public void InsertQueue(Queue queue)
+        //{
+        //    context.Queues.Add(queue);
+        //}
 
-        public void UpdateQueue(Queue queue)
-        {
-            context.Entry(queue).State = EntityState.Modified;
-        }
+        //public void DeleteQueue(int queueID)
+        //{
+        //    Queue queue = context.Queues.Find(queueID);
+        //    context.Queues.Remove(queue);
+        //}
 
-        public void Save()
-        {
-            context.SaveChanges();
-        }
+        //public void UpdateQueue(Queue queue)
+        //{
+        //    context.Entry(queue).State = EntityState.Modified;
+        //}
 
-        private bool disposed = false;
+        //public void Save()
+        //{
+        //    context.SaveChanges();
+        //}
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    context.Dispose();
-                }
-            }
-            this.disposed = true;
-        }
+        //private bool disposed = false;
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        //protected virtual void Dispose(bool disposing)
+        //{
+        //    if (!this.disposed)
+        //    {
+        //        if (disposing)
+        //        {
+        //            context.Dispose();
+        //        }
+        //    }
+        //    this.disposed = true;
+        //}
+
+        //public void Dispose()
+        //{
+        //    Dispose(true);
+        //    GC.SuppressFinalize(this);
+        //}
     }
     
 }

@@ -6,6 +6,7 @@ namespace shnexy.Migrations
     using System.Linq;
     using Shnexy.Models;
     using System.Collections.Generic;
+    using Shnexy.DataAccessLayer;
 
     internal sealed class Configuration : DbMigrationsConfiguration<Shnexy.DataAccessLayer.ShnexyDbContext>
     {
@@ -29,6 +30,11 @@ namespace shnexy.Migrations
             //      new Person { FullName = "Rowan Miller" }
             //    );
             //
+
+
+            MessageRepository messageRepo = new MessageRepository(new UnitOfWork(new ShnexyDbContext()));
+            QueueRepository queueRepo = new QueueRepository(new UnitOfWork(new ShnexyDbContext()));
+
 
             context.Services.AddOrUpdate(
                 p => p.Name,
@@ -80,7 +86,7 @@ namespace shnexy.Migrations
             List<Message> messages = new List<Message>();
 
             //create a message aimed at the 4158067915 address
-            Message message = new Message();
+            Message message = new Message(messageRepo);
             //message.RecipientList.Add(address806);
             message.Sender = address871;
             message.Body = "Watson, Come here, please! ";
@@ -95,8 +101,8 @@ namespace shnexy.Migrations
 
             var queues = new List<Queue>
             {
-                new Queue{ServiceName="WhatsApp"},
-                new Queue{ServiceName="WeChat"}
+                new Queue(queueRepo){ServiceName="WhatsApp"},
+                new Queue(queueRepo){ServiceName="WeChat"}
 
             };
               //queue.MessageList.Add(message.Id);

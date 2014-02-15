@@ -11,7 +11,8 @@ namespace Shnexy.Models
     {
         public int Id;
 
-        private ShnexyDbContext db = new ShnexyDbContext(); 
+        private ShnexyDbContext db = new ShnexyDbContext();
+        private QueueRepository queueRepo = new QueueRepository(new UnitOfWork(new ShnexyDbContext()));
 
         public void ProcessQueues()
         {
@@ -31,7 +32,7 @@ namespace Shnexy.Models
                     {
                         try
                         {
-                            curMessage.Send();
+                            curMessage.Send(queueRepo);
                             curMessage.State = MessageState.SENT;
                         }
                         catch

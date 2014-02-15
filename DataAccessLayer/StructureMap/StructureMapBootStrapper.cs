@@ -2,6 +2,7 @@
 using StructureMap.Configuration.DSL;
 
 using Shnexy.DataAccessLayer;
+using Shnexy.DataAccessLayer.Interfaces;
 
 namespace Shnexy.DataAccessLayer.StructureMap
 {
@@ -25,7 +26,7 @@ namespace Shnexy.DataAccessLayer.StructureMap
             {
                 For<IQueueRepository>().Use<QueueRepository>();
                 For<IMessageRepository>().Use<MessageRepository>();
-
+                For<IUnitOfWork>().Use(new UnitOfWork(new ShnexyDbContext()));
             }
         }
 
