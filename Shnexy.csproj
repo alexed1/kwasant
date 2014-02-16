@@ -185,6 +185,7 @@
     <Compile Include="Controllers\QueueController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\GenericRepository.cs" />
+    <Compile Include="DataAccessLayer\Interfaces\IEntity.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IMessageRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IQueueRepository.cs" />

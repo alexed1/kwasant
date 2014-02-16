@@ -10,7 +10,7 @@ using Shnexy.DataAccessLayer.Interfaces;
 
 namespace Shnexy.Models
 {
-    public class Queue
+    public class Queue : IEntity
     {
         public int Id { get; set; }
         //public string Name { get; set; }
@@ -23,6 +23,7 @@ namespace Shnexy.Models
         public Queue()
         {
             queueRepo = new QueueRepository(new UnitOfWork(new ShnexyDbContext()));
+            MessageList = new PersistableIntCollection { };
         }
         public Queue(IQueueRepository queueRepository)
         {

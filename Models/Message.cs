@@ -6,10 +6,11 @@ using System.ComponentModel.DataAnnotations;
 using Shnexy.Utilities;
 using System.Diagnostics;
 using Shnexy.DataAccessLayer;
+using Shnexy.DataAccessLayer.Interfaces;
 
 namespace Shnexy.Models
 {
-    public class Message
+    public class Message : IEntity
     {
 
 
