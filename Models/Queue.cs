@@ -35,7 +35,10 @@ namespace Shnexy.Models
         //put a message into a queue
         public void Enqueue (int MessageId)
         {
-            MessageList = MessageList + "," + MessageId.ToStr();  //this adds a leading comma to empty strings. may need to deal here. probably should.
+
+            if (MessageList.Length > 0)
+                MessageList = MessageList + ",";
+            MessageList = MessageList + MessageId.ToStr(); 
             queueRepo.Update(this);
             queueRepo.UnitOfWork.SaveChanges();
                 
