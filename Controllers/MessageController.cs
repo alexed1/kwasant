@@ -4,27 +4,31 @@ using System.Net;
 using System.Web.Mvc;
 using Shnexy.Models;
 using Shnexy.DataAccessLayer;
+using shnexy.Migrations;
 
 namespace Shnexy.Controllers
 {
     public class MessageController : Controller
     {
-        private readonly IMessageRepository repo;
+        private IMessageRepository messageRepository;
+        private IQueueRepository queueRepo;
         public MessageController()
         {
-            //this.messageRepository = new MessageRepository(new ShnexyDbContext());
+            // this.messageRepository = new MessageRepository(new ShnexyDbContext());
+            queueRepo = new QueueRepository(new UnitOfWork(new ShnexyDbContext()));
 
         }
 
-        public MessageController(IMessageRepository messageRepository)
+        public MessageController(IMessageRepository messageRepository) : this()
         {
-            repo = messageRepository;
+            this.messageRepository = messageRepository;
+
         }
 
         // GET: /Message/
         public ActionResult Index()
         {
-            var messages = repo.GetMessages();
+            var messages = messageRepository.GetQuery();
             return View(messages);
         }
 
@@ -32,7 +36,7 @@ namespace Shnexy.Controllers
         public ViewResult Details(int id)
         {
 
-            Message message = repo.GetMessageById(id); // db.Messages.Find(id);
+            Message message = messageRepository.GetByKey(id); // db.Messages.Find(id);
 
             return View(message);
         }
@@ -41,6 +45,36 @@ namespace Shnexy.Controllers
         public ActionResult Create()
         {
             return View();
+        }
+
+
+        // GET: /Message/Send
+        public ActionResult Send()
+        {
+            int id = 1;
+
+
+            Address address806 = new Address();
+            address806.Body = "14158067915";
+            address806.ServiceName = "WhatsApp";
+
+            Address address871 = new Address();
+            address871.Body = "14158710872";
+            address871.ServiceName = "WhatsApp";
+
+            Message message = new Message(messageRepository); //why does this work, but not the version in Configuration#Seed, which causes the RecipientList to be null?
+            message.RecipientList.Add(address806);
+            message.Sender = address871;
+            message.Body = "Hello, Come here, please! ";
+            message.Id = 45;
+            messageRepository.Add(message);
+            messageRepository.Save(message);
+
+
+            //Message message = messageRepository.GetByKey(id);
+            //message.RecipientList.Add(address806);
+            message.Send(queueRepo);
+            return View("Index", "Admin");
         }
 
         // POST: /Message/Create
@@ -52,8 +86,8 @@ namespace Shnexy.Controllers
         {
             if (ModelState.IsValid)
             {
-                repo.InsertMessage(message); //db.Messages.Add(message);
-                repo.Save(); //db.SaveChanges();
+                messageRepository.Add(message); //db.Messages.Add(message);
+                messageRepository.Save(message); //db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -67,7 +101,7 @@ namespace Shnexy.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Message message = repo.GetMessageById(id); // db.Messages.Find(id);
+            Message message = messageRepository.GetByKey(id); // db.Messages.Find(id);
             if (message == null)
             {
                 return HttpNotFound();
@@ -84,8 +118,8 @@ namespace Shnexy.Controllers
         {
             if (ModelState.IsValid)
             {
-                repo.UpdateMessage(message); // db.Entry(message).State = EntityState.Modified;
-                repo.Save(); // db.SaveChanges();
+                messageRepository.Update(message); // db.Entry(message).State = EntityState.Modified;
+                messageRepository.Save(message); // db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(message);
@@ -98,7 +132,7 @@ namespace Shnexy.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Message message = repo.GetMessageById(id);  //db.Messages.Find(id);
+            Message message = messageRepository.GetByKey(id);  //db.Messages.Find(id);
             if (message == null)
             {
                 return HttpNotFound();
@@ -111,9 +145,10 @@ namespace Shnexy.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Message message = repo.GetMessageById(id);  //db.Messages.Find(id);
-            repo.DeleteMessage(id); // db.Messages.Remove(message);
-            repo.Save(); // db.SaveChanges();
+            Message message = messageRepository.GetByKey(id);  //db.Messages.Find(id);
+            messageRepository.Remove(message); // db.Messages.Remove(message);
+            //messageRepository.Save(message); // db.SaveChanges();
+
             return RedirectToAction("Index");
         }
 
@@ -121,9 +156,10 @@ namespace Shnexy.Controllers
         {
             if (disposing)
             {
-                repo.Dispose(); // db.Dispose();
+                messageRepository.Dispose(); // db.Dispose();
             }
             base.Dispose(disposing);
         }
     }
+
 }

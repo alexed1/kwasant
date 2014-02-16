@@ -9,6 +9,26 @@ namespace Shnexy.Utilities
 {
 
         
+
+    public static class IntString
+    {
+        public static List<string> Deserialize(string data)
+        {
+            List<string> intList = new List<string>();
+            string[] separators = {","};
+            intList = data.Split(separators, StringSplitOptions.None).ToList();
+            return intList;
+        }
+
+        public static string Serialize(List<string> intList)
+        {
+            string textrep = String.Join( ",",intList.ToArray());
+            return textrep;
+        }
+
+
+    }
+
     //Entity Framework can't handle non-primitive types. The code below lets us create a Collection of Integers that is stored as a string.
     //See http://stackoverflow.com/a/11990836/1915866
     /// <summary>

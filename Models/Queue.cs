@@ -13,33 +13,38 @@ namespace Shnexy.Models
     public class Queue : IEntity
     {
         public int Id { get; set; }
-        //public string Name { get; set; }
-        public virtual PersistableIntCollection MessageList { get; set; }
-        public string ServiceName { get; set; }
 
-       // private UnitOfWork unitOfWork = new UnitOfWork();
+        public string MessageList { get; set; }
+        public string ServiceName { get; set; }
+        public string foo { get; set; }
+
+
         private IQueueRepository queueRepo;
 
         public Queue()
         {
             queueRepo = new QueueRepository(new UnitOfWork(new ShnexyDbContext()));
-            MessageList = new PersistableIntCollection { };
+            MessageList = "";
         }
         public Queue(IQueueRepository queueRepository)
         {
             queueRepo = queueRepository;
-            MessageList = new PersistableIntCollection { };
+            MessageList = "";
         }
 
         //put a message into a queue
         public void Enqueue (int MessageId)
         {
-            MessageList.Add(MessageId);
+            MessageList = MessageList + "," + MessageId.ToStr();  //this adds a leading comma to empty strings. may need to deal here. probably should.
             queueRepo.Update(this);
-            queueRepo.Save(this);
+            queueRepo.UnitOfWork.SaveChanges();
+                
+
             
         }
     }
+
+
 
 
 }

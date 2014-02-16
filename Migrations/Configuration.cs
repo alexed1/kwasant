@@ -87,7 +87,7 @@ namespace shnexy.Migrations
 
             //create a message aimed at the 4158067915 address
             Message message = new Message(messageRepo);
-            //message.RecipientList.Add(address806);
+            message.RecipientList.Add(address806);
             message.Sender = address871;
             message.Body = "Watson, Come here, please! ";
             

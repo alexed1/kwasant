@@ -24,8 +24,6 @@ namespace Shnexy.Models
         private IMessageRepository messageRepo;
         private IQueueRepository queueRepo;
 
-
-
         public Message()
         {
             messageRepo = new MessageRepository(new UnitOfWork(new ShnexyDbContext()));
@@ -36,7 +34,7 @@ namespace Shnexy.Models
 
             messageRepo = messageRepository;
 
-            RecipientList = new List<Address> { };
+            RecipientList = new List<Address>();
             State = MessageState.UNSENT;
         }
 
@@ -63,7 +61,8 @@ namespace Shnexy.Models
                 Queue queue = queueRepo.GetQuery().Where(q => q.ServiceName == queueName).First();
                 queue.Enqueue(this.Id);               
             }
-            messageRepo.Save();
+            messageRepo.UnitOfWork.SaveChanges();
+
            
         }
     }

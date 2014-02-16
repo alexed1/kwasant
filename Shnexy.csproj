@@ -216,6 +216,14 @@
     <Compile Include="Migrations\201402150610155_uow.Designer.cs">
       <DependentUpon>201402150610155_uow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201402160242068_IntString.cs" />
+    <Compile Include="Migrations\201402160242068_IntString.Designer.cs">
+      <DependentUpon>201402160242068_IntString.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402160248071_foo.cs" />
+    <Compile Include="Migrations\201402160248071_foo.Designer.cs">
+      <DependentUpon>201402160248071_foo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Address.cs" />
@@ -448,6 +456,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201402150610155_uow.resx">
       <DependentUpon>201402150610155_uow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402160242068_IntString.resx">
+      <DependentUpon>201402160242068_IntString.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402160248071_foo.resx">
+      <DependentUpon>201402160248071_foo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\WhatsAppApi.Properties.Resources.resources" />
     <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Properties\Resources.resx" />

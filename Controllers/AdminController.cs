@@ -20,7 +20,7 @@ namespace Shnexy.Controllers
            // migrator.Update();
 
             var engine = new Engine();
-            engine.ProcessQueues();
+            //engine.ProcessQueues(); database needs the messagelist initialized from null for this to work 
             return View();
         }
 	}
