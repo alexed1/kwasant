@@ -27,10 +27,28 @@ namespace Shnexy.Controllers
 
 
 
+            Address address806 = new Address();
+            address806.Body = "14158067915";
+            address806.ServiceName = "WhatsApp";
+
+            Address address871 = new Address();
+            address871.Body = "14158710872";
+            address871.ServiceName = "WhatsApp";
+
             Message message = messageRepo.GetAll().First();
-            //message.RecipientList.Add(address806);
+            message.RecipientList = new List<Address>();
+            message.RecipientList.Add(address806);
+            message.Sender = address871;
+            message.Body = "45 hoo hawHello, Come here, please! ";
+            message.Id = 50;
+
+
+            message.TestSend();
             //message.Send(queueRepo);
 
+
+
+           
             Debug.WriteLine("debug output from AdminController");
             ProcessStartInfo info = new ProcessStartInfo("D:/dev/shnexy/ShnexyMTA/bin/Debug/ShnexyMTA.exe");
 

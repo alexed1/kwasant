@@ -16,7 +16,7 @@ using WhatsAppApi.Register;
 
 namespace WhatsTest
 {
-    internal class Program
+    public class Program
     {
         private static void Main(string[] args)
         {
@@ -27,6 +27,12 @@ namespace WhatsTest
             string sender = "14158710872"; // Mobile number with country code (but without + or 00)
             string password = "vvAfia/L8DxRsw6l7gRS8L0Tg5U=";//v2 password
             string target = "14158067915";// Mobile number to send the message to
+
+            Process(sender, password, nickname, target, "foo");
+        }
+
+        public static void Process(string sender, string password, string nickname, string target, string body)
+        {
 
             WhatsApp wa = new WhatsApp(sender, password, nickname, true);
 
@@ -53,9 +59,9 @@ namespace WhatsTest
 
             wa.Connect();
             wa.Login();
-
-            ProcessChat(wa, target);
-            Console.ReadKey();
+            wa.Message(target, body);
+            //ProcessChat(wa, target);
+            //Console.ReadKey();
         }
 
         static void wa_OnGetGroups(WhatsApp.GroupInfo[] groups)

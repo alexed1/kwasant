@@ -7,6 +7,9 @@ using Shnexy.Utilities;
 using System.Diagnostics;
 using Shnexy.DataAccessLayer;
 using Shnexy.DataAccessLayer.Interfaces;
+using WhatsAppApi;
+using WhatsTest;
+using WhatsAppPort;
 
 namespace Shnexy.Models
 {
@@ -38,7 +41,19 @@ namespace Shnexy.Models
             State = MessageState.UNSENT;
         }
 
+        public void TestSend()
+        {
 
+            string nickname = "WhatsApiNet";
+            string sender = "14158710872"; // Mobile number with country code (but without + or 00)
+            string password = "vvAfia/L8DxRsw6l7gRS8L0Tg5U=";//v2 password
+            string target = "14158067915";// Mobile number to send the message to
+
+            //WhatSocket.Instance.Message(this.user.WhatsUser.GetFullJid(), txtBxSentText.Text);
+            WhatsTest.Program curProg = new WhatsTest.Program();
+            WhatsTest.Program.Process(sender, password, nickname, target, this.Body);
+            Debug.WriteLine("message processed");
+        }
         public void Send(IQueueRepository queueRepo)
         {
 
