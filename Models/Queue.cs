@@ -16,7 +16,6 @@ namespace Shnexy.Models
 
         public string MessageList { get; set; }
         public string ServiceName { get; set; }
-        public string foo { get; set; }
 
 
         private IQueueRepository queueRepo;

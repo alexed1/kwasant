@@ -224,10 +224,15 @@
     <Compile Include="Migrations\201402160248071_foo.Designer.cs">
       <DependentUpon>201402160248071_foo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201402170148216_removefoo.cs" />
+    <Compile Include="Migrations\201402170148216_removefoo.Designer.cs">
+      <DependentUpon>201402170148216_removefoo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Engine.cs" />
+    <Compile Include="Models\EngineController.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\Profile.cs" />
@@ -435,6 +440,7 @@
     <Folder Include="Services\ChatProviders\WhatsApp\WhatsAppPort\obj\x86\Debug\TempPE\" />
     <Folder Include="Services\ChatProviders\WhatsApp\WhatsTest\obj\x86\Debug\TempPE\" />
     <Folder Include="Services\ChatProviders\WhatsApp\WhatsTest\Properties\" />
+    <Folder Include="Views\Engine\" />
     <Folder Include="Views\Session\" />
   </ItemGroup>
   <ItemGroup>
@@ -462,6 +468,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201402160248071_foo.resx">
       <DependentUpon>201402160248071_foo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402170148216_removefoo.resx">
+      <DependentUpon>201402170148216_removefoo.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\WhatsAppApi.Properties.Resources.resources" />
     <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Properties\Resources.resx" />
