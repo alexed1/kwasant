@@ -43,6 +43,10 @@
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="StructureMap">
       <HintPath>packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
     </Reference>
@@ -109,10 +113,6 @@
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <Private>True</Private>
-      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="WebActivator">
       <HintPath>packages\WebActivator.1.5.3\lib\net40\WebActivator.dll</HintPath>
@@ -197,42 +197,19 @@
     <Compile Include="DataAccessLayer\StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapControllerFactory.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapHttpControllerActivator.cs" />
+    <Compile Include="Fixtures\Seed.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201402130740231_Initial.cs" />
-    <Compile Include="Migrations\201402130740231_Initial.Designer.cs">
-      <DependentUpon>201402130740231_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402140111280_next.cs" />
-    <Compile Include="Migrations\201402140111280_next.Designer.cs">
-      <DependentUpon>201402140111280_next.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402140126515_next2.cs" />
-    <Compile Include="Migrations\201402140126515_next2.Designer.cs">
-      <DependentUpon>201402140126515_next2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402150610155_uow.cs" />
-    <Compile Include="Migrations\201402150610155_uow.Designer.cs">
-      <DependentUpon>201402150610155_uow.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402160242068_IntString.cs" />
-    <Compile Include="Migrations\201402160242068_IntString.Designer.cs">
-      <DependentUpon>201402160242068_IntString.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402160248071_foo.cs" />
-    <Compile Include="Migrations\201402160248071_foo.Designer.cs">
-      <DependentUpon>201402160248071_foo.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402170148216_removefoo.cs" />
-    <Compile Include="Migrations\201402170148216_removefoo.Designer.cs">
-      <DependentUpon>201402170148216_removefoo.cs</DependentUpon>
+    <Compile Include="Migrations\201402170636491_initial.cs" />
+    <Compile Include="Migrations\201402170636491_initial.Designer.cs">
+      <DependentUpon>201402170636491_initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Address.cs" />
     <Compile Include="Models\Engine.cs" />
-    <Compile Include="Models\EngineController.cs" />
+    <Compile Include="Controllers\EngineController.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Message.cs" />
     <Compile Include="Models\Profile.cs" />
@@ -451,26 +428,8 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201402130740231_Initial.resx">
-      <DependentUpon>201402130740231_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402140111280_next.resx">
-      <DependentUpon>201402140111280_next.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402140126515_next2.resx">
-      <DependentUpon>201402140126515_next2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402150610155_uow.resx">
-      <DependentUpon>201402150610155_uow.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402160242068_IntString.resx">
-      <DependentUpon>201402160242068_IntString.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402160248071_foo.resx">
-      <DependentUpon>201402160248071_foo.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402170148216_removefoo.resx">
-      <DependentUpon>201402170148216_removefoo.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201402170636491_initial.resx">
+      <DependentUpon>201402170636491_initial.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppApi\obj\Debug\WhatsAppApi.Properties.Resources.resources" />
     <EmbeddedResource Include="Services\ChatProviders\WhatsApp\WhatsAppApi\Properties\Resources.resx" />

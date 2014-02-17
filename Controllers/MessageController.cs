@@ -51,27 +51,12 @@ namespace Shnexy.Controllers
         // GET: /Message/Send
         public ActionResult Send()
         {
-            int id = 1;
 
 
-            Address address806 = new Address();
-            address806.Body = "14158067915";
-            address806.ServiceName = "WhatsApp";
-
-            Address address871 = new Address();
-            address871.Body = "14158710872";
-            address871.ServiceName = "WhatsApp";
-
-            Message message = new Message(messageRepository); //why does this work, but not the version in Configuration#Seed, which causes the RecipientList to be null?
-            message.RecipientList.Add(address806);
-            message.Sender = address871;
-            message.Body = "Hello, Come here, please! ";
-            message.Id = 45;
-            messageRepository.Add(message);
-            messageRepository.Save(message);
 
 
-            //Message message = messageRepository.GetByKey(id);
+            int Id = 45;
+            Message message = messageRepository.GetByKey(Id);
             //message.RecipientList.Add(address806);
             message.Send(queueRepo);
             return View("Index", "Admin");

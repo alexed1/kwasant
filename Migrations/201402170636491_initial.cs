@@ -3,7 +3,7 @@ namespace shnexy.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Initial : DbMigration
+    public partial class initial : DbMigration
     {
         public override void Up()
         {
@@ -57,7 +57,7 @@ namespace shnexy.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        MessageList_SerializedValue = c.String(),
+                        MessageList = c.String(),
                         ServiceName = c.String(),
                     })
                 .PrimaryKey(t => t.Id);
@@ -77,6 +77,7 @@ namespace shnexy.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
+                        foobar = c.String(),
                     })
                 .PrimaryKey(t => t.Id);
             

@@ -32,8 +32,7 @@ namespace ShnexyMTA
                 HttpClient httpShnexyClient = new HttpClient();
                 HttpContent httpContent = new StringContent("");
                 HttpResponseMessage response =
-                    httpShnexyClient.PostAsync(baseURL, httpContent);
-
+                    httpShnexyClient.PostAsync(baseURL, httpContent).Result; ;
 
 
 
