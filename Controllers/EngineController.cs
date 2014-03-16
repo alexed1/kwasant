@@ -1,4 +1,5 @@
-﻿using Shnexy.DataAccessLayer;
+﻿using S22.Imap;
+using Shnexy.DataAccessLayer;
 using Shnexy.Fixtures;
 using Shnexy.Models;
 using System;
@@ -46,16 +47,13 @@ namespace Shnexy.Controllers
             //message.TestSend();
             //message.Send(queueRepo);
 
-
-
-           
-            Debug.WriteLine("debug output from AdminController");
-            ProcessStartInfo info = new ProcessStartInfo("D:/dev/shnexy/ShnexyMTA/bin/Debug/ShnexyMTA.exe");
-
-            using (Process process = Process.Start(info))
+      
+            // Connect on port 993 using SSL.
+            using (ImapClient Client = new ImapClient("imap.gmail.com", 993, true))
             {
-
+                Console.WriteLine("We are connected!");
             }
+        
             return RedirectToAction("Index", "Admin");
 
         }
