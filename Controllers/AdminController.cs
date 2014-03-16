@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using shnexy.Migrations;
+
 using System.Data.Entity.Migrations;
 using Shnexy.Models;
 using System.Diagnostics;

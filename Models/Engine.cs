@@ -21,31 +21,7 @@ namespace Shnexy.Models
             //    get all messages
             //    if they're unsent, send them, remove them from the queue, and change their status to sent
 
-            foreach (var queue in db.Queues)
-            {
-                
-                foreach (var messageId in queue.MessageList)
-                {
-
-                    Message curMessage = db.Messages.First(m => m.Id == messageId);
-                    if (curMessage.State == MessageState.UNSENT)
-                    {
-                        try
-                        {
-                            curMessage.Send(queueRepo);
-                            curMessage.State = MessageState.SENT;
-                        }
-                        catch
-                        {
-                            throw new ApplicationException("Transmission Failed");
-                        }
-
-
-                    }
-                    else throw new ApplicationException("A Sent message was found in the outbound queues. problem. big problem.");
-                }
-
-            }
+           
 
         }
     

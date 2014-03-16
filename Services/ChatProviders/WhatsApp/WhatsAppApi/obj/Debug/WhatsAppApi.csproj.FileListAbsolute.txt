@@ -1,7 +1,0 @@
-D:\dev\WhatsAPINet\WhatsAppApi\bin\Debug\WhatsAppApi.dll
-D:\dev\WhatsAPINet\WhatsAppApi\bin\Debug\WhatsAppApi.pdb
-D:\dev\WhatsAPINet\WhatsAppApi\obj\Debug\WhatsAppApi.csprojResolveAssemblyReference.cache
-D:\dev\WhatsAPINet\WhatsAppApi\obj\Debug\WhatsAppApi.Properties.Resources.resources
-D:\dev\WhatsAPINet\WhatsAppApi\obj\Debug\WhatsAppApi.csproj.GenerateResource.Cache
-D:\dev\WhatsAPINet\WhatsAppApi\obj\Debug\WhatsAppApi.dll
-D:\dev\WhatsAPINet\WhatsAppApi\obj\Debug\WhatsAppApi.pdb

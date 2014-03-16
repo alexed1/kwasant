@@ -25,7 +25,7 @@ namespace Shnexy.DataAccessLayer.StructureMap
             public ControllerRegistry()
             {
                 For<IQueueRepository>().Use<QueueRepository>();
-                For<IMessageRepository>().Use<MessageRepository>();
+                
                 For<IUnitOfWork>().Use(new UnitOfWork(new ShnexyDbContext()));
             }
         }
@@ -35,7 +35,7 @@ namespace Shnexy.DataAccessLayer.StructureMap
             public TestDBControllerRegistry()
             {
                 For<IQueueRepository>().Use<QueueRepository>();
-                For<IMessageRepository>().Use<MessageRepository>();
+                
                 
             }
         }

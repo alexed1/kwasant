@@ -13,37 +13,37 @@ namespace Shnexy.Controllers
 {
     public class EngineController : Controller
     {
-        public IQueueRepository queueRepo;
-        public IMessageRepository messageRepo;
+        //public IQueueRepository queueRepo;
+        //public IMessageRepository messageRepo;
         //start the system
         public ActionResult Bootstrap()
         {
 
-            queueRepo = new QueueRepository(new UnitOfWork(new ShnexyDbContext()));
-            messageRepo = new MessageRepository(new UnitOfWork(new ShnexyDbContext()));
-            //update database
-            //Seed.AddMessage(messageRepo);
+            //queueRepo = new QueueRepository(new UnitOfWork(new ShnexyDbContext()));
+            //messageRepo = new MessageRepository(new UnitOfWork(new ShnexyDbContext()));
+            ////update database
+            ////Seed.AddMessage(messageRepo);
 
 
 
 
-            Address address806 = new Address();
-            address806.Body = "14158067915";
-            address806.ServiceName = "WhatsApp";
+            //Address address806 = new Address();
+            //address806.Body = "14158067915";
+            //address806.ServiceName = "WhatsApp";
 
-            Address address871 = new Address();
-            address871.Body = "14158710872";
-            address871.ServiceName = "WhatsApp";
+            //Address address871 = new Address();
+            //address871.Body = "14158710872";
+            //address871.ServiceName = "WhatsApp";
 
-            Message message = messageRepo.GetAll().First();
-            message.RecipientList = new List<Address>();
-            message.RecipientList.Add(address806);
-            message.Sender = address871;
-            message.Body = "45 hoo hawHello, Come here, please! ";
-            message.Id = 50;
+            //Message message = messageRepo.GetAll().First();
+            //message.RecipientList = new List<Address>();
+            //message.RecipientList.Add(address806);
+            //message.Sender = address871;
+            //message.Body = "45 hoo hawHello, Come here, please! ";
+            //message.Id = 50;
 
 
-            message.TestSend();
+            //message.TestSend();
             //message.Send(queueRepo);
 
 
