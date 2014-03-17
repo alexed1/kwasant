@@ -1,5 +1,6 @@
 ﻿using S22.Imap;
 using Shnexy.DataAccessLayer;
+using Shnexy.DataAccessLayer.Repositories;
 using Shnexy.Fixtures;
 using Shnexy.Models;
 using System;
@@ -15,8 +16,14 @@ namespace Shnexy.Controllers
 {
     public class EngineController : Controller
     {
-        //public IQueueRepository queueRepo;
+        public IEmailRepository _emailRepo;
         //public IMessageRepository messageRepo;
+
+        public EngineController(IEmailRepository emailRepo)
+        {
+            _emailRepo = emailRepo;
+        }
+
         //start the system
         public ActionResult Bootstrap()
         {
@@ -60,7 +67,7 @@ namespace Shnexy.Controllers
             }
             foreach (var message in messages)
             {
-                var curEmail = new Email(message);
+                var curEmail = new Email(message, _emailRepo);
                 curEmail.Save();
             }
             return RedirectToAction("Index", "Admin");

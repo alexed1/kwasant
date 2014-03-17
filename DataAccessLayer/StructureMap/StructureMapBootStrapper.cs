@@ -1,4 +1,5 @@
-﻿using Shnexy.Models;
+﻿using Shnexy.DataAccessLayer.Repositories;
+using Shnexy.Models;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
@@ -26,12 +27,12 @@ namespace Shnexy.DataAccessLayer.StructureMap
             public ControllerRegistry()
             {
                 For<IEmail>().Use<Email>();
-                
+                For<IEmailRepository>().Use<EmailRepository>();
                 For<IUnitOfWork>().Use(new UnitOfWork(new ShnexyDbContext()));
             }
         }
 
-        public class TestDBControllerRegistry : Registry
+        public class TestDBControllerRegistry : Registry //merge this
         {
             public TestDBControllerRegistry()
             {

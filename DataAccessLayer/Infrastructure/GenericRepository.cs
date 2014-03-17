@@ -13,7 +13,7 @@ namespace Shnexy.DataAccessLayer
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     public class GenericRepository<TEntity>
-        where TEntity : class, IEntity
+        where TEntity : class
     {
         private readonly IUnitOfWork _unitOfWork;
         internal DbSet<TEntity> dbSet;
@@ -77,40 +77,42 @@ namespace Shnexy.DataAccessLayer
         {
 
             //dbSet.Attach(entity);
-            //_unitOfWork.Db.Entry(entity).State = EntityState.Modified;
+            _unitOfWork.Db.Entry(entity).State = EntityState.Modified;
 
-            TEntity attachedEntity = dbSet.Local.SingleOrDefault(e => e.Id == entity.Id);  // You need to have access to key
+            //TEntity attachedEntity = dbSet.Local.SingleOrDefault(e => e.Id == entity.Id);  // You need to have access to key
 
-            if (attachedEntity != null)
-            {
-                var attachedEntry = Database.Entry(attachedEntity);
-                attachedEntry.CurrentValues.SetValues(entity);
-            }
-            else
-            {
-                _unitOfWork.Db.Entry(entity).State = EntityState.Modified; // This should attach entity
+            //if (attachedEntity != null)
+            //{
+            //    var attachedEntry = Database.Entry(attachedEntity);
+            //    attachedEntry.CurrentValues.SetValues(entity);
+            //}
+            //else
+            //{
+            //    _unitOfWork.Db.Entry(entity).State = EntityState.Modified; // This should attach entity
 
-            }
+            //}
 
         }
         //http://stackoverflow.com/a/12587752/1915866
-        public virtual void Update(TEntity entity)
+        public virtual void Update(TEntity entity, TEntity existingEntity)
         {
+
+            _unitOfWork.Db.Entry(existingEntity).CurrentValues.SetValues(entity);
             //dbSet.Attach(entity);
             //_unitOfWork.Db.Entry(entity).State = EntityState.Modified;
 
             //var set = Database.Set<TEntity>();
-            TEntity attachedEntity = dbSet.Local.SingleOrDefault(e => e.Id == entity.Id);  // You need to have access to key
+            //TEntity attachedEntity = dbSet.Local.SingleOrDefault(e => e.Id == entity.Id);  // You need to have access to key
 
-            if (attachedEntity != null)
-            {
-                var attachedEntry = Database.Entry(attachedEntity);
-                attachedEntry.CurrentValues.SetValues(entity);
-            }
-            else
-            {
-                _unitOfWork.Db.Entry(entity).State = EntityState.Modified; // This should attach entity
-            }
+            //if (attachedEntity != null)
+            //{
+            //    var attachedEntry = Database.Entry(attachedEntity);
+            //    attachedEntry.CurrentValues.SetValues(entity);
+            //}
+            //else
+            //{
+            //    _unitOfWork.Db.Entry(entity).State = EntityState.Modified; // This should attach entity
+            //}
         }
 
         public TEntity FindOne(Expression<Func<TEntity, bool>> criteria)
