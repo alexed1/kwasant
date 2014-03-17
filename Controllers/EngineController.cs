@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
 
@@ -47,13 +48,21 @@ namespace Shnexy.Controllers
             //message.TestSend();
             //message.Send(queueRepo);
 
-      
+            string username = "alexlucre1";
+            string password = "lucrelucre";
+            IEnumerable<MailMessage> messages;
             // Connect on port 993 using SSL.
-            using (ImapClient Client = new ImapClient("imap.gmail.com", 993, true))
+            using (ImapClient Client = new ImapClient("imap.gmail.com", 993, username, password, AuthMethod.Login, true))
             {
-                Console.WriteLine("We are connected!");
+                Debug.WriteLine("We are connected!");
+                IEnumerable<uint> uids = Client.Search(SearchCondition.Unseen());
+                messages = Client.GetMessages(uids);
             }
-        
+            foreach (var message in messages)
+            {
+                var curEmail = new Email(message);
+                curEmail.Save();
+            }
             return RedirectToAction("Index", "Admin");
 
         }

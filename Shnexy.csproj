@@ -183,17 +183,15 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\QueueController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\GenericRepository.cs" />
+    <Compile Include="DataAccessLayer\Infrastructure\UnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEntity.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\IQueueRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IUnitOfWork.cs" />
-    <Compile Include="DataAccessLayer\Repositories\QueueRepository.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyInitializer.cs" />
-    <Compile Include="DataAccessLayer\Infrastructure\UnitOfWork.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapControllerFactory.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapHttpControllerActivator.cs" />
@@ -202,12 +200,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\Address.cs" />
+    <Compile Include="Models\EmailAddress.cs" />
+    <Compile Include="Models\Email.cs" />
     <Compile Include="Models\Engine.cs" />
     <Compile Include="Controllers\EngineController.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="DataAccessLayer\Interfaces\IEmail.cs" />
     <Compile Include="Models\Profile.cs" />
-    <Compile Include="Models\Queue.cs" />
     <Compile Include="Models\Registration.cs" />
     <Compile Include="Models\Service.cs" />
     <Compile Include="Models\User.cs" />
@@ -294,10 +293,16 @@
     <Content Include="Views\Queue\Details.cshtml" />
     <Content Include="Views\Queue\Edit.cshtml" />
     <Content Include="Views\Queue\Index.cshtml" />
+    <Content Include="Views\Email\Create.cshtml" />
+    <Content Include="Views\Email\Delete.cshtml" />
+    <Content Include="Views\Email\Details.cshtml" />
+    <Content Include="Views\Email\Edit.cshtml" />
+    <Content Include="Views\Email\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
+    <Folder Include="DataAccessLayer\Repositories\" />
     <Folder Include="Migrations\" />
     <Folder Include="Views\Engine\" />
     <Folder Include="Views\Session\" />

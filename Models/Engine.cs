@@ -12,16 +12,11 @@ namespace Shnexy.Models
         public int Id;
 
         private ShnexyDbContext db = new ShnexyDbContext();
-        private QueueRepository queueRepo = new QueueRepository(new UnitOfWork(new ShnexyDbContext()));
+       
 
         public void ProcessQueues()
         {
-            //get all queues
-            //for each queue
-            //    get all messages
-            //    if they're unsent, send them, remove them from the queue, and change their status to sent
-
-           
+    
 
         }
     
