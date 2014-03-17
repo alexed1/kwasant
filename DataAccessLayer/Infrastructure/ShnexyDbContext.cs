@@ -26,6 +26,8 @@ namespace Shnexy.DataAccessLayer
         public DbSet<Profile> Profiles { get; set; }
 
         public DbSet<EmailAddress> EmailAddresses { get; set; }
+
+        public System.Data.Entity.DbSet<Shnexy.Models.AppointmentTable> AppointmentTables { get; set; }
         
 
       

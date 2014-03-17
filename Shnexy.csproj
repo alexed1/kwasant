@@ -39,6 +39,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AjaxMin, Version=4.57.4561.28951, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\AjaxMin.dll</HintPath>
+    </Reference>
+    <Reference Include="DayPilot">
+      <HintPath>packages\DayPilot.4.1.264\lib\DayPilot.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
@@ -52,6 +59,34 @@
     </Reference>
     <Reference Include="StructureMap">
       <HintPath>packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Core, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=632609b4d040f6b4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.HtmlConverter.Base, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.HtmlConverter.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.HTMLUI.Base, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.HTMLUI.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Linq.Base, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.Linq.Base.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Schedule.Mvc, Version=11.4500.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\MVC\MVC5\Syncfusion.Schedule.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Shared.Mvc, Version=11.4500.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\MVC\MVC5\Syncfusion.Shared.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Theme.Base, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.Theme.Base.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -204,8 +239,13 @@
     <Compile Include="Migrations\201403170229250_initial.Designer.cs">
       <DependentUpon>201403170229250_initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201403170818299_syncfusion.cs" />
+    <Compile Include="Migrations\201403170818299_syncfusion.Designer.cs">
+      <DependentUpon>201403170818299_syncfusion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\AppointmentTable.cs" />
     <Compile Include="Models\EmailAddress.cs" />
     <Compile Include="Models\Email.cs" />
     <Compile Include="Models\Engine.cs" />
@@ -309,6 +349,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
     <Folder Include="Views\Engine\" />
+    <Folder Include="Views\Schedule\" />
     <Folder Include="Views\Session\" />
   </ItemGroup>
   <ItemGroup>
@@ -321,6 +362,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201403170229250_initial.resx">
       <DependentUpon>201403170229250_initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403170818299_syncfusion.resx">
+      <DependentUpon>201403170818299_syncfusion.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

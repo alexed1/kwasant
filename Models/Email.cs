@@ -30,6 +30,9 @@ namespace Shnexy.Models
         private EmailAddress curAddress ;
         private IEmailRepository _emailRepo;
 
+        public Email()
+        {
+        }
 
         public Email(MailMessage curMessage, IEmailRepository emailRepo)
         {
