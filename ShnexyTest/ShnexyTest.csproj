@@ -1,0 +1,324 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8D38298A-9246-4AB9-80C4-9A830213346C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ShnexyTest</RootNamespace>
+    <AssemblyName>ShnexyTest</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Web.XmlTransform">
+      <HintPath>..\packages\Microsoft.Web.Xdt.1.0.0\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
+    <Reference Include="NuGet.Core, Version=2.8.50126.400, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\NuGet.Core.2.8.0\lib\net40-Client\NuGet.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.core">
+      <HintPath>..\packages\NUnitTestAdapter.WithFramework.1.0\lib\nunit.core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="nunit.core.interfaces">
+      <HintPath>..\packages\NUnitTestAdapter.WithFramework.1.0\lib\nunit.core.interfaces.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\packages\NUnitTestAdapter.WithFramework.1.0\lib\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.util">
+      <HintPath>..\packages\NUnitTestAdapter.WithFramework.1.0\lib\nunit.util.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NUnit.VisualStudio.TestAdapter">
+      <HintPath>..\packages\NUnitTestAdapter.WithFramework.1.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="DDay.Collections.Test\Doctor.cs" />
+    <Compile Include="DDay.Collections.Test\GroupedCollectionTests.cs" />
+    <Compile Include="DDay.Collections.Test\GroupedValueListTests.cs" />
+    <Compile Include="DDay.Collections.Test\Person.cs" />
+    <Compile Include="DDay.Collections.Test\Property.cs" />
+    <Compile Include="DDay.Collections.Test\Startup.cs" />
+    <Compile Include="DDay.iCal.Test\AlarmTest.cs" />
+    <Compile Include="DDay.iCal.Test\ComponentTest.cs" />
+    <Compile Include="DDay.iCal.Test\CopyTest.cs" />
+    <Compile Include="DDay.iCal.Test\Custom\Custom1.cs" />
+    <Compile Include="DDay.iCal.Test\EventTest.cs" />
+    <Compile Include="DDay.iCal.Test\FreeBusyTest.cs" />
+    <Compile Include="DDay.iCal.Test\iCalDateTimeTest.cs" />
+    <Compile Include="DDay.iCal.Test\JournalTest.cs" />
+    <Compile Include="DDay.iCal.Test\ProgramTest.cs" />
+    <Compile Include="DDay.iCal.Test\RecurrenceTest.cs" />
+    <Compile Include="DDay.iCal.Test\SerializationTest.cs" />
+    <Compile Include="DDay.iCal.Test\Startup.cs" />
+    <Compile Include="DDay.iCal.Test\TodoTest.cs" />
+    <Compile Include="UnitTest1.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DDay.Collections.Test\DDay.Collections.Test.csproj" />
+    <Content Include="DDay.Collections.Test\nunit-console-runner.dll" />
+    <Content Include="DDay.Collections.Test\nunit-gui-runner.dll" />
+    <Content Include="DDay.Collections.Test\nunit.core.dll" />
+    <Content Include="DDay.Collections.Test\nunit.core.interfaces.dll" />
+    <Content Include="DDay.Collections.Test\nunit.fixtures.dll" />
+    <Content Include="DDay.Collections.Test\nunit.framework.dll" />
+    <Content Include="DDay.Collections.Test\nunit.uiexception.dll" />
+    <Content Include="DDay.Collections.Test\nunit.uikit.dll" />
+    <Content Include="DDay.Collections.Test\nunit.util.dll" />
+    <Content Include="DDay.iCal.Test\Calendars\Alarm\ALARM1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Alarm\ALARM2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Alarm\ALARM3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Alarm\ALARM4.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Alarm\ALARM5.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Alarm\ALARM6.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Alarm\ALARM7.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Journal\JOURNAL1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Journal\JOURNAL2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Bug1741093.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Bug2912657.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Bug2916581.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Bug2959692.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Bug2966236.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Bug3007244.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Bug3312617.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Bug3312618and3522651.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Bug3312619.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Bug3517553.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\ByMonth1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\ByMonth2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\ByMonthDay1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Daily1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\DailyByDay1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\DailyByHourMinute1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\DailyCount1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\DailyCount2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\DailyInterval1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\DailyInterval2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\DailyUntil1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Empty1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Hourly1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\HourlyInterval1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\HourlyInterval2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\HourlyUntil1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Minutely1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MinutelyByHour1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MinutelyCount1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MinutelyCount2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MinutelyCount3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MinutelyCount4.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MinutelyInterval1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Monthly1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyByDay1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyByMonthDay1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyByMonthDay2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyBySetPos1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyBySetPos2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyCountByDay1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyCountByDay2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyCountByDay3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyCountByMonthDay1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyCountByMonthDay2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyCountByMonthDay3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyInterval1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\MonthlyUntilByDay1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Secondly1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\WeeklyCount1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\WeeklyCountWkst1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\WeeklyCountWkst2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\WeeklyCountWkst3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\WeeklyCountWkst4.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\WeeklyInterval1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\WeeklyUntil1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\WeeklyUntilWkst1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\WeeklyUntilWkst2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\WeeklyWkst1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\Yearly1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyByDay1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyByMonth1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyByMonth2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyByMonth3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyByMonthDay1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyBySetPos1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyByWeekNo1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyByWeekNo2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyByWeekNo3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyByWeekNo4.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyByWeekNo5.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyComplex1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyCountByMonth1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyCountByYearDay1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Recurrence\YearlyInterval1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Attachment3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Attachment4.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Attendee1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Attendee2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Bug2033495.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Bug2148092.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Bug2938007.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Bug3363485.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Bug3379920.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Calendar1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\CalendarParameters2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\CaseInsensitive1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\CaseInsensitive2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\CaseInsensitive3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\CaseInsensitive4.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Categories1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\DateTime1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\DateTime2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Duration1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\EmptyLines1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\EmptyLines2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\EmptyLines3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\EmptyLines4.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Encoding1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Encoding2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Encoding3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Event1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Event2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Event3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Event4.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\GeographicLocation1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Google1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Language1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Language2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Language3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Language4.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Outlook2007LineFolds.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Parameter1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Parameter2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Parse1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\PARSE17.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\ProdID1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\ProdID2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Property1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\RecurrenceDates1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\RequestStatus1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\TimeZone1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\TimeZone2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\TimeZone3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Todo1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Todo2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Todo3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Todo4.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Todo5.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Todo6.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Todo7.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Transparency1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Transparency2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\Trigger1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\USHolidays.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\XProperty1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Serialization\XProperty2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Todo\Todo1.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Todo\Todo2.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Todo\Todo3.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Todo\Todo4.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Todo\Todo5.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Todo\Todo6.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Todo\Todo7.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Todo\Todo8.ics" />
+    <Content Include="DDay.iCal.Test\Calendars\Todo\Todo9.ics" />
+    <Content Include="DDay.iCal.Test\Copyright.txt" />
+    <Content Include="DDay.iCal.Test\Data\LoremIpsum.txt" />
+    <Content Include="DDay.iCal.Test\Data\Test.doc" />
+    <Content Include="DDay.iCal.Test\DDay.iCal.Test.csproj" />
+    <Content Include="DDay.iCal.Test\DDay.iCal.Test.csproj.user" />
+    <Content Include="DDay.iCal.Test\log4net.dll" />
+    <Content Include="DDay.iCal.Test\nunit-console-runner.dll" />
+    <Content Include="DDay.iCal.Test\nunit-gui-runner.dll" />
+    <Content Include="DDay.iCal.Test\nunit.core.dll" />
+    <Content Include="DDay.iCal.Test\nunit.core.interfaces.dll" />
+    <Content Include="DDay.iCal.Test\nunit.fixtures.dll" />
+    <Content Include="DDay.iCal.Test\nunit.framework.dll" />
+    <Content Include="DDay.iCal.Test\nunit.uiexception.dll" />
+    <Content Include="DDay.iCal.Test\nunit.uikit.dll" />
+    <Content Include="DDay.iCal.Test\nunit.util.dll" />
+    <Content Include="DDay.iCal.Test\obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
+    <Content Include="DDay.iCal.Test\Properties\AssemblyInfo.cs.template" />
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DDay.iCal.Test\bin\Debug\" />
+    <Folder Include="DDay.iCal.Test\Lists\" />
+    <Folder Include="DDay.iCal.Test\obj\Debug\TempPE\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Shnexy.csproj">
+      <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
+      <Name>Shnexy</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
