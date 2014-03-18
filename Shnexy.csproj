@@ -225,6 +225,7 @@
     <Compile Include="DataAccessLayer\Infrastructure\GenericRepository.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\UnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEntity.cs" />
+    <Compile Include="DataAccessLayer\Interfaces\IEvent.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IUnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyInitializer.cs" />
@@ -359,7 +360,6 @@
     <Compile Include="DDay\DDay.iCal\Compatibility\DebuggerDisplayAttribute.cs" />
     <Compile Include="DDay\DDay.iCal\Components\Alarm.cs" />
     <Compile Include="DDay\DDay.iCal\Components\CalendarComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\Event.cs" />
     <Compile Include="DDay\DDay.iCal\Components\FreeBusy.cs" />
     <Compile Include="DDay\DDay.iCal\Components\iCalTimeZone.cs" />
     <Compile Include="DDay\DDay.iCal\Components\iCalTimeZoneInfo.cs" />
@@ -413,7 +413,6 @@
     <Compile Include="DDay\DDay.iCal\Interfaces\Components\IAlarm.cs" />
     <Compile Include="DDay\DDay.iCal\Interfaces\Components\IAlarmContainer.cs" />
     <Compile Include="DDay\DDay.iCal\Interfaces\Components\ICalendarComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IEvent.cs" />
     <Compile Include="DDay\DDay.iCal\Interfaces\Components\IFreeBusy.cs" />
     <Compile Include="DDay\DDay.iCal\Interfaces\Components\IJournal.cs" />
     <Compile Include="DDay\DDay.iCal\Interfaces\Components\IRecurringComponent.cs" />
@@ -531,6 +530,14 @@
     <Compile Include="Migrations\201403170818299_syncfusion.Designer.cs">
       <DependentUpon>201403170818299_syncfusion.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201403180803443_addEvent.cs" />
+    <Compile Include="Migrations\201403180803443_addEvent.Designer.cs">
+      <DependentUpon>201403180803443_addEvent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201403180807070_addEventstatus.cs" />
+    <Compile Include="Migrations\201403180807070_addEventstatus.Designer.cs">
+      <DependentUpon>201403180807070_addEventstatus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AppointmentTable.cs" />
@@ -538,6 +545,7 @@
     <Compile Include="Models\Email.cs" />
     <Compile Include="Models\Engine.cs" />
     <Compile Include="Controllers\EngineController.cs" />
+    <Compile Include="Models\Event.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEmail.cs" />
     <Compile Include="Models\Profile.cs" />
@@ -690,6 +698,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201403170818299_syncfusion.resx">
       <DependentUpon>201403170818299_syncfusion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403180803443_addEvent.resx">
+      <DependentUpon>201403180803443_addEvent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403180807070_addEventstatus.resx">
+      <DependentUpon>201403180807070_addEventstatus.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

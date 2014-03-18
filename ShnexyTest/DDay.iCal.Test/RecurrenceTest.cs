@@ -10,8 +10,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
+using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DDay.iCal.Serialization.iCalendar;
 using NUnit.Framework;
+using Shnexy.Models;
 
 namespace Shnexy.DDay.iCal.Test
 {

@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.Serialization;
+using Shnexy.DataAccessLayer.Interfaces;
+using Shnexy.DDay.iCal;
 
-namespace Shnexy.DDay.iCal
+//This was originally DDay Code. 
+
+namespace Shnexy.Models
 {
     /// <summary>
     /// A class that represents an RFC 5545 VEVENT component.
@@ -28,6 +31,7 @@ namespace Shnexy.DDay.iCal
     {
         #region Public Properties
 
+        public int Id { get; set; }
         /// <summary>
         /// The start date/time of the event.
         /// <note>

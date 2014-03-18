@@ -27,6 +27,8 @@ namespace Shnexy.Models
 
         public ICollection<EmailAddress> Bcc_Addresses { get; set; }
 
+        public string Status { get; set; } //TODO replace with typesafe enum
+
         private EmailAddress curAddress ;
         private IEmailRepository _emailRepo;
 
@@ -55,6 +57,7 @@ namespace Shnexy.Models
                 Bcc_Addresses = new Collection<EmailAddress>();
                 Bcc_Addresses.Add(MapAddress(address)); //ugly This maps the MSDN address to our normalized EmailAddress
             }
+            Status = "Unprocessed";
             _emailRepo = emailRepo;
         }
 
@@ -68,5 +71,6 @@ namespace Shnexy.Models
             _emailRepo.Add(this);
             _emailRepo.UnitOfWork.SaveChanges(); 
         }
+
     }
 }

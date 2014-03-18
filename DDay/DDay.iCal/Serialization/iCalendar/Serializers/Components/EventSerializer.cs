@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using Shnexy.DataAccessLayer.Interfaces;
+using Shnexy.Models;
 
 namespace Shnexy.DDay.iCal.Serialization.iCalendar
 {

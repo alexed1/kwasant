@@ -6,8 +6,10 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
+using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DDay.iCal.Serialization;
 using Shnexy.DDay.iCal.Serialization.iCalendar;
+using Shnexy.Models;
 
 namespace Shnexy.DDay.iCal
 {

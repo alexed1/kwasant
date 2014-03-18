@@ -8,6 +8,8 @@ using System.Web;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using Shnexy.DataAccessLayer.Interfaces;
+using Shnexy.Models;
 
 namespace Shnexy.DDay.iCal.Test
 {

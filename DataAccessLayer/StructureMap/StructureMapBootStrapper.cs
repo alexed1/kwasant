@@ -27,6 +27,7 @@ namespace Shnexy.DataAccessLayer.StructureMap
             public ControllerRegistry()
             {
                 For<IEmail>().Use<Email>();
+                For<IEvent>().Use<Event>();
                 For<IEmailRepository>().Use<EmailRepository>();
                 For<IUnitOfWork>().Use(new UnitOfWork(new ShnexyDbContext()));
             }

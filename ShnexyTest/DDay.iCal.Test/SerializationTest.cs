@@ -7,9 +7,11 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DDay.iCal.Serialization;
 using Shnexy.DDay.iCal.Serialization.iCalendar;
 using NUnit.Framework;
+using Shnexy.Models;
 
 namespace Shnexy.DDay.iCal.Test
 {

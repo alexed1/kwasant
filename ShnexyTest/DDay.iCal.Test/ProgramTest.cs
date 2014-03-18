@@ -9,6 +9,7 @@ using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DDay.iCal.Serialization.iCalendar;
 using NUnit.Framework;
 

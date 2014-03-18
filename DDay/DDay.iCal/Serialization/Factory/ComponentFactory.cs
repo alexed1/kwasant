@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
 using Shnexy.DDay.iCal.Serialization;
+using Shnexy.Models;
 
 namespace Shnexy.DDay.iCal
 {

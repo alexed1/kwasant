@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Shnexy.DDay.iCal;
+using Shnexy.Models;
 
 namespace Shnexy.DDay.iCal.Test
 {

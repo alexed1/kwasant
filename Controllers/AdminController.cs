@@ -26,5 +26,11 @@ namespace Shnexy.Controllers
 
             return View();
         }
+
+        //public ActionResult ProcessBookings()
+        //{
+        //    //get all Bookings with status = "unprocessed"
+        //    //foreach Booking, process it
+        //}
 	}
 }

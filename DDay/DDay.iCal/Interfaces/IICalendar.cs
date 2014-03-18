@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Shnexy.DataAccessLayer.Interfaces;
 
 namespace Shnexy.DDay.iCal
 {

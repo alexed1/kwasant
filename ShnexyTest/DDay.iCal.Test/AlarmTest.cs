@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using NUnit.Framework;
+using Shnexy.DataAccessLayer.Interfaces;
 
 namespace Shnexy.DDay.iCal.Test
 {

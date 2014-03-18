@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using Shnexy.DDay.iCal;
 
-namespace Shnexy.DDay.iCal
+namespace Shnexy.DataAccessLayer.Interfaces
 {
     public interface IEvent :
         IRecurringComponent
