@@ -54,6 +54,23 @@ namespace Shnexy.DDay.iCal.Serialization.iCalendar
             }
         }        
 
+
+        //====================================
+        //shnexy code
+        //We don't want to go straight into a file. We want to take the text stream and persist it in a db
+        public virtual string Serialize(IICalendar iCal)
+        {
+            string Body; // outside using
+
+            using (MemoryStream stream = new MemoryStream())
+            {
+                Serialize(iCal, stream, new UTF8Encoding());
+                Body = Encoding.UTF8.GetString(stream.ToArray());
+            }
+            return Body;
+        }
+
+        //==============================================================
         #endregion
 
         #region Overrides

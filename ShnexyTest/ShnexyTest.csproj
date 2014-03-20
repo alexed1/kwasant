@@ -38,6 +38,9 @@
     <Reference Include="Microsoft.Web.XmlTransform">
       <HintPath>..\packages\Microsoft.Web.Xdt.1.0.0\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="NuGet.Core, Version=2.8.50126.400, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NuGet.Core.2.8.0\lib\net40-Client\NuGet.Core.dll</HintPath>
@@ -95,7 +98,8 @@
     <Compile Include="DDay.iCal.Test\SerializationTest.cs" />
     <Compile Include="DDay.iCal.Test\Startup.cs" />
     <Compile Include="DDay.iCal.Test\TodoTest.cs" />
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="Fixtures\FixtureData - Event.cs" />
+    <Compile Include="Models\EngineTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

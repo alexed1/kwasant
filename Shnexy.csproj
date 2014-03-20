@@ -227,9 +227,13 @@
     <Compile Include="DataAccessLayer\Interfaces\IEntity.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEvent.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
+    <Compile Include="DataAccessLayer\Interfaces\ICustomerRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IUnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyInitializer.cs" />
     <Compile Include="DataAccessLayer\Repositories\EmailRepository.cs" />
+    <Compile Include="DataAccessLayer\Interfaces\ISerializedEventRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\CustomerRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\SerializeEventRepository.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapControllerFactory.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapHttpControllerActivator.cs" />
@@ -538,18 +542,26 @@
     <Compile Include="Migrations\201403180807070_addEventstatus.Designer.cs">
       <DependentUpon>201403180807070_addEventstatus.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201403192308391_RemovedEvent.cs" />
+    <Compile Include="Migrations\201403192308391_RemovedEvent.Designer.cs">
+      <DependentUpon>201403192308391_RemovedEvent.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AppointmentTable.cs" />
+    <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\EmailAddress.cs" />
     <Compile Include="Models\Email.cs" />
     <Compile Include="Models\Engine.cs" />
     <Compile Include="Controllers\EngineController.cs" />
     <Compile Include="Models\Event.cs" />
+    <Compile Include="DataAccessLayer\Interfaces\ICustomer.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEmail.cs" />
+    <Compile Include="DataAccessLayer\Interfaces\ISerializedEvent.cs" />
     <Compile Include="Models\Profile.cs" />
     <Compile Include="Models\Registration.cs" />
+    <Compile Include="Models\SerializedEvent.cs" />
     <Compile Include="Models\Service.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -704,6 +716,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201403180807070_addEventstatus.resx">
       <DependentUpon>201403180807070_addEventstatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403192308391_RemovedEvent.resx">
+      <DependentUpon>201403192308391_RemovedEvent.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

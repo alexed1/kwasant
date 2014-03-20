@@ -75,6 +75,9 @@ namespace Shnexy.DataAccessLayer.Interfaces
         /// </summary>
         EventStatus Status { get; set; }
 
+        //internal tracking of process through the flow
+        string WorkflowState { get; set; }
+
         /// <summary>
         /// The transparency of the event.  In other words,
         /// whether or not the period of time this event
@@ -85,5 +88,7 @@ namespace Shnexy.DataAccessLayer.Interfaces
         TransparencyType Transparency { get; set; }
 
         bool IsActive();
+
+        void Dispatch();
     }
 }

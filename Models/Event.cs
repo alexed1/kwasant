@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Shnexy.DataAccessLayer.Interfaces;
+using Shnexy.DataAccessLayer.Repositories;
 using Shnexy.DDay.iCal;
 
 //This was originally DDay Code. 
+using Shnexy.DDay.iCal.Serialization.iCalendar;
 
 namespace Shnexy.Models
 {
@@ -22,9 +24,8 @@ namespace Shnexy.Models
     ///         <item>Create a TextCollection DataType for 'text' items separated by commas</item>
     ///     </list>
     /// </note>
-#if !SILVERLIGHT
+
     [Serializable]    
-#endif
     public class Event : 
         RecurringComponent,
         IEvent
@@ -32,6 +33,7 @@ namespace Shnexy.Models
         #region Public Properties
 
         public int Id { get; set; }
+        public int CustomerId { get; set; } //added by shnexy
         /// <summary>
         /// The start date/time of the event.
         /// <note>
@@ -187,6 +189,12 @@ namespace Shnexy.Models
             set { Properties.Set("STATUS", value); }
         }
 
+        public String WorkflowState
+        {
+            get { return Properties.Get<string>("STATUS"); }
+            set { Properties.Set("STATUS", value); }
+        }
+
         /// <summary>
         /// The transparency of the event.  In other words,
         /// whether or not the period of time this event
@@ -205,6 +213,8 @@ namespace Shnexy.Models
         #region Private Fields
 
         EventEvaluator m_Evaluator;
+        private ICustomer curCustomer;
+        private IUnitOfWork _uow;
 
         #endregion
 
@@ -218,6 +228,7 @@ namespace Shnexy.Models
         public Event() : base()
         {
             Initialize();
+            curCustomer = new Customer(new CustomerRepository(_uow));
         }
 
         private void Initialize()
@@ -318,6 +329,40 @@ namespace Shnexy.Models
                 Duration = DTEnd.Subtract(DTStart);
             else if (DTStart == null && Duration != default(TimeSpan) && DTEnd != null)
                 DTStart = DTEnd.Subtract(Duration);
+        }
+        #endregion
+
+        #region Added by Shnexy
+
+        //extract the ICS, and put it into an outbound email message in the outbound queue
+        public void Dispatch()
+        {
+            
+
+
+            iCalendar iCal = new iCalendar();
+            iCal.AddChild(this);
+
+            iCalendarSerializer serializer = new iCalendarSerializer(iCal);
+           // string Body = serializer.Serialize(iCal); but we don't need the body right now
+
+            //generate a unique file name, using customer id + eventID. 
+            //EventId should be added to the event and synced to the customer and incremented.
+            string filename = "invite_" + CustomerId.ToString() + "_" + Id.ToString();
+            serializer.Serialize(filename);
+
+           
+
+            //Get Customer using CustomerId. retrieve the email target address
+            curCustomer = curCustomer.GetByKey(CustomerId);
+
+            //create an Email message addressed to the customer and attache the file.
+            Email curEmail = new Email();
+
+
+            //add EmailID to outbound queue
+
+
         }
 
         #endregion

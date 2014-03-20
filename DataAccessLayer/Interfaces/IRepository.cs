@@ -58,8 +58,9 @@ namespace Shnexy.DataAccessLayer.Interfaces
         /// </summary>
         /// <typeparam name="TEntity">The type of the entity.</typeparam>
         /// <param name="entity">The entity.</param>
-        void Update(TEntity entity);
+       // void Update(TEntity entity);
 
+        void Update(TEntity entity, TEntity existingEntity);
         /// <summary>
         /// Gets all.
         /// </summary>
