@@ -27,6 +27,8 @@ namespace Shnexy.Models
             Address = importedAddress.Address;
 
         }
+
+      
  
     }
 }

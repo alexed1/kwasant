@@ -72,5 +72,12 @@ namespace Shnexy.Models
             _emailRepo.UnitOfWork.SaveChanges(); 
         }
 
+        public void Configure(EmailAddress destEmailAddress, int eventId, string filename)
+        {
+            To_Addresses.Add(destEmailAddress);
+            //TODO tag the email with the eventId
+            
+        }
+
     }
 }

@@ -358,7 +358,7 @@ namespace Shnexy.Models
 
             //create an Email message addressed to the customer and attache the file.
             Email curEmail = new Email();
-
+            curEmail.Configure(curCustomer.email, Id, filename);
 
             //add EmailID to outbound queue
 
