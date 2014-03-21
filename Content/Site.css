@@ -40,3 +40,13 @@ input[type="checkbox"].input-validation-error {
 .validation-summary-valid {
     display: none;
 }
+
+.bookingAgentFormControlBorder {
+    border: 2px solid gray;
+    text-align:left;
+    padding-left:2px;
+    color:#000000;
+    font-size:0.85em;
+    font-weight:normal;
+    min-height:35px;
+}

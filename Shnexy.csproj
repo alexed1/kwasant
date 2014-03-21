@@ -43,16 +43,69 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\AjaxMin.dll</HintPath>
     </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="DayPilot">
       <HintPath>packages\DayPilot.4.1.264\lib\DayPilot.dll</HintPath>
     </Reference>
+    <Reference Include="DayPilot.Web.Mvc, Version=7.4.5579.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\DayPilotMVC\DayPilot.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\AbdulSH-7\shnexy\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\AbdulSH-7\shnexy\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.AspNet.Identity.Core.1.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.AspNet.Identity.EntityFramework.1.0.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.AspNet.Identity.Owin.1.0.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Facebook">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.Owin.Security.Facebook.2.1.0\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Google">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.Owin.Security.Google.2.1.0\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.Owin.Security.MicrosoftAccount.2.1.0\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.Owin.Security.OAuth.2.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Twitter">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.Owin.Security.Twitter.2.1.0\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="S22.Imap">
       <HintPath>packages\S22.Imap.3.6.0.0\lib\net40\S22.Imap.dll</HintPath>
@@ -63,14 +116,6 @@
     <Reference Include="Syncfusion.Core, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=632609b4d040f6b4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.HtmlConverter.Base, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.HtmlConverter.Base.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.HTMLUI.Base, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.HTMLUI.Base.dll</HintPath>
     </Reference>
     <Reference Include="Syncfusion.Linq.Base, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -108,6 +153,29 @@
     <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebApi.WebHost.4.0.30506.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.AspNet.Mvc.5.1.1\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.AspNet.Razor.3.1.1\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
@@ -128,88 +196,13 @@
     </Reference>
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.Helpers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.0.0\lib\net45\System.Web.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Optimization">
-      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.1\lib\net40\System.Web.Optimization.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.0.0\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
     <Reference Include="WebActivator">
       <HintPath>packages\WebActivator.1.5.3\lib\net40\WebActivator.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease">
-      <Private>True</Private>
-      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
-    </Reference>
-    <Reference Include="Antlr3.Runtime">
-      <Private>True</Private>
-      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Core">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.1.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.Owin">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.1.0.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
-      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.1.0.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin">
-      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin">
-      <HintPath>..\packages\Microsoft.Owin.2.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb">
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.0.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security">
-      <HintPath>..\packages\Microsoft.Owin.Security.2.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Facebook">
-      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.2.0.0\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Cookies">
-      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.2.0.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.OAuth">
-      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.2.0.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Google">
-      <HintPath>..\packages\Microsoft.Owin.Security.Google.2.0.0\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.Twitter">
-      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.2.0.0\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount">
-      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.2.0.0\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+      <HintPath>..\AbdulSH-7\shnexy\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -219,8 +212,15 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\BookingAgentController.cs" />
+    <Compile Include="Controllers\CalendarController.cs" />
+    <Compile Include="Controllers\Data\EventManager.cs" />
     <Compile Include="Controllers\EmailController.cs" />
+    <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
+    <Compile Include="Controllers\Helpers\Log.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MonthController.cs" />
+    <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\GenericRepository.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\UnitOfWork.cs" />
@@ -599,10 +599,30 @@
     <Content Include="DDay\License.txt" />
     <Content Include="DDay\Release Notes\1.0.1.txt" />
     <Content Include="DDay\SilverlightAdapter.dll" />
+    <Content Include="daypilot.mdf" />
+    <Content Include="daypilot_log.ldf" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Media\elements.css" />
+    <Content Include="Media\elements\calendar_silver_allday30.gif" />
+    <Content Include="Media\layout.css" />
+    <Content Include="Media\layout\btn\all.png" />
+    <Content Include="Media\layout\header-in.png" />
+    <Content Include="Media\layout\header.png" />
+    <Content Include="Media\layout\home\daypilot_calendar234x130.png" />
+    <Content Include="Media\layout\home\daypilot_month196x130.png" />
+    <Content Include="Media\layout\home\daypilot_scheduler247x130.png" />
+    <Content Include="Media\layout\li.png" />
+    <Content Include="Media\layout\main.png" />
+    <Content Include="Media\layout\shadow.png" />
+    <Content Include="Media\layout\tab-left.png" />
+    <Content Include="Media\layout\tab-right.png" />
+    <Content Include="Media\layout\toolbar2.png" />
+    <Content Include="Media\linked\gradient_dps.jpg" />
+    <Content Include="Media\linked\gradient_hard_left.png" />
+    <Content Include="Media\linked\tentative5x8.gif" />
     <Content Include="Scripts\bootstrap-slider.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -618,9 +638,13 @@
     <None Include="Properties\PublishProfiles\shnexy.pubxml" />
     <None Include="Properties\PublishProfiles\shnexy2.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\daypilot-all.min.js" />
+    <Content Include="Scripts\DayPilot\daypilot-all.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-1.8.1.min.js" />
+    <Content Include="Scripts\jquery-2.0.3.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -629,6 +653,62 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
+    <Content Include="Themes\areas.css" />
+    <Content Include="Themes\areas\icons.png" />
+    <Content Include="Themes\bubble_default.css" />
+    <Content Include="Themes\calendar_blue.css" />
+    <Content Include="Themes\calendar_g.css" />
+    <Content Include="Themes\calendar_green.css" />
+    <Content Include="Themes\calendar_traditional.css" />
+    <Content Include="Themes\calendar_transparent.css" />
+    <Content Include="Themes\calendar_white.css" />
+    <Content Include="Themes\legacy\calendar_bronze\delete.gif" />
+    <Content Include="Themes\legacy\calendar_bronze\down.png" />
+    <Content Include="Themes\legacy\calendar_bronze\left30.gif" />
+    <Content Include="Themes\legacy\calendar_bronze\top21.gif" />
+    <Content Include="Themes\legacy\calendar_bronze\up.png" />
+    <Content Include="Themes\legacy\calendar_silver\corner20.gif" />
+    <Content Include="Themes\legacy\calendar_silver\delete.gif" />
+    <Content Include="Themes\legacy\calendar_silver\down.png" />
+    <Content Include="Themes\legacy\calendar_silver\left45.gif" />
+    <Content Include="Themes\legacy\calendar_silver\light_line_10.png" />
+    <Content Include="Themes\legacy\calendar_silver\right17.gif" />
+    <Content Include="Themes\legacy\calendar_silver\top21.gif" />
+    <Content Include="Themes\legacy\calendar_silver\up.png" />
+    <Content Include="Themes\legacy\month_silver\event20.gif" />
+    <Content Include="Themes\legacy\month_silver\light_line_10.png" />
+    <Content Include="Themes\legacy\month_silver\top20.gif" />
+    <Content Include="Themes\legacy\navigator_silver\top21.gif" />
+    <Content Include="Themes\legacy\scheduler_silver\gradient_dps.jpg" />
+    <Content Include="Themes\legacy\scheduler_silver\left45.gif" />
+    <Content Include="Themes\legacy\scheduler_silver\light_line_10.png" />
+    <Content Include="Themes\legacy\scheduler_silver\top20.gif" />
+    <Content Include="Themes\legacy\scheduler_silver\tree_collapse.png" />
+    <Content Include="Themes\legacy\scheduler_silver\tree_expand.png" />
+    <Content Include="Themes\legacy\scheduler_silver\tree_nochildren.png" />
+    <Content Include="Themes\legacy\traditional.css" />
+    <Content Include="Themes\menu_default.css" />
+    <Content Include="Themes\month_blue.css" />
+    <Content Include="Themes\month_g.css" />
+    <Content Include="Themes\month_green.css" />
+    <Content Include="Themes\month_traditional.css" />
+    <Content Include="Themes\month_transparent.css" />
+    <Content Include="Themes\month_white.css" />
+    <Content Include="Themes\navigator_8.css" />
+    <Content Include="Themes\navigator_blue.css" />
+    <Content Include="Themes\navigator_g.css" />
+    <Content Include="Themes\navigator_green.css" />
+    <Content Include="Themes\navigator_transparent.css" />
+    <Content Include="Themes\navigator_white.css" />
+    <Content Include="Themes\scheduler_8.css" />
+    <Content Include="Themes\scheduler_blue.css" />
+    <Content Include="Themes\scheduler_green.css" />
+    <Content Include="Themes\scheduler_traditional.css" />
+    <Content Include="Themes\scheduler_transparent.css" />
+    <Content Include="Themes\scheduler_white.css" />
+    <Content Include="Themes\scheduler_white\tree_collapse.png" />
+    <Content Include="Themes\scheduler_white\tree_expand.png" />
+    <Content Include="Themes\scheduler_white\tree_nochildren.png" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -677,6 +757,7 @@
     <Content Include="Views\Email\Details.cshtml" />
     <Content Include="Views\Email\Edit.cshtml" />
     <Content Include="Views\Email\Index.cshtml" />
+    <Content Include="Views\BookingAgent\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
