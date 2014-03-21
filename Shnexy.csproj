@@ -46,6 +46,14 @@
     <Reference Include="DayPilot">
       <HintPath>packages\DayPilot.4.1.264\lib\DayPilot.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
@@ -166,12 +174,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Core.1.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
@@ -221,19 +223,16 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DataAccessLayer\Repositories\GenericRepository.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\UnitOfWork.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\IEntity.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEvent.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\ICustomerRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IUnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyInitializer.cs" />
     <Compile Include="DataAccessLayer\Repositories\EmailRepository.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\ISerializedEventRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\CustomerRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\SerializeEventRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\IGenericRepository.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapControllerFactory.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapHttpControllerActivator.cs" />
@@ -526,29 +525,12 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201403170229250_initial.cs" />
-    <Compile Include="Migrations\201403170229250_initial.Designer.cs">
-      <DependentUpon>201403170229250_initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403170818299_syncfusion.cs" />
-    <Compile Include="Migrations\201403170818299_syncfusion.Designer.cs">
-      <DependentUpon>201403170818299_syncfusion.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403180803443_addEvent.cs" />
-    <Compile Include="Migrations\201403180803443_addEvent.Designer.cs">
-      <DependentUpon>201403180803443_addEvent.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403180807070_addEventstatus.cs" />
-    <Compile Include="Migrations\201403180807070_addEventstatus.Designer.cs">
-      <DependentUpon>201403180807070_addEventstatus.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403192308391_RemovedEvent.cs" />
-    <Compile Include="Migrations\201403192308391_RemovedEvent.Designer.cs">
-      <DependentUpon>201403192308391_RemovedEvent.cs</DependentUpon>
+    <Compile Include="Migrations\201403210641421_Initial.cs" />
+    <Compile Include="Migrations\201403210641421_Initial.Designer.cs">
+      <DependentUpon>201403210641421_Initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\AppointmentTable.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\EmailAddress.cs" />
     <Compile Include="Models\Email.cs" />
@@ -558,12 +540,9 @@
     <Compile Include="DataAccessLayer\Interfaces\ICustomer.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEmail.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\ISerializedEvent.cs" />
     <Compile Include="Models\Profile.cs" />
     <Compile Include="Models\Registration.cs" />
-    <Compile Include="Models\SerializedEvent.cs" />
     <Compile Include="Models\Service.cs" />
-    <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyDbContext.cs" />
     <Compile Include="Services\APIManagement\Packagers\Mandrill\MandrillPackager.cs" />
@@ -599,6 +578,7 @@
     <Content Include="DDay\DDay.iCal\Serialization\iCalendar\iCalParserTokenTypes.txt" />
     <Content Include="DDay\DDay.iCal\SubWCRev.exe" />
     <Content Include="DDay\License.txt" />
+    <Content Include="DDay\ReadMe.txt" />
     <Content Include="DDay\Release Notes\1.0.1.txt" />
     <Content Include="DDay\SilverlightAdapter.dll" />
     <Content Include="favicon.ico" />
@@ -707,20 +687,8 @@
     <EmbeddedResource Include="DDay\antlr\antlr.astframe\antlr.debug.misc\JTreeASTPanel.resx">
       <DependentUpon>JTreeASTPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403170229250_initial.resx">
-      <DependentUpon>201403170229250_initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403170818299_syncfusion.resx">
-      <DependentUpon>201403170818299_syncfusion.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403180803443_addEvent.resx">
-      <DependentUpon>201403180803443_addEvent.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403180807070_addEventstatus.resx">
-      <DependentUpon>201403180807070_addEventstatus.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403192308391_RemovedEvent.resx">
-      <DependentUpon>201403192308391_RemovedEvent.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201403210641421_Initial.resx">
+      <DependentUpon>201403210641421_Initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

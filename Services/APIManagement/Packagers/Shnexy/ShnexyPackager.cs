@@ -38,12 +38,12 @@ namespace Shnexy.Services.APIManagement.Packagers.Shnexy
         /// Prepares Request Body with JSON Data, Makes rest API call
         /// Deserializes response.
         /// </summary>
-        //public string PostLoanApplication(out int loanid, CustomerDO curCustomerDO, LoanApplicationDO curLoanApplicationDO)
+        //public string PostLoanApplication(out int loanid, Customer curCustomer, LoanApplicationDO curLoanApplicationDO)
         //{
         //    try
         //    {
         //        RestfulCall curCall = new RestfulCall(baseUrl, "LoanApplication/Process", Method.POST);
-        //        string objString = PrepareCreditCheckRequest(curCustomerDO, curLoanApplicationDO);
+        //        string objString = PrepareCreditCheckRequest(curCustomer, curLoanApplicationDO);
         //        curCall.AddQuery("responseString", objString);
         //        curCall.AllowAutoRedirect = false;
         //        RestfulResponse response = curCall.Execute();
@@ -74,9 +74,9 @@ namespace Shnexy.Services.APIManagement.Packagers.Shnexy
         /// <summary>
         /// Creates API request
         /// Prepares Request Query with Dictionary param, Makes rest API call to get customer detail from Shnexy
-        /// De-serialize response string and returns CustomerDO.
+        /// De-serialize response string and returns Customer.
         /// </summary>
-        //public List<CustomerDO> GetCustomer(Dictionary<string, string> param)
+        //public List<Customer> GetCustomer(Dictionary<string, string> param)
         //{
 
         //    try
@@ -88,7 +88,7 @@ namespace Shnexy.Services.APIManagement.Packagers.Shnexy
         //        //Throw Exception if API Response contains Error Object
         //        try
         //        {
-        //            return jsonSerializer.Deserialize<List<CustomerDO>>(response.Content);
+        //            return jsonSerializer.Deserialize<List<Customer>>(response.Content);
         //        }
         //        catch
         //        {
@@ -106,9 +106,9 @@ namespace Shnexy.Services.APIManagement.Packagers.Shnexy
         /// <summary>
         /// Creates API request
         /// Prepares Request Query with Dictionary param, Makes rest API call to update customer detail into Shnexy
-        /// De-serialize response string and returns CustomerDO.
+        /// De-serialize response string and returns Customer.
         /// </summary>
-        //public CustomerDO PostCustomer(CustomerDO ShnexyCustomer)
+        //public Customer PostCustomer(Customer ShnexyCustomer)
         //{
         //    RestfulCall curCall = new RestfulCall(baseUrl, "Customer/Post", Method.POST);
         //    string customerData = jsonSerializer.Serialize(ShnexyCustomer);
@@ -116,8 +116,8 @@ namespace Shnexy.Services.APIManagement.Packagers.Shnexy
         //    curCall.AllowAutoRedirect = false;
         //    // TODO : ShnexyAPI is not implemented, after implementation uncomment following code and call ShnexyAPI
         //    //var response = curCall.Execute();
-        //    //return jsonSerializer.Deserialize<CustomerDO>(response.Content);
-        //    return new CustomerDO();
+        //    //return jsonSerializer.Deserialize<Customer>(response.Content);
+        //    return new Customer();
         //}
 
         /// <summary>
@@ -162,10 +162,10 @@ namespace Shnexy.Services.APIManagement.Packagers.Shnexy
         /// <summary>
         /// De-serialize Request string into Customer object
         /// </summary>
-        //public void UnpackPostCustomer(string requestString, out CustomerDO curCustomerDO)
+        //public void UnpackPostCustomer(string requestString, out Customer curCustomer)
         //{
-        //    curCustomerDO = jsonSerializer.Deserialize<CustomerDO>(requestString);
-        //    if (curCustomerDO == null)
+        //    curCustomer = jsonSerializer.Deserialize<Customer>(requestString);
+        //    if (curCustomer == null)
         //        throw new ArgumentException("Call to PostCustomer must provide Customer Object", "Required : Customer Object");
         //}
 
@@ -225,7 +225,7 @@ namespace Shnexy.Services.APIManagement.Packagers.Shnexy
         /// <summary>
         /// Serialize Response object into JSON string
         /// </summary>
-        //public void PackResponseGetcustomer(List<CustomerDO> curCustomerListDO, out string result)
+        //public void PackResponseGetcustomer(List<Customer> curCustomerListDO, out string result)
         //{
         //    result = jsonSerializer.Serialize(curCustomerListDO);
         //}

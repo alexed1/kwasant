@@ -25,12 +25,12 @@ namespace Shnexy.DDay.iCal.Test
     //    }
     //}
 
-    public class CustomEvent1 : Event
-    {
-        public string NonstandardProperty
-        {
-            get { return Properties.Get<string>("X-NONSTANDARD-PROPERTY"); }
-            set { Properties.Set("X-NONSTANDARD-PROPERTY", value); }
-        }                
-    }
+    //public class CustomEvent1 : Event
+    //{
+    //    public string NonstandardProperty
+    //    {
+    //        get { return Properties.Get<string>("X-NONSTANDARD-PROPERTY"); }
+    //        set { Properties.Set("X-NONSTANDARD-PROPERTY", value); }
+    //    }                
+    //}
 }

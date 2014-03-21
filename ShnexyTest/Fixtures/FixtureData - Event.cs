@@ -13,15 +13,19 @@ namespace ShnexyTest.Fixtures
 
         public  Event TestEvent()
         {
-            return new Event
+            return new Event(_uow)
             {
                 Id = 1,
                 CustomerId = 1,
-                DTStart = (iCalDateTime)DateTime.Parse("20040117"),
-                DTEnd = (iCalDateTime)DateTime.Parse("20040110"),
+                //DTStart = (iCalDateTime)DateTime.Parse("20040117"),
+                DTStart = new iCalDateTime("20040117"),
+                DTEnd = new iCalDateTime("20040110"),
                 Location = "San Francisco",
                 Description = "First Ever Event",
                 WorkflowState = "Undispatched"
+
+              //   DateTimeSerializer serializer = new DateTimeSerializer();
+            //CopyFrom(serializer.Deserialize(new StringReader(value)) as ICopyable);
 
             };
         }

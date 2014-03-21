@@ -15,13 +15,7 @@ namespace ShnexyTest.Fixtures
     partial class FixtureData
     {
 
-        public ICustomerRepository customerRepo;
-        public IUnitOfWork _uow;
 
-        public FixtureData(IUnitOfWork uow)
-        {
-            _uow = uow;
-        }
 
 
         [Test]

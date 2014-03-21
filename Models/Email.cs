@@ -32,7 +32,7 @@ namespace Shnexy.Models
         private EmailAddress curAddress ;
         private IEmailRepository _emailRepo;
 
-        public Email()
+        public Email(IEmailRepository emailRepo)
         {
         }
 
@@ -77,6 +77,18 @@ namespace Shnexy.Models
             To_Addresses.Add(destEmailAddress);
             //TODO tag the email with the eventId
             
+        }
+
+        public IEnumerable<Email> GetAll()
+        {
+            return _emailRepo.GetAll();
+            
+        }
+
+        public Email GetByKey(int Id)
+        {
+            return _emailRepo.GetByKey(Id);
+
         }
 
     }

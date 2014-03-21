@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
 using Shnexy.DataAccessLayer.StructureMap;
+using Shnexy.DDay.iCal;
 using ShnexyTest.Fixtures;
 using Shnexy.Models;
 using StructureMap;
@@ -24,7 +25,7 @@ namespace ShnexyTest.Models
         [SetUp]
         public void Setup()
         {
-            //bootstrap structuremap and tell it to use "test" mode.
+            
             StructureMapBootStrapper.ConfigureDependencies("test");
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             customerRepo = new CustomerRepository(_uow);
@@ -36,13 +37,16 @@ namespace ShnexyTest.Models
         [Test]
         public void Event_Dispatch_CanSendICS()
         {
+            
             //load the test event
             Shnexy.Models.Event curEvent = _fixture.TestEvent();
             //load the corresponding test customer
             Customer curCustomer = _fixture.TestCustomer();
-           
+          
+            
 
             //persist the customer to test the database.
+            
             curCustomer.Add();
             customerRepo.UnitOfWork.SaveChanges();
 

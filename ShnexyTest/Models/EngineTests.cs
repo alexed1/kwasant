@@ -19,7 +19,7 @@ namespace ShnexyTest
             mockEvent = new Mock<IEvent>();
             
            
-            //orderRepo = new OrderRepository(new UnitOfWork(new LikiTestDbContext()));
+            
         }
         [Test]
         [Category("Engine Tests")]

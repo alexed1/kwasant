@@ -13,7 +13,7 @@ namespace Shnexy.Fixtures
         
         //static public void AddMessage(IMessageRepository messageRepository)
         //{
-        //    //IMessageRepository messageRepository = new MessageRepository(new UnitOfWork(new ShnexyDbContext()));
+        //   
 
 
 

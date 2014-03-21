@@ -12,8 +12,7 @@ namespace Shnexy.DataAccessLayer
     //The database context is injected via a UnitOfWork implementation
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    public class GenericRepository<TEntity>
-        where TEntity : class
+    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
         private readonly IUnitOfWork _unitOfWork;
         internal DbSet<TEntity> dbSet;

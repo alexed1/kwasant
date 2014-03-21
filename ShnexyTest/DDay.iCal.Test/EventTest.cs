@@ -8,7 +8,10 @@ using System.Web;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using Shnexy.DataAccessLayer.Interfaces;
+using Shnexy.DataAccessLayer.StructureMap;
 using Shnexy.Models;
+using StructureMap;
 
 namespace Shnexy.DDay.iCal.Test
 {
@@ -16,11 +19,14 @@ namespace Shnexy.DDay.iCal.Test
     public class EventTest
     {
         private string tzid;
+        private IUnitOfWork _uow;
 
         [TestFixtureSetUp]
         public void InitAll()
         {
             tzid = "US-Eastern";
+            StructureMapBootStrapper.ConfigureDependencies("test");
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
         }
         
         /// <summary>
@@ -31,7 +37,7 @@ namespace Shnexy.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
             
-            Event evt = new Event();
+            Event evt = new Event(_uow);
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
             evt.End = new iCalDateTime(2010, 3, 26);
@@ -49,7 +55,7 @@ namespace Shnexy.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
 
-            Event evt = new Event();
+            Event evt = new Event(_uow);
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
             evt.End = new iCalDateTime(2010, 3, 26);
@@ -71,7 +77,7 @@ namespace Shnexy.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
 
-            Event evt = new Event();
+            Event evt = new Event(_uow);
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
             evt.End = new iCalDateTime(2010, 3, 26);

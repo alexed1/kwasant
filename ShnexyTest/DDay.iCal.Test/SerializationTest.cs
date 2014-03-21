@@ -8,10 +8,12 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Shnexy.DataAccessLayer.Interfaces;
+using Shnexy.DataAccessLayer.StructureMap;
 using Shnexy.DDay.iCal.Serialization;
 using Shnexy.DDay.iCal.Serialization.iCalendar;
 using NUnit.Framework;
 using Shnexy.Models;
+using StructureMap;
 
 namespace Shnexy.DDay.iCal.Test
 {
@@ -19,11 +21,14 @@ namespace Shnexy.DDay.iCal.Test
     public class SerializationTest
     {
         private string tzid;
+        private IUnitOfWork _uow;
 
         [TestFixtureSetUp]
         public void InitAll()
         {
             tzid = "US-Eastern";
+            StructureMapBootStrapper.ConfigureDependencies("test");
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
         }
 
         private void SerializeTest(string filename, Type iCalSerializerType) { SerializeTest(filename, typeof(iCalendar), iCalSerializerType); }
@@ -562,7 +567,7 @@ namespace Shnexy.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
             var start = new DateTime(2000, 1, 1);
-            Event evt = new Event();
+            Event evt = new Event(_uow);
             evt.RecurrenceDates.Add(new PeriodList { new Period(new iCalDateTime(start), new iCalDateTime(new DateTime(2000, 1, 2))) });
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);

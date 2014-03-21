@@ -227,9 +227,10 @@ namespace Shnexy.Models
         /// (usually an iCalendar object) as its parent.
         /// </summary>
         /// <param name="parent">An <see cref="iCalObject"/>, usually an iCalendar object.</param>
-        public Event() : base()
+        public Event(IUnitOfWork uow) : base()
         {
             Initialize();
+            _uow = uow;
             curCustomer = new Customer(new CustomerRepository(_uow));
         }
 
@@ -359,7 +360,7 @@ namespace Shnexy.Models
             curCustomer = curCustomer.GetByKey(CustomerId);
 
             //create an Email message addressed to the customer and attache the file.
-            Email curEmail = new Email();
+            Email curEmail = new Email(new EmailRepository(_uow));
             curEmail.Configure(curCustomer.email, Id, filename);
 
             //call Mandrill. need to reconcile the two email structures.

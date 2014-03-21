@@ -11,9 +11,11 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Web;
 using Shnexy.DataAccessLayer.Interfaces;
+using Shnexy.DataAccessLayer.StructureMap;
 using Shnexy.DDay.iCal.Serialization.iCalendar;
 using NUnit.Framework;
 using Shnexy.Models;
+using StructureMap;
 
 namespace Shnexy.DDay.iCal.Test
 {
@@ -21,11 +23,14 @@ namespace Shnexy.DDay.iCal.Test
     public class RecurrenceTest
     {
         private string tzid;
+        private IUnitOfWork _uow;
 
         [TestFixtureSetUp]
         public void InitAll()
         {
             tzid = "US-Eastern";
+            StructureMapBootStrapper.ConfigureDependencies("test");
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
         }
 
         private void EventOccurrenceTest(
@@ -2627,7 +2632,7 @@ namespace Shnexy.DDay.iCal.Test
         [Test, Category("Recurrence")]
         public void Bug3178652()
         {
-            var evt = new Event();
+            var evt = new Event(_uow);
             evt.Start = new iCalDateTime(2011, 1, 29, 11, 0, 0);
             evt.Duration = TimeSpan.FromHours(1.5);
             evt.Summary = "29th February Test";

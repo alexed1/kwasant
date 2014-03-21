@@ -11,26 +11,28 @@ namespace Shnexy.Models
 {
     public class Customer :  ICustomer
     {
-
         public int Id { get; set; }
         public EmailAddress email { get; set; }
 
-        private ICustomerRepository customerRepo ;
+
+        private ICustomerRepository _customerRepo ;
 
         public Customer(ICustomerRepository customerRepo)
-            
-        {
 
+        {
+            _customerRepo = customerRepo;
         }
 
         public void Add()
         {
-            customerRepo.Add(this); 
+            
+            _customerRepo.Add(this); 
         }
 
         public Customer GetByKey(int Id)
         {
-            return customerRepo.GetByKey(Id);
+            
+            return _customerRepo.GetByKey(Id);
         }
 
     }

@@ -32,7 +32,7 @@ namespace Shnexy.DataAccessLayer.StructureMap
                 For<IEmail>().Use<Email>();
                 For<IEvent>().Use<Event>();
                 For<IEmailRepository>().Use<EmailRepository>();
-                
+                For<ICustomer>().Use<Customer>();
             }
         }
 
@@ -40,7 +40,7 @@ namespace Shnexy.DataAccessLayer.StructureMap
         {
             public DevMode()
             {
-                For<IUnitOfWork>().Use(new UnitOfWork(new DevContext()));
+               // For<IUnitOfWork>().Use(new UnitOfWork(new DevContext()));
 
             }
         }
@@ -49,7 +49,7 @@ namespace Shnexy.DataAccessLayer.StructureMap
         {
             public TestMode()
             {
-                For<IUnitOfWork>().Use(new UnitOfWork(new TestContext()));
+                For<IUnitOfWork>().Use(new UnitOfWork(new ShnexyDbContext()));
 
             }
         }

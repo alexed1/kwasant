@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Shnexy.DataAccessLayer.Interfaces;
+using Shnexy.DataAccessLayer.Repositories;
 using Shnexy.Models;
 using Shnexy.DataAccessLayer;
 
@@ -17,13 +18,13 @@ namespace Shnexy.Controllers
         
 
         private IUnitOfWork _uow;
-        private ShnexyDbContext db;
 
+        private Email curEmail;
 
         public EmailController(IUnitOfWork uow)
         {
             _uow = uow;
-            db = (ShnexyDbContext)uow.Db; //don't know why we have to have an explicit cast here
+            curEmail = new Email(new EmailRepository(_uow));
         }
 
 
@@ -31,17 +32,20 @@ namespace Shnexy.Controllers
         // GET: /Email/
         public ActionResult Index()
         {
-            return View(db.Emails.ToList());
+            
+            List<Email> curEmails = new List<Email>();
+            curEmails = curEmail.GetAll().ToList();
+            return View(curEmails);
         }
 
         // GET: /Email/Details/5
-        public ActionResult Details(int? id)
+        public ActionResult Details(int Id)
         {
-            if (id == null)
+            if (Id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Email curEmail = db.Emails.Find(id);
+            curEmail = curEmail.GetByKey(Id);
             if (curEmail == null)
             {
                 return HttpNotFound();
@@ -49,93 +53,6 @@ namespace Shnexy.Controllers
             return View(curEmail);
         }
 
-        // GET: /Email/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: /Email/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include="Id,Body,Subject")] Email curEmail)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Emails.Add(curEmail);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            return View(curEmail);
-        }
-
-        // GET: /Email/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Email curEmail = db.Emails.Find(id);
-            if (curEmail == null)
-            {
-                return HttpNotFound();
-            }
-            return View(curEmail);
-        }
-
-        // POST: /Email/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include="Id,Body,Subject")] Email curEmail)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(curEmail).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(curEmail);
-        }
-
-        // GET: /Email/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Email curEmail = db.Emails.Find(id);
-            if (curEmail == null)
-            {
-                return HttpNotFound();
-            }
-            return View(curEmail);
-        }
-
-        // POST: /Email/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Email curEmail = db.Emails.Find(id);
-            db.Emails.Remove(curEmail);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+       
     }
 }

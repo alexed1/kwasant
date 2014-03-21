@@ -13,10 +13,10 @@ namespace Shnexy.DataAccessLayer
      public class UnitOfWork : IUnitOfWork
     {
         private TransactionScope transaction;
-        public ShnexyDbContext db;
+        public DbContext db;
 
 
-        public UnitOfWork(ShnexyDbContext curDbContext)
+        public UnitOfWork(DbContext curDbContext)
         {
             db = curDbContext;
         }

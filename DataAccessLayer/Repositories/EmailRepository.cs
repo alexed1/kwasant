@@ -10,7 +10,7 @@ namespace Shnexy.DataAccessLayer.Repositories
 {
 
 
-    public class EmailRepository : GenericRepository<Email>, IEmailRepository
+    public class EmailRepository : GenericRepository<Email>,  IEmailRepository
     {
 
         public EmailRepository(IUnitOfWork uow) : base(uow)
@@ -20,7 +20,7 @@ namespace Shnexy.DataAccessLayer.Repositories
     }
 
 
-    public interface IEmailRepository
+    public interface IEmailRepository : IGenericRepository<Email>
     {
         IUnitOfWork UnitOfWork { get; }
 
