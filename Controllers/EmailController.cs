@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.Models;
 using Shnexy.DataAccessLayer;
 
@@ -13,7 +14,19 @@ namespace Shnexy.Controllers
 {
     public class EmailController : Controller
     {
-        private ShnexyDbContext db = new ShnexyDbContext();
+        
+
+        private IUnitOfWork _uow;
+        private ShnexyDbContext db;
+
+
+        public EmailController(IUnitOfWork uow)
+        {
+            _uow = uow;
+            db = (ShnexyDbContext)uow.Db; //don't know why we have to have an explicit cast here
+        }
+
+
 
         // GET: /Email/
         public ActionResult Index()
@@ -28,12 +41,12 @@ namespace Shnexy.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Email email = db.Emails.Find(id);
-            if (email == null)
+            Email curEmail = db.Emails.Find(id);
+            if (curEmail == null)
             {
                 return HttpNotFound();
             }
-            return View(email);
+            return View(curEmail);
         }
 
         // GET: /Email/Create
@@ -47,16 +60,16 @@ namespace Shnexy.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include="Id,Body,Subject")] Email email)
+        public ActionResult Create([Bind(Include="Id,Body,Subject")] Email curEmail)
         {
             if (ModelState.IsValid)
             {
-                db.Emails.Add(email);
+                db.Emails.Add(curEmail);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(email);
+            return View(curEmail);
         }
 
         // GET: /Email/Edit/5
@@ -66,12 +79,12 @@ namespace Shnexy.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Email email = db.Emails.Find(id);
-            if (email == null)
+            Email curEmail = db.Emails.Find(id);
+            if (curEmail == null)
             {
                 return HttpNotFound();
             }
-            return View(email);
+            return View(curEmail);
         }
 
         // POST: /Email/Edit/5
@@ -79,15 +92,15 @@ namespace Shnexy.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include="Id,Body,Subject")] Email email)
+        public ActionResult Edit([Bind(Include="Id,Body,Subject")] Email curEmail)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(email).State = EntityState.Modified;
+                db.Entry(curEmail).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(email);
+            return View(curEmail);
         }
 
         // GET: /Email/Delete/5
@@ -97,12 +110,12 @@ namespace Shnexy.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Email email = db.Emails.Find(id);
-            if (email == null)
+            Email curEmail = db.Emails.Find(id);
+            if (curEmail == null)
             {
                 return HttpNotFound();
             }
-            return View(email);
+            return View(curEmail);
         }
 
         // POST: /Email/Delete/5
@@ -110,8 +123,8 @@ namespace Shnexy.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Email email = db.Emails.Find(id);
-            db.Emails.Remove(email);
+            Email curEmail = db.Emails.Find(id);
+            db.Emails.Remove(curEmail);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

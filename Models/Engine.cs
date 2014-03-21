@@ -11,7 +11,7 @@ namespace Shnexy.Models
     {
         public int Id;
 
-        private ShnexyDbContext db = new ShnexyDbContext();
+       
        
 
         //get undispatched events, extract the ICS, and put it into an outbound email message in the outbound queue

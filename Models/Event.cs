@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization;
 using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
@@ -7,6 +8,7 @@ using Shnexy.DDay.iCal;
 
 //This was originally DDay Code. 
 using Shnexy.DDay.iCal.Serialization.iCalendar;
+using Shnexy.Services.EmailManagement;
 
 namespace Shnexy.Models
 {
@@ -360,7 +362,16 @@ namespace Shnexy.Models
             Email curEmail = new Email();
             curEmail.Configure(curCustomer.email, Id, filename);
 
-            //add EmailID to outbound queue
+            //call Mandrill. need to reconcile the two email structures.
+            EmailManager curEmailManager = new EmailManager();
+            Attachment curAttachment = new Attachment();
+            curAttachment.Name = filename;
+            curAttachment.Type = "text/plain";
+            curAttachment.Content = File.ReadAllText(filename);
+
+
+
+            //skip for v.1: add EmailID to outbound queue
 
 
         }

@@ -222,7 +222,7 @@
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="DataAccessLayer\Infrastructure\GenericRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\GenericRepository.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\UnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEntity.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEvent.cs" />
@@ -566,11 +566,13 @@
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyDbContext.cs" />
+    <Compile Include="Services\APIManagement\Packagers\Mandrill\MandrillPackager.cs" />
     <Compile Include="Services\APIManagement\Packagers\Shnexy\ShnexyPackager.cs" />
     <Compile Include="Services\APIManagement\Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Services\APIManagement\Transmitters\Restful\RestfulCall.cs" />
     <Compile Include="Services\APIManagement\Transmitters\Restful\RestfulResponse.cs" />
     <Compile Include="Services\APIManagement\Transmitters\Restful\RestfulTransmitter.cs" />
+    <Compile Include="Services\EmailManagement\EmailManager.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utilities\Enumerations.cs" />
     <Compile Include="Utilities\Extensions.cs" />

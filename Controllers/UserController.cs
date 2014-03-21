@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.Models;
 using Shnexy.DataAccessLayer;
 
@@ -9,7 +10,17 @@ namespace Shnexy.Controllers
 {
     public class UserController : Controller
     {
-        private ShnexyDbContext db = new ShnexyDbContext();
+        private IUnitOfWork _uow;
+        private ShnexyDbContext db;
+
+
+        public UserController(IUnitOfWork uow)
+        {
+            _uow = uow;
+            db = (ShnexyDbContext)uow.Db; //don't know why we have to have an explicit cast here
+        }
+
+
 
         // GET: /User/
         public ActionResult Index()

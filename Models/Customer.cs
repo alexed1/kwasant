@@ -5,6 +5,7 @@ using System.Web;
 using Shnexy.DataAccessLayer;
 using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
+using Syncfusion.Mvc.Shared;
 
 namespace Shnexy.Models
 {
@@ -22,7 +23,10 @@ namespace Shnexy.Models
 
         }
 
-
+        public void Add()
+        {
+            customerRepo.Add(this); 
+        }
 
         public Customer GetByKey(int Id)
         {

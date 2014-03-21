@@ -23,16 +23,8 @@ namespace Shnexy.DataAccessLayer.Repositories
     public interface IEmailRepository
     {
         IUnitOfWork UnitOfWork { get; }
-        Email GetByKey(object keyValue);
-        IQueryable<Email> GetQuery();
+
         void Add(Email entity);
-        void Remove(Email entity);
-        void Attach(Email entity);
-        IEnumerable<Email> GetAll();
-        void Save(Email entity);
-        void Update(Email entity, Email existingEntity);
-        Email FindOne(Expression<Func<Email, bool>> criteria);
-        IEnumerable<Email> FindList(Expression<Func<Email, bool>> criteria);
-        void Dispose();
+   
     }
 }

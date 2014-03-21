@@ -11,11 +11,12 @@ namespace ShnexyTest.Fixtures
     partial class FixtureData
     {
 
-        public static Event TestEvents()
+        public  Event TestEvent()
         {
             return new Event
             {
                 Id = 1,
+                CustomerId = 1,
                 DTStart = (iCalDateTime)DateTime.Parse("20040117"),
                 DTEnd = (iCalDateTime)DateTime.Parse("20040110"),
                 Location = "San Francisco",

@@ -13,7 +13,7 @@ namespace Shnexy.DataAccessLayer
     public class ShnexyDbContext : DbContext
     {
 
-        public ShnexyDbContext() : base("localShnexyDb")
+        public ShnexyDbContext(string dbName) : base(dbName)
         {
             // Database.SetInitializer(new DropCreateDatabaseAlways<ShnexyDbContext>());
         }
@@ -33,4 +33,23 @@ namespace Shnexy.DataAccessLayer
 
       
     }
+
+    public class DevContext : ShnexyDbContext
+    {
+        public DevContext() : base("localShnexyDb")
+        {
+            
+        }
+
+    }
+    public class TestContext : ShnexyDbContext
+    {
+        public TestContext()
+            : base("Shnexy_TEST_Db")
+        {
+
+        }
+
+    }
+
 }

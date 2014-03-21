@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Net;
 
-namespace Liki.App.Services.APIManagement.Transmitters.Restful
+namespace Shnexy.Services.APIManagement.Transmitters.Restful
 {
     /// <summary>
     /// Container class for common properties shared by RestResponse

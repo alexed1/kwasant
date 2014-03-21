@@ -64,6 +64,10 @@
       <HintPath>..\packages\NUnitTestAdapter.WithFramework.1.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="StructureMap, Version=2.6.4.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <Choose>
@@ -98,8 +102,10 @@
     <Compile Include="DDay.iCal.Test\SerializationTest.cs" />
     <Compile Include="DDay.iCal.Test\Startup.cs" />
     <Compile Include="DDay.iCal.Test\TodoTest.cs" />
+    <Compile Include="Fixtures\FixtureData - Customer.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />
     <Compile Include="Models\EngineTests.cs" />
+    <Compile Include="Models\EventTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

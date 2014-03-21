@@ -10,16 +10,15 @@ using System.Data.Entity.Core;
 
 namespace Shnexy.DataAccessLayer
 {
-    //currently hard-wired with the main shnexy context, but by passing a different context into the constructor, we can set the db at runtime
-    public class UnitOfWork : IUnitOfWork
+     public class UnitOfWork : IUnitOfWork
     {
         private TransactionScope transaction;
-        private DbContext db = new ShnexyDbContext();
+        public ShnexyDbContext db;
 
 
-        public UnitOfWork(DbContext curDbContext)
+        public UnitOfWork(ShnexyDbContext curDbContext)
         {
-            this.db = curDbContext;
+            db = curDbContext;
         }
 
         public void Save()

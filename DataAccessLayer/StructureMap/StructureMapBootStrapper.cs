@@ -12,34 +12,45 @@ namespace Shnexy.DataAccessLayer.StructureMap
     {
         #region Method
 
-        public static void ConfigureDependencies()
+        public static void ConfigureDependencies(string type)
         {
-            ObjectFactory.Initialize(x => x.AddRegistry<ControllerRegistry>());
+            switch (type)
+            {
+                case "test":
+                    ObjectFactory.Initialize(x => x.AddRegistry<TestMode>());
+                    break;
+                default:
+                    ObjectFactory.Initialize(x => x.AddRegistry<DevMode>());
+                    break;
+            }
         }
 
-        public static void TestConfigureDependencies()
+        public class ShnexyCoreRegistry : Registry
         {
-            ObjectFactory.Initialize(x => x.AddRegistry<TestDBControllerRegistry>());
-        }
-
-        public class ControllerRegistry : Registry
-        {
-            public ControllerRegistry()
+            public ShnexyCoreRegistry()
             {
                 For<IEmail>().Use<Email>();
                 For<IEvent>().Use<Event>();
                 For<IEmailRepository>().Use<EmailRepository>();
-                For<IUnitOfWork>().Use(new UnitOfWork(new ShnexyDbContext()));
+                
             }
         }
 
-        public class TestDBControllerRegistry : Registry //merge this
+        public class DevMode : ShnexyCoreRegistry 
         {
-            public TestDBControllerRegistry()
+            public DevMode()
             {
-                For<IEmail>().Use<Email>();
-                
-                
+                For<IUnitOfWork>().Use(new UnitOfWork(new DevContext()));
+
+            }
+        }
+
+        public class TestMode : ShnexyCoreRegistry
+        {
+            public TestMode()
+            {
+                For<IUnitOfWork>().Use(new UnitOfWork(new TestContext()));
+
             }
         }
 

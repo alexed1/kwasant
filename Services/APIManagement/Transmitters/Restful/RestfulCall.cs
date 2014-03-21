@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Net;
+using System.Text;
+
 using Shnexy.Utilities;
 
-
-namespace Liki.App.Services.APIManagement.Transmitters.Restful
+namespace Shnexy.Services.APIManagement.Transmitters.Restful
 {
     /// <summary>
     /// Container for data used to make requests
