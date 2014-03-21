@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Data.Entity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Core;
 using NUnit.Framework;
+using Shnexy.DataAccessLayer;
 using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
 using Shnexy.DataAccessLayer.StructureMap;
@@ -25,7 +27,8 @@ namespace ShnexyTest.Models
         [SetUp]
         public void Setup()
         {
-            
+            Database.SetInitializer(new DropCreateDatabaseAlways<ShnexyDbContext>());
+
             StructureMapBootStrapper.ConfigureDependencies("test");
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             customerRepo = new CustomerRepository(_uow);

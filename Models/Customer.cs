@@ -23,6 +23,10 @@ namespace Shnexy.Models
             _customerRepo = customerRepo;
         }
 
+        //public Customer()
+        //{
+            
+        //}
         public void Add()
         {
             

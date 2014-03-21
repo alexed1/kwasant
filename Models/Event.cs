@@ -234,6 +234,14 @@ namespace Shnexy.Models
             curCustomer = new Customer(new CustomerRepository(_uow));
         }
 
+        //there are things deep within DDay that create Events, and we don't want to force the unit of work down there.
+        public Event()
+            : base()
+        {
+            Initialize();
+       
+        }
+
         private void Initialize()
         {
             this.Name = Components.EVENT;
