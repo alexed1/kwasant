@@ -69,6 +69,7 @@ namespace Shnexy.DataAccessLayer
 
         public IEnumerable<TEntity> GetAll()
         {
+            
             return dbSet.AsEnumerable().ToList();
         }
 

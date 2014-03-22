@@ -24,7 +24,7 @@ namespace Shnexy.Controllers
         public EmailController(IUnitOfWork uow)
         {
             _uow = uow;
-            curEmail = new Email(new EmailRepository(_uow));
+            curEmail = new Email(new EmailRepository(_uow)); //why is repo null?
         }
 
 
