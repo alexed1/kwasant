@@ -19,12 +19,14 @@ namespace Shnexy.Controllers
 
         private IUnitOfWork _uow;
 
-        private Email curEmail;
+        private IEmail curEmail;
+        private IEmailRepository curEmailRepo;
 
         public EmailController(IUnitOfWork uow)
         {
             _uow = uow;
-            curEmail = new Email(new EmailRepository(_uow)); //why is repo null?
+            curEmailRepo = new EmailRepository(_uow);
+            curEmail = new Email(curEmailRepo); //why is repo null?
         }
 
 
@@ -33,8 +35,8 @@ namespace Shnexy.Controllers
         public ActionResult Index()
         {
             
-            List<Email> curEmails = new List<Email>();
-            curEmails = curEmail.GetAll().ToList();
+            IEnumerable<Email> curEmails = new List<Email>();
+            curEmails = curEmail.GetAll();
             return View(curEmails);
         }
 

@@ -19,7 +19,7 @@ namespace Shnexy.DataAccessLayer
             
         }
 
-        public ShnexyDbContext() : base("ShnexyTestDb")
+        public ShnexyDbContext() : base("ShnexyTestDbauto")
         {
            
         }
@@ -35,7 +35,7 @@ namespace Shnexy.DataAccessLayer
 
         //public System.Data.Entity.DbSet<Shnexy.Models.AppointmentTable> AppointmentTables { get; set; }
         
-        //to do: explore why there are 6 customers in the db. suggests the database needs to be dropped. 
+        
       
     }
 

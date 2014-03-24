@@ -525,9 +525,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201403210641421_Initial.cs" />
-    <Compile Include="Migrations\201403210641421_Initial.Designer.cs">
-      <DependentUpon>201403210641421_Initial.cs</DependentUpon>
+    <Compile Include="Migrations\201403242202436_initial.cs" />
+    <Compile Include="Migrations\201403242202436_initial.Designer.cs">
+      <DependentUpon>201403242202436_initial.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -687,8 +687,8 @@
     <EmbeddedResource Include="DDay\antlr\antlr.astframe\antlr.debug.misc\JTreeASTPanel.resx">
       <DependentUpon>JTreeASTPanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403210641421_Initial.resx">
-      <DependentUpon>201403210641421_Initial.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201403242202436_initial.resx">
+      <DependentUpon>201403242202436_initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
