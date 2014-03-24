@@ -19,7 +19,7 @@ namespace Shnexy.DataAccessLayer
             
         }
 
-        public ShnexyDbContext() : base("ShnexyTestDbauto")
+        public ShnexyDbContext() : base("name=ShnexyDevLocalDb")
         {
            
         }
