@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using App_Code.Helpers
+
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -10,6 +13,38 @@
     <link href="Content/bootstrap.css" rel="stylesheet">
     <link href="Content/slider.css" rel="stylesheet">
     
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/calendar_blue.css")?v=@Html.GetBuild()" />
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/calendar_green.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/calendar_white.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/calendar_transparent.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/calendar_traditional.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/calendar_g.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/month_blue.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/month_green.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/month_white.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/month_transparent.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/month_traditional.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/month_g.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/navigator_blue.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/navigator_green.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/navigator_white.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/navigator_transparent.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/navigator_g.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/scheduler_blue.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/scheduler_green.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/scheduler_8.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/scheduler_white.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/scheduler_transparent.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/scheduler_traditional.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/areas.css")?v=@Html.GetBuild()" />
+
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Media/layout.css")?v=@Html.GetBuild()" />    
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Media/elements.css")?v=@Html.GetBuild()" />
+
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-2.0.3.min.js")"></script>
+	<script type="text/javascript" src="@Url.Content("~/Scripts/DayPilot/daypilot-all.min.js")?v=@Html.GetBuild()"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/DayPilot/daypilot-all.min.js")"></script>
+
 </head>
 <body>
 

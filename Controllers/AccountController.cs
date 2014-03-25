@@ -326,8 +326,9 @@ namespace Shnexy.Controllers
         private IAuthenticationManager AuthenticationManager
         {
             get
-            {
-                return HttpContext.GetOwinContext().Authentication;
+            {  
+                
+                return HttpContext.GetOwinContext().Authentication;                
             }
         }
 
