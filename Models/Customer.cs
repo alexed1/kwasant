@@ -12,11 +12,13 @@ namespace Shnexy.Models
     public class Customer :  ICustomer
     {
         public int Id { get; set; }
-        public EmailAddress email { get; set; }
+        public EmailAddress emailAddr { get; set; }
 
 
         private ICustomerRepository _customerRepo ;
 
+        //parameterless constructor seems to be required by EF. But we should not invoke it manually because we need to inject a repo
+       
         public Customer(ICustomerRepository customerRepo)
 
         {

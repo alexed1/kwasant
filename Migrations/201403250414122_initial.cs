@@ -12,19 +12,19 @@ namespace Shnexy.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        email_Id = c.Int(),
+                        emailAddr_Id = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.EmailAddresses", t => t.email_Id)
-                .Index(t => t.email_Id);
+                .ForeignKey("dbo.EmailAddresses", t => t.emailAddr_Id)
+                .Index(t => t.emailAddr_Id);
             
             CreateTable(
                 "dbo.EmailAddresses",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(),
-                        Email = c.String(),
+                        DisplayName = c.String(),
+                        EmailAddressBody = c.String(),
                         Email_Id = c.Int(),
                         Email_Id1 = c.Int(),
                         Email_Id2 = c.Int(),
@@ -59,12 +59,12 @@ namespace Shnexy.Migrations
             DropForeignKey("dbo.Emails", "Sender_Id", "dbo.EmailAddresses");
             DropForeignKey("dbo.EmailAddresses", "Email_Id1", "dbo.Emails");
             DropForeignKey("dbo.EmailAddresses", "Email_Id", "dbo.Emails");
-            DropForeignKey("dbo.Customers", "email_Id", "dbo.EmailAddresses");
+            DropForeignKey("dbo.Customers", "emailAddr_Id", "dbo.EmailAddresses");
             DropIndex("dbo.Emails", new[] { "Sender_Id" });
             DropIndex("dbo.EmailAddresses", new[] { "Email_Id2" });
             DropIndex("dbo.EmailAddresses", new[] { "Email_Id1" });
             DropIndex("dbo.EmailAddresses", new[] { "Email_Id" });
-            DropIndex("dbo.Customers", new[] { "email_Id" });
+            DropIndex("dbo.Customers", new[] { "emailAddr_Id" });
             DropTable("dbo.Emails");
             DropTable("dbo.EmailAddresses");
             DropTable("dbo.Customers");

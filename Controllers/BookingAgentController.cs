@@ -13,7 +13,7 @@ namespace Shnexy.Controllers
 {
     public class BookingAgentController : Controller
     {
-        private ShnexyDbContext db = new ShnexyDbContext();
+        //private ShnexyDbContext db = new ShnexyDbContext(); Use injection
 
         // GET: /Email/
         public ActionResult Index()
@@ -29,7 +29,7 @@ namespace Shnexy.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                //db.Dispose();
             }
             base.Dispose(disposing);
         }

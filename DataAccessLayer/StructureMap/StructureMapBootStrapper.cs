@@ -40,7 +40,7 @@ namespace Shnexy.DataAccessLayer.StructureMap
         {
             public DevMode()
             {
-               // For<IUnitOfWork>().Use(new UnitOfWork(new DevContext()));
+                For<IUnitOfWork>().Use(new UnitOfWork(new ShnexyDbContext()));
 
             }
         }

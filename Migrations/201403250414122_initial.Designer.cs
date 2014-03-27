@@ -13,7 +13,7 @@ namespace Shnexy.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201403242202436_initial"; }
+            get { return "201403250414122_initial"; }
         }
         
         string IMigrationMetadata.Source

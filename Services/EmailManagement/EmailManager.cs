@@ -51,7 +51,7 @@ namespace Shnexy.Services.EmailManagement
         public MandrillEmail Convert(Email curEmail)
         {
             MandrillEmail curMandrillEmail = new MandrillEmail();
-            curMandrillEmail.FromEmail = curEmail.Sender.Email;
+            curMandrillEmail.FromEmail = curEmail.Sender.EmailAddressBody;
             curMandrillEmail.To[0] = curEmail.To_Addresses.First(); //THIS ONLY WORKS FOR A SINGLE RECIPIENT!
             curMandrillEmail.Subject = curEmail.Subject;
             return curMandrillEmail;
@@ -73,8 +73,8 @@ namespace Shnexy.Services.EmailManagement
             MandrillEmail message = new MandrillEmail();
             message.To = new EmailAddress[1];
             EmailAddress address = new EmailAddress();
-            address.Email = "poonam@cash1loans.com";
-            address.Name = "poonam";
+            address.EmailAddressBody = "poonam@cash1loans.com";
+            address.DisplayName = "poonam";
             message.To[0] = address;
             message.Subject = "test message";
             message.FromEmail = "sender@leaseitkeepit.com";

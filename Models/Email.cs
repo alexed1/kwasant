@@ -39,6 +39,9 @@ namespace Shnexy.Models
         public Email(IEmailRepository emailRepo)
         {
             _emailRepo = emailRepo;
+            To_Addresses = new Collection<EmailAddress>();
+            CC_Addresses = new Collection<EmailAddress>();
+            Bcc_Addresses = new Collection<EmailAddress>();
         }
 
         public Email(MailMessage curMessage, IEmailRepository emailRepo)
@@ -46,6 +49,7 @@ namespace Shnexy.Models
             Body = curMessage.Body;
             Subject = curMessage.Subject;
             Sender = MapAddress(curMessage.From);
+
      
             foreach (var address in curMessage.To)
             {

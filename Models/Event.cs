@@ -369,7 +369,7 @@ namespace Shnexy.Models
 
             //create an Email message addressed to the customer and attache the file.
             Email curEmail = new Email(new EmailRepository(_uow));
-            curEmail.Configure(curCustomer.email, Id, filename);
+            curEmail.Configure(curCustomer.emailAddr, Id, filename);
 
             //call Mandrill. need to reconcile the two email structures.
             EmailManager curEmailManager = new EmailManager();

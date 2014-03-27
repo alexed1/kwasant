@@ -13,16 +13,16 @@ namespace Shnexy.DataAccessLayer
     public class ShnexyDbContext : DbContext
     {
 
-
-        static  ShnexyDbContext()
+        //special constructor to enable migration to run on the test setup. 
+        public  ShnexyDbContext() : base("name=ShnexyTESTLocalDb")
         {
             
         }
 
-        public ShnexyDbContext() : base("name=ShnexyDevLocalDb")
-        {
+        //public ShnexyDbContext(string mode) : base(mode)
+        //{
            
-        }
+        //}
 
       
         

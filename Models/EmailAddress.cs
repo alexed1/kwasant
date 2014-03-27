@@ -9,22 +9,22 @@ namespace Shnexy.Models
     public interface IEmailAddress
     {
         int Id { get; set; }
-        string Name { get; set; }
-        string Email { get; set; }
+        string DisplayName { get; set; }
+        string EmailAddressBody { get; set; }
     }
 
     public class EmailAddress : IEmailAddress
     {
 
         public int Id {get; set; }
-        public string Name {get; set;}
-        public string Email { get; set; }
+        public string DisplayName {get; set;}
+        public string EmailAddressBody { get; set; }
 
 
         public EmailAddress(MailAddress importedAddress)
         {
-            Name = importedAddress.DisplayName;
-            Email = importedAddress.Address;
+            DisplayName = importedAddress.DisplayName;
+            EmailAddressBody = importedAddress.Address;
 
         }
 

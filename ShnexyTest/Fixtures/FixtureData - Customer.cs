@@ -25,11 +25,11 @@ namespace ShnexyTest.Fixtures
             return new Customer(customerRepo)
             {
                 Id = 1,
-                email = new EmailAddress
+                emailAddr = new EmailAddress
                 {
-                    Email = "alexlucre1@gmail.com",
+                    EmailAddressBody = "alexlucre1@gmail.com",
                     Id = 1,
-                    Name = "Alex Lucre1"
+                    DisplayName = "Alex Lucre1"
                 }
 
             };

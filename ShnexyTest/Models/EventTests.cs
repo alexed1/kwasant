@@ -3,6 +3,7 @@ using System.Data.Entity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Core;
 using NUnit.Framework;
+using Shnexy;
 using Shnexy.DataAccessLayer;
 using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
@@ -11,7 +12,11 @@ using Shnexy.DDay.iCal;
 using ShnexyTest.Fixtures;
 using Shnexy.Models;
 using StructureMap;
+using System.Web.Mvc;
 
+using System.Data.Entity;
+using Shnexy.DataAccessLayer;
+using Shnexy.DataAccessLayer.StructureMap;
 
 namespace ShnexyTest.Models
 {
@@ -27,10 +32,18 @@ namespace ShnexyTest.Models
         [SetUp]
         public void Setup()
         {
+          
+
             Database.SetInitializer(new DropCreateDatabaseAlways<ShnexyDbContext>());
+            
 
             StructureMapBootStrapper.ConfigureDependencies("test");
+            
+
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
+
+            _uow.Db.Database.Initialize(true);
+
             customerRepo = new CustomerRepository(_uow);
 
             _fixture = new FixtureData(_uow);

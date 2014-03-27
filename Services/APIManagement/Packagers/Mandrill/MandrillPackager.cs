@@ -59,7 +59,7 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
             //What we're doing here is just copying the email address from the EmailAddress object into a similar field called 'rcpt'
             //This will break the moment we use 'cc' or 'bcc' or put more than one addressee into the message.
             var curRecipient = new MandrillEmailTemplateMergeRecipient();
-            curRecipient.Rcpt = message.To[0].Email;
+            curRecipient.Rcpt = message.To[0].EmailAddressBody;
 
             //map the template-specific chunks of custom data that will be dyanmically integrated into the template at send time. Put them into a list that can be easily serialized.
             foreach (var pair in mergeFields)
