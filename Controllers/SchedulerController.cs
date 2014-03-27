@@ -16,7 +16,7 @@ using DayPilot.Web.Mvc.Json;
 using DayPilot.Web.Mvc.Recurrence;
 using DayPilot.Web.Mvc.Utils;
 
-namespace MvcApplication1.Controllers
+namespace Shnexy.Controllers
 {
     [HandleError]
     public class SchedulerController : Controller

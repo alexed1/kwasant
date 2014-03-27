@@ -12,8 +12,6 @@ namespace Shnexy.DataAccessLayer
 
         protected override void Seed(ShnexyDbContext context)
         {
-            
-
         }
     }
 }

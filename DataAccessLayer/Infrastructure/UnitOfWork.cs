@@ -52,11 +52,7 @@ namespace Shnexy.DataAccessLayer
         }
         public void SaveChanges()
         {
-
             db.SaveChanges();
-
-
-
         }
 
         public DbContext Db

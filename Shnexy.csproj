@@ -53,11 +53,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\DayPilotMVC\DayPilot.Web.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework">
-      <HintPath>..\AbdulSH-7\shnexy\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.dll</HintPath>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\AbdulSH-7\shnexy\packages\EntityFramework.6.0.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.AspNet.Identity.Core.1.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
@@ -135,11 +137,13 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -224,15 +228,18 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\GenericRepository.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\UnitOfWork.cs" />
+    <Compile Include="DataAccessLayer\Interfaces\ICustomerRepository.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DataAccessLayer\Interfaces\IEntity.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEvent.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\ICustomerRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IUnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyInitializer.cs" />
+    <Compile Include="DataAccessLayer\Repositories\EventRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\CustomerRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\EmailRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\ISerializedEventRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\CustomerRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\SerializeEventRepository.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapControllerFactory.cs" />
@@ -546,6 +553,10 @@
     <Compile Include="Migrations\201403192308391_RemovedEvent.Designer.cs">
       <DependentUpon>201403192308391_RemovedEvent.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201403240247490_addEvent1.cs" />
+    <Compile Include="Migrations\201403240247490_addEvent1.Designer.cs">
+      <DependentUpon>201403240247490_addEvent1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AppointmentTable.cs" />
@@ -599,8 +610,6 @@
     <Content Include="DDay\License.txt" />
     <Content Include="DDay\Release Notes\1.0.1.txt" />
     <Content Include="DDay\SilverlightAdapter.dll" />
-    <Content Include="daypilot.mdf" />
-    <Content Include="daypilot_log.ldf" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -757,7 +766,37 @@
     <Content Include="Views\Email\Details.cshtml" />
     <Content Include="Views\Email\Edit.cshtml" />
     <Content Include="Views\Email\Index.cshtml" />
-    <Content Include="Views\BookingAgent\Index.cshtml" />
+    <Content Include="Views\Calendar\Index.cshtml" />
+    <Content Include="Views\Calendar\New.cshtml" />
+    <Content Include="Views\Calendar\ActiveAreas.cshtml" />
+    <Content Include="Views\Calendar\AutoHide.cshtml" />
+    <Content Include="Views\Calendar\AutoRefresh.cshtml" />
+    <Content Include="Views\Calendar\Columns50.cshtml" />
+    <Content Include="Views\Calendar\ContextMenu.cshtml" />
+    <Content Include="Views\Calendar\Crosshair.cshtml" />
+    <Content Include="Views\Calendar\DayRange.cshtml" />
+    <Content Include="Views\Calendar\DaysResources.cshtml" />
+    <Content Include="Views\Calendar\EventArrangement.cshtml" />
+    <Content Include="Views\Calendar\EventSelecting.cshtml" />
+    <Content Include="Views\Calendar\ExternalDragDrop.cshtml" />
+    <Content Include="Views\Calendar\GoogleLike.cshtml" />
+    <Content Include="Views\Calendar\HeaderAutoFit.cshtml" />
+    <Content Include="Views\Calendar\Height100Pct.cshtml" />
+    <Content Include="Views\Calendar\JQuery.cshtml" />
+    <Content Include="Views\Calendar\Message.cshtml" />
+    <Content Include="Views\Calendar\Navigation.json" />
+    <Content Include="Views\Calendar\Notify.cshtml" />
+    <Content Include="Views\Calendar\RecurringEvents.cshtml" />
+    <Content Include="Views\Calendar\Resources.cshtml" />
+    <Content Include="Views\Calendar\Rtl.cshtml" />
+    <Content Include="Views\Calendar\ThemeBlue.cshtml" />
+    <Content Include="Views\Calendar\ThemeGreen.cshtml" />
+    <Content Include="Views\Calendar\ThemeTraditional.cshtml" />
+    <Content Include="Views\Calendar\ThemeTransparent.cshtml" />
+    <Content Include="Views\Calendar\ThemeWhite.cshtml" />
+    <Content Include="Views\Calendar\TimeHeaderCellDuration.cshtml" />
+    <Content Include="Views\Calendar\Today.cshtml" />
+    <Content Include="Views\Calendar\Open.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -768,6 +807,7 @@
     <Folder Include="DDay\DDay.iCal\bin\Debug\" />
     <Folder Include="DDay\DDay.iCal\obj\Debug\TempPE\" />
     <Folder Include="DDay\Patches\" />
+    <Folder Include="Views\BookingAgent\" />
     <Folder Include="Views\Engine\" />
     <Folder Include="Views\Schedule\" />
     <Folder Include="Views\Session\" />
@@ -801,6 +841,12 @@
     <EmbeddedResource Include="Migrations\201403192308391_RemovedEvent.resx">
       <DependentUpon>201403192308391_RemovedEvent.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403240247490_addEvent1.resx">
+      <DependentUpon>201403240247490_addEvent1.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

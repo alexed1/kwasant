@@ -9,7 +9,6 @@ using Shnexy.Models;
 namespace Shnexy.DataAccessLayer.Repositories
 {
 
-
     public class EmailRepository : GenericRepository<Email>, IEmailRepository
     {
 
@@ -25,8 +24,7 @@ namespace Shnexy.DataAccessLayer.Repositories
         IUnitOfWork UnitOfWork { get; }
         Email GetByKey(object keyValue);
         IQueryable<Email> GetQuery();
-        void Add(Email entity);
-        void Remove(Email entity);
+        void Add(Email entity);        void Remove(Email entity);
         void Attach(Email entity);
         IEnumerable<Email> GetAll();
         void Save(Email entity);

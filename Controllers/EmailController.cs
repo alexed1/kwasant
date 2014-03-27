@@ -18,7 +18,7 @@ namespace Shnexy.Controllers
         // GET: /Email/
         public ActionResult Index()
         {
-            return View(db.Emails.ToList());
+           return View(db.Emails.ToList());
         }
 
         // GET: /Email/Details/5
@@ -83,7 +83,8 @@ namespace Shnexy.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(email).State = EntityState.Modified;
+                //Comment By Abdul to successful built
+                db.Entry(email).State = System.Data.Entity.EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }

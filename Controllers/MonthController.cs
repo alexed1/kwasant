@@ -12,7 +12,7 @@ using DayPilot.Web.Mvc.Events;
 using DayPilot.Web.Mvc.Events.Common;
 using DayPilot.Web.Mvc.Events.Month;
 
-namespace MvcApplication1.Controllers
+namespace Shnexy.Controllers
 {
     [HandleError]
     public class MonthController : Controller

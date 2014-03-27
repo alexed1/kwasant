@@ -6,5 +6,6 @@ namespace Shnexy.DataAccessLayer.Repositories
     public interface ICustomerRepository : IRepository<Customer>
     {
         
-    }
+    }  
+
 }

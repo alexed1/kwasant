@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Data;
-using System.Globalization;
-using System.Threading;
 using System.Web.Mvc;
+using System.Threading;
+using System.Globalization;
+
+using Shnexy.Models;
+using Shnexy.DataAccessLayer;
+
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
@@ -13,11 +17,13 @@ using DayPilot.Web.Mvc.Json;
 using BeforeCellRenderArgs = DayPilot.Web.Mvc.Events.Calendar.BeforeCellRenderArgs;
 using TimeRangeSelectedArgs = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedArgs;
 
-namespace MvcApplication1.Controllers
+namespace Shnexy.Controllers
 {
     [HandleError]
     public class CalendarController : Controller
     {
+        private ShnexyDbContext db = new ShnexyDbContext();
+
         public ActionResult Index()
         {
             return View();
@@ -81,6 +87,8 @@ namespace MvcApplication1.Controllers
             return View();
         }
 
+
+
         public ActionResult JQuery()
         {
             return View();
@@ -92,6 +100,11 @@ namespace MvcApplication1.Controllers
         }
 
         public ActionResult ExternalDragDrop()
+        {
+            return View();
+        }
+
+        public ActionResult Open()
         {
             return View();
         }
@@ -275,6 +288,7 @@ namespace MvcApplication1.Controllers
                         new EventManager(Controller).EventDelete(e.Id);
                         Update();
                         break;
+                    
                 }
             }
 

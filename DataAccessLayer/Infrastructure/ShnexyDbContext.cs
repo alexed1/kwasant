@@ -8,15 +8,13 @@ using Shnexy.Models;
 
 namespace Shnexy.DataAccessLayer
 {
-
-
     public class ShnexyDbContext : DbContext
     {
-
         public ShnexyDbContext() : base("localShnexyDb")
         {
-            // Database.SetInitializer(new DropCreateDatabaseAlways<ShnexyDbContext>());
-        }
+             //Database.SetInitializer(new DropCreateDatabaseAlways<ShnexyDbContext>());
+        }        
+
         public DbSet<User> Users { get; set; }
 
         public DbSet<Email> Emails { get; set; }
@@ -28,9 +26,11 @@ namespace Shnexy.DataAccessLayer
 
         public DbSet<EmailAddress> EmailAddresses { get; set; }
 
-        public System.Data.Entity.DbSet<Shnexy.Models.AppointmentTable> AppointmentTables { get; set; }
-        
+        public DbSet<Event> Events { get; set; }
 
-      
+        public System.Data.Entity.DbSet<Shnexy.Models.AppointmentTable> AppointmentTables { get; set; }
+
+       
+
     }
 }

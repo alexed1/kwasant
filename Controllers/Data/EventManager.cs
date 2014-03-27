@@ -76,139 +76,139 @@ public class EventManager
 
         DataRow dr;
 
-        dr = dt.NewRow();
-        dr["id"] = 1;
-        dr["start"] = Convert.ToDateTime("15:00");
-        dr["end"] = Convert.ToDateTime("15:00");
-        dr["text"] = "Event 1";
-        dr["resource"] = "A";
-        dt.Rows.Add(dr);
+        //dr = dt.NewRow();
+        //dr["id"] = 1;
+        //dr["start"] = Convert.ToDateTime("15:00");
+        //dr["end"] = Convert.ToDateTime("15:00");
+        //dr["text"] = "Event 1";
+        //dr["resource"] = "A";
+        //dt.Rows.Add(dr);
 
-        dr = dt.NewRow();
-        dr["id"] = 2;
-        dr["start"] = Convert.ToDateTime("16:00");
-        dr["end"] = Convert.ToDateTime("17:00");
-        dr["text"] = "Event 2";
-        dr["resource"] = "A";
-        dr["color"] = "green";
-        dt.Rows.Add(dr);
+        //dr = dt.NewRow();
+        //dr["id"] = 2;
+        //dr["start"] = Convert.ToDateTime("16:00");
+        //dr["end"] = Convert.ToDateTime("17:00");
+        //dr["text"] = "Event 2";
+        //dr["resource"] = "A";
+        //dr["color"] = "green";
+        //dt.Rows.Add(dr);
 
-        dr = dt.NewRow();
-        dr["id"] = 3;
-        dr["start"] = Convert.ToDateTime("14:15").AddDays(1);
-        dr["end"] = Convert.ToDateTime("18:45").AddDays(1);
-        dr["text"] = "Event 3";
-        dr["resource"] = "A";
-        dt.Rows.Add(dr);
+        //dr = dt.NewRow();
+        //dr["id"] = 3;
+        //dr["start"] = Convert.ToDateTime("14:15").AddDays(1);
+        //dr["end"] = Convert.ToDateTime("18:45").AddDays(1);
+        //dr["text"] = "Event 3";
+        //dr["resource"] = "A";
+        //dt.Rows.Add(dr);
 
-        dr = dt.NewRow();
-        dr["id"] = 4;
-        dr["start"] = Convert.ToDateTime("16:30");
-        dr["end"] = Convert.ToDateTime("17:30");
-        dr["text"] = "Sales Dept. Meeting Once Again";
-        dr["resource"] = "B";
-        dt.Rows.Add(dr);
+        //dr = dt.NewRow();
+        //dr["id"] = 4;
+        //dr["start"] = Convert.ToDateTime("16:30");
+        //dr["end"] = Convert.ToDateTime("17:30");
+        //dr["text"] = "Sales Dept. Meeting Once Again";
+        //dr["resource"] = "B";
+        //dt.Rows.Add(dr);
 
-        dr = dt.NewRow();
-        dr["id"] = 5;
-        dr["start"] = Convert.ToDateTime("8:00");
-        dr["end"] = Convert.ToDateTime("9:00");
-        dr["text"] = "Event 4";
-        dr["resource"] = "B";
-        dt.Rows.Add(dr);
+        //dr = dt.NewRow();
+        //dr["id"] = 5;
+        //dr["start"] = Convert.ToDateTime("8:00");
+        //dr["end"] = Convert.ToDateTime("9:00");
+        //dr["text"] = "Event 4";
+        //dr["resource"] = "B";
+        //dt.Rows.Add(dr);
 
-        dr = dt.NewRow();
-        dr["id"] = 6;
-        dr["start"] = Convert.ToDateTime("14:00");
-        dr["end"] = Convert.ToDateTime("20:00");
-        dr["text"] = "Event 6";
-        dr["resource"] = "C";
-        dt.Rows.Add(dr);
-
-
-        dr = dt.NewRow();
-        dr["id"] = 7;
-        dr["start"] = Convert.ToDateTime("11:00");
-        dr["end"] = Convert.ToDateTime("13:14");
-        dr["text"] = "Unicode test: 公曆 (requires Unicode fonts on the client side)";
-        dr["color"] = "red";
-        dt.Rows.Add(dr);
-
-        dr = dt.NewRow();
-        dr["id"] = 8;
-        dr["start"] = Convert.ToDateTime("13:14").AddDays(-1);
-        dr["end"] = Convert.ToDateTime("14:05").AddDays(-1);
-        dr["text"] = "Event 8";
-        dr["resource"] = "C";
-        dt.Rows.Add(dr);
+        //dr = dt.NewRow();
+        //dr["id"] = 6;
+        //dr["start"] = Convert.ToDateTime("14:00");
+        //dr["end"] = Convert.ToDateTime("20:00");
+        //dr["text"] = "Event 6";
+        //dr["resource"] = "C";
+        //dt.Rows.Add(dr);
 
 
-        dr = dt.NewRow();
-        dr["id"] = 9;
-        dr["start"] = Convert.ToDateTime("13:14").AddDays(7);
-        dr["end"] = Convert.ToDateTime("14:05").AddDays(7);
-        dr["text"] = "Event 9";
-        dr["resource"] = "C";
-        dt.Rows.Add(dr);
+        //dr = dt.NewRow();
+        //dr["id"] = 7;
+        //dr["start"] = Convert.ToDateTime("11:00");
+        //dr["end"] = Convert.ToDateTime("13:14");
+        //dr["text"] = "Unicode test: 公曆 (requires Unicode fonts on the client side)";
+        //dr["color"] = "red";
+        //dt.Rows.Add(dr);
 
-        dr = dt.NewRow();
-        dr["id"] = 10;
-        dr["start"] = Convert.ToDateTime("13:14").AddDays(-7);
-        dr["end"] = Convert.ToDateTime("14:05").AddDays(-7);
-        dr["text"] = "Event 10";
-        dt.Rows.Add(dr);
-
-        dr = dt.NewRow();
-        dr["id"] = 11;
-        dr["start"] = Convert.ToDateTime("00:00").AddDays(8);
-        dr["end"] = Convert.ToDateTime("00:00").AddDays(15);
-        dr["text"] = "Event 11";
-        dr["resource"] = "D";
-        dr["allday"] = true;
-        dt.Rows.Add(dr);
-
-        dr = dt.NewRow();
-        dr["id"] = 12;
-        dr["start"] = Convert.ToDateTime("00:00").AddDays(-2);
-        dr["end"] = Convert.ToDateTime("00:00").AddDays(-1);
-        dr["text"] = "Event 12";
-        dr["resource"] = "D";
-        dr["allday"] = true;
-        dt.Rows.Add(dr);
-
-        dr = dt.NewRow();
-        dr["id"] = 13;
-        dr["start"] = DateTime.Now.AddDays(-7);
-        dr["end"] = DateTime.Now.AddDays(14);
-        dr["text"] = "Event 13";
-        dr["resource"] = "B";
-        dr["allday"] = true;
-        dt.Rows.Add(dr);
-
-        dr = dt.NewRow();
-        dr["id"] = 14;
-        dr["start"] = Convert.ToDateTime("7:45:00");
-        dr["end"] = Convert.ToDateTime("8:30:00");
-        dr["text"] = "Event 14";
-        dr["resource"] = "D";
-        dt.Rows.Add(dr);
-
-        dr = dt.NewRow();
-        dr["id"] = 16;
-        dr["start"] = Convert.ToDateTime("8:30:00").AddDays(1);
-        dr["end"] = Convert.ToDateTime("9:00:00").AddDays(1);
-        dr["text"] = "Event 16";
-        dr["resource"] = "D";
-        dt.Rows.Add(dr);
+        //dr = dt.NewRow();
+        //dr["id"] = 8;
+        //dr["start"] = Convert.ToDateTime("13:14").AddDays(-1);
+        //dr["end"] = Convert.ToDateTime("14:05").AddDays(-1);
+        //dr["text"] = "Event 8";
+        //dr["resource"] = "C";
+        //dt.Rows.Add(dr);
 
 
-        dr = dt.NewRow();
-        dr["id"] = 17;
-        dr["start"] = Convert.ToDateTime("8:00:00").AddDays(1);
-        dr["end"] = Convert.ToDateTime("8:00:01").AddDays(1);
-        dr["text"] = "Event 17";
-        dr["resource"] = "D";
-        dt.Rows.Add(dr);
+        //dr = dt.NewRow();
+        //dr["id"] = 9;
+        //dr["start"] = Convert.ToDateTime("13:14").AddDays(7);
+        //dr["end"] = Convert.ToDateTime("14:05").AddDays(7);
+        //dr["text"] = "Event 9";
+        //dr["resource"] = "C";
+        //dt.Rows.Add(dr);
+
+        //dr = dt.NewRow();
+        //dr["id"] = 10;
+        //dr["start"] = Convert.ToDateTime("13:14").AddDays(-7);
+        //dr["end"] = Convert.ToDateTime("14:05").AddDays(-7);
+        //dr["text"] = "Event 10";
+        //dt.Rows.Add(dr);
+
+        //dr = dt.NewRow();
+        //dr["id"] = 11;
+        //dr["start"] = Convert.ToDateTime("00:00").AddDays(8);
+        //dr["end"] = Convert.ToDateTime("00:00").AddDays(15);
+        //dr["text"] = "Event 11";
+        //dr["resource"] = "D";
+        //dr["allday"] = true;
+        //dt.Rows.Add(dr);
+
+        //dr = dt.NewRow();
+        //dr["id"] = 12;
+        //dr["start"] = Convert.ToDateTime("00:00").AddDays(-2);
+        //dr["end"] = Convert.ToDateTime("00:00").AddDays(-1);
+        //dr["text"] = "Event 12";
+        //dr["resource"] = "D";
+        //dr["allday"] = true;
+        //dt.Rows.Add(dr);
+
+        //dr = dt.NewRow();
+        //dr["id"] = 13;
+        //dr["start"] = DateTime.Now.AddDays(-7);
+        //dr["end"] = DateTime.Now.AddDays(14);
+        //dr["text"] = "Event 13";
+        //dr["resource"] = "B";
+        //dr["allday"] = true;
+        //dt.Rows.Add(dr);
+
+        //dr = dt.NewRow();
+        //dr["id"] = 14;
+        //dr["start"] = Convert.ToDateTime("7:45:00");
+        //dr["end"] = Convert.ToDateTime("8:30:00");
+        //dr["text"] = "Event 14";
+        //dr["resource"] = "D";
+        //dt.Rows.Add(dr);
+
+        //dr = dt.NewRow();
+        //dr["id"] = 16;
+        //dr["start"] = Convert.ToDateTime("8:30:00").AddDays(1);
+        //dr["end"] = Convert.ToDateTime("9:00:00").AddDays(1);
+        //dr["text"] = "Event 16";
+        //dr["resource"] = "D";
+        //dt.Rows.Add(dr);
+
+
+        //dr = dt.NewRow();
+        //dr["id"] = 17;
+        //dr["start"] = Convert.ToDateTime("8:00:00").AddDays(1);
+        //dr["end"] = Convert.ToDateTime("8:00:01").AddDays(1);
+        //dr["text"] = "Event 17";
+        //dr["resource"] = "D";
+        //dt.Rows.Add(dr);
 
         return dt;
     }
