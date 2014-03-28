@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Data.Entity.Migrations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Core;
 using NUnit.Framework;
@@ -32,13 +33,13 @@ namespace ShnexyTest.Models
         [SetUp]
         public void Setup()
         {
-          
 
+            
             Database.SetInitializer(new DropCreateDatabaseAlways<ShnexyDbContext>());
-            
-
+             
+       
             StructureMapBootStrapper.ConfigureDependencies("test");
-            
+
 
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
@@ -48,21 +49,21 @@ namespace ShnexyTest.Models
 
             _fixture = new FixtureData(_uow);
         }
-       
+
         //this is a core integration test: get the ics message through
         [Test]
         public void Event_Dispatch_CanSendICS()
         {
-            
+
             //load the test event
             Shnexy.Models.Event curEvent = _fixture.TestEvent();
             //load the corresponding test customer
             Customer curCustomer = _fixture.TestCustomer();
-          
-            
+
+
 
             //persist the customer to test the database.
-            
+
             curCustomer.Add();
             customerRepo.UnitOfWork.SaveChanges();
 

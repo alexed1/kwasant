@@ -21,10 +21,12 @@ namespace Shnexy
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             // StructureMap Dependencies configuration
-            StructureMapBootStrapper.ConfigureDependencies("dev"); //set to either "test" or "dev"
+            StructureMapBootStrapper.ConfigureDependencies("test"); //set to either "test" or "dev"
             ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
 
             Database.SetInitializer(new ShnexyInitializer());
+            ShnexyDbContext db = new ShnexyDbContext();
+            db.Database.Initialize(true);
 
 
 

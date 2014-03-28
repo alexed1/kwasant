@@ -367,7 +367,7 @@ namespace Shnexy.Models
             //Get Customer using CustomerId. retrieve the email target address
             curCustomer = curCustomer.GetByKey(CustomerId);
 
-            //create an Email message addressed to the customer and attache the file.
+            //create an Email message addressed to the customer and attach the file.
             Email curEmail = new Email(new EmailRepository(_uow));
             curEmail.Configure(curCustomer.emailAddr, Id, filename);
 

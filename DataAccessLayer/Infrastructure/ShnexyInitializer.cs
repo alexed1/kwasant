@@ -1,4 +1,5 @@
-﻿using Shnexy.DataAccessLayer;
+﻿using System.Diagnostics;
+using Shnexy.DataAccessLayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Shnexy.DataAccessLayer
         protected override void Seed(ShnexyDbContext context)
         {
             
-
+            Debug.WriteLine("in seed");
         }
     }
 }
