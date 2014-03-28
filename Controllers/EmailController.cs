@@ -10,6 +10,9 @@ using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
 using Shnexy.Models;
 using Shnexy.DataAccessLayer;
+using Shnexy.Services.APIManagement.Packagers.Shnexy;
+using Shnexy.Utilities;
+using StructureMap;
 
 namespace Shnexy.Controllers
 {
@@ -21,18 +24,32 @@ namespace Shnexy.Controllers
 
         private IEmail curEmail;
         private IEmailRepository curEmailRepo;
+        private ShnexyPackager API;
+        
 
         public EmailController(IUnitOfWork uow)
         {
             _uow = uow;
             curEmailRepo = new EmailRepository(_uow);
             curEmail = new Email(curEmailRepo); //why is repo null?
+            API = new ShnexyPackager();
         }
 
 
 
         // GET: /Email/
-        public ActionResult Index()
+        [HttpGet]
+        public string ProcessGetEmail(string requestString)
+        {
+            Dictionary<string, string> param = new Dictionary<string, string>();
+            API.UnpackGetEmail(requestString, out param);
+            Email thisEmail = curEmail.GetByKey(param["Id"].ToInt());
+            return API.PackResponseGetEmail(thisEmail);
+        }
+
+
+
+        public ActionResult ShowAll()
         {
             
             IEnumerable<Email> curEmails = new List<Email>();
