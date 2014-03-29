@@ -370,14 +370,21 @@ namespace Shnexy.Models
             //create an Email message addressed to the customer and attach the file.
             Email curEmail = new Email(new EmailRepository(_uow));
             curEmail.Configure(curCustomer.emailAddr, Id, filename);
+            curEmail.FromEmail = "alex@edelstein.org";
+            curEmail.FromName = "Alexed";
+            curEmail.Text = "this is the body. ICS should be attached";
+            curEmail.Subject = "Meeting Request from Alex Edelstein Sent by Booqit";
 
             //call Mandrill. need to reconcile the two email structures.
             EmailManager curEmailManager = new EmailManager();
+
             Attachment curAttachment = new Attachment();
             curAttachment.Name = filename;
             curAttachment.Type = "text/plain";
             curAttachment.Content = File.ReadAllText(filename);
+            curEmail.Attachments.Add(curAttachment);
 
+            curEmailManager.Send(curEmail);
 
 
             //skip for v.1: add EmailID to outbound queue

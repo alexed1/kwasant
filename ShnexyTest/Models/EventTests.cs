@@ -52,6 +52,7 @@ namespace ShnexyTest.Models
 
         //this is a core integration test: get the ics message through
         [Test]
+        [Category("Event")]
         public void Event_Dispatch_CanSendICS()
         {
 

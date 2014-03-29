@@ -557,6 +557,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\EmailAddress.cs" />
     <Compile Include="Models\Email.cs" />
@@ -582,7 +583,6 @@
     <Compile Include="Utilities\Enumerations.cs" />
     <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="Utilities\PersistableIntCollection.cs" />
-    <Compile Include="Utilities\TypeSafeEnum.cs" />
     <Compile Include="ViewModels\User\UserDetailsVM.cs" />
   </ItemGroup>
   <ItemGroup>

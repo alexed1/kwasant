@@ -27,9 +27,9 @@ namespace ShnexyTest.Fixtures
                 Id = 1,
                 emailAddr = new EmailAddress
                 {
-                    EmailAddressBody = "alexlucre1@gmail.com",
+                    Email = "alexlucre1@gmail.com",
                     Id = 1,
-                    DisplayName = "Alex Lucre1"
+                    Name = "Alex Lucre1"
                 }
 
             };

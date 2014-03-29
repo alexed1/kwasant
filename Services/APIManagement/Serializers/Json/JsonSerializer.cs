@@ -18,10 +18,12 @@ namespace Shnexy.Services.APIManagement.Serializers.Json
         {
             _settings = new JsonSerializerSettings
                             {
-                                MissingMemberHandling = MissingMemberHandling.Ignore,
+                                MissingMemberHandling = MissingMemberHandling.Error,
                                 NullValueHandling = NullValueHandling.Include,
                                 DefaultValueHandling = DefaultValueHandling.Include,
-                                PreserveReferencesHandling=PreserveReferencesHandling.Objects                               
+                                Formatting = Formatting.Indented,
+                                PreserveReferencesHandling = PreserveReferencesHandling.None,
+                                ReferenceLoopHandling = ReferenceLoopHandling.Ignore                           
                             };
         }
 

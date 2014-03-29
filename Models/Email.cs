@@ -11,21 +11,43 @@ using Shnexy.DataAccessLayer.Repositories;
 
 namespace Shnexy.Models
 {
+
+    ///// <summary>
+    /////This class is structured to facilitate auto-serialization of data that gets sent using the Mandrill API. It is similar to our main Email class
+    ///// We should probably get rid of it, and write manual serialization code
+    ///// Another open issue is: should the EmailAddress be done as an array (like here) or as a Collection. The array is probably more cross-platform
+    ///// </summary>
+    //[Serializable]
+    //public class Email
+    //{
+
+    //    public List<EmailTemplateMergeRecipient> MergeVars;
+    //    public Email()
+    //    {
+    //        MergeVars = new List<EmailTemplateMergeRecipient> { };
+    //    }
+    //}
+
     public class Email : IEmail
     {
         [Key]
         public int Id { get; set; }
 
-        public string Body { get; set; }
+        public string Html { get; set; }
+        public string Text { get; set; }
 
         public string Subject { get; set; }
-        public EmailAddress Sender { get; set; }
+        public string FromEmail { get; set; }
+        public string FromName { get; set; }
+        
 
-        public ICollection<EmailAddress> To_Addresses { get; set; }
+        public List<EmailAddress> To { get; set; }
 
-        public ICollection<EmailAddress> CC_Addresses { get; set; }
+        public List<EmailAddress> CC { get; set; }
 
-        public ICollection<EmailAddress> Bcc_Addresses { get; set; }
+        public List<EmailAddress> Bcc { get; set; }
+
+        public List<Attachment> Attachments { get; set; } 
 
         public string Status { get; set; } //TODO replace with typesafe enum
 
@@ -39,32 +61,37 @@ namespace Shnexy.Models
         public Email(IEmailRepository emailRepo)
         {
             _emailRepo = emailRepo;
-            To_Addresses = new Collection<EmailAddress>();
-            CC_Addresses = new Collection<EmailAddress>();
-            Bcc_Addresses = new Collection<EmailAddress>();
+            To = new List<EmailAddress>();
+            CC = new List<EmailAddress>();
+            Bcc = new List<EmailAddress>();
+            Attachments = new List<Attachment>();
         }
 
         public Email(MailMessage curMessage, IEmailRepository emailRepo)
         {
-            Body = curMessage.Body;
+            Text = curMessage.Body;
             Subject = curMessage.Subject;
-            Sender = MapAddress(curMessage.From);
+            FromEmail = MapAddress(curMessage.From).Email;
 
-     
+            To = new List<EmailAddress>();
+            CC = new List<EmailAddress>();
+            Bcc = new List<EmailAddress>();
+        
             foreach (var address in curMessage.To)
             {
-                To_Addresses = new Collection<EmailAddress>();
-                To_Addresses.Add(MapAddress(address)); //ugly This maps the MSDN address to our normalized EmailAddress
+                
+                To.Add(MapAddress(address));
+                     //ugly This maps the MSDN address to our normalized EmailAddress
             }
             foreach (var address in curMessage.CC)
             {
-                CC_Addresses = new Collection<EmailAddress>();
-                CC_Addresses.Add(MapAddress(address)); //ugly This maps the MSDN address to our normalized EmailAddress
+                CC.Add(MapAddress(address));
+                 //ugly This maps the MSDN address to our normalized EmailAddress
             }
             foreach (var address in curMessage.Bcc)
             {
-                Bcc_Addresses = new Collection<EmailAddress>();
-                Bcc_Addresses.Add(MapAddress(address)); //ugly This maps the MSDN address to our normalized EmailAddress
+                
+                Bcc.Add(MapAddress(address)); //ugly This maps the MSDN address to our normalized EmailAddress
             }
             Status = "Unprocessed";
             _emailRepo = emailRepo;
@@ -72,7 +99,7 @@ namespace Shnexy.Models
 
         public EmailAddress MapAddress(MailAddress importedAddress)
         {
-            return new EmailAddress(importedAddress);
+              return new EmailAddress(importedAddress);
         }
 
         public void Save()
@@ -83,7 +110,7 @@ namespace Shnexy.Models
 
         public void Configure(EmailAddress destEmailAddress, int eventId, string filename)
         {
-            To_Addresses.Add(destEmailAddress);
+            To.Add(destEmailAddress);
             //TODO tag the email with the eventId
             
         }
