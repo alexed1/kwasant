@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Mail;
 using System.Web;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 using Shnexy.DataAccessLayer.Repositories;
 
 namespace Shnexy.Models
@@ -31,6 +32,7 @@ namespace Shnexy.Models
     public class Email : IEmail
     {
         [Key]
+        [JsonIgnore]
         public int Id { get; set; }
 
         public string Html { get; set; }
@@ -43,11 +45,11 @@ namespace Shnexy.Models
 
         public List<EmailAddress> To { get; set; }
 
-        public List<EmailAddress> CC { get; set; }
+        public ICollection<EmailAddress> CC { get; set; }
 
-        public List<EmailAddress> Bcc { get; set; }
+        public ICollection<EmailAddress> Bcc { get; set; }
 
-        public List<Attachment> Attachments { get; set; } 
+        public ICollection<Attachment> Attachments { get; set; } 
 
         public string Status { get; set; } //TODO replace with typesafe enum
 

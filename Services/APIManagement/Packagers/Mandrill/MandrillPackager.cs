@@ -12,7 +12,7 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
 
 {
     //uses the Mandrill API at https://mandrillapp.com/settings/index
-    public class MandrillPackage_SendTemplater
+    public class MandrillPackager
     {
         #region Members
 
@@ -27,7 +27,7 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
         /// <summary>
         /// Initialize mandrill packager
         /// </summary>
-        public MandrillPackage_SendTemplater()
+        public MandrillPackager()
         {
             baseURL = "https://mandrillapp.com/api/1.0/";
             jsonSerializer = new JsonSerializer();
@@ -59,7 +59,7 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
             //What we're doing here is just copying the email address from the EmailAddress object into a similar field called 'rcpt'
             //This will break the moment we use 'cc' or 'bcc' or put more than one addressee into the message.
             var curRecipient = new EmailTemplateMergeRecipient();
-            curRecipient.Rcpt = message.To[0].Email;
+            //curRecipient.Rcpt = message.To. FIX THIS
 
             //map the template-specific chunks of custom data that will be dyanmically integrated into the template at send time. Put them into a list that can be easily serialized.
             foreach (var pair in mergeFields)
@@ -124,6 +124,15 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
 
         #endregion
 
+        public string PostPing()
+        {
+            RestfulCall curCall = new RestfulCall(baseURL, "/users/ping.json", Method.POST);
+            string pingstring = @"{ ""key"": """ + MandrillKey + @"""}";
+            curCall.AddBody(pingstring, "application/json");
+            var response = curCall.Execute();
+
+            return response.Content;
+        }
     }
 }
 

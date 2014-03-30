@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using Microsoft.Ajax.Utilities;
@@ -12,7 +13,7 @@ namespace Shnexy.Services.EmailManagement
     {
         #region Members
 
-        private MandrillPackage_SendTemplater MandrillAPI;
+        private MandrillPackager MandrillAPI;
 
         #endregion
 
@@ -23,7 +24,7 @@ namespace Shnexy.Services.EmailManagement
         /// </summary>
         public EmailManager()
         {
-            MandrillAPI = new MandrillPackage_SendTemplater();
+            MandrillAPI = new MandrillPackager();
         }
 
         #endregion
@@ -43,6 +44,13 @@ namespace Shnexy.Services.EmailManagement
         {
 
             var results = MandrillAPI.PostMessageSend(message);
+            Debug.WriteLine(results);
+        }
+
+        public void Ping()
+        {
+            var results = MandrillAPI.PostPing();
+            Debug.WriteLine(results);
         }
 
         //converts a standard email into a Email so we can easily auto-serialize into Mandrill JSON
@@ -71,12 +79,14 @@ namespace Shnexy.Services.EmailManagement
             Email message = new Email();
             message.To = new List<EmailAddress>();
             EmailAddress address = new EmailAddress();
-            address.Email = "poonam@cash1loans.com";
-            address.Name = "poonam";
+            address.Email = "alexlucre1@gmail.com";
+            address.Name = "Test Sender";
             message.To.Add(address);
             message.Subject = "test message";
-            message.FromEmail = "sender@leaseitkeepit.com";
+            message.FromEmail = "sender@edelstein.org";
             message.FromName = "LeaseItKeepIt";
+            message.Html = "foo";
+            message.Text = "bar";
 
             Dictionary<string, string> mergeFields = new Dictionary<string, string>();
             mergeFields["First_Name"] = "Chad";
@@ -84,7 +94,8 @@ namespace Shnexy.Services.EmailManagement
             mergeFields["Lease_Amount"] = "$453.43";
             mergeFields["Next_Payment_Date"] = "February 22, 2014";
 
-            SendTemplate(templateName, message, mergeFields);
+           // SendTemplate(templateName, message, mergeFields);
+            Send(message);
         }
         #endregion
 

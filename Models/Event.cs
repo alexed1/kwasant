@@ -380,8 +380,11 @@ namespace Shnexy.Models
 
             Attachment curAttachment = new Attachment();
             curAttachment.Name = filename;
-            curAttachment.Type = "text/plain";
+            curAttachment.Type = "text/calendar; charset=UTF-8; method=REQUEST";
+
+
             curAttachment.Content = File.ReadAllText(filename);
+            
             curEmail.Attachments.Add(curAttachment);
 
             curEmailManager.Send(curEmail);
