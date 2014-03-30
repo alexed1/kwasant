@@ -4,6 +4,7 @@ using Shnexy.DataAccessLayer;
 using Shnexy.DataAccessLayer.Repositories;
 using Shnexy.Fixtures;
 using Shnexy.Models;
+using Shnexy.Services.EmailManagement;
 using Syncfusion.Mvc.Schedule;
 using System;
 using System.Collections.Generic;
@@ -57,6 +58,8 @@ namespace Shnexy.Controllers
                 var curEmail = new Email(message, _emailRepo);
                 curEmail.Save();
             }
+
+          
             return RedirectToAction("Index", "Admin");
 
         }

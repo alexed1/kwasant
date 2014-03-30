@@ -113,6 +113,7 @@
     <Compile Include="DDay.iCal.Test\SerializationTest.cs" />
     <Compile Include="DDay.iCal.Test\Startup.cs" />
     <Compile Include="DDay.iCal.Test\TodoTest.cs" />
+    <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Customer.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />
     <Compile Include="Fixtures\FixtureData.cs" />

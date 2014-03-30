@@ -1,5 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Shnexy.Services.APIManagement.Serializers.Json
 {
@@ -18,12 +22,19 @@ namespace Shnexy.Services.APIManagement.Serializers.Json
         {
             _settings = new JsonSerializerSettings
                             {
-                                MissingMemberHandling = MissingMemberHandling.Ignore,
+                                MissingMemberHandling = MissingMemberHandling.Error,
                                 NullValueHandling = NullValueHandling.Include,
                                 DefaultValueHandling = DefaultValueHandling.Include,
-                                PreserveReferencesHandling=PreserveReferencesHandling.Objects                               
+                                Formatting = Formatting.Indented,
+                                PreserveReferencesHandling = PreserveReferencesHandling.None,
+                                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,   
+                                ContractResolver = new CustomPropertyNamesContractResolver()
                             };
         }
+
+
+
+       
 
         /// <summary>
         /// Serialize the object as JSON
@@ -64,5 +75,69 @@ namespace Shnexy.Services.APIManagement.Serializers.Json
             }
             return listT;
         }
+
+
+        //=================================
+        // The following code converts our Pascal Case property names to the kind that mandrill needs
+        // based loosely on http://stackoverflow.com/a/18828097/1915866
+        public enum IdentifierCase
+        {
+            Camel,
+            Pascal,
+        }
+        public class CustomPropertyNamesContractResolver : DefaultContractResolver
+        {
+            private static readonly CultureInfo Culture = CultureInfo.InvariantCulture;
+
+            public CustomPropertyNamesContractResolver(bool shareCache = false)
+                : base(shareCache)
+            {
+                Case = IdentifierCase.Pascal;
+                PreserveUnderscores = true;
+            }
+
+            public IdentifierCase Case { get; set; }
+            public bool PreserveUnderscores { get; set; }
+
+            protected override string ResolvePropertyName(string propertyName)
+            {
+                return ChangeCase(propertyName);
+            }
+
+            private string ChangeCase(string s)
+            {
+                var sb = new StringBuilder();
+
+                bool addNoUnderscore = true;//applies for the first char, and for chars that follow a capital char (i.e. we don't want "CC" to become "C_C")
+                bool lastCharUpper = true;
+                foreach (var c in s)
+                {
+
+                    if (char.IsLower(c))
+                    {
+                        sb.Append(c);
+                        lastCharUpper = false;
+                    }
+                    else
+                    {
+                        if (lastCharUpper)
+                        {
+                            sb.Append(char.ToLower(c));
+                        }
+                        else
+                        {
+                            sb.Append("_");
+                            sb.Append(char.ToLower(c));
+                            lastCharUpper = true;
+                        }
+                    }
+                   
+                }
+                return sb.ToString();
+            }
+
+            
+        }
+
     }
 }

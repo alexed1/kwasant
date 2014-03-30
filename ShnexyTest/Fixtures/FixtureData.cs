@@ -14,6 +14,7 @@ namespace ShnexyTest.Fixtures
 
 
         public ICustomerRepository customerRepo;
+        public IEmailAddressRepository emailAddressRepo;
         public IUnitOfWork _uow;
 
         public FixtureData(IUnitOfWork uow)

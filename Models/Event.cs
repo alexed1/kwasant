@@ -34,8 +34,19 @@ namespace Shnexy.Models
     {
         #region Public Properties
 
+
+        //ADDED BY SHNEXY++++++++++++++++++++++++++++++++++++++++++++++++++++
         public int Id { get; set; }
+        //this is the locally stored ICS file. We'll want to do something much more sophisticated, involving the cloud.
+        public string ICSFilename { get; set; }
         public int CustomerId { get; set; } //added by shnexy
+
+        public List<EmailAddress> Attendees { get; set; } 
+
+
+
+        //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
         /// <summary>
         /// The start date/time of the event.
         /// <note>
@@ -345,45 +356,36 @@ namespace Shnexy.Models
 
         #region Added by Shnexy
 
-        //extract the ICS, and put it into an outbound email message in the outbound queue
-        public void Dispatch()
+        //Create an ICS file out of the event
+        public string GenerateICS()
         {
-            
-
-
             iCalendar iCal = new iCalendar();
             iCal.AddChild(this);
 
             iCalendarSerializer serializer = new iCalendarSerializer(iCal);
-           // string Body = serializer.Serialize(iCal); but we don't need the body right now
+            // string Body = serializer.Serialize(iCal); but we don't need the body right now
 
             //generate a unique file name, using customer id + eventID. 
             //EventId should be added to the event and synced to the customer and incremented.
             string filename = "invite_" + CustomerId.ToString() + "_" + Id.ToString();
             serializer.Serialize(filename);
-
-           
-
-            //Get Customer using CustomerId. retrieve the email target address
-            curCustomer = curCustomer.GetByKey(CustomerId);
-
-            //create an Email message addressed to the customer and attach the file.
-            Email curEmail = new Email(new EmailRepository(_uow));
-            curEmail.Configure(curCustomer.emailAddr, Id, filename);
-
-            //call Mandrill. need to reconcile the two email structures.
-            EmailManager curEmailManager = new EmailManager();
-            Attachment curAttachment = new Attachment();
-            curAttachment.Name = filename;
-            curAttachment.Type = "text/plain";
-            curAttachment.Content = File.ReadAllText(filename);
-
-
-
-            //skip for v.1: add EmailID to outbound queue
-
-
+            return filename;
         }
+
+        //Generate an ICS for the event, put it into an email and queue the email
+        public void Dispatch()
+        {
+            ICSFilename = GenerateICS();
+            Email curEmail = new Email(new EmailRepository(_uow));
+            curEmail.Configure(this);
+            curEmail.Save();
+            curEmail.Send();
+        }
+
+   
+
+        
+
 
         #endregion
     }

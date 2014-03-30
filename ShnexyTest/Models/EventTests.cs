@@ -52,6 +52,7 @@ namespace ShnexyTest.Models
 
         //this is a core integration test: get the ics message through
         [Test]
+        [Category("Event")]
         public void Event_Dispatch_CanSendICS()
         {
 
@@ -60,17 +61,29 @@ namespace ShnexyTest.Models
             //load the corresponding test customer
             Customer curCustomer = _fixture.TestCustomer();
 
-
-
             //persist the customer to test the database.
-
             curCustomer.Add();
             customerRepo.UnitOfWork.SaveChanges();
 
+            //Create new email
+            //Call Email#Configure
+            //Call Email#Dispatch
             curEvent.Dispatch();
+
+            //Verify success
             //use imap to load unread messages from the test customer account
             //verify that one of the messages is a proper ICS message
             //retry every 15 seconds for 1 minute
+
+            
+
+            //create an Email message addressed to the customer and attach the file.
+            
+           
+
+
+
+            //skip for v.1: add EmailID to outbound queue
 
 
 

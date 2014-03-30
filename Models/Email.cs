@@ -3,34 +3,67 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Web;
 using System.Windows.Forms;
+using Newtonsoft.Json;
+using Shnexy.DataAccessLayer;
+using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
+using Shnexy.Services.APIManagement.Packagers.Mandrill;
+using StructureMap;
 
 namespace Shnexy.Models
 {
+
+    ///// <summary>
+    /////This class is structured to facilitate auto-serialization of data that gets sent using the Mandrill API. It is similar to our main Email class
+    ///// We should probably get rid of it, and write manual serialization code
+    ///// Another open issue is: should the EmailAddress be done as an array (like here) or as a Collection. The array is probably more cross-platform
+    ///// </summary>
+    //[Serializable]
+    //public class Email
+    //{
+
+    //    public List<EmailTemplateMergeRecipient> MergeVars;
+    //    public Email()
+    //    {
+    //        MergeVars = new List<EmailTemplateMergeRecipient> { };
+    //    }
+    //}
+
     public class Email : IEmail
     {
         [Key]
+        [JsonIgnore]
         public int Id { get; set; }
 
-        public string Body { get; set; }
+        public string Html { get; set; }
+        public string Text { get; set; }
 
         public string Subject { get; set; }
-        public EmailAddress Sender { get; set; }
+        public string FromEmail { get; set; }
+        public string FromName { get; set; }
+        
 
-        public ICollection<EmailAddress> To_Addresses { get; set; }
+        public List<EmailAddress> To { get; set; }
 
-        public ICollection<EmailAddress> CC_Addresses { get; set; }
+        public ICollection<EmailAddress> CC { get; set; }
 
-        public ICollection<EmailAddress> Bcc_Addresses { get; set; }
+        public ICollection<EmailAddress> Bcc { get; set; }
+
+        public ICollection<Attachment> Attachments { get; set; } 
 
         public string Status { get; set; } //TODO replace with typesafe enum
 
         private EmailAddress curAddress ;
         private IEmailRepository _emailRepo;
+        private ICustomerRepository _customerRepo;
+        private IUnitOfWork _uow;
+        private MandrillPackager MandrillAPI;
 
         public Email()
         {
@@ -39,32 +72,40 @@ namespace Shnexy.Models
         public Email(IEmailRepository emailRepo)
         {
             _emailRepo = emailRepo;
-            To_Addresses = new Collection<EmailAddress>();
-            CC_Addresses = new Collection<EmailAddress>();
-            Bcc_Addresses = new Collection<EmailAddress>();
+            To = new List<EmailAddress>();
+            CC = new List<EmailAddress>();
+            Bcc = new List<EmailAddress>();
+            Attachments = new List<Attachment>();
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            _customerRepo = new CustomerRepository(_uow);
+            MandrillAPI = new MandrillPackager();
         }
 
         public Email(MailMessage curMessage, IEmailRepository emailRepo)
         {
-            Body = curMessage.Body;
+            Text = curMessage.Body;
             Subject = curMessage.Subject;
-            Sender = MapAddress(curMessage.From);
+            FromEmail = MapAddress(curMessage.From).Email;
 
-     
+            To = new List<EmailAddress>();
+            CC = new List<EmailAddress>();
+            Bcc = new List<EmailAddress>();
+        
             foreach (var address in curMessage.To)
             {
-                To_Addresses = new Collection<EmailAddress>();
-                To_Addresses.Add(MapAddress(address)); //ugly This maps the MSDN address to our normalized EmailAddress
+                
+                To.Add(MapAddress(address));
+                     //ugly This maps the MSDN address to our normalized EmailAddress
             }
             foreach (var address in curMessage.CC)
             {
-                CC_Addresses = new Collection<EmailAddress>();
-                CC_Addresses.Add(MapAddress(address)); //ugly This maps the MSDN address to our normalized EmailAddress
+                CC.Add(MapAddress(address));
+                 //ugly This maps the MSDN address to our normalized EmailAddress
             }
             foreach (var address in curMessage.Bcc)
             {
-                Bcc_Addresses = new Collection<EmailAddress>();
-                Bcc_Addresses.Add(MapAddress(address)); //ugly This maps the MSDN address to our normalized EmailAddress
+                
+                Bcc.Add(MapAddress(address)); //ugly This maps the MSDN address to our normalized EmailAddress
             }
             Status = "Unprocessed";
             _emailRepo = emailRepo;
@@ -72,7 +113,7 @@ namespace Shnexy.Models
 
         public EmailAddress MapAddress(MailAddress importedAddress)
         {
-            return new EmailAddress(importedAddress);
+              return new EmailAddress(importedAddress);
         }
 
         public void Save()
@@ -81,12 +122,41 @@ namespace Shnexy.Models
             _emailRepo.UnitOfWork.SaveChanges(); 
         }
 
-        public void Configure(EmailAddress destEmailAddress, int eventId, string filename)
+        //Configure the outbound email for a specified Event
+        public void Configure(Event curEvent)
         {
-            To_Addresses.Add(destEmailAddress);
-            //TODO tag the email with the eventId
-            
+            //Get Customer using CustomerId. retrieve the email target address
+            Customer curCustomer = new Customer(_customerRepo);
+            curCustomer = curCustomer.GetByKey(curEvent.CustomerId);
+
+            FromEmail = curCustomer.emailAddr.Email;
+            FromName = curCustomer.emailAddr.Name;
+            Text = "This is a Booqit Event Request. For more information, see https://foo.com";
+            Html = "This is a Booqit Event Request. For more information, see https://foo.com";
+            Subject = "Invitation via Booqit: " + curEvent.Summary + "@ " + curEvent.DTStart;
+
+            foreach (var attendee in curEvent.Attendees)
+            {
+                To.Add(attendee);
+            }
+
+            Attachment icsFile = new Attachment();
+            icsFile.Name = "invite.ics";
+            icsFile.Type = "application/ics";
+            var file = File.ReadAllBytes(curEvent.ICSFilename);
+            var base64Version = Convert.ToBase64String(file, 0, file.Length);
+            icsFile.Content = base64Version;
+            Attachments.Add(icsFile);
         }
+
+        public void Send()
+        {     
+            var results = MandrillAPI.PostMessageSend(this);
+            Debug.WriteLine(results);
+        
+        }
+
+
 
         public IEnumerable<Email> GetAll()
         {
