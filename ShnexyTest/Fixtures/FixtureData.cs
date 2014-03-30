@@ -13,14 +13,15 @@ namespace ShnexyTest.Fixtures
     {
 
 
-        public ICustomerRepository customerRepo;
-        public IEmailAddressRepository emailAddressRepo;
-        public IUnitOfWork _uow;
+        private ICustomerRepository customerRepo;
+        private IEmailAddressRepository emailAddressRepo;
+        private IUnitOfWork _uow;
 
         public FixtureData(IUnitOfWork uow)
         {
             _uow = uow;
             customerRepo = new CustomerRepository(_uow);
+            emailAddressRepo= new EmailAddressRepository(_uow);
         }
 
     }
