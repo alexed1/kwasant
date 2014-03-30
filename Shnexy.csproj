@@ -257,9 +257,10 @@
     <Compile Include="DataAccessLayer\Infrastructure\UnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEvent.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\ICustomerRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\ICustomerRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IUnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyInitializer.cs" />
+    <Compile Include="DataAccessLayer\Repositories\EmailAddressRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\EmailRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\CustomerRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\GenericRepository.cs" />

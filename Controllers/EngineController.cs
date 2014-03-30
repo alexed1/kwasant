@@ -59,8 +59,6 @@ namespace Shnexy.Controllers
                 curEmail.Save();
             }
 
-            EmailManager curEmailManager = new EmailManager();
-            curEmailManager.Test();
           
             return RedirectToAction("Index", "Admin");
 

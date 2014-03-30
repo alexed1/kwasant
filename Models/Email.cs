@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Web;
 using System.Windows.Forms;
 using Newtonsoft.Json;
+using Shnexy.DataAccessLayer;
+using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
+using Shnexy.Services.APIManagement.Packagers.Mandrill;
+using StructureMap;
 
 namespace Shnexy.Models
 {
@@ -55,6 +61,9 @@ namespace Shnexy.Models
 
         private EmailAddress curAddress ;
         private IEmailRepository _emailRepo;
+        private ICustomerRepository _customerRepo;
+        private IUnitOfWork _uow;
+        private MandrillPackager MandrillAPI;
 
         public Email()
         {
@@ -67,6 +76,9 @@ namespace Shnexy.Models
             CC = new List<EmailAddress>();
             Bcc = new List<EmailAddress>();
             Attachments = new List<Attachment>();
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            _customerRepo = new CustomerRepository(_uow);
+            MandrillAPI = new MandrillPackager();
         }
 
         public Email(MailMessage curMessage, IEmailRepository emailRepo)
@@ -110,12 +122,41 @@ namespace Shnexy.Models
             _emailRepo.UnitOfWork.SaveChanges(); 
         }
 
-        public void Configure(EmailAddress destEmailAddress, int eventId, string filename)
+        //Configure the outbound email for a specified Event
+        public void Configure(Event curEvent)
         {
-            To.Add(destEmailAddress);
-            //TODO tag the email with the eventId
-            
+            //Get Customer using CustomerId. retrieve the email target address
+            Customer curCustomer = new Customer(_customerRepo);
+            curCustomer = curCustomer.GetByKey(curEvent.CustomerId);
+
+            FromEmail = curCustomer.emailAddr.Email;
+            FromName = curCustomer.emailAddr.Name;
+            Text = "This is a Booqit Event Request. For more information, see https://foo.com";
+            Html = "This is a Booqit Event Request. For more information, see https://foo.com";
+            Subject = "Invitation via Booqit: " + curEvent.Summary + "@ " + curEvent.DTStart;
+
+            foreach (var attendee in curEvent.Attendees)
+            {
+                To.Add(attendee);
+            }
+
+            Attachment icsFile = new Attachment();
+            icsFile.Name = "invite.ics";
+            icsFile.Type = "application/ics";
+            var file = File.ReadAllBytes(curEvent.ICSFilename);
+            var base64Version = Convert.ToBase64String(file, 0, file.Length);
+            icsFile.Content = base64Version;
+            Attachments.Add(icsFile);
         }
+
+        public void Send()
+        {     
+            var results = MandrillAPI.PostMessageSend(this);
+            Debug.WriteLine(results);
+        
+        }
+
+
 
         public IEnumerable<Email> GetAll()
         {

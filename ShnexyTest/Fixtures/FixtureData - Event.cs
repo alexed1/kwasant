@@ -18,11 +18,16 @@ namespace ShnexyTest.Fixtures
                 Id = 1,
                 CustomerId = 1,
                 //DTStart = (iCalDateTime)DateTime.Parse("20040117"),
-                DTStart = new iCalDateTime("20040117"),
-                DTEnd = new iCalDateTime("20040110"),
+                DTStart = new iCalDateTime("20140517"),
+                DTEnd = new iCalDateTime("20140610"),
                 Location = "San Francisco",
                 Description = "First Ever Event",
-                WorkflowState = "Undispatched"
+                Summary = "Here's a Summary",
+                WorkflowState = "Undispatched",
+                Attendees = new List<EmailAddress> {
+                    TestEmail1(),
+                    TestEmail2()
+                 }
 
               //   DateTimeSerializer serializer = new DateTimeSerializer();
             //CopyFrom(serializer.Deserialize(new StringReader(value)) as ICopyable);
