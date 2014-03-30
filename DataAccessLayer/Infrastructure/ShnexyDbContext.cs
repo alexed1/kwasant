@@ -33,6 +33,8 @@ namespace Shnexy.DataAccessLayer
 
         public DbSet<EmailAddress> EmailAddresses { get; set; }
 
+        public DbSet<EventFile> EventFiles { get; set; }
+
         //public System.Data.Entity.DbSet<Shnexy.Models.AppointmentTable> AppointmentTables { get; set; }
         
         

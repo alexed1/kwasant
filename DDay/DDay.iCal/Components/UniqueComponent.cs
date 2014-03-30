@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
@@ -103,6 +104,7 @@ namespace Shnexy.DDay.iCal
             set { Properties.Set("REQUEST-STATUS", value); }
         }
 
+       
         virtual public Uri Url
         {
             get { return Properties.Get<Uri>("URL"); }

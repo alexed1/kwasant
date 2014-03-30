@@ -566,6 +566,7 @@
     <Compile Include="Controllers\EngineController.cs" />
     <Compile Include="Models\Event.cs" />
     <Compile Include="DataAccessLayer\Interfaces\ICustomer.cs" />
+    <Compile Include="Models\EventFile.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEmail.cs" />
     <Compile Include="Models\Profile.cs" />

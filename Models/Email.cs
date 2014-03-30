@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Shnexy.DataAccessLayer;
 using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
+using Shnexy.DDay.iCal;
 using Shnexy.Services.APIManagement.Packagers.Mandrill;
 using StructureMap;
 
@@ -28,10 +29,10 @@ namespace Shnexy.Models
     //public class Email
     //{
 
-    //    public List<EmailTemplateMergeRecipient> MergeVars;
+    //    public List<MandrillMergeRecipient> MergeVars;
     //    public Email()
     //    {
-    //        MergeVars = new List<EmailTemplateMergeRecipient> { };
+    //        MergeVars = new List<MandrillMergeRecipient> { };
     //    }
     //}
 
@@ -129,8 +130,8 @@ namespace Shnexy.Models
             Customer curCustomer = new Customer(_customerRepo);
             curCustomer = curCustomer.GetByKey(curEvent.CustomerId);
 
-            FromEmail = curCustomer.emailAddr.Email;
-            FromName = curCustomer.emailAddr.Name;
+            FromEmail = "lucreorganizer@gmail.com";
+            FromName = "Booqit Organizer";
             Text = "This is a Booqit Event Request. For more information, see https://foo.com";
             Html = "This is a Booqit Event Request. For more information, see https://foo.com";
             Subject = "Invitation via Booqit: " + curEvent.Summary + "@ " + curEvent.DTStart;

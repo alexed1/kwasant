@@ -41,9 +41,16 @@ namespace Shnexy.Models
         public string ICSFilename { get; set; }
         public int CustomerId { get; set; } //added by shnexy
 
-        public List<EmailAddress> Attendees { get; set; } 
+        public List<EmailAddress> Attendees { get; set; }
 
 
+        public string DbStringofUrl { get; set; }
+
+        //virtual public Uri Url
+        //{
+        //    get { return Properties.Get<Uri>("URL"); }
+        //    set { Properties.Set("URL", value); }
+        //}
 
         //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

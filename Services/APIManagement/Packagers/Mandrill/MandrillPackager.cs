@@ -49,22 +49,22 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
         /// </summary>
         public string PostMessageSendTemplate(String templateName, Email message, Dictionary<string, string> mergeFields)
         {
-            RestfulCall curCall = new RestfulCall(baseURL, "/messages/send-template.json", Method.POST);
-            MandrillPackage_SendTemplate curPackage = new MandrillPackage_SendTemplate(MandrillKey);
+            var curCall = new RestfulCall(baseURL, "/messages/send-template.json", Method.POST);
+            var curTemplatePackage = new MandrillTemplatePackage(MandrillKey);
 
-            curPackage.TemplateName = templateName;
+            curTemplatePackage.TemplateName = templateName;
 
             //ADD CUSTOM MERGE FIELDS
             //Currently we support just a single recipient. Mandrill's merge tag solution, though, requires a syntax that assume multiple recipients.
             //What we're doing here is just copying the email address from the EmailAddress object into a similar field called 'rcpt'
             //This will break the moment we use 'cc' or 'bcc' or put more than one addressee into the message.
-            var curRecipient = new EmailTemplateMergeRecipient();
+            var curRecipient = new MandrillMergeRecipient();
             //curRecipient.Rcpt = message.To. FIX THIS
 
             //map the template-specific chunks of custom data that will be dyanmically integrated into the template at send time. Put them into a list that can be easily serialized.
             foreach (var pair in mergeFields)
             {
-                EmailTemplateContentChunk curChunk = new EmailTemplateContentChunk();
+                var curChunk = new MandrillDynamicContentChunk();
                 curChunk.Name = pair.Key;
                 curChunk.Content = pair.Value;
                 curRecipient.Vars.Add(curChunk);
@@ -72,30 +72,31 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
             }
             //message.MergeVars.Add(curRecipient); NEED A DIFFERENT WAY TO ADD MERGE VARS
 
-            return AssembleAndSend(curPackage, curCall, message);
+            return AssembleAndSend(curTemplatePackage, curCall, message);
 
         }
 
+
+        //======================================================
         //simple send with no merge variables or templates
         public string PostMessageSend(Email message)
         {
-            RestfulCall curCall = new RestfulCall(baseURL, "/messages/send.json", Method.POST);
-            MandrillPackage_SendNoTemplate curPackage = new MandrillPackage_SendNoTemplate(MandrillKey);
-            return AssembleAndSend_NoTemplate(curPackage, curCall, message);
+            var curCall = new RestfulCall(baseURL, "/messages/send.json", Method.POST);
+            var curBasePackage = new MandrillBasePackage(MandrillKey);
+            return AssembleAndSend(curBasePackage, curCall, message);
         }
 
 
         //FINAL ASSEMBLY AND TRANSMISSION
         //finish configuring a complete 'package' that can be auto-serialized into the json that Mandrill understands.
-        public string AssembleAndSend(MandrillPackage_SendTemplate curPackage, RestfulCall curCall, Email message)
+        public string AssembleAndSend(MandrillBasePackage curTemplatePackage, RestfulCall curCall, Email message)
         {
 
-            curPackage.Message = new Email();
-            curPackage.Key = MandrillKey;
-                //message;
+            curTemplatePackage.Message = message;
+            curTemplatePackage.Key = MandrillKey;
 
             //serialize the email data and add it to the RestfulCall
-            curCall.AddBody(jsonSerializer.Serialize(curPackage), "application/json");
+            curCall.AddBody(jsonSerializer.Serialize(curTemplatePackage), "application/json");
 
             //Transmit the call
             var response = curCall.Execute();
@@ -104,23 +105,23 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
 
         }
 
-        //DRY THIS UP
-        public string AssembleAndSend_NoTemplate(MandrillPackage_SendNoTemplate curPackage, RestfulCall curCall, Email message)
-        {
+        ////DRY THIS UP
+        //public string AssembleAndSend_NoTemplate(MandrillBasePackage curBasePackage, RestfulCall curCall, Email message)
+        //{
 
-            curPackage.Message = message;
-            curPackage.Key = MandrillKey;
+        //    curBasePackage.Message = message;
+        //    curBasePackage.Key = MandrillKey;
        
 
-            //serialize the email data and add it to the RestfulCall
-            curCall.AddBody(jsonSerializer.Serialize(curPackage), "application/json");
+        //    //serialize the email data and add it to the RestfulCall
+        //    curCall.AddBody(jsonSerializer.Serialize(curBasePackage), "application/json");
 
-            //Transmit the call
-            var response = curCall.Execute();
+        //    //Transmit the call
+        //    var response = curCall.Execute();
 
-            return response.Content;
+        //    return response.Content;
 
-        }
+        //}
 
         #endregion
 
@@ -136,26 +137,23 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
     }
 }
 
-
+//=============================================================================================================================================
 //MANDRILL-SPECIFIC ENTITIES
 //These only really exist because it makes it really easy to auto serialize and deserialize from the specific JSON that Mandrill has defined.
+//They should not be used directly, but only by MandrillPackager
 
-/// <summary>
-/// This package combines an email message with mandrill-specific template chunks and a Mandrill key
-/// </summary>
-public class MandrillPackage_SendTemplate
+
+public class MandrillBasePackage
 {
     #region Members
 
     public string Key;
-    public string TemplateName;
-    public List<EmailTemplateContentChunk> TemplateContent;
     public Email Message;
 
     #endregion
 
     #region Constructor
-    public MandrillPackage_SendTemplate(string curKey)
+    public MandrillBasePackage(string curKey)
     {
         Key = curKey;
     }
@@ -163,19 +161,24 @@ public class MandrillPackage_SendTemplate
     #endregion
 }
 
-public class MandrillPackage_SendNoTemplate
+/// <summary>
+/// This package combines an email message with mandrill-specific template chunks and a Mandrill key
+/// </summary>
+public class MandrillTemplatePackage : MandrillBasePackage
 {
     #region Members
 
-    public string Key;
-    public Email Message;
+   
+    public string TemplateName;
+    public List<MandrillDynamicContentChunk> TemplateContent;
+
 
     #endregion
 
     #region Constructor
-    public MandrillPackage_SendNoTemplate(string curKey)
+    public MandrillTemplatePackage(string curKey) : base(curKey)
     {
-        Key = curKey;
+ 
     }
 
     #endregion
@@ -184,7 +187,7 @@ public class MandrillPackage_SendNoTemplate
 
 
 [Serializable]
-public class EmailTemplateContentChunk
+public class MandrillDynamicContentChunk
 {
     public string Name;
     public string Content;
@@ -194,19 +197,19 @@ public class EmailTemplateContentChunk
 /// In the Mandrill JSON, dynamic merge data must be provided on a per-recipient basis. Each recipient can have a List of dynamic chunks.
 /// </summary>
 [Serializable]
-public class EmailTemplateMergeRecipient
+public class MandrillMergeRecipient
 {
     #region Members
 
     public string Rcpt;
-    public List<EmailTemplateContentChunk> Vars;
+    public List<MandrillDynamicContentChunk> Vars;
 
     #endregion
 
     #region Constructor
-    public EmailTemplateMergeRecipient()
+    public MandrillMergeRecipient()
     {
-        Vars = new List<EmailTemplateContentChunk> { };
+        Vars = new List<MandrillDynamicContentChunk> { };
     }
 
     #endregion
