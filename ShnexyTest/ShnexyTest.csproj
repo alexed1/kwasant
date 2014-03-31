@@ -119,6 +119,7 @@
     <Compile Include="Fixtures\FixtureData.cs" />
     <Compile Include="Models\EngineTests.cs" />
     <Compile Include="Models\EventTests.cs" />
+    <Compile Include="Models\CustomerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

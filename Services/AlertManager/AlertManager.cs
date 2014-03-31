@@ -31,11 +31,11 @@ namespace Liki.App.Services.AlertManager
         /// </summary>
         public static BooqitAlertData Parse(string alertData)
         {
-            BooqitAlertData booqitEventData = new BooqitAlertData();
+            BooqitAlertData booqitAlertData = new BooqitAlertData();
             List<string> alertDataPairs = alertData.Split(',').ToList();
-            booqitEventData.alertName = alertDataPairs[0].Split('=')[1].Trim();
-            booqitEventData.alertData = alertData.Substring(alertDataPairs[0].Length + 1);
-            return booqitEventData;
+            booqitAlertData.alertName = alertDataPairs[0].Split('=')[1].Trim();
+            booqitAlertData.alertData = alertData.Substring(alertDataPairs[0].Length + 1);
+            return booqitAlertData;
         }
 
         /// <summary>

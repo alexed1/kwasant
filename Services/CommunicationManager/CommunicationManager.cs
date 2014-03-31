@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using Liki.App.Services.AlertManager;
@@ -21,7 +22,7 @@ namespace Shnexy.Services
         public void NewCustomerWorkflow(BooqitAlertData eventData)
         {
            
-            
+            Debug.WriteLine("NewCustomer has been created.");
         }
 
 

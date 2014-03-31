@@ -25,6 +25,8 @@ namespace ShnexyTest.Fixtures
             return new Customer(customerRepo)
             {
                 Id = 1,
+                FirstName = "Jack",
+                LastName = "Maginot",
                 emailAddr = TestEmail1()
 
             };
