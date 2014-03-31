@@ -136,8 +136,11 @@
       <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.Theme.Base.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.ComponentModel.Composition.Registration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
@@ -236,6 +239,7 @@
     <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IUnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyInitializer.cs" />
+    <Compile Include="DataAccessLayer\Repositories\EmailAddressRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\EventRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\CustomerRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\EmailRepository.cs" />
@@ -529,6 +533,7 @@
     <Compile Include="DDay\DDay.iCal\Utility\RecurrenceUtil.cs" />
     <Compile Include="DDay\DDay.iCal\Utility\SerializationUtil.cs" />
     <Compile Include="DDay\DDay.iCal\Utility\TextUtil.cs" />
+    <Compile Include="Fixtures\FixtureDataEmail.cs" />
     <Compile Include="Fixtures\Seed.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -797,6 +802,7 @@
     <Content Include="Views\Calendar\TimeHeaderCellDuration.cshtml" />
     <Content Include="Views\Calendar\Today.cshtml" />
     <Content Include="Views\Calendar\Open.cshtml" />
+    <Content Include="Views\Shared\_Blank.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

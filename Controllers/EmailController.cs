@@ -8,6 +8,8 @@ using System.Web;
 using System.Web.Mvc;
 using Shnexy.Models;
 using Shnexy.DataAccessLayer;
+using System.Web.Routing;
+using Shnexy.Fixtures;
 
 namespace Shnexy.Controllers
 {
@@ -17,7 +19,7 @@ namespace Shnexy.Controllers
 
         // GET: /Email/
         public ActionResult Index()
-        {
+        {  
            return View(db.Emails.ToList());
         }
 
@@ -29,11 +31,17 @@ namespace Shnexy.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Email email = db.Emails.Find(id);
+
             if (email == null)
             {
                 return HttpNotFound();
             }
-            return View(email);
+            else
+            {
+                //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
+                return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Calendar", action = "Index", id = id }));
+            }
+            //return View(email);
         }
 
         // GET: /Email/Create

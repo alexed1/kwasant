@@ -65,9 +65,7 @@ namespace Shnexy.Controllers
             using (ImapClient Client = new ImapClient("imap.gmail.com", 993, username, password, AuthMethod.Login, true))
             {
                 Debug.WriteLine("We are connected!");
-                //IEnumerable<uint> uids = Client.Search(SearchCondition.Unseen());
-
-                IEnumerable<uint> uids = Client.Search(SearchCondition.Seen());
+                IEnumerable<uint> uids = Client.Search(SearchCondition.Unseen());                
                 messages = Client.GetMessages(uids);               
             }
 

@@ -8,9 +8,11 @@ using System.Net.Mail;
 using System.Web;
 using System.Windows.Forms;
 using Shnexy.DataAccessLayer.Repositories;
+using System.ComponentModel.DataAnnotations;
 
 namespace Shnexy.Models
 {
+    
     public class Email : IEmail
     {
         [Key]

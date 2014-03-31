@@ -1,19 +1,89 @@
-﻿@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
-<form id="f" method="post" action="@Url.Action("New")">
-    
-<h1>New Event</h1>    
-    
-<div>Text</div>
-<div>@Html.TextBox("Text")</div>
-    
-<div>Start</div>
-<div>@Html.TextBox("Start")</div>
+﻿@using System.Web.Mvc
 
-<div>End</div>
-<div>@Html.TextBox("End")</div>
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+
+<header>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet"  type="text/css"/>
+</header>
+
+<form id="f" method="post" action="@Url.Action("New")">    
+<h3>New Event</h3>  
+<hr />  
+<div>Name</div>
+<div>@Html.TextBox("Name", "", new { @class = "form-control col-md-1" })</div>
+<br />    
+<div>Duration</div>
+<div>@Html.TextBox("Duration","",new { @class = "form-control col-md-1" })</div>
+<br />    
+<div>Location</div>
+<div>@Html.TextBox("Location","", new { @class = "form-control col-md-1" })</div>
+<br />
+<div>Is All Day</div>
+ <div style="width:20px"> @Html.CheckBox("chk", false, new { @class = "form-control" })</div>
+<br />
+
+@{
+     List<SelectListItem> itemsStatus = new List<SelectListItem>();
+
+     itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "0", Selected = true });
+     itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "1" });
+     itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "2"});
+}
+<br />
+<div>Status</div>
+<div style="width:200px"> @Html.DropDownList("itemsStatus",itemsStatus, new { @class = "form-control col-md-1" })</div>
+
+<br />
+@{
+     List<SelectListItem> itemsTransparency = new List<SelectListItem>();
+
+     itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "0", Selected = true });
+     itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "1" });
+}
+<br />
+<div>Transparency Type</div>
+<div style="width:200px">@Html.DropDownList("TransparencyType",itemsTransparency, new { @class = "form-control col-md-1" })</div>
+<br /><br />
+<div>Class</div>
+<div>@Html.TextBox("Class","", new { @class = "form-control col-md-1" })</div>
+<br />  
+<div>Description</div>
+<div>@Html.TextArea("Description", "", 5, 31, new { @class = "form-control col-md-1" })</div>
+@{
+     List<SelectListItem> itemsPriority = new List<SelectListItem>();
+
+     itemsPriority.Add(new SelectListItem { Text = "High", Value = "0", Selected = true });
+     itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "1" });
+     itemsPriority.Add(new SelectListItem { Text = "Low", Value = "2" });
+}
+<br />
+<div>Priority</div>
+<div style="width:200px">@Html.DropDownList("Priority",itemsPriority,new { @class = "form-control col-md-1" })</div>
+<br />
+
+@{
+     List<SelectListItem> itemsSequence = new List<SelectListItem>();
+
+     itemsSequence.Add(new SelectListItem { Text = "One", Value = "0", Selected = true });
+     itemsSequence.Add(new SelectListItem { Text = "Twp", Value = "1" });
+     itemsSequence.Add(new SelectListItem { Text = "Three", Value = "2" });
+}
+<br />
+<div>Sequence</div>
+<div style="width:200px">@Html.DropDownList("Sequence",itemsSequence, new { @class = "form-control col-md-1" })</div>
+<br /><br />
+
+<div>Line</div>
+<div style="width:30px">@Html.TextBox("Line", "" ,new { @class = "form-control col-md-1" })</div>
+<br />
+<div>Column</div>
+<div  style="width:30px">@Html.TextBox("Column", "",new { @class = "form-control col-md-1" })</div>
+
+<hr />
+
     
 <div class="space">
-    <input type="submit" value="Save" />
+    <input type="submit" value="Save"/></div>
     <a href="javascript:close()">Cancel</a>
 </div>
 </form>

@@ -1,11 +1,16 @@
 ﻿using System;
 using System.Data;
+using System.Linq;
 using System.Web.Mvc;
 using System.Threading;
 using System.Globalization;
+using System.Linq.Expressions;
+using System.Collections.Generic; 
 
 using Shnexy.Models;
 using Shnexy.DataAccessLayer;
+using Shnexy.DataAccessLayer.Interfaces;
+using Shnexy.DataAccessLayer.Repositories;
 
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
@@ -24,10 +29,30 @@ namespace Shnexy.Controllers
     {
         private ShnexyDbContext db = new ShnexyDbContext();
 
-        public ActionResult Index()
+        IEmailAddressRepository _emailAddRepo;
+
+        public ActionResult Index(int id)
         {
-            return View();
+            Email email = db.Emails.Find(id);            
+
+            //EmailAddress emailAddress = db.EmailAddresses.Find(email.Sender);
+            //EmailAddress emailAddress = db.EmailAddresses.Where();
+
+            //_emailAddRepo = new EmailAddressRepository(new UnitOfWork(new ShnexyDbContext()));
+            //IEnumerable<EmailAddress> emailAddress  =  _emailAddRepo.GetAll();
+
+            //ICollection<EmailAddress> ed= email.Bcc_Addresses.ToList();
+             
+            if (email == null)
+            {
+                return HttpNotFound();
+            }
+            else
+            {
+                return View(email);
+            }            
         }
+
         public ActionResult Rtl()
         {
             return View();

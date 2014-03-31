@@ -30,7 +30,11 @@ namespace Shnexy.DataAccessLayer
 
         public System.Data.Entity.DbSet<Shnexy.Models.AppointmentTable> AppointmentTables { get; set; }
 
-       
 
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Event>().Ignore(t => t.Url);
+        }
     }
 }

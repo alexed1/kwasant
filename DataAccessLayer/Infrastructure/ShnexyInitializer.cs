@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Shnexy.Models;
+using Shnexy.Fixtures;
 
 namespace Shnexy.DataAccessLayer
 {
@@ -12,6 +13,7 @@ namespace Shnexy.DataAccessLayer
 
         protected override void Seed(ShnexyDbContext context)
         {
+            //FixtureDataEmail.AddEmailMessage();
         }
     }
 }

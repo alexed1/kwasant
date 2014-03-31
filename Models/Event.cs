@@ -26,7 +26,7 @@ namespace Shnexy.Models
     /// </note>
 
     [Serializable]    
-    public class Event : 
+    public class Event :
         RecurringComponent,
         IEvent
     {
@@ -293,7 +293,8 @@ namespace Shnexy.Models
 
         #endregion
 
-        #region Overrides
+        
+        #region Overrides     
 
         protected override bool EvaluationIncludesReferenceDate
         {

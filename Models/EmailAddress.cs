@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Web;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace Shnexy.Models
 {
@@ -12,20 +14,29 @@ namespace Shnexy.Models
         string DisplayName { get; set; }
         string Address { get; set; }
     }
-
+    
     public class EmailAddress : IEmailAddress
-    {
-
+    {   
         public int Id {get; set; }
         public string DisplayName {get; set;}
-        public string Address { get; set; }
-
+        public string Address { get; set; }        
 
         public EmailAddress(MailAddress importedAddress)
         {
             DisplayName = importedAddress.DisplayName;
             Address = importedAddress.Address;
 
+        }
+
+        public EmailAddress(string DisplayName, string Address)
+        {
+            this.DisplayName = DisplayName;
+            this.Address = Address;
+
+        }
+
+        public EmailAddress()
+        {
         }
  
     }
