@@ -31,7 +31,7 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
         {
             baseURL = "https://mandrillapp.com/api/1.0/";
             jsonSerializer = new JsonSerializer();
-            MandrillKey = "kTVEu8YY1OcZGnUUNnO9Hg"; //this is currently tied to the alex@leaseitkeepit.com mandrill account. details https://cmretail.atlassian.net/wiki/display/LIKI/Email+Integration+Details
+            MandrillKey = "Nr9OJgXzpEgaibv4fIuudQ"; //this is currently tied to the alex@edelstein.org mandrill account. https://maginot.atlassian.net/wiki/display/SH/Email+Systems
         }
 
         #endregion
@@ -105,26 +105,11 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
 
         }
 
-        ////DRY THIS UP
-        //public string AssembleAndSend_NoTemplate(MandrillBasePackage curBasePackage, RestfulCall curCall, Email message)
-        //{
-
-        //    curBasePackage.Message = message;
-        //    curBasePackage.Key = MandrillKey;
-       
-
-        //    //serialize the email data and add it to the RestfulCall
-        //    curCall.AddBody(jsonSerializer.Serialize(curBasePackage), "application/json");
-
-        //    //Transmit the call
-        //    var response = curCall.Execute();
-
-        //    return response.Content;
-
-        //}
-
+  
         #endregion
 
+
+        //for testing Mandrill if things are broken
         public string PostPing()
         {
             RestfulCall curCall = new RestfulCall(baseURL, "/users/ping.json", Method.POST);

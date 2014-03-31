@@ -39,6 +39,13 @@ namespace Shnexy.Services.EmailManagement
             var results = MandrillAPI.PostMessageSendTemplate(templateName, message, mergeFields);
         }
 
+        public void Send(Email curEmail)
+        {
+
+            var results = MandrillAPI.PostMessageSend(curEmail);
+           
+        }
+
 
         public void Ping()
         {

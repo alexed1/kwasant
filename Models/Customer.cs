@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Liki.App.Services.AlertManager;
 using Shnexy.DataAccessLayer;
 using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
@@ -31,8 +32,11 @@ namespace Shnexy.Models
         //}
         public void Add()
         {
-            
-            _customerRepo.Add(this); 
+            _customerRepo.Add(this);
+
+            //probably need to test to see if this is a new customer or not, or we'll send too many welcome letters
+            AlertManager.CustomerCreated(
+                String.Format("name=CustomerCreated, createdate=" + DateTime.Now + ", CustomerId=" + this.Id));
         }
 
         public Customer GetByKey(int Id)

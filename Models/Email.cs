@@ -15,6 +15,7 @@ using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
 using Shnexy.DDay.iCal;
 using Shnexy.Services.APIManagement.Packagers.Mandrill;
+using Shnexy.Services.EmailManagement;
 using StructureMap;
 
 namespace Shnexy.Models
@@ -65,6 +66,7 @@ namespace Shnexy.Models
         private ICustomerRepository _customerRepo;
         private IUnitOfWork _uow;
         private MandrillPackager MandrillAPI;
+        private EmailManager _emailManager;
 
         public Email()
         {
@@ -80,6 +82,7 @@ namespace Shnexy.Models
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _customerRepo = new CustomerRepository(_uow);
             MandrillAPI = new MandrillPackager();
+            _emailManager = new EmailManager();
         }
 
         public Email(MailMessage curMessage, IEmailRepository emailRepo)
@@ -151,9 +154,11 @@ namespace Shnexy.Models
         }
 
         public void Send()
-        {     
-            var results = MandrillAPI.PostMessageSend(this);
-            Debug.WriteLine(results);
+        {
+
+            _emailManager.Send(this);
+            
+           
         
         }
 
