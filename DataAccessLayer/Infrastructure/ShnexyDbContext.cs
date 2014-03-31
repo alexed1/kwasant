@@ -13,7 +13,7 @@ namespace Shnexy.DataAccessLayer
         public ShnexyDbContext() : base("localShnexyDb")
         {
              //Database.SetInitializer(new DropCreateDatabaseAlways<ShnexyDbContext>());
-        }        
+        }                
 
         public DbSet<User> Users { get; set; }
 

@@ -19,7 +19,7 @@ namespace Shnexy.Controllers
 
         // GET: /Email/
         public ActionResult Index()
-        {  
+        {
            return View(db.Emails.ToList());
         }
 

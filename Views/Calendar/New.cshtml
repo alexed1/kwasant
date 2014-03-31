@@ -4,13 +4,30 @@
 
 <header>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet"  type="text/css"/>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        function validate() {            
+            if ($("#divName").val().trim() == '') {
+                alert('aaaa');
+                $("#divName").val("Name is required.");
+                return false;
+            }
+        }
+    });
+
+</script>
+
 </header>
 
 <form id="f" method="post" action="@Url.Action("New")">    
 <h3>New Event</h3>  
 <hr />  
 <div>Name</div>
-<div>@Html.TextBox("Name", "", new { @class = "form-control col-md-1" })</div>
+<div>
+    @Html.TextBox("Name", "", new { @class = "form-control col-md-1" })
+    <div id="divName"></div>    
+</div>
 <br />    
 <div>Duration</div>
 <div>@Html.TextBox("Duration","",new { @class = "form-control col-md-1" })</div>
@@ -19,26 +36,28 @@
 <div>@Html.TextBox("Location","", new { @class = "form-control col-md-1" })</div>
 <br />
 <div>Is All Day</div>
- <div style="width:20px"> @Html.CheckBox("chk", false, new { @class = "form-control" })</div>
+ <div style="width:20px"> @Html.CheckBox("chkIsAllDay", false, new { @class = "form-control" })</div>
 <br />
 
 @{
      List<SelectListItem> itemsStatus = new List<SelectListItem>();
 
-     itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "0", Selected = true });
-     itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "1" });
-     itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "2"});
+     itemsStatus.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+     itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "1"});
+     itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "2" });
+     itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "3"});
 }
 <br />
 <div>Status</div>
-<div style="width:200px"> @Html.DropDownList("itemsStatus",itemsStatus, new { @class = "form-control col-md-1" })</div>
+<div style="width:200px"> @Html.DropDownList("Status",itemsStatus, new { @class = "form-control col-md-1" })</div>
 
 <br />
 @{
      List<SelectListItem> itemsTransparency = new List<SelectListItem>();
 
-     itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "0", Selected = true });
-     itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "1" });
+     itemsTransparency.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+     itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "1" });
+     itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "2" });
 }
 <br />
 <div>Transparency Type</div>
@@ -52,9 +71,10 @@
 @{
      List<SelectListItem> itemsPriority = new List<SelectListItem>();
 
-     itemsPriority.Add(new SelectListItem { Text = "High", Value = "0", Selected = true });
-     itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "1" });
-     itemsPriority.Add(new SelectListItem { Text = "Low", Value = "2" });
+     itemsPriority.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+     itemsPriority.Add(new SelectListItem { Text = "High", Value = "1" });
+     itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2" });
+     itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3" });
 }
 <br />
 <div>Priority</div>
@@ -64,9 +84,10 @@
 @{
      List<SelectListItem> itemsSequence = new List<SelectListItem>();
 
-     itemsSequence.Add(new SelectListItem { Text = "One", Value = "0", Selected = true });
-     itemsSequence.Add(new SelectListItem { Text = "Twp", Value = "1" });
-     itemsSequence.Add(new SelectListItem { Text = "Three", Value = "2" });
+     itemsSequence.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+     itemsSequence.Add(new SelectListItem { Text = "One", Value = "1" });
+     itemsSequence.Add(new SelectListItem { Text = "Two", Value = "2" });
+     itemsSequence.Add(new SelectListItem { Text = "Three", Value = "3" });
 }
 <br />
 <div>Sequence</div>
@@ -83,7 +104,7 @@
 
     
 <div class="space">
-    <input type="submit" value="Save"/></div>
+    <input id="btnSave" type="submit" value="Save" onclick="validate()"/></div>
     <a href="javascript:close()">Cancel</a>
 </div>
 </form>

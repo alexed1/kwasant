@@ -1,6 +1,9 @@
-﻿@using DayPilot.Web.Mvc
-@model Shnexy.Models.Email
-@using DayPilot.Web.Mvc.Enums
+﻿@model Shnexy.Models.Email
+
+@using System.Collections.Generic;
+
+@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums 
 @using DayPilot.Web.Mvc.Enums.Calendar
 @using DayPilot.Web.Mvc.Enums.Navigator
 @using DayPilot.Web.Mvc.Events.Calendar
@@ -11,6 +14,7 @@
     ViewBag.Title = "DayPilot Scheduler for ASP.NET MVC 4";
 }
 
+<header>
 <script type="text/javascript">
     function modal(url) {
         var m = new DayPilot.Modal();
@@ -22,13 +26,15 @@
         };
         m.showUrl(url);
     }
-</script>
+</script>    
+
+</header>
 
 <div class="jumbotron">
     @*<h3>Booking Agent</h3>
     *@
-    <div class="row" style="font-size: 0.85em">
-        <div class="col-md-5" style="border: 2px solid gray; padding-left: 20px; height: 520px">
+    <div class="row" style="font-size: 0.85em;" >
+        <div class="col-md-5"  style="border: 2px solid gray; padding-left: 20px; min-height:650px">
             <br />
 
             <div class="row">
@@ -36,7 +42,7 @@
                     <div>From:</div>
                 </div>
                 <div class="col-md-9">
-                    <div class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.Sender)</div>
+                    <div class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.Sender.Address)</div>
                 </div>
             </div>
 
@@ -64,7 +70,33 @@
                     <div>To:</div>
                 </div>
                 <div class="col-md-9">
-                    <div class="bookingAgentFormControlBorder"></div>
+                    <div class="bookingAgentFormControlBorder">
+                    @{
+                        var toEmailAddresses = (string)ViewData["ToEmailAddresses"];
+                        
+                        <span>@toEmailAddresses</span>
+                     }                 
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-10" style="height: 20px">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    <div>CC:</div>
+                </div>
+                <div class="col-md-9">
+                    <div class="bookingAgentFormControlBorder">
+                        @{
+                            var cCEmailAddresses = (string)ViewData["CCEmailAddresses"];
+                        
+                            <span>@cCEmailAddresses</span>
+                        }  
+                    </div>
                 </div>
             </div>
 
@@ -78,7 +110,13 @@
                     <div>Bcc:</div>
                 </div>
                 <div class="col-md-9">
-                    <div class="bookingAgentFormControlBorder"></div>
+                    <div class="bookingAgentFormControlBorder">
+                        @{
+                            var bCCEmailAddresses = (string)ViewData["BCCEmailAddresses"];
+                        
+                            <span>@bCCEmailAddresses</span>
+                        }  
+                    </div>
                 </div>
             </div>
 
@@ -92,13 +130,13 @@
                     <div>Body:</div>
                 </div>
                 <div class="col-md-9">
-                    <div style="height: 200px;overflow-x: scroll" class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.Body)</div>
+                    <div style="height: 200px; overflow-x: scroll" class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.Body)</div>
                 </div>
             </div>
 
             <br />
         </div>
-        <div class="col-md-7" style="border: 2px solid gray; height: 520px">
+        <div class="col-md-7" style="border: 2px solid gray; padding-left: 20px;min-height:650px">
             <div class="row">
                 @Html.DayPilotMenu("menu1", new DayPilotMenuConfig
                 {

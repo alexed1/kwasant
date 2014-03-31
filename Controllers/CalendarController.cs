@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Net;
 using System.Data;
 using System.Linq;
+using System.Text;
 using System.Web.Mvc;
 using System.Threading;
 using System.Globalization;
 using System.Linq.Expressions;
-using System.Collections.Generic; 
+using System.Collections.Generic;
 
 using Shnexy.Models;
 using Shnexy.DataAccessLayer;
@@ -22,6 +24,7 @@ using DayPilot.Web.Mvc.Json;
 using BeforeCellRenderArgs = DayPilot.Web.Mvc.Events.Calendar.BeforeCellRenderArgs;
 using TimeRangeSelectedArgs = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedArgs;
 
+
 namespace Shnexy.Controllers
 {
     [HandleError]
@@ -31,26 +34,128 @@ namespace Shnexy.Controllers
 
         IEmailAddressRepository _emailAddRepo;
 
-        public ActionResult Index(int id)
+        public ActionResult Index(int id = 0)
         {
-            Email email = db.Emails.Find(id);            
 
-            //EmailAddress emailAddress = db.EmailAddresses.Find(email.Sender);
-            //EmailAddress emailAddress = db.EmailAddresses.Where();
+            if (id <= 0)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
-            //_emailAddRepo = new EmailAddressRepository(new UnitOfWork(new ShnexyDbContext()));
-            //IEnumerable<EmailAddress> emailAddress  =  _emailAddRepo.GetAll();
+            Email email = db.Emails.Find(id);
 
-            //ICollection<EmailAddress> ed= email.Bcc_Addresses.ToList();
-             
+            List<EmailAddress> emailSenderList = new List<EmailAddress>();
+            StringBuilder sb = new StringBuilder("");
+
+            //Get Sender
+            sb.Append("SELECT dbo.EmailAddresses.Id, DisplayName, Address FROM dbo.EmailAddresses");
+            sb.AppendFormat(" INNER JOIN dbo.Emails AS E ON E.Sender_Id= dbo.EmailAddresses.Id WHERE E.Id={0}", email.Id);
+
+            emailSenderList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
+
+            if (emailSenderList != null && emailSenderList.Count > 0)
+            {
+                email.Sender = emailSenderList[0];
+            }
+
+            //Get To Addresses
+            sb = new StringBuilder("");
+            sb.AppendFormat(" SELECT Id, DisplayName, Address FROM dbo.EmailAddresses WHERE Email_Id2={0}", email.Id);
+
+            List<EmailAddress> emailToEmailAddressList = new List<EmailAddress>();
+
+            emailToEmailAddressList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
+
+            StringBuilder sbToEmailAddressList = new StringBuilder("");
+
+            if (emailToEmailAddressList != null && emailToEmailAddressList.Count > 0)
+            {
+                email.To_Addresses = emailToEmailAddressList;
+
+                foreach (EmailAddress emailAddress in emailToEmailAddressList)
+                {
+                    if (sbToEmailAddressList.Length == 0)
+                    {
+                        sbToEmailAddressList.Append(emailAddress.Address);
+                    }
+                    else
+                    {
+                        sbToEmailAddressList.Append(",");
+                        sbToEmailAddressList.Append(emailAddress.Address);
+                    }
+                }
+            }
+
+
+            //Get CC Addresses
+            sb = new StringBuilder("");
+            sb.AppendFormat(" SELECT Id, DisplayName, Address FROM dbo.EmailAddresses WHERE Email_Id1={0}", email.Id);
+
+            List<EmailAddress> emailCCEmailAddressList = new List<EmailAddress>();
+
+            emailToEmailAddressList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
+
+            StringBuilder sbCCEmailAddressList = new StringBuilder("");
+
+            if (emailCCEmailAddressList != null && emailCCEmailAddressList.Count > 0)
+            {
+                email.CC_Addresses = emailCCEmailAddressList;
+
+                foreach (EmailAddress emailAddress in emailCCEmailAddressList)
+                {
+                    if (sbCCEmailAddressList.Length == 0)
+                    {
+                        sbCCEmailAddressList.Append(emailAddress.Address);
+                    }
+                    else
+                    {
+                        sbCCEmailAddressList.Append(",");
+                        sbCCEmailAddressList.Append(emailAddress.Address);
+                    }
+                }
+            }
+
+            //Get BCC Addresses
+            sb = new StringBuilder("");
+            sb.AppendFormat(" SELECT Id, DisplayName, Address FROM dbo.EmailAddresses WHERE Email_Id={0}", email.Id);
+
+            List<EmailAddress> emailBCCEmailAddressList = new List<EmailAddress>();
+
+            emailToEmailAddressList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
+
+            StringBuilder sbBCCEmailAddressList = new StringBuilder("");
+
+            if (emailBCCEmailAddressList != null && emailBCCEmailAddressList.Count > 0)
+            {
+                email.Bcc_Addresses = emailBCCEmailAddressList;
+
+                foreach (EmailAddress emailAddress in emailBCCEmailAddressList)
+                {
+                    if (sbBCCEmailAddressList.Length == 0)
+                    {
+                        sbBCCEmailAddressList.Append(emailAddress.Address);
+                    }
+                    else
+                    {
+                        sbBCCEmailAddressList.Append(",");
+                        sbBCCEmailAddressList.Append(emailAddress.Address);
+                    }
+                }
+            }
+
+
+
             if (email == null)
             {
                 return HttpNotFound();
             }
             else
             {
+                ViewData["ToEmailAddresses"] = sbToEmailAddressList.ToString();
+                ViewData["CCEmailAddresses"] = sbCCEmailAddressList.ToString();
+                ViewData["BCCEmailAddresses"] = sbBCCEmailAddressList.ToString();
                 return View(email);
-            }            
+            }
         }
 
         public ActionResult Rtl()
@@ -162,12 +267,12 @@ namespace Shnexy.Controllers
         public ActionResult ContextMenu()
         {
             return View();
-        } 
+        }
 
         public ActionResult Message()
         {
             return View();
-        } 
+        }
 
         public ActionResult DayRange()
         {
@@ -232,10 +337,112 @@ namespace Shnexy.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult New(FormCollection form)
         {
-            DateTime start = Convert.ToDateTime(form["Start"]);
-            DateTime end = Convert.ToDateTime(form["End"]);
-            new EventManager(this).EventCreate(start, end, form["Text"], null);
-            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+
+            String strEventName = String.Empty;
+            TimeSpan tsDuration = new TimeSpan();
+            String strLocation = String.Empty;
+            Boolean bIsAllDay = false;
+            int intStatus = 0;
+            int intTransparency = 0;
+            String strClass = String.Empty;
+            String strDescription = String.Empty;
+            int intPriority = 0;
+            int intSequence = 0;
+            int intLine = 0;
+            int intColumn = 0;
+
+            strEventName = !String.IsNullOrEmpty(form["Name"]) ? form["Name"].ToString() : String.Empty;
+            strLocation = !String.IsNullOrEmpty(form["Location"]) ? form["Location"].ToString() : String.Empty;
+            intStatus = !String.IsNullOrEmpty(form["Status"]) ? Convert.ToInt32(form["Status"]) : 0;
+            intTransparency = !String.IsNullOrEmpty(form["TransparencyType"]) ? Convert.ToInt32(form["TransparencyType"]) : 0;
+            intPriority = !String.IsNullOrEmpty(form["Priority"]) ? Convert.ToInt32(form["Priority"]) : 0 ;
+            intSequence = !String.IsNullOrEmpty(form["Sequence"]) ? Convert.ToInt32(form["Sequence"]) : 0 ;
+            intLine = !String.IsNullOrEmpty(form["Line"]) ? Convert.ToInt32(form["Line"]) : 0 ;
+            intColumn = !String.IsNullOrEmpty(form["Column"]) ? Convert.ToInt32(form["Column"]) : 0;
+
+            if (String.IsNullOrEmpty(form["Duration"]))
+            {
+            }
+            else
+            {
+                long lngDuration = Convert.ToInt64(form["Duration"]);
+                tsDuration = TimeSpan.FromTicks(lngDuration);
+            }            
+
+            if (String.IsNullOrEmpty(form["chkIsAllDay"]))
+            {
+
+            }
+            else
+            {
+                String strCheckAllDay = form["chkIsAllDay"].ToString();
+                String strTemp = String.Empty;
+
+                if (strCheckAllDay.IndexOf(',') > -1)
+                {                    
+                  String [] arrCheckAllDay = strCheckAllDay.Split(',');
+                  strTemp = arrCheckAllDay[0];
+                }
+                else
+                {
+                    strTemp = strCheckAllDay;
+                }
+
+                bIsAllDay = Convert.ToBoolean(strTemp);
+            }
+
+
+            if (intStatus == 0 || intTransparency == 0 || intPriority == 0 || intSequence == 0 || intLine == 0 || intColumn == 0 || !bIsAllDay)
+                return View();            
+
+            Event evt = new Event();
+
+            evt.Name = strEventName;
+            evt.Duration = tsDuration;
+            evt.Location = strLocation;
+            evt.IsAllDay = bIsAllDay;
+
+            switch (intStatus)
+            {
+                case 1:
+                    evt.Status = DDay.iCal.EventStatus.Tentative;
+                    break;
+                case 2:
+                    evt.Status = DDay.iCal.EventStatus.Confirmed;
+                    break;
+                case 3:
+                    evt.Status = DDay.iCal.EventStatus.Cancelled;
+                    break;
+            }
+
+            switch (intTransparency)
+            {
+                case 1:
+                    evt.Transparency = DDay.iCal.TransparencyType.Opaque;
+                    break;
+                case 2:
+                    evt.Transparency = DDay.iCal.TransparencyType.Transparent;
+                    break;                
+            }
+
+            evt.Class = strClass;
+            evt.Description = strDescription;
+            evt.Priority = intPriority;
+            evt.Sequence=intSequence;
+            evt.Line = intLine;
+            evt.Column = intColumn;
+
+            //DateTime end = Convert.ToDateTime(form["End"]);
+            //new EventManager(this).EventCreate(start, end, form["Text"], null);
+            //return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+
+            IEventRepository eventRepo = new EventRepository(new UnitOfWork(new ShnexyDbContext()));
+            eventRepo.Add(evt);
+
+            //db.Events.Add(evt);
+            db.SaveChanges();
+
+            return View();
         }
 
         public class Dpn : DayPilotNavigator
@@ -313,7 +520,7 @@ namespace Shnexy.Controllers
                         new EventManager(Controller).EventDelete(e.Id);
                         Update();
                         break;
-                    
+
                 }
             }
 
@@ -322,7 +529,7 @@ namespace Shnexy.Controllers
                 switch (e.Command)
                 {
                     case "navigate":
-                        StartDate = (DateTime) e.Data["start"];
+                        StartDate = (DateTime)e.Data["start"];
                         Update(CallBackUpdateType.Full);
                         break;
 
@@ -436,7 +643,7 @@ namespace Shnexy.Controllers
                     tomorrow.Children.Add("A", "a", DateTime.Today.AddDays(1));
                     tomorrow.Children.Add("B", "b", DateTime.Today.AddDays(1));
                     Columns.Add(tomorrow);
-                    
+
                 }
                 else if (Id == "resources")
                 {
