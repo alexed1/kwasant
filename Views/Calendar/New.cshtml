@@ -8,13 +8,62 @@
 <script type="text/javascript">
     $(document).ready(function () {
         function validate() {            
-            if ($("#divName").val().trim() == '') {
-                alert('aaaa');
+            if ($("#divName").val().trim() == '') {                
                 $("#divName").val("Name is required.");
                 return false;
             }
         }
     });
+
+    function Validate() {
+
+        var bFlag = false;
+       
+        var name = document.getElementById('Name');
+        var dName = document.getElementById('divName');                
+
+        if (name != null) {
+            if (name.value.trim() == '') {
+                dName.innerHTML = 'Name is required.';
+                bFlag = false;
+            }
+            else {
+                dName.innerHTML = '';
+                bFlag = true;
+            }
+        }
+
+        var duration = document.getElementById('Duration');
+        var dDuration = document.getElementById('divDuration');
+
+        if (duration != null) {
+            if (duration.value.trim() == '') {
+                dDuration.innerHTML = 'Duration is required.';
+                bFlag = false;
+            }
+            else {
+                dDuration.innerHTML = '';
+                bFlag = true;
+            }
+        }
+
+        var location = document.getElementById('Location');
+        var dLocation = document.getElementById('divLocation');
+
+        if (location != null) {
+            if (location.value.trim() == '') {
+                dLocation.innerHTML = 'Location is required.';
+                bFlag = false;
+            }
+            else {
+                dLocation.innerHTML = '';
+                bFlag = true;
+            }
+        }
+
+
+        return bFlag;
+    }
 
 </script>
 
@@ -30,10 +79,14 @@
 </div>
 <br />    
 <div>Duration</div>
-<div>@Html.TextBox("Duration","",new { @class = "form-control col-md-1" })</div>
+<div>@Html.TextBox("Duration","",new { @class = "form-control col-md-1" })
+<div id="divDuration"></div>    
+</div>
 <br />    
 <div>Location</div>
-<div>@Html.TextBox("Location","", new { @class = "form-control col-md-1" })</div>
+<div>@Html.TextBox("Location","", new { @class = "form-control col-md-1" })
+<div id="divLocation"></div>
+</div>
 <br />
 <div>Is All Day</div>
  <div style="width:20px"> @Html.CheckBox("chkIsAllDay", false, new { @class = "form-control" })</div>
@@ -104,7 +157,7 @@
 
     
 <div class="space">
-    <input id="btnSave" type="submit" value="Save" onclick="validate()"/></div>
+    <input id="btnSave" type="submit" value="Save" onclick="return Validate()"/></div>
     <a href="javascript:close()">Cancel</a>
 </div>
 </form>
