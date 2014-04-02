@@ -76,21 +76,8 @@ namespace Shnexy.DataAccessLayer
         public virtual void Save(TEntity entity)
         {
 
-            //dbSet.Attach(entity);
             _unitOfWork.Db.Entry(entity).State = EntityState.Modified;
 
-            //TEntity attachedEntity = dbSet.Local.SingleOrDefault(e => e.Id == entity.Id);  // You need to have access to key
-
-            //if (attachedEntity != null)
-            //{
-            //    var attachedEntry = Database.Entry(attachedEntity);
-            //    attachedEntry.CurrentValues.SetValues(entity);
-            //}
-            //else
-            //{
-            //    _unitOfWork.Db.Entry(entity).State = EntityState.Modified; // This should attach entity
-
-            //}
 
         }
         //http://stackoverflow.com/a/12587752/1915866
@@ -98,21 +85,7 @@ namespace Shnexy.DataAccessLayer
         {
 
             _unitOfWork.Db.Entry(existingEntity).CurrentValues.SetValues(entity);
-            //dbSet.Attach(entity);
-            //_unitOfWork.Db.Entry(entity).State = EntityState.Modified;
 
-            //var set = Database.Set<TEntity>();
-            //TEntity attachedEntity = dbSet.Local.SingleOrDefault(e => e.Id == entity.Id);  // You need to have access to key
-
-            //if (attachedEntity != null)
-            //{
-            //    var attachedEntry = Database.Entry(attachedEntity);
-            //    attachedEntry.CurrentValues.SetValues(entity);
-            //}
-            //else
-            //{
-            //    _unitOfWork.Db.Entry(entity).State = EntityState.Modified; // This should attach entity
-            //}
         }
 
         public TEntity FindOne(Expression<Func<TEntity, bool>> criteria)

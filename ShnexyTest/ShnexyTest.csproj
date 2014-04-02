@@ -121,6 +121,7 @@
     <Compile Include="Models\EventTests.cs" />
     <Compile Include="Models\CustomerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\EventRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="DDay.Collections.Test\DDay.Collections.Test.csproj" />
