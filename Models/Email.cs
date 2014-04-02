@@ -8,16 +8,16 @@ using System.Net.Mail;
 using System.Web;
 using System.Windows.Forms;
 using Shnexy.DataAccessLayer.Repositories;
-using System.ComponentModel.DataAnnotations;
+
+using Shnexy.DDay.iCal;
 
 namespace Shnexy.Models
-{
-    
+{    
     public class Email : IEmail
     {
         [Key]
         public int Id { get; set; }
-
+        
         public string Body { get; set; }
 
         public string Subject { get; set; }

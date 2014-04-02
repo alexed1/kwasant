@@ -9,6 +9,8 @@ using System.Diagnostics;
 using Shnexy.DDay.iCal.Serialization;
 using Shnexy.DDay.iCal.Serialization.iCalendar;
 
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Shnexy.DDay.iCal
 {
     /// <summary>

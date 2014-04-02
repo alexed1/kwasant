@@ -563,8 +563,13 @@
       <DependentUpon>201403240247490_addEvent1.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\20140420247490_addEventFile.cs" />
+    <Compile Include="Migrations\20140420247490_addEventFile.Designer.cs">
+      <DependentUpon>20140420247490_addEventFile.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AppointmentTable.cs" />
+    <Compile Include="Models\EventFile.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\EmailAddress.cs" />
     <Compile Include="Models\Email.cs" />
@@ -850,6 +855,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201403240247490_addEvent1.resx">
       <DependentUpon>201403240247490_addEvent1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\20140420247490_addEventFile.resx">
+      <DependentUpon>20140420247490_addEventFile.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

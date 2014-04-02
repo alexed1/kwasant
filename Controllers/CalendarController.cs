@@ -30,9 +30,7 @@ namespace Shnexy.Controllers
     [HandleError]
     public class CalendarController : Controller
     {
-        private ShnexyDbContext db = new ShnexyDbContext();
-
-        IEmailAddressRepository _emailAddRepo;
+        private ShnexyDbContext db = new ShnexyDbContext();      
 
         public ActionResult Index(int id = 0)
         {
@@ -142,8 +140,6 @@ namespace Shnexy.Controllers
                     }
                 }
             }
-
-
 
             if (email == null)
             {
@@ -327,8 +323,11 @@ namespace Shnexy.Controllers
 
         public ActionResult New(string id)
         {
+
+            ViewData["Id"] = id;             
+
             return View(new EventManager.Event
-            {
+            {   
                 Start = Convert.ToDateTime(Request.QueryString["start"]),
                 End = Convert.ToDateTime(Request.QueryString["end"])
             });
@@ -339,35 +338,44 @@ namespace Shnexy.Controllers
         {
 
             String strEventName = String.Empty;
+            DateTime dtFromDate;
+            DateTime dtToDate;
             TimeSpan tsDuration = new TimeSpan();
             String strLocation = String.Empty;
             Boolean bIsAllDay = false;
-            int intStatus = 0;
-            int intTransparency = 0;
+            String strStatus = String.Empty;
+            String strTransparency = String.Empty;
             String strClass = String.Empty;
             String strDescription = String.Empty;
             int intPriority = 0;
             int intSequence = 0;
-            int intLine = 0;
-            int intColumn = 0;
+            String strSummary = String.Empty;
+            String strCategory = String.Empty;
+            String strId = String.Empty;
+            
 
             strEventName = !String.IsNullOrEmpty(form["Name"]) ? form["Name"].ToString() : String.Empty;
+            dtFromDate = form["FromDate"] !=null ?  Convert.ToDateTime(form["FromDate"]) : DateTime.MinValue;
+            dtToDate =  form["ToDate"] != null ?  Convert.ToDateTime(form["ToDate"]) : DateTime.MinValue;
             strLocation = !String.IsNullOrEmpty(form["Location"]) ? form["Location"].ToString() : String.Empty;
-            intStatus = !String.IsNullOrEmpty(form["Status"]) ? Convert.ToInt32(form["Status"]) : 0;
-            intTransparency = !String.IsNullOrEmpty(form["TransparencyType"]) ? Convert.ToInt32(form["TransparencyType"]) : 0;
+            strStatus = !String.IsNullOrEmpty(form["Status"]) ? form["Status"].ToString() : String.Empty;
+            strTransparency = !String.IsNullOrEmpty(form["TransparencyType"]) ? form["TransparencyType"].ToString() : String.Empty;
+            strClass = !String.IsNullOrEmpty(form["Class"]) ? form["Class"].ToString() : String.Empty;
+            strDescription = !String.IsNullOrEmpty(form["Description"]) ? form["Description"].ToString() : String.Empty;
             intPriority = !String.IsNullOrEmpty(form["Priority"]) ? Convert.ToInt32(form["Priority"]) : 0 ;
             intSequence = !String.IsNullOrEmpty(form["Sequence"]) ? Convert.ToInt32(form["Sequence"]) : 0 ;
-            intLine = !String.IsNullOrEmpty(form["Line"]) ? Convert.ToInt32(form["Line"]) : 0 ;
-            intColumn = !String.IsNullOrEmpty(form["Column"]) ? Convert.ToInt32(form["Column"]) : 0;
+            strSummary = !String.IsNullOrEmpty(form["Summary"]) ? form["Summary"].ToString() : String.Empty;    
+            strCategory=!String.IsNullOrEmpty(form["Category"]) ? form["Category"].ToString() : String.Empty;
+            strId = !String.IsNullOrEmpty(form["Id"]) ? form["Id"].ToString() : String.Empty;     
 
-            if (String.IsNullOrEmpty(form["Duration"]))
-            {
-            }
-            else
-            {
-                long lngDuration = Convert.ToInt64(form["Duration"]);
-                tsDuration = TimeSpan.FromTicks(lngDuration);
-            }            
+            //if (String.IsNullOrEmpty(form["Duration"]))
+            //{
+            //}
+            //else
+            //{
+            //    long lngDuration = Convert.ToInt64(form["Duration"]);
+            //    tsDuration = TimeSpan.FromTicks(lngDuration);
+            //}            
 
             if (String.IsNullOrEmpty(form["chkIsAllDay"]))
             {
@@ -391,58 +399,103 @@ namespace Shnexy.Controllers
                 bIsAllDay = Convert.ToBoolean(strTemp);
             }
 
+            if (intPriority == 0 || intSequence == 0)
+                return View();
 
-            if (intStatus == 0 || intTransparency == 0 || intPriority == 0 || intSequence == 0 || intLine == 0 || intColumn == 0 || !bIsAllDay)
-                return View();            
 
-            Event evt = new Event();
+            String strEventICSString = String.Empty;
 
-            evt.Name = strEventName;
-            evt.Duration = tsDuration;
-            evt.Location = strLocation;
-            evt.IsAllDay = bIsAllDay;
+            strEventICSString = GetICSFormattedEventString(EventData._dtStartDate, EventData._dtEndDate , intSequence,strCategory,intPriority,strTransparency,strStatus,strClass,strSummary,strDescription,strLocation);
 
-            switch (intStatus)
-            {
-                case 1:
-                    evt.Status = DDay.iCal.EventStatus.Tentative;
-                    break;
-                case 2:
-                    evt.Status = DDay.iCal.EventStatus.Confirmed;
-                    break;
-                case 3:
-                    evt.Status = DDay.iCal.EventStatus.Cancelled;
-                    break;
-            }
+            EventFile eventFile = new EventFile();
 
-            switch (intTransparency)
-            {
-                case 1:
-                    evt.Transparency = DDay.iCal.TransparencyType.Opaque;
-                    break;
-                case 2:
-                    evt.Transparency = DDay.iCal.TransparencyType.Transparent;
-                    break;                
-            }
+            eventFile.Id = strId;
+            eventFile.Body = strEventICSString;
 
-            evt.Class = strClass;
-            evt.Description = strDescription;
-            evt.Priority = intPriority;
-            evt.Sequence=intSequence;
-            evt.Line = intLine;
-            evt.Column = intColumn;
-
-            //DateTime end = Convert.ToDateTime(form["End"]);
-            //new EventManager(this).EventCreate(start, end, form["Text"], null);
-            //return JavaScript(SimpleJsonSerializer.Serialize("OK"));
-
-            IEventRepository eventRepo = new EventRepository(new UnitOfWork(new ShnexyDbContext()));
-            eventRepo.Add(evt);
-
-            //db.Events.Add(evt);
+            db.EventFiles.Add(eventFile);            
             db.SaveChanges();
 
-            return View();
+            (new EventManager(this)).EventDelete(strId);
+
+            String[] arrICSString1 = strEventICSString.Split(Environment.NewLine.ToCharArray());
+
+            //String[] arrICSString = strEventICSString.Split(Environment.NewLine.ToCharArray());
+
+                        
+
+            new EventManager(this).EventCreate(EventData._dtStartDate, EventData._dtEndDate, strDescription, null, strId);
+            return JavaScript(SimpleJsonSerializer.Serialize("OK"));           
+            
+        }
+
+        private String GetICSFormattedEventString(DateTime FromDate, DateTime ToDate, int Sequence, String Category, int Priority, String Transp, String Status, String Class, String Summary, String Description, String Location)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("BEGIN:VCALENDAR\r\f");
+            sb.Append("VERSION:2.0\r\f");
+            sb.Append("PRODID:-//ince/events//NONSGML v1.0//EN\r\f");
+            sb.Append("BEGIN:VEVENT\r\f");
+            sb.Append(String.Format("DTSTART:{0}\r\f", GetFormatedDate(FromDate)));
+            sb.Append(String.Format("DTEND:{0}\r\f", GetFormatedDate(ToDate)));     
+            //sb.Append("DTSTAMP:19970324T1200Z");            
+            sb.Append(String.Format("SEQUENCE:{0}\r\f", Sequence));
+            sb.Append(String.Format("UID:{0}\r\f", new Guid()));
+            sb.Append(String.Format("CATEGORIES:{0}\r\f", Category));
+            sb.Append(String.Format("PRIORITY:{0}\r\f", Priority));
+            sb.Append(String.Format("STATUS:{0}\r\f", Status));            
+            sb.Append(String.Format("TRANSP:{0}\r\f", Transp));
+            sb.Append(String.Format("CLASS:{0}\r\f", Class));
+            sb.Append(String.Format("SUMMARY:{0}\r\f", Summary));
+            sb.Append(String.Format("DESCRIPTION:{0}\r\f", Description));
+            sb.Append(String.Format("LOCATION:{0}\r\f", Location));                 
+            sb.Append("END:VEVENT");
+            sb.Append("END:VCALENDAR\r\f");
+            return sb.ToString();
+        }
+
+        private static string GetFormatedDate(DateTime date)
+        {
+            return String.Format("{0}{1}{2}T{3}{4}00Z", date.ToUniversalTime().Year, date.ToUniversalTime().Month.ToString("00"), date.ToUniversalTime().Day.ToString("00"), date.ToUniversalTime().Hour.ToString("00"), date.ToUniversalTime().Minute.ToString("00"));
+        }
+
+        private String CreateBody(String title, String description, String location, DateTime startTime, DateTime endTime)
+        {
+            const String successStyle = ".success{color: #333333;font-family: Century Gothic, Arial;font-size:1.4em;margin-top:5px;margin-bottom:5px;}";
+            const String standardStyle = ".standard{color: #333333;font-family: Century Gothic, Arial;font-size:1.0em}";
+            const String reminderStyle = ".reminderStyle{color: red;font-family: Century Gothic, Arial;font-size:1.0em;font-variant:italic;margin-top:2px;margin-bottom:2px;}";
+            const String contentsStyle = ".contentsTable{color: #333333;font-family: Century Gothic, Arial;font-size:1.0em;border-collapse:collapse;border-spacing:0px;padding:0px;margin:0px;} .contentsTable > td {padding-right:5px;}";
+            var b = new StringBuilder();
+            b.Append(String.Format("<style>{0} {1} {2} {3}</style>", successStyle, standardStyle, contentsStyle, reminderStyle));
+            b.Append(String.Format("<div class=\"standard\">You have successfully registered for the following event</div>"));
+            b.Append(String.Format("<div class=\"success\">{0}</div>", title));
+            b.Append(String.Format("<div class=\"reminderStyle\">Please click on the calendar invitation to add this appointment to your calendar.</div>"));
+            b.Append(String.Format("<table class=\"contentsTable\">"));
+            b.Append(String.Format("<tr class=\"standard\"><td>Time</td><td>{0} - {1}</td></tr>", startTime, endTime));
+            b.Append(String.Format("<tr class=\"standard\"><td>Location</td><td>{0}</td></tr>", location));
+            b.Append(String.Format("<tr class=\"standard\"><td>Description</td><td>{0}</td></tr>", description));
+            b.Append(String.Format("</table>"));
+            return b.ToString();
+        }
+
+        public void SendAppointment(string from, string to, string title, string body, DateTime startTime, DateTime endTime, String location)
+        {
+            //var mail = new MailMessage(from, to, String.Format("Successfully registered for {0}", title), CreateBody(title, body, location, startTime, endTime));
+            //mail.IsBodyHtml = true;
+            //byte[] attachment = CreateiCal(title, location, startTime, endTime);
+            //var ms = new MemoryStream(attachment);
+            //mail.Attachments.Add(new Attachment(ms, "eventappointment.ics", "text/plain"));
+            //var smtp = new SmtpClient("ukexch01");
+            //smtp.Send(mail);
+            //mail.Dispose();
+        }
+
+
+        public static class EventData
+        {
+            public static DateTime _dtStartDate;
+            public static DateTime _dtEndDate;
+            public static String _Id;
         }
 
         public class Dpn : DayPilotNavigator
@@ -471,7 +524,11 @@ namespace Shnexy.Controllers
         {
             protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
             {
-                new EventManager(Controller).EventCreate(e.Start, e.End, "Default name", e.Resource);
+                new EventManager(Controller).EventCreate(e.Start, e.End, "Click To Open Form", e.Resource);                
+
+                EventData._dtStartDate = Convert.ToDateTime(e.Start);
+                EventData._dtEndDate = Convert.ToDateTime(e.End);
+
                 Update();
             }
 
@@ -491,7 +548,9 @@ namespace Shnexy.Controllers
 
             protected override void OnEventClick(EventClickArgs e)
             {
-                UpdateWithMessage("Event clicked: " + e.Text);
+                EventData._Id = e.Id;
+
+                //UpdateWithMessage("Event clicked: " + e.Text);
                 //Redirect("http://www.daypilot.org/");
             }
 
@@ -509,7 +568,10 @@ namespace Shnexy.Controllers
 
             protected override void OnEventBubble(EventBubbleArgs e)
             {
+                EventData._Id=e.Id;
                 e.BubbleHtml = "This is an event bubble for id: " + e.Id;
+                //EventData._dtStartDate = Convert.ToDateTime(e.Start);
+                //EventData._dtEndDate = Convert.ToDateTime(e.End);
             }
 
             protected override void OnEventMenuClick(EventMenuClickArgs e)
@@ -697,6 +759,8 @@ namespace Shnexy.Controllers
 
                 DataAllDayField = "allday";
                 //DataTagFields = "id, name";
+
+               
 
             }
 

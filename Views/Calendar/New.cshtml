@@ -1,4 +1,8 @@
 ﻿@using System.Web.Mvc
+@using Shnexy.Models
+@using Shnexy.DataAccessLayer
+@using Shnexy.DataAccessLayer.Interfaces
+@using Shnexy.DataAccessLayer.Repositories
 
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 
@@ -6,21 +10,21 @@
     <link href="~/Content/bootstrap.min.css" rel="stylesheet"  type="text/css"/>
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        function validate() {            
-            if ($("#divName").val().trim() == '') {                
-                $("#divName").val("Name is required.");
-                return false;
-            }
-        }
-    });
+    //$(document).ready(function () {
+    //    //function validate() {            
+    //    //    if ($("#divName").val().trim() == '') {                
+    //    //        $("#divName").val("Name is required.");
+    //    //        return false;
+    //    //    }
+    //    //}
+    //});
 
     function Validate() {
 
         var bFlag = false;
-       
+
         var name = document.getElementById('Name');
-        var dName = document.getElementById('divName');                
+        var dName = document.getElementById('divName');
 
         if (name != null) {
             if (name.value.trim() == '') {
@@ -29,20 +33,6 @@
             }
             else {
                 dName.innerHTML = '';
-                bFlag = true;
-            }
-        }
-
-        var duration = document.getElementById('Duration');
-        var dDuration = document.getElementById('divDuration');
-
-        if (duration != null) {
-            if (duration.value.trim() == '') {
-                dDuration.innerHTML = 'Duration is required.';
-                bFlag = false;
-            }
-            else {
-                dDuration.innerHTML = '';
                 bFlag = true;
             }
         }
@@ -61,7 +51,6 @@
             }
         }
 
-
         return bFlag;
     }
 
@@ -72,16 +61,6 @@
 <form id="f" method="post" action="@Url.Action("New")">    
 <h3>New Event</h3>  
 <hr />  
-<div>Name</div>
-<div>
-    @Html.TextBox("Name", "", new { @class = "form-control col-md-1" })
-    <div id="divName"></div>    
-</div>
-<br />    
-<div>Duration</div>
-<div>@Html.TextBox("Duration","",new { @class = "form-control col-md-1" })
-<div id="divDuration"></div>    
-</div>
 <br />    
 <div>Location</div>
 <div>@Html.TextBox("Location","", new { @class = "form-control col-md-1" })
@@ -96,9 +75,9 @@
      List<SelectListItem> itemsStatus = new List<SelectListItem>();
 
      itemsStatus.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
-     itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "1"});
-     itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "2" });
-     itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "3"});
+     itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "Tentative"});
+     itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "Confirmed" });
+     itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "Cancelled"});
 }
 <br />
 <div>Status</div>
@@ -109,15 +88,25 @@
      List<SelectListItem> itemsTransparency = new List<SelectListItem>();
 
      itemsTransparency.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
-     itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "1" });
-     itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "2" });
+     itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "Opaque" });
+     itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "Transparent" });
 }
 <br />
 <div>Transparency Type</div>
 <div style="width:200px">@Html.DropDownList("TransparencyType",itemsTransparency, new { @class = "form-control col-md-1" })</div>
 <br /><br />
+
+@{
+     List<SelectListItem> itemsClass = new List<SelectListItem>();
+
+     itemsClass.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+     itemsClass.Add(new SelectListItem { Text = "PUBLIC", Value = "PUBLIC"});
+     itemsClass.Add(new SelectListItem { Text = "PRIVATE", Value = "PRIVATE" });
+     itemsClass.Add(new SelectListItem { Text = "CONFIDENTIAL", Value = "CONFIDENTIAL"});
+}
+
 <div>Class</div>
-<div>@Html.TextBox("Class","", new { @class = "form-control col-md-1" })</div>
+<div style="width:200px">@Html.DropDownList("Class",itemsClass, new { @class = "form-control col-md-1" })</div>
 <br />  
 <div>Description</div>
 <div>@Html.TextArea("Description", "", 5, 31, new { @class = "form-control col-md-1" })</div>
@@ -141,24 +130,77 @@
      itemsSequence.Add(new SelectListItem { Text = "One", Value = "1" });
      itemsSequence.Add(new SelectListItem { Text = "Two", Value = "2" });
      itemsSequence.Add(new SelectListItem { Text = "Three", Value = "3" });
+     itemsSequence.Add(new SelectListItem { Text = "Four", Value = "4" });
+     itemsSequence.Add(new SelectListItem { Text = "Five", Value = "5" });
+     itemsSequence.Add(new SelectListItem { Text = "Six", Value = "6" });
+     itemsSequence.Add(new SelectListItem { Text = "Seven", Value = "7" });
+     itemsSequence.Add(new SelectListItem { Text = "Eight", Value = "8" });
+     itemsSequence.Add(new SelectListItem { Text = "Nine", Value = "9" });
+     itemsSequence.Add(new SelectListItem { Text = "Ten", Value = "10" });
 }
 <br />
 <div>Sequence</div>
 <div style="width:200px">@Html.DropDownList("Sequence",itemsSequence, new { @class = "form-control col-md-1" })</div>
 <br /><br />
 
-<div>Line</div>
-<div style="width:30px">@Html.TextBox("Line", "" ,new { @class = "form-control col-md-1" })</div>
+<div>Summary</div>
+<div>@Html.TextArea("Summary", "", 5, 31, new { @class = "form-control col-md-1" })</div>
+<br /><br />
+<div>Category</div>
+<div>@Html.TextBox("Category","", new { @class = "form-control col-md-1" })
+<div id="divCategory"></div>
+</div>
+
+ @{
+
+        int SEQUENCE=5;
+        int CATEGORY=7;
+        int PRIORITY=8;
+        int STATUS=9;
+        int TRANS=10;
+        int CALSS=11;
+        int SUMMARY=12;
+        int DESCRIPTION=13;
+        int LOCATION=14;
+
+         
+      
+      var Id = (string)ViewData["Id"];
+      @Html.TextBox("Id",@Id, new { @class = "form-control col-md-1" })
+
+      ShnexyDbContext db = new ShnexyDbContext();  
+      EventFile evtFile = new EventFile();
+
+      if(db !=null)
+      {              
+        evtFile = db.EventFiles.Find(Id);    
+      }
+
+      if(evtFile !=null)
+      { 
+        String[] arrICSString = evtFile.Body.Split(Environment.NewLine.ToCharArray());
+        String[] arrLocation= arrICSString[14].Split(':');          
+
+        <script type="text/javascript">
+            var oLocation = document.getElementById('Location');
+            var divLocationICS = document.getElementById('divLocationICS');            
+            oLocation.value = divLocationICS.innerText;
+        </script>   
+           
+      }
+  }
+
 <br />
-<div>Column</div>
-<div  style="width:30px">@Html.TextBox("Column", "",new { @class = "form-control col-md-1" })</div>
-
-<hr />
-
-    
+<hr />    
 <div class="space">
-    <input id="btnSave" type="submit" value="Save" onclick="return Validate()"/></div>
-    <a href="javascript:close()">Cancel</a>
+    <div style="clear:both">
+        <div style="float:left">
+            <input id="btnSave" type="submit" value="OK"  style="width: 100px; height: 30px; border: 2px solid black; margin-right:20px" onclick="return Validate()"/>    
+        </div>        
+        <div  style="float:left">
+            <a href="javascript:close()"><div  style="width: 100px;">Cancel</div></a>            
+        </div>
+    </div>
 </div>
 </form>
     
@@ -168,17 +210,26 @@
             parent.DayPilot.ModalStatic.close(result);
         }
     }
-        
-    $("#f").submit(function() {
-            var f = $("#f");
-            $.post(f.action, f.serialize(), function(result) {
-                close(eval(result));
-            });
-            return false;
+
+    //$("#f").submit(function () {
+    //    var f = $("#f");
+    //    $.post(f.action, f.serialize(), function (result) {
+    //        close(eval(result));
+    //    });
+    //    return false;
+    //});
+
+
+    $("#f").submit(function () {
+        var f = $("#f");
+        $.post(f.action, f.serialize(), function (result) {
+            close(eval(result));
         });
-            
-    $(document).ready(function() {
+        return false;
+    });
+
+    $(document).ready(function () {
         $("#Text").focus();
     });
-    
+
 </script>

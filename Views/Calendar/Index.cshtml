@@ -11,25 +11,44 @@
 @using DayPilot.Web.Mvc.Themes.Calendar
 
 @{
-    ViewBag.Title = "DayPilot Scheduler for ASP.NET MVC 4";
+    ViewBag.Title = "Shnexy | Event";
 }
 
 <header>
 <script type="text/javascript">
     function modal(url) {
         var m = new DayPilot.Modal();
-        m.closed = function () {
-            if (this.result == "OK") {
+
+        m.closed = function () {            
+            if (this.result == "OK") {                
                 dps.commandCallBack('refresh');
             }
             dps.clearSelection();
-        };
+        };        
         m.showUrl(url);
     }
+
+    function eventClick(e) {        
+        // only fire the server-side event if the ID is 5 or status field is set to tentative
+        //if (e.value() == "5" || e.tag("status") == "tentative") {
+        //    dpc.eventClickCallBack(e);
+        //}
+
+        var m = new DayPilot.Modal();
+        m.closed = function () {
+            if (this.result == "OK") {                
+                dps.commandCallBack('refresh');
+            }
+            dps.clearSelection();
+        };        
+
+        var url = 'http://localhost:50613/Calendar/New/' + e.value();
+        m.showUrl(url);
+    }
+
 </script>    
 
 </header>
-
 <div class="jumbotron">
     @*<h3>Booking Agent</h3>
     *@
@@ -143,8 +162,8 @@
                     Items = new DayPilot.Web.Mvc.MenuItemCollection()
                     {
                         @*new DayPilot.Web.Mvc.MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "modal('/New?id=" + e.value() + "');"},*@
-
-                        new DayPilot.Web.Mvc.MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "modal('http://localhost:50613/Calendar/New');"},
+                        
+                        @*new DayPilot.Web.Mvc.MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "modal('http://localhost:50613/Calendar/New/id='" + e.value()  + "');"},*@
 
 
                         @*new DayPilot.Web.Mvc.MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, Command = "Open"},*@
@@ -173,9 +192,12 @@
                         Height = 400,
                         HeightSpec = HeightSpec.BusinessHours,
                         EventBubble = "bubble",
-                        EventClickHandling = EventClickHandlingType.CallBack,                        
+                        @*EventClickHandling = EventClickHandlingType.CallBack,*@                        
+                        @*EventClickJavaScript = "modal('http://localhost:50613/Calendar/New/id=1');",*@
+                        EventClickJavaScript = "eventClick(e)",
+                        EventClickHandling = EventClickHandlingType.JavaScript,                     
                         HeaderClickHandling = HeaderClickHandlingType.JavaScript,                        
-                        ContextMenu = "menu1",
+                        @*ContextMenu = "menu1",*@
                         HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"
                     }))
 
@@ -197,7 +219,7 @@
             </div>
             <br />
             <div class="Row">
-                <input type="button" value="OK" style="width: 150px; height: 30px; border: 2px solid black; float: right" />
+                @*<input type="button" value="OK"  />*@
             </div>
         </div>
     </div>
