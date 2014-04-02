@@ -50,7 +50,7 @@ namespace ShnexyTest.Repositories
             //VERIFY
             Event retrievedEvent = curEventRepo.GetByKey(originalEvent.Id);
             //verify its the same
-            Assert.AreEqual(originalEvent.Attendees, retrievedEvent.Attendees);
+            Assert.AreEqual(originalEvent.Attendees.Count, retrievedEvent.Attendees.Count);
             Assert.AreEqual(originalEvent.DTStart, retrievedEvent.DTStart);
         }
     }
