@@ -6,7 +6,6 @@ using Liki.App.Services.AlertManager;
 using Shnexy.DataAccessLayer;
 using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
-using Syncfusion.Mvc.Shared;
 
 namespace Shnexy.Models
 {
