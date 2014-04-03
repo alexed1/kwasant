@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>DayPilot</id>
+    <version>4.1.264</version>
+    <title>DayPilot Lite for ASP.NET WebForms</title>
+    <authors>Annpoint, s.r.o.</authors>
+    <owners>Annpoint, s.r.o.</owners>
+    <licenseUrl>http://www.daypilot.org/lite-license.html</licenseUrl>
+    <projectUrl>http://www.daypilot.org/daypilot-lite.html</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>DayPilot is a set of AJAX calendar/scheduling/Gantt controls for ASP.NET WebForms.</description>
+    <copyright />
+    <tags>ajax calendar scheduler gantt</tags>
+  </metadata>
+</package>
