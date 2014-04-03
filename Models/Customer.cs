@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using Liki.App.Services.AlertManager;
+using Shnexy.DataAccessLayer;
+using Shnexy.DataAccessLayer.Interfaces;
 using Shnexy.DataAccessLayer.Repositories;
 
 namespace Shnexy.Models
