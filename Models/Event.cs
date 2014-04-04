@@ -32,15 +32,8 @@ namespace Shnexy.Models
     {
         #region Public Properties
 
-        public string ICSFilename { get; set; }
-
         public int Id { get; set; }
         public int CustomerId { get; set; } //added by shnexy
-
-        public List<EmailAddress> Attendees { get; set; }
-
-        public string DbStringofUrl { get; set; }
-
         /// <summary>
         /// The start date/time of the event.
         /// <note>
