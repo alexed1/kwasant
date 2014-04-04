@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
+using Shnexy;
 
 namespace Daemons
 {
-    public abstract class BaseDaemon
+    public abstract class BaseDaemon : IDaemon
     {
         public abstract int WaitTimeBetweenExecution { get; }
 
