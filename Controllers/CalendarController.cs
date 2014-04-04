@@ -24,6 +24,7 @@ using DayPilot.Web.Mvc.Json;
 using BeforeCellRenderArgs = DayPilot.Web.Mvc.Events.Calendar.BeforeCellRenderArgs;
 using TimeRangeSelectedArgs = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedArgs;
 
+using System.Data.Entity;
 
 namespace Shnexy.Controllers
 {
@@ -321,9 +322,8 @@ namespace Shnexy.Controllers
             return new Dpn().CallBack(this);
         }
 
-        public ActionResult New(string id)
-        {
-
+        public ActionResult New(string id)        
+        {   
             ViewData["Id"] = id;             
 
             return View(new EventManager.Event
@@ -351,8 +351,7 @@ namespace Shnexy.Controllers
             int intSequence = 0;
             String strSummary = String.Empty;
             String strCategory = String.Empty;
-            String strId = String.Empty;
-            
+            String strId = String.Empty;            
 
             strEventName = !String.IsNullOrEmpty(form["Name"]) ? form["Name"].ToString() : String.Empty;
             dtFromDate = form["FromDate"] !=null ?  Convert.ToDateTime(form["FromDate"]) : DateTime.MinValue;
@@ -366,22 +365,9 @@ namespace Shnexy.Controllers
             intSequence = !String.IsNullOrEmpty(form["Sequence"]) ? Convert.ToInt32(form["Sequence"]) : 0 ;
             strSummary = !String.IsNullOrEmpty(form["Summary"]) ? form["Summary"].ToString() : String.Empty;    
             strCategory=!String.IsNullOrEmpty(form["Category"]) ? form["Category"].ToString() : String.Empty;
-            strId = !String.IsNullOrEmpty(form["Id"]) ? form["Id"].ToString() : String.Empty;     
+            strId = !String.IsNullOrEmpty(form["Id"]) ? form["Id"].ToString() : String.Empty;                        
 
-            //if (String.IsNullOrEmpty(form["Duration"]))
-            //{
-            //}
-            //else
-            //{
-            //    long lngDuration = Convert.ToInt64(form["Duration"]);
-            //    tsDuration = TimeSpan.FromTicks(lngDuration);
-            //}            
-
-            if (String.IsNullOrEmpty(form["chkIsAllDay"]))
-            {
-
-            }
-            else
+            if (!String.IsNullOrEmpty(form["chkIsAllDay"]))           
             {
                 String strCheckAllDay = form["chkIsAllDay"].ToString();
                 String strTemp = String.Empty;
@@ -407,23 +393,39 @@ namespace Shnexy.Controllers
 
             strEventICSString = GetICSFormattedEventString(EventData._dtStartDate, EventData._dtEndDate , intSequence,strCategory,intPriority,strTransparency,strStatus,strClass,strSummary,strDescription,strLocation);
 
-            EventFile eventFile = new EventFile();
+            int intResult;
+            Boolean blnResult;
 
-            eventFile.Id = strId;
+            blnResult = Int32.TryParse(strId, out intResult);
+            
+            EventFile eventFile = new EventFile();
             eventFile.Body = strEventICSString;
 
-            db.EventFiles.Add(eventFile);            
-            db.SaveChanges();
+            if (!blnResult)
+            {   
+                db.EventFiles.Add(eventFile);
+                db.SaveChanges();
+            }
+            else
+            {
+                int intEventFileId = Convert.ToInt32(strId);
 
-            (new EventManager(this)).EventDelete(strId);
+                EventFile eventFileExist = db.EventFiles.Find(intEventFileId);
 
-            String[] arrICSString1 = strEventICSString.Split(Environment.NewLine.ToCharArray());
+                if (eventFileExist != null)
+                {
+                    IEventFileRepository eventFileRepo = new EventFileRepository(new UnitOfWork(new ShnexyDbContext()));
 
-            //String[] arrICSString = strEventICSString.Split(Environment.NewLine.ToCharArray());
+                    eventFile.Id = intEventFileId;
+                    eventFileRepo.Update(eventFile, eventFileExist);
 
-                        
+                    //db.Database.ExecuteSqlCommand(String.Format("UPDATE EventFile SET Body={0} WHERE Id={1}", strEventICSString, intEventFileId));   
+                }
+            }
 
-            new EventManager(this).EventCreate(EventData._dtStartDate, EventData._dtEndDate, strDescription, null, strId);
+            (new EventManager(this)).EventDelete(strId);            
+
+            new EventManager(this).EventCreate(EventData._dtStartDate, EventData._dtEndDate, strDescription, null, eventFile.Id.ToString());
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));           
             
         }
@@ -437,8 +439,7 @@ namespace Shnexy.Controllers
             sb.Append("PRODID:-//ince/events//NONSGML v1.0//EN\r\f");
             sb.Append("BEGIN:VEVENT\r\f");
             sb.Append(String.Format("DTSTART:{0}\r\f", GetFormatedDate(FromDate)));
-            sb.Append(String.Format("DTEND:{0}\r\f", GetFormatedDate(ToDate)));     
-            //sb.Append("DTSTAMP:19970324T1200Z");            
+            sb.Append(String.Format("DTEND:{0}\r\f", GetFormatedDate(ToDate)));                 
             sb.Append(String.Format("SEQUENCE:{0}\r\f", Sequence));
             sb.Append(String.Format("UID:{0}\r\f", new Guid()));
             sb.Append(String.Format("CATEGORIES:{0}\r\f", Category));
@@ -448,7 +449,8 @@ namespace Shnexy.Controllers
             sb.Append(String.Format("CLASS:{0}\r\f", Class));
             sb.Append(String.Format("SUMMARY:{0}\r\f", Summary));
             sb.Append(String.Format("DESCRIPTION:{0}\r\f", Description));
-            sb.Append(String.Format("LOCATION:{0}\r\f", Location));                 
+            sb.Append(String.Format("LOCATION:{0}\r\f", Location));
+            sb.Append(String.Format("LOCATION:{0}\r\f", Location));
             sb.Append("END:VEVENT");
             sb.Append("END:VCALENDAR\r\f");
             return sb.ToString();

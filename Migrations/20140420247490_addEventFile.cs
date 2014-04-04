@@ -11,7 +11,7 @@ namespace Shnexy.Migrations
                 "dbo.EventFile",
                 c => new
                 {
-                    Id = c.String(),                    
+                    Id = c.Int(nullable: false, identity: true),
                     Body = c.String(),
                 })
                 .PrimaryKey(t => t.Id);

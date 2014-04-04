@@ -231,6 +231,7 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\GenericRepository.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\UnitOfWork.cs" />
+    <Compile Include="DataAccessLayer\Interfaces\IEventFile.cs" />
     <Compile Include="DataAccessLayer\Interfaces\ICustomerRepository.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -239,6 +240,7 @@
     <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IUnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyInitializer.cs" />
+    <Compile Include="DataAccessLayer\Repositories\EventFileRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\EmailAddressRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\EventRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\CustomerRepository.cs" />

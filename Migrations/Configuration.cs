@@ -9,7 +9,7 @@ namespace Shnexy.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         protected override void Seed(Shnexy.DataAccessLayer.ShnexyDbContext context)

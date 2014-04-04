@@ -7,7 +7,7 @@ namespace Shnexy.Models
 {
     public class EventFile
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Body { get; set; }
     }
 }

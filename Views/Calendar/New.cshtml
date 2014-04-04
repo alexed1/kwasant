@@ -61,23 +61,135 @@
 <form id="f" method="post" action="@Url.Action("New")">    
 <h3>New Event</h3>  
 <hr />  
-<br />    
+<br />
+
+@{
+        int SEQUENCE=6;
+        int CATEGORY=8;
+        int PRIORITY=9;
+        int STATUS=10;
+        int TRANS=11;
+        int CALSS=12;
+        int SUMMARY=13;
+        int DESCRIPTION=14;
+        int LOCATION=15;   
+
+        String strLocation = String.Empty;
+        bool blnchkIsAllDay= false;
+        String strStatus = String.Empty;
+        String strTransparencyType = String.Empty;
+        String strClass = String.Empty;
+        String strDescription = String.Empty;
+        String strPriority = String.Empty;
+        String strSequence = String.Empty;
+        String strSummary = String.Empty;
+        String strCategory = String.Empty;                
+        
+        var Id = (string)ViewData["Id"];
+
+        ShnexyDbContext db = new ShnexyDbContext();  
+        EventFile evtFile = new EventFile();
+
+      if(db !=null)
+      {      
+
+        int intResult;
+        Boolean blnResult;
+
+        blnResult = Int32.TryParse(Id, out intResult);
+
+        if(blnResult){
+            evtFile = db.EventFiles.Find(Convert.ToInt32(Id));
+
+            if(evtFile !=null)
+            { 
+                String[] arrICSString = evtFile.Body.Split(Environment.NewLine.ToCharArray());
+                
+                String[] arrLocation = arrICSString[LOCATION].Split(':');
+                strLocation = arrLocation[1];
+
+                String[] arrCategory = arrICSString[CATEGORY].Split(':');
+                strCategory = arrCategory[1]; 
+
+                String[] arrPriority = arrICSString[PRIORITY].Split(':');
+                strPriority =  arrPriority[1]; 
+
+                String[] arrStatus = arrICSString[STATUS].Split(':');
+                strStatus = arrStatus[1];
+
+                String[] arrTrans = arrICSString[TRANS].Split(':');
+                strTransparencyType = arrTrans[1];
+
+                String[] arrClass = arrICSString[CALSS].Split(':');
+                strClass = arrClass[1];
+
+                String[] arrSummary = arrICSString[SUMMARY].Split(':');
+                strSummary = arrSummary[1];  
+
+                String[] arrDescription = arrICSString[DESCRIPTION].Split(':');
+                strDescription = arrDescription[1];                              
+
+                String[] arrSequence = arrICSString[SEQUENCE].Split(':');
+                strSequence = arrSequence[1];
+                
+            }
+        }
+      }  
+
 <div>Location</div>
-<div>@Html.TextBox("Location","", new { @class = "form-control col-md-1" })
+<div>@Html.TextBox("Location",@strLocation, new { @class = "form-control col-md-1" })
 <div id="divLocation"></div>
-</div>
+</div>        
+    
+}    
+
 <br />
-<div>Is All Day</div>
+@*<div>Is All Day</div>
  <div style="width:20px"> @Html.CheckBox("chkIsAllDay", false, new { @class = "form-control" })</div>
-<br />
+<br />*@
 
 @{
      List<SelectListItem> itemsStatus = new List<SelectListItem>();
 
-     itemsStatus.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
-     itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "Tentative"});
-     itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "Confirmed" });
-     itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "Cancelled"});
+     if(String.IsNullOrEmpty(strTransparencyType))
+     {
+         itemsStatus.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+         itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "Tentative"});
+         itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "Confirmed" });
+         itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "Cancelled"});
+    }
+    else
+    {
+        itemsStatus.Add(new SelectListItem { Text = "--Select--", Value = "0"});
+
+        if(strStatus.Trim() == "Tentative")
+        {
+            itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "Tentative", Selected = true });
+        }
+        else
+        {
+            itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "Tentative"});
+        }
+         
+        if(strStatus.Trim() == "Confirmed")
+        {
+            itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "Confirmed", Selected = true });
+        }
+        else
+        {
+            itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "Confirmed" });
+        }  
+
+        if(strStatus.Trim() == "Cancelled")
+        {
+            itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "Cancelled", Selected = true});
+        }
+        else
+        {
+            itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "Cancelled"});
+        }       
+
+    }
 }
 <br />
 <div>Status</div>
@@ -87,9 +199,34 @@
 @{
      List<SelectListItem> itemsTransparency = new List<SelectListItem>();
 
-     itemsTransparency.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
-     itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "Opaque" });
-     itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "Transparent" });
+     if(String.IsNullOrEmpty(strTransparencyType))
+     {
+        itemsTransparency.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+        itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "Opaque" });
+        itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "Transparent" });
+     }
+     else
+     {
+        itemsTransparency.Add(new SelectListItem { Text = "--Select--", Value = "0" });
+
+        if(strTransparencyType.Trim() == "Opaque")
+        {
+            itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "Opaque", Selected = true  });
+        }
+        else
+        {
+            itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "Opaque" });
+        }
+
+        if(strTransparencyType.Trim() == "Transparent")
+        {
+            itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "Transparent" , Selected = true});            
+        }
+        else
+        {
+            itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "Transparent" });
+        }        
+     }
 }
 <br />
 <div>Transparency Type</div>
@@ -99,24 +236,92 @@
 @{
      List<SelectListItem> itemsClass = new List<SelectListItem>();
 
-     itemsClass.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
-     itemsClass.Add(new SelectListItem { Text = "PUBLIC", Value = "PUBLIC"});
-     itemsClass.Add(new SelectListItem { Text = "PRIVATE", Value = "PRIVATE" });
-     itemsClass.Add(new SelectListItem { Text = "CONFIDENTIAL", Value = "CONFIDENTIAL"});
+     if(String.IsNullOrEmpty(strClass))
+     {
+         itemsClass.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+         itemsClass.Add(new SelectListItem { Text = "PUBLIC", Value = "PUBLIC"});
+         itemsClass.Add(new SelectListItem { Text = "PRIVATE", Value = "PRIVATE" });
+         itemsClass.Add(new SelectListItem { Text = "CONFIDENTIAL", Value = "CONFIDENTIAL"});
+     }
+     else
+     {
+        itemsClass.Add(new SelectListItem { Text = "--Select--", Value = "0"});
+
+        if(strClass.Trim() == "PUBLIC")
+        {
+            itemsClass.Add(new SelectListItem { Text = "PUBLIC", Value = "PUBLIC", Selected = true});
+        }
+        else
+        {
+            itemsClass.Add(new SelectListItem { Text = "PUBLIC", Value = "PUBLIC"});
+        }
+
+        if(strClass.Trim() == "PRIVATE")
+        {            
+            itemsClass.Add(new SelectListItem { Text = "PRIVATE", Value = "PRIVATE", Selected = true });
+        }
+        else
+        {
+            itemsClass.Add(new SelectListItem { Text = "PRIVATE", Value = "PRIVATE"});
+        }
+
+        if(strClass.Trim() == "CONFIDENTIAL")
+        {            
+            itemsClass.Add(new SelectListItem { Text = "CONFIDENTIAL", Value = "CONFIDENTIAL", Selected = true});
+        }
+        else
+        {
+            itemsClass.Add(new SelectListItem { Text = "CONFIDENTIAL", Value = "CONFIDENTIAL"});
+        }
+     }  
 }
 
 <div>Class</div>
 <div style="width:200px">@Html.DropDownList("Class",itemsClass, new { @class = "form-control col-md-1" })</div>
 <br />  
 <div>Description</div>
-<div>@Html.TextArea("Description", "", 5, 31, new { @class = "form-control col-md-1" })</div>
+<div>@Html.TextArea("Description", @strDescription, 5, 31, new { @class = "form-control col-md-1" })</div>
 @{
-     List<SelectListItem> itemsPriority = new List<SelectListItem>();
+     List<SelectListItem> itemsPriority = new List<SelectListItem>();    
 
-     itemsPriority.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
-     itemsPriority.Add(new SelectListItem { Text = "High", Value = "1" });
-     itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2" });
-     itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3" });
+    if(strPriority == "0")
+     {
+        itemsPriority.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+        itemsPriority.Add(new SelectListItem { Text = "High", Value = "1" });
+        itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2" });
+        itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3" });
+     }
+     else
+     {
+        itemsPriority.Add(new SelectListItem { Text = "--Select--", Value = "0"});
+
+        if(strPriority == "1")
+        {
+            itemsPriority.Add(new SelectListItem { Text = "High", Value = "1" , Selected = true});
+        }
+        else
+        {
+            itemsPriority.Add(new SelectListItem { Text = "High", Value = "1" });
+        }
+
+        if(strPriority == "2")
+        {
+            itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2" , Selected = true});
+        }
+        else
+        {
+            itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2" });
+        }
+
+        if(strPriority == "3")
+        {
+            itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3" , Selected = true});
+        }
+        else
+        {
+            itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3" });
+        }
+     }
 }
 <br />
 <div>Priority</div>
@@ -126,17 +331,35 @@
 @{
      List<SelectListItem> itemsSequence = new List<SelectListItem>();
 
-     itemsSequence.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
-     itemsSequence.Add(new SelectListItem { Text = "One", Value = "1" });
-     itemsSequence.Add(new SelectListItem { Text = "Two", Value = "2" });
-     itemsSequence.Add(new SelectListItem { Text = "Three", Value = "3" });
-     itemsSequence.Add(new SelectListItem { Text = "Four", Value = "4" });
-     itemsSequence.Add(new SelectListItem { Text = "Five", Value = "5" });
-     itemsSequence.Add(new SelectListItem { Text = "Six", Value = "6" });
-     itemsSequence.Add(new SelectListItem { Text = "Seven", Value = "7" });
-     itemsSequence.Add(new SelectListItem { Text = "Eight", Value = "8" });
-     itemsSequence.Add(new SelectListItem { Text = "Nine", Value = "9" });
-     itemsSequence.Add(new SelectListItem { Text = "Ten", Value = "10" });
+
+     if(strSequence == "0")
+     {   
+        itemsSequence.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+        itemsSequence.Add(new SelectListItem { Text = "One", Value = "1" });
+        itemsSequence.Add(new SelectListItem { Text = "Two", Value = "2" });     
+     }
+     else
+     {
+        itemsSequence.Add(new SelectListItem { Text = "--Select--", Value = "0"});
+
+        if(strSequence == "1")
+        {
+            itemsSequence.Add(new SelectListItem { Text = "One", Value = "1", Selected = true });
+        }
+        else
+        {
+            itemsSequence.Add(new SelectListItem { Text = "One", Value = "1" });
+        }
+
+        if(strSequence == "2")
+        {
+            itemsSequence.Add(new SelectListItem { Text = "Two", Value = "2", Selected = true });     
+        }
+        else
+        {
+            itemsSequence.Add(new SelectListItem { Text = "Two", Value = "2" });     
+        }
+     }
 }
 <br />
 <div>Sequence</div>
@@ -144,53 +367,17 @@
 <br /><br />
 
 <div>Summary</div>
-<div>@Html.TextArea("Summary", "", 5, 31, new { @class = "form-control col-md-1" })</div>
+<div>@Html.TextArea("Summary", @strSummary, 5, 31, new { @class = "form-control col-md-1" })</div>
 <br /><br />
 <div>Category</div>
-<div>@Html.TextBox("Category","", new { @class = "form-control col-md-1" })
+<div>@Html.TextBox("Category",@strCategory, new { @class = "form-control col-md-1" })
 <div id="divCategory"></div>
-</div>
-
- @{
-
-        int SEQUENCE=5;
-        int CATEGORY=7;
-        int PRIORITY=8;
-        int STATUS=9;
-        int TRANS=10;
-        int CALSS=11;
-        int SUMMARY=12;
-        int DESCRIPTION=13;
-        int LOCATION=14;
-
-         
-      
-      var Id = (string)ViewData["Id"];
-      @Html.TextBox("Id",@Id, new { @class = "form-control col-md-1" })
-
-      ShnexyDbContext db = new ShnexyDbContext();  
-      EventFile evtFile = new EventFile();
-
-      if(db !=null)
-      {              
-        evtFile = db.EventFiles.Find(Id);    
-      }
-
-      if(evtFile !=null)
-      { 
-        String[] arrICSString = evtFile.Body.Split(Environment.NewLine.ToCharArray());
-        String[] arrLocation= arrICSString[14].Split(':');          
-
-        <script type="text/javascript">
-            var oLocation = document.getElementById('Location');
-            var divLocationICS = document.getElementById('divLocationICS');            
-            oLocation.value = divLocationICS.innerText;
-        </script>   
-           
-      }
-  }
-
+</div> 
 <br />
+@{  
+    <div style="visibility:hidden">@Html.TextBox("Id",@Id, new { @class = "form-control col-md-1" })</div>       
+}
+
 <hr />    
 <div class="space">
     <div style="clear:both">
