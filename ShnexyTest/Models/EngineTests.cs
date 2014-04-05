@@ -1,9 +1,9 @@
 ﻿using System;
+using Data.DataAccessLayer.Interfaces;
+using Data.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NUnit.Framework;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.Models;
 
 namespace ShnexyTest
 {

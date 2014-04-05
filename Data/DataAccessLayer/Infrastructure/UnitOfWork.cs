@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Shnexy.Models;
-using Shnexy.DataAccessLayer.Interfaces;
 using System.Data.Entity;
 using System.Transactions;
-using System.Data.Entity.Core;
+using Data.DataAccessLayer.Interfaces;
 
-namespace Shnexy.DataAccessLayer
+namespace Data.DataAccessLayer.Infrastructure
 {
      public class UnitOfWork : IUnitOfWork
     {

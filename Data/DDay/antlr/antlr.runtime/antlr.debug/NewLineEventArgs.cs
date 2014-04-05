@@ -1,8 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	
-	public class NewLineEventArgs : ANTLREventArgs
+    public class NewLineEventArgs : ANTLREventArgs
 	{
 		public NewLineEventArgs()
 		{

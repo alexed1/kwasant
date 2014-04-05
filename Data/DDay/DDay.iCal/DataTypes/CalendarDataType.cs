@@ -1,11 +1,13 @@
 using System;
-using System.Collections;
-using System.Text;
-using System.Reflection;
 using System.Runtime.Serialization;
-using System.Collections.Generic;
+using Data.DDay.DDay.iCal.General;
+using Data.DDay.DDay.iCal.General.Proxies;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Interfaces.General.Proxies;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.DataTypes
 {
     /// <summary>
     /// An abstract class from which all iCalendar data types inherit.

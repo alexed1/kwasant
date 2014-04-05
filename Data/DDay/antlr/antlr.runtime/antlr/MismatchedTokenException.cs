@@ -1,10 +1,9 @@
 using System;
-using StringBuilder = System.Text.StringBuilder;
+using System.Text;
+using Data.DDay.antlr.antlr.runtime.antlr.collections;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
 
-using BitSet = antlr.collections.impl.BitSet;
-using AST = antlr.collections.AST;
-
-namespace antlr
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
     /*ANTLR Translator Generator
     * Project led by Terence Parr at http://www.jGuru.com

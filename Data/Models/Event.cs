@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.Serialization;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.Repositories;
-using Shnexy.DDay.iCal;
-
+using Data.DDay.DDay.iCal;
+using Data.DDay.DDay.iCal.Evaluation;
+using Data.DDay.DDay.iCal.ExtensionMethods;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.Repositories;
 //This was originally DDay Code. 
-using Shnexy.DDay.iCal.Serialization.iCalendar;
-using Shnexy.Services.EmailManagement;
 
-namespace Shnexy.Models
+namespace Data.Models
 {
     /// <summary>
     /// A class that represents an RFC 5545 VEVENT component.

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Data.DDay.DDay.iCal;
 using Shnexy.DDay.iCal;
-using Shnexy.Models;
 
 namespace Shnexy.DDay.iCal.Test
 {

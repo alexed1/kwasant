@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Shnexy.DataAccessLayer.Interfaces
+namespace Data.DataAccessLayer.Interfaces
 {
     public interface IRepository<TEntity> : IDisposable where TEntity : class
     {

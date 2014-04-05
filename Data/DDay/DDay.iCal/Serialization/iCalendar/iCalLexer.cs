@@ -1,44 +1,15 @@
 // $ANTLR 2.7.6 (20061021): "iCal.g" -> "iCalLexer.cs"$
 
-    using System.Text;
-    using System.IO;
-	using System.Collections;
-    using System.Collections.Generic;  
-    using System.Runtime.Serialization;
-    using Shnexy.DDay.iCal.Serialization;
-    using Shnexy.DDay.iCal.Serialization.iCalendar;
+using System.IO;
+using System.Collections;
+using Data.DDay.antlr.antlr.runtime.antlr;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Serialization.iCalendar
 {
 	// Generate header specific to lexer CSharp file
-	using System;
-	using Stream                          = System.IO.Stream;
-	using TextReader                      = System.IO.TextReader;
-	using Hashtable                       = System.Collections.Hashtable;
-	using Comparer                        = System.Collections.Comparer;
-	
-	using TokenStreamException            = antlr.TokenStreamException;
-	using TokenStreamIOException          = antlr.TokenStreamIOException;
-	using TokenStreamRecognitionException = antlr.TokenStreamRecognitionException;
-	using CharStreamException             = antlr.CharStreamException;
-	using CharStreamIOException           = antlr.CharStreamIOException;
-	using ANTLRException                  = antlr.ANTLRException;
-	using CharScanner                     = antlr.CharScanner;
-	using InputBuffer                     = antlr.InputBuffer;
-	using ByteBuffer                      = antlr.ByteBuffer;
-	using CharBuffer                      = antlr.CharBuffer;
-	using Token                           = antlr.Token;
-	using IToken                          = antlr.IToken;
-	using CommonToken                     = antlr.CommonToken;
-	using SemanticException               = antlr.SemanticException;
-	using RecognitionException            = antlr.RecognitionException;
-	using NoViableAltForCharException     = antlr.NoViableAltForCharException;
-	using MismatchedCharException         = antlr.MismatchedCharException;
-	using TokenStream                     = antlr.TokenStream;
-	using LexerSharedInputState           = antlr.LexerSharedInputState;
-	using BitSet                          = antlr.collections.impl.BitSet;
-	
-	public 	class iCalLexer : antlr.CharScanner	, TokenStream
+    
+    public 	class iCalLexer : CharScanner	, TokenStream
 	 {
 		public const int EOF = 1;
 		public const int NULL_TREE_LOOKAHEAD = 3;

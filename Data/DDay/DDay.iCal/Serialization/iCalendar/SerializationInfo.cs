@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Shnexy.DDay.iCal.Serialization.iCalendar
+﻿namespace Data.DDay.DDay.iCal.Serialization.iCalendar
 {
     public class SerializationInfo
     {

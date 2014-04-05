@@ -1,8 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	
-	public class InputBufferEventArgs : ANTLREventArgs
+    public class InputBufferEventArgs : ANTLREventArgs
 	{
 		public InputBufferEventArgs()
 		{

@@ -1,4 +1,7 @@
-namespace antlr
+using System.Text;
+using Data.DDay.antlr.antlr.runtime.antlr.collections;
+
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
 	/* ANTLR Translator Generator
 	 * Project led by Terence Parr at http://www.jGuru.com
@@ -10,12 +13,8 @@ namespace antlr
 	//                            Kunle Odutola       : kunle UNDERSCORE odutola AT hotmail DOT com
 	//                            Anthony Oguntimehin
 	//
-
-	using System;
-	using StringBuilder 	= System.Text.StringBuilder;
-	using AST 				= antlr.collections.AST;
-
-	public abstract class ParseTree : BaseAST
+    
+    public abstract class ParseTree : BaseAST
 	{
 		/// <summary>
 		/// Walk parse tree and return requested number of derivation steps.

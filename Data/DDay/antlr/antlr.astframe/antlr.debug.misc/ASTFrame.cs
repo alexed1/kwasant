@@ -1,13 +1,13 @@
 using System;
 using System.Drawing;
+using System.Windows.Forms;
+using Data.DDay.antlr.antlr.runtime.antlr;
+using Data.DDay.antlr.antlr.runtime.antlr.collections;
 //using System.Collections;
 //using System.ComponentModel;
-using System.Windows.Forms;
-
 //using antlr;
-using AST = antlr.collections.AST;
 
-namespace antlr.debug.misc
+namespace Data.DDay.antlr.antlr.astframe.antlr.debug.misc
 {
 	/// <summary>
 	/// Summary description for myASTFrame.

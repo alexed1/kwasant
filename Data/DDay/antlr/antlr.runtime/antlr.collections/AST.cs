@@ -1,9 +1,7 @@
 using System;
-using IEnumerator = System.Collections.IEnumerator;
+using System.Collections;
 
-using IToken = antlr.IToken;
-
-namespace antlr.collections
+namespace Data.DDay.antlr.antlr.runtime.antlr.collections
 {
     /*ANTLR Translator Generator
     * Project led by Terence Parr at http://www.jGuru.com

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Structs;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Interfaces.Components
 {
     public interface IAlarm :
         ICalendarComponent

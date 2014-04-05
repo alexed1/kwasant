@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.IO;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.DataTypes
 {
     /// <summary>
     /// Represents an RFC 5545 "BYDAY" value.
@@ -67,8 +65,8 @@ namespace Shnexy.DDay.iCal
 
         public WeekDay(string value)
         {
-            DDay.iCal.Serialization.iCalendar.WeekDaySerializer serializer =
-                new DDay.iCal.Serialization.iCalendar.WeekDaySerializer();
+            WeekDaySerializer serializer =
+                new WeekDaySerializer();
             CopyFrom(serializer.Deserialize(new StringReader(value)) as ICopyable);
         }
 

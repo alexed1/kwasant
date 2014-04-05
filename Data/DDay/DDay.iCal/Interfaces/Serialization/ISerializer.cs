@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using IServiceProvider = Data.DDay.DDay.iCal.Interfaces.General.IServiceProvider;
 
-namespace Shnexy.DDay.iCal.Serialization
+namespace Data.DDay.DDay.iCal.Interfaces.Serialization
 {    
     public interface ISerializer :
         IServiceProvider

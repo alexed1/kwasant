@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Web;
-using Liki.App.Services.AlertManager;
+﻿using System.Diagnostics;
+using Data.Services.AlertManager;
 
-namespace Shnexy.Services
+namespace Data.Services.CommunicationManager
 {
     public class CommunicationManager
     {
@@ -16,7 +12,7 @@ namespace Shnexy.Services
 
         public void SubscribeToAlerts()
         {
-            AlertManager.alertCustomerCreated += new AlertManager.CustomerCreatedHandler(NewCustomerWorkflow);
+            AlertManager.AlertManager.alertCustomerCreated += new AlertManager.AlertManager.CustomerCreatedHandler(NewCustomerWorkflow);
         }
 
 

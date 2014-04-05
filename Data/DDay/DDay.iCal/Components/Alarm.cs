@@ -1,11 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Configuration;
 using System.Runtime.Serialization;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Structs;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {
     /// <summary>
     /// A class that represents an RFC 2445 VALARM component.

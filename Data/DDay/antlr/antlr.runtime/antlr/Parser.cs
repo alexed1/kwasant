@@ -1,18 +1,8 @@
 using System;
-using EventHandlerList			= System.ComponentModel.EventHandlerList;
-
-using BitSet					= antlr.collections.impl.BitSet;
-using AST						= antlr.collections.AST;
-using ASTArray					= antlr.collections.impl.ASTArray;
-using antlr.debug;
-
-using MessageListener				= antlr.debug.MessageListener;
-using ParserListener				= antlr.debug.ParserListener;
-using ParserMatchListener			= antlr.debug.ParserMatchListener;
-using ParserTokenListener			= antlr.debug.ParserTokenListener;
-using SemanticPredicateListener		= antlr.debug.SemanticPredicateListener;
-using SyntacticPredicateListener	= antlr.debug.SyntacticPredicateListener;
-using TraceListener					= antlr.debug.TraceListener;
+using System.ComponentModel;
+using Data.DDay.antlr.antlr.runtime.antlr.collections;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
+using Data.DDay.antlr.antlr.runtime.antlr.debug;
 
 /*
 	private Vector messageListeners;
@@ -24,7 +14,7 @@ using TraceListener					= antlr.debug.TraceListener;
 	private Vector traceListeners;
 */
 	
-namespace antlr
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
 	/*ANTLR Translator Generator
 	* Project led by Terence Parr at http://www.jGuru.com

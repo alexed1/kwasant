@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using Data.DataAccessLayer.Infrastructure;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.Repositories;
+using Data.DataAccessLayer.StructureMap;
+using Data.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Core;
 using NUnit.Framework;
 using Shnexy;
-using Shnexy.DataAccessLayer;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.Repositories;
-using Shnexy.DataAccessLayer.StructureMap;
 using Shnexy.DDay.iCal;
 using ShnexyTest.Fixtures;
-using Shnexy.Models;
 using StructureMap;
 using System.Web.Mvc;
 
 using System.Data.Entity;
-using Shnexy.DataAccessLayer;
-using Shnexy.DataAccessLayer.StructureMap;
+using Event = Data.Models.Event;
 
 namespace ShnexyTest.Models
 {
@@ -57,7 +56,7 @@ namespace ShnexyTest.Models
         {
 
             //load the test event
-            Shnexy.Models.Event curEvent = _fixture.TestEvent();
+            Event curEvent = _fixture.TestEvent();
             //load the corresponding test customer
             Customer curCustomer = _fixture.TestCustomer();
 

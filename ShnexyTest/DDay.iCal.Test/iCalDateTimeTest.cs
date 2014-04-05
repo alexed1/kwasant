@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
 using NUnit.Framework;
 
 namespace Shnexy.DDay.iCal.Test

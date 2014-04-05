@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Shnexy.DDay.Collections.Interfaces;
-using Shnexy.DDay.Collections.Interfaces.Proxies;
+using Data.DDay.Collections.Interfaces;
+using Data.DDay.Collections.Interfaces.Proxies;
 
-namespace Shnexy.DDay.Collections.Proxies
+namespace Data.DDay.Collections.Proxies
 {
     /// <summary>
     /// A proxy for a keyed list.

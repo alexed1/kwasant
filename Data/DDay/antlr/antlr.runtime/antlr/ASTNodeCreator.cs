@@ -1,9 +1,8 @@
-namespace antlr
-{
-	using System;
-	using AST		= antlr.collections.AST;
+using Data.DDay.antlr.antlr.runtime.antlr.collections;
 
-	/*ANTLR Translator Generator
+namespace Data.DDay.antlr.antlr.runtime.antlr
+{
+    /*ANTLR Translator Generator
 	* Project led by Terence Parr at http://www.jGuru.com
 	* Software rights: http://www.antlr.org/license.html
 	*

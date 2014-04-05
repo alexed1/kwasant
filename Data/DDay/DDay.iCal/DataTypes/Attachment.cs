@@ -1,12 +1,13 @@
 using System;
 using System.Net;
-using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
 using System.IO;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.DataTypes
 {
     /// <summary>
     /// A class to handle attachments, or URIs as attachments, within an iCalendar. 

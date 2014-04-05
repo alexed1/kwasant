@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Shnexy.DDay.Collections.Interfaces;
+using Data.DDay.Collections.Interfaces;
 
-namespace Shnexy.DDay.Collections.Enumerators
+namespace Data.DDay.Collections.Enumerators
 {
     public class GroupedListEnumerator<TType> :
         IEnumerator<TType>

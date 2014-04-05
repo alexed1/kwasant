@@ -1,9 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	
-
-	public interface Listener
+    public interface Listener
 	{
 		void  doneParsing	(object source, TraceEventArgs e);
 		void  refresh		();

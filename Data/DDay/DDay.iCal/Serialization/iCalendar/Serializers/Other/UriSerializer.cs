@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
-using System.Text.RegularExpressions;
-using System.Collections;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Interfaces.Serialization;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
+using Data.DDay.DDay.iCal.Utility;
 
-namespace Shnexy.DDay.iCal.Serialization.iCalendar
+namespace Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Other
 {
     public class UriSerializer :
         EncodableDataTypeSerializer

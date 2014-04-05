@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Structs;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Interfaces.DataTypes
 {
     public interface IDateTime :
         IEncodableDataType,
@@ -20,7 +20,7 @@ namespace Shnexy.DDay.iCal
         DateTime UTC { get; }
 
         /// <summary>
-        /// Retrieves the <see cref="iCalTimeZoneInfo"/> object for the time
+        /// Retrieves the <see cref="Data.DDay.DDay.iCal.Components.iCalTimeZoneInfo"/> object for the time
         /// zone set by <see cref="TZID"/>.
         /// </summary>
         TimeZoneObservance? TimeZoneObservance { get; set; }

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
+﻿using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.Serialization;
 
-namespace Shnexy.DDay.iCal.Serialization.iCalendar
+namespace Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes
 {
     public abstract class EncodableDataTypeSerializer :
         DataTypeSerializer

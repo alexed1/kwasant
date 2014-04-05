@@ -1,13 +1,15 @@
 using System;
-using System.Collections;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Text;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Shnexy.DDay.Collections;
+using Data.DDay.Collections;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Factory;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {
     /// <summary>
     /// Represents a unique component, a component with a unique UID,

@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.Serialization;
 
-namespace Shnexy.DDay.iCal.Serialization.iCalendar
+namespace Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Components
 {
     public class UniqueComponentSerializer :
         ComponentSerializer

@@ -1,8 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	
-	/// <summary>
+    /// <summary>
 	/// Provides an abstract base for implementing <see cref="ParserTokenListener"/> subclasses.
 	/// </summary>
 	/// <remarks>

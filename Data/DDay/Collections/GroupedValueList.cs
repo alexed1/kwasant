@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shnexy.DDay.Collections.Interfaces;
-using Shnexy.DDay.Collections.Proxies;
+using Data.DDay.Collections.Interfaces;
+using Data.DDay.Collections.Proxies;
 
-namespace Shnexy.DDay.Collections
+namespace Data.DDay.Collections
 {
     public class GroupedValueList<TGroup, TInterface, TItem, TValueType> :
         GroupedList<TGroup, TInterface>,

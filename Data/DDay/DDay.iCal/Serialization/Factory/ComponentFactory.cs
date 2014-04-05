@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Runtime.Serialization;
-using Shnexy.DDay.iCal.Serialization;
-using Shnexy.Models;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.Serialization.Factory;
+using Data.DDay.DDay.iCal.Utility;
+using Data.Models;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Serialization.Factory
 {
     public class ComponentFactory :
         ICalendarComponentFactory

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Shnexy.DDay.Collections.Interfaces;
+﻿using Data.DDay.Collections.Interfaces;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Interfaces.General
 {
     public interface ICalendarObject :
         IGroupedObject<string>,

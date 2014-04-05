@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Data.DDay.Collections;
 using NUnit.Framework;
-using Shnexy.DDay.Collections;
 
 namespace DDay.Collections.Test
 {

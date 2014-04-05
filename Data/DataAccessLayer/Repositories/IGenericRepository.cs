@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Shnexy.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.Interfaces;
 
-namespace Shnexy.DataAccessLayer
+namespace Data.DataAccessLayer.Repositories
 {
     public interface IGenericRepository<TEntity> where TEntity : class
     {

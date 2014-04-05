@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Globalization;
 using System.Diagnostics;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Utility
 {
     public class DateUtil
     {

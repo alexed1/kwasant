@@ -2,7 +2,7 @@
 using System.IO;
 using System.Net;
 
-namespace Shnexy.Services.APIManagement.Transmitters.Restful
+namespace Data.Services.APIManager.Transmitters.Restful
 {
     /// <summary>
     /// This is a common Class for call any Restful Call.Contains the methods that call the API , Get the response and 

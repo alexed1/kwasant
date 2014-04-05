@@ -1,8 +1,8 @@
 using System;
-using AST = antlr.collections.AST;
-using BitSet = antlr.collections.impl.BitSet;
-	
-namespace antlr
+using Data.DDay.antlr.antlr.runtime.antlr.collections;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
+
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
 	/*ANTLR Translator Generator
 	* Project led by Terence Parr at http://www.jGuru.com

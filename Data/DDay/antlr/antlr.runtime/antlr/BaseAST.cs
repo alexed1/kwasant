@@ -1,13 +1,11 @@
 using System;
-using StringBuilder = System.Text.StringBuilder;
+using System.Collections;
+using System.IO;
+using System.Text;
+using Data.DDay.antlr.antlr.runtime.antlr.collections;
 //using ISerializable		= System.Runtime.Serialization.ISerializable;
-using TextWriter = System.IO.TextWriter;
-using ArrayList = System.Collections.ArrayList;
-using IEnumerator = System.Collections.IEnumerator;
 
-using AST = antlr.collections.AST;
-
-namespace antlr
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
     /*ANTLR Translator Generator
     * Project led by Terence Parr at http://www.jGuru.com

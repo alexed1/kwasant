@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using System.Web;
+﻿using System.Net.Mail;
+using Data.DataAccessLayer.Repositories;
 using Newtonsoft.Json;
-using Shnexy.DataAccessLayer.Repositories;
 
-namespace Shnexy.Models
+namespace Data.Models
 {
     public interface IEmailAddress
     {

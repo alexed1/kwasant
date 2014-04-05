@@ -1,10 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Runtime.Serialization;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Evaluation;
+using Data.DDay.DDay.iCal.General.Proxies;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Structs;
+using Data.DDay.DDay.iCal.Utility;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {
     /// <summary>
     /// An iCalendar component that recurs.

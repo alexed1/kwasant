@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Shnexy.DDay.Collections.Interfaces.Proxies;
+﻿using Data.DDay.Collections.Interfaces.Proxies;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Interfaces.General.Proxies
 {
     public interface ICalendarParameterCollectionProxy :
         ICalendarParameterCollection,

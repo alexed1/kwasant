@@ -1,13 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Diagnostics;
-using Shnexy.DDay.Collections;
+using Data.DDay.Collections;
+using Data.DDay.DDay.iCal.ExtensionMethods;
+using Data.DDay.DDay.iCal.Interfaces.General;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.General
 {
     /// <summary>
     /// A class that represents a property of the <see cref="iCalendar"/>

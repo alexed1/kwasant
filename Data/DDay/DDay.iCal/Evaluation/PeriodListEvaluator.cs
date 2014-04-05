@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Evaluation
 {
     public class PeriodListEvaluator :
         Evaluator

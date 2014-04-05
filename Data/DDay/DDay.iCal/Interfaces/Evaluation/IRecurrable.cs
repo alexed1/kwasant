@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using IServiceProvider = Data.DDay.DDay.iCal.Interfaces.General.IServiceProvider;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Interfaces.Evaluation
 {
     public interface IRecurrable :
         IGetOccurrences,

@@ -1,8 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	
-	public interface IParserDebugSubject : IDebugSubject
+    public interface IParserDebugSubject : IDebugSubject
 	{
 		event MatchEventHandler					MatchedToken;
 		event MatchEventHandler					MatchedNotToken;

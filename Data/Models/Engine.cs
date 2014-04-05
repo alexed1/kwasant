@@ -1,4 +1,4 @@
-﻿namespace Shnexy.Models
+﻿namespace Data.Models
 {
     public class Engine
     {

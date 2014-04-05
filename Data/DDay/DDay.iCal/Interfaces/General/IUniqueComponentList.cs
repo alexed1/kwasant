@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections;
+﻿using Data.DDay.DDay.iCal.Interfaces.Components;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Interfaces.General
 {
     public interface IUniqueComponentList<TComponentType> :
         ICalendarObjectList<TComponentType>

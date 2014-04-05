@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Shnexy.DataAccessLayer.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Interfaces.Serialization;
+using Data.DataAccessLayer.Interfaces;
 
-namespace Shnexy.DDay.iCal.Serialization
+namespace Data.DDay.DDay.iCal.Serialization
 {
     public delegate Type TypeResolverDelegate(object context);
 

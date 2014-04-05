@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using Data.DDay.Collections;
+using Data.DDay.Collections.Interfaces;
+using Data.DDay.Collections.Proxies;
 using NUnit.Framework;
-using Shnexy.DDay.Collections;
-using Shnexy.DDay.Collections.Interfaces;
-using Shnexy.DDay.Collections.Proxies;
 
 namespace DDay.Collections.Test
 {

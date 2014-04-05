@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Shnexy.DDay.Collections.Interfaces;
+﻿using System.Collections.Generic;
+using Data.DDay.Collections.Interfaces;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Interfaces.General
 {
     public interface ICalendarParameterCollection :
         IGroupedList<string, ICalendarParameter>

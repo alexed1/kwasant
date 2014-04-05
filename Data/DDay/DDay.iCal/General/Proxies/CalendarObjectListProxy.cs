@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Shnexy.DDay.Collections.Interfaces;
-using Shnexy.DDay.Collections.Proxies;
+﻿using System.Linq;
+using Data.DDay.Collections.Interfaces;
+using Data.DDay.Collections.Proxies;
+using Data.DDay.DDay.iCal.Interfaces.General;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.General.Proxies
 {
     public class CalendarObjectListProxy<TType> :
         GroupedCollectionProxy<string, ICalendarObject, TType>,

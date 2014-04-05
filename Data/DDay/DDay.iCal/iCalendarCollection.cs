@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Runtime.Serialization;
-using Shnexy.DDay.iCal.Serialization;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Structs;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {
     /// <summary>
     /// A list of iCalendars.

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Data.DDay.DDay.iCal.Interfaces.General;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.ExtensionMethods
 {
     public static class CalendarObjectExtensions
     {

@@ -1,6 +1,6 @@
 using System;
 
-namespace Shnexy.DDay.Collections.Interfaces
+namespace Data.DDay.Collections.Interfaces
 {
     public interface IGroupedObject<TGroup>
     {

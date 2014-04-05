@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Net;
 
-namespace Shnexy.Services.APIManagement.Transmitters.Restful
+namespace Data.Services.APIManager.Transmitters.Restful
 {
     /// <summary>
     /// Container class for common properties shared by RestResponse

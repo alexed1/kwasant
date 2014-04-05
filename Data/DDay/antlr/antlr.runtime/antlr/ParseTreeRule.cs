@@ -1,4 +1,7 @@
-namespace antlr
+using System.Text;
+using Data.DDay.antlr.antlr.runtime.antlr.collections;
+
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
 
 	/* ANTLR Translator Generator
@@ -11,12 +14,8 @@ namespace antlr
 	//                            Kunle Odutola       : kunle UNDERSCORE odutola AT hotmail DOT com
 	//                            Anthony Oguntimehin
 	//
-
-	using System;
-	using StringBuilder 	= System.Text.StringBuilder;
-	using AST 				= antlr.collections.AST;
-
-	public class ParseTreeRule : ParseTree 
+    
+    public class ParseTreeRule : ParseTree 
 	{
 		public const int INVALID_ALT = -1;
 

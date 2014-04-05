@@ -1,7 +1,6 @@
-using System;
-using StringBuilder			= System.Text.StringBuilder;
+using System.Text;
 
-namespace antlr
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
 	/*ANTLR Translator Generator
 	* Project led by Terence Parr at http://www.jGuru.com

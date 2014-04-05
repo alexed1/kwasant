@@ -1,8 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	
-	public interface ParserMatchListener : Listener
+    public interface ParserMatchListener : Listener
 	{
 		void  parserMatch		(object source, MatchEventArgs e);
 		void  parserMatchNot	(object source, MatchEventArgs e);

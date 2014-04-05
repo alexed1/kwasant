@@ -1,10 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Shnexy.DataAccessLayer.Interfaces;
+﻿using System.Collections.Generic;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Factory;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.Evaluation;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Structs;
+using Data.DataAccessLayer.Interfaces;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {
     public class FreeBusy :
         UniqueComponent,

@@ -9,8 +9,14 @@ using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
+using Data.DDay.DDay.iCal;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
+using Data.DDay.DDay.iCal.Structs;
+using Data.DataAccessLayer.Interfaces;
 using NUnit.Framework;
 
 namespace Shnexy.DDay.iCal.Test
@@ -374,7 +380,7 @@ namespace Shnexy.DDay.iCal.Test
 
                 if (tzinfo != null)
                 {
-                    var ical_tz = DDay.iCal.iCalTimeZone.FromSystemTimeZone(tzinfo);
+                    var ical_tz = iCalTimeZone.FromSystemTimeZone(tzinfo);
                     Assert.AreNotEqual(0, ical_tz.TimeZoneInfos.Count, zone.StandardName + ": no time zone information was extracted.");
                 }
             }

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Shnexy.DDay.iCal.Serialization
+namespace Data.DDay.DDay.iCal.Interfaces.Serialization.Factory
 {
     public interface ISerializerFactory
     {

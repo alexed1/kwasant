@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Shnexy.Models;
+﻿using Data.Models;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {
     #region Alarms
 
@@ -71,7 +67,7 @@ namespace Shnexy.DDay.iCal
     };
 
     /// <summary>
-    /// Status codes available to a <see cref="Todo"/> item.
+    /// Status codes available to a <see cref="Data.DDay.DDay.iCal.Components.Todo"/> item.
     /// </summary>
     public enum TodoStatus
     {
@@ -82,7 +78,7 @@ namespace Shnexy.DDay.iCal
     };
 
     /// <summary>
-    /// Status codes available to a <see cref="Journal"/> entry.
+    /// Status codes available to a <see cref="Data.DDay.DDay.iCal.Components.Journal"/> entry.
     /// </summary>    
     public enum JournalStatus
     {

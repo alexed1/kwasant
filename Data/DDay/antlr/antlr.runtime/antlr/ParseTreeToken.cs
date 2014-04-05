@@ -1,4 +1,6 @@
-namespace antlr
+using System.Text;
+
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
 
 	/* ANTLR Translator Generator
@@ -11,12 +13,8 @@ namespace antlr
 	//                            Kunle Odutola       : kunle UNDERSCORE odutola AT hotmail DOT com
 	//                            Anthony Oguntimehin
 	//
-
-	using System;
-	using StringBuilder 	= System.Text.StringBuilder;
-	using AST 				= antlr.collections.AST;
-
-	public class ParseTreeToken : ParseTree
+    
+    public class ParseTreeToken : ParseTree
 	{
 		protected IToken token;
 

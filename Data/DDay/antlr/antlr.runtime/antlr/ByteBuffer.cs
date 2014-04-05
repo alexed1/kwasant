@@ -1,10 +1,7 @@
 using System;
-using System.Runtime.InteropServices;
-using Stream = System.IO.Stream;
-using BinaryReader = System.IO.BinaryReader;
-using IOException = System.IO.IOException;
+using System.IO;
 
-namespace antlr
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
     /*ANTLR Translator Generator
     * Project led by Terence Parr at http://www.jGuru.com

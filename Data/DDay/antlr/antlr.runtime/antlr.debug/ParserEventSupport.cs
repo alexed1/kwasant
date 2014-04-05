@@ -1,16 +1,9 @@
-namespace antlr.debug
+using System.Collections;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
+
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	using System.Reflection;
-
-    using Hashtable	        = System.Collections.Hashtable;
-	using DictionaryEntry	= System.Collections.DictionaryEntry;
-	using ArrayList			= System.Collections.ArrayList;
-
-	using antlr.collections.impl;
-	
-	
-	public delegate void MessageEventHandler(object sender, MessageEventArgs e); 
+    public delegate void MessageEventHandler(object sender, MessageEventArgs e); 
 	public delegate void NewLineEventHandler(object sender, NewLineEventArgs e); 
 	public delegate void MatchEventHandler(object sender, MatchEventArgs e); 
 	public delegate void TokenEventHandler(object sender, TokenEventArgs e); 

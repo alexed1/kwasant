@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Shnexy.DataAccessLayer.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.Evaluation;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DataAccessLayer.Interfaces;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Interfaces
 {
     public interface IICalendar :
         ICalendarComponent,

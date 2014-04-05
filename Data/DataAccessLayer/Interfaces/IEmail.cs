@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
+using Data.Models;
 
-namespace Shnexy.Models
+namespace Data.DataAccessLayer.Interfaces
 {
     public interface IEmail
     {

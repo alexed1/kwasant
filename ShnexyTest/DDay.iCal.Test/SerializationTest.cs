@@ -7,13 +7,27 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.StructureMap;
-using Shnexy.DDay.iCal.Serialization;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
+using Data.DDay.DDay.iCal;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.ExtensionMethods;
+using Data.DDay.DDay.iCal.General;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Interfaces.Serialization;
+using Data.DDay.DDay.iCal.Serialization;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Components;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Other;
+using Data.DDay.DDay.iCal.Structs;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.StructureMap;
+using Data.Models;
 using NUnit.Framework;
-using Shnexy.Models;
 using StructureMap;
+using Attachment = Data.DDay.DDay.iCal.DataTypes.Attachment;
 
 namespace Shnexy.DDay.iCal.Test
 {

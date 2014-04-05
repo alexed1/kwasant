@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Globalization;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.Evaluation;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Utility;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Evaluation
 {
     public abstract class Evaluator :
         IEvaluator

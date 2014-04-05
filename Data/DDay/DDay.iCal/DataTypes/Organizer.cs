@@ -1,13 +1,11 @@
 using System;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System.Text;
-using Shnexy.DDay.iCal;
-using System.Runtime.Serialization;
 using System.IO;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.DataTypes
 {
     /// <summary>
     /// A class that represents the organizer of an event/todo/journal.

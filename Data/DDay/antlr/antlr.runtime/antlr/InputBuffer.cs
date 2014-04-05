@@ -1,10 +1,9 @@
-namespace antlr
-{
-	using System;
-	using ArrayList		= System.Collections.ArrayList;
-	using StringBuilder	= System.Text.StringBuilder;
+using System.Collections;
+using System.Text;
 
-	/*ANTLR Translator Generator
+namespace Data.DDay.antlr.antlr.runtime.antlr
+{
+    /*ANTLR Translator Generator
 	* Project led by Terence Parr at http://www.jGuru.com
 	* Software rights: http://www.antlr.org/license.html
 	*/

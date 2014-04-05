@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Runtime.Serialization;
 using System.IO;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.DataTypes
 {
     /// <summary>
     /// Represents a time offset from UTC (Coordinated Universal Time).

@@ -1,8 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	
-	public abstract class GuessingEventArgs : ANTLREventArgs
+    public abstract class GuessingEventArgs : ANTLREventArgs
 	{
 		public GuessingEventArgs()
 		{

@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Models;
 using NUnit.Framework;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.Repositories;
-using Shnexy.DataAccessLayer.StructureMap;
-using Shnexy.Models;
 using Shnexy.DDay.iCal;
 
 namespace ShnexyTest.Fixtures

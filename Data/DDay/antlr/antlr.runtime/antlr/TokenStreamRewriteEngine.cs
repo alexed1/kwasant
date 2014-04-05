@@ -1,4 +1,8 @@
-namespace antlr
+using System.Collections;
+using System.Text;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
+
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
 	/* ANTLR Translator Generator
 	 * Project led by Terence Parr at http://www.jGuru.com
@@ -10,17 +14,8 @@ namespace antlr
 	//                            Kunle Odutola       : kunle UNDERSCORE odutola AT hotmail DOT com
 	//                            Anthony Oguntimehin
 	//
-
-	using System;
-	using IList 		= System.Collections.IList;
-	using IDictionary 	= System.Collections.IDictionary;
-	using ArrayList 	= System.Collections.ArrayList;
-    using Hashtable     = System.Collections.Hashtable;
-	using IComparer		= System.Collections.IComparer;
-	using StringBuilder = System.Text.StringBuilder;
-	using BitSet 		= antlr.collections.impl.BitSet;
-
-	/// <summary>
+    
+    /// <summary>
 	/// This token stream tracks the *entire* token stream coming from
 	/// a lexer, but does not pass on the whitespace (or whatever else
 	/// you want to discard) to the parser.

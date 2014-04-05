@@ -1,13 +1,11 @@
-using System;
+using System.Windows.Forms;
+using Data.DDay.antlr.antlr.runtime.antlr.collections;
 //using System.Collections;
 //using System.ComponentModel;
 //using System.Drawing;
 //using System.Data;
-using System.Windows.Forms;
 
-using AST = antlr.collections.AST;
-
-namespace antlr.debug.misc
+namespace Data.DDay.antlr.antlr.astframe.antlr.debug.misc
 {
 	/// <summary>
 	/// Summary description for myJTreeASTPanel.

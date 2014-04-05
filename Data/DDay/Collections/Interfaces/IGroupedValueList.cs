@@ -1,4 +1,4 @@
-﻿namespace Shnexy.DDay.Collections.Interfaces
+﻿namespace Data.DDay.Collections.Interfaces
 {
     public interface IGroupedValueList<TGroup, TInterface, TItem, TValueType> :
         IGroupedValueCollection<TGroup, TInterface, TItem, TValueType>,

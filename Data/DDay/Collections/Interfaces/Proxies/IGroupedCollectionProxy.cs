@@ -1,4 +1,4 @@
-﻿namespace Shnexy.DDay.Collections.Interfaces.Proxies
+﻿namespace Data.DDay.Collections.Interfaces.Proxies
 {
     public interface IGroupedCollectionProxy<TGroup, TOriginal, TNew> :
         IGroupedCollection<TGroup, TNew>

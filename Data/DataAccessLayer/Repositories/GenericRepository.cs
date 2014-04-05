@@ -1,12 +1,11 @@
-﻿using Shnexy.DataAccessLayer.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Web;
+using Data.DataAccessLayer.Interfaces;
 
-namespace Shnexy.DataAccessLayer
+namespace Data.DataAccessLayer.Repositories
 {
     //This generic repository ensures minimum repetition in all of the other repositories.
     //The database context is injected via a UnitOfWork implementation

@@ -1,13 +1,14 @@
 using System;
 using System.Diagnostics;
-using System.Collections;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Runtime.Serialization;
 using System.IO;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
+using Data.DDay.DDay.iCal.Structs;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.DataTypes
 {
     /// <summary>
     /// The iCalendar equivalent of the .NET <see cref="DateTime"/> class.
@@ -378,7 +379,7 @@ namespace Shnexy.DDay.iCal
         }
 
         /// <summary>
-        /// Gets/sets the <see cref="iCalTimeZoneInfo"/> object for the time
+        /// Gets/sets the <see cref="Data.DDay.DDay.iCal.Components.iCalTimeZoneInfo"/> object for the time
         /// zone set by <see cref="TZID"/>.
         /// </summary>
         public TimeZoneObservance? TimeZoneObservance

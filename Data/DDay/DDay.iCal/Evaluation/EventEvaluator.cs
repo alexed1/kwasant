@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Shnexy.DataAccessLayer.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DataAccessLayer.Interfaces;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Evaluation
 {
     public class EventEvaluator :
         RecurringEvaluator

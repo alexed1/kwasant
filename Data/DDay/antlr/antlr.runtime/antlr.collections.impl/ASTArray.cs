@@ -1,7 +1,4 @@
-using System;
-using AST = antlr.collections.AST;
-	
-namespace antlr.collections.impl
+namespace Data.DDay.antlr.antlr.runtime.antlr.collections.impl
 {
 	/*ANTLR Translator Generator
 	* Project led by Terence Parr at http://www.jGuru.com

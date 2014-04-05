@@ -1,12 +1,11 @@
-﻿using Shnexy.DataAccessLayer.Repositories;
-using Shnexy.Models;
+﻿using Data.DataAccessLayer.Infrastructure;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.Repositories;
+using Data.Models;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
-using Shnexy.DataAccessLayer;
-using Shnexy.DataAccessLayer.Interfaces;
-
-namespace Shnexy.DataAccessLayer.StructureMap
+namespace Data.DataAccessLayer.StructureMap
 {
     public class StructureMapBootStrapper
     {

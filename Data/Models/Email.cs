@@ -1,24 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Entity;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net.Mail;
-using System.Web;
-using System.Windows.Forms;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.Repositories;
+using Data.Services.APIManager.Packagers.Mandrill;
+using Data.Services.EmailManager;
 using Newtonsoft.Json;
-using Shnexy.DataAccessLayer;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.Repositories;
-using Shnexy.DDay.iCal;
-using Shnexy.Services.APIManagement.Packagers.Mandrill;
-using Shnexy.Services.EmailManagement;
 using StructureMap;
 
-namespace Shnexy.Models
+namespace Data.Models
 {
 
     ///// <summary>

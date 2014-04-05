@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections;
-using Shnexy.DDay.Collections;
+using Data.DDay.Collections;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Interfaces.General
 {
     public interface IFilteredCalendarObjectList<T> :
         ICollection<T>

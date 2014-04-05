@@ -1,8 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	
-	public interface SemanticPredicateListener : Listener
+    public interface SemanticPredicateListener : Listener
 	{
 		void  semanticPredicateEvaluated(object source, SemanticPredicateEventArgs e);
 	}

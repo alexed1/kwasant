@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Data.Models;
+using Data.Services.APIManager.Serializers.Json;
+using Data.Services.APIManager.Transmitters.Restful;
 using Microsoft.Owin;
-using Shnexy.Models;
-using Shnexy.Services.APIManagement.Serializers.Json;
-using Shnexy.Services.APIManagement.Transmitters.Restful;
 using UtilitiesLib;
 
-namespace Shnexy.Services.APIManagement.Packagers.Mandrill
-
-{
-    //uses the Mandrill API at https://mandrillapp.com/settings/index
+namespace Data.Services.APIManager.Packagers.Mandrill
+{ //uses the Mandrill API at https://mandrillapp.com/settings/index
     public class MandrillPackager
     {
         #region Members
@@ -120,7 +118,6 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
             return response.Content;
         }
     }
-}
 
 //=============================================================================================================================================
 //MANDRILL-SPECIFIC ENTITIES
@@ -128,83 +125,75 @@ namespace Shnexy.Services.APIManagement.Packagers.Mandrill
 //They should not be used directly, but only by MandrillPackager
 
 
-public class MandrillBasePackage
-{
-    #region Members
-
-    public string Key;
-    public Email Message;
-
-    #endregion
-
-    #region Constructor
-    public MandrillBasePackage(string curKey)
+    public class MandrillBasePackage
     {
-        Key = curKey;
+        #region Members
+
+        public string Key;
+        public Email Message;
+
+        #endregion
+
+        #region Constructor
+        public MandrillBasePackage(string curKey)
+        {
+            Key = curKey;
+        }
+
+        #endregion
     }
 
-    #endregion
-}
-
-/// <summary>
-/// This package combines an email message with mandrill-specific template chunks and a Mandrill key
-/// </summary>
-public class MandrillTemplatePackage : MandrillBasePackage
-{
-    #region Members
+    /// <summary>
+    /// This package combines an email message with mandrill-specific template chunks and a Mandrill key
+    /// </summary>
+    public class MandrillTemplatePackage : MandrillBasePackage
+    {
+        #region Members
 
    
-    public string TemplateName;
-    public List<MandrillDynamicContentChunk> TemplateContent;
+        public string TemplateName;
+        public List<MandrillDynamicContentChunk> TemplateContent;
 
 
-    #endregion
+        #endregion
 
-    #region Constructor
-    public MandrillTemplatePackage(string curKey) : base(curKey)
-    {
+        #region Constructor
+        public MandrillTemplatePackage(string curKey) : base(curKey)
+        {
  
+        }
+
+        #endregion
     }
 
-    #endregion
-}
 
 
-
-[Serializable]
-public class MandrillDynamicContentChunk
-{
-    public string Name;
-    public string Content;
-}
-
-/// <summary>
-/// In the Mandrill JSON, dynamic merge data must be provided on a per-recipient basis. Each recipient can have a List of dynamic chunks.
-/// </summary>
-[Serializable]
-public class MandrillMergeRecipient
-{
-    #region Members
-
-    public string Rcpt;
-    public List<MandrillDynamicContentChunk> Vars;
-
-    #endregion
-
-    #region Constructor
-    public MandrillMergeRecipient()
+    [Serializable]
+    public class MandrillDynamicContentChunk
     {
-        Vars = new List<MandrillDynamicContentChunk> { };
+        public string Name;
+        public string Content;
     }
 
-    #endregion
+    /// <summary>
+    /// In the Mandrill JSON, dynamic merge data must be provided on a per-recipient basis. Each recipient can have a List of dynamic chunks.
+    /// </summary>
+    [Serializable]
+    public class MandrillMergeRecipient
+    {
+        #region Members
+
+        public string Rcpt;
+        public List<MandrillDynamicContentChunk> Vars;
+
+        #endregion
+
+        #region Constructor
+        public MandrillMergeRecipient()
+        {
+            Vars = new List<MandrillDynamicContentChunk> { };
+        }
+
+        #endregion
+    }
 }
-
-
-
-
-
-
-
-
-

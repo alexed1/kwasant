@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using Data.DDay.DDay.iCal.Interfaces.Serialization;
 
-namespace Shnexy.DDay.iCal.Serialization.iCalendar
+namespace Data.DDay.DDay.iCal.Serialization.iCalendar.Processors
 {
     public class CompositeProcessor<T> :
         List<ISerializationProcessor<T>>,

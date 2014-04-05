@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Shnexy.DataAccessLayer;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.Repositories;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.Repositories;
 
 namespace ShnexyTest.Fixtures
 {

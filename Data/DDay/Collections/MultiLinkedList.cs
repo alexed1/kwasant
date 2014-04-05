@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Shnexy.DDay.Collections.Interfaces;
+using Data.DDay.Collections.Interfaces;
 
-namespace Shnexy.DDay.Collections
+namespace Data.DDay.Collections
 {
     public class MultiLinkedList<TType> :
         List<TType>,

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Shnexy.DDay.Collections
+namespace Data.DDay.Collections
 {
     #region EventArgs
 

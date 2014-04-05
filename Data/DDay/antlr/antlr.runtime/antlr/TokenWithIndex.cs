@@ -1,4 +1,4 @@
-namespace antlr
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
 	/* ANTLR Translator Generator
 	 * Project led by Terence Parr at http://www.jGuru.com
@@ -10,10 +10,8 @@ namespace antlr
 	//                            Kunle Odutola       : kunle UNDERSCORE odutola AT hotmail DOT com
 	//                            Anthony Oguntimehin
 	//
-
-	using System;
-
-	 /// <summary>
+    
+    /// <summary>
 	 /// This token tracks it's own index 0..n-1 relative to the beginning 
 	 /// of the stream. It is designed to work with 
 	 /// <see cref="TokenStreamRewriteEngine"/> in TokenStreamRewriteEngine.cs

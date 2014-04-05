@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using IServiceProvider = Data.DDay.DDay.iCal.Interfaces.General.IServiceProvider;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.General
 {
     public class ServiceProvider :
         IServiceProvider

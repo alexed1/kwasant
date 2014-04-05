@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
-using Shnexy.DDay.iCal.Serialization;
+using Data.DDay.DDay.iCal.Interfaces.Serialization;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Utility
 {
     public static class TextUtil
     {

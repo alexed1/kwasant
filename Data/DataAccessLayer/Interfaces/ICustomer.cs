@@ -1,4 +1,6 @@
-namespace Shnexy.Models
+using Data.Models;
+
+namespace Data.DataAccessLayer.Interfaces
 {
     public interface ICustomer
     {

@@ -1,4 +1,6 @@
-namespace antlr
+using System;
+
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
     /*ANTLR Translator Generator
     * Project led by Terence Parr at http://www.jGuru.com
@@ -14,9 +16,7 @@ namespace antlr
     //
     // With many thanks to Eric V. Smith from the ANTLR list.
     //
-
-    using System;
-
+    
     [Serializable]
     public class ANTLRPanicException : ANTLRException
     {

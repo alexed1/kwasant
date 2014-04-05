@@ -1,15 +1,9 @@
-namespace antlr.debug
+using System.Collections;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
+
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	using System.Reflection;
-
-    using Hashtable	    = System.Collections.Hashtable;
-	using ArrayList		= System.Collections.ArrayList;
-
-	using antlr.collections.impl;
-	
-	
-	/// <summary>A class to assist in firing parser events
+    /// <summary>A class to assist in firing parser events
 	/// NOTE: I intentionally _did_not_ synchronize the event firing and
 	/// add/remove listener methods.  This is because the add/remove should
 	/// _only_ be called by the parser at its start/end, and the _same_thread_

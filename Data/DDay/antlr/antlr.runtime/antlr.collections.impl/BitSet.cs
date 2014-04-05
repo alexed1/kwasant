@@ -1,9 +1,9 @@
 using System;
-using ArrayList = System.Collections.ArrayList;
+using System.Collections;
 
 //using CharFormatter				= antlr.CharFormatter;
 
-namespace antlr.collections.impl
+namespace Data.DDay.antlr.antlr.runtime.antlr.collections.impl
 {
     /*ANTLR Translator Generator
     * Project led by Terence Parr at http://www.jGuru.com

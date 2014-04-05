@@ -1,12 +1,6 @@
 ﻿using System.Diagnostics;
-using Shnexy.DataAccessLayer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Shnexy.Models;
 
-namespace Shnexy.DataAccessLayer
+namespace Data.DataAccessLayer.Infrastructure
 {
     public class ShnexyInitializer : System.Data.Entity.DropCreateDatabaseIfModelChanges<ShnexyDbContext>
     {

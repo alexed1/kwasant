@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
+using Data.DDay.DDay.iCal.General;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Utility
 {
     static public class KnownTypeHelper
     {

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Shnexy.DDay.Collections;
-using Shnexy.DDay.Collections.Interfaces;
+using Data.DDay.Collections;
+using Data.DDay.Collections.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.General;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.General.Proxies
 {
     public class UniqueComponentListProxy<TComponentType> :
         CalendarObjectListProxy<TComponentType>,

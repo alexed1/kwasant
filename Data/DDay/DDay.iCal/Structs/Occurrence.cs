@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Diagnostics;
-using System.Runtime.Serialization;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.Evaluation;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Structs
 {    
 #if !SILVERLIGHT
     [Serializable]

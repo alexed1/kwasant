@@ -7,6 +7,8 @@ using System.Resources;
 using System.Web;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Data.DDay.DDay.iCal;
+using Data.DDay.DDay.iCal.Interfaces;
 using NUnit.Framework;
 
 namespace Shnexy.DDay.iCal.Test

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Runtime.Serialization;
 using System.Reflection;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Utility
 {
     public class SerializationUtil
     {

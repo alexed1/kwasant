@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Net.Mail;
-using System.Web;
-using Shnexy.Models;
+﻿using System.Data.Entity;
+using Data.Models;
 
-namespace Shnexy.DataAccessLayer
+namespace Data.DataAccessLayer.Infrastructure
 {
 
 

@@ -1,16 +1,20 @@
 using System;
-using System.Data;
-using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Runtime.Serialization;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Evaluation;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.Evaluation;
+using Data.DDay.DDay.iCal.Structs;
+using Data.DDay.DDay.iCal.Utility;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {    
     /// <summary>
     /// A class that contains time zone information, and is usually accessed
-    /// from an iCalendar object using the <see cref="DDay.iCal.iCalendar.GetTimeZone"/> method.        
+    /// from an iCalendar object using the <see cref="Shnexy.iCalendareZone"/> method.        
     /// </summary>
 #if !SILVERLIGHT
     [Serializable]

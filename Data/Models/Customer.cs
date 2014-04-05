@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Liki.App.Services.AlertManager;
-using Shnexy.DataAccessLayer;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.Repositories;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.Repositories;
+using Data.Services.AlertManager;
 
-namespace Shnexy.Models
+namespace Data.Models
 {
     public class Customer :  ICustomer
     {

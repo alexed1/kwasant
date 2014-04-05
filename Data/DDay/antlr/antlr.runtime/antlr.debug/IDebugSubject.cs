@@ -1,7 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	//using EventHandlerList	= System.ComponentModel.EventHandlerList;
+    //using EventHandlerList	= System.ComponentModel.EventHandlerList;
 	
 	public interface IDebugSubject
 	{

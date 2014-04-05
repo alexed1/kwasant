@@ -1,8 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	
-	public class Tracer : TraceListenerBase, TraceListener
+    public class Tracer : TraceListenerBase, TraceListener
 	{
 		protected string indentString = "";
 		// TBD: should be StringBuffer

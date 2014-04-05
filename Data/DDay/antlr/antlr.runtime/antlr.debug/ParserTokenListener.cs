@@ -1,8 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	
-	public interface ParserTokenListener : Listener
+    public interface ParserTokenListener : Listener
 	{
 		void  parserConsume	(object source, TokenEventArgs e);
 		void  parserLA		(object source, TokenEventArgs e);

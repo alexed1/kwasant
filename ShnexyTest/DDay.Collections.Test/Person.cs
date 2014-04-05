@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Collections;
-using Shnexy.DDay.Collections;
-using Shnexy.DDay.Collections.Interfaces;
+using Data.DDay.Collections;
+using Data.DDay.Collections.Interfaces;
 
 namespace DDay.Collections.Test
 {

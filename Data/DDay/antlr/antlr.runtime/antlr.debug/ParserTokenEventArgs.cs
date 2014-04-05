@@ -1,8 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	
-	public class TokenEventArgs : ANTLREventArgs
+    public class TokenEventArgs : ANTLREventArgs
 	{
 		public TokenEventArgs()
 		{

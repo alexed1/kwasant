@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Shnexy.DDay.Collections.Interfaces
+namespace Data.DDay.Collections.Interfaces
 {
     public interface IGroupedValueCollection<TGroup, TInterface, TItem, TValueType> :
         IGroupedCollection<TGroup, TInterface>

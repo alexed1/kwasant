@@ -1,10 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections;
-using Shnexy.DataAccessLayer.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Interfaces.Serialization;
+using Data.DDay.DDay.iCal.Interfaces.Serialization.Factory;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Components;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Other;
+using Data.DataAccessLayer.Interfaces;
 
-namespace Shnexy.DDay.iCal.Serialization.iCalendar
+namespace Data.DDay.DDay.iCal.Serialization.iCalendar.Factory
 {
     public class SerializerFactory :
         ISerializerFactory

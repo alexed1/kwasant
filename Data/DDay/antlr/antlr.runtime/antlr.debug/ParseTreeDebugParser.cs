@@ -1,4 +1,7 @@
-namespace antlr.debug
+using System.Collections.Generic;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
+
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
 
 	/* ANTLR Translator Generator
@@ -11,13 +14,8 @@ namespace antlr.debug
 	//                            Kunle Odutola       : kunle UNDERSCORE odutola AT hotmail DOT com
 	//                            Anthony Oguntimehin
 	//
-
-	using System;
-	using Stack = System.Collections.Generic.Stack<object>;
-	using antlr;
-	using BitSet = antlr.collections.impl.BitSet;
-
-	/// <summary>
+    
+    /// <summary>
 	/// Specifies the behaviour required (i.e. parser modifications) 
 	/// specifically to support parse tree debugging and derivation.
 	/// </summary>
@@ -37,7 +35,7 @@ namespace antlr.debug
 		/// Each new rule invocation must have it's own subtree. Tokens are
 		/// added to the current root so we must have a stack of subtree roots.
 		/// </summary>
-		protected Stack currentParseTreeRoot = new Stack();
+		protected Stack<object> currentParseTreeRoot = new Stack<object>();
 
 		/// <summary>
 		/// Track most recently created parse subtree so that when parsing

@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Exceptions
 {
     public class EvaluationEngineException : Exception
     {

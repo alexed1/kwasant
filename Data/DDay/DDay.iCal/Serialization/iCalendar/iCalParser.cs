@@ -1,34 +1,27 @@
 // $ANTLR 2.7.6 (20061021): "iCal.g" -> "iCalParser.cs"$
 
-    using System.Text;
-    using System.IO;
-	using System.Collections;
-    using System.Collections.Generic;  
-    using System.Runtime.Serialization;
-    using Shnexy.DDay.iCal.Serialization;
-    using Shnexy.DDay.iCal.Serialization.iCalendar;
+using System.Text;
+using System.IO;
+using System.Collections;
+using System.Collections.Generic;
+using System;
+using Data.DDay.DDay.iCal.ExtensionMethods;
+using Data.DDay.DDay.iCal.General;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Interfaces.Serialization;
+using Data.DDay.DDay.iCal.Interfaces.Serialization.Factory;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
+using Data.DDay.DDay.iCal.Utility;
+using Data.DDay.antlr.antlr.runtime.antlr;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Serialization.iCalendar
 {
 	// Generate the header common to all output files.
-	using System;
-	
-	using TokenBuffer              = antlr.TokenBuffer;
-	using TokenStreamException     = antlr.TokenStreamException;
-	using TokenStreamIOException   = antlr.TokenStreamIOException;
-	using ANTLRException           = antlr.ANTLRException;
-	using LLkParser = antlr.LLkParser;
-	using Token                    = antlr.Token;
-	using IToken                   = antlr.IToken;
-	using TokenStream              = antlr.TokenStream;
-	using RecognitionException     = antlr.RecognitionException;
-	using NoViableAltException     = antlr.NoViableAltException;
-	using MismatchedTokenException = antlr.MismatchedTokenException;
-	using SemanticException        = antlr.SemanticException;
-	using ParserSharedInputState   = antlr.ParserSharedInputState;
-	using BitSet                   = antlr.collections.impl.BitSet;
-	
-	public 	class iCalParser : antlr.LLkParser
+    
+    public 	class iCalParser : LLkParser
 	{
 		public const int EOF = 1;
 		public const int NULL_TREE_LOOKAHEAD = 3;

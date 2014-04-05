@@ -4,7 +4,7 @@ using System.Web.Http.Controllers;
 using System.Web.Http.Dispatcher;
 using StructureMap;
 
-namespace Shnexy.DataAccessLayer.StructureMap
+namespace Data.DataAccessLayer.StructureMap
 {
     public class StructureMapHttpControllerActivator : IHttpControllerActivator
     {

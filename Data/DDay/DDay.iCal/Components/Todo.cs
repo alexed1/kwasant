@@ -1,12 +1,13 @@
 using System;
 using System.Diagnostics;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Configuration;
 using System.Runtime.Serialization;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Evaluation;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {
     /// <summary>
     /// A class that represents an RFC 5545 VTODO component.

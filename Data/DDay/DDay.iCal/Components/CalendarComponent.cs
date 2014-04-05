@@ -1,15 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Text;
-using System.Reflection;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Diagnostics;
-using Shnexy.DDay.iCal.Serialization;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
+using Data.DDay.DDay.iCal.General;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Interfaces.Serialization;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Components;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {
     /// <summary>
     /// This class is used by the parsing framework for iCalendar components.

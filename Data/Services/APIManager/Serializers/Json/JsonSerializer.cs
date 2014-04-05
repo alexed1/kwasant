@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Shnexy.Services.APIManagement.Serializers.Json
+namespace Data.Services.APIManager.Serializers.Json
 {
     /// <summary>
     /// Default JSON serializer

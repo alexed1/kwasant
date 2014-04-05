@@ -1,14 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.Serialization;
 using System.IO;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.DataTypes
 {
     /// <summary>
-    /// A class that is used to specify exactly when an <see cref="Alarm"/> component will trigger.
+    /// A class that is used to specify exactly when an <see cref="Data.DDay.DDay.iCal.Components.Alarm"/> component will trigger.
     /// Usually this date/time is relative to the component to which the Alarm is associated.
     /// </summary>    
 #if !SILVERLIGHT

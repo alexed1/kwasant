@@ -1,10 +1,9 @@
-namespace antlr.debug
+using System.Threading;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
+
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	using System.Threading;
-	using antlr.collections.impl;
-	
-	public class LLkDebuggingParser : LLkParser, DebuggingParser
+    public class LLkDebuggingParser : LLkParser, DebuggingParser
 	{
 		private void  InitBlock()
 		{

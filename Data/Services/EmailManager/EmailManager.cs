@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
-using Shnexy.Models;
-using Shnexy.Services.APIManagement.Packagers.Mandrill;
+using Data.Models;
+using Data.Services.APIManager.Packagers.Mandrill;
 
-namespace Shnexy.Services.EmailManagement
+namespace Data.Services.EmailManager
 {
     public class EmailManager
     {

@@ -6,11 +6,10 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.Repositories;
-using Shnexy.Models;
-using Shnexy.DataAccessLayer;
-using Shnexy.Services.APIManagement.Packagers.Shnexy;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.Repositories;
+using Data.Models;
+using Data.Services.APIManager.Packagers.Shnexy;
 using StructureMap;
 using UtilitiesLib;
 

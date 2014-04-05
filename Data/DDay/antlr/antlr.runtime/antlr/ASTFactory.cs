@@ -1,15 +1,11 @@
 using System;
 using System.Collections;
-using Assembly = System.Reflection.Assembly;
+using System.Diagnostics;
+using System.Reflection;
+using Data.DDay.antlr.antlr.runtime.antlr.collections;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
 
-using Hashtable = System.Collections.Hashtable;
-using ArrayList = System.Collections.ArrayList;
-using Debug = System.Diagnostics.Debug;
-using AST = antlr.collections.AST;
-using ASTArray = antlr.collections.impl.ASTArray;
-using ANTLRException = antlr.ANTLRException;
-
-namespace antlr
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
     /*ANTLR Translator Generator
     * Project led by Terence Parr at http://www.jGuru.com

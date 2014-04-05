@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using Data.DDay.DDay.iCal.Serialization;
 
-namespace Shnexy.DDay.iCal.Serialization
+namespace Data.DDay.DDay.iCal.Interfaces.Serialization
 {
     public interface IDataTypeMapper
     {

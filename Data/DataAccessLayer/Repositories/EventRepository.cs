@@ -5,13 +5,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Web;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DDay.iCal;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
-using Shnexy.Models;
+using Data.DDay.DDay.iCal;
+using Data.DDay.DDay.iCal.ExtensionMethods;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
+using Data.DataAccessLayer.Interfaces;
+using Data.Models;
 
-namespace Shnexy.DataAccessLayer.Repositories
+namespace Data.DataAccessLayer.Repositories
 {
 
     //The EventRepository works differently from other repositories. It does not attempt to persist the Event class directly via EF but instead serializes it and stores the resulting

@@ -1,13 +1,8 @@
 using System;
-using System.Diagnostics;
-using System.Data;
-using System.Configuration;
-using Shnexy.DDay.iCal;
-using Shnexy.DDay.iCal.Serialization;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Data.DDay.DDay.iCal.Interfaces.Components;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {
     /// <summary>
     /// A class that represents an RFC 5545 VJOURNAL component.

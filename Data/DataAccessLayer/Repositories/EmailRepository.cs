@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Web;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.Models;
+﻿using Data.DataAccessLayer.Interfaces;
+using Data.Models;
 
-namespace Shnexy.DataAccessLayer.Repositories
+namespace Data.DataAccessLayer.Repositories
 {
 
 

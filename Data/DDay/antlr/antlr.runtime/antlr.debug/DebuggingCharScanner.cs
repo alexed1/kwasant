@@ -1,12 +1,10 @@
-namespace antlr.debug
-{
-	using System;
-	using System.Threading;
-	using antlr;
+using System;
+using System.Threading;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
 
-	using BitSet	= antlr.collections.impl.BitSet;
-	
-	public abstract class DebuggingCharScanner : CharScanner, DebuggingParser
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
+{
+    public abstract class DebuggingCharScanner : CharScanner, DebuggingParser
 	{
 		private void  InitBlock()
 		{

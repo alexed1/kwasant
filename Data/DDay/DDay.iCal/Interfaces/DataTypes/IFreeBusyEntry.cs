@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Shnexy.DDay.iCal
+﻿namespace Data.DDay.DDay.iCal.Interfaces.DataTypes
 {
     public interface IFreeBusyEntry :
         IPeriod

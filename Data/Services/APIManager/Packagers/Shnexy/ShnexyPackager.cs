@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Text.RegularExpressions;
-using Shnexy.Models;
-using Shnexy.Services.APIManagement.Serializers.Json;
+using Data.Models;
+using Data.Services.APIManager.Serializers.Json;
 using UtilitiesLib;
 
-
-namespace Shnexy.Services.APIManagement.Packagers.Shnexy
+namespace Data.Services.APIManager.Packagers.Shnexy
 {
     /// <summary>
     /// This class converts JSON to Objects and vice versa, so that RESTful calls can be processed.

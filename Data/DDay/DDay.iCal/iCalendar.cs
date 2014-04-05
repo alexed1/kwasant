@@ -2,16 +2,24 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DDay.iCal.Serialization;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
-using Shnexy.Models;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.ExtensionMethods;
+using Data.DDay.DDay.iCal.General.Proxies;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.Evaluation;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Interfaces.Serialization;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
+using Data.DDay.DDay.iCal.Structs;
+using Data.DataAccessLayer.Interfaces;
+using Data.Models;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {
     /// <summary>
     /// A class that represents an iCalendar object.  To load an iCalendar object, generally a
@@ -510,7 +518,7 @@ namespace Shnexy.DDay.iCal
         }
 
         /// <summary>
-        /// A collection of <see cref="DDay.iCal.FreeBusy"/> components in the iCalendar.
+        /// A collection of <see cref="Shnexy.Data.DDay.DDay.iCal.Components.FreeBusyponents in the iCalendar.
         /// </summary>
         virtual public IUniqueComponentList<IFreeBusy> FreeBusy
         {
@@ -518,7 +526,7 @@ namespace Shnexy.DDay.iCal
         }
 
         /// <summary>
-        /// A collection of <see cref="Journal"/> components in the iCalendar.
+        /// A collection of <see cref="Data.DDay.DDay.iCal.Components.Journal"/> components in the iCalendar.
         /// </summary>
         virtual public ICalendarObjectList<IJournal> Journals
         {
@@ -534,7 +542,7 @@ namespace Shnexy.DDay.iCal
         }
 
         /// <summary>
-        /// A collection of <see cref="Todo"/> components in the iCalendar.
+        /// A collection of <see cref="Data.DDay.DDay.iCal.Components.Todo"/> components in the iCalendar.
         /// </summary>
         virtual public IUniqueComponentList<ITodo> Todos
         {

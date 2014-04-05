@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 
 using System.Text;
-
+using Data.DDay.DDay.iCal;
+using Data.Models;
 using NUnit.Framework;
-using Shnexy.Models;
 
 namespace Shnexy.DDay.iCal.Test
 {

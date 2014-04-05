@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Shnexy.Models;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.Models;
 using Shnexy.DDay.iCal;
 
 namespace ShnexyTest.Fixtures

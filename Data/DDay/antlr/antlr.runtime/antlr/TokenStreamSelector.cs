@@ -1,10 +1,7 @@
-using System;
+using System.Collections;
+using System.Collections.Generic;
 
-using Hashtable = System.Collections.Hashtable;
-
-using Stack    		= System.Collections.Generic.Stack<object>;
-	
-namespace antlr
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
 	/*ANTLR Translator Generator
 	* Project led by Terence Parr at http://www.jGuru.com
@@ -37,7 +34,7 @@ namespace antlr
 		protected internal TokenStream input;
 		
 		/*Used to track stack of input streams */
-		protected internal Stack streamStack = new Stack();
+		protected internal Stack<object> streamStack = new Stack<object>();
 		
 		public TokenStreamSelector() : base()
 		{

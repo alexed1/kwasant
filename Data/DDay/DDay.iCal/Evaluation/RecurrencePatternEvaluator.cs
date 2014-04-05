@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Globalization;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Exceptions;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Utility;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.Evaluation
 {
     /// <summary>
     /// Much of this code comes from iCal4j, as Ben Fortuna has done an

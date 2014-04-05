@@ -1,8 +1,6 @@
-namespace antlr.debug
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
 {
-	using System;
-	
-	public interface ICharScannerDebugSubject : IDebugSubject
+    public interface ICharScannerDebugSubject : IDebugSubject
 	{
 		event NewLineEventHandler				HitNewLine;
 		event MatchEventHandler					MatchedChar;

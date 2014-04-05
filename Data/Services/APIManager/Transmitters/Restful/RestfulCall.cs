@@ -4,8 +4,7 @@ using System.Net;
 using System.Text;
 using UtilitiesLib;
 
-
-namespace Shnexy.Services.APIManagement.Transmitters.Restful
+namespace Data.Services.APIManager.Transmitters.Restful
 {
     /// <summary>
     /// Container for data used to make requests

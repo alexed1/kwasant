@@ -1,13 +1,8 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
-using System.ComponentModel;
-using System.Runtime.Serialization;
-using Shnexy.DDay.Collections;
+using Data.DDay.Collections;
+using Data.DDay.DDay.iCal.Interfaces.General;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.General
 {
     /// <summary>
     /// A collection of calendar objects.

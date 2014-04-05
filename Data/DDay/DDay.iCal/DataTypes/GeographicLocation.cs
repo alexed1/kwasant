@@ -1,17 +1,16 @@
 using System;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.Serialization;
 using System.IO;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
-using Shnexy.Models;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
+using Data.Models;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal.DataTypes
 {
     /// <summary>
     /// A class that represents the geographical location of an
-    /// <see cref="Event"/> or <see cref="Todo"/> item.
+    /// <see cref="Event"/> or <see cref="Data.DDay.DDay.iCal.Components.Todo"/> item.
     /// </summary>
     [DebuggerDisplay("{Latitude};{Longitude}")]
 #if !SILVERLIGHT

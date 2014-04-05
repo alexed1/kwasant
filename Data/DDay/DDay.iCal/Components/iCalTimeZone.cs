@@ -1,14 +1,18 @@
 using System;
-using System.Data;
-using System.Collections;
-using System.Configuration;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Globalization;
 using System.Diagnostics;
-using Shnexy.DDay.Collections;
+using Data.DDay.Collections;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Evaluation;
+using Data.DDay.DDay.iCal.ExtensionMethods;
+using Data.DDay.DDay.iCal.General.Proxies;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Structs;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {
     /// <summary>
     /// A class that represents an RFC 5545 VTIMEZONE component.
@@ -79,7 +83,7 @@ namespace Shnexy.DDay.iCal
                     continue;
 
                 var delta = adjustmentRule.DaylightDelta;
-                var dday_tzinfo_standard = new DDay.iCal.iCalTimeZoneInfo();
+                var dday_tzinfo_standard = new iCalTimeZoneInfo();
                 dday_tzinfo_standard.Name = "STANDARD";
                 dday_tzinfo_standard.TimeZoneName = tzinfo.StandardName;
                 dday_tzinfo_standard.Start = new iCalDateTime(new DateTime(adjustmentRule.DateStart.Year, adjustmentRule.DaylightTransitionEnd.Month, adjustmentRule.DaylightTransitionEnd.Day, adjustmentRule.DaylightTransitionEnd.TimeOfDay.Hour, adjustmentRule.DaylightTransitionEnd.TimeOfDay.Minute, adjustmentRule.DaylightTransitionEnd.TimeOfDay.Second).AddDays(1));
@@ -94,7 +98,7 @@ namespace Shnexy.DDay.iCal
 
                 if (tzinfo.SupportsDaylightSavingTime)
                 {
-                    var dday_tzinfo_daylight = new DDay.iCal.iCalTimeZoneInfo();
+                    var dday_tzinfo_daylight = new iCalTimeZoneInfo();
                     dday_tzinfo_daylight.Name = "DAYLIGHT";
                     dday_tzinfo_daylight.TimeZoneName = tzinfo.DaylightName;
                     dday_tzinfo_daylight.Start = new iCalDateTime(new DateTime(adjustmentRule.DateStart.Year, adjustmentRule.DaylightTransitionStart.Month, adjustmentRule.DaylightTransitionStart.Day, adjustmentRule.DaylightTransitionStart.TimeOfDay.Hour, adjustmentRule.DaylightTransitionStart.TimeOfDay.Minute, adjustmentRule.DaylightTransitionStart.TimeOfDay.Second));
@@ -114,7 +118,7 @@ namespace Shnexy.DDay.iCal
             // base time zone information.
             if (dday_tz.TimeZoneInfos.Count == 0)
             {
-                var dday_tzinfo_standard = new DDay.iCal.iCalTimeZoneInfo();
+                var dday_tzinfo_standard = new iCalTimeZoneInfo();
                 dday_tzinfo_standard.Name = "STANDARD";
                 dday_tzinfo_standard.TimeZoneName = tzinfo.StandardName;
                 dday_tzinfo_standard.Start = earliest;                

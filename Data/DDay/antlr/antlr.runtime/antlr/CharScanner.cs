@@ -1,16 +1,13 @@
 using System;
-using Stream = System.IO.Stream;
-using TextReader = System.IO.TextReader;
-using StringBuilder = System.Text.StringBuilder;
+using System.Collections;
+using System.ComponentModel;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using Data.DDay.antlr.antlr.runtime.antlr.collections.impl;
+using Data.DDay.antlr.antlr.runtime.antlr.debug;
 
-using Hashtable = System.Collections.Hashtable;
-using Assembly = System.Reflection.Assembly;
-using EventHandlerList = System.ComponentModel.EventHandlerList;
-
-using BitSet = antlr.collections.impl.BitSet;
-using antlr.debug;
-
-namespace antlr
+namespace Data.DDay.antlr.antlr.runtime.antlr
 {
     /*ANTLR Translator Generator
     * Project led by Terence Parr at http://www.jGuru.com

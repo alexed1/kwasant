@@ -1,9 +1,8 @@
-namespace antlr.debug
-{
-	using System;
-	using ArrayList	= System.Collections.ArrayList;
+using System.Collections;
 
-	public class InputBufferEventSupport
+namespace Data.DDay.antlr.antlr.runtime.antlr.debug
+{
+    public class InputBufferEventSupport
 	{
 		public virtual ArrayList InputBufferListeners
 		{

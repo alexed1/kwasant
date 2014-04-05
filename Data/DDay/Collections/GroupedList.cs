@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Shnexy.DDay.Collections.Enumerators;
-using Shnexy.DDay.Collections.Interfaces;
+using Data.DDay.Collections.Enumerators;
+using Data.DDay.Collections.Interfaces;
 
-namespace Shnexy.DDay.Collections
+namespace Data.DDay.Collections
 {
     /// <summary>
     /// A list of objects that are keyed.

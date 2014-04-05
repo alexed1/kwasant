@@ -7,10 +7,14 @@ using System.Resources;
 using System.Web;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Data.DDay.DDay.iCal;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.ExtensionMethods;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.StructureMap;
+using Data.Models;
 using NUnit.Framework;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.StructureMap;
-using Shnexy.Models;
 using StructureMap;
 
 namespace Shnexy.DDay.iCal.Test

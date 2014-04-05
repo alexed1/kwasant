@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Shnexy.DDay.Collections.Interfaces
+namespace Data.DDay.Collections.Interfaces
 {
     public interface IValueObject<T>
     {
