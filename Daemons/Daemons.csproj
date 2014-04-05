@@ -32,12 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework">
-      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
-    </Reference>
-    <Reference Include="EntityFramework.SqlServer">
-      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
-    </Reference>
     <Reference Include="S22.Imap">
       <HintPath>..\packages\S22.Imap.3.6.0.0\lib\net40\S22.Imap.dll</HintPath>
     </Reference>
@@ -55,7 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseDaemon.cs" />
+    <Compile Include="Daemon.cs" />
     <Compile Include="EventExposers\ExposedEvent.cs" />
     <Compile Include="InboundEmailHander.cs" />
     <Compile Include="OutboundEmailHandler.cs" />
@@ -66,9 +60,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shnexy.csproj">
-      <Project>{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}</Project>
-      <Name>Shnexy</Name>
+    <ProjectReference Include="..\Data\Data.csproj">
+      <Project>{0bd2e27e-8bc3-400b-8560-b67015b4cfac}</Project>
+      <Name>Data</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

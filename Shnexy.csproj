@@ -41,10 +41,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxMin, Version=4.57.4561.28951, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\AjaxMin.dll</HintPath>
-    </Reference>
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
@@ -121,29 +117,8 @@
     <Reference Include="StructureMap">
       <HintPath>packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
     </Reference>
-    <Reference Include="Syncfusion.Core, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=632609b4d040f6b4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Linq.Base, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.Linq.Base.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Schedule.Mvc, Version=11.4500.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\MVC\MVC5\Syncfusion.Schedule.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Shared.Mvc, Version=11.4500.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\MVC\MVC5\Syncfusion.Shared.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Theme.Base, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.Theme.Base.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
@@ -188,7 +163,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -257,341 +231,13 @@
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\Helpers\Log.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="DataAccessLayer\Infrastructure\UnitOfWork.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\IEvent.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\EventRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\ICustomerRepository.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\IUnitOfWork.cs" />
-    <Compile Include="DataAccessLayer\Infrastructure\ShnexyInitializer.cs" />
-    <Compile Include="DataAccessLayer\Repositories\EmailAddressRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\EmailRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\CustomerRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\GenericRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\IGenericRepository.cs" />
-    <Compile Include="DataAccessLayer\StructureMap\StructureMapBootStrapper.cs" />
-    <Compile Include="DataAccessLayer\StructureMap\StructureMapControllerFactory.cs" />
-    <Compile Include="DataAccessLayer\StructureMap\StructureMapHttpControllerActivator.cs" />
-    <Compile Include="DDay\antlr\antlr.astframe\antlr.debug.misc\ASTFrame.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DDay\antlr\antlr.astframe\antlr.debug.misc\JTreeASTPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.collections.impl\ASTArray.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.collections.impl\BitSet.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.collections\AST.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ANTLREventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\DebuggingCharScanner.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\DebuggingInputBuffer.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\DebuggingParser.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\GuessingEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ICharScannerDebugSubject.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\IDebugSubject.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\InputBufferEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\InputBufferEventSupport.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\InputBufferListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\InputBufferListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\InputBufferReporter.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\IParserDebugSubject.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\Listener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\LLkDebuggingParser.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\MessageEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\MessageListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\MessageListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\NewLineEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\NewLineListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserController.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserEventSupport.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserMatchEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserMatchListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserMatchListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserReporter.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserTokenEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserTokenListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserTokenListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParseTreeDebugParser.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ScannerEventSupport.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\SemanticPredicateEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\SemanticPredicateListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\SemanticPredicateListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\SyntacticPredicateEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\SyntacticPredicateListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\SyntacticPredicateListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\TraceEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\TraceListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\TraceListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\Tracer.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ANTLRException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ANTLRPanicException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ASTFactory.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ASTNodeCreator.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ASTNULLType.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ASTPair.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ASTVisitor.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\BaseAST.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ByteBuffer.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CharBuffer.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CharQueue.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CharScanner.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CharStreamException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CharStreamIOException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CommonAST.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CommonASTWithHiddenTokens.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CommonHiddenStreamToken.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CommonToken.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\DefaultFileLineFormatter.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\DumpASTVisitor.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\FileLineFormatter.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\IHiddenStreamToken.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\InputBuffer.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\IToken.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\LexerSharedInputState.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\LLkParser.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\MismatchedCharException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\MismatchedTokenException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\NoViableAltException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\NoViableAltForCharException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\Parser.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ParserSharedInputState.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ParseTree.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ParseTreeRule.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ParseTreeToken.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\RecognitionException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\SemanticException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\StringUtils.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\Token.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenBuffer.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenCreator.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenQueue.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStream.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamBasicFilter.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamHiddenTokenFilter.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamIOException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamRecognitionException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamRetryException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamRewriteEngine.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamSelector.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenWithIndex.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TreeParser.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TreeParserSharedInputState.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\SupportClass.cs" />
-    <Compile Include="DDay\Collections\Constants.cs" />
-    <Compile Include="DDay\Collections\Enumerators\GroupedListEnumerator.cs" />
-    <Compile Include="DDay\Collections\GroupedList.cs" />
-    <Compile Include="DDay\Collections\GroupedValueList.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IGroupedCollection.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IGroupedList.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IGroupedObject.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IGroupedValueCollection.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IGroupedValueList.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IMultiLinkedList.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IValueObject.cs" />
-    <Compile Include="DDay\Collections\Interfaces\Proxies\IGroupedCollectionProxy.cs" />
-    <Compile Include="DDay\Collections\Interfaces\Proxies\IGroupedValueListProxy.cs" />
-    <Compile Include="DDay\Collections\MultiLinkedList.cs" />
-    <Compile Include="DDay\Collections\Proxies\GroupedCollectionProxy.cs" />
-    <Compile Include="DDay\Collections\Proxies\GroupedValueListProxy.cs" />
-    <Compile Include="DDay\DDay.iCal\Compatibility\BrowsableAttribute.cs" />
-    <Compile Include="DDay\DDay.iCal\Compatibility\DebuggerDisplayAttribute.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\Alarm.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\CalendarComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\FreeBusy.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\iCalTimeZone.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\iCalTimeZoneInfo.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\Journal.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\RecurringComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\Todo.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\UniqueComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Constants.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\Attachment.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\Attendee.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\CalendarDataType.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\EncodableDataType.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\FreeBusyEntry.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\GeographicLocation.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\iCalDateTime.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\IGroupedCollection.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\Organizer.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\Period.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\PeriodList.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\RecurrencePattern.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\RequestStatus.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\StatusCode.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\Trigger.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\UTCOffset.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\WeekDay.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\Evaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\EventEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\PeriodListEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\RecurrencePatternEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\RecurringEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\TimeZoneEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\TimeZoneInfoEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\TodoEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Exceptions\EvaluationEngineException.cs" />
-    <Compile Include="DDay\DDay.iCal\ExtensionMethods\CalendarObjectExtensions.cs" />
-    <Compile Include="DDay\DDay.iCal\ExtensionMethods\ListExtensions.cs" />
-    <Compile Include="DDay\DDay.iCal\Factory\UIDFactory.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarObject.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarObjectBase.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarObjectList.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarParameter.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarParameterList.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarProperty.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarPropertyList.cs" />
-    <Compile Include="DDay\DDay.iCal\General\Proxies\CalendarObjectListProxy.cs" />
-    <Compile Include="DDay\DDay.iCal\General\Proxies\CalendarParameterCollectionProxy.cs" />
-    <Compile Include="DDay\DDay.iCal\General\Proxies\UniqueComponentListProxy.cs" />
-    <Compile Include="DDay\DDay.iCal\General\ServiceProvider.cs" />
-    <Compile Include="DDay\DDay.iCal\iCalendar.cs" />
-    <Compile Include="DDay\DDay.iCal\iCalendarCollection.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IAlarm.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IAlarmContainer.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\ICalendarComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IFreeBusy.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IJournal.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IRecurringComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\ITimeZone.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\ITimeZoneInfo.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\ITodo.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IUniqueComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IAttachment.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IAttendee.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\ICalendarDataType.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IDateTime.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IEncodableDataType.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IFreeBusyEntry.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IGeographicLocation.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IOrganizer.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IPeriod.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IPeriodList.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IRecurrencePattern.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IRequestStatus.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IStatusCode.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\ITrigger.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IUTCOffset.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IWeekDay.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Evaluation\IEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Evaluation\IGetFreeBusy.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Evaluation\IGetOccurrences.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Evaluation\IRecurrable.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarObject.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarObjectList.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarParameter.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarParameterCollection.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarParameterCollectionContainer.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarProperty.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarPropertyList.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarPropertyListContainer.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICopyable.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\IFilteredCalendarObjectList.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ILoadable.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\IMergeable.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\IServiceProvider.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\IUniqueComponentList.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\Proxies\ICalendarParameterCollectionProxy.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\IICalendar.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\IICalendarCollection.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\Factory\ICalendarComponentFactory.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\Factory\ISerializerFactory.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\IDataTypeMapper.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\IEncodingProvider.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\IEncodingStack.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\ISerializationContext.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\ISerializationProcessor.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\ISerializationSettings.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\ISerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\IStringSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\DataTypeMapper.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\EncodingProvider.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\EncodingStack.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\Factory\ComponentFactory.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Factory\DataTypeSerializerFactory.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Factory\SerializerFactory.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\iCalLexer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\iCalParser.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\iCalParserTokenTypes.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Processors\ComponentPropertyConsolidator.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Processors\CompositeProcessor.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\SerializationInfo.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Components\ComponentSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Components\EventSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Components\UniqueComponentSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataMapSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\AttachmentSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\AttendeeSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\DataTypeSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\DateTimeSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\EncodableDataTypeSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\FreeBusyEntrySerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\GeographicLocationSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\OrganizerSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\PeriodListSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\PeriodSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\RecurrencePatternSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\RequestStatusSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\StatusCodeSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\TriggerSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\UTCOffsetSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\WeekDaySerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\iCalendarSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Other\EnumSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Other\IntegerSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Other\StringSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Other\TimeSpanSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Other\UriSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\ParameterSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\PropertySerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\SerializerBase.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\SerializationContext.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\SerializationSettings.cs" />
-    <Compile Include="DDay\DDay.iCal\Structs\AlarmOccurrence.cs" />
-    <Compile Include="DDay\DDay.iCal\Structs\Occurrence.cs" />
-    <Compile Include="DDay\DDay.iCal\Structs\TimeZoneObservance.cs" />
-    <Compile Include="DDay\DDay.iCal\Utility\DateUtil.cs" />
-    <Compile Include="DDay\DDay.iCal\Utility\KnownTypeHelper.cs" />
-    <Compile Include="DDay\DDay.iCal\Utility\RecurrenceUtil.cs" />
-    <Compile Include="DDay\DDay.iCal\Utility\SerializationUtil.cs" />
-    <Compile Include="DDay\DDay.iCal\Utility\TextUtil.cs" />
     <Compile Include="Fixtures\Seed.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="IDaemon.cs" />
-    <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\Alert.cs" />
-    <Compile Include="Models\Attachment.cs" />
-    <Compile Include="Models\Customer.cs" />
-    <Compile Include="Models\EmailAddress.cs" />
-    <Compile Include="Models\Email.cs" />
-    <Compile Include="Models\Engine.cs" />
     <Compile Include="Controllers\EngineController.cs" />
-    <Compile Include="Models\Event.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\ICustomer.cs" />
-    <Compile Include="Models\EventFile.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\IEmail.cs" />
-    <Compile Include="Models\Profile.cs" />
-    <Compile Include="Models\Registration.cs" />
-    <Compile Include="Models\Service.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DataAccessLayer\Infrastructure\ShnexyDbContext.cs" />
-    <Compile Include="Services\AlertManager\AlertManager.cs" />
-    <Compile Include="Services\APIManager\Packagers\Mandrill\MandrillPackager.cs" />
-    <Compile Include="Services\APIManager\Packagers\Shnexy\ShnexyPackager.cs" />
-    <Compile Include="Services\APIManager\Serializers\Json\JsonSerializer.cs" />
-    <Compile Include="Services\APIManager\Transmitters\Restful\RestfulCall.cs" />
-    <Compile Include="Services\APIManager\Transmitters\Restful\RestfulResponse.cs" />
-    <Compile Include="Services\APIManager\Transmitters\Restful\RestfulTransmitter.cs" />
-    <Compile Include="Services\CommunicationManager\CommunicationManager.cs" />
-    <Compile Include="Services\EmailManager\EmailManager.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Utilities\Enumerations.cs" />
-    <Compile Include="Utilities\Extensions.cs" />
     <Compile Include="ViewModels\User\UserDetailsVM.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -599,6 +245,73 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\justified-nav.css" />
     <Content Include="Content\slider.css" />
+    <Content Include="Content\Website - kwasant.com\backgroundsize.min.htc" />
+    <Content Include="Content\Website - kwasant.com\css\bootstrap-responsive.css" />
+    <Content Include="Content\Website - kwasant.com\css\bootstrap-responsive.min.css" />
+    <Content Include="Content\Website - kwasant.com\css\bootstrap.css" />
+    <Content Include="Content\Website - kwasant.com\css\bootstrap.min.css" />
+    <Content Include="Content\Website - kwasant.com\css\colorbox.css" />
+    <Content Include="Content\Website - kwasant.com\css\font-awesome-ie7.min.css" />
+    <Content Include="Content\Website - kwasant.com\css\font-awesome.min.css" />
+    <Content Include="Content\Website - kwasant.com\css\img\bg-overlay.png" />
+    <Content Include="Content\Website - kwasant.com\css\img\browser-header.jpg" />
+    <Content Include="Content\Website - kwasant.com\css\img\controls.png" />
+    <Content Include="Content\Website - kwasant.com\css\img\glyphicons-halflings-white.png" />
+    <Content Include="Content\Website - kwasant.com\css\img\glyphicons-halflings.png" />
+    <Content Include="Content\Website - kwasant.com\css\img\ie-black-bg.png" />
+    <Content Include="Content\Website - kwasant.com\css\img\loading.gif" />
+    <Content Include="Content\Website - kwasant.com\css\main.css" />
+    <Content Include="Content\Website - kwasant.com\font\fontawesome-webfont.svg" />
+    <Content Include="Content\Website - kwasant.com\gadegets.xml" />
+    <Content Include="Content\Website - kwasant.com\images\bg1.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\bg2.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\bg3.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\bg4.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\bg5.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\bg6.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\bg7.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\bg8.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\bg9.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\calendar5.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\client-1.png" />
+    <Content Include="Content\Website - kwasant.com\images\client-2.png" />
+    <Content Include="Content\Website - kwasant.com\images\client-3.png" />
+    <Content Include="Content\Website - kwasant.com\images\client-4.png" />
+    <Content Include="Content\Website - kwasant.com\images\client-5.png" />
+    <Content Include="Content\Website - kwasant.com\images\client-6.png" />
+    <Content Include="Content\Website - kwasant.com\images\homepage1.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\homepage2.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\homepage3.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\homepage4.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\image_1.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\image_2.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\image_3.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\image_4.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\image_5.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\image_6.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\image_7.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\logo.png" />
+    <Content Include="Content\Website - kwasant.com\images\logo2.png" />
+    <Content Include="Content\Website - kwasant.com\images\love.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\older-calendar.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\screen.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\stone-calendar.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\team.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\team2.jpg" />
+    <Content Include="Content\Website - kwasant.com\images\team3.jpg" />
+    <Content Include="Content\Website - kwasant.com\index.html" />
+    <Content Include="Content\Website - kwasant.com\js\bootstrap.js" />
+    <Content Include="Content\Website - kwasant.com\js\bootstrap.min.js" />
+    <Content Include="Content\Website - kwasant.com\js\jquery.colorbox-min.js" />
+    <Content Include="Content\Website - kwasant.com\js\jquery.viewport.min.js" />
+    <Content Include="Content\Website - kwasant.com\js\main.js" />
+    <Content Include="Content\Website - kwasant.com\js\placeholder.js" />
+    <Content Include="Content\Website - kwasant.com\js\plugins.js" />
+    <Content Include="Content\Website - kwasant.com\js\respond.min.js" />
+    <Content Include="Content\Website - kwasant.com\js\vendor\jquery-1.10.2.min.js" />
+    <Content Include="Content\Website - kwasant.com\js\vendor\modernizr-2.6.2.min.js" />
+    <Content Include="Content\Website - kwasant.com\js\waypoints.js" />
+    <Content Include="Content\Website - kwasant.com\shortcodes.html" />
     <Content Include="DDay\antlr.runtime.dll" />
     <Content Include="DDay\antlr.runtime.Silverlight.dll" />
     <Content Include="DDay\antlr\antlr.astframe\antlr.astframe.csproj" />
@@ -675,6 +388,11 @@
     <Content Include="packages\EntityFramework.6.1.0\tools\EntityFramework.PowerShell.dll" />
     <Content Include="packages\EntityFramework.6.1.0\tools\EntityFramework.PowerShell.Utility.dll" />
     <Content Include="packages\EntityFramework.6.1.0\tools\migrate.exe" />
+    <Content Include="Content\Website - kwasant.com\font\fontawesome-webfont.eot" />
+    <Content Include="Content\Website - kwasant.com\font\fontawesome-webfont.ttf" />
+    <Content Include="Content\Website - kwasant.com\font\fontawesome-webfont.woff" />
+    <Content Include="Content\Website - kwasant.com\font\FontAwesome.otf" />
+    <Content Include="Content\Website - kwasant.com\images\blue_tag.psd" />
     <None Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2-vsdoc.js" />
     <Content Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2.js" />
     <Content Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2.min.js" />
@@ -830,15 +548,6 @@
     <Content Include="Scripts\bootstrap-slider.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="DDay\Sandcastle.shfb" />
-    <Content Include="DDay\Collections\obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
-    <Content Include="DDay\antlr\antlr.astframe\Makefile.in" />
-    <Content Include="DDay\antlr\antlr.runtime\DDay.iCal.pfx" />
-    <Content Include="DDay\antlr\antlr.runtime\Makefile.in" />
-    <Content Include="DDay\TimeZones\America.ics" />
-    <Content Include="DDay\DDay.iCal\obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
-    <Content Include="DDay\DDay.iCal\Properties\AssemblyInfo.cs.template" />
-    <Content Include="DDay\DDay.iCal\Serialization\iCalendar\iCal.g" />
     <Content Include="packages\Antlr.3.5.0.2\Antlr.3.5.0.2.nupkg" />
     <Content Include="packages\Antlr3.Runtime.PCL.3.5.0.3\Antlr3.Runtime.PCL.3.5.0.3.nupkg" />
     <Content Include="packages\Antlr3.Runtime.PCL.3.5.0.3\Antlr3.Runtime.PCL.3.5.0.3.nuspec" />
@@ -1072,11 +781,6 @@
     <Content Include="Views\Message\Details.cshtml" />
     <Content Include="Views\Message\Edit.cshtml" />
     <Content Include="Views\Message\Index.cshtml" />
-    <Content Include="Views\Queue\Create.cshtml" />
-    <Content Include="Views\Queue\Delete.cshtml" />
-    <Content Include="Views\Queue\Details.cshtml" />
-    <Content Include="Views\Queue\Edit.cshtml" />
-    <Content Include="Views\Queue\Index.cshtml" />
     <Content Include="Views\Email\Create.cshtml" />
     <Content Include="Views\Email\Delete.cshtml" />
     <Content Include="Views\Email\Details.cshtml" />
@@ -1087,12 +791,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
-    <Folder Include="DDay\antlr\antlr.runtime\Properties\" />
-    <Folder Include="DDay\Collections\bin\Debug\" />
-    <Folder Include="DDay\Collections\obj\Debug\TempPE\" />
-    <Folder Include="DDay\DDay.iCal\bin\Debug\" />
-    <Folder Include="DDay\DDay.iCal\obj\Debug\TempPE\" />
-    <Folder Include="DDay\Patches\" />
     <Folder Include="Views\Engine\" />
     <Folder Include="Views\Schedule\" />
     <Folder Include="Views\Session\" />
@@ -1105,17 +803,21 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DDay\antlr\antlr.astframe\antlr.debug.misc\ASTFrame.resx">
-      <DependentUpon>ASTFrame.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DDay\antlr\antlr.astframe\antlr.debug.misc\JTreeASTPanel.resx">
-      <DependentUpon>JTreeASTPanel.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Configuration\Configuration.csproj">
+    <ProjectReference Include="Configuration\Configuration.csproj">
       <Project>{D8F7F734-21CE-4277-A14F-EBDDE71DFF0C}</Project>
       <Name>Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="Daemons\Daemons.csproj">
+      <Project>{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}</Project>
+      <Name>Daemons</Name>
+    </ProjectReference>
+    <ProjectReference Include="Data\Data.csproj">
+      <Project>{0bd2e27e-8bc3-400b-8560-b67015b4cfac}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="Utilities\Utilities.csproj">
+      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

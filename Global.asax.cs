@@ -6,8 +6,8 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using System.Data.Entity;
-using Shnexy.DataAccessLayer;
-using Shnexy.DataAccessLayer.StructureMap;
+using Data.DataAccessLayer.Infrastructure;
+using Data.DataAccessLayer.StructureMap;
 
 namespace Shnexy
 {

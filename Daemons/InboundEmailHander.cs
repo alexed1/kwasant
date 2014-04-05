@@ -1,7 +1,8 @@
 ﻿using System;
+using Data.DataAccessLayer.Repositories;
+using Data.Models;
 using S22.Imap;
-using Shnexy.DataAccessLayer.Repositories;
-using Shnexy.Models;
+
 using StructureMap;
 
 namespace Daemons

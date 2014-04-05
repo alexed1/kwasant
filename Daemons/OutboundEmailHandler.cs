@@ -1,5 +1,5 @@
 ﻿using System;
-using Shnexy.DataAccessLayer.Repositories;
+using Data.DataAccessLayer.Repositories;
 using StructureMap;
 
 namespace Daemons

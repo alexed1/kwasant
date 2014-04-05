@@ -1,14 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.Repositories;
-using Shnexy.DataAccessLayer.StructureMap;
-using Shnexy.Models;
-using Shnexy.DDay.iCal;
+﻿using Data.Models;
 
 namespace ShnexyTest.Fixtures
 {

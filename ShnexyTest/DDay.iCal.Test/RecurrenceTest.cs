@@ -4,20 +4,26 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Resources;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Web;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.StructureMap;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
+using Data.DDay.DDay.iCal;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Evaluation;
+using Data.DDay.DDay.iCal.Exceptions;
+using Data.DDay.DDay.iCal.ExtensionMethods;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.Evaluation;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
+using Data.DDay.DDay.iCal.Structs;
+using Data.DDay.DDay.iCal.Utility;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.StructureMap;
+using Data.Models;
 using NUnit.Framework;
-using Shnexy.Models;
 using StructureMap;
 
-namespace Shnexy.DDay.iCal.Test
+namespace ShnexyTest.DDay.iCal.Test
 {
     [TestFixture]
     public class RecurrenceTest
@@ -1883,7 +1889,7 @@ namespace Shnexy.DDay.iCal.Test
             standard.OffsetFrom = new UTCOffset("-0400");
             standard.OffsetTo = new UTCOffset("-0500");
             standard.TimeZoneName = "EST";
-            tz.AddChild(standard);
+            CalendarObjectExtensions.AddChild(tz, standard);
 
             ITimeZoneInfo daylight = new iCalTimeZoneInfo(Components.DAYLIGHT);
             daylight.Start = new iCalDateTime(new DateTime(1987, 4, 5, 2, 0, 0, DateTimeKind.Utc));
@@ -1891,7 +1897,7 @@ namespace Shnexy.DDay.iCal.Test
             daylight.OffsetFrom = new UTCOffset("-0500");
             daylight.OffsetTo = new UTCOffset("-0400");
             daylight.TimeZoneName = "EDT";            
-            tz.AddChild(daylight);
+            CalendarObjectExtensions.AddChild(tz, daylight);
 
             IEvent evt = iCal.Create<Event>();
             evt.Summary = "Test event";

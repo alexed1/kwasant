@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Data.Entity;
+using Data.DataAccessLayer.Infrastructure;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.Repositories;
+using Data.DataAccessLayer.StructureMap;
+using Data.Models;
 using NUnit.Framework;
-using Shnexy.DataAccessLayer;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.Repositories;
-using Shnexy.DataAccessLayer.StructureMap;
-using Shnexy.Models;
 using ShnexyTest.Fixtures;
 using StructureMap;
 

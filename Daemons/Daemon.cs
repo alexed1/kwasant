@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using Daemons.EventExposers;
-using Shnexy;
 
 namespace Daemons
 {
     //For more information, see https://maginot.atlassian.net/wiki/display/SH/Design+Document%3A+SH-21
-    public abstract class Daemon : IDaemon
+    public abstract class Daemon
     {
         public abstract int WaitTimeBetweenExecution { get; }
 

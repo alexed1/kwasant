@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Shnexy.Models;
-using Shnexy.DDay.iCal;
+﻿using System.Collections.Generic;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.Models;
 
 namespace ShnexyTest.Fixtures
 {
