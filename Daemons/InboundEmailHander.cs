@@ -10,6 +10,16 @@ namespace Daemons
     {
         private readonly ImapClient _client;
 
+        private static string GetIMAPServer()
+        {
+            return "imap.gmail.com";
+        }
+
+        private static int GetIMAPPort()
+        {
+            return 993;
+        }
+
         private string GetUserName()
         {
             return "alexlucre1";
@@ -19,11 +29,14 @@ namespace Daemons
             return "lucrelucre";
         }
 
+        private static bool UseSSL()
+        {
+            return true;
+        }
+
         public InboundEmailHander()
         {
-            var username = GetUserName();
-            var password = GetPassword();
-            _client = new ImapClient("imap.gmail.com", 993, username, password, AuthMethod.Login, true);
+            _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
         }
 
         public override int WaitTimeBetweenExecution
@@ -42,6 +55,11 @@ namespace Daemons
                 var curEmail = new Email(message, emailRepo);
                 curEmail.Save();
             }
+        }
+
+        protected override void CleanUp()
+        {
+            _client.Dispose();
         }
     }
 }

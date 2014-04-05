@@ -3,6 +3,12 @@ using System.Reflection;
 
 namespace Daemons.EventExposers
 {
+    /// <summary>
+    /// This class allows us to pseudo-statically type references to events.
+    /// When you need to reference an event, create a new class in this folder, and implement the static accessors for the event.
+    /// EventExposers should be named #NameOfClassWithDesiredEvent#EventExposer
+    /// See the bottom of this file for an example.
+    /// </summary>
     public abstract class ExposedEvent
     {
         private readonly String _name;
@@ -29,4 +35,29 @@ namespace Daemons.EventExposers
         {
         }
     }
+
+    /*  Example of ExposedEvent usage
+     
+        public class MySpecialClassWithEvents
+        {
+            public event EventHandler MyEvent;
+        }
+
+        public sealed class MySpecialClassWithEventsEventExposer : ExposedEvent<MySpecialClassWithEvents>
+        {
+            public static ExposedEvent MyEvent = new MySpecialClassWithEventsEventExposer("MyEvent");
+            private MySpecialClassWithEventsEventExposer(string name)
+                : base(name)
+            {
+            }
+        }
+
+        public class MyDaemon : Daemon
+        {
+            public MyDaemon()
+            {
+                RegisterEvent<EventArgs>(MySpecialClassWithEventsEventExposer.MyEvent, (a, b) => { });
+            }
+        }
+    */
 }
