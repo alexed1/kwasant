@@ -86,14 +86,32 @@ namespace ShnexyTest.Daemons
         [Test]
         public void DaemonHandlesExceptionsAndDoesNotCrash()
         {
+            var workLock = new object();
+            int workNumber = 0;
+            var finished = false;
             Thread workerThread;
             const string testException = "Test exception";
             var mockDaemon = StartDaemonAndAwaitStartup(() =>
             {
-                throw new Exception(testException);
+                lock (workLock)
+                {
+                    if (workNumber == 0)
+                    {
+                        workNumber++;
+                        throw new Exception(testException);
+                    }
+                    finished = true;
+                    Monitor.Pulse(workLock);
+                }
             }, out workerThread);
 
-            Thread.Sleep(1000);
+            lock (workLock)
+            {
+                while (!finished)
+                {
+                    Monitor.Wait(workLock);
+                }
+            }
             Assert.True(mockDaemon.IsRunning);
             Assert.AreEqual(1, mockDaemon.LoggedExceptions.Count);
             Assert.AreEqual(testException, mockDaemon.LoggedExceptions.First().Message);
