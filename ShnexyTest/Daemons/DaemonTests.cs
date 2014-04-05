@@ -106,13 +106,10 @@ namespace ShnexyTest.Daemons
             }, out workerThread);
 
             lock (workLock)
-            {
-                while (!finished)
-                {
-                    Monitor.Wait(workLock);
-                }
-            }
+                Monitor.Wait(workLock);
+            
             Assert.True(mockDaemon.IsRunning);
+            Assert.True(finished);
             Assert.AreEqual(1, mockDaemon.LoggedExceptions.Count);
             Assert.AreEqual(testException, mockDaemon.LoggedExceptions.First().Message);
         }
