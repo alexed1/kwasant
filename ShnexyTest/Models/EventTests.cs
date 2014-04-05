@@ -1,21 +1,12 @@
-﻿using System;
-using System.Data.Entity;
-using System.Data.Entity.Migrations;
+﻿using System.Data.Entity;
 using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.StructureMap;
 using Data.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NUnit.Core;
 using NUnit.Framework;
-using Shnexy;
-using Shnexy.DDay.iCal;
 using ShnexyTest.Fixtures;
 using StructureMap;
-using System.Web.Mvc;
-
-using System.Data.Entity;
 using Event = Data.Models.Event;
 
 namespace ShnexyTest.Models

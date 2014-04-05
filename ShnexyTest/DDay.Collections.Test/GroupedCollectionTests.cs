@@ -1,12 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using Data.DDay.Collections;
 using Data.DDay.Collections.Interfaces;
 using Data.DDay.Collections.Proxies;
 using NUnit.Framework;
 
-namespace DDay.Collections.Test
+namespace ShnexyTest.DDay.Collections.Test
 {
     [TestFixture]
     public class GroupedCollectionTests

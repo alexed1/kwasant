@@ -10,7 +10,6 @@ using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.Models;
 using Data.Services.APIManager.Packagers.Shnexy;
-using StructureMap;
 using UtilitiesLib;
 
 namespace Shnexy.Controllers

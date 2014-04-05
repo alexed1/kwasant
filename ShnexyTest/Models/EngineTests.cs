@@ -1,11 +1,9 @@
-﻿using System;
-using Data.DataAccessLayer.Interfaces;
+﻿using Data.DataAccessLayer.Interfaces;
 using Data.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NUnit.Framework;
 
-namespace ShnexyTest
+namespace ShnexyTest.Models
 {
     [TestFixture]
     public class UnitTest1

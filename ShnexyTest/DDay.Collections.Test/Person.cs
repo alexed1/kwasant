@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections;
 using Data.DDay.Collections;
 using Data.DDay.Collections.Interfaces;
 
-namespace DDay.Collections.Test
+namespace ShnexyTest.DDay.Collections.Test
 {
     public class Person :
         IGroupedObject<long>,

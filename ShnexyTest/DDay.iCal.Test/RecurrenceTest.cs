@@ -4,12 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Resources;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Web;
 using Data.DDay.DDay.iCal;
 using Data.DDay.DDay.iCal.DataTypes;
 using Data.DDay.DDay.iCal.Evaluation;
@@ -28,7 +23,7 @@ using Data.Models;
 using NUnit.Framework;
 using StructureMap;
 
-namespace Shnexy.DDay.iCal.Test
+namespace ShnexyTest.DDay.iCal.Test
 {
     [TestFixture]
     public class RecurrenceTest

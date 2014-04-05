@@ -5,7 +5,6 @@ using System.Web;
 using Data.Models;
 using Data.Services.APIManager.Serializers.Json;
 using Data.Services.APIManager.Transmitters.Restful;
-using Microsoft.Owin;
 using UtilitiesLib;
 
 namespace Data.Services.APIManager.Packagers.Mandrill

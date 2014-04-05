@@ -29,7 +29,7 @@ using NUnit.Framework;
 using StructureMap;
 using Attachment = Data.DDay.DDay.iCal.DataTypes.Attachment;
 
-namespace Shnexy.DDay.iCal.Test
+namespace ShnexyTest.DDay.iCal.Test
 {
     [TestFixture]
     public class SerializationTest

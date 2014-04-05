@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Data.DDay.DDay.iCal;
-using Shnexy.DDay.iCal;
 
-namespace Shnexy.DDay.iCal.Test
+namespace ShnexyTest.DDay.iCal.Test.Custom
 {
     // FIXME: fix this custom calendar to function properly
     //[ComponentBaseType(typeof(CustomComponentBase1))]

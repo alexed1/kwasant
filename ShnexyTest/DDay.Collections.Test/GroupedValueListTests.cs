@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Data.DDay.Collections;
 using NUnit.Framework;
 
-namespace DDay.Collections.Test
+namespace ShnexyTest.DDay.Collections.Test
 {
     [TestFixture]
     public class GroupedValueListTests
