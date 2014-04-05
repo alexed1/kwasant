@@ -62,6 +62,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="DDay.Collections.Test\Doctor.cs" />
     <Compile Include="DDay.Collections.Test\GroupedCollectionTests.cs" />
     <Compile Include="DDay.Collections.Test\GroupedValueListTests.cs" />
@@ -282,6 +283,10 @@
     <Folder Include="DDay.iCal.Test\obj\Debug\TempPE\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Daemons\Daemons.csproj">
+      <Project>{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}</Project>
+      <Name>Daemons</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{0bd2e27e-8bc3-400b-8560-b67015b4cfac}</Project>
       <Name>Data</Name>

@@ -11,13 +11,27 @@ namespace Daemons
     {
         public abstract int WaitTimeBetweenExecution { get; }
 
-        protected bool IsRunning { get; private set; }
-        protected bool IsStopping { get; private set; }
+        public bool IsRunning { get; private set; }
+        public bool IsStopping { get; private set; }
 
         protected abstract void Run();
         private readonly Queue<Action> _eventQueue = new Queue<Action>();
         private readonly HashSet<EventInfo> _activeEventHandlers = new HashSet<EventInfo>();
-        
+        private readonly HashSet<Exception> _loggedExceptions = new HashSet<Exception>();
+
+
+        /// <summary>
+        /// Currently unused, but will be a useful debugging tool when investigating event callbacks.
+        /// </summary>
+        public IList<Exception> LoggedExceptions
+        {
+            get
+            {
+                lock(_loggedExceptions)
+                    return new List<Exception>(_loggedExceptions);
+            }
+        }
+
         /// <summary>
         /// Currently unused, but will be a useful debugging tool when investigating event callbacks.
         /// </summary>
@@ -83,12 +97,12 @@ namespace Daemons
             }
         }
 
-        public void Start()
+        public bool Start()
         {
             lock (this)
             {
                 if (IsRunning)
-                    return;
+                    return false;
 
                 IsRunning = true;
             }
@@ -130,6 +144,7 @@ namespace Daemons
                 });
 
             workerThread.Start();
+            return true;
         }
 
         public void Stop()
@@ -147,6 +162,9 @@ namespace Daemons
 
         private void HandleException(Exception e)
         {
+            lock (_loggedExceptions)
+                _loggedExceptions.Add(e);
+
             //To be filled out when we have a logging mechanism in place
         }
     }
