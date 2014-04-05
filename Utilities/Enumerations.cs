@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace Shnexy.Utilities
+namespace UtilitiesLib
 {
 
     //creates a base class for a string-based enumerated list. The subclasses instantiate the list with the allowable values, and this class makes sure that only those values can be used. 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
-using Shnexy.Utilities;
+using UtilitiesLib;
 
 
 namespace Shnexy.Services.APIManagement.Transmitters.Restful

@@ -6,7 +6,7 @@ using Microsoft.Owin;
 using Shnexy.Models;
 using Shnexy.Services.APIManagement.Serializers.Json;
 using Shnexy.Services.APIManagement.Transmitters.Restful;
-using Shnexy.Utilities;
+using UtilitiesLib;
 
 namespace Shnexy.Services.APIManagement.Packagers.Mandrill
 

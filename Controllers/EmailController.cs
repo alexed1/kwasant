@@ -11,8 +11,8 @@ using Shnexy.DataAccessLayer.Repositories;
 using Shnexy.Models;
 using Shnexy.DataAccessLayer;
 using Shnexy.Services.APIManagement.Packagers.Shnexy;
-using Shnexy.Utilities;
 using StructureMap;
+using UtilitiesLib;
 
 namespace Shnexy.Controllers
 {
