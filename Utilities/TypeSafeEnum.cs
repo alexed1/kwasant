@@ -11,7 +11,7 @@ namespace Shnexy.Utilities
     // - this allows all static members to be truly unique to the specific
     //   derived class
     // from http://stackoverflow.com/questions/424366/c-sharp-string-enums/424414#424414
-    public class EnumBase<E, T> where E: EnumBase<E, T>
+    public class EnumBase<E, T> where E : EnumBase<E, T>
     {
         #region Instance code
         public T Value { get; private set; }
@@ -29,8 +29,9 @@ namespace Shnexy.Utilities
 
         #region Static tools
         static private readonly Dictionary<string, EnumBase<E, T>> mapping;
-        static EnumBase() {
-            mapping = new Dictionary<string, EnumBase<E, T>>(); 
+        static EnumBase()
+        {
+            mapping = new Dictionary<string, EnumBase<E, T>>();
         }
         protected static E Parse(string name)
         {
@@ -48,9 +49,11 @@ namespace Shnexy.Utilities
         // initialization will be explicit, promising the mapping dictionary
         // will never be empty when this method is called.
         protected static IEnumerable<E> All
-        { get {
+        {
+            get
+            {
                 return mapping.Values.AsEnumerable().Cast<E>();
-              } 
+            }
         }
         #endregion
     }
@@ -64,7 +67,7 @@ namespace Shnexy.Utilities
         private CallRequestStatus(int Value, String Name) : base(Value, Name) { }
         public new static IEnumerable<CallRequestStatus> All
         {
-            get 
+            get
             { return EnumBase<CallRequestStatus, int>.All; }
         }
 
@@ -76,16 +79,16 @@ namespace Shnexy.Utilities
     {
         public static readonly ParticipantType PRODUCER = new ParticipantType(1, "PRODUCER");
         public static readonly ParticipantType CONSUMER = new ParticipantType(2, "CONSUMER");
-       
+
 
         private ParticipantType(int Value, String Name) : base(Value, Name) { }
         public new static IEnumerable<ParticipantType> All
-        {get { return EnumBase<ParticipantType, int>.All; }}
+        { get { return EnumBase<ParticipantType, int>.All; } }
 
         public static explicit operator ParticipantType(string str)
         { return Parse(str); }
 
-      
+
 
     }
 
@@ -106,7 +109,8 @@ namespace Shnexy.Utilities
 
         }
 
-        public override String ToString(){
+        public override String ToString()
+        {
             return name;
         }
 

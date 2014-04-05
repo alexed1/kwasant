@@ -314,9 +314,9 @@
     <Folder Include="DDay.iCal.Test\obj\Debug\TempPE\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Shnexy.csproj">
-      <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
-      <Name>Shnexy</Name>
+    <ProjectReference Include="..\Data\Data.csproj">
+      <Project>{0bd2e27e-8bc3-400b-8560-b67015b4cfac}</Project>
+      <Name>Data</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

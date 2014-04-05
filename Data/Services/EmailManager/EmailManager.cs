@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Web;
-using Microsoft.Ajax.Utilities;
 using Shnexy.Models;
 using Shnexy.Services.APIManagement.Packagers.Mandrill;
 

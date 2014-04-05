@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
-using System.Web;
-
-using Shnexy.Utilities;
-using Shnexy.DataAccessLayer;
-
-namespace Shnexy.Models
+﻿namespace Shnexy.Models
 {
     public class Engine
     {
