@@ -6,9 +6,9 @@ using StructureMap;
 
 namespace Daemons
 {
-    public class InboundEmailHander : BaseDaemon
+    public class InboundEmailHander : Daemon
     {
-        private readonly ImapClient m_Client;
+        private readonly ImapClient _client;
 
         private string GetUserName()
         {
@@ -23,7 +23,7 @@ namespace Daemons
         {
             var username = GetUserName();
             var password = GetPassword();
-            m_Client = new ImapClient("imap.gmail.com", 993, username, password, AuthMethod.Login, true);
+            _client = new ImapClient("imap.gmail.com", 993, username, password, AuthMethod.Login, true);
         }
 
         public override int WaitTimeBetweenExecution
@@ -33,8 +33,8 @@ namespace Daemons
 
         protected override void Run()
         {
-            var uids = m_Client.Search(SearchCondition.Unseen());
-            var messages = m_Client.GetMessages(uids);
+            var uids = _client.Search(SearchCondition.Unseen());
+            var messages = _client.GetMessages(uids);
 
             var emailRepo = ObjectFactory.GetInstance<IEmailRepository>();
             foreach (var message in messages)

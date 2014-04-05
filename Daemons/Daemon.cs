@@ -6,7 +6,7 @@ using Shnexy;
 
 namespace Daemons
 {
-    public abstract class BaseDaemon : IDaemon
+    public abstract class Daemon : IDaemon
     {
         public abstract int WaitTimeBetweenExecution { get; }
 
@@ -14,11 +14,11 @@ namespace Daemons
         protected bool IsStopping { get; private set; }
 
         protected abstract void Run();
-        private readonly Queue<Action> m_EventQueue = new Queue<Action>();
-        private readonly HashSet<EventInfo> m_ActiveEventHandlers = new HashSet<EventInfo>();
+        private readonly Queue<Action> _eventQueue = new Queue<Action>();
+        private readonly HashSet<EventInfo> _activeEventHandlers = new HashSet<EventInfo>();
         protected IList<EventInfo> ActiveEventHandlers
         {
-            get { return new List<EventInfo>(m_ActiveEventHandlers); }
+            get { return new List<EventInfo>(_activeEventHandlers); }
         }
 
         protected void RegisterEvent<TEventArgs>(EventInfo eventInfo, Action<Object, TEventArgs> callback)
@@ -26,38 +26,38 @@ namespace Daemons
         {
             var action = new Action<object, TEventArgs>((sender, args) =>
                 {
-                    lock (m_EventQueue)
+                    lock (_eventQueue)
                     {
-                        m_EventQueue.Enqueue(() => callback(sender, args));
-                        Monitor.Pulse(m_EventQueue);
+                        _eventQueue.Enqueue(() => callback(sender, args));
+                        Monitor.Pulse(_eventQueue);
                     }
                 });
 
             var handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, action.Target, action.Method);
             eventInfo.AddEventHandler(this, handler);
 
-            m_ActiveEventHandlers.Add(eventInfo);
+            _activeEventHandlers.Add(eventInfo);
         }
 
         protected void ProcessNextEvent()
         {
-            lock (m_EventQueue)
+            lock (_eventQueue)
             {
-                while (m_EventQueue.Count == 0)
+                while (_eventQueue.Count == 0)
                 {
-                    Monitor.Wait(m_EventQueue);
+                    Monitor.Wait(_eventQueue);
                 }
-                m_EventQueue.Dequeue()();
+                _eventQueue.Dequeue()();
             }
         }
 
         protected bool ProcessNextEventNoWait()
         {
-            lock (m_EventQueue)
+            lock (_eventQueue)
             {
-                if (m_EventQueue.Count > 0)
+                if (_eventQueue.Count > 0)
                 {
-                    m_EventQueue.Dequeue()();
+                    _eventQueue.Dequeue()();
                     return true;
                 }
                 return false;

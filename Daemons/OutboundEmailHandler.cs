@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Linq;
-using Shnexy.DataAccessLayer;
+using Shnexy.DataAccessLayer.Repositories;
+using StructureMap;
 
 namespace Daemons
 {
-    public class OutboundEmailHandler : BaseDaemon
+    public class OutboundEmailHandler : Daemon
     {
         public OutboundEmailHandler()
         {
@@ -19,13 +19,12 @@ namespace Daemons
 
         protected override void Run()
         {
-            while(ProcessNextEventNoWait()) {}
-            using (var db = new ShnexyDbContext())
+            while (ProcessNextEventNoWait()) { }
+            var emailRepo = ObjectFactory.GetInstance<IEmailRepository>();
+
+            foreach (var email in emailRepo.FindList(e => e.Status == "queued"))
             {
-                foreach (var email in db.Emails.Where(e => e.Status == "queued"))
-                {
-                    email.Send();
-                }
+                email.Send();
             }
         }
     }
