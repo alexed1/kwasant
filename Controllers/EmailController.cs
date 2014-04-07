@@ -47,7 +47,7 @@ namespace Shnexy.Controllers
 
 
 
-        public ActionResult ShowAll()
+        public ActionResult Index()
         {
             
             IEnumerable<Email> curEmails = new List<Email>();
