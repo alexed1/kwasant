@@ -47,12 +47,12 @@ namespace Shnexy.Controllers
 
 
 
-        public ActionResult ShowAll()
+        public ActionResult Index()
         {
             
             IEnumerable<Email> curEmails = new List<Email>();
             curEmails = curEmail.GetAll();
-            return View(curEmails);
+            return View("Index", curEmails);
         }
 
         // GET: /Email/Details/5
