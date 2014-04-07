@@ -8,8 +8,11 @@ namespace Data.DataAccessLayer.Infrastructure
     public class ShnexyDbContext : DbContext
     {
 
-        //special constructor to enable migration to run on the test setup. 
-        public  ShnexyDbContext() : base("name=ShnexyTESTLocalDb")
+       
+        //see web.config for connection string names.
+        //azure is AzureDbContext
+        public ShnexyDbContext()
+            : base("name=AzureDbContext")
         {
             
         }
