@@ -571,6 +571,12 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\BooqitTakes1Step.png" />
+    <Content Include="Content\Images\scheduler1.jpg" />
+    <Content Include="Content\Images\stock-photo-17850747-businessman-writing-in-a-planner.jpg" />
+    <Content Include="Content\Images\stock-photo-18215604-daily-planner.jpg" />
+    <Content Include="Content\Images\stock-photo-4316947-schedule.jpg" />
+    <Content Include="Content\Website\images\Process\workflow.png" />
     <Content Include="Content\justified-nav.css" />
     <Content Include="Content\slider.css" />
     <Content Include="Content\Website\backgroundsize.min.htc" />
@@ -722,6 +728,9 @@
     <Content Include="Content\Website\font\fontawesome-webfont.woff" />
     <Content Include="Content\Website\font\FontAwesome.otf" />
     <Content Include="Content\Website\images\blue_tag.psd" />
+    <Content Include="Content\Images\BooqitTakes1Step.vsdx" />
+    <Content Include="Content\Images\Email thread .docx" />
+    <Content Include="Content\Images\~%24%24BooqitTakes1Step.~vsdx" />
     <None Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2-vsdoc.js" />
     <Content Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2.js" />
     <Content Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2.min.js" />
