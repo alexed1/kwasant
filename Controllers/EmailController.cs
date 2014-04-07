@@ -52,7 +52,7 @@ namespace Shnexy.Controllers
             
             IEnumerable<Email> curEmails = new List<Email>();
             curEmails = curEmail.GetAll();
-            return View(curEmails);
+            return View("Index", curEmails);
         }
 
         // GET: /Email/Details/5
