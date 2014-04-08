@@ -547,7 +547,8 @@ a[rel=popover]{
     padding: 10px 20px 12px;
 	box-shadow: 0 -3px 2px 0 #D7D7D7 inset;
 	/*filter: none; */
-	opacity: .7;
+	/*opacity: .7;*/
+	background-color:rgba(16,0,0,0.5);
 }
 
 .navbar .navbar-inner .brand{
@@ -1452,3 +1453,5 @@ footer .info-block i{
 #contacts p, h3 {color: #000;}
 
 address {color: #30beda;}
+
+
