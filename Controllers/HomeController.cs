@@ -12,7 +12,7 @@ namespace Shnexy.Controllers
         public ActionResult Index()
         {
 
-            return Redirect("www.kwasant.com/Website/index.html");
+            return Redirect("/Website/index.html");
         }
 
         public ActionResult About()

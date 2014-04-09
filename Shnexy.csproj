@@ -286,7 +286,12 @@
     <Content Include="Website\images\image_6.jpg" />
     <Content Include="Website\images\image_7.jpg" />
     <Content Include="Website\images\logo.png" />
+    <Content Include="Website\images\logo11.png" />
     <Content Include="Website\images\logo2.png" />
+    <Content Include="Website\images\logo5.png" />
+    <Content Include="Website\images\logo6.png" />
+    <Content Include="Website\images\logo7.png" />
+    <Content Include="Website\images\logo9.png" />
     <Content Include="Website\images\love.jpg" />
     <Content Include="Website\images\Management\alexhead.png" />
     <Content Include="Website\images\older-calendar.jpg" />
