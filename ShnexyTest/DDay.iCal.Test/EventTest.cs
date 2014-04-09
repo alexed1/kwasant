@@ -32,7 +32,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
             
-            Event evt = new Event(_uow);
+            Event evt = new Event();
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
             evt.End = new iCalDateTime(2010, 3, 26);
@@ -50,7 +50,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
 
-            Event evt = new Event(_uow);
+            Event evt = new Event();
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
             evt.End = new iCalDateTime(2010, 3, 26);
@@ -72,7 +72,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
 
-            Event evt = new Event(_uow);
+            Event evt = new Event();
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
             evt.End = new iCalDateTime(2010, 3, 26);

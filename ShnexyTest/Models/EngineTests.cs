@@ -19,15 +19,6 @@ namespace ShnexyTest.Models
            
             
         }
-        [Test]
-        [Category("Engine Tests")]
-        public void Engine_ProcessEvents_Works()
-        {
-            mockEvent.Setup(curEvent => curEvent.Dispatch());
-            Engine curEngine = new Engine();
-            curEngine.ProcessEvents(); //not useful, this test
-        }
-
        
     }
 }

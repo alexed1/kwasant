@@ -13,12 +13,12 @@ namespace ShnexyTest.Fixtures
         public Customer TestCustomer()
         {
 
-            return new Customer(customerRepo)
+            return new Customer()
             {
-                Id = 1,
+                CustomerID = 1,
                 FirstName = "Jack",
                 LastName = "Maginot",
-                emailAddr = TestEmail1()
+                Email = TestEmail1()
 
             };
         }

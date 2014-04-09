@@ -57,6 +57,7 @@
     <Compile Include="Managers\APIManager\Transmitters\Restful\RestfulCall.cs" />
     <Compile Include="Managers\APIManager\Transmitters\Restful\RestfulResponse.cs" />
     <Compile Include="Managers\APIManager\Transmitters\Restful\RestfulTransmitter.cs" />
+    <Compile Include="Managers\CommunicationManager\CommunicationManager.cs" />
     <Compile Include="Managers\EmailManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -64,6 +65,10 @@
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DDay\DDay.csproj">
+      <Project>{D940EFCA-2D57-466C-8103-54DB173F1BD2}</Project>
+      <Name>DDay</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

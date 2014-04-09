@@ -1,9 +1,14 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using System.Net.Mime;
+using System.Text;
 using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
+using Data.DDay.DDay.iCal;
+using Data.DDay.DDay.iCal.ExtensionMethods;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
 using Data.Models;
 using DBTools.Managers;
 using StructureMap;
@@ -14,7 +19,24 @@ namespace DBTools
 {
     public static class EmailHelper
     {
-        public static Email AddNewEmailToRepository(EmailRepository emailRepository, MailMessage mailAddress)
+        public static void AttachInvitationToEmail(Event ev, Email email)
+        {
+            iCalendar iCal = new iCalendar();
+            iCal.AddChild(ev);
+
+            iCalendarSerializer serializer = new iCalendarSerializer(iCal);
+            var fileToAttach = serializer.Serialize(iCal);
+
+            var attachment = CreateNewAttachment(
+                new System.Net.Mail.Attachment(
+                    new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
+                    new ContentType {MediaType = "application/calendar", Name = "invite.ics"}
+                ));
+
+            email.Attachments.Add(attachment);
+        }
+
+        public static Email AddNewEmailToRepository(IEmailRepository emailRepository, MailMessage mailAddress)
         {
             var uow = emailRepository.UnitOfWork;
             var email = new Email

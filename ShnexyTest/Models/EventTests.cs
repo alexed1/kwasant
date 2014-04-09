@@ -4,6 +4,7 @@ using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.StructureMap;
 using Data.Models;
+using DBTools;
 using NUnit.Framework;
 using ShnexyTest.Fixtures;
 using StructureMap;
@@ -52,14 +53,21 @@ namespace ShnexyTest.Models
             Customer curCustomer = _fixture.TestCustomer();
 
             //persist the customer to test the database.
-            curCustomer.Add();
+            customerRepo.Add(curCustomer);
             customerRepo.UnitOfWork.SaveChanges();
 
             //Create new email
             //Call Email#Configure
             //Call Email#Dispatch
-            curEvent.Dispatch();
+            var email = new Email();
 
+            email.From = new EmailAddress {Address = "lucreorganizer@gmail.com", Name = "Booqit Organizer"};
+            email.Text = "This is a Booqit Event Request. For more information, see https://foo.com";
+            email.Subject = "Invitation via Booqit: " + curEvent.Summary + "@ " + curEvent.DTStart;
+
+
+            EmailHelper.AttachInvitationToEmail(curEvent, email);
+            EmailHelper.SendEmail(email);
             //Verify success
             //use imap to load unread messages from the test customer account
             //verify that one of the messages is a proper ICS message

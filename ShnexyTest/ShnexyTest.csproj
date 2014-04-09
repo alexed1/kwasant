@@ -287,6 +287,18 @@
       <Project>{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}</Project>
       <Name>Daemons</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Data\Data.csproj">
+      <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DBTools\DBTools.csproj">
+      <Project>{066ED602-B036-489C-B616-63682348A750}</Project>
+      <Name>DBTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DDay\DDay.csproj">
+      <Project>{d940efca-2d57-466c-8103-54db173f1bd2}</Project>
+      <Name>DDay</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
