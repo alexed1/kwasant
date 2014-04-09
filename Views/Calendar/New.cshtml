@@ -10,14 +10,30 @@
     <link href="~/Content/bootstrap.min.css" rel="stylesheet"  type="text/css"/>
 
 <script type="text/javascript">
-    //$(document).ready(function () {
-    //    //function validate() {            
-    //    //    if ($("#divName").val().trim() == '') {                
-    //    //        $("#divName").val("Name is required.");
-    //    //        return false;
-    //    //    }
-    //    //}
-    //});
+    $(document).ready(function () {
+        //function validate() {            
+        //    if ($("#divName").val().trim() == '') {                
+        //        $("#divName").val("Name is required.");
+        //        return false;
+        //    }
+        //}    
+    });
+
+    /* Wild Char Check Start*/
+    function checkWildCar(texBox, IsNoteType) {
+        var oTextBox = document.getElementById(texBox);
+
+        var specialChars = "!@@#$^&%*()+=-[]\/{}|:<>?,.";
+
+        for (var i = 0; i < specialChars.length; i++) {
+            if (IsNoteType) {
+                oTextBox.value = oTextBox.value.replace(/[^\w\,\s\.\#\-]/gi, '')
+            }
+            else {
+                oTextBox.value = oTextBox.value.replace(/[^\w\s\.]/gi, '')
+            }
+        }
+    }
 
     function Validate() {
 
@@ -87,10 +103,10 @@
         
         var Id = (string)ViewData["Id"];
 
-        ShnexyDbContext db = new ShnexyDbContext();  
+        IEventFileRepository eventFileRepository = new EventFileRepository(new UnitOfWork(new ShnexyDbContext()));        
         EventFile evtFile = new EventFile();
 
-      if(db !=null)
+      if(eventFileRepository !=null)
       {      
 
         int intResult;
@@ -99,7 +115,7 @@
         blnResult = Int32.TryParse(Id, out intResult);
 
         if(blnResult){
-            evtFile = db.EventFiles.Find(Convert.ToInt32(Id));
+            evtFile = eventFileRepository.GetByKey(Convert.ToInt32(Id));
 
             if(evtFile !=null)
             { 
@@ -137,7 +153,7 @@
       }  
 
 <div>Location</div>
-<div>@Html.TextBox("Location",@strLocation, new { @class = "form-control col-md-1" })
+<div>@Html.TextBox("Location", @strLocation, new { @class = "form-control col-md-1" })
 <div id="divLocation"></div>
 </div>        
     
@@ -375,7 +391,7 @@
 </div> 
 <br />
 @{  
-    <div style="visibility:hidden">@Html.TextBox("Id",@Id, new { @class = "form-control col-md-1" })</div>       
+    <div style="display:none">@Html.TextBox("Id",@Id, new { @class = "form-control col-md-1" })</div>       
 }
 
 <hr />    
@@ -388,6 +404,8 @@
             <a href="javascript:close()"><div  style="width: 100px;">Cancel</div></a>            
         </div>
     </div>
+<br />
+<br />
 </div>
 </form>
     
@@ -398,15 +416,6 @@
         }
     }
 
-    //$("#f").submit(function () {
-    //    var f = $("#f");
-    //    $.post(f.action, f.serialize(), function (result) {
-    //        close(eval(result));
-    //    });
-    //    return false;
-    //});
-
-
     $("#f").submit(function () {
         var f = $("#f");
         $.post(f.action, f.serialize(), function (result) {
@@ -416,7 +425,13 @@
     });
 
     $(document).ready(function () {
-        $("#Text").focus();
+        $("#Location").focus();
+
+        $("Location").blur(function () {            
+            //var oTextBox = document.getElementById('Location');
+            //checkWildCar(oTextBox, false);
+        });
+
     });
 
 </script>

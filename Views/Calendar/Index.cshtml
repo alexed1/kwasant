@@ -37,12 +37,12 @@
         var m = new DayPilot.Modal();
         m.closed = function () {
             if (this.result == "OK") {                
-                dps.commandCallBack('refresh');
+                dpc.commandCallBack('refresh');
             }
-            dps.clearSelection();
+            dpc.clearSelection();
         };        
 
-        var url = 'http://localhost:50613/Calendar/New/' + e.value();
+        var url = getConfigFilePath() + '/New/' + e.value();
         m.showUrl(url);
     }
 
@@ -53,120 +53,114 @@
     @*<h3>Booking Agent</h3>
     *@
     <div class="row" style="font-size: 0.85em;" >
-        <div class="col-md-5"  style="border: 2px solid gray; padding-left: 20px; min-height:650px">
+        <div class="col-md-5 container_box">
             <br />
 
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-2 label_vertical_alignment">
                     <div>From:</div>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-9 label_vertical_alignment">
                     <div class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.Sender.Address)</div>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-10" style="height: 20px">
+                <div class="col-md-10 divider_height">
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-2 label_vertical_alignment">
                     <div>Subject:</div>
                 </div>
-                <div class="col-md-9">
+                <div class="col-md-9 label_vertical_alignment">
                     <div class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.Subject)</div>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-10" style="height: 20px">
+                <div class="col-md-10 divider_height">
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-2 label_vertical_alignment">
                     <div>To:</div>
                 </div>
                 <div class="col-md-9">
                     <div class="bookingAgentFormControlBorder">
-                    @{
-                        var toEmailAddresses = (string)ViewData["ToEmailAddresses"];
-                        
-                        <span>@toEmailAddresses</span>
-                     }                 
+                        @{
+                            var toEmailAddresses = (string)ViewData["ToEmailAddresses"];
+
+                            <span>@toEmailAddresses</span>
+                        }
                     </div>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-10" style="height: 20px">
+                <div class="col-md-10 divider_height">
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-2 label_vertical_alignment">
                     <div>CC:</div>
                 </div>
                 <div class="col-md-9">
                     <div class="bookingAgentFormControlBorder">
                         @{
                             var cCEmailAddresses = (string)ViewData["CCEmailAddresses"];
-                        
+
                             <span>@cCEmailAddresses</span>
-                        }  
+                        }
                     </div>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-10" style="height: 20px">
+                <div class="col-md-10 divider_height">
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-2 label_vertical_alignment">
                     <div>Bcc:</div>
                 </div>
                 <div class="col-md-9">
                     <div class="bookingAgentFormControlBorder">
                         @{
                             var bCCEmailAddresses = (string)ViewData["BCCEmailAddresses"];
-                        
+
                             <span>@bCCEmailAddresses</span>
-                        }  
+                        }
                     </div>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-10" style="height: 20px">
+                <div class="col-md-10 divider_height">
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-2">
+                <div class="col-md-2 label_vertical_alignment">
                     <div>Body:</div>
                 </div>
                 <div class="col-md-9">
-                    <div style="height: 200px; overflow-x: scroll" class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.Body)</div>
+                    <div style="height: 200px" class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.Body)</div>
                 </div>
             </div>
 
             <br />
         </div>
-        <div class="col-md-7" style="border: 2px solid gray; padding-left: 20px;min-height:650px">
+        <div class="col-md-7 container_box">
             <div class="row">
                 @Html.DayPilotMenu("menu1", new DayPilotMenuConfig
                 {
                     Items = new DayPilot.Web.Mvc.MenuItemCollection()
                     {
-                        @*new DayPilot.Web.Mvc.MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "modal('/New?id=" + e.value() + "');"},*@
-                        
-                        @*new DayPilot.Web.Mvc.MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "modal('http://localhost:50613/Calendar/New/id='" + e.value()  + "');"},*@
-
-
-                        @*new DayPilot.Web.Mvc.MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, Command = "Open"},*@
                         new DayPilot.Web.Mvc.MenuItem { Text = "Delete", Action = MenuItemAction.CallBack, Command = "Delete"}
                     }
                 })
@@ -179,7 +173,7 @@
                     }
                 })
 
-               @Html.DayPilotBubble("bubble")
+                @Html.DayPilotBubble("bubble")
 
                 @(Html.DayPilotCalendar("dpc", new DayPilotCalendarConfig
                     {
@@ -192,17 +186,15 @@
                         Height = 400,
                         HeightSpec = HeightSpec.BusinessHours,
                         EventBubble = "bubble",
-                        @*EventClickHandling = EventClickHandlingType.CallBack,*@                        
-                        @*EventClickJavaScript = "modal('http://localhost:50613/Calendar/New/id=1');",*@
                         EventClickJavaScript = "eventClick(e)",
-                        EventClickHandling = EventClickHandlingType.JavaScript,                     
-                        HeaderClickHandling = HeaderClickHandlingType.JavaScript,                        
-                        @*ContextMenu = "menu1",*@
+                        EventClickHandling = EventClickHandlingType.JavaScript,
+                        HeaderClickHandling = HeaderClickHandlingType.JavaScript,
+                        ContextMenu = "menu1",
                         HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"
                     }))
 
 
-  
+
                 <script type="text/javascript">
                     function modal(url) {
                         var m = new DayPilot.Modal();
@@ -223,7 +215,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <div class="row">
