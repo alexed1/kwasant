@@ -1,6 +1,5 @@
 ﻿using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
-using Data.DataAccessLayer.Repositories;
 using Data.Models;
 using StructureMap;
 using StructureMap.Configuration.DSL;
@@ -28,10 +27,15 @@ namespace Data.DataAccessLayer.StructureMap
         {
             public ShnexyCoreRegistry()
             {
-                For<IEmail>().Use<Email>();
-                For<IEvent>().Use<Event>();
-                For<IEmailRepository>().Use<EmailRepository>();
+                For<IAttachment>().Use<Attachment>();
+                For<IAttendee>().Use<Attendee>();
+                For<IBookingRequest>().Use<BookingRequest>();
                 For<ICustomer>().Use<Customer>();
+                For<IEmail>().Use<Email>();
+                For<IEmailAddress>().Use<EmailAddress>();
+                For<IEmailStatus>().Use<EmailStatus>();
+                For<IInvitation>().Use<Invitation>();
+                For<IUser>().Use<User>();
             }
         }
 

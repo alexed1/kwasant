@@ -1,14 +1,15 @@
-﻿namespace Data.Models
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using Data.DataAccessLayer.Interfaces;
+
+namespace Data.Models
 {
-    public class Attachment
-
-
+    public class Attachment : IAttachment
     {
-        public int Id {get; set; }
-        public string Type;
-        public string Name;
-        public string Content;
-
-
+        [Key]
+        public int AttachmentID { get; set; }
+        public String Name { get; set; }
+        public String Type { get; set; }
+        public String FileLocation { get; set; }
     }
 }

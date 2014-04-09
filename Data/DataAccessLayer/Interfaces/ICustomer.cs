@@ -1,14 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Data.Models;
 
 namespace Data.DataAccessLayer.Interfaces
 {
     public interface ICustomer
     {
-        int Id { get; set; }
-        EmailAddress emailAddr { get; set; }
+        [Key]
+        int CustomerID { get; set; }
 
-        Customer GetByKey(int Id);
+        String Email { get; set; }
+        String Name { get; set; }
+        User User { get; set; }
+        IEnumerable<BookingRequest> BookingRequests { get; set; }
     }
-
-
 }

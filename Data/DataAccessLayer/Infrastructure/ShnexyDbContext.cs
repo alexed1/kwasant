@@ -6,9 +6,7 @@ namespace Data.DataAccessLayer.Infrastructure
 
 
     public class ShnexyDbContext : DbContext
-    {
-
-       
+    {       
         //see web.config for connection string names.
         //azure is AzureDbContext
         public ShnexyDbContext()
@@ -17,44 +15,35 @@ namespace Data.DataAccessLayer.Infrastructure
             
         }
 
-        //public ShnexyDbContext(string mode) : base(mode)
-        //{
-           
-        //}
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<BookingRequest>().ToTable("BookingRequests");
 
-      
-        
+            modelBuilder.Entity<Email>()
+                .HasRequired(e => e.From);
 
-        public DbSet<Email> Emails { get; set; }
+            modelBuilder.Entity<EmailAddress>()
+                .HasOptional(ea => ea.FromEmail)
+                .WithRequired(e => e.From)
+                .Map(x => x.MapKey("FromEmailAddressID"));
+
+            base.OnModelCreating(modelBuilder);
+        }
+
+        public DbSet<Invitation> Invitations { get; set; }
+
+        public DbSet<Attendee> Attendees { get; set; }
+
+        public DbSet<User> Users { get; set; }
 
         public DbSet<Customer> Customers { get; set; }
 
+        public DbSet<BookingRequest> BookingRequests { get; set; }
+
+        public DbSet<EmailStatus> EmailStatuses { get; set; }
+
+        public DbSet<Email> Emails { get; set; }
+
         public DbSet<EmailAddress> EmailAddresses { get; set; }
-
-        public DbSet<EventFile> EventFiles { get; set; }
-
-        //public System.Data.Entity.DbSet<Shnexy.Models.AppointmentTable> AppointmentTables { get; set; }
-        
-        
-      
     }
-
-    //public class DevContext : ShnexyDbContext
-    //{
-    //    public DevContext() : base("localShnexyDb")
-    //    {
-            
-    //    }
-
-    //}
-    //public class TestContext : ShnexyDbContext
-    //{
-    //    public TestContext()
-    //        : base("ShnexyTestDb")
-    //    {
-
-    //    }
-
-    
-
 }
