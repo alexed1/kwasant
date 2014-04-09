@@ -19,8 +19,7 @@ namespace Shnexy.Controllers
 
         // GET: /Email/
         public ActionResult Index()
-        {
-            FixtureDataEmail.AddEmailMessage();
+        {   
             return View(db.Emails.ToList());
         }
 

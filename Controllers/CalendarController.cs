@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using System.Threading;
+using System.Data.Entity;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Collections.Generic;
-
 using Shnexy.Models;
 using Shnexy.DataAccessLayer;
 using Shnexy.DataAccessLayer.Interfaces;
@@ -24,22 +24,86 @@ using DayPilot.Web.Mvc.Json;
 using BeforeCellRenderArgs = DayPilot.Web.Mvc.Events.Calendar.BeforeCellRenderArgs;
 using TimeRangeSelectedArgs = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedArgs;
 
-using System.Data.Entity;
 
 namespace Shnexy.Controllers
 {
     [HandleError]
     public class CalendarController : Controller
     {
-        private ShnexyDbContext db = new ShnexyDbContext();      
+        private ShnexyDbContext db = new ShnexyDbContext();
+
+        IEventFileRepository eventFileRepository = new EventFileRepository(new UnitOfWork(new ShnexyDbContext()));
+
+        private DateTime ConvertLocalDateTime(String UnversalDateTimeString)
+        {
+            String strLocalDateTime = UnversalDateTimeString.Insert(4, "-").Insert(7, "-").Replace("T", " ").Insert(13, ":").Insert(16, ":");
+
+            try
+            {
+                return DateTime.Parse(strLocalDateTime);
+            }
+            catch (Exception e)
+            {
+                return new DateTime();
+            }
+        }
+
+        private void PopulateCalender()
+        {
+            int day = (int)DateTime.Now.DayOfWeek;
+            DateTime dtWeekStartDate = DateTime.Now.AddDays(-day);
+            DateTime dtWeekEndDate = dtWeekStartDate.AddDays(6);
+
+            List<EventFile> eventFileList = eventFileRepository.GetAll().ToList();
+
+            int DTSTART = 4;
+            int DTEND = 5;
+            int DESCRIPTION = 14;
+
+            foreach (EventFile eFile in eventFileList)
+            {
+                String[] arrICSBodyString = eFile.Body.Split(Environment.NewLine.ToCharArray());
+
+                String[] arrDTSTART = arrICSBodyString[DTSTART].Split(':');
+
+                String strDTSTART = String.Empty;
+                strDTSTART = arrDTSTART[1];
+
+                DateTime dtStart = ConvertLocalDateTime(strDTSTART);
+
+                String[] arrDTEND = arrICSBodyString[DTEND].Split(':');
+
+                String strDTEND = String.Empty;
+                strDTEND = arrDTEND[1];
+
+                DateTime dtEnd = ConvertLocalDateTime(strDTEND);
+
+                String[] arrBody = arrICSBodyString[DESCRIPTION].Split(':');
+                String strBody = String.Empty;
+
+                strBody = arrBody[1];
+
+                if (dtStart >= dtWeekStartDate && dtEnd <= dtWeekEndDate)
+                {
+                    try
+                    {
+                        new EventManager(this).EventCreate(dtStart, dtEnd, strBody, null, eFile.Id.ToString());
+                    }
+                    catch (Exception e)
+                    {
+                    }
+                }
+            }
+        }
 
         public ActionResult Index(int id = 0)
         {
-
             if (id <= 0)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
+            PopulateCalender();
 
             Email email = db.Emails.Find(id);
 
@@ -322,12 +386,12 @@ namespace Shnexy.Controllers
             return new Dpn().CallBack(this);
         }
 
-        public ActionResult New(string id)        
-        {   
-            ViewData["Id"] = id;             
+        public ActionResult New(string id)
+        {
+            ViewData["Id"] = id;
 
             return View(new EventManager.Event
-            {   
+            {
                 Start = Convert.ToDateTime(Request.QueryString["start"]),
                 End = Convert.ToDateTime(Request.QueryString["end"])
             });
@@ -340,7 +404,6 @@ namespace Shnexy.Controllers
             String strEventName = String.Empty;
             DateTime dtFromDate;
             DateTime dtToDate;
-            TimeSpan tsDuration = new TimeSpan();
             String strLocation = String.Empty;
             Boolean bIsAllDay = false;
             String strStatus = String.Empty;
@@ -351,39 +414,39 @@ namespace Shnexy.Controllers
             int intSequence = 0;
             String strSummary = String.Empty;
             String strCategory = String.Empty;
-            String strId = String.Empty;            
+            String strId = String.Empty;
 
             strEventName = !String.IsNullOrEmpty(form["Name"]) ? form["Name"].ToString() : String.Empty;
-            dtFromDate = form["FromDate"] !=null ?  Convert.ToDateTime(form["FromDate"]) : DateTime.MinValue;
-            dtToDate =  form["ToDate"] != null ?  Convert.ToDateTime(form["ToDate"]) : DateTime.MinValue;
+            dtFromDate = form["FromDate"] != null ? Convert.ToDateTime(form["FromDate"]) : DateTime.MinValue;
+            dtToDate = form["ToDate"] != null ? Convert.ToDateTime(form["ToDate"]) : DateTime.MinValue;
             strLocation = !String.IsNullOrEmpty(form["Location"]) ? form["Location"].ToString() : String.Empty;
             strStatus = !String.IsNullOrEmpty(form["Status"]) ? form["Status"].ToString() : String.Empty;
             strTransparency = !String.IsNullOrEmpty(form["TransparencyType"]) ? form["TransparencyType"].ToString() : String.Empty;
             strClass = !String.IsNullOrEmpty(form["Class"]) ? form["Class"].ToString() : String.Empty;
             strDescription = !String.IsNullOrEmpty(form["Description"]) ? form["Description"].ToString() : String.Empty;
-            intPriority = !String.IsNullOrEmpty(form["Priority"]) ? Convert.ToInt32(form["Priority"]) : 0 ;
-            intSequence = !String.IsNullOrEmpty(form["Sequence"]) ? Convert.ToInt32(form["Sequence"]) : 0 ;
-            strSummary = !String.IsNullOrEmpty(form["Summary"]) ? form["Summary"].ToString() : String.Empty;    
-            strCategory=!String.IsNullOrEmpty(form["Category"]) ? form["Category"].ToString() : String.Empty;
-            strId = !String.IsNullOrEmpty(form["Id"]) ? form["Id"].ToString() : String.Empty;                        
+            intPriority = !String.IsNullOrEmpty(form["Priority"]) ? Convert.ToInt32(form["Priority"]) : 0;
+            intSequence = !String.IsNullOrEmpty(form["Sequence"]) ? Convert.ToInt32(form["Sequence"]) : 0;
+            strSummary = !String.IsNullOrEmpty(form["Summary"]) ? form["Summary"].ToString() : String.Empty;
+            strCategory = !String.IsNullOrEmpty(form["Category"]) ? form["Category"].ToString() : String.Empty;
+            strId = !String.IsNullOrEmpty(form["Id"]) ? form["Id"].ToString() : String.Empty;
 
-            if (!String.IsNullOrEmpty(form["chkIsAllDay"]))           
-            {
-                String strCheckAllDay = form["chkIsAllDay"].ToString();
-                String strTemp = String.Empty;
+            //if (!String.IsNullOrEmpty(form["chkIsAllDay"]))
+            //{
+            //    String strCheckAllDay = form["chkIsAllDay"].ToString();
+            //    String strTemp = String.Empty;
 
-                if (strCheckAllDay.IndexOf(',') > -1)
-                {                    
-                  String [] arrCheckAllDay = strCheckAllDay.Split(',');
-                  strTemp = arrCheckAllDay[0];
-                }
-                else
-                {
-                    strTemp = strCheckAllDay;
-                }
+            //    if (strCheckAllDay.IndexOf(',') > -1)
+            //    {
+            //        String[] arrCheckAllDay = strCheckAllDay.Split(',');
+            //        strTemp = arrCheckAllDay[0];
+            //    }
+            //    else
+            //    {
+            //        strTemp = strCheckAllDay;
+            //    }
 
-                bIsAllDay = Convert.ToBoolean(strTemp);
-            }
+            //    bIsAllDay = Convert.ToBoolean(strTemp);
+            //}
 
             if (intPriority == 0 || intSequence == 0)
                 return View();
@@ -391,43 +454,64 @@ namespace Shnexy.Controllers
 
             String strEventICSString = String.Empty;
 
-            strEventICSString = GetICSFormattedEventString(EventData._dtStartDate, EventData._dtEndDate , intSequence,strCategory,intPriority,strTransparency,strStatus,strClass,strSummary,strDescription,strLocation);
-
             int intResult;
             Boolean blnResult;
 
             blnResult = Int32.TryParse(strId, out intResult);
-            
+
             EventFile eventFile = new EventFile();
-            eventFile.Body = strEventICSString;
+
+            (new EventManager(this)).EventDelete(strId);
+
 
             if (!blnResult)
-            {   
-                db.EventFiles.Add(eventFile);
-                db.SaveChanges();
+            {
+                strEventICSString = GetICSFormattedEventString(EventData._dtStartDate, EventData._dtEndDate, intSequence, strCategory, intPriority, strTransparency, strStatus, strClass, strSummary, strDescription, strLocation);
+                eventFile.Body = strEventICSString;
+
+                eventFileRepository.Add(eventFile);
+                eventFileRepository.UnitOfWork.SaveChanges();
+
+                new EventManager(this).EventCreate(EventData._dtStartDate, EventData._dtEndDate, strDescription, null, eventFile.Id.ToString());
             }
             else
             {
                 int intEventFileId = Convert.ToInt32(strId);
 
-                EventFile eventFileExist = db.EventFiles.Find(intEventFileId);
-
-                if (eventFileExist != null)
+                if (intEventFileId > 0)
                 {
-                    IEventFileRepository eventFileRepo = new EventFileRepository(new UnitOfWork(new ShnexyDbContext()));
+                    EventFile eventFileExist = eventFileRepository.GetByKey(intEventFileId);
 
-                    eventFile.Id = intEventFileId;
-                    eventFileRepo.Update(eventFile, eventFileExist);
+                    if (eventFileExist != null)
+                    {
 
-                    //db.Database.ExecuteSqlCommand(String.Format("UPDATE EventFile SET Body={0} WHERE Id={1}", strEventICSString, intEventFileId));   
+                        String strTempStartDate = GetFormatedDate(EventData._dtEditStartDate);
+                        DateTime dtTempStartDate = ConvertLocalDateTime(strTempStartDate);
+
+                        String strDate = String.Format("{0}/{1}/{2}", dtTempStartDate.Month, dtTempStartDate.Day, dtTempStartDate.Year);
+
+                        if (strDate != "1/1/1")
+                        {
+                            EventFile newEventFile = new EventFile();
+
+                            newEventFile.Id = intEventFileId;
+
+                            strEventICSString = GetICSFormattedEventString(EventData._dtEditStartDate, EventData._dtEditEndDate, intSequence, strCategory, intPriority, strTransparency, strStatus, strClass, strSummary, strDescription, strLocation);
+                            newEventFile.Body = strEventICSString;
+
+                            eventFileRepository.Update(newEventFile, eventFileExist);
+                            eventFileRepository.UnitOfWork.SaveChanges();
+
+                            new EventManager(this).EventCreate(EventData._dtEditStartDate, EventData._dtEditEndDate, strDescription, null, intEventFileId.ToString());
+                        }
+                    }
                 }
             }
 
-            (new EventManager(this)).EventDelete(strId);            
+            //new EventManager(this).EventCreate(EventData._dtStartDate, EventData._dtEndDate, strDescription, null, eventFile.Id.ToString());
+            //PopulateCalender();
+            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
 
-            new EventManager(this).EventCreate(EventData._dtStartDate, EventData._dtEndDate, strDescription, null, eventFile.Id.ToString());
-            return JavaScript(SimpleJsonSerializer.Serialize("OK"));           
-            
         }
 
         private String GetICSFormattedEventString(DateTime FromDate, DateTime ToDate, int Sequence, String Category, int Priority, String Transp, String Status, String Class, String Summary, String Description, String Location)
@@ -439,12 +523,12 @@ namespace Shnexy.Controllers
             sb.Append("PRODID:-//ince/events//NONSGML v1.0//EN\r\f");
             sb.Append("BEGIN:VEVENT\r\f");
             sb.Append(String.Format("DTSTART:{0}\r\f", GetFormatedDate(FromDate)));
-            sb.Append(String.Format("DTEND:{0}\r\f", GetFormatedDate(ToDate)));                 
+            sb.Append(String.Format("DTEND:{0}\r\f", GetFormatedDate(ToDate)));
             sb.Append(String.Format("SEQUENCE:{0}\r\f", Sequence));
             sb.Append(String.Format("UID:{0}\r\f", new Guid()));
             sb.Append(String.Format("CATEGORIES:{0}\r\f", Category));
             sb.Append(String.Format("PRIORITY:{0}\r\f", Priority));
-            sb.Append(String.Format("STATUS:{0}\r\f", Status));            
+            sb.Append(String.Format("STATUS:{0}\r\f", Status));
             sb.Append(String.Format("TRANSP:{0}\r\f", Transp));
             sb.Append(String.Format("CLASS:{0}\r\f", Class));
             sb.Append(String.Format("SUMMARY:{0}\r\f", Summary));
@@ -497,7 +581,13 @@ namespace Shnexy.Controllers
         {
             public static DateTime _dtStartDate;
             public static DateTime _dtEndDate;
+
+            public static DateTime _dtEditStartDate;
+            public static DateTime _dtEditEndDate;
+
             public static String _Id;
+
+            public static DateTime _dtCalenderEndDate;
         }
 
         public class Dpn : DayPilotNavigator
@@ -518,15 +608,16 @@ namespace Shnexy.Controllers
                 DataStartField = "start";
                 DataEndField = "end";
                 DataIdField = "id";
-
             }
         }
 
         public class Dpc : DayPilotCalendar
         {
+            IEventFileRepository eventFileRepository = new EventFileRepository(new UnitOfWork(new ShnexyDbContext()));
+
             protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
             {
-                new EventManager(Controller).EventCreate(e.Start, e.End, "Click To Open Form", e.Resource);                
+                new EventManager(Controller).EventCreate(e.Start, e.End, "Click To Open Form", e.Resource);
 
                 EventData._dtStartDate = Convert.ToDateTime(e.Start);
                 EventData._dtEndDate = Convert.ToDateTime(e.End);
@@ -539,14 +630,74 @@ namespace Shnexy.Controllers
                 if (new EventManager(Controller).Get(e.Id) != null)
                 {
                     new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd);
+                    MoveUpdateEventFile(e.Id, e.NewStart, e.NewEnd);
                 }
                 else // external drag&drop
                 {
                     new EventManager(Controller).EventCreate(e.NewStart, e.NewEnd, e.Text, e.NewResource, e.Id);
+                    MoveUpdateEventFile(e.Id, e.NewStart, e.NewEnd);
                 }
 
                 Update();
             }
+
+            private static string GetFormatedDate(DateTime date)
+            {
+                return String.Format("{0}{1}{2}T{3}{4}00Z", date.ToUniversalTime().Year, date.ToUniversalTime().Month.ToString("00"), date.ToUniversalTime().Day.ToString("00"), date.ToUniversalTime().Hour.ToString("00"), date.ToUniversalTime().Minute.ToString("00"));
+            }
+
+            private void MoveUpdateEventFile(String Id, DateTime StartDate, DateTime EndDate)
+            {
+
+                int DTSTART = 4;
+                int DTEND = 5;
+
+                EventFile evtFile = new EventFile();
+
+                if (eventFileRepository != null)
+                {
+                    int intResultId;
+                    Boolean blnResult;
+
+                    blnResult = Int32.TryParse(Id, out intResultId);
+
+                    if (blnResult)
+                    {
+                        evtFile = eventFileRepository.GetByKey(intResultId);
+
+                        StringBuilder sb = new StringBuilder("");
+
+                        if (evtFile != null)
+                        {
+                            String strICSMessageBody = String.Empty;
+                            strICSMessageBody = evtFile.Body;
+
+                            String[] arrICSString = strICSMessageBody.Split(Environment.NewLine.ToCharArray());
+
+                            String strStartDate = String.Format("\fDTSTART:{0}", GetFormatedDate(StartDate));
+                            String strEndDate = String.Format("\fDTEND:{0}", GetFormatedDate(EndDate));
+
+                            arrICSString[4] = strStartDate;
+                            arrICSString[5] = strEndDate;
+
+                            foreach (String strTemp in arrICSString)
+                            {
+                                sb.Append(strTemp);
+                                sb.Append("\r");
+                            }
+                        }
+
+                        EventFile newEventFile = new EventFile();
+
+                        newEventFile.Id = intResultId;
+                        newEventFile.Body = sb.ToString();
+
+                        eventFileRepository.Update(newEventFile, evtFile);
+                        eventFileRepository.UnitOfWork.SaveChanges();
+                    }
+                }
+            }
+
 
             protected override void OnEventClick(EventClickArgs e)
             {
@@ -570,7 +721,10 @@ namespace Shnexy.Controllers
 
             protected override void OnEventBubble(EventBubbleArgs e)
             {
-                EventData._Id=e.Id;
+                EventData._dtEditStartDate = e.Start;
+                EventData._dtEditEndDate = e.End;
+
+                EventData._Id = e.Id;
                 e.BubbleHtml = "This is an event bubble for id: " + e.Id;
                 //EventData._dtStartDate = Convert.ToDateTime(e.Start);
                 //EventData._dtEndDate = Convert.ToDateTime(e.End);
@@ -581,10 +735,28 @@ namespace Shnexy.Controllers
                 switch (e.Command)
                 {
                     case "Delete":
+
+                        int intResultId;
+                        Boolean blnResult;
+
+                        blnResult = Int32.TryParse(e.Id, out intResultId);
+
+                        if (blnResult)
+                        {
+                            EventFile deleteEventFile;
+
+                            deleteEventFile = eventFileRepository.GetByKey(intResultId);
+
+                            if (deleteEventFile != null)
+                            {
+                                eventFileRepository.Remove(deleteEventFile);
+                                eventFileRepository.UnitOfWork.SaveChanges();
+                            }
+                        }
+
                         new EventManager(Controller).EventDelete(e.Id);
                         Update();
                         break;
-
                 }
             }
 
@@ -690,7 +862,6 @@ namespace Shnexy.Controllers
 
             protected override void OnInit(InitArgs initArgs)
             {
-
                 //Thread.Sleep(5000);
 
                 UpdateWithMessage("Welcome!", CallBackUpdateType.Full);
@@ -729,6 +900,7 @@ namespace Shnexy.Controllers
                     e.InnerHtml += " adding some longer text so the autofit can be tested";
                 }
 
+                EventData._dtCalenderEndDate = e.Date;
             }
             protected override void OnBeforeTimeHeaderRender(BeforeTimeHeaderRenderArgs e)
             {
@@ -761,12 +933,7 @@ namespace Shnexy.Controllers
 
                 DataAllDayField = "allday";
                 //DataTagFields = "id, name";
-
-               
-
             }
-
         }
-
     }
 }
