@@ -29,5 +29,21 @@ namespace Data.Constants
                 return _cachedStatuses[statusID];
             }
         }
+
+        public static void ApplySeedData(IUnitOfWork uow)
+        {
+            var constants = typeof (EmailStatusConstants).GetFields();
+            var emailStatusRepo = new EmailStatusRepository(uow);
+            foreach (var constant in constants)
+            {
+                var name = constant.Name;
+                var value = constant.GetValue(null);
+                emailStatusRepo.Add(new EmailStatus
+                {
+                    EmailStatusID = (int)value,
+                    Value = name
+                });
+            }
+        }
     }
 }
