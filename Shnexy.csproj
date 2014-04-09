@@ -233,7 +233,6 @@
     <Compile Include="Controllers\EngineController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="ViewModels\User\UserDetailsVM.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -650,8 +649,7 @@
     <Content Include="packages\WebGrease.1.5.2\WebGrease.1.5.2.nupkg" />
     <Content Include="packages\WebGrease.1.6.0\WebGrease.1.6.0.nupkg" />
     <Content Include="packages\WebGrease.1.6.0\WebGrease.1.6.0.nuspec" />
-    <None Include="Properties\PublishProfiles\shnexy.pubxml" />
-    <None Include="Properties\PublishProfiles\shnexy2.pubxml" />
+    <None Include="Properties\PublishProfiles\kwasant.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\daypilot-all.min.js" />
     <Content Include="Scripts\DayPilot\daypilot-all.min.js" />
