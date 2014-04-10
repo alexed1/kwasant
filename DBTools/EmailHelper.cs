@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
@@ -10,8 +9,6 @@ using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DDay.DDay.iCal;
 using Data.DDay.DDay.iCal.DataTypes;
-using Data.DDay.DDay.iCal.ExtensionMethods;
-using Data.DDay.DDay.iCal.Interfaces;
 using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
 using Data.Models;
 using DBTools.Managers;
@@ -26,19 +23,19 @@ namespace DBTools
     {
         public static void DispatchInvitation(IUnitOfWork uow, Invitation invitation)
         {
-            var emailRepo = new EmailRepository(uow);
+            EmailRepository emailRepo = new EmailRepository(uow);
 
-            var fromEmail = "lucreorganizer@gmail.com";
-            var fromName = "Booqit Organizer";
+            string fromEmail = "lucreorganizer@gmail.com";
+            string fromName = "Booqit Organizer";
 
-            var mailMessage = new MailMessage { From = new MailAddress(fromEmail, fromName) };
-            foreach (var attendee in invitation.Attendees)
+            MailMessage mailMessage = new MailMessage { From = new MailAddress(fromEmail, fromName) };
+            foreach (Data.Models.Attendee attendee in invitation.Attendees)
                 mailMessage.To.Add(new MailAddress(attendee.EmailAddress, attendee.Name));
             mailMessage.Subject = "Invitation via Booqit: " + invitation.Summary + "@ " + invitation.StartDate;
             mailMessage.Body = "This is a Booqit Event Request. For more information, see https://foo.com";
 
-            var calendar = new iCalendar();
-            var evnt = new Event();
+            iCalendar calendar = new iCalendar();
+            Event evnt = new Event();
             if (invitation.IsAllDay)
             {
                 evnt.IsAllDay = true;
@@ -54,7 +51,7 @@ namespace DBTools
             evnt.Location = invitation.Where;
             evnt.Description = invitation.Description;
             evnt.Summary = invitation.Summary;
-            foreach (var attendee in invitation.Attendees)
+            foreach (Data.Models.Attendee attendee in invitation.Attendees)
             {
                 evnt.Attendees.Add(new Attendee
                 {
@@ -71,7 +68,7 @@ namespace DBTools
 
             calendar.Events.Add(evnt);
             
-            var email = AddNewEmailToRepository(emailRepo, mailMessage);
+            Email email = AddNewEmailToRepository(emailRepo, mailMessage);
             AttachCalendarToEmail(calendar, email);
             invitation.Emails.Add(email);
 
@@ -82,9 +79,9 @@ namespace DBTools
         public static void AttachCalendarToEmail(iCalendar iCal, Email email)
         {
             iCalendarSerializer serializer = new iCalendarSerializer(iCal);
-            var fileToAttach = serializer.Serialize(iCal);
+            string fileToAttach = serializer.Serialize(iCal);
 
-            var attachment = CreateNewAttachment(
+            Attachment attachment = CreateNewAttachment(
                 new System.Net.Mail.Attachment(
                     new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
                     new ContentType {MediaType = "application/calendar", Name = "invite.ics"}
@@ -95,7 +92,7 @@ namespace DBTools
 
         public static Email AddNewEmailToRepository(IEmailRepository emailRepository, MailMessage mailAddress)
         {
-            var email = new Email
+            Email email = new Email
             {
                 From = GetEmailAddress(mailAddress.From),
                 BCC = mailAddress.Bcc.Select(GetEmailAddress).ToList(),
@@ -122,8 +119,8 @@ namespace DBTools
 
         private static Attachment CreateNewAttachment(System.Net.Mail.Attachment attachment)
         {
-            var fileName = Path.GetFullPath(Path.GetRandomFileName());
-            var fileStream = File.Open(fileName, FileMode.OpenOrCreate);
+            string fileName = Path.GetFullPath(Path.GetRandomFileName());
+            FileStream fileStream = File.Open(fileName, FileMode.OpenOrCreate);
             attachment.ContentStream.CopyTo(fileStream);
             fileStream.Close();
 
@@ -138,10 +135,10 @@ namespace DBTools
         public static void SendEmail(Email email)
         {
             new EmailManager().Send(email);
-            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            var er = new EmailRepository(uow);
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailRepository er = new EmailRepository(uow);
 
-            var originalEmail = er.GetByKey(email.EmailID);
+            Email originalEmail = er.GetByKey(email.EmailID);
             email.Status = EmailStatusConstants.GetStatusRow(EmailStatusConstants.SENT);
             er.Update(email, originalEmail);
             uow.SaveChanges();

@@ -40,13 +40,13 @@ namespace DBTools.Managers.APIManager.Transmitters.Restful
         private RestfulResponse ConvertToRestResponse(HttpWebResponse curWebResponse)
         {
             StreamReader sr = new StreamReader(curWebResponse.GetResponseStream());
-            var curResponse = new RestfulResponse();
+            RestfulResponse curResponse = new RestfulResponse();
             curResponse.Content = sr.ReadToEnd();
             curResponse.StatusCode = curWebResponse.StatusCode;
             curResponse.StatusDescription = curWebResponse.StatusDescription;
-            foreach (var headerName in curWebResponse.Headers.AllKeys)
+            foreach (string headerName in curWebResponse.Headers.AllKeys)
             {
-                var headerValue = curWebResponse.Headers[headerName];
+                string headerValue = curWebResponse.Headers[headerName];
                 curResponse.Headers.Add(headerName, headerValue);
             }
             return curResponse;

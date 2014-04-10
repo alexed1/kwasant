@@ -32,20 +32,20 @@ namespace DBTools.Managers
         /// </summary>
         public void SendTemplate(string templateName, Email message, Dictionary<string, string> mergeFields)
         {
-            var results = MandrillAPI.PostMessageSendTemplate(templateName, message, mergeFields);
+            string results = MandrillAPI.PostMessageSendTemplate(templateName, message, mergeFields);
         }
 
         public void Send(Email curEmail)
         {
 
-            var results = MandrillAPI.PostMessageSend(curEmail);
+            string results = MandrillAPI.PostMessageSend(curEmail);
            
         }
 
 
         public void Ping()
         {
-            var results = MandrillAPI.PostPing();
+            string results = MandrillAPI.PostPing();
             Debug.WriteLine(results);
         }
 

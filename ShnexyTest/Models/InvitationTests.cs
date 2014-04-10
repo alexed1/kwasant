@@ -10,7 +10,6 @@ using DBTools;
 using NUnit.Framework;
 using ShnexyTest.Fixtures;
 using StructureMap;
-using Event = Data.Models.Event;
 
 namespace ShnexyTest.Models
 {
@@ -48,9 +47,9 @@ namespace ShnexyTest.Models
         [Category("Invitation")]
         public void Event_Dispatch_CanSendICS()
         {
-            var invRepo = new InvitationRepository(_uow);
-            var attendeesRepo = new AttendeeRepository(_uow);
-            var attendees =
+            InvitationRepository invRepo = new InvitationRepository(_uow);
+            AttendeeRepository attendeesRepo = new AttendeeRepository(_uow);
+            List<Attendee> attendees =
                 new List<Attendee>
                 {
                     _fixture.TestAttendee1(),
@@ -58,7 +57,7 @@ namespace ShnexyTest.Models
                 };
             attendees.ForEach(attendeesRepo.Add);
 
-            var invitation = new Invitation
+            Invitation invitation = new Invitation
             {
                 Description = "This is my test invitation",
                 Summary = @"My test invitation",

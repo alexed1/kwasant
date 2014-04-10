@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Data.Models;
 using DBTools.Managers.APIManager.Transmitters.Restful;
 using Newtonsoft.Json;
@@ -48,8 +47,8 @@ namespace DBTools.Managers.APIManager.Packagers.Mandrill
         /// </summary>
         public string PostMessageSendTemplate(String templateName, Email message, Dictionary<string, string> mergeFields)
         {
-            var curCall = new RestfulCall(baseURL, "/messages/send-template.json", Method.POST);
-            var curTemplatePackage = new MandrillTemplatePackage(MandrillKey, message);
+            RestfulCall curCall = new RestfulCall(baseURL, "/messages/send-template.json", Method.POST);
+            MandrillTemplatePackage curTemplatePackage = new MandrillTemplatePackage(MandrillKey, message);
 
             curTemplatePackage.TemplateName = templateName;
 
@@ -57,13 +56,13 @@ namespace DBTools.Managers.APIManager.Packagers.Mandrill
             //Currently we support just a single recipient. Mandrill's merge tag solution, though, requires a syntax that assume multiple recipients.
             //What we're doing here is just copying the email address from the EmailAddress object into a similar field called 'rcpt'
             //This will break the moment we use 'cc' or 'bcc' or put more than one addressee into the message.
-            var curRecipient = new MandrillMergeRecipient();
+            MandrillMergeRecipient curRecipient = new MandrillMergeRecipient();
             //curRecipient.Rcpt = message.To. FIX THIS
 
             //map the template-specific chunks of custom data that will be dyanmically integrated into the template at send time. Put them into a list that can be easily serialized.
-            foreach (var pair in mergeFields)
+            foreach (KeyValuePair<string, string> pair in mergeFields)
             {
-                var curChunk = new MandrillDynamicContentChunk();
+                MandrillDynamicContentChunk curChunk = new MandrillDynamicContentChunk();
                 curChunk.Name = pair.Key;
                 curChunk.Content = pair.Value;
                 curRecipient.Vars.Add(curChunk);
@@ -80,8 +79,8 @@ namespace DBTools.Managers.APIManager.Packagers.Mandrill
         //simple send with no merge variables or templates
         public string PostMessageSend(Email message)
         {
-            var curCall = new RestfulCall(baseURL, "/messages/send.json", Method.POST);
-            var curBasePackage = new MandrillBasePackage(MandrillKey, message);
+            RestfulCall curCall = new RestfulCall(baseURL, "/messages/send.json", Method.POST);
+            MandrillBasePackage curBasePackage = new MandrillBasePackage(MandrillKey, message);
             return AssembleAndSend(curBasePackage, curCall);
         }
 
@@ -94,7 +93,7 @@ namespace DBTools.Managers.APIManager.Packagers.Mandrill
             curCall.AddBody(jsonSerializer.Serialize(curTemplatePackage), "application/json");
 
             //Transmit the call
-            var response = curCall.Execute();
+            RestfulResponse response = curCall.Execute();
 
             return response.Content;
 
@@ -110,7 +109,7 @@ namespace DBTools.Managers.APIManager.Packagers.Mandrill
             RestfulCall curCall = new RestfulCall(baseURL, "/users/ping.json", Method.POST);
             string pingstring = @"{ ""key"": """ + MandrillKey + @"""}";
             curCall.AddBody(pingstring, "application/json");
-            var response = curCall.Execute();
+            RestfulResponse response = curCall.Execute();
 
             return response.Content;
         }
@@ -184,8 +183,8 @@ namespace DBTools.Managers.APIManager.Packagers.Mandrill
                 Important = false,
                 Attachments = message.Attachments.Select(a =>
                 {
-                    var file = File.ReadAllBytes(a.FileLocation);
-                    var base64Version = Convert.ToBase64String(file, 0, file.Length);
+                    byte[] file = File.ReadAllBytes(a.FileLocation);
+                    string base64Version = Convert.ToBase64String(file, 0, file.Length);
 
                     return new MandrilEmail.MandrilAttachment
                     {

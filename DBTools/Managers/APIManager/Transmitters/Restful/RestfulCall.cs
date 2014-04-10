@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Text;
 using UtilitiesLib;
@@ -151,7 +152,7 @@ namespace DBTools.Managers.APIManager.Transmitters.Restful
         /// </summary>
         private Uri BuildUrl()
         {
-            var urlString = Resource;
+            string urlString = Resource;
             if (!urlString.IsNullOrEmpty() && urlString.StartsWith("/"))
                 urlString = urlString.Substring(1);
 
@@ -186,9 +187,9 @@ namespace DBTools.Managers.APIManager.Transmitters.Restful
                 return;
             }
             //prepare bytes for rest api request body for writing to stream
-            var requestBodyBytes = Encoding.UTF8.GetBytes(Body);
+            byte[] requestBodyBytes = Encoding.UTF8.GetBytes(Body);
             curWebRequest.ContentLength = requestBodyBytes.Length;
-            using (var requestStream = curWebRequest.GetRequestStream())
+            using (Stream requestStream = curWebRequest.GetRequestStream())
             {
                 requestStream.Write(requestBodyBytes, 0, requestBodyBytes.Length);
             }
@@ -202,7 +203,7 @@ namespace DBTools.Managers.APIManager.Transmitters.Restful
             //If rest request has post parameters then set content type to application/x-www-form-urlencoded"
             if (QueryParams.Count > 0)
             {
-                var body = BuildQueryString();
+                string body = BuildQueryString();
                 if (!body.IsNullOrEmpty())
                 {
                     ContentType = "application/x-www-form-urlencoded";
@@ -216,7 +217,7 @@ namespace DBTools.Managers.APIManager.Transmitters.Restful
         /// </summary>
         public HttpWebRequest configureCurCall()
         {
-            var curWebRequest = (HttpWebRequest)WebRequest.Create(BuildUrl());
+            HttpWebRequest curWebRequest = (HttpWebRequest)WebRequest.Create(BuildUrl());
             AppendHeaders(curWebRequest);
             curWebRequest.Method = Method.GetName();
             curWebRequest.AllowAutoRedirect = AllowAutoRedirect;
@@ -232,7 +233,7 @@ namespace DBTools.Managers.APIManager.Transmitters.Restful
         /// </summary>
         private void AppendHeaders(HttpWebRequest curWebRequest)
         {
-            foreach (var header in HeaderParams)
+            foreach (KeyValuePair<string, string> header in HeaderParams)
             {
                 if (restrictedHeaderActions.ContainsKey(header.Key))
                     restrictedHeaderActions[header.Key].Invoke(curWebRequest, header.Value.ToString());
@@ -246,8 +247,8 @@ namespace DBTools.Managers.APIManager.Transmitters.Restful
         /// </summary>
         private string BuildQueryString()
         {
-            var querystring = new StringBuilder();
-            foreach (var p in QueryParams)
+            StringBuilder querystring = new StringBuilder();
+            foreach (KeyValuePair<string, string> p in QueryParams)
             {
                 if (querystring.Length > 1)
                     querystring.Append("&");
@@ -264,7 +265,7 @@ namespace DBTools.Managers.APIManager.Transmitters.Restful
             //Authenticate for Amazon/OAuth
             AuthenticateIfNeeded();
 
-            var curWebRequest = configureCurCall();
+            HttpWebRequest curWebRequest = configureCurCall();
             return APITransmitter.Transmit(curWebRequest, this);
         }
 

@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
 namespace DBTools.Managers.APIManager.Serializers.Json
@@ -62,9 +63,9 @@ namespace DBTools.Managers.APIManager.Serializers.Json
             if (responseJson.StartsWith("{\"messages\":{")) return default(IList<T>);
             if (responseJson == "[]") return default(IList<T>);
 
-            var result = JsonConvert.DeserializeObject<object>(responseJson, _settings);
+            object result = JsonConvert.DeserializeObject<object>(responseJson, _settings);
             IList<T> listT = new List<T>();
-            foreach (var item in ((Newtonsoft.Json.Linq.JObject)(result)))
+            foreach (KeyValuePair<string, JToken> item in ((Newtonsoft.Json.Linq.JObject)(result)))
             {
                 listT.Add(Deserialize<T>(item.Value.ToString()));
             }
@@ -101,11 +102,11 @@ namespace DBTools.Managers.APIManager.Serializers.Json
 
             private string ChangeCase(string s)
             {
-                var sb = new StringBuilder();
+                StringBuilder sb = new StringBuilder();
 
                 bool addNoUnderscore = true;//applies for the first char, and for chars that follow a capital char (i.e. we don't want "CC" to become "C_C")
                 bool lastCharUpper = true;
-                foreach (var c in s)
+                foreach (char c in s)
                 {
 
                     if (char.IsLower(c))
