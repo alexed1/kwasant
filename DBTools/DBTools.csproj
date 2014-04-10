@@ -67,7 +67,7 @@
       <Name>Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\DDay\DDay.csproj">
-      <Project>{D940EFCA-2D57-466C-8103-54DB173F1BD2}</Project>
+      <Project>{d940efca-2d57-466c-8103-54db173f1bd2}</Project>
       <Name>DDay</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
