@@ -1,28 +1,28 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+//using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
 namespace Shnexy.Utilities
 {
 
-        
+
 
     public static class IntString
     {
         public static List<string> Deserialize(string data)
         {
             List<string> intList = new List<string>();
-            string[] separators = {","};
+            string[] separators = { "," };
             intList = data.Split(separators, StringSplitOptions.None).ToList();
             return intList;
         }
 
         public static string Serialize(List<string> intList)
         {
-            string textrep = String.Join( ",",intList.ToArray());
+            string textrep = String.Join(",", intList.ToArray());
             return textrep;
         }
 

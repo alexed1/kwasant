@@ -1,44 +1,428 @@
-﻿@model IEnumerable<Shnexy.Models.Event>
+﻿@using System.Web.Mvc
+@using Data.Models
+@using Data.DataAccessLayer
+@using Data.DataAccessLayer.Interfaces
+@using Data.DataAccessLayer.Repositories
+@using Data.DataAccessLayer.Infrastructure
 
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
-<form id="f" method="post">
+<header>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //function validate() {
+            //    if ($("#divName").val().trim() == '') {
+            //        $("#divName").val("Name is required.");
+            //        return false;
+            //    }
+            //}
+        });
 
- @*action="@Url.Action("New")"*@    
+        /* Wild Char Check Start*/
+        function checkWildCar(texBox, IsNoteType) {
+            var oTextBox = document.getElementById(texBox);
 
-<h1>New Event</h1>    
-    
-<div>Text</div>
-<div>asasa</div>
-    
-<div>Start</div>
-<div>BBB</div>
+            var specialChars = "!@@#$^&%*()+=-[]\/{}|:<>?,.";
 
-<div>End</div>
-<div>CC</div>
-    
+            for (var i = 0; i < specialChars.length; i++) {
+                if (IsNoteType) {
+                    oTextBox.value = oTextBox.value.replace(/[^\w\,\s\.\#\-]/gi, '')
+                }
+                else {
+                    oTextBox.value = oTextBox.value.replace(/[^\w\s\.]/gi, '')
+                }
+            }
+        }
+
+        function Validate() {
+
+            var bFlag = false;
+
+            var name = document.getElementById('Name');
+            var dName = document.getElementById('divName');
+
+            if (name != null) {
+                if (name.value.trim() == '') {
+                    dName.innerHTML = 'Name is required.';
+                    bFlag = false;
+                }
+                else {
+                    dName.innerHTML = '';
+                    bFlag = true;
+                }
+            }
+
+            var location = document.getElementById('Location');
+            var dLocation = document.getElementById('divLocation');
+
+            if (location != null) {
+                if (location.value.trim() == '') {
+                    dLocation.innerHTML = 'Location is required.';
+                    bFlag = false;
+                }
+                else {
+                    dLocation.innerHTML = '';
+                    bFlag = true;
+                }
+            }
+
+            return bFlag;
+        }
+
+    </script>
+</header>
+<form id="f" method="post" action="@Url.Action("New")">
+    <h3>New Event</h3>
+    <hr />
+    <br />
+    @{
+        int SEQUENCE = 6;
+        int CATEGORY = 8;
+        int PRIORITY = 9;
+        int STATUS = 10;
+        int TRANS = 11;
+        int CALSS = 12;
+        int SUMMARY = 13;
+        int DESCRIPTION = 14;
+        int LOCATION = 15;
+
+        String strLocation = String.Empty;
+        bool blnchkIsAllDay = false;
+        String strStatus = String.Empty;
+        String strTransparencyType = String.Empty;
+        String strClass = String.Empty;
+        String strDescription = String.Empty;
+        String strPriority = String.Empty;
+        String strSequence = String.Empty;
+        String strSummary = String.Empty;
+        String strCategory = String.Empty;
+
+        var Id = (string)ViewData["Id"];
+
+        IEventFileRepository eventFileRepository = new EventFileRepository(new UnitOfWork(new ShnexyDbContext()));
+        EventFile evtFile = new EventFile();
+
+        if (eventFileRepository != null)
+        {
+
+            int intResult;
+            Boolean blnResult;
+
+            blnResult = Int32.TryParse(Id, out intResult);
+
+            if (blnResult)
+            {
+                evtFile = eventFileRepository.GetByKey(Convert.ToInt32(Id));
+
+                if (evtFile != null)
+                {
+                    String[] arrICSString = evtFile.Body.Split(Environment.NewLine.ToCharArray());
+
+                    String[] arrLocation = arrICSString[LOCATION].Split(':');
+                    strLocation = arrLocation[1];
+
+                    String[] arrCategory = arrICSString[CATEGORY].Split(':');
+                    strCategory = arrCategory[1];
+
+                    String[] arrPriority = arrICSString[PRIORITY].Split(':');
+                    strPriority = arrPriority[1];
+
+                    String[] arrStatus = arrICSString[STATUS].Split(':');
+                    strStatus = arrStatus[1];
+
+                    String[] arrTrans = arrICSString[TRANS].Split(':');
+                    strTransparencyType = arrTrans[1];
+
+                    String[] arrClass = arrICSString[CALSS].Split(':');
+                    strClass = arrClass[1];
+
+                    String[] arrSummary = arrICSString[SUMMARY].Split(':');
+                    strSummary = arrSummary[1];
+
+                    String[] arrDescription = arrICSString[DESCRIPTION].Split(':');
+                    strDescription = arrDescription[1];
+
+                    String[] arrSequence = arrICSString[SEQUENCE].Split(':');
+                    strSequence = arrSequence[1];
+
+                }
+            }
+        }
+
+        <div>Location</div>
+        <div>
+            @Html.TextBox("Location", @strLocation, new { @class = "form-control col-md-1" })
+        <div id="divLocation"></div>
+    </div>
+
+    }
+    <br />
+    @*<div>Is All Day</div>
+         <div style="width:20px"> @Html.CheckBox("chkIsAllDay", false, new { @class = "form-control" })</div>
+        <br />*@
+    @{
+        List<SelectListItem> itemsStatus = new List<SelectListItem>();
+
+        if (String.IsNullOrEmpty(strTransparencyType))
+        {
+            itemsStatus.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+            itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "Tentative" });
+            itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "Confirmed" });
+            itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "Cancelled" });
+        }
+        else
+        {
+            itemsStatus.Add(new SelectListItem { Text = "--Select--", Value = "0" });
+
+            if (strStatus.Trim() == "Tentative")
+            {
+                itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "Tentative", Selected = true });
+            }
+            else
+            {
+                itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "Tentative" });
+            }
+
+            if (strStatus.Trim() == "Confirmed")
+            {
+                itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "Confirmed", Selected = true });
+            }
+            else
+            {
+                itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "Confirmed" });
+            }
+
+            if (strStatus.Trim() == "Cancelled")
+            {
+                itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "Cancelled", Selected = true });
+            }
+            else
+            {
+                itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "Cancelled" });
+            }
+
+        }
+    }
+    <br />
+    <div>Status</div>
+    <div style="width:200px"> @Html.DropDownList("Status", itemsStatus, new { @class = "form-control col-md-1" })</div>
+    <br />
+    @{
+        List<SelectListItem> itemsTransparency = new List<SelectListItem>();
+
+        if (String.IsNullOrEmpty(strTransparencyType))
+        {
+            itemsTransparency.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+            itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "Opaque" });
+            itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "Transparent" });
+        }
+        else
+        {
+            itemsTransparency.Add(new SelectListItem { Text = "--Select--", Value = "0" });
+
+            if (strTransparencyType.Trim() == "Opaque")
+            {
+                itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "Opaque", Selected = true });
+            }
+            else
+            {
+                itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "Opaque" });
+            }
+
+            if (strTransparencyType.Trim() == "Transparent")
+            {
+                itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "Transparent", Selected = true });
+            }
+            else
+            {
+                itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "Transparent" });
+            }
+        }
+    }
+    <br />
+    <div>Transparency Type</div>
+    <div style="width:200px">@Html.DropDownList("TransparencyType", itemsTransparency, new { @class = "form-control col-md-1" })</div>
+    <br /><br />
+    @{
+        List<SelectListItem> itemsClass = new List<SelectListItem>();
+
+        if (String.IsNullOrEmpty(strClass))
+        {
+            itemsClass.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+            itemsClass.Add(new SelectListItem { Text = "PUBLIC", Value = "PUBLIC" });
+            itemsClass.Add(new SelectListItem { Text = "PRIVATE", Value = "PRIVATE" });
+            itemsClass.Add(new SelectListItem { Text = "CONFIDENTIAL", Value = "CONFIDENTIAL" });
+        }
+        else
+        {
+            itemsClass.Add(new SelectListItem { Text = "--Select--", Value = "0" });
+
+            if (strClass.Trim() == "PUBLIC")
+            {
+                itemsClass.Add(new SelectListItem { Text = "PUBLIC", Value = "PUBLIC", Selected = true });
+            }
+            else
+            {
+                itemsClass.Add(new SelectListItem { Text = "PUBLIC", Value = "PUBLIC" });
+            }
+
+            if (strClass.Trim() == "PRIVATE")
+            {
+                itemsClass.Add(new SelectListItem { Text = "PRIVATE", Value = "PRIVATE", Selected = true });
+            }
+            else
+            {
+                itemsClass.Add(new SelectListItem { Text = "PRIVATE", Value = "PRIVATE" });
+            }
+
+            if (strClass.Trim() == "CONFIDENTIAL")
+            {
+                itemsClass.Add(new SelectListItem { Text = "CONFIDENTIAL", Value = "CONFIDENTIAL", Selected = true });
+            }
+            else
+            {
+                itemsClass.Add(new SelectListItem { Text = "CONFIDENTIAL", Value = "CONFIDENTIAL" });
+            }
+        }
+    }
+    <div>Class</div>
+    <div style="width:200px">@Html.DropDownList("Class", itemsClass, new { @class = "form-control col-md-1" })</div>
+    <br />
+    <div>Description</div>
+    <div>@Html.TextArea("Description", @strDescription, 5, 31, new { @class = "form-control col-md-1" })</div>
+    @{
+        List<SelectListItem> itemsPriority = new List<SelectListItem>();
+
+        if (strPriority == "0")
+        {
+            itemsPriority.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+            itemsPriority.Add(new SelectListItem { Text = "High", Value = "1" });
+            itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2" });
+            itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3" });
+        }
+        else
+        {
+            itemsPriority.Add(new SelectListItem { Text = "--Select--", Value = "0" });
+
+            if (strPriority == "1")
+            {
+                itemsPriority.Add(new SelectListItem { Text = "High", Value = "1", Selected = true });
+            }
+            else
+            {
+                itemsPriority.Add(new SelectListItem { Text = "High", Value = "1" });
+            }
+
+            if (strPriority == "2")
+            {
+                itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2", Selected = true });
+            }
+            else
+            {
+                itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2" });
+            }
+
+            if (strPriority == "3")
+            {
+                itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3", Selected = true });
+            }
+            else
+            {
+                itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3" });
+            }
+        }
+    }
+    <br />
+    <div>Priority</div>
+    <div style="width:200px">@Html.DropDownList("Priority", itemsPriority, new { @class = "form-control col-md-1" })</div>
+    <br />
+    @{
+        List<SelectListItem> itemsSequence = new List<SelectListItem>();
+
+
+        if (strSequence == "0")
+        {
+            itemsSequence.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+            itemsSequence.Add(new SelectListItem { Text = "One", Value = "1" });
+            itemsSequence.Add(new SelectListItem { Text = "Two", Value = "2" });
+        }
+        else
+        {
+            itemsSequence.Add(new SelectListItem { Text = "--Select--", Value = "0" });
+
+            if (strSequence == "1")
+            {
+                itemsSequence.Add(new SelectListItem { Text = "One", Value = "1", Selected = true });
+            }
+            else
+            {
+                itemsSequence.Add(new SelectListItem { Text = "One", Value = "1" });
+            }
+
+            if (strSequence == "2")
+            {
+                itemsSequence.Add(new SelectListItem { Text = "Two", Value = "2", Selected = true });
+            }
+            else
+            {
+                itemsSequence.Add(new SelectListItem { Text = "Two", Value = "2" });
+            }
+        }
+    }
+    <br />
+    <div>Sequence</div>
+    <div style="width:200px">@Html.DropDownList("Sequence", itemsSequence, new { @class = "form-control col-md-1" })</div>
+    <br /><br />
+    <div>Summary</div>
+    <div>@Html.TextArea("Summary", @strSummary, 5, 31, new { @class = "form-control col-md-1" })</div>
+    <br /><br />
+    <div>Category</div>
+    <div>
+        @Html.TextBox("Category", @strCategory, new { @class = "form-control col-md-1" })
+    <div id="divCategory"></div>
+</div>
+<br />
+@{
+    <div style="display:none">@Html.TextBox("Id", @Id, new { @class = "form-control col-md-1" })</div>
+}
+<hr />
 <div class="space">
-    <input type="submit" value="Save" />
-    <a href="javascript:close()">Cancel</a>
+    <div style="clear:both">
+        <div style="float:left">
+            <input id="btnSave" type="submit" value="OK" style="width: 100px; height: 30px; border: 2px solid black; margin-right:20px" onclick="return Validate()" />
+        </div>
+        <div style="float:left">
+            <a href="javascript:close()"><div style="width: 100px;">Cancel</div></a>
+        </div>
+    </div>
+    <br />
+    <br />
 </div>
 </form>
-    
-@*<script type="text/javascript">
+
+<script type="text/javascript">
     function close(result) {
         if (parent && parent.DayPilot && parent.DayPilot.ModalStatic) {
             parent.DayPilot.ModalStatic.close(result);
         }
     }
-        
-    $("#f").submit(function() {
-            var f = $("#f");
-            $.post(f.action, f.serialize(), function(result) {
-                close(eval(result));
-            });
-            return false;
+
+    $("#f").submit(function () {
+        var f = $("#f");
+        $.post(f.action, f.serialize(), function (result) {
+            close(eval(result));
         });
-            
-    $(document).ready(function() {
-        $("#Text").focus();
+        return false;
     });
-    
-</script>*@
+
+    $(document).ready(function () {
+        $("#Location").focus();
+
+        $("Location").blur(function () {
+            //var oTextBox = document.getElementById('Location');
+            //checkWildCar(oTextBox, false);
+        });
+
+    });
+
+</script>

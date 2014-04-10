@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
-namespace Shnexy.Utilities
+namespace UtilitiesLib
 {
 
     //creates a base class for a string-based enumerated list. The subclasses instantiate the list with the allowable values, and this class makes sure that only those values can be used. 
@@ -101,6 +99,17 @@ namespace Shnexy.Utilities
             SetAllowable(init_list);
         }
     }
+
+    /// <summary>
+    /// HTTP method to use when making requests
+    /// </summary>
+    public enum Method
+    {
+        GET,
+        POST,
+        PUT,
+    }
+
 }
   
 

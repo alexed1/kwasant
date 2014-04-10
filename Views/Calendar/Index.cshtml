@@ -1,9 +1,9 @@
-﻿@model Shnexy.Models.Email
+﻿@model Data.Models.Email
 
 @using System.Collections.Generic;
 
 @using DayPilot.Web.Mvc
-@using DayPilot.Web.Mvc.Enums 
+@using DayPilot.Web.Mvc.Enums
 @using DayPilot.Web.Mvc.Enums.Calendar
 @using DayPilot.Web.Mvc.Enums.Navigator
 @using DayPilot.Web.Mvc.Events.Calendar
@@ -11,48 +11,46 @@
 @using DayPilot.Web.Mvc.Themes.Calendar
 
 @{
-    ViewBag.Title = "Shnexy | Event";
+    ViewBag.Title = "Event ";
 }
 
 <header>
-<script type="text/javascript">
-    function modal(url) {
-        var m = new DayPilot.Modal();
+    <script type="text/javascript">
+        function modal(url) {
+            var m = new DayPilot.Modal();
 
-        m.closed = function () {            
-            if (this.result == "OK") {                
-                dps.commandCallBack('refresh');
-            }
-            dps.clearSelection();
-        };        
-        m.showUrl(url);
-    }
+            m.closed = function () {
+                if (this.result == "OK") {
+                    dps.commandCallBack('refresh');
+                }
+                dps.clearSelection();
+            };
+            m.showUrl(url);
+        }
 
-    function eventClick(e) {        
-        // only fire the server-side event if the ID is 5 or status field is set to tentative
-        //if (e.value() == "5" || e.tag("status") == "tentative") {
-        //    dpc.eventClickCallBack(e);
-        //}
+        function eventClick(e) {
+            // only fire the server-side event if the ID is 5 or status field is set to tentative
+            //if (e.value() == "5" || e.tag("status") == "tentative") {
+            //    dpc.eventClickCallBack(e);
+            //}
 
-        var m = new DayPilot.Modal();
-        m.closed = function () {
-            if (this.result == "OK") {                
-                dpc.commandCallBack('refresh');
-            }
-            dpc.clearSelection();
-        };        
+            var m = new DayPilot.Modal();
+            m.closed = function () {
+                if (this.result == "OK") {
+                    dpc.commandCallBack('refresh');
+                }
+                dpc.clearSelection();                
+            };
 
-        var url = getConfigFilePath() + '/New/' + e.value();
-        m.showUrl(url);
-    }
+            var url = getBaseCalendarURL() + '/New/' + e.value();
+            m.showUrl(url);
+        }            
 
-</script>    
-
+    </script>
 </header>
-<div class="jumbotron">
-    @*<h3>Booking Agent</h3>
-    *@
-    <div class="row" style="font-size: 0.85em;" >
+
+<div class="jumbotron">    
+    <div class="row" style="font-size: 0.85em;">
         <div class="col-md-5 container_box">
             <br />
 
@@ -61,7 +59,7 @@
                     <div>From:</div>
                 </div>
                 <div class="col-md-9 label_vertical_alignment">
-                    <div class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.Sender.Address)</div>
+                    <div class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.FromEmail)</div>
                 </div>
             </div>
 
@@ -149,7 +147,9 @@
                     <div>Body:</div>
                 </div>
                 <div class="col-md-9">
-                    <div style="height: 200px" class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.Body)</div>
+                    <div style="height: 200px" class="bookingAgentFormControlBorder">
+                        @Html.DisplayFor(model => model.Text)                        
+                    </div>                    
                 </div>
             </div>
 
@@ -192,8 +192,7 @@
                         ContextMenu = "menu1",
                         HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"
                     }))
-
-
+                
 
                 <script type="text/javascript">
                     function modal(url) {
@@ -210,8 +209,8 @@
 
             </div>
             <br />
-            <div class="Row">
-                @*<input type="button" value="OK"  />*@
+            <div class="Row" style="height:179px;">
+                
             </div>
         </div>
     </div>

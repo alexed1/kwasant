@@ -1,26 +1,27 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections;
-using System.IO;
-using System.Resources;
-using System.Web;
-using System.Reflection;
-using System.Text.RegularExpressions;
+using Data.DDay.DDay.iCal;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.ExtensionMethods;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.StructureMap;
+using Data.Models;
 using NUnit.Framework;
-using Shnexy.Models;
+using StructureMap;
 
-namespace Shnexy.DDay.iCal.Test
+namespace ShnexyTest.DDay.iCal.Test
 {
     [TestFixture]
     public class EventTest
     {
         private string tzid;
+        private IUnitOfWork _uow;
 
         [TestFixtureSetUp]
         public void InitAll()
         {
             tzid = "US-Eastern";
+            StructureMapBootStrapper.ConfigureDependencies("test");
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
         }
         
         /// <summary>
@@ -31,7 +32,7 @@ namespace Shnexy.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
             
-            Event evt = new Event();
+            Event evt = new Event(_uow);
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
             evt.End = new iCalDateTime(2010, 3, 26);
@@ -49,7 +50,7 @@ namespace Shnexy.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
 
-            Event evt = new Event();
+            Event evt = new Event(_uow);
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
             evt.End = new iCalDateTime(2010, 3, 26);
@@ -71,7 +72,7 @@ namespace Shnexy.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
 
-            Event evt = new Event();
+            Event evt = new Event(_uow);
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
             evt.End = new iCalDateTime(2010, 3, 26);

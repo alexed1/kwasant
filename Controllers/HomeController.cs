@@ -11,8 +11,8 @@ namespace Shnexy.Controllers
     {
         public ActionResult Index()
         {
-            
-            return RedirectToAction("Index", "Admin");
+
+            return Redirect("/Website/index.html");
         }
 
         public ActionResult About()

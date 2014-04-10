@@ -2,29 +2,35 @@
 using System.Web;
 using System.Text;
 using System.Linq;
-using Shnexy.Models;
-using Shnexy.DataAccessLayer;
-using Shnexy.DataAccessLayer.Repositories;
-using Shnexy.DataAccessLayer.Interfaces;
+using Data.Models;
+using Data.DataAccessLayer;
+using Data.DataAccessLayer.Repositories;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.Infrastructure;
 using System.Collections.Generic;
 
 namespace Shnexy.Fixtures
 {
     static public class FixtureDataEmail
-    {
-
-       static public void AddEmailMessage()
+    { 
+        static public void AddEmailMessage()
        {
+
+           #region "Member Variable"
            ShnexyDbContext db = new ShnexyDbContext();
 
-           //
+           IEmailRepository emailRepository = new EmailRepository(new UnitOfWork(new ShnexyDbContext()));
+           IEmailAddressRepository emailAddressRepository = new EmailAddressRepository(new UnitOfWork(new ShnexyDbContext()));
+
+           #endregion "Member Variable"
 
            EmailAddress emailAddress;
            Email email = new Email();          
 
            StringBuilder sb = new StringBuilder();
 
-           //Email 1
+           #region "Email 1"
+
            emailAddress = new EmailAddress("Gmail Team", "mail-noreply@google.com");
            db.EmailAddresses.Add(emailAddress);
            db.SaveChanges();           
@@ -52,11 +58,12 @@ namespace Shnexy.Fixtures
            sb.AppendLine("Happy emailing,");
            sb.AppendLine("The Gmail Team");
 
-           email.Body = sb.ToString();
-           email.Sender = emailAddress;
-           email.Status = "Unprocess";
+           email.Text = sb.ToString();
+           email.FromEmail = "mail-noreply@google.com";
+           email.Status = "Unprocess";           
 
-           db.Emails.Add(email);
+           emailRepository.Add(email);
+           emailRepository.UnitOfWork.SaveChanges();
 
            emailAddress = new EmailAddress("Alex Foozle", "alexlucre1@gmail.com");           
            db.EmailAddresses.Add(emailAddress);
@@ -70,7 +77,10 @@ namespace Shnexy.Fixtures
            {
            }
 
-           //Email 2
+           #endregion "Email 1"
+
+           #region "Email 2"
+
            emailAddress = new EmailAddress("Gmail Team", "mail-noreply@google.com");
            db.EmailAddresses.Add(emailAddress);
            db.SaveChanges();
@@ -90,11 +100,12 @@ namespace Shnexy.Fixtures
            sb.AppendLine("Happy emailing,");
            sb.AppendLine("The Gmail Team");
 
-           email.Body = sb.ToString();
-           email.Sender = emailAddress;
+           email.Text = sb.ToString();
+           email.FromEmail = "mail-noreply@google.com";
            email.Status = "Unprocess";
 
-           db.Emails.Add(email);
+           emailRepository.Add(email);
+           emailRepository.UnitOfWork.SaveChanges();
 
            emailAddress = new EmailAddress("Alex Foozle", "alexlucre1@gmail.com");
            db.EmailAddresses.Add(emailAddress);
@@ -107,8 +118,10 @@ namespace Shnexy.Fixtures
            catch (Exception e)
            {
            }
+           #endregion "Email 2"
 
-           //Email 3
+           #region "Email 3"
+
            emailAddress = new EmailAddress("Gmail Team", "mail-noreply@google.com");
            db.EmailAddresses.Add(emailAddress);
            db.SaveChanges();
@@ -146,11 +159,12 @@ namespace Shnexy.Fixtures
            sb.AppendLine("Happy emailing,");
            sb.AppendLine("The Gmail Team");
 
-           email.Body = sb.ToString();
-           email.Sender = emailAddress;
+           email.Text = sb.ToString();
+           email.FromEmail = "mail-noreply@google.com";
            email.Status = "Unprocess";
 
-           db.Emails.Add(email);
+           emailRepository.Add(email);
+           emailRepository.UnitOfWork.SaveChanges();
 
            emailAddress = new EmailAddress("Alex Foozle", "alexlucre1@gmail.com");
            db.EmailAddresses.Add(emailAddress);
@@ -163,8 +177,10 @@ namespace Shnexy.Fixtures
            catch (Exception e)
            {
            }
+           #endregion "Email 3"
 
-           //Email 4
+           #region "Email 4"
+
            emailAddress = new EmailAddress("Google+ team", "noreply-daa26fef@plus.google.com");
            db.EmailAddresses.Add(emailAddress);
            db.SaveChanges();
@@ -184,11 +200,12 @@ namespace Shnexy.Fixtures
            sb.AppendLine("Keep updated on-the-go on Android and iPhone");
            sb.AppendLine("");
 
-           email.Body = sb.ToString();
-           email.Sender = emailAddress;
+           email.Text = sb.ToString();
+           email.FromEmail = "noreply-daa26fef@plus.google.com";
            email.Status = "Unprocess";
 
-           db.Emails.Add(email);
+           emailRepository.Add(email);
+           emailRepository.UnitOfWork.SaveChanges();
 
            emailAddress = new EmailAddress("Alex Foozle", "alexlucre1@gmail.com");
            db.EmailAddresses.Add(emailAddress);
@@ -201,8 +218,10 @@ namespace Shnexy.Fixtures
            catch (Exception e)
            {
            }
+           #endregion "Email 4"
 
-           //Email 5
+           #region "Email 5"
+
            emailAddress = new EmailAddress("Alex Edelstein", "alex@edelstein.org");
            db.EmailAddresses.Add(emailAddress);
            db.SaveChanges();
@@ -214,11 +233,12 @@ namespace Shnexy.Fixtures
            sb.AppendLine("");
            sb.AppendLine("");
 
-           email.Body = sb.ToString();
-           email.Sender = emailAddress;
+           email.Text = sb.ToString();
+           email.FromEmail = "alex@edelstein.org";
            email.Status = "Unprocess";
 
-           db.Emails.Add(email);
+           emailRepository.Add(email);
+           emailRepository.UnitOfWork.SaveChanges();
 
            emailAddress = new EmailAddress("alexlucre1", "alexlucre1@gmail.com");
            db.EmailAddresses.Add(emailAddress);
@@ -232,7 +252,10 @@ namespace Shnexy.Fixtures
            {
            }
 
-           //Email 6
+           #endregion "Email 5"
+
+           #region "Email 6"
+
            emailAddress = new EmailAddress("Alex Edelstein", "alexlucre1@gmail.com");
            db.EmailAddresses.Add(emailAddress);
            db.SaveChanges();
@@ -244,11 +267,12 @@ namespace Shnexy.Fixtures
            sb.AppendLine("");
            sb.AppendLine("");
 
-           email.Body = sb.ToString();
-           email.Sender = emailAddress;
+           email.Text = sb.ToString();
+           email.FromEmail = "alexlucre1@gmail.com";
            email.Status = "Unprocess";
 
-           db.Emails.Add(email);
+           emailRepository.Add(email);
+           emailRepository.UnitOfWork.SaveChanges();
 
            emailAddress = new EmailAddress("alex", "alex@edelstein.org");
            db.EmailAddresses.Add(emailAddress);
@@ -261,8 +285,10 @@ namespace Shnexy.Fixtures
            catch(Exception e)
            {
            }
+           #endregion "Email 6"
 
-           //Email 7
+           #region "Email 7"
+           
            emailAddress = new EmailAddress("LeaseItKeepIt", "sender@edelstein.org");
            db.EmailAddresses.Add(emailAddress);
            db.SaveChanges();
@@ -274,11 +300,12 @@ namespace Shnexy.Fixtures
            sb.AppendLine("foo");
            sb.AppendLine("");
 
-           email.Body = sb.ToString();
-           email.Sender = emailAddress;
+           email.Text = sb.ToString();
+           email.FromEmail = "sender@edelstein.org";
            email.Status = "Unprocess";
 
-           db.Emails.Add(email);
+           emailRepository.Add(email);
+           emailRepository.UnitOfWork.SaveChanges();
 
            emailAddress = new EmailAddress("Test Sender", "alexlucre1@gmail.com");
            db.EmailAddresses.Add(emailAddress);
@@ -292,7 +319,10 @@ namespace Shnexy.Fixtures
            {
            }
 
-           //Email 8
+           #endregion "Email 7"
+
+           #region "Email 8"
+           
            emailAddress = new EmailAddress("Alex Edelstein", "alexed15@gmail.com");
            db.EmailAddresses.Add(emailAddress);
            db.SaveChanges();
@@ -315,11 +345,12 @@ namespace Shnexy.Fixtures
            sb.AppendLine("Going?   Yes - Maybe - No    more options »");
            sb.AppendLine("");
 
-           email.Body = sb.ToString();
-           email.Sender = emailAddress;
+           email.Text = sb.ToString();
+           email.FromEmail = "alexed15@gmail.com";
            email.Status = "Unprocess";
 
-           db.Emails.Add(email);
+           emailRepository.Add(email);
+           emailRepository.UnitOfWork.SaveChanges();
 
            emailAddress = new EmailAddress("Test Sender", "alexlucre1@gmail.com");
            db.EmailAddresses.Add(emailAddress);
@@ -333,7 +364,10 @@ namespace Shnexy.Fixtures
            {
            }
 
-           //Email 9
+           #endregion "Email 8"
+
+           #region "Email 9"
+
            emailAddress = new EmailAddress("Alexed", "alex@edelstein.org");
            db.EmailAddresses.Add(emailAddress);
            db.SaveChanges();
@@ -345,11 +379,12 @@ namespace Shnexy.Fixtures
            sb.AppendLine("this the HTML ");
            sb.AppendLine("");
 
-           email.Body = sb.ToString();
-           email.Sender = emailAddress;
+           email.Text = sb.ToString();
+           email.FromEmail = "alex@edelstein.org";
            email.Status = "Unprocess";
 
-           db.Emails.Add(email);
+           emailRepository.Add(email);
+           emailRepository.UnitOfWork.SaveChanges();
 
            emailAddress = new EmailAddress("Alex Lucre1", "alexlucre1@gmail.com");
            db.EmailAddresses.Add(emailAddress);
@@ -364,6 +399,8 @@ namespace Shnexy.Fixtures
 
            }
            db.SaveChanges();
+
+           #endregion "Email 9"
        }
     }
 }

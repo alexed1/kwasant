@@ -1,10 +1,8 @@
 ﻿using System.Collections;
+using Data.DataAccessLayer.Repositories;
+using Data.Models;
 using S22.Imap;
-using Shnexy.DataAccessLayer;
-using Shnexy.DataAccessLayer.Repositories;
 using Shnexy.Fixtures;
-using Shnexy.Models;
-using Syncfusion.Mvc.Schedule;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,8 +10,6 @@ using System.Linq;
 using System.Net.Mail;
 using System.Web;
 using System.Web.Mvc;
-
-
 
 namespace Shnexy.Controllers
 {
@@ -30,33 +26,17 @@ namespace Shnexy.Controllers
         //start the system
         public ActionResult Bootstrap()
         {
+            //CustomerRepository customerRepo = new CustomerRepository(new UnitOfWork(new ShnexyDbContext()));
+            //Customer curCustomer = new Customer(customerRepo);
+            //curCustomer.Id = 23;
+            //curCustomer.email = new EmailAddress();
+            //curCustomer.email.Email = "alex@edelstein.org";
 
-            //queueRepo = new QueueRepository(new UnitOfWork(new ShnexyDbContext()));
-            //messageRepo = new MessageRepository(new UnitOfWork(new ShnexyDbContext()));
-            ////update database
-            ////Seed.AddMessage(messageRepo);
+            
+            ////Customer curCustomer = new Customer(customerRepo);
+            //curCustomer.Add();
+            //customerRepo.UnitOfWork.SaveChanges();
 
-
-
-
-            //Address address806 = new Address();
-            //address806.Body = "14158067915";
-            //address806.ServiceName = "WhatsApp";
-
-            //Address address871 = new Address();
-            //address871.Body = "14158710872";
-            //address871.ServiceName = "WhatsApp";
-
-            //Message message = messageRepo.GetAll().First();
-            //message.RecipientList = new List<Address>();
-            //message.RecipientList.Add(address806);
-            //message.Sender = address871;
-            //message.Body = "45 hoo hawHello, Come here, please! ";
-            //message.Id = 50;
-
-
-            //message.TestSend();
-            //message.Send(queueRepo);
 
             string username = "alexlucre1";
             string password = "lucrelucre";
@@ -74,6 +54,8 @@ namespace Shnexy.Controllers
                 var curEmail = new Email(message, _emailRepo);
                 curEmail.Save();
             }
+
+          
             return RedirectToAction("Index", "Admin");
 
         }

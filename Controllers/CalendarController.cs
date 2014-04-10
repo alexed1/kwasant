@@ -9,10 +9,14 @@ using System.Data.Entity;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Collections.Generic;
-using Shnexy.Models;
-using Shnexy.DataAccessLayer;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DataAccessLayer.Repositories;
+
+
+using Data.Models;
+using Data.DataAccessLayer;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.Repositories;
+using Data.DataAccessLayer.Infrastructure;
+using Data.Services.APIManager.Packagers.Shnexy;
 
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
@@ -30,72 +34,19 @@ namespace Shnexy.Controllers
     [HandleError]
     public class CalendarController : Controller
     {
+
+        #region "Member Variable"
+
         private ShnexyDbContext db = new ShnexyDbContext();
 
+        private ShnexyPackager API;
+
+        IEmailRepository emailRepository = new EmailRepository(new UnitOfWork(new ShnexyDbContext()));
         IEventFileRepository eventFileRepository = new EventFileRepository(new UnitOfWork(new ShnexyDbContext()));
 
-        private DateTime ConvertLocalDateTime(String UnversalDateTimeString)
-        {
-            String strLocalDateTime = UnversalDateTimeString.Insert(4, "-").Insert(7, "-").Replace("T", " ").Insert(13, ":").Insert(16, ":");
+        #endregion "Member Variable"
 
-            try
-            {
-                return DateTime.Parse(strLocalDateTime);
-            }
-            catch (Exception e)
-            {
-                return new DateTime();
-            }
-        }
-
-        private void PopulateCalender()
-        {
-            int day = (int)DateTime.Now.DayOfWeek;
-            DateTime dtWeekStartDate = DateTime.Now.AddDays(-day);
-            DateTime dtWeekEndDate = dtWeekStartDate.AddDays(6);
-
-            List<EventFile> eventFileList = eventFileRepository.GetAll().ToList();
-
-            int DTSTART = 4;
-            int DTEND = 5;
-            int DESCRIPTION = 14;
-
-            foreach (EventFile eFile in eventFileList)
-            {
-                String[] arrICSBodyString = eFile.Body.Split(Environment.NewLine.ToCharArray());
-
-                String[] arrDTSTART = arrICSBodyString[DTSTART].Split(':');
-
-                String strDTSTART = String.Empty;
-                strDTSTART = arrDTSTART[1];
-
-                DateTime dtStart = ConvertLocalDateTime(strDTSTART);
-
-                String[] arrDTEND = arrICSBodyString[DTEND].Split(':');
-
-                String strDTEND = String.Empty;
-                strDTEND = arrDTEND[1];
-
-                DateTime dtEnd = ConvertLocalDateTime(strDTEND);
-
-                String[] arrBody = arrICSBodyString[DESCRIPTION].Split(':');
-                String strBody = String.Empty;
-
-                strBody = arrBody[1];
-
-                if (dtStart >= dtWeekStartDate && dtEnd <= dtWeekEndDate)
-                {
-                    try
-                    {
-                        new EventManager(this).EventCreate(dtStart, dtEnd, strBody, null, eFile.Id.ToString());
-                    }
-                    catch (Exception e)
-                    {
-                    }
-                }
-            }
-        }
-
+        #region "Action"
         public ActionResult Index(int id = 0)
         {
             if (id <= 0)
@@ -105,118 +56,133 @@ namespace Shnexy.Controllers
 
             PopulateCalender();
 
-            Email email = db.Emails.Find(id);
+            #region "Get Email Related Information"
 
-            List<EmailAddress> emailSenderList = new List<EmailAddress>();
-            StringBuilder sb = new StringBuilder("");
-
-            //Get Sender
-            sb.Append("SELECT dbo.EmailAddresses.Id, DisplayName, Address FROM dbo.EmailAddresses");
-            sb.AppendFormat(" INNER JOIN dbo.Emails AS E ON E.Sender_Id= dbo.EmailAddresses.Id WHERE E.Id={0}", email.Id);
-
-            emailSenderList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
-
-            if (emailSenderList != null && emailSenderList.Count > 0)
+            if (emailRepository != null)
             {
-                email.Sender = emailSenderList[0];
-            }
+                Email email = emailRepository.GetByKey(id);
 
-            //Get To Addresses
-            sb = new StringBuilder("");
-            sb.AppendFormat(" SELECT Id, DisplayName, Address FROM dbo.EmailAddresses WHERE Email_Id2={0}", email.Id);
-
-            List<EmailAddress> emailToEmailAddressList = new List<EmailAddress>();
-
-            emailToEmailAddressList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
-
-            StringBuilder sbToEmailAddressList = new StringBuilder("");
-
-            if (emailToEmailAddressList != null && emailToEmailAddressList.Count > 0)
-            {
-                email.To_Addresses = emailToEmailAddressList;
-
-                foreach (EmailAddress emailAddress in emailToEmailAddressList)
+                if (email != null)
                 {
-                    if (sbToEmailAddressList.Length == 0)
+                    EventData._EmailId = email.Id;
+
+                    List<EmailAddress> emailSenderList = new List<EmailAddress>();
+                    StringBuilder sb = new StringBuilder("");
+
+                    #region "Get To Addresses"
+
+                    sb = new StringBuilder("");
+                    sb.AppendFormat(" SELECT Id, Name, Email FROM dbo.EmailAddresses WHERE Email_Id2={0}", email.Id);
+
+                    List<EmailAddress> emailToEmailAddressList = new List<EmailAddress>();
+
+                    emailToEmailAddressList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
+
+                    StringBuilder sbToEmailAddressList = new StringBuilder("");
+
+                    if (emailToEmailAddressList != null && emailToEmailAddressList.Count > 0)
                     {
-                        sbToEmailAddressList.Append(emailAddress.Address);
+                        email.To = emailToEmailAddressList;
+
+                        foreach (EmailAddress emailAddress in emailToEmailAddressList)
+                        {
+                            if (sbToEmailAddressList.Length == 0)
+                            {
+                                sbToEmailAddressList.Append(emailAddress.Email);
+                            }
+                            else
+                            {
+                                sbToEmailAddressList.Append(",");
+                                sbToEmailAddressList.Append(emailAddress.Email);
+                            }
+                        }
                     }
-                    else
+
+                    #endregion "Get To Addresses"
+
+                    #region "Get CC Addresses"
+
+                    sb = new StringBuilder("");
+                    sb.AppendFormat(" SELECT Id, Name, Email FROM dbo.EmailAddresses WHERE Email_Id1={0}", email.Id);
+
+                    List<EmailAddress> emailCCEmailAddressList = new List<EmailAddress>();
+
+                    emailToEmailAddressList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
+
+                    StringBuilder sbCCEmailAddressList = new StringBuilder("");
+
+                    if (emailCCEmailAddressList != null && emailCCEmailAddressList.Count > 0)
                     {
-                        sbToEmailAddressList.Append(",");
-                        sbToEmailAddressList.Append(emailAddress.Address);
+                        email.CC = emailCCEmailAddressList;
+
+                        foreach (EmailAddress emailAddress in emailCCEmailAddressList)
+                        {
+                            if (sbCCEmailAddressList.Length == 0)
+                            {
+                                sbCCEmailAddressList.Append(emailAddress.Email);
+                            }
+                            else
+                            {
+                                sbCCEmailAddressList.Append(",");
+                                sbCCEmailAddressList.Append(emailAddress.Email);
+                            }
+                        }
                     }
+
+                    #endregion "Get CC Addresses"
+
+                    #region "Get BCC Addresses"
+
+                    sb = new StringBuilder("");
+                    sb.AppendFormat(" SELECT Id, Name, Email FROM dbo.EmailAddresses WHERE Email_Id={0}", email.Id);
+
+                    List<EmailAddress> emailBCCEmailAddressList = new List<EmailAddress>();
+
+                    emailToEmailAddressList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
+
+                    StringBuilder sbBCCEmailAddressList = new StringBuilder("");
+
+                    if (emailBCCEmailAddressList != null && emailBCCEmailAddressList.Count > 0)
+                    {
+                        email.Bcc = emailBCCEmailAddressList;
+
+                        foreach (EmailAddress emailAddress in emailBCCEmailAddressList)
+                        {
+                            if (sbBCCEmailAddressList.Length == 0)
+                            {
+                                sbBCCEmailAddressList.Append(emailAddress.Email);
+                            }
+                            else
+                            {
+                                sbBCCEmailAddressList.Append(",");
+                                sbBCCEmailAddressList.Append(emailAddress.Email);
+                            }
+                        }
+                    }
+
+                    #endregion "Get BCC Addresses"
+
+                    #region "Set ViewData"
+
+                    ViewData["ToEmailAddresses"] = sbToEmailAddressList.ToString();
+                    ViewData["CCEmailAddresses"] = sbCCEmailAddressList.ToString();
+                    ViewData["BCCEmailAddresses"] = sbBCCEmailAddressList.ToString();
+
+                    #endregion "Set ViewData"
+
+                    return View(email);
                 }
-            }
-
-
-            //Get CC Addresses
-            sb = new StringBuilder("");
-            sb.AppendFormat(" SELECT Id, DisplayName, Address FROM dbo.EmailAddresses WHERE Email_Id1={0}", email.Id);
-
-            List<EmailAddress> emailCCEmailAddressList = new List<EmailAddress>();
-
-            emailToEmailAddressList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
-
-            StringBuilder sbCCEmailAddressList = new StringBuilder("");
-
-            if (emailCCEmailAddressList != null && emailCCEmailAddressList.Count > 0)
-            {
-                email.CC_Addresses = emailCCEmailAddressList;
-
-                foreach (EmailAddress emailAddress in emailCCEmailAddressList)
+                else
                 {
-                    if (sbCCEmailAddressList.Length == 0)
-                    {
-                        sbCCEmailAddressList.Append(emailAddress.Address);
-                    }
-                    else
-                    {
-                        sbCCEmailAddressList.Append(",");
-                        sbCCEmailAddressList.Append(emailAddress.Address);
-                    }
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-            }
-
-            //Get BCC Addresses
-            sb = new StringBuilder("");
-            sb.AppendFormat(" SELECT Id, DisplayName, Address FROM dbo.EmailAddresses WHERE Email_Id={0}", email.Id);
-
-            List<EmailAddress> emailBCCEmailAddressList = new List<EmailAddress>();
-
-            emailToEmailAddressList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
-
-            StringBuilder sbBCCEmailAddressList = new StringBuilder("");
-
-            if (emailBCCEmailAddressList != null && emailBCCEmailAddressList.Count > 0)
-            {
-                email.Bcc_Addresses = emailBCCEmailAddressList;
-
-                foreach (EmailAddress emailAddress in emailBCCEmailAddressList)
-                {
-                    if (sbBCCEmailAddressList.Length == 0)
-                    {
-                        sbBCCEmailAddressList.Append(emailAddress.Address);
-                    }
-                    else
-                    {
-                        sbBCCEmailAddressList.Append(",");
-                        sbBCCEmailAddressList.Append(emailAddress.Address);
-                    }
-                }
-            }
-
-            if (email == null)
-            {
-                return HttpNotFound();
             }
             else
             {
-                ViewData["ToEmailAddresses"] = sbToEmailAddressList.ToString();
-                ViewData["CCEmailAddresses"] = sbCCEmailAddressList.ToString();
-                ViewData["BCCEmailAddresses"] = sbBCCEmailAddressList.ToString();
-                return View(email);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+
+            #endregion "Get Email Related Information"
         }
 
         public ActionResult Rtl()
@@ -241,7 +207,6 @@ namespace Shnexy.Controllers
         {
             return View();
         }
-
 
         public ActionResult ThemeBlue()
         {
@@ -277,8 +242,6 @@ namespace Shnexy.Controllers
         {
             return View();
         }
-
-
 
         public ActionResult JQuery()
         {
@@ -401,7 +364,6 @@ namespace Shnexy.Controllers
         public ActionResult New(FormCollection form)
         {
 
-            String strEventName = String.Empty;
             DateTime dtFromDate;
             DateTime dtToDate;
             String strLocation = String.Empty;
@@ -416,7 +378,6 @@ namespace Shnexy.Controllers
             String strCategory = String.Empty;
             String strId = String.Empty;
 
-            strEventName = !String.IsNullOrEmpty(form["Name"]) ? form["Name"].ToString() : String.Empty;
             dtFromDate = form["FromDate"] != null ? Convert.ToDateTime(form["FromDate"]) : DateTime.MinValue;
             dtToDate = form["ToDate"] != null ? Convert.ToDateTime(form["ToDate"]) : DateTime.MinValue;
             strLocation = !String.IsNullOrEmpty(form["Location"]) ? form["Location"].ToString() : String.Empty;
@@ -430,6 +391,7 @@ namespace Shnexy.Controllers
             strCategory = !String.IsNullOrEmpty(form["Category"]) ? form["Category"].ToString() : String.Empty;
             strId = !String.IsNullOrEmpty(form["Id"]) ? form["Id"].ToString() : String.Empty;
 
+            #region Commmentted
             //if (!String.IsNullOrEmpty(form["chkIsAllDay"]))
             //{
             //    String strCheckAllDay = form["chkIsAllDay"].ToString();
@@ -448,8 +410,10 @@ namespace Shnexy.Controllers
             //    bIsAllDay = Convert.ToBoolean(strTemp);
             //}
 
+            #endregion Commmentted
+
             if (intPriority == 0 || intSequence == 0)
-                return View();
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
 
             String strEventICSString = String.Empty;
@@ -472,6 +436,31 @@ namespace Shnexy.Controllers
                 eventFileRepository.Add(eventFile);
                 eventFileRepository.UnitOfWork.SaveChanges();
 
+                #region "Update Email Status to Proccessed"
+
+                if (EventData._EmailId > 0)
+                {
+                    Email existingEmail = emailRepository.GetByKey(EventData._EmailId);
+
+                    if (existingEmail != null)
+                    {
+                        Email newEmail = new Email();
+
+                        newEmail.Id = EventData._EmailId;
+                        newEmail.Text = existingEmail.Text;
+                        newEmail.Subject = existingEmail.Subject;
+                        newEmail.FromEmail = existingEmail.FromEmail;
+                        newEmail.Status = "Processed";
+
+                        emailRepository.Update(newEmail, existingEmail);
+                        emailRepository.UnitOfWork.SaveChanges();
+
+                        newEmail.Id = 0;
+                    }
+                }
+
+                #endregion "Update Email Status to Proccessed"
+
                 new EventManager(this).EventCreate(EventData._dtStartDate, EventData._dtEndDate, strDescription, null, eventFile.Id.ToString());
             }
             else
@@ -485,34 +474,48 @@ namespace Shnexy.Controllers
                     if (eventFileExist != null)
                     {
 
-                        String strTempStartDate = GetFormatedDate(EventData._dtEditStartDate);
-                        DateTime dtTempStartDate = ConvertLocalDateTime(strTempStartDate);
+                        String strDTSTART = String.Empty;
+                        String strDTEND = String.Empty;
 
-                        String strDate = String.Format("{0}/{1}/{2}", dtTempStartDate.Month, dtTempStartDate.Day, dtTempStartDate.Year);
+                        strDTSTART = !String.IsNullOrEmpty(form["start"]) ? form["start"].ToString() : String.Empty;
+                        strDTEND = !String.IsNullOrEmpty(form["end"]) ? form["end"].ToString() : String.Empty;
 
-                        if (strDate != "1/1/1")
+                        if (!String.IsNullOrEmpty(strDTSTART) && !String.IsNullOrEmpty(strDTEND))
                         {
-                            EventFile newEventFile = new EventFile();
+                            DateTime dtTempStartDate = ConvertLocalDateTime(strDTSTART);
 
-                            newEventFile.Id = intEventFileId;
+                            String strDate = String.Format("{0}/{1}/{2}", dtTempStartDate.Month, dtTempStartDate.Day, dtTempStartDate.Year);
 
-                            strEventICSString = GetICSFormattedEventString(EventData._dtEditStartDate, EventData._dtEditEndDate, intSequence, strCategory, intPriority, strTransparency, strStatus, strClass, strSummary, strDescription, strLocation);
-                            newEventFile.Body = strEventICSString;
+                            if (strDate != "1/1/1")
+                            {
 
-                            eventFileRepository.Update(newEventFile, eventFileExist);
-                            eventFileRepository.UnitOfWork.SaveChanges();
+                                DateTime dtEditStartDate = ConvertLocalDateTime(strDTSTART);
+                                DateTime dtEditEndDate = ConvertLocalDateTime(strDTEND);
 
-                            new EventManager(this).EventCreate(EventData._dtEditStartDate, EventData._dtEditEndDate, strDescription, null, intEventFileId.ToString());
+                                EventFile newEventFile = new EventFile();
+                                newEventFile.Id = intEventFileId;
+
+                                strEventICSString = GetICSFormattedEventString(dtEditStartDate, dtEditEndDate, intSequence, strCategory, intPriority, strTransparency, strStatus, strClass, strSummary, strDescription, strLocation);
+                                newEventFile.Body = strEventICSString;
+
+                                eventFileRepository.Update(newEventFile, eventFileExist);
+                                eventFileRepository.UnitOfWork.SaveChanges();
+
+                                new EventManager(this).EventCreate(dtEditStartDate, dtEditEndDate, strDescription, null, intEventFileId.ToString());
+                            }
                         }
+
                     }
                 }
             }
 
-            //new EventManager(this).EventCreate(EventData._dtStartDate, EventData._dtEndDate, strDescription, null, eventFile.Id.ToString());
-            //PopulateCalender();
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
 
         }
+
+        #endregion "Action"
+
+        #region "Method"
 
         private String GetICSFormattedEventString(DateTime FromDate, DateTime ToDate, int Sequence, String Category, int Priority, String Transp, String Status, String Class, String Summary, String Description, String Location)
         {
@@ -564,30 +567,84 @@ namespace Shnexy.Controllers
             return b.ToString();
         }
 
-        public void SendAppointment(string from, string to, string title, string body, DateTime startTime, DateTime endTime, String location)
+        private DateTime ConvertLocalDateTime(String UnversalDateTimeString)
         {
-            //var mail = new MailMessage(from, to, String.Format("Successfully registered for {0}", title), CreateBody(title, body, location, startTime, endTime));
-            //mail.IsBodyHtml = true;
-            //byte[] attachment = CreateiCal(title, location, startTime, endTime);
-            //var ms = new MemoryStream(attachment);
-            //mail.Attachments.Add(new Attachment(ms, "eventappointment.ics", "text/plain"));
-            //var smtp = new SmtpClient("ukexch01");
-            //smtp.Send(mail);
-            //mail.Dispose();
+            String strLocalDateTime = UnversalDateTimeString.Insert(4, "-").Insert(7, "-").Replace("T", " ").Insert(13, ":").Insert(16, ":");
+
+            try
+            {
+                return DateTime.Parse(strLocalDateTime);
+            }
+            catch (Exception e)
+            {
+                return new DateTime();
+            }
         }
+
+        private void PopulateCalender()
+        {
+            int day = (int)DateTime.Now.DayOfWeek;
+            DateTime dtWeekStartDate = DateTime.Now.AddDays(-day);
+            DateTime dtWeekEndDate = dtWeekStartDate.AddDays(6);
+
+            List<EventFile> eventFileList = eventFileRepository.GetAll().ToList();
+
+            int DTSTART = 4;
+            int DTEND = 5;
+            int DESCRIPTION = 14;
+
+            foreach (EventFile eFile in eventFileList)
+            {
+                String[] arrICSBodyString = eFile.Body.Split(Environment.NewLine.ToCharArray());
+
+                String[] arrDTSTART = arrICSBodyString[DTSTART].Split(':');
+
+                String strDTSTART = String.Empty;
+                strDTSTART = arrDTSTART[1];
+
+                DateTime dtStart = ConvertLocalDateTime(strDTSTART);
+
+                String[] arrDTEND = arrICSBodyString[DTEND].Split(':');
+
+                String strDTEND = String.Empty;
+                strDTEND = arrDTEND[1];
+
+                DateTime dtEnd = ConvertLocalDateTime(strDTEND);
+
+                String[] arrBody = arrICSBodyString[DESCRIPTION].Split(':');
+                String strBody = String.Empty;
+
+                strBody = arrBody[1];
+
+                if (dtWeekStartDate >= dtStart || dtEnd <= dtWeekEndDate)
+                {
+                    try
+                    {
+                        new EventManager(this).EventCreate(dtStart, dtEnd, strBody, null, eFile.Id.ToString());
+                    }
+                    catch (Exception e)
+                    {
+                    }
+                }
+            }
+        }
+
+        #endregion "Method"
 
 
         public static class EventData
         {
-            public static DateTime _dtStartDate;
-            public static DateTime _dtEndDate;
+            internal static DateTime _dtStartDate;
+            internal static DateTime _dtEndDate;
 
-            public static DateTime _dtEditStartDate;
-            public static DateTime _dtEditEndDate;
+            internal static DateTime _dtEditStartDate;
+            internal static DateTime _dtEditEndDate;
 
-            public static String _Id;
+            internal static String _Id;
 
-            public static DateTime _dtCalenderEndDate;
+            internal static DateTime _dtCalenderEndDate;
+
+            internal static int _EmailId;
         }
 
         public class Dpn : DayPilotNavigator

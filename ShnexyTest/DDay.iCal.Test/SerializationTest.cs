@@ -7,23 +7,43 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.DDay.iCal.Serialization;
-using Shnexy.DDay.iCal.Serialization.iCalendar;
+using Data.DDay.DDay.iCal;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.ExtensionMethods;
+using Data.DDay.DDay.iCal.General;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
+using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using Data.DDay.DDay.iCal.Interfaces.General;
+using Data.DDay.DDay.iCal.Interfaces.Serialization;
+using Data.DDay.DDay.iCal.Serialization;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Components;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Other;
+using Data.DDay.DDay.iCal.Structs;
+using Data.DataAccessLayer.Interfaces;
+using Data.DataAccessLayer.StructureMap;
+using Data.Models;
 using NUnit.Framework;
-using Shnexy.Models;
+using StructureMap;
+using Attachment = Data.DDay.DDay.iCal.DataTypes.Attachment;
+using Shnexy.DDay.iCal;
 
-namespace Shnexy.DDay.iCal.Test
+namespace ShnexyTest.DDay.iCal.Test
 {
     [TestFixture]
     public class SerializationTest
     {
         private string tzid;
+        private IUnitOfWork _uow;
 
         [TestFixtureSetUp]
         public void InitAll()
         {
             tzid = "US-Eastern";
+            StructureMapBootStrapper.ConfigureDependencies("test");
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
         }
 
         private void SerializeTest(string filename, Type iCalSerializerType) { SerializeTest(filename, typeof(iCalendar), iCalSerializerType); }
@@ -562,7 +582,7 @@ namespace Shnexy.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
             var start = new DateTime(2000, 1, 1);
-            Event evt = new Event();
+            Event evt = new Event(_uow);
             evt.RecurrenceDates.Add(new PeriodList { new Period(new iCalDateTime(start), new iCalDateTime(new DateTime(2000, 1, 2))) });
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);

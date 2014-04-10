@@ -1,11 +1,9 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Data.DataAccessLayer.Interfaces;
+using Data.Models;
 using Moq;
 using NUnit.Framework;
-using Shnexy.DataAccessLayer.Interfaces;
-using Shnexy.Models;
 
-namespace ShnexyTest
+namespace ShnexyTest.Models
 {
     [TestFixture]
     public class UnitTest1
@@ -19,7 +17,7 @@ namespace ShnexyTest
             mockEvent = new Mock<IEvent>();
             
            
-            //orderRepo = new OrderRepository(new UnitOfWork(new LikiTestDbContext()));
+            
         }
         [Test]
         [Category("Engine Tests")]

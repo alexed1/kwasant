@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
 
-namespace Shnexy.DDay.iCal.Test
+namespace ShnexyTest.DDay.Collections.Test
 {
     public class DDayStartup
     {

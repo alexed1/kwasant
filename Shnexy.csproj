@@ -20,6 +20,8 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">.\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -39,17 +41,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxMin, Version=4.57.4561.28951, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\AjaxMin.dll</HintPath>
-    </Reference>
-    <Reference Include="Antlr3.Runtime">
       <HintPath>packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="DayPilot">
       <HintPath>packages\DayPilot.4.1.264\lib\DayPilot.dll</HintPath>
     </Reference>
-    <Reference Include="DayPilot.Web.Mvc">
+    <Reference Include="DayPilot.Web.Mvc, Version=7.7.5658.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\DayPilotMVC\DayPilot.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -77,33 +77,36 @@
     <Reference Include="Microsoft.Owin.Host.SystemWeb">
       <HintPath>packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security">
+    <Reference Include="Microsoft.Owin.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.Cookies">
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.Security.Facebook">
-      <HintPath>packages\Microsoft.Owin.Security.Facebook.2.1.0\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.Owin.Security.Facebook.2.1.0\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.Security.Google">
-      <HintPath>packages\Microsoft.Owin.Security.Google.2.1.0\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.Owin.Security.Google.2.1.0\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.Security.MicrosoftAccount">
-      <HintPath>packages\Microsoft.Owin.Security.MicrosoftAccount.2.1.0\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.Owin.Security.MicrosoftAccount.2.1.0\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Security.OAuth">
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.Owin.Security.OAuth.2.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.Security.Twitter">
-      <HintPath>packages\Microsoft.Owin.Security.Twitter.2.1.0\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
+      <HintPath>..\AbdulSH-7\shnexy\packages\Microsoft.Owin.Security.Twitter.2.1.0\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>packages\CommonServiceLocator.1.2\lib\portable-windows8+net40+sl5+windowsphone8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Newtonsoft.Json.6.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin">
       <HintPath>packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
@@ -111,32 +114,7 @@
     <Reference Include="S22.Imap">
       <HintPath>packages\S22.Imap.3.6.0.0\lib\net40\S22.Imap.dll</HintPath>
     </Reference>
-    <Reference Include="StructureMap">
-      <HintPath>packages\structuremap.3.0.0.108\lib\net40\StructureMap.dll</HintPath>
-    </Reference>
-    <Reference Include="StructureMap.Net4">
-      <HintPath>packages\structuremap.3.0.0.108\lib\net40\StructureMap.Net4.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Core, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=632609b4d040f6b4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Linq.Base, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.Linq.Base.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Schedule.Mvc, Version=11.4500.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\MVC\MVC5\Syncfusion.Schedule.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Shared.Mvc, Version=11.4500.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\MVC\MVC5\Syncfusion.Shared.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="Syncfusion.Theme.Base, Version=11.4450.0.26, Culture=neutral, PublicKeyToken=3d67ed1f87d44c89, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files (x86)\Syncfusion\Essential Studio\11.4.0.26\Assemblies\4.5.1\Syncfusion.Theme.Base.dll</HintPath>
-    </Reference>
+    <Reference Include="StructureMap, Version=2.6.4.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.Composition.Registration" />
@@ -144,9 +122,8 @@
     <Reference Include="System.Data.Entity" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Microsoft.AspNet.WebApi.Client.5.1.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
@@ -158,38 +135,30 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Microsoft.AspNet.WebApi.Core.5.1.2\lib\net45\System.Web.Http.dll</HintPath>
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebApi.Core.4.0.30506.0\lib\net40\System.Web.Http.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http.WebHost, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\Microsoft.AspNet.WebApi.WebHost.5.1.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.WebApi.WebHost.4.0.30506.0\lib\net40\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.AspNet.Mvc.5.1.2\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Optimization">
       <HintPath>packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
@@ -214,7 +183,39 @@
       <HintPath>packages\WebActivator.1.5.3\lib\net40\WebActivator.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease">
-      <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+      <HintPath>..\AbdulSH-7\shnexy\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\packages\Microsoft.Owin.2.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.0.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Facebook">
+      <HintPath>..\packages\Microsoft.Owin.Security.Facebook.2.0.0\lib\net45\Microsoft.Owin.Security.Facebook.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.2.0.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.2.0.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Google">
+      <HintPath>..\packages\Microsoft.Owin.Security.Google.2.0.0\lib\net45\Microsoft.Owin.Security.Google.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Twitter">
+      <HintPath>..\packages\Microsoft.Owin.Security.Twitter.2.0.0\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.MicrosoftAccount">
+      <HintPath>..\packages\Microsoft.Owin.Security.MicrosoftAccount.2.0.0\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -222,7 +223,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="App_Start\StructuremapMvc.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BookingAgentController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
@@ -231,407 +232,433 @@
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\Helpers\Log.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="DependencyResolution\IoC.cs" />
+    <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
+    <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
     <Compile Include="Controllers\MonthController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
-    <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="DataAccessLayer\Infrastructure\GenericRepository.cs" />
-    <Compile Include="DataAccessLayer\Infrastructure\UnitOfWork.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\IEventFile.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\ICustomerRepository.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DataAccessLayer\Interfaces\IEntity.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\IEvent.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\IUnitOfWork.cs" />
-    <Compile Include="DataAccessLayer\Infrastructure\ShnexyInitializer.cs" />
-    <Compile Include="DataAccessLayer\Repositories\EventFileRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\EmailAddressRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\EventRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\CustomerRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\EmailRepository.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\ISerializedEventRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\SerializeEventRepository.cs" />
-    <Compile Include="DataAccessLayer\StructureMap\StructureMapBootStrapper.cs" />
-    <Compile Include="DataAccessLayer\StructureMap\StructureMapControllerFactory.cs" />
-    <Compile Include="DataAccessLayer\StructureMap\StructureMapHttpControllerActivator.cs" />
-    <Compile Include="DDay\antlr\antlr.astframe\antlr.debug.misc\ASTFrame.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DDay\antlr\antlr.astframe\antlr.debug.misc\JTreeASTPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.collections.impl\ASTArray.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.collections.impl\BitSet.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.collections\AST.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ANTLREventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\DebuggingCharScanner.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\DebuggingInputBuffer.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\DebuggingParser.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\GuessingEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ICharScannerDebugSubject.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\IDebugSubject.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\InputBufferEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\InputBufferEventSupport.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\InputBufferListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\InputBufferListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\InputBufferReporter.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\IParserDebugSubject.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\Listener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\LLkDebuggingParser.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\MessageEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\MessageListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\MessageListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\NewLineEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\NewLineListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserController.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserEventSupport.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserMatchEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserMatchListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserMatchListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserReporter.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserTokenEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserTokenListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParserTokenListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ParseTreeDebugParser.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\ScannerEventSupport.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\SemanticPredicateEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\SemanticPredicateListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\SemanticPredicateListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\SyntacticPredicateEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\SyntacticPredicateListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\SyntacticPredicateListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\TraceEventArgs.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\TraceListener.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\TraceListenerBase.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr.debug\Tracer.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ANTLRException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ANTLRPanicException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ASTFactory.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ASTNodeCreator.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ASTNULLType.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ASTPair.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ASTVisitor.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\BaseAST.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ByteBuffer.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CharBuffer.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CharQueue.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CharScanner.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CharStreamException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CharStreamIOException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CommonAST.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CommonASTWithHiddenTokens.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CommonHiddenStreamToken.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\CommonToken.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\DefaultFileLineFormatter.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\DumpASTVisitor.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\FileLineFormatter.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\IHiddenStreamToken.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\InputBuffer.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\IToken.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\LexerSharedInputState.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\LLkParser.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\MismatchedCharException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\MismatchedTokenException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\NoViableAltException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\NoViableAltForCharException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\Parser.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ParserSharedInputState.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ParseTree.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ParseTreeRule.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\ParseTreeToken.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\RecognitionException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\SemanticException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\StringUtils.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\Token.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenBuffer.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenCreator.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenQueue.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStream.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamBasicFilter.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamHiddenTokenFilter.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamIOException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamRecognitionException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamRetryException.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamRewriteEngine.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenStreamSelector.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TokenWithIndex.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TreeParser.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\antlr\TreeParserSharedInputState.cs" />
-    <Compile Include="DDay\antlr\antlr.runtime\SupportClass.cs" />
-    <Compile Include="DDay\Collections\Constants.cs" />
-    <Compile Include="DDay\Collections\Enumerators\GroupedListEnumerator.cs" />
-    <Compile Include="DDay\Collections\GroupedList.cs" />
-    <Compile Include="DDay\Collections\GroupedValueList.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IGroupedCollection.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IGroupedList.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IGroupedObject.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IGroupedValueCollection.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IGroupedValueList.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IMultiLinkedList.cs" />
-    <Compile Include="DDay\Collections\Interfaces\IValueObject.cs" />
-    <Compile Include="DDay\Collections\Interfaces\Proxies\IGroupedCollectionProxy.cs" />
-    <Compile Include="DDay\Collections\Interfaces\Proxies\IGroupedValueListProxy.cs" />
-    <Compile Include="DDay\Collections\MultiLinkedList.cs" />
-    <Compile Include="DDay\Collections\Proxies\GroupedCollectionProxy.cs" />
-    <Compile Include="DDay\Collections\Proxies\GroupedValueListProxy.cs" />
-    <Compile Include="DDay\DDay.iCal\Compatibility\BrowsableAttribute.cs" />
-    <Compile Include="DDay\DDay.iCal\Compatibility\DebuggerDisplayAttribute.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\Alarm.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\CalendarComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\FreeBusy.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\iCalTimeZone.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\iCalTimeZoneInfo.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\Journal.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\RecurringComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\Todo.cs" />
-    <Compile Include="DDay\DDay.iCal\Components\UniqueComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Constants.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\Attachment.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\Attendee.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\CalendarDataType.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\EncodableDataType.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\FreeBusyEntry.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\GeographicLocation.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\iCalDateTime.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\IGroupedCollection.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\Organizer.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\Period.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\PeriodList.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\RecurrencePattern.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\RequestStatus.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\StatusCode.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\Trigger.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\UTCOffset.cs" />
-    <Compile Include="DDay\DDay.iCal\DataTypes\WeekDay.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\Evaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\EventEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\PeriodListEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\RecurrencePatternEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\RecurringEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\TimeZoneEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\TimeZoneInfoEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Evaluation\TodoEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Exceptions\EvaluationEngineException.cs" />
-    <Compile Include="DDay\DDay.iCal\ExtensionMethods\CalendarObjectExtensions.cs" />
-    <Compile Include="DDay\DDay.iCal\ExtensionMethods\ListExtensions.cs" />
-    <Compile Include="DDay\DDay.iCal\Factory\UIDFactory.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarObject.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarObjectBase.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarObjectList.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarParameter.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarParameterList.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarProperty.cs" />
-    <Compile Include="DDay\DDay.iCal\General\CalendarPropertyList.cs" />
-    <Compile Include="DDay\DDay.iCal\General\Proxies\CalendarObjectListProxy.cs" />
-    <Compile Include="DDay\DDay.iCal\General\Proxies\CalendarParameterCollectionProxy.cs" />
-    <Compile Include="DDay\DDay.iCal\General\Proxies\UniqueComponentListProxy.cs" />
-    <Compile Include="DDay\DDay.iCal\General\ServiceProvider.cs" />
-    <Compile Include="DDay\DDay.iCal\iCalendar.cs" />
-    <Compile Include="DDay\DDay.iCal\iCalendarCollection.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IAlarm.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IAlarmContainer.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\ICalendarComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IFreeBusy.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IJournal.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IRecurringComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\ITimeZone.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\ITimeZoneInfo.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\ITodo.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Components\IUniqueComponent.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IAttachment.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IAttendee.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\ICalendarDataType.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IDateTime.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IEncodableDataType.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IFreeBusyEntry.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IGeographicLocation.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IOrganizer.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IPeriod.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IPeriodList.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IRecurrencePattern.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IRequestStatus.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IStatusCode.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\ITrigger.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IUTCOffset.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\DataTypes\IWeekDay.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Evaluation\IEvaluator.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Evaluation\IGetFreeBusy.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Evaluation\IGetOccurrences.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Evaluation\IRecurrable.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarObject.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarObjectList.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarParameter.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarParameterCollection.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarParameterCollectionContainer.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarProperty.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarPropertyList.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICalendarPropertyListContainer.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ICopyable.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\IFilteredCalendarObjectList.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\ILoadable.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\IMergeable.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\IServiceProvider.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\IUniqueComponentList.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\General\Proxies\ICalendarParameterCollectionProxy.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\IICalendar.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\IICalendarCollection.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\Factory\ICalendarComponentFactory.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\Factory\ISerializerFactory.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\IDataTypeMapper.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\IEncodingProvider.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\IEncodingStack.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\ISerializationContext.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\ISerializationProcessor.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\ISerializationSettings.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\ISerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Interfaces\Serialization\IStringSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\DataTypeMapper.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\EncodingProvider.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\EncodingStack.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\Factory\ComponentFactory.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Factory\DataTypeSerializerFactory.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Factory\SerializerFactory.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\iCalLexer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\iCalParser.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\iCalParserTokenTypes.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Processors\ComponentPropertyConsolidator.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Processors\CompositeProcessor.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\SerializationInfo.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Components\ComponentSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Components\EventSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Components\UniqueComponentSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataMapSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\AttachmentSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\AttendeeSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\DataTypeSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\DateTimeSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\EncodableDataTypeSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\FreeBusyEntrySerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\GeographicLocationSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\OrganizerSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\PeriodListSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\PeriodSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\RecurrencePatternSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\RequestStatusSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\StatusCodeSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\TriggerSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\UTCOffsetSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\DataTypes\WeekDaySerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\iCalendarSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Other\EnumSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Other\IntegerSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Other\StringSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Other\TimeSpanSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\Other\UriSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\ParameterSerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\PropertySerializer.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\iCalendar\Serializers\SerializerBase.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\SerializationContext.cs" />
-    <Compile Include="DDay\DDay.iCal\Serialization\SerializationSettings.cs" />
-    <Compile Include="DDay\DDay.iCal\Structs\AlarmOccurrence.cs" />
-    <Compile Include="DDay\DDay.iCal\Structs\Occurrence.cs" />
-    <Compile Include="DDay\DDay.iCal\Structs\TimeZoneObservance.cs" />
-    <Compile Include="DDay\DDay.iCal\Utility\DateUtil.cs" />
-    <Compile Include="DDay\DDay.iCal\Utility\KnownTypeHelper.cs" />
-    <Compile Include="DDay\DDay.iCal\Utility\RecurrenceUtil.cs" />
-    <Compile Include="DDay\DDay.iCal\Utility\SerializationUtil.cs" />
-    <Compile Include="DDay\DDay.iCal\Utility\TextUtil.cs" />
     <Compile Include="Fixtures\FixtureDataEmail.cs" />
     <Compile Include="Fixtures\Seed.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201403170229250_initial.cs" />
-    <Compile Include="Migrations\201403170229250_initial.Designer.cs">
-      <DependentUpon>201403170229250_initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403170818299_syncfusion.cs" />
-    <Compile Include="Migrations\201403170818299_syncfusion.Designer.cs">
-      <DependentUpon>201403170818299_syncfusion.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403180803443_addEvent.cs" />
-    <Compile Include="Migrations\201403180803443_addEvent.Designer.cs">
-      <DependentUpon>201403180803443_addEvent.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403180807070_addEventstatus.cs" />
-    <Compile Include="Migrations\201403180807070_addEventstatus.Designer.cs">
-      <DependentUpon>201403180807070_addEventstatus.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403192308391_RemovedEvent.cs" />
-    <Compile Include="Migrations\201403192308391_RemovedEvent.Designer.cs">
-      <DependentUpon>201403192308391_RemovedEvent.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201403240247490_addEvent1.cs" />
-    <Compile Include="Migrations\201403240247490_addEvent1.Designer.cs">
-      <DependentUpon>201403240247490_addEvent1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Migrations\20140420247490_addEventFile.cs" />
-    <Compile Include="Migrations\20140420247490_addEventFile.Designer.cs">
-      <DependentUpon>20140420247490_addEventFile.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\AppointmentTable.cs" />
-    <Compile Include="Models\EventFile.cs" />
-    <Compile Include="Models\Customer.cs" />
-    <Compile Include="Models\EmailAddress.cs" />
-    <Compile Include="Models\Email.cs" />
-    <Compile Include="Models\Engine.cs" />
     <Compile Include="Controllers\EngineController.cs" />
-    <Compile Include="Models\Event.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\ICustomer.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\IEmail.cs" />
-    <Compile Include="DataAccessLayer\Interfaces\ISerializedEvent.cs" />
-    <Compile Include="Models\Profile.cs" />
-    <Compile Include="Models\Registration.cs" />
-    <Compile Include="Models\SerializedEvent.cs" />
-    <Compile Include="Models\Service.cs" />
-    <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DataAccessLayer\Infrastructure\ShnexyDbContext.cs" />
-    <Compile Include="Services\APIManagement\Packagers\Shnexy\ShnexyPackager.cs" />
-    <Compile Include="Services\APIManagement\Serializers\Json\JsonSerializer.cs" />
-    <Compile Include="Services\APIManagement\Transmitters\Restful\RestfulCall.cs" />
-    <Compile Include="Services\APIManagement\Transmitters\Restful\RestfulResponse.cs" />
-    <Compile Include="Services\APIManagement\Transmitters\Restful\RestfulTransmitter.cs" />
     <Compile Include="Startup.cs" />
-    <Compile Include="Utilities\Enumerations.cs" />
-    <Compile Include="Utilities\Extensions.cs" />
-    <Compile Include="Utilities\PersistableIntCollection.cs" />
-    <Compile Include="Utilities\TypeSafeEnum.cs" />
-    <Compile Include="ViewModels\User\UserDetailsVM.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\BookingAgent.css" />
-    <Content Include="Content\bootstrap-theme.css" />
-    <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Index.css" />
     <Content Include="Content\justified-nav.css" />
     <Content Include="Content\slider.css" />
-    <Content Include="DDay\antlr.runtime.dll" />
-    <Content Include="DDay\antlr.runtime.Silverlight.dll" />
-    <Content Include="DDay\antlr\antlr.astframe\antlr.astframe.csproj" />
-    <Content Include="DDay\antlr\antlr.runtime\antlr.runtime.csproj" />
-    <Content Include="DDay\antlr\antlr.runtime\antlr.runtime.Silverlight.csproj" />
-    <Content Include="DDay\antlr\antlr.runtime\antlr.runtime.Silverlight.csproj.user" />
-    <Content Include="DDay\DDay.iCal.dll" />
-    <Content Include="DDay\DDay.iCal\DDay.iCal.csproj" />
-    <Content Include="DDay\DDay.iCal\DDay.iCal.Silverlight.csproj" />
-    <Content Include="DDay\DDay.iCal\DDay.iCal.Silverlight.csproj.user" />
-    <Content Include="DDay\DDay.iCal\License.txt" />
-    <Content Include="DDay\DDay.iCal\Serialization\iCalendar\iCalParserTokenTypes.txt" />
-    <Content Include="DDay\DDay.iCal\SubWCRev.exe" />
-    <Content Include="DDay\License.txt" />
-    <Content Include="DDay\Release Notes\1.0.1.txt" />
-    <Content Include="DDay\SilverlightAdapter.dll" />
-    <Content Include="favicon.ico" />
+    <Content Include="packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.pdb" />
+    <Content Include="packages\Antlr.3.5.0.2\Antlr.3.5.0.2.nupkg" />
+    <Content Include="packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll" />
+    <Content Include="packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.pdb" />
+    <Content Include="packages\Antlr3.Runtime.PCL.3.5.0.3\Antlr3.Runtime.PCL.3.5.0.3.nupkg" />
+    <Content Include="packages\Antlr3.Runtime.PCL.3.5.0.3\Antlr3.Runtime.PCL.3.5.0.3.nuspec" />
+    <Content Include="packages\Antlr3.Runtime.PCL.3.5.0.3\lib\portable-win+net40+sl40+wp\Antlr3.Runtime.dll" />
+    <Content Include="packages\bootstrap.3.0.0\bootstrap.3.0.0.nupkg" />
+    <Content Include="packages\bootstrap.3.0.0\Content\Content\bootstrap-theme.css" />
+    <Content Include="packages\bootstrap.3.0.0\Content\Content\bootstrap-theme.min.css" />
+    <Content Include="packages\bootstrap.3.0.0\Content\Content\bootstrap.css" />
+    <Content Include="packages\bootstrap.3.0.0\Content\Content\bootstrap.min.css" />
+    <Content Include="packages\bootstrap.3.0.0\Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="packages\bootstrap.3.0.0\Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="packages\bootstrap.3.0.0\Content\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="packages\bootstrap.3.0.0\Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="packages\bootstrap.3.0.0\Content\Scripts\bootstrap.js" />
+    <Content Include="packages\bootstrap.3.0.0\Content\Scripts\bootstrap.min.js" />
+    <Content Include="packages\CommonServiceLocator.1.0\CommonServiceLocator.1.0.nupkg" />
+    <Content Include="packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll" />
+    <Content Include="packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.pdb" />
+    <Content Include="packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.XML" />
+    <Content Include="packages\CommonServiceLocator.1.0\lib\SL30\Microsoft.Practices.ServiceLocation.dll" />
+    <Content Include="packages\CommonServiceLocator.1.0\lib\SL30\Microsoft.Practices.ServiceLocation.XML" />
+    <Content Include="packages\DayPilot.4.1.264\DayPilot.4.1.264.nupkg" />
+    <Content Include="packages\DayPilot.4.1.264\DayPilot.4.1.264.nuspec" />
+    <Content Include="packages\DayPilot.4.1.264\lib\DayPilot.dll" />
+    <Content Include="packages\DayPilot.4.1.264\lib\DayPilot.Web.Mvc.dll" />
+    <Content Include="packages\EntityFramework.6.0.0\Content\App.config.transform" />
+    <Content Include="packages\EntityFramework.6.0.0\Content\Web.config.transform" />
+    <Content Include="packages\EntityFramework.6.0.0\EntityFramework.6.0.0.nupkg" />
+    <Content Include="packages\EntityFramework.6.0.0\lib\net40\EntityFramework.SqlServer.xml" />
+    <Content Include="packages\EntityFramework.6.0.0\lib\net40\EntityFramework.xml" />
+    <Content Include="packages\EntityFramework.6.0.0\lib\net45\EntityFramework.SqlServer.xml" />
+    <Content Include="packages\EntityFramework.6.0.0\lib\net45\EntityFramework.xml" />
+    <Content Include="packages\EntityFramework.6.0.0\tools\about_EntityFramework.help.txt" />
+    <Content Include="packages\EntityFramework.6.0.0\tools\EntityFramework.psd1" />
+    <Content Include="packages\EntityFramework.6.0.0\tools\EntityFramework.psm1" />
+    <Content Include="packages\EntityFramework.6.0.0\tools\init.ps1" />
+    <Content Include="packages\EntityFramework.6.0.0\tools\install.ps1" />
+    <Content Include="packages\EntityFramework.6.1.0\content\App.config.transform" />
+    <Content Include="packages\EntityFramework.6.1.0\content\Web.config.transform" />
+    <Content Include="packages\EntityFramework.6.1.0\EntityFramework.6.1.0.nupkg" />
+    <Content Include="packages\EntityFramework.6.1.0\lib\net40\EntityFramework.dll" />
+    <Content Include="packages\EntityFramework.6.1.0\lib\net40\EntityFramework.SqlServer.dll" />
+    <Content Include="packages\EntityFramework.6.1.0\lib\net40\EntityFramework.SqlServer.xml" />
+    <Content Include="packages\EntityFramework.6.1.0\lib\net40\EntityFramework.xml" />
+    <Content Include="packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll" />
+    <Content Include="packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll" />
+    <Content Include="packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.xml" />
+    <Content Include="packages\EntityFramework.6.1.0\lib\net45\EntityFramework.xml" />
+    <Content Include="packages\EntityFramework.6.1.0\tools\about_EntityFramework.help.txt" />
+    <Content Include="packages\EntityFramework.6.1.0\tools\EntityFramework.PowerShell.dll" />
+    <Content Include="packages\EntityFramework.6.1.0\tools\EntityFramework.PowerShell.Utility.dll" />
+    <Content Include="packages\EntityFramework.6.1.0\tools\EntityFramework.psd1" />
+    <Content Include="packages\EntityFramework.6.1.0\tools\EntityFramework.psm1" />
+    <Content Include="packages\EntityFramework.6.1.0\tools\init.ps1" />
+    <Content Include="packages\EntityFramework.6.1.0\tools\install.ps1" />
+    <Content Include="packages\EntityFramework.6.1.0\tools\migrate.exe" />
+    <Content Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2.js" />
+    <Content Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2.min.js" />
+    <Content Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2.min.map" />
+    <Content Include="packages\jQuery.1.10.2\jQuery.1.10.2.nupkg" />
+    <Content Include="packages\jQuery.1.10.2\Tools\common.ps1" />
+    <Content Include="packages\jQuery.1.10.2\Tools\install.ps1" />
+    <Content Include="packages\jQuery.1.10.2\Tools\uninstall.ps1" />
+    <Content Include="packages\jQuery.Validation.1.11.1\Content\Scripts\jquery.validate.js" />
+    <Content Include="packages\jQuery.Validation.1.11.1\Content\Scripts\jquery.validate.min.js" />
+    <Content Include="packages\jQuery.Validation.1.11.1\jQuery.Validation.1.11.1.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.Identity.Core.2.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll" />
+    <Content Include="packages\Microsoft.AspNet.Identity.Core.2.0.0\lib\net45\Microsoft.AspNet.Identity.Core.xml" />
+    <Content Include="packages\Microsoft.AspNet.Identity.Core.2.0.0\Microsoft.AspNet.Identity.Core.2.0.0.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.Identity.Core.2.0.0\Microsoft.AspNet.Identity.Core.2.0.0.nuspec" />
+    <Content Include="packages\Microsoft.AspNet.Identity.EntityFramework.2.0.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll" />
+    <Content Include="packages\Microsoft.AspNet.Identity.EntityFramework.2.0.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.xml" />
+    <Content Include="packages\Microsoft.AspNet.Identity.EntityFramework.2.0.0\Microsoft.AspNet.Identity.EntityFramework.2.0.0.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.Identity.EntityFramework.2.0.0\Microsoft.AspNet.Identity.EntityFramework.2.0.0.nuspec" />
+    <Content Include="packages\Microsoft.AspNet.Identity.Owin.1.0.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll" />
+    <Content Include="packages\Microsoft.AspNet.Identity.Owin.2.0.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll" />
+    <Content Include="packages\Microsoft.AspNet.Identity.Owin.2.0.0\lib\net45\Microsoft.AspNet.Identity.Owin.xml" />
+    <Content Include="packages\Microsoft.AspNet.Identity.Owin.2.0.0\Microsoft.AspNet.Identity.Owin.2.0.0.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.Identity.Owin.2.0.0\Microsoft.AspNet.Identity.Owin.2.0.0.nuspec" />
+    <Content Include="packages\Microsoft.AspNet.Mvc.5.1.1\Content\Web.config.install.xdt" />
+    <Content Include="packages\Microsoft.AspNet.Mvc.5.1.1\Content\Web.config.uninstall.xdt" />
+    <Content Include="packages\Microsoft.AspNet.Mvc.5.1.1\lib\net45\System.Web.Mvc.dll" />
+    <Content Include="packages\Microsoft.AspNet.Mvc.5.1.1\lib\net45\System.Web.Mvc.xml" />
+    <Content Include="packages\Microsoft.AspNet.Mvc.5.1.1\Microsoft.AspNet.Mvc.5.1.1.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.Mvc.5.1.1\Microsoft.AspNet.Mvc.5.1.1.nuspec" />
+    <Content Include="packages\Microsoft.AspNet.Mvc.5.1.2\Content\Web.config.install.xdt" />
+    <Content Include="packages\Microsoft.AspNet.Mvc.5.1.2\Content\Web.config.uninstall.xdt" />
+    <Content Include="packages\Microsoft.AspNet.Mvc.5.1.2\lib\net45\foo" />
+    <Content Include="packages\Microsoft.AspNet.Mvc.5.1.2\lib\net45\System.Web.Mvc.dll" />
+    <Content Include="packages\Microsoft.AspNet.Mvc.5.1.2\lib\net45\System.Web.Mvc.xml" />
+    <Content Include="packages\Microsoft.AspNet.Mvc.5.1.2\Microsoft.AspNet.Mvc.5.1.2.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.Razor.3.1.1\lib\net45\System.Web.Razor.dll" />
+    <Content Include="packages\Microsoft.AspNet.Razor.3.1.1\lib\net45\System.Web.Razor.xml" />
+    <Content Include="packages\Microsoft.AspNet.Razor.3.1.1\Microsoft.AspNet.Razor.3.1.1.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\foo2" />
+    <Content Include="packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\System.Web.Razor.dll" />
+    <Content Include="packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\System.Web.Razor.xml" />
+    <Content Include="packages\Microsoft.AspNet.Razor.3.1.2\Microsoft.AspNet.Razor.3.1.2.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll" />
+    <Content Include="packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\system.web.optimization.xml" />
+    <Content Include="packages\Microsoft.AspNet.Web.Optimization.1.1.3\Microsoft.AspNet.Web.Optimization.1.1.3.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.Web.Optimization.1.1.3\Microsoft.AspNet.Web.Optimization.1.1.3.nuspec" />
+    <Content Include="packages\Microsoft.AspNet.WebApi.4.0.30506.0\Microsoft.AspNet.WebApi.4.0.30506.0.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\lib\net40\System.Net.Http.Formatting.dll" />
+    <Content Include="packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\lib\net40\System.Net.Http.Formatting.xml" />
+    <Content Include="packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\Microsoft.AspNet.WebApi.Client.4.0.30506.0.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.WebApi.Core.4.0.30506.0\content\web.config.transform" />
+    <Content Include="packages\Microsoft.AspNet.WebApi.Core.4.0.30506.0\lib\net40\System.Web.Http.dll" />
+    <Content Include="packages\Microsoft.AspNet.WebApi.Core.4.0.30506.0\lib\net40\System.Web.Http.xml" />
+    <Content Include="packages\Microsoft.AspNet.WebApi.Core.4.0.30506.0\Microsoft.AspNet.WebApi.Core.4.0.30506.0.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.WebApi.WebHost.4.0.30506.0\lib\net40\System.Web.Http.WebHost.dll" />
+    <Content Include="packages\Microsoft.AspNet.WebApi.WebHost.4.0.30506.0\lib\net40\System.Web.Http.WebHost.xml" />
+    <Content Include="packages\Microsoft.AspNet.WebApi.WebHost.4.0.30506.0\Microsoft.AspNet.WebApi.WebHost.4.0.30506.0.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.1\Content\Web.config.install.xdt" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.1\Content\Web.config.uninstall.xdt" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.Helpers.dll" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.Helpers.xml" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.Deployment.dll" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.Deployment.xml" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.dll" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.Razor.dll" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.Razor.xml" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.1\lib\net45\System.Web.WebPages.xml" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.1\Microsoft.AspNet.WebPages.3.1.1.nupkg" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.1\Microsoft.AspNet.WebPages.3.1.1.nuspec" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.2\Content\Web.config.install.xdt" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.2\Content\Web.config.uninstall.xdt" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\foo3" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.Helpers.dll" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.Helpers.xml" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Deployment.dll" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Deployment.xml" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.dll" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Razor.dll" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Razor.xml" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.xml" />
+    <Content Include="packages\Microsoft.AspNet.WebPages.3.1.2\Microsoft.AspNet.WebPages.3.1.2.nupkg" />
+    <Content Include="packages\Microsoft.jQuery.Unobtrusive.Validation.3.0.0\Content\Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="packages\Microsoft.jQuery.Unobtrusive.Validation.3.0.0\Content\Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="packages\Microsoft.jQuery.Unobtrusive.Validation.3.0.0\Microsoft.jQuery.Unobtrusive.Validation.3.0.0.nupkg" />
+    <Content Include="packages\Microsoft.Net.Http.2.0.20710.0\lib\net40\System.Net.Http.dll" />
+    <Content Include="packages\Microsoft.Net.Http.2.0.20710.0\lib\net40\System.Net.Http.WebRequest.dll" />
+    <Content Include="packages\Microsoft.Net.Http.2.0.20710.0\lib\net40\System.Net.Http.WebRequest.xml" />
+    <Content Include="packages\Microsoft.Net.Http.2.0.20710.0\lib\net40\System.Net.Http.xml" />
+    <Content Include="packages\Microsoft.Net.Http.2.0.20710.0\lib\net45\_._" />
+    <Content Include="packages\Microsoft.Net.Http.2.0.20710.0\Microsoft.Net.Http.2.0.20710.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.2.1.0\lib\net40\Microsoft.Owin.dll" />
+    <Content Include="packages\Microsoft.Owin.2.1.0\lib\net40\Microsoft.Owin.XML" />
+    <Content Include="packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll" />
+    <Content Include="packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.XML" />
+    <Content Include="packages\Microsoft.Owin.2.1.0\Microsoft.Owin.2.1.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net40\Microsoft.Owin.Host.SystemWeb.dll" />
+    <Content Include="packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net40\Microsoft.Owin.Host.SystemWeb.xml" />
+    <Content Include="packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll" />
+    <Content Include="packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.xml" />
+    <Content Include="packages\Microsoft.Owin.Host.SystemWeb.2.1.0\Microsoft.Owin.Host.SystemWeb.2.1.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll" />
+    <Content Include="packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.XML" />
+    <Content Include="packages\Microsoft.Owin.Security.2.1.0\Microsoft.Owin.Security.2.1.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Security.2.1.0\Microsoft.Owin.Security.2.1.0.nuspec" />
+    <Content Include="packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll" />
+    <Content Include="packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.xml" />
+    <Content Include="packages\Microsoft.Owin.Security.Cookies.2.1.0\Microsoft.Owin.Security.Cookies.2.1.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Security.Cookies.2.1.0\Microsoft.Owin.Security.Cookies.2.1.0.nuspec" />
+    <Content Include="packages\Microsoft.Owin.Security.Facebook.2.0.0\lib\net45\Microsoft.Owin.Security.Facebook.dll" />
+    <Content Include="packages\Microsoft.Owin.Security.Facebook.2.0.0\lib\net45\Microsoft.Owin.Security.Facebook.XML" />
+    <Content Include="packages\Microsoft.Owin.Security.Facebook.2.0.0\Microsoft.Owin.Security.Facebook.2.0.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Security.Facebook.2.1.0\Microsoft.Owin.Security.Facebook.2.1.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Security.Facebook.2.1.0\Microsoft.Owin.Security.Facebook.2.1.0.nuspec" />
+    <Content Include="packages\Microsoft.Owin.Security.Google.2.0.0\lib\net45\Microsoft.Owin.Security.Google.dll" />
+    <Content Include="packages\Microsoft.Owin.Security.Google.2.0.0\lib\net45\Microsoft.Owin.Security.Google.XML" />
+    <Content Include="packages\Microsoft.Owin.Security.Google.2.0.0\Microsoft.Owin.Security.Google.2.0.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Security.Google.2.1.0\lib\net45\Microsoft.Owin.Security.Google.XML" />
+    <Content Include="packages\Microsoft.Owin.Security.Google.2.1.0\Microsoft.Owin.Security.Google.2.1.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Security.Google.2.1.0\Microsoft.Owin.Security.Google.2.1.0.nuspec" />
+    <Content Include="packages\Microsoft.Owin.Security.MicrosoftAccount.2.0.0\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.dll" />
+    <Content Include="packages\Microsoft.Owin.Security.MicrosoftAccount.2.0.0\lib\net45\Microsoft.Owin.Security.MicrosoftAccount.XML" />
+    <Content Include="packages\Microsoft.Owin.Security.MicrosoftAccount.2.0.0\Microsoft.Owin.Security.MicrosoftAccount.2.0.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Security.MicrosoftAccount.2.1.0\Microsoft.Owin.Security.MicrosoftAccount.2.1.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Security.MicrosoftAccount.2.1.0\Microsoft.Owin.Security.MicrosoftAccount.2.1.0.nuspec" />
+    <Content Include="packages\Microsoft.Owin.Security.OAuth.2.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll" />
+    <Content Include="packages\Microsoft.Owin.Security.OAuth.2.1.0\lib\net45\Microsoft.Owin.Security.OAuth.XML" />
+    <Content Include="packages\Microsoft.Owin.Security.OAuth.2.1.0\Microsoft.Owin.Security.OAuth.2.1.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Security.OAuth.2.1.0\Microsoft.Owin.Security.OAuth.2.1.0.nuspec" />
+    <Content Include="packages\Microsoft.Owin.Security.Twitter.2.0.0\lib\net45\Microsoft.Owin.Security.Twitter.dll" />
+    <Content Include="packages\Microsoft.Owin.Security.Twitter.2.0.0\lib\net45\Microsoft.Owin.Security.Twitter.XML" />
+    <Content Include="packages\Microsoft.Owin.Security.Twitter.2.0.0\Microsoft.Owin.Security.Twitter.2.0.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Security.Twitter.2.1.0\Microsoft.Owin.Security.Twitter.2.1.0.nupkg" />
+    <Content Include="packages\Microsoft.Owin.Security.Twitter.2.1.0\Microsoft.Owin.Security.Twitter.2.1.0.nuspec" />
+    <Content Include="packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll" />
+    <Content Include="packages\Microsoft.Web.Infrastructure.1.0.0.0\Microsoft.Web.Infrastructure.1.0.0.0.nupkg" />
+    <Content Include="packages\Microsoft.Web.Xdt.1.0.0\lib\net40\Microsoft.Web.XmlTransform.dll" />
+    <Content Include="packages\Microsoft.Web.Xdt.1.0.0\Microsoft.Web.Xdt.1.0.0.nupkg" />
+    <Content Include="packages\Modernizr.2.6.2\Content\Scripts\modernizr-2.6.2.js" />
+    <Content Include="packages\Modernizr.2.6.2\Modernizr.2.6.2.nupkg" />
+    <Content Include="packages\Modernizr.2.6.2\Tools\common.ps1" />
+    <Content Include="packages\Modernizr.2.6.2\Tools\install.ps1" />
+    <Content Include="packages\Modernizr.2.6.2\Tools\uninstall.ps1" />
+    <Content Include="packages\Moq.4.2.1402.2112\lib\net35\Moq.dll" />
+    <Content Include="packages\Moq.4.2.1402.2112\lib\net35\Moq.xml" />
+    <Content Include="packages\Moq.4.2.1402.2112\lib\net40\Moq.dll" />
+    <Content Include="packages\Moq.4.2.1402.2112\lib\net40\Moq.xml" />
+    <Content Include="packages\Moq.4.2.1402.2112\lib\sl4\Moq.Silverlight.dll" />
+    <Content Include="packages\Moq.4.2.1402.2112\lib\sl4\Moq.Silverlight.xml" />
+    <Content Include="packages\Moq.4.2.1402.2112\Moq.4.2.1402.2112.nupkg" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\net20\Newtonsoft.Json.dll" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\net20\Newtonsoft.Json.xml" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\net35\Newtonsoft.Json.dll" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\net35\Newtonsoft.Json.xml" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\net40\Newtonsoft.Json.dll" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\net40\Newtonsoft.Json.xml" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.xml" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\netcore45\Newtonsoft.Json.dll" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\netcore45\Newtonsoft.Json.xml" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\portable-net40+sl5+wp80+win8+monotouch+monoandroid\Newtonsoft.Json.dll" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\portable-net40+sl5+wp80+win8+monotouch+monoandroid\Newtonsoft.Json.xml" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\portable-net45+wp80+win8\Newtonsoft.Json.dll" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\lib\portable-net45+wp80+win8\Newtonsoft.Json.xml" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\Newtonsoft.Json.6.0.1.nupkg" />
+    <Content Include="packages\Newtonsoft.Json.6.0.1\tools\install.ps1" />
+    <Content Include="packages\Nuget.Core.2.8.0\lib\net40-Client\NuGet.Core.dll" />
+    <Content Include="packages\Nuget.Core.2.8.0\Nuget.Core.2.8.0.nupkg" />
+    <Content Include="packages\Nuget.Core.2.8.0\Nuget.Core.2.8.0.nuspec" />
+    <Content Include="packages\NUnit.Runners.2.6.3\license.txt" />
+    <Content Include="packages\NUnit.Runners.2.6.3\NUnit.Runners.2.6.3.nupkg" />
+    <Content Include="packages\NUnit.Runners.2.6.3\NUnit.Runners.2.6.3.nuspec" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\agent.conf" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\agent.log.conf" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\launcher.log.conf" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Circles\Failure.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Circles\Ignored.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Circles\Inconclusive.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Circles\Skipped.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Circles\Success.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Classic\Failure.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Classic\Ignored.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Classic\Inconclusive.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Classic\Skipped.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Classic\Success.jpg" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Default\Failure.png" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Default\Ignored.png" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Default\Inconclusive.png" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Default\Skipped.png" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Default\Success.png" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Visual Studio\Failure.png" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Visual Studio\Ignored.png" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Visual Studio\Inconclusive.png" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Visual Studio\SeriousWarning.png" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Visual Studio\Skipped.png" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\Images\Tree\Visual Studio\Success.png" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\log4net.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\nunit-console-runner.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\nunit-gui-runner.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\nunit.core.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\nunit.core.interfaces.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\nunit.uiexception.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\nunit.uikit.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\lib\nunit.util.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit-agent-x86.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit-agent-x86.exe.config" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit-agent.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit-agent.exe.config" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit-console-x86.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit-console-x86.exe.config" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit-console.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit-console.exe.config" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit-editor.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit-x86.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit-x86.exe.config" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit.exe.config" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\nunit.framework.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\pnunit-agent.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\pnunit-agent.exe.config" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\pnunit-launcher.exe" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\pnunit-launcher.exe.config" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\pnunit.framework.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\pnunit.tests.dll" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\runpnunit.bat" />
+    <Content Include="packages\NUnit.Runners.2.6.3\tools\test.conf" />
+    <Content Include="packages\NUnitTestAdapter.1.0\lib\nunit.core.dll" />
+    <Content Include="packages\NUnitTestAdapter.1.0\lib\nunit.core.interfaces.dll" />
+    <Content Include="packages\NUnitTestAdapter.1.0\lib\nunit.util.dll" />
+    <Content Include="packages\NUnitTestAdapter.1.0\lib\NUnit.VisualStudio.TestAdapter.dll" />
+    <Content Include="packages\NUnitTestAdapter.1.0\NUnitTestAdapter.1.0.nupkg" />
+    <Content Include="packages\NUnitTestAdapter.1.0\tools\install.ps1" />
+    <Content Include="packages\NUnitTestAdapter.WithFramework.1.0\lib\nunit.core.dll" />
+    <Content Include="packages\NUnitTestAdapter.WithFramework.1.0\lib\nunit.core.interfaces.dll" />
+    <Content Include="packages\NUnitTestAdapter.WithFramework.1.0\lib\nunit.framework.dll" />
+    <Content Include="packages\NUnitTestAdapter.WithFramework.1.0\lib\nunit.framework.xml" />
+    <Content Include="packages\NUnitTestAdapter.WithFramework.1.0\lib\nunit.util.dll" />
+    <Content Include="packages\NUnitTestAdapter.WithFramework.1.0\lib\NUnit.VisualStudio.TestAdapter.dll" />
+    <Content Include="packages\NUnitTestAdapter.WithFramework.1.0\NUnitTestAdapter.WithFramework.1.0.nupkg" />
+    <Content Include="packages\NUnitTestAdapter.WithFramework.1.0\tools\install.ps1" />
+    <Content Include="packages\Owin.1.0\lib\net40\Owin.dll" />
+    <Content Include="packages\Owin.1.0\Owin.1.0.nupkg" />
+    <Content Include="packages\repositories.config" />
+    <Content Include="packages\Respond.1.2.0\content\Scripts\respond.js" />
+    <Content Include="packages\Respond.1.2.0\content\Scripts\respond.min.js" />
+    <Content Include="packages\Respond.1.2.0\Respond.1.2.0.nupkg" />
+    <Content Include="packages\S22.Imap.3.6.0.0\lib\net35\S22.Imap.dll" />
+    <Content Include="packages\S22.Imap.3.6.0.0\lib\net35\S22.Imap.XML" />
+    <Content Include="packages\S22.Imap.3.6.0.0\lib\net40\S22.Imap.dll" />
+    <Content Include="packages\S22.Imap.3.6.0.0\lib\net40\S22.Imap.XML" />
+    <Content Include="packages\S22.Imap.3.6.0.0\S22.Imap.3.6.0.0.nupkg" />
+    <Content Include="packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll" />
+    <Content Include="packages\structuremap.2.6.4.1\lib\net40\StructureMap.pdb" />
+    <Content Include="packages\structuremap.2.6.4.1\lib\net40\StructureMap.XML" />
+    <Content Include="packages\structuremap.2.6.4.1\structuremap.2.6.4.1.nupkg" />
+    <Content Include="packages\StructureMap.MVC4.2.6.4.3\content\App_Start\StructuremapMvc.cs.pp" />
+    <Content Include="packages\StructureMap.MVC4.2.6.4.3\content\DependencyResolution\IoC.cs.pp" />
+    <Content Include="packages\StructureMap.MVC4.2.6.4.3\content\DependencyResolution\StructureMapDependencyResolver.cs.pp" />
+    <Content Include="packages\StructureMap.MVC4.2.6.4.3\content\DependencyResolution\StructureMapDependencyScope.cs.pp" />
+    <Content Include="packages\StructureMap.MVC4.2.6.4.3\StructureMap.MVC4.2.6.4.3.nupkg" />
+    <Content Include="packages\StructureMap.MVC4.2.6.4.3\StructureMap.MVC4.2.6.4.3.nuspec" />
+    <Content Include="packages\WebActivator.1.5.3\lib\net40\WebActivator.dll" />
+    <Content Include="packages\WebActivator.1.5.3\WebActivator.1.5.3.nupkg" />
+    <Content Include="packages\WebGrease.1.5.2\lib\WebGrease.dll" />
+    <Content Include="packages\WebGrease.1.5.2\tools\install.ps1" />
+    <Content Include="packages\WebGrease.1.5.2\tools\uninstall.ps1" />
+    <Content Include="packages\WebGrease.1.5.2\tools\WG.exe" />
+    <Content Include="packages\WebGrease.1.5.2\WebGrease.1.5.2.nupkg" />
+    <Content Include="packages\WebGrease.1.6.0\WebGrease.1.6.0.nupkg" />
+    <Content Include="packages\WebGrease.1.6.0\WebGrease.1.6.0.nuspec" />
+    <Content Include="Scripts\Common.js" />
+    <Content Include="Website\backgroundsize.min.htc" />
+    <Content Include="Website\css\bootstrap-responsive.css" />
+    <Content Include="Website\css\bootstrap-responsive.min.css" />
+    <Content Include="Website\css\bootstrap.css" />
+    <Content Include="Website\css\bootstrap.min.css" />
+    <Content Include="Website\css\colorbox.css" />
+    <Content Include="Website\css\font-awesome-ie7.min.css" />
+    <Content Include="Website\css\font-awesome.min.css" />
+    <Content Include="Website\css\img\bg-overlay.png" />
+    <Content Include="Website\css\img\browser-header.jpg" />
+    <Content Include="Website\css\img\controls.png" />
+    <Content Include="Website\css\img\glyphicons-halflings-white.png" />
+    <Content Include="Website\css\img\glyphicons-halflings.png" />
+    <Content Include="Website\css\img\ie-black-bg.png" />
+    <Content Include="Website\css\img\loading.gif" />
+    <Content Include="Website\css\main.css" />
+    <Content Include="Website\font\fontawesome-webfont.svg" />
+    <Content Include="Website\gadegets.xml" />
+    <Content Include="Website\images\bg1.jpg" />
+    <Content Include="Website\images\bg2.jpg" />
+    <Content Include="Website\images\bg3.jpg" />
+    <Content Include="Website\images\bg4.jpg" />
+    <Content Include="Website\images\bg5.jpg" />
+    <Content Include="Website\images\bg6.jpg" />
+    <Content Include="Website\images\bg7.jpg" />
+    <Content Include="Website\images\bg8.jpg" />
+    <Content Include="Website\images\bg9.jpg" />
+    <Content Include="Website\images\calendar5.jpg" />
+    <Content Include="Website\images\client-1.png" />
+    <Content Include="Website\images\client-2.png" />
+    <Content Include="Website\images\client-3.png" />
+    <Content Include="Website\images\client-4.png" />
+    <Content Include="Website\images\client-5.png" />
+    <Content Include="Website\images\client-6.png" />
+    <Content Include="Website\images\Croissant\croissant_nolic.jpg" />
+    <Content Include="Website\images\homepage1.jpg" />
+    <Content Include="Website\images\homepage2.jpg" />
+    <Content Include="Website\images\homepage3.jpg" />
+    <Content Include="Website\images\homepage4.jpg" />
+    <Content Include="Website\images\image_1.jpg" />
+    <Content Include="Website\images\image_2.jpg" />
+    <Content Include="Website\images\image_3.jpg" />
+    <Content Include="Website\images\image_4.jpg" />
+    <Content Include="Website\images\image_5.jpg" />
+    <Content Include="Website\images\image_6.jpg" />
+    <Content Include="Website\images\image_7.jpg" />
+    <Content Include="Website\images\logo.png" />
+    <Content Include="Website\images\logo11.png" />
+    <Content Include="Website\images\logo2.png" />
+    <Content Include="Website\images\logo5.png" />
+    <Content Include="Website\images\logo6.png" />
+    <Content Include="Website\images\logo7.png" />
+    <Content Include="Website\images\logo9.png" />
+    <Content Include="Website\images\love.jpg" />
+    <Content Include="Website\images\Management\alexhead.png" />
+    <Content Include="Website\images\older-calendar.jpg" />
+    <Content Include="Website\images\Process\1Step.png" />
+    <Content Include="Website\images\Process\workflow.png" />
+    <Content Include="Website\images\Process\Workflowv2.png" />
+    <Content Include="Website\images\screen.jpg" />
+    <Content Include="Website\images\stone-calendar.jpg" />
+    <Content Include="Website\images\team.jpg" />
+    <Content Include="Website\images\team2.jpg" />
+    <Content Include="Website\images\team3.jpg" />
+    <Content Include="Website\index.html" />
+    <Content Include="Website\js\bootstrap.js" />
+    <Content Include="Website\js\bootstrap.min.js" />
+    <Content Include="Website\js\jquery.colorbox-min.js" />
+    <Content Include="Website\js\jquery.viewport.min.js" />
+    <Content Include="Website\js\main.js" />
+    <Content Include="Website\js\placeholder.js" />
+    <Content Include="Website\js\plugins.js" />
+    <Content Include="Website\js\respond.min.js" />
+    <Content Include="Website\js\vendor\jquery-1.10.2.min.js" />
+    <Content Include="Website\js\vendor\modernizr-2.6.2.min.js" />
+    <Content Include="Website\js\waypoints.js" />
+    <Content Include="Website\shortcodes.html" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -653,35 +680,24 @@
     <Content Include="Media\linked\gradient_dps.jpg" />
     <Content Include="Media\linked\gradient_hard_left.png" />
     <Content Include="Media\linked\tentative5x8.gif" />
+    <Content Include="Website\.htaccess" />
+    <Content Include="Website\font\fontawesome-webfont.eot" />
+    <Content Include="Website\font\fontawesome-webfont.ttf" />
+    <Content Include="Website\font\fontawesome-webfont.woff" />
+    <Content Include="Website\font\FontAwesome.otf" />
+    <Content Include="Website\images\blue_tag.psd" />
     <Content Include="Scripts\bootstrap-slider.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="DDay\Sandcastle.shfb" />
-    <Content Include="DDay\Collections\obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
-    <Content Include="DDay\antlr\antlr.astframe\Makefile.in" />
-    <Content Include="DDay\antlr\antlr.runtime\DDay.iCal.pfx" />
-    <Content Include="DDay\antlr\antlr.runtime\Makefile.in" />
-    <Content Include="DDay\TimeZones\America.ics" />
-    <Content Include="DDay\DDay.iCal\obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
-    <Content Include="DDay\DDay.iCal\Properties\AssemblyInfo.cs.template" />
-    <Content Include="DDay\DDay.iCal\Serialization\iCalendar\iCal.g" />
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="Content\bootstrap.css.map" />
-    <None Include="Properties\PublishProfiles\shnexy.pubxml" />
-    <None Include="Properties\PublishProfiles\shnexy2.pubxml" />
+    <None Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2-vsdoc.js" />
+    <None Include="packages\jQuery.1.10.2\Tools\jquery-1.10.2.intellisense.js" />
+    <None Include="packages\jQuery.Validation.1.11.1\Content\Scripts\jquery.validate-vsdoc.js" />
+    <None Include="Properties\PublishProfiles\kwasant.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="Scripts\Common.js" />
     <Content Include="Scripts\daypilot-all.min.js" />
     <Content Include="Scripts\DayPilot\daypilot-all.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
-    <None Include="Scripts\jquery-2.1.0.intellisense.js" />
-    <Content Include="Scripts\jquery-2.1.0.js" />
-    <Content Include="Scripts\jquery-2.1.0.min.js" />
-    <Content Include="Scripts\jquery-2.1.0.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\jquery-1.8.1.min.js" />
     <Content Include="Scripts\jquery-2.0.3.min.js" />
@@ -690,10 +706,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
-    <Content Include="Scripts\modernizr-2.7.2.js" />
     <Content Include="Scripts\respond.js" />
-    <Content Include="Scripts\respond.matchmedia.addListener.js" />
-    <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Themes\areas.css" />
@@ -761,9 +774,7 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
-    <Content Include="Views\Web.config">
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -792,11 +803,6 @@
     <Content Include="Views\Message\Details.cshtml" />
     <Content Include="Views\Message\Edit.cshtml" />
     <Content Include="Views\Message\Index.cshtml" />
-    <Content Include="Views\Queue\Create.cshtml" />
-    <Content Include="Views\Queue\Delete.cshtml" />
-    <Content Include="Views\Queue\Details.cshtml" />
-    <Content Include="Views\Queue\Edit.cshtml" />
-    <Content Include="Views\Queue\Index.cshtml" />
     <Content Include="Views\Email\Create.cshtml" />
     <Content Include="Views\Email\Delete.cshtml" />
     <Content Include="Views\Email\Details.cshtml" />
@@ -838,49 +844,34 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
-    <Folder Include="DDay\antlr\antlr.runtime\Properties\" />
-    <Folder Include="DDay\Collections\bin\Debug\" />
-    <Folder Include="DDay\Collections\obj\Debug\TempPE\" />
-    <Folder Include="DDay\DDay.iCal\bin\Debug\" />
-    <Folder Include="DDay\DDay.iCal\obj\Debug\TempPE\" />
-    <Folder Include="DDay\Patches\" />
     <Folder Include="Views\BookingAgent\" />
     <Folder Include="Views\Engine\" />
     <Folder Include="Views\Schedule\" />
     <Folder Include="Views\Session\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
-    <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="DDay\antlr\antlr.astframe\antlr.debug.misc\ASTFrame.resx">
-      <DependentUpon>ASTFrame.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="DDay\antlr\antlr.astframe\antlr.debug.misc\JTreeASTPanel.resx">
-      <DependentUpon>JTreeASTPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403170229250_initial.resx">
-      <DependentUpon>201403170229250_initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403170818299_syncfusion.resx">
-      <DependentUpon>201403170818299_syncfusion.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403180803443_addEvent.resx">
-      <DependentUpon>201403180803443_addEvent.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403180807070_addEventstatus.resx">
-      <DependentUpon>201403180807070_addEventstatus.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403192308391_RemovedEvent.resx">
-      <DependentUpon>201403192308391_RemovedEvent.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201403240247490_addEvent1.resx">
-      <DependentUpon>201403240247490_addEvent1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\20140420247490_addEventFile.resx">
-      <DependentUpon>20140420247490_addEventFile.cs</DependentUpon>
-    </EmbeddedResource>
+    <ProjectReference Include="Configuration\Configuration.csproj">
+      <Project>{D8F7F734-21CE-4277-A14F-EBDDE71DFF0C}</Project>
+      <Name>Configuration</Name>
+    </ProjectReference>
+    <ProjectReference Include="Daemons\Daemons.csproj">
+      <Project>{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}</Project>
+      <Name>Daemons</Name>
+    </ProjectReference>
+    <ProjectReference Include="Data\Data.csproj">
+      <Project>{0bd2e27e-8bc3-400b-8560-b67015b4cfac}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="Utilities\Utilities.csproj">
+      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -913,6 +904,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

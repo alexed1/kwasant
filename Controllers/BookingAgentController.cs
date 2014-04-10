@@ -6,8 +6,6 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using Shnexy.Models;
-using Shnexy.DataAccessLayer;
 
 using System.Globalization;
 using DayPilot.Web.Mvc.Data;
@@ -25,7 +23,7 @@ namespace Shnexy.Controllers
 {
     public class BookingAgentController : Controller
     {
-        private ShnexyDbContext db = new ShnexyDbContext();
+        //private ShnexyDbContext db = new ShnexyDbContext(); Use injection
 
         // GET: /Email/
         public ActionResult Index()
@@ -48,7 +46,7 @@ namespace Shnexy.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                //db.Dispose();
             }
             base.Dispose(disposing);
         }

@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Collections;
-using System.IO;
-using System.Resources;
-using System.Web;
-using System.Reflection;
-using System.Text.RegularExpressions;
+using Data.DDay.DDay.iCal;
+using Data.DDay.DDay.iCal.Interfaces;
+using Data.DDay.DDay.iCal.Interfaces.Components;
 using NUnit.Framework;
 
-namespace Shnexy.DDay.iCal.Test
+namespace ShnexyTest.DDay.iCal.Test
 {
     [TestFixture]
     public class JournalTest

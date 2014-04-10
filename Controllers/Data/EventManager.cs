@@ -9,8 +9,8 @@ using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
-using System.Xml.Linq;
 using DayPilot.Web.Mvc.Recurrence;
+
 
 /// <summary>
 /// Summary description for EventManager

@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Shnexy.DDay.iCal;
-using Shnexy.Models;
+using Data.DDay.DDay.iCal;
 
-namespace Shnexy.DDay.iCal.Test
+namespace ShnexyTest.DDay.iCal.Test.Custom
 {
     // FIXME: fix this custom calendar to function properly
     //[ComponentBaseType(typeof(CustomComponentBase1))]
@@ -25,12 +21,12 @@ namespace Shnexy.DDay.iCal.Test
     //    }
     //}
 
-    public class CustomEvent1 : Event
-    {
-        public string NonstandardProperty
-        {
-            get { return Properties.Get<string>("X-NONSTANDARD-PROPERTY"); }
-            set { Properties.Set("X-NONSTANDARD-PROPERTY", value); }
-        }                
-    }
+    //public class CustomEvent1 : Event
+    //{
+    //    public string NonstandardProperty
+    //    {
+    //        get { return Properties.Get<string>("X-NONSTANDARD-PROPERTY"); }
+    //        set { Properties.Set("X-NONSTANDARD-PROPERTY", value); }
+    //    }                
+    //}
 }
