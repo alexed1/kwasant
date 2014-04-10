@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using Data.Models;
-using DBTools.Managers.APIManager.Serializers.Json;
 using DBTools.Managers.APIManager.Transmitters.Restful;
+using Newtonsoft.Json;
 using UtilitiesLib;
+using JsonSerializer = DBTools.Managers.APIManager.Serializers.Json.JsonSerializer;
 
 namespace DBTools.Managers.APIManager.Packagers.Mandrill
 { //uses the Mandrill API at https://mandrillapp.com/settings/index
@@ -45,7 +49,7 @@ namespace DBTools.Managers.APIManager.Packagers.Mandrill
         public string PostMessageSendTemplate(String templateName, Email message, Dictionary<string, string> mergeFields)
         {
             var curCall = new RestfulCall(baseURL, "/messages/send-template.json", Method.POST);
-            var curTemplatePackage = new MandrillTemplatePackage(MandrillKey);
+            var curTemplatePackage = new MandrillTemplatePackage(MandrillKey, message);
 
             curTemplatePackage.TemplateName = templateName;
 
@@ -67,7 +71,7 @@ namespace DBTools.Managers.APIManager.Packagers.Mandrill
             }
             //message.MergeVars.Add(curRecipient); NEED A DIFFERENT WAY TO ADD MERGE VARS
 
-            return AssembleAndSend(curTemplatePackage, curCall, message);
+            return AssembleAndSend(curTemplatePackage, curCall);
 
         }
 
@@ -77,19 +81,15 @@ namespace DBTools.Managers.APIManager.Packagers.Mandrill
         public string PostMessageSend(Email message)
         {
             var curCall = new RestfulCall(baseURL, "/messages/send.json", Method.POST);
-            var curBasePackage = new MandrillBasePackage(MandrillKey);
-            return AssembleAndSend(curBasePackage, curCall, message);
+            var curBasePackage = new MandrillBasePackage(MandrillKey, message);
+            return AssembleAndSend(curBasePackage, curCall);
         }
 
 
         //FINAL ASSEMBLY AND TRANSMISSION
         //finish configuring a complete 'package' that can be auto-serialized into the json that Mandrill understands.
-        public string AssembleAndSend(MandrillBasePackage curTemplatePackage, RestfulCall curCall, Email message)
+        public string AssembleAndSend(MandrillBasePackage curTemplatePackage, RestfulCall curCall)
         {
-
-            curTemplatePackage.Message = message;
-            curTemplatePackage.Key = MandrillKey;
-
             //serialize the email data and add it to the RestfulCall
             curCall.AddBody(jsonSerializer.Serialize(curTemplatePackage), "application/json");
 
@@ -126,15 +126,76 @@ namespace DBTools.Managers.APIManager.Packagers.Mandrill
     {
         #region Members
 
+        public class MandrilEmail
+        {
+            public class MandrilEmailAddress
+            {
+                public string Email;
+                public string Name;
+                public string Type;
+            }
+
+            public class MandrilHeader
+            {
+                public string ReplyTo;
+            }
+
+            public class MandrilAttachment
+            {
+                public String Type;
+                public String Name;
+                public String Content;
+            }
+
+            public string HTML;
+            public string Subject;
+            public string FromEmail;
+            public string FromName;
+            public List<MandrilEmailAddress> To;
+            public MandrilHeader Headers;
+            public bool Important;
+            public List<MandrilAttachment> Attachments;
+            public List<MandrilAttachment> Images;
+            public bool Async;
+        }
+
         public string Key;
-        public Email Message;
+        [JsonIgnore]
+        public Email Email;
+
+        public MandrilEmail Message;
 
         #endregion
 
         #region Constructor
-        public MandrillBasePackage(string curKey)
+        public MandrillBasePackage(string curKey, Email message)
         {
             Key = curKey;
+            Email = message;
+
+            Message = new MandrilEmail
+            {
+                HTML = message.Text,
+                Subject = message.Subject,
+                FromEmail = message.From.Address,
+                FromName = message.From.Name,
+                To = message.To.Select(t => new MandrilEmail.MandrilEmailAddress {Email = t.Address, Name = t.Name, Type = "to"}).ToList(),
+                Headers = null,
+                Important = false,
+                Attachments = message.Attachments.Select(a =>
+                {
+                    var file = File.ReadAllBytes(a.FileLocation);
+                    var base64Version = Convert.ToBase64String(file, 0, file.Length);
+
+                    return new MandrilEmail.MandrilAttachment
+                    {
+                        Content = base64Version,
+                        Name = a.Name,
+                        Type = a.Type   
+                    };
+                }).ToList(),
+                Async = false
+            };
         }
 
         #endregion
@@ -155,7 +216,7 @@ namespace DBTools.Managers.APIManager.Packagers.Mandrill
         #endregion
 
         #region Constructor
-        public MandrillTemplatePackage(string curKey) : base(curKey)
+        public MandrillTemplatePackage(string curKey, Email email) : base(curKey, email)
         {
  
         }

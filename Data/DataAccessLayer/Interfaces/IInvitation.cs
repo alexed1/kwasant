@@ -9,7 +9,7 @@ namespace Data.DataAccessLayer.Interfaces
         [Key]
         int InvitationID { get; set; }
 
-        string Description { get; set; }
+        string Summary { get; set; }
         string Where { get; set; }
         DateTime StartDate { get; set; }
         DateTime EndDate { get; set; }

@@ -20,20 +20,16 @@ namespace DBTools.Managers.APIManager.Serializers.Json
         public JsonSerializer()
         {
             _settings = new JsonSerializerSettings
-                            {
-                                MissingMemberHandling = MissingMemberHandling.Error,
-                                NullValueHandling = NullValueHandling.Include,
-                                DefaultValueHandling = DefaultValueHandling.Include,
-                                Formatting = Formatting.Indented,
-                                PreserveReferencesHandling = PreserveReferencesHandling.None,
-                                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,   
-                                ContractResolver = new CustomPropertyNamesContractResolver()
-                            };
+            {
+                MissingMemberHandling = MissingMemberHandling.Error,
+                NullValueHandling = NullValueHandling.Include,
+                DefaultValueHandling = DefaultValueHandling.Include,
+                Formatting = Formatting.Indented,
+                PreserveReferencesHandling = PreserveReferencesHandling.None,
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                ContractResolver = new CustomPropertyNamesContractResolver()
+            };
         }
-
-
-
-       
 
         /// <summary>
         /// Serialize the object as JSON

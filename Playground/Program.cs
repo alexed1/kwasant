@@ -8,6 +8,7 @@ using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.StructureMap;
 using Data.Models;
+using DBTools;
 using StructureMap;
 
 namespace Playground
@@ -18,29 +19,48 @@ namespace Playground
         /// This is a sandbox for devs to use. Useful for directly calling some library without needing to launch the main application
         /// </summary>
         /// <param name="args"></param>
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             StructureMapBootStrapper.ConfigureDependencies(String.Empty);
             var con = new ShnexyDbContext();
-             con.Database.Initialize(true);
+            con.Database.Initialize(true);
 
+            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            var invRepo = new InvitationRepository(uow);
+            var attendeesRepo = new AttendeeRepository(uow);
+            var attendees =
+                new List<Attendee>
+                {
+                    new Attendee
+                    {
+                        EmailAddress = "robert.rudman@serraview.com",
+                        Name = "Robert Rudman",
+                    },
+                    new Attendee
+                    {
+                        EmailAddress = "joeblow@gmail.com",
+                        Name = "Joe Blow",
+                    },
+                    new Attendee
+                    {
+                        EmailAddress = "rjrudman@gmail.com",
+                        Name = "Robert Rudman GMAIL",
+                    }
+                };
+            attendees.ForEach(attendeesRepo.Add);
 
-            //var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            //var emailRepo = new EmailRepository(uow);
-            //var e = new Email();
-            //e.To = new List<EmailAddress>
-            //{
-            //    new EmailAddress { Address = "Rob", Name = "Rob", ToEmail = e},
-            //    new EmailAddress { Address = "Rob2", Name = "Rob2", ToEmail = e}
-            //};
-            //e.From = new EmailAddress {Address = "FromRob", Name = "FromRob"};
-            //e.Status = new EmailStatusConstants {Value = "queued"};
-            //emailRepo.Add(e);
-            //emailRepo.UnitOfWork.SaveChanges();
-            //;
-
-            //var fromEmail = emailRepo.GetQuery().Select(e => e.From).ToList();
-            new OutboundEmailHandler().Start();
+            var invitation = new Invitation
+            {
+                Description = "This is my test invitation",
+                Summary = @"My test invitation",
+                Where = @"Some place!",
+                StartDate = DateTime.Today.AddMinutes(5),
+                EndDate = DateTime.Today.AddMinutes(15),
+                Attendees = attendees,
+                Emails = new List<Email>()
+            };
+            invRepo.Add(invitation);
+            EmailHelper.DispatchInvitation(uow, invitation);
         }
     }
 }

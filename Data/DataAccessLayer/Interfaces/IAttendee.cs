@@ -11,7 +11,6 @@ namespace Data.DataAccessLayer.Interfaces
 
         String Name { get; set; }
         String EmailAddress { get; set; }
-        bool Organiser { get; set; }
         Invitation Invitation { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
@@ -15,7 +17,7 @@ namespace ShnexyTest.Models
 
 
     [TestFixture]
-    public class EventTests
+    public class InvitationTests
     {
         public ICustomerRepository customerRepo;
         public IUnitOfWork _uow;
@@ -43,31 +45,31 @@ namespace ShnexyTest.Models
 
         //this is a core integration test: get the ics message through
         [Test]
-        [Category("Event")]
+        [Category("Invitation")]
         public void Event_Dispatch_CanSendICS()
         {
+            var invRepo = new InvitationRepository(_uow);
+            var attendeesRepo = new AttendeeRepository(_uow);
+            var attendees =
+                new List<Attendee>
+                {
+                    _fixture.TestAttendee1(),
+                    _fixture.TestAttendee2()
+                };
+            attendees.ForEach(attendeesRepo.Add);
 
-            //load the test event
-            Event curEvent = _fixture.TestEvent();
-            //load the corresponding test customer
-            Customer curCustomer = _fixture.TestCustomer();
-
-            //persist the customer to test the database.
-            customerRepo.Add(curCustomer);
-            customerRepo.UnitOfWork.SaveChanges();
-
-            //Create new email
-            //Call Email#Configure
-            //Call Email#Dispatch
-            var email = new Email();
-
-            email.From = new EmailAddress {Address = "lucreorganizer@gmail.com", Name = "Booqit Organizer"};
-            email.Text = "This is a Booqit Event Request. For more information, see https://foo.com";
-            email.Subject = "Invitation via Booqit: " + curEvent.Summary + "@ " + curEvent.DTStart;
-
-
-            EmailHelper.AttachInvitationToEmail(curEvent, email);
-            EmailHelper.SendEmail(email);
+            var invitation = new Invitation
+            {
+                Description = "This is my test invitation",
+                Summary = @"My test invitation",
+                Where = @"Some place!",
+                StartDate = DateTime.Today.AddMinutes(5),
+                EndDate = DateTime.Today.AddMinutes(15),
+                Attendees = attendees,
+                Emails = new List<Email>()
+            };
+            invRepo.Add(invitation);
+            EmailHelper.DispatchInvitation(_uow, invitation);
             //Verify success
             //use imap to load unread messages from the test customer account
             //verify that one of the messages is a proper ICS message
