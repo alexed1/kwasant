@@ -4,20 +4,12 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using System.Threading;
-using System.Data.Entity;
-using System.Globalization;
-using System.Linq.Expressions;
 using System.Collections.Generic;
 
 
 using Data.Models;
-using Data.DataAccessLayer;
-using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.Infrastructure;
-using Data.Services.APIManager.Packagers.Shnexy;
-
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
@@ -25,6 +17,7 @@ using DayPilot.Web.Mvc.Events.Calendar;
 using DayPilot.Web.Mvc.Events.Common;
 using DayPilot.Web.Mvc.Events.Navigator;
 using DayPilot.Web.Mvc.Json;
+using DBTools.Managers.APIManager.Packagers.Shnexy;
 using BeforeCellRenderArgs = DayPilot.Web.Mvc.Events.Calendar.BeforeCellRenderArgs;
 using TimeRangeSelectedArgs = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedArgs;
 

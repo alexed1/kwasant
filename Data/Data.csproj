@@ -51,6 +51,7 @@
     <Reference Include="System" />
     <Reference Include="System.Activities" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -97,10 +98,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\EmailStatusConstants.cs" />
+    <Compile Include="DataAccessLayer\Infrastructure\FileManager.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyDbContext.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyInitializer.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\UnitOfWork.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IRepository.cs" />
+    <Compile Include="DataAccessLayer\Interfaces\ISaveHook.cs" />
+    <Compile Include="DataAccessLayer\Repositories\AttachmentRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\AttendeeRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\CustomerRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\EmailAddressRepository.cs" />
@@ -110,6 +114,7 @@
     <Compile Include="DataAccessLayer\Interfaces\ICustomerRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IGenericRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\InvitationRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\StoredFileRepository.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapControllerFactory.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapHttpControllerActivator.cs" />
@@ -131,6 +136,7 @@
     <Compile Include="DataAccessLayer\Interfaces\IInvitation.cs" />
     <Compile Include="Models\Invitation.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IUser.cs" />
+    <Compile Include="Models\StoredFile.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

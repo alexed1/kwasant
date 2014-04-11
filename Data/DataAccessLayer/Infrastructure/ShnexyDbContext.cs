@@ -1,4 +1,6 @@
 ﻿using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
+using Data.DataAccessLayer.Interfaces;
 using Data.Models;
 
 namespace Data.DataAccessLayer.Infrastructure
@@ -15,9 +17,21 @@ namespace Data.DataAccessLayer.Infrastructure
             
         }
 
+        public override int SaveChanges()
+        {
+            ChangeTracker.DetectChanges();
+            foreach (var entity in ChangeTracker.Entries<ISaveHook>())
+            {
+                entity.Entity.SaveHook();
+            }
+
+            return base.SaveChanges();
+        }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<BookingRequest>().ToTable("BookingRequests");
+            modelBuilder.Entity<Attachment>().ToTable("Attachments");
 
             modelBuilder.Entity<Email>()
                 .HasRequired(e => e.From);
@@ -45,5 +59,7 @@ namespace Data.DataAccessLayer.Infrastructure
         public DbSet<Email> Emails { get; set; }
 
         public DbSet<EmailAddress> EmailAddresses { get; set; }
+
+        public DbSet<StoredFile> StoredFiles { get; set; }
     }
 }

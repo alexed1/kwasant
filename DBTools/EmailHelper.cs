@@ -119,16 +119,11 @@ namespace DBTools
 
         private static Attachment CreateNewAttachment(System.Net.Mail.Attachment attachment)
         {
-            string fileName = Path.GetFullPath(Path.GetRandomFileName());
-            FileStream fileStream = File.Open(fileName, FileMode.OpenOrCreate);
-            attachment.ContentStream.CopyTo(fileStream);
-            fileStream.Close();
-
             return new Attachment
             {
-                FileLocation = fileName,
-                Name = attachment.Name,
-                Type = attachment.ContentType.MediaType
+                OriginalName = attachment.Name,
+                Type = attachment.ContentType.MediaType,
+                Data = attachment.ContentStream
             };
         }
 

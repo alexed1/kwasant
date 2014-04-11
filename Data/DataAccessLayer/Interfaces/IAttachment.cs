@@ -7,9 +7,5 @@ namespace Data.DataAccessLayer.Interfaces
     {
         [Key]
         int AttachmentID { get; set; }
-
-        String Name { get; set; }
-        String Type { get; set; }
-        String FileLocation { get; set; }
     }
 }

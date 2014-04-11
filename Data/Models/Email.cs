@@ -29,6 +29,7 @@ namespace Data.Models
         [InverseProperty("BCCEmail")]
         public virtual List<EmailAddress> BCC { get; set; }
 
+        [InverseProperty("Email")]
         public virtual List<Attachment> Attachments { get; set; }
         public virtual Invitation Invitation { get; set; }
     }

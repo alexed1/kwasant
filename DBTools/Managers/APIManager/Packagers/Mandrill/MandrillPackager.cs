@@ -183,13 +183,13 @@ namespace DBTools.Managers.APIManager.Packagers.Mandrill
                 Important = false,
                 Attachments = message.Attachments.Select(a =>
                 {
-                    byte[] file = File.ReadAllBytes(a.FileLocation);
+                    byte[] file = a.Bytes;
                     string base64Version = Convert.ToBase64String(file, 0, file.Length);
 
                     return new MandrilEmail.MandrilAttachment
                     {
                         Content = base64Version,
-                        Name = a.Name,
+                        Name = a.OriginalName,
                         Type = a.Type   
                     };
                 }).ToList(),
