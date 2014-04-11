@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace DBTools.Managers.APIManager.Serializers.Json
+namespace Data.Tools.Managers.APIManager.Serializers.Json
 {
     /// <summary>
     /// Default JSON serializer

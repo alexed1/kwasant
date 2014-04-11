@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
-using DBTools.Managers;
 
-namespace Data.Services.CommunicationManager
+namespace Data.Tools.Managers.CommunicationManager
 {
     public class CommunicationManager
     {

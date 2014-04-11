@@ -11,13 +11,12 @@ using Data.DDay.DDay.iCal;
 using Data.DDay.DDay.iCal.DataTypes;
 using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
 using Data.Models;
-using DBTools.Managers;
+using Data.Tools.Managers;
 using StructureMap;
 using Attachment = Data.Models.Attachment;
 using Attendee = Data.DDay.DDay.iCal.DataTypes.Attendee;
 
-
-namespace DBTools
+namespace Data.Tools
 {
     public static class EmailHelper
     {

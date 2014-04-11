@@ -1,13 +1,11 @@
-﻿using System;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Net.Mail;
 using System.Web.Mvc;
 using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.StructureMap;
-using Data.Models;
-using DBTools;
+using Data.Tools;
 using StructureMap;
 
 namespace Playground

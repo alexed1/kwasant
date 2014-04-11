@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Data.Models;
-using DBTools.Managers.APIManager.Transmitters.Restful;
+using Data.Tools.Managers.APIManager.Transmitters.Restful;
 using Newtonsoft.Json;
 using UtilitiesLib;
-using JsonSerializer = DBTools.Managers.APIManager.Serializers.Json.JsonSerializer;
+using JsonSerializer = Data.Tools.Managers.APIManager.Serializers.Json.JsonSerializer;
 
-namespace DBTools.Managers.APIManager.Packagers.Mandrill
+namespace Data.Tools.Managers.APIManager.Packagers.Mandrill
 { //uses the Mandrill API at https://mandrillapp.com/settings/index
     public class MandrillPackager
     {

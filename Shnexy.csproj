@@ -830,10 +830,6 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="DBTools\DBTools.csproj">
-      <Project>{066ED602-B036-489C-B616-63682348A750}</Project>
-      <Name>DBTools</Name>
-    </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>

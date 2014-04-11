@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Data.Models;
-using DBTools.Managers.APIManager.Packagers.Mandrill;
+using Data.Tools.Managers.APIManager.Packagers.Mandrill;
 
-namespace DBTools.Managers
+namespace Data.Tools.Managers
 {
     public class EmailManager
     {

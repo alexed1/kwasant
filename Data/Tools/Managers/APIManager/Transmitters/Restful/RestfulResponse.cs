@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 
-namespace DBTools.Managers.APIManager.Transmitters.Restful
+namespace Data.Tools.Managers.APIManager.Transmitters.Restful
 {
     /// <summary>
     /// Container class for common properties shared by RestResponse

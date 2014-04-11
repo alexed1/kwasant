@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using UtilitiesLib;
 
-namespace DBTools.Managers.APIManager.Transmitters.Restful
+namespace Data.Tools.Managers.APIManager.Transmitters.Restful
 {
     /// <summary>
     /// Container for data used to make requests
