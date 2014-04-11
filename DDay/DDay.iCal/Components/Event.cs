@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using Data.DDay.DDay.iCal;
 using Data.DDay.DDay.iCal.Evaluation;
-using Data.DDay.DDay.iCal.ExtensionMethods;
 using Data.DDay.DDay.iCal.Interfaces.DataTypes;
-using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
 using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models

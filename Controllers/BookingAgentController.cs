@@ -1,22 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
-
-using System.Globalization;
-using DayPilot.Web.Mvc.Data;
-using DayPilot.Web.Mvc.Enums;
-using DayPilot.Web.Mvc.Events.Calendar;
-using DayPilot.Web.Mvc.Events.Common;
-using DayPilot.Web.Mvc.Events.Navigator;
 using DayPilot.Web.Mvc.Json;
-using BeforeCellRenderArgs = DayPilot.Web.Mvc.Events.Calendar.BeforeCellRenderArgs;
-using TimeRangeSelectedArgs = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedArgs;
-
 
 
 namespace Shnexy.Controllers

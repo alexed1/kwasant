@@ -1,15 +1,12 @@
-﻿using System.Collections;
+﻿using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
-using Data.Models;
+using DBTools;
 using S22.Imap;
-using Shnexy.Fixtures;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Mail;
-using System.Web;
 using System.Web.Mvc;
+using StructureMap;
 
 namespace Shnexy.Controllers
 {
@@ -49,12 +46,13 @@ namespace Shnexy.Controllers
                 messages = Client.GetMessages(uids);               
             }
 
+            var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+            var emailRepository = new EmailRepository(unitOfWork);
             foreach (var message in messages)
             {
-                var curEmail = new Email(message, _emailRepo);
-                curEmail.Save();
+                EmailHelper.AddNewEmailToRepository(emailRepository, message);
             }
-
+            emailRepository.UnitOfWork.SaveChanges();
           
             return RedirectToAction("Index", "Admin");
 
@@ -62,8 +60,6 @@ namespace Shnexy.Controllers
 
         public ActionResult ProcessQueues()
         {
-
-            Engine curEngine = new Engine();
             //curEngine.ProcessQueues();
             return View();
         }

@@ -2,11 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Net.Mail;
 using Data.DataAccessLayer.Interfaces;
-using Data.DataAccessLayer.Repositories;
-using StructureMap;
 
 namespace Data.Models
 {

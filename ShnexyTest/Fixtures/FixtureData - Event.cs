@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Data.DDay.DDay.iCal.DataTypes;
+﻿using Data.DDay.DDay.iCal.DataTypes;
 using Data.Models;
 
 namespace ShnexyTest.Fixtures

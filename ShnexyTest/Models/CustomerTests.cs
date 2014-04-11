@@ -1,5 +1,4 @@
-﻿using System;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;

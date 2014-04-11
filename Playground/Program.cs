@@ -1,15 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using Daemons;
 using Data.DataAccessLayer.Infrastructure;
-using Data.DataAccessLayer.Interfaces;
-using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.StructureMap;
-using Data.Models;
-using DBTools;
-using StructureMap;
 
 namespace Playground
 {

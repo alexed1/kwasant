@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Mail;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
-using Data.Models;
 using DBTools;
 using S22.Imap;
 
