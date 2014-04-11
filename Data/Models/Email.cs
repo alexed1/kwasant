@@ -8,8 +8,6 @@ namespace Data.Models
 {
     public class Email : IEmail
     {
-        
-
         [Key]
         public int EmailID { get; set; }
         

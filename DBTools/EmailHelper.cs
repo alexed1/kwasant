@@ -48,7 +48,7 @@ namespace DBTools
             evnt.DTStamp = new iCalDateTime(DateTime.Now);
             evnt.LastModified = new iCalDateTime(DateTime.Now);
 
-            evnt.Location = invitation.Where;
+            evnt.Location = invitation.Location;
             evnt.Description = invitation.Description;
             evnt.Summary = invitation.Summary;
             foreach (Data.Models.Attendee attendee in invitation.Attendees)
@@ -68,7 +68,7 @@ namespace DBTools
 
             calendar.Events.Add(evnt);
             
-            Email email = AddNewEmailToRepository(emailRepo, mailMessage);
+            Email email = ConvertMailMessageToEmail(emailRepo, mailMessage);
             AttachCalendarToEmail(calendar, email);
             invitation.Emails.Add(email);
 
@@ -90,7 +90,7 @@ namespace DBTools
             email.Attachments.Add(attachment);
         }
 
-        public static Email AddNewEmailToRepository(IEmailRepository emailRepository, MailMessage mailAddress)
+        public static Email ConvertMailMessageToEmail(IEmailRepository emailRepository, MailMessage mailAddress)
         {
             Email email = new Email
             {
@@ -131,11 +131,8 @@ namespace DBTools
         {
             new EmailManager().Send(email);
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            EmailRepository er = new EmailRepository(uow);
 
-            Email originalEmail = er.GetByKey(email.EmailID);
             email.Status = EmailStatusConstants.GetStatusRow(EmailStatusConstants.SENT);
-            er.Update(email, originalEmail);
             uow.SaveChanges();
         }
     }

@@ -50,7 +50,7 @@ namespace Shnexy.Controllers
             var emailRepository = new EmailRepository(unitOfWork);
             foreach (var message in messages)
             {
-                EmailHelper.AddNewEmailToRepository(emailRepository, message);
+                EmailHelper.ConvertMailMessageToEmail(emailRepository, message);
             }
             emailRepository.UnitOfWork.SaveChanges();
           

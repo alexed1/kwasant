@@ -10,6 +10,7 @@ namespace Data.DataAccessLayer.Infrastructure
         static string GetAbsolutePath(String relativePath)
         {
             var directory = ConfigurationManager.AppSettings["LocalFileStorageDirectory"];
+            directory = Path.GetFullPath(directory);
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
             return Path.Combine(directory, relativePath);

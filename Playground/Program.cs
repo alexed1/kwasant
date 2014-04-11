@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Data.Entity;
+using System.Net.Mail;
+using System.Web.Mvc;
 using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.StructureMap;
 using Data.Models;
+using DBTools;
 using StructureMap;
 
 namespace Playground
@@ -16,31 +20,26 @@ namespace Playground
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            StructureMapBootStrapper.ConfigureDependencies(String.Empty);
-            var con = new ShnexyDbContext();
-            con.Database.Initialize(true);
+            StructureMapBootStrapper.ConfigureDependencies("test"); //set to either "test" or "dev"
+            ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
+
+            Database.SetInitializer(new ShnexyInitializer());
+            ShnexyDbContext db = new ShnexyDbContext();
+            db.Database.Initialize(true);
 
 
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            var attachmentRepo = new AttachmentRepository(uow);
-            
-            //var attachment = new Attachment
-            //{
-            //    OriginalName = "My Attachment",
-            //    StringData = "Testing123"
-            //};
-            //attachmentRepo.Add(attachment);
+            var emailRepository = new EmailRepository(uow);
 
-
-            var sfRepo = new StoredFileRepository(uow);
-            var sf = new StoredFile()
+            var mailMessage = new MailMessage(new MailAddress("AClient@gmail.com", "Client Smith"),
+                new MailAddress("kwa@sant.com", "Booqit Service"))
             {
-                OriginalName = "My File",
-                StringData = "Testing123"
+                Subject = "Book me a meeting!",
+                Body = "Book it in office A at 10:30am on Tuesday"
             };
-            sfRepo.Add(sf);
-            attachmentRepo.UnitOfWork.SaveChanges();
 
+            EmailHelper.ConvertMailMessageToEmail(emailRepository, mailMessage);
+            emailRepository.UnitOfWork.SaveChanges();
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Data.Models
     {
         [Key]
         public int CustomerID { get; set; }
-        public EmailAddress Email { get; set; }
+        public virtual EmailAddress Email { get; set; }
         public String FirstName { get; set; }
         public String LastName { get; set; }
         public virtual User User { get; set; }

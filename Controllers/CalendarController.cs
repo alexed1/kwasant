@@ -1,15 +1,11 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Data;
-using System.Linq;
-using System.Text;
 using System.Web.Mvc;
-using System.Collections.Generic;
-
-
+using Data.DataAccessLayer.Interfaces;
 using Data.Models;
 using Data.DataAccessLayer.Repositories;
-using Data.DataAccessLayer.Infrastructure;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
@@ -17,7 +13,7 @@ using DayPilot.Web.Mvc.Events.Calendar;
 using DayPilot.Web.Mvc.Events.Common;
 using DayPilot.Web.Mvc.Events.Navigator;
 using DayPilot.Web.Mvc.Json;
-using DBTools.Managers.APIManager.Packagers.Shnexy;
+using StructureMap;
 using BeforeCellRenderArgs = DayPilot.Web.Mvc.Events.Calendar.BeforeCellRenderArgs;
 using TimeRangeSelectedArgs = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedArgs;
 
@@ -27,155 +23,25 @@ namespace Shnexy.Controllers
     [HandleError]
     public class CalendarController : Controller
     {
-
-        #region "Member Variable"
-
-        private ShnexyDbContext db = new ShnexyDbContext();
-
-        private ShnexyPackager API;
-
-        IEmailRepository emailRepository = new EmailRepository(new UnitOfWork(new ShnexyDbContext()));
-        IEventFileRepository eventFileRepository = new EventFileRepository(new UnitOfWork(new ShnexyDbContext()));
-
-        #endregion "Member Variable"
-
         #region "Action"
+
         public ActionResult Index(int id = 0)
         {
+            var emailRepository = new EmailRepository(ObjectFactory.GetInstance<IUnitOfWork>());
             if (id <= 0)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
 
             PopulateCalender();
 
-            #region "Get Email Related Information"
-
-            if (emailRepository != null)
+            Email email = emailRepository.GetByKey(id);
+            if (email != null)
             {
-                Email email = emailRepository.GetByKey(id);
-
-                if (email != null)
-                {
-                    EventData._EmailId = email.Id;
-
-                    List<EmailAddress> emailSenderList = new List<EmailAddress>();
-                    StringBuilder sb = new StringBuilder("");
-
-                    #region "Get To Addresses"
-
-                    sb = new StringBuilder("");
-                    sb.AppendFormat(" SELECT Id, Name, Email FROM dbo.EmailAddresses WHERE Email_Id2={0}", email.Id);
-
-                    List<EmailAddress> emailToEmailAddressList = new List<EmailAddress>();
-
-                    emailToEmailAddressList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
-
-                    StringBuilder sbToEmailAddressList = new StringBuilder("");
-
-                    if (emailToEmailAddressList != null && emailToEmailAddressList.Count > 0)
-                    {
-                        email.To = emailToEmailAddressList;
-
-                        foreach (EmailAddress emailAddress in emailToEmailAddressList)
-                        {
-                            if (sbToEmailAddressList.Length == 0)
-                            {
-                                sbToEmailAddressList.Append(emailAddress.Email);
-                            }
-                            else
-                            {
-                                sbToEmailAddressList.Append(",");
-                                sbToEmailAddressList.Append(emailAddress.Email);
-                            }
-                        }
-                    }
-
-                    #endregion "Get To Addresses"
-
-                    #region "Get CC Addresses"
-
-                    sb = new StringBuilder("");
-                    sb.AppendFormat(" SELECT Id, Name, Email FROM dbo.EmailAddresses WHERE Email_Id1={0}", email.Id);
-
-                    List<EmailAddress> emailCCEmailAddressList = new List<EmailAddress>();
-
-                    emailToEmailAddressList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
-
-                    StringBuilder sbCCEmailAddressList = new StringBuilder("");
-
-                    if (emailCCEmailAddressList != null && emailCCEmailAddressList.Count > 0)
-                    {
-                        email.CC = emailCCEmailAddressList;
-
-                        foreach (EmailAddress emailAddress in emailCCEmailAddressList)
-                        {
-                            if (sbCCEmailAddressList.Length == 0)
-                            {
-                                sbCCEmailAddressList.Append(emailAddress.Email);
-                            }
-                            else
-                            {
-                                sbCCEmailAddressList.Append(",");
-                                sbCCEmailAddressList.Append(emailAddress.Email);
-                            }
-                        }
-                    }
-
-                    #endregion "Get CC Addresses"
-
-                    #region "Get BCC Addresses"
-
-                    sb = new StringBuilder("");
-                    sb.AppendFormat(" SELECT Id, Name, Email FROM dbo.EmailAddresses WHERE Email_Id={0}", email.Id);
-
-                    List<EmailAddress> emailBCCEmailAddressList = new List<EmailAddress>();
-
-                    emailToEmailAddressList = db.EmailAddresses.SqlQuery(sb.ToString()).ToList();
-
-                    StringBuilder sbBCCEmailAddressList = new StringBuilder("");
-
-                    if (emailBCCEmailAddressList != null && emailBCCEmailAddressList.Count > 0)
-                    {
-                        email.Bcc = emailBCCEmailAddressList;
-
-                        foreach (EmailAddress emailAddress in emailBCCEmailAddressList)
-                        {
-                            if (sbBCCEmailAddressList.Length == 0)
-                            {
-                                sbBCCEmailAddressList.Append(emailAddress.Email);
-                            }
-                            else
-                            {
-                                sbBCCEmailAddressList.Append(",");
-                                sbBCCEmailAddressList.Append(emailAddress.Email);
-                            }
-                        }
-                    }
-
-                    #endregion "Get BCC Addresses"
-
-                    #region "Set ViewData"
-
-                    ViewData["ToEmailAddresses"] = sbToEmailAddressList.ToString();
-                    ViewData["CCEmailAddresses"] = sbCCEmailAddressList.ToString();
-                    ViewData["BCCEmailAddresses"] = sbBCCEmailAddressList.ToString();
-
-                    #endregion "Set ViewData"
-
-                    return View(email);
-                }
-                else
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
+                ViewData["ToEmailAddresses"] = String.Join(",", email.To.Select(a => a.Address));
+                ViewData["CCEmailAddresses"] = String.Join(",", email.CC.Select(a => a.Address));
+                ViewData["BCCEmailAddresses"] = String.Join(",", email.BCC.Select(a => a.Address));
+                return View(email);
             }
-            else
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            #endregion "Get Email Related Information"
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
         public ActionResult Rtl()
@@ -311,7 +177,6 @@ namespace Shnexy.Controllers
             return View();
         }
 
-
         public ActionResult RecurringEvents()
         {
             return View();
@@ -353,273 +218,210 @@ namespace Shnexy.Controllers
             });
         }
 
+        private static T GetValueFromForm<T>(FormCollection form, String name, T defaultValue = default(T))
+        {
+            var obj = form[name];
+            if (obj == null)
+                return defaultValue;
+
+            var returnType = typeof (T);
+            if (returnType == typeof(DateTime))
+            {
+                return (T)(object)Convert.ToDateTime(obj);
+            }
+            if (returnType == typeof (int))
+                return (T)(object)Convert.ToInt32(obj);
+            throw new Exception("Invalid type provided");
+        }
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult New(FormCollection form)
         {
-
-            DateTime dtFromDate;
-            DateTime dtToDate;
-            String strLocation = String.Empty;
-            Boolean bIsAllDay = false;
-            String strStatus = String.Empty;
-            String strTransparency = String.Empty;
-            String strClass = String.Empty;
-            String strDescription = String.Empty;
-            int intPriority = 0;
-            int intSequence = 0;
-            String strSummary = String.Empty;
-            String strCategory = String.Empty;
-            String strId = String.Empty;
-
-            dtFromDate = form["FromDate"] != null ? Convert.ToDateTime(form["FromDate"]) : DateTime.MinValue;
-            dtToDate = form["ToDate"] != null ? Convert.ToDateTime(form["ToDate"]) : DateTime.MinValue;
-            strLocation = !String.IsNullOrEmpty(form["Location"]) ? form["Location"].ToString() : String.Empty;
-            strStatus = !String.IsNullOrEmpty(form["Status"]) ? form["Status"].ToString() : String.Empty;
-            strTransparency = !String.IsNullOrEmpty(form["TransparencyType"]) ? form["TransparencyType"].ToString() : String.Empty;
-            strClass = !String.IsNullOrEmpty(form["Class"]) ? form["Class"].ToString() : String.Empty;
-            strDescription = !String.IsNullOrEmpty(form["Description"]) ? form["Description"].ToString() : String.Empty;
-            intPriority = !String.IsNullOrEmpty(form["Priority"]) ? Convert.ToInt32(form["Priority"]) : 0;
-            intSequence = !String.IsNullOrEmpty(form["Sequence"]) ? Convert.ToInt32(form["Sequence"]) : 0;
-            strSummary = !String.IsNullOrEmpty(form["Summary"]) ? form["Summary"].ToString() : String.Empty;
-            strCategory = !String.IsNullOrEmpty(form["Category"]) ? form["Category"].ToString() : String.Empty;
-            strId = !String.IsNullOrEmpty(form["Id"]) ? form["Id"].ToString() : String.Empty;
-
-            #region Commmentted
-            //if (!String.IsNullOrEmpty(form["chkIsAllDay"]))
-            //{
-            //    String strCheckAllDay = form["chkIsAllDay"].ToString();
-            //    String strTemp = String.Empty;
-
-            //    if (strCheckAllDay.IndexOf(',') > -1)
-            //    {
-            //        String[] arrCheckAllDay = strCheckAllDay.Split(',');
-            //        strTemp = arrCheckAllDay[0];
-            //    }
-            //    else
-            //    {
-            //        strTemp = strCheckAllDay;
-            //    }
-
-            //    bIsAllDay = Convert.ToBoolean(strTemp);
-            //}
-
-            #endregion Commmentted
+            var dtFromDate = GetValueFromForm(form, "FromDate", DateTime.MinValue);
+            var dtToDate = GetValueFromForm(form, "ToDate", DateTime.MinValue);
+            var strLocation = GetValueFromForm(form, "Location", String.Empty);
+            var strStatus = GetValueFromForm(form, "Status", String.Empty);
+            var strTransparency = GetValueFromForm(form, "TransparencyType", String.Empty);
+            var strClass = GetValueFromForm(form, "Class", String.Empty);
+            var strDescription = GetValueFromForm(form, "Description", String.Empty);
+            var intPriority = GetValueFromForm(form, "Priority", 0);
+            var intSequence = GetValueFromForm(form, "Sequence", 0);
+            var strSummary = GetValueFromForm(form, "Summary", String.Empty);
+            var strCategory = GetValueFromForm(form, "Category", String.Empty);
+            var strId = GetValueFromForm(form, "Id", String.Empty);
 
             if (intPriority == 0 || intSequence == 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-
-            String strEventICSString = String.Empty;
-
-            int intResult;
-            Boolean blnResult;
-
-            blnResult = Int32.TryParse(strId, out intResult);
-
-            EventFile eventFile = new EventFile();
+            int invitationID;
+            var invitationExists = Int32.TryParse(strId, out invitationID);
 
             (new EventManager(this)).EventDelete(strId);
 
-
-            if (!blnResult)
+            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            var invitationRepository = new InvitationRepository(uow);
+            Invitation invitation;
+            if (invitationExists)
             {
-                strEventICSString = GetICSFormattedEventString(EventData._dtStartDate, EventData._dtEndDate, intSequence, strCategory, intPriority, strTransparency, strStatus, strClass, strSummary, strDescription, strLocation);
-                eventFile.Body = strEventICSString;
-
-                eventFileRepository.Add(eventFile);
-                eventFileRepository.UnitOfWork.SaveChanges();
-
-                #region "Update Email Status to Proccessed"
-
-                if (EventData._EmailId > 0)
-                {
-                    Email existingEmail = emailRepository.GetByKey(EventData._EmailId);
-
-                    if (existingEmail != null)
-                    {
-                        Email newEmail = new Email();
-
-                        newEmail.Id = EventData._EmailId;
-                        newEmail.Text = existingEmail.Text;
-                        newEmail.Subject = existingEmail.Subject;
-                        newEmail.FromEmail = existingEmail.FromEmail;
-                        newEmail.Status = "Processed";
-
-                        emailRepository.Update(newEmail, existingEmail);
-                        emailRepository.UnitOfWork.SaveChanges();
-
-                        newEmail.Id = 0;
-                    }
-                }
-
-                #endregion "Update Email Status to Proccessed"
-
-                new EventManager(this).EventCreate(EventData._dtStartDate, EventData._dtEndDate, strDescription, null, eventFile.Id.ToString());
+                invitation = invitationRepository.GetByKey(invitationID);
             }
             else
             {
-                int intEventFileId = Convert.ToInt32(strId);
+                invitation = new Invitation();
+                invitationRepository.Add(invitation);
 
-                if (intEventFileId > 0)
+                if (EventData._EmailId > 0)
                 {
-                    EventFile eventFileExist = eventFileRepository.GetByKey(intEventFileId);
-
-                    if (eventFileExist != null)
-                    {
-
-                        String strDTSTART = String.Empty;
-                        String strDTEND = String.Empty;
-
-                        strDTSTART = !String.IsNullOrEmpty(form["start"]) ? form["start"].ToString() : String.Empty;
-                        strDTEND = !String.IsNullOrEmpty(form["end"]) ? form["end"].ToString() : String.Empty;
-
-                        if (!String.IsNullOrEmpty(strDTSTART) && !String.IsNullOrEmpty(strDTEND))
-                        {
-                            DateTime dtTempStartDate = ConvertLocalDateTime(strDTSTART);
-
-                            String strDate = String.Format("{0}/{1}/{2}", dtTempStartDate.Month, dtTempStartDate.Day, dtTempStartDate.Year);
-
-                            if (strDate != "1/1/1")
-                            {
-
-                                DateTime dtEditStartDate = ConvertLocalDateTime(strDTSTART);
-                                DateTime dtEditEndDate = ConvertLocalDateTime(strDTEND);
-
-                                EventFile newEventFile = new EventFile();
-                                newEventFile.Id = intEventFileId;
-
-                                strEventICSString = GetICSFormattedEventString(dtEditStartDate, dtEditEndDate, intSequence, strCategory, intPriority, strTransparency, strStatus, strClass, strSummary, strDescription, strLocation);
-                                newEventFile.Body = strEventICSString;
-
-                                eventFileRepository.Update(newEventFile, eventFileExist);
-                                eventFileRepository.UnitOfWork.SaveChanges();
-
-                                new EventManager(this).EventCreate(dtEditStartDate, dtEditEndDate, strDescription, null, intEventFileId.ToString());
-                            }
-                        }
-
-                    }
+                    var emailRepository = new EmailRepository(ObjectFactory.GetInstance<IUnitOfWork>());
+                    Email existingEmail = emailRepository.GetByKey(EventData._EmailId);
+                    //existingEmail.Status to "Processed"
                 }
             }
+            invitation.StartDate = dtFromDate;
+            invitation.EndDate = dtToDate;
+            invitation.Location = strLocation;
+            invitation.Status = strStatus;
+            invitation.Transparency = strTransparency;
+            invitation.Class = strClass;
+            invitation.Description = strDescription;
+            invitation.Priority = intPriority;
+            invitation.Sequence = intSequence;
+            invitation.Summary = strSummary;
+            invitation.Category = strCategory;
+
+
+            //if (!invitationExists)
+            //{
+            //    strEventICSString = GetICSFormattedEventString(EventData._dtStartDate, EventData._dtEndDate, intSequence, strCategory, intPriority, strTransparency, strStatus, strClass, strSummary, strDescription, strLocation);
+            //    eventFile.Body = strEventICSString;
+
+            //    eventFileRepository.Add(eventFile);
+            //    eventFileRepository.UnitOfWork.SaveChanges();
+
+            //    #region "Update Email Status to Proccessed"
+
+            //    if (EventData._EmailId > 0)
+            //    {
+            //        Email existingEmail = emailRepository.GetByKey(EventData._EmailId);
+
+            //        if (existingEmail != null)
+            //        {
+            //            Email newEmail = new Email();
+
+            //            newEmail.Id = EventData._EmailId;
+            //            newEmail.Text = existingEmail.Text;
+            //            newEmail.Subject = existingEmail.Subject;
+            //            newEmail.FromEmail = existingEmail.FromEmail;
+            //            newEmail.Status = "Processed";
+
+            //            emailRepository.Update(newEmail, existingEmail);
+            //            emailRepository.UnitOfWork.SaveChanges();
+
+            //            newEmail.Id = 0;
+            //        }
+            //    }
+
+            //    #endregion "Update Email Status to Proccessed"
+
+            //    new EventManager(this).EventCreate(EventData._dtStartDate, EventData._dtEndDate, strDescription, null, eventFile.Id.ToString());
+            //}
+            //else
+            //{
+            //    if (invitationID > 0)
+            //    {
+            //        EventFile eventFileExist = eventFileRepository.GetByKey(invitationID);
+
+            //        if (eventFileExist != null)
+            //        {
+
+            //            String strDTSTART = String.Empty;
+            //            String strDTEND = String.Empty;
+
+            //            strDTSTART = !String.IsNullOrEmpty(form["start"]) ? form["start"].ToString() : String.Empty;
+            //            strDTEND = !String.IsNullOrEmpty(form["end"]) ? form["end"].ToString() : String.Empty;
+
+            //            if (!String.IsNullOrEmpty(strDTSTART) && !String.IsNullOrEmpty(strDTEND))
+            //            {
+            //                DateTime dtTempStartDate = ConvertLocalDateTime(strDTSTART);
+
+            //                String strDate = String.Format("{0}/{1}/{2}", dtTempStartDate.Month, dtTempStartDate.Day, dtTempStartDate.Year);
+
+            //                if (strDate != "1/1/1")
+            //                {
+
+            //                    DateTime dtEditStartDate = ConvertLocalDateTime(strDTSTART);
+            //                    DateTime dtEditEndDate = ConvertLocalDateTime(strDTEND);
+
+            //                    EventFile newEventFile = new EventFile();
+            //                    newEventFile.Id = intEventFileId;
+
+            //                    strEventICSString = GetICSFormattedEventString(dtEditStartDate, dtEditEndDate, intSequence, strCategory, intPriority, strTransparency, strStatus, strClass, strSummary, strDescription, strLocation);
+            //                    newEventFile.Body = strEventICSString;
+
+            //                    eventFileRepository.Update(newEventFile, eventFileExist);
+            //                    eventFileRepository.UnitOfWork.SaveChanges();
+
+            //                    new EventManager(this).EventCreate(dtEditStartDate, dtEditEndDate, strDescription, null, intEventFileId.ToString());
+            //                }
+            //            }
+
+            //        }
+            //    }
+            //}
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
-
         }
 
         #endregion "Action"
 
         #region "Method"
 
-        private String GetICSFormattedEventString(DateTime FromDate, DateTime ToDate, int Sequence, String Category, int Priority, String Transp, String Status, String Class, String Summary, String Description, String Location)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append("BEGIN:VCALENDAR\r\f");
-            sb.Append("VERSION:2.0\r\f");
-            sb.Append("PRODID:-//ince/events//NONSGML v1.0//EN\r\f");
-            sb.Append("BEGIN:VEVENT\r\f");
-            sb.Append(String.Format("DTSTART:{0}\r\f", GetFormatedDate(FromDate)));
-            sb.Append(String.Format("DTEND:{0}\r\f", GetFormatedDate(ToDate)));
-            sb.Append(String.Format("SEQUENCE:{0}\r\f", Sequence));
-            sb.Append(String.Format("UID:{0}\r\f", new Guid()));
-            sb.Append(String.Format("CATEGORIES:{0}\r\f", Category));
-            sb.Append(String.Format("PRIORITY:{0}\r\f", Priority));
-            sb.Append(String.Format("STATUS:{0}\r\f", Status));
-            sb.Append(String.Format("TRANSP:{0}\r\f", Transp));
-            sb.Append(String.Format("CLASS:{0}\r\f", Class));
-            sb.Append(String.Format("SUMMARY:{0}\r\f", Summary));
-            sb.Append(String.Format("DESCRIPTION:{0}\r\f", Description));
-            sb.Append(String.Format("LOCATION:{0}\r\f", Location));
-            sb.Append(String.Format("LOCATION:{0}\r\f", Location));
-            sb.Append("END:VEVENT");
-            sb.Append("END:VCALENDAR\r\f");
-            return sb.ToString();
-        }
-
-        private static string GetFormatedDate(DateTime date)
-        {
-            return String.Format("{0}{1}{2}T{3}{4}00Z", date.ToUniversalTime().Year, date.ToUniversalTime().Month.ToString("00"), date.ToUniversalTime().Day.ToString("00"), date.ToUniversalTime().Hour.ToString("00"), date.ToUniversalTime().Minute.ToString("00"));
-        }
-
-        private String CreateBody(String title, String description, String location, DateTime startTime, DateTime endTime)
-        {
-            const String successStyle = ".success{color: #333333;font-family: Century Gothic, Arial;font-size:1.4em;margin-top:5px;margin-bottom:5px;}";
-            const String standardStyle = ".standard{color: #333333;font-family: Century Gothic, Arial;font-size:1.0em}";
-            const String reminderStyle = ".reminderStyle{color: red;font-family: Century Gothic, Arial;font-size:1.0em;font-variant:italic;margin-top:2px;margin-bottom:2px;}";
-            const String contentsStyle = ".contentsTable{color: #333333;font-family: Century Gothic, Arial;font-size:1.0em;border-collapse:collapse;border-spacing:0px;padding:0px;margin:0px;} .contentsTable > td {padding-right:5px;}";
-            var b = new StringBuilder();
-            b.Append(String.Format("<style>{0} {1} {2} {3}</style>", successStyle, standardStyle, contentsStyle, reminderStyle));
-            b.Append(String.Format("<div class=\"standard\">You have successfully registered for the following event</div>"));
-            b.Append(String.Format("<div class=\"success\">{0}</div>", title));
-            b.Append(String.Format("<div class=\"reminderStyle\">Please click on the calendar invitation to add this appointment to your calendar.</div>"));
-            b.Append(String.Format("<table class=\"contentsTable\">"));
-            b.Append(String.Format("<tr class=\"standard\"><td>Time</td><td>{0} - {1}</td></tr>", startTime, endTime));
-            b.Append(String.Format("<tr class=\"standard\"><td>Location</td><td>{0}</td></tr>", location));
-            b.Append(String.Format("<tr class=\"standard\"><td>Description</td><td>{0}</td></tr>", description));
-            b.Append(String.Format("</table>"));
-            return b.ToString();
-        }
-
-        private DateTime ConvertLocalDateTime(String UnversalDateTimeString)
-        {
-            String strLocalDateTime = UnversalDateTimeString.Insert(4, "-").Insert(7, "-").Replace("T", " ").Insert(13, ":").Insert(16, ":");
-
-            try
-            {
-                return DateTime.Parse(strLocalDateTime);
-            }
-            catch (Exception e)
-            {
-                return new DateTime();
-            }
-        }
-
         private void PopulateCalender()
         {
-            int day = (int)DateTime.Now.DayOfWeek;
-            DateTime dtWeekStartDate = DateTime.Now.AddDays(-day);
-            DateTime dtWeekEndDate = dtWeekStartDate.AddDays(6);
+            //int day = (int)DateTime.Now.DayOfWeek;
+            //DateTime dtWeekStartDate = DateTime.Now.AddDays(-day);
+            //DateTime dtWeekEndDate = dtWeekStartDate.AddDays(6);
 
-            List<EventFile> eventFileList = eventFileRepository.GetAll().ToList();
+            //List<EventFile> eventFileList = eventFileRepository.GetAll().ToList();
 
-            int DTSTART = 4;
-            int DTEND = 5;
-            int DESCRIPTION = 14;
+            //int DTSTART = 4;
+            //int DTEND = 5;
+            //int DESCRIPTION = 14;
 
-            foreach (EventFile eFile in eventFileList)
-            {
-                String[] arrICSBodyString = eFile.Body.Split(Environment.NewLine.ToCharArray());
+            //foreach (EventFile eFile in eventFileList)
+            //{
+            //    String[] arrICSBodyString = eFile.Body.Split(Environment.NewLine.ToCharArray());
 
-                String[] arrDTSTART = arrICSBodyString[DTSTART].Split(':');
+            //    String[] arrDTSTART = arrICSBodyString[DTSTART].Split(':');
 
-                String strDTSTART = String.Empty;
-                strDTSTART = arrDTSTART[1];
+            //    String strDTSTART = String.Empty;
+            //    strDTSTART = arrDTSTART[1];
 
-                DateTime dtStart = ConvertLocalDateTime(strDTSTART);
+            //    DateTime dtStart = ConvertLocalDateTime(strDTSTART);
 
-                String[] arrDTEND = arrICSBodyString[DTEND].Split(':');
+            //    String[] arrDTEND = arrICSBodyString[DTEND].Split(':');
 
-                String strDTEND = String.Empty;
-                strDTEND = arrDTEND[1];
+            //    String strDTEND = String.Empty;
+            //    strDTEND = arrDTEND[1];
 
-                DateTime dtEnd = ConvertLocalDateTime(strDTEND);
+            //    DateTime dtEnd = ConvertLocalDateTime(strDTEND);
 
-                String[] arrBody = arrICSBodyString[DESCRIPTION].Split(':');
-                String strBody = String.Empty;
+            //    String[] arrBody = arrICSBodyString[DESCRIPTION].Split(':');
+            //    String strBody = String.Empty;
 
-                strBody = arrBody[1];
+            //    strBody = arrBody[1];
 
-                if (dtWeekStartDate >= dtStart || dtEnd <= dtWeekEndDate)
-                {
-                    try
-                    {
-                        new EventManager(this).EventCreate(dtStart, dtEnd, strBody, null, eFile.Id.ToString());
-                    }
-                    catch (Exception e)
-                    {
-                    }
-                }
-            }
+            //    if (dtWeekStartDate >= dtStart || dtEnd <= dtWeekEndDate)
+            //    {
+            //        try
+            //        {
+            //            new EventManager(this).EventCreate(dtStart, dtEnd, strBody, null, eFile.Id.ToString());
+            //        }
+            //        catch (Exception e)
+            //        {
+            //        }
+            //    }
+            //}
         }
 
         #endregion "Method"
@@ -662,9 +464,7 @@ namespace Shnexy.Controllers
         }
 
         public class Dpc : DayPilotCalendar
-        {
-            IEventFileRepository eventFileRepository = new EventFileRepository(new UnitOfWork(new ShnexyDbContext()));
-
+        {            
             protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
             {
                 new EventManager(Controller).EventCreate(e.Start, e.End, "Click To Open Form", e.Resource);
@@ -702,50 +502,50 @@ namespace Shnexy.Controllers
                 int DTSTART = 4;
                 int DTEND = 5;
 
-                EventFile evtFile = new EventFile();
+                //EventFile evtFile = new EventFile();
 
-                if (eventFileRepository != null)
-                {
-                    int intResultId;
-                    Boolean blnResult;
+                //if (eventFileRepository != null)
+                //{
+                //    int intResultId;
+                //    Boolean blnResult;
 
-                    blnResult = Int32.TryParse(Id, out intResultId);
+                //    blnResult = Int32.TryParse(Id, out intResultId);
 
-                    if (blnResult)
-                    {
-                        evtFile = eventFileRepository.GetByKey(intResultId);
+                //    if (blnResult)
+                //    {
+                //        evtFile = eventFileRepository.GetByKey(intResultId);
 
-                        StringBuilder sb = new StringBuilder("");
+                //        StringBuilder sb = new StringBuilder("");
 
-                        if (evtFile != null)
-                        {
-                            String strICSMessageBody = String.Empty;
-                            strICSMessageBody = evtFile.Body;
+                //        if (evtFile != null)
+                //        {
+                //            String strICSMessageBody = String.Empty;
+                //            strICSMessageBody = evtFile.Body;
 
-                            String[] arrICSString = strICSMessageBody.Split(Environment.NewLine.ToCharArray());
+                //            String[] arrICSString = strICSMessageBody.Split(Environment.NewLine.ToCharArray());
 
-                            String strStartDate = String.Format("\fDTSTART:{0}", GetFormatedDate(StartDate));
-                            String strEndDate = String.Format("\fDTEND:{0}", GetFormatedDate(EndDate));
+                //            String strStartDate = String.Format("\fDTSTART:{0}", GetFormatedDate(StartDate));
+                //            String strEndDate = String.Format("\fDTEND:{0}", GetFormatedDate(EndDate));
 
-                            arrICSString[4] = strStartDate;
-                            arrICSString[5] = strEndDate;
+                //            arrICSString[4] = strStartDate;
+                //            arrICSString[5] = strEndDate;
 
-                            foreach (String strTemp in arrICSString)
-                            {
-                                sb.Append(strTemp);
-                                sb.Append("\r");
-                            }
-                        }
+                //            foreach (String strTemp in arrICSString)
+                //            {
+                //                sb.Append(strTemp);
+                //                sb.Append("\r");
+                //            }
+                //        }
 
-                        EventFile newEventFile = new EventFile();
+                //        EventFile newEventFile = new EventFile();
 
-                        newEventFile.Id = intResultId;
-                        newEventFile.Body = sb.ToString();
+                //        newEventFile.Id = intResultId;
+                //        newEventFile.Body = sb.ToString();
 
-                        eventFileRepository.Update(newEventFile, evtFile);
-                        eventFileRepository.UnitOfWork.SaveChanges();
-                    }
-                }
+                //        eventFileRepository.Update(newEventFile, evtFile);
+                //        eventFileRepository.UnitOfWork.SaveChanges();
+                //    }
+                //}
             }
 
 
@@ -791,18 +591,18 @@ namespace Shnexy.Controllers
 
                         blnResult = Int32.TryParse(e.Id, out intResultId);
 
-                        if (blnResult)
-                        {
-                            EventFile deleteEventFile;
+                        //if (blnResult)
+                        //{
+                        //    EventFile deleteEventFile;
 
-                            deleteEventFile = eventFileRepository.GetByKey(intResultId);
+                        //    deleteEventFile = eventFileRepository.GetByKey(intResultId);
 
-                            if (deleteEventFile != null)
-                            {
-                                eventFileRepository.Remove(deleteEventFile);
-                                eventFileRepository.UnitOfWork.SaveChanges();
-                            }
-                        }
+                        //    if (deleteEventFile != null)
+                        //    {
+                        //        eventFileRepository.Remove(deleteEventFile);
+                        //        eventFileRepository.UnitOfWork.SaveChanges();
+                        //    }
+                        //}
 
                         new EventManager(Controller).EventDelete(e.Id);
                         Update();
