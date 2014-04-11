@@ -119,12 +119,13 @@ namespace DBTools
 
         private static Attachment CreateNewAttachment(System.Net.Mail.Attachment attachment)
         {
-            return new Attachment
+            var att = new Attachment
             {
                 OriginalName = attachment.Name,
                 Type = attachment.ContentType.MediaType,
-                Data = attachment.ContentStream
             };
+            att.SetData(attachment.ContentStream);
+            return att;
         }
 
         public static void SendEmail(Email email)

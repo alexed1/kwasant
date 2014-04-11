@@ -22,7 +22,7 @@ namespace Data.DataAccessLayer.Infrastructure
                 file.StoredName = Path.GetRandomFileName();
 
             var fileStream = new FileStream(GetAbsolutePath(file.StoredName), FileMode.Create);
-            file.Data.CopyTo(fileStream);
+            file.GetData().CopyTo(fileStream);
             fileStream.Close();
         }
 
@@ -35,7 +35,7 @@ namespace Data.DataAccessLayer.Infrastructure
             var fileStream = new FileStream(GetAbsolutePath(file.StoredName), FileMode.Open);
             fileStream.CopyTo(memoryStream);
             fileStream.Close();
-            file.Data = memoryStream;
+            file.SetData(memoryStream);
         }
     }
 }

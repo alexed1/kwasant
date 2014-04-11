@@ -15,32 +15,29 @@ namespace Data.Models
         public String StoredName { get; set; }
 
         private Stream _data;
-        [NotMapped]
-        public Stream Data
-        {
-            get
-            {
-                if (_data == null)
-                    FileManager.LoadFile(this);
-                return _data;
-            }
-            set
-            {
-                _data = value;
-            }
-        }
 
+        public Stream GetData()
+        {
+            if (_data == null)
+                FileManager.LoadFile(this);
+            return _data;
+        }
+        public void SetData(Stream value)
+        {
+            _data = value;
+        }
+        
         [NotMapped]
         public String StringData
         {
             get
-            {                
-                return new StreamReader(Data).ReadToEnd();
+            {
+                return new StreamReader(GetData()).ReadToEnd();
             }
             set
             {
                 var memStream = new MemoryStream(Encoding.UTF8.GetBytes(value));
-                Data = memStream;
+                SetData(memStream);
             }
         }
 
@@ -50,12 +47,12 @@ namespace Data.Models
             get
             {
                 var memoryStream = new MemoryStream();
-                Data.CopyTo(memoryStream);
+                GetData().CopyTo(memoryStream);
                 return memoryStream.ToArray();
             }
             set
             {
-                Data = new MemoryStream(value);
+                SetData(new MemoryStream(value));
             }
         }
 
