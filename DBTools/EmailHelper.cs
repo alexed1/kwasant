@@ -106,7 +106,7 @@ namespace DBTools
             email.To.ForEach(a => a.ToEmail = email);
             email.CC.ForEach(a => a.BCCEmail = email);
             email.BCC.ForEach(a => a.CCEmail = email);
-            email.Status = EmailStatusConstants.GetStatusRow(EmailStatusConstants.QUEUED);
+            email.StatusID = EmailStatusConstants.QUEUED;
 
             emailRepository.Add(email);
             return email;
@@ -133,7 +133,7 @@ namespace DBTools
             new EmailManager().Send(email);
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
-            email.Status = EmailStatusConstants.GetStatusRow(EmailStatusConstants.SENT);
+            email.StatusID = EmailStatusConstants.SENT;
             uow.SaveChanges();
         }
     }

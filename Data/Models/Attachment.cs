@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models
@@ -10,8 +9,7 @@ namespace Data.Models
         [Key]
         public int AttachmentID { get; set; }
 
-        [ForeignKey("Email")] 
-        public int EmailID;
+        public int EmailID { get; set; }
         [Required]
         public Email Email { get; set; }
         public String Type { get; set; }

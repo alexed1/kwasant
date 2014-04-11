@@ -34,6 +34,15 @@ namespace Data.DataAccessLayer.Infrastructure
 
             modelBuilder.Entity<Email>()
                 .HasRequired(e => e.From);
+            modelBuilder.Entity<Email>()
+                .HasRequired(e => e.Status)
+                .WithMany(es => es.Emails)
+                .HasForeignKey(e => e.StatusID);
+
+            modelBuilder.Entity<Attachment>()
+                .HasRequired(a => a.Email)
+                .WithMany(e => e.Attachments)
+                .HasForeignKey(a => a.EmailID);
 
             modelBuilder.Entity<EmailAddress>()
                 .HasOptional(ea => ea.FromEmail)

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.Models;
@@ -25,8 +26,8 @@ namespace Shnexy.Controllers
 
         // GET: /Email/
         public ActionResult Index()
-        {            
-            return View(curEmailRepo.GetAll().Where(e => e.Status.Value == "Unprocess").ToList());            
+        {
+            return View(curEmailRepo.GetAll().Where(e => e.StatusID == EmailStatusConstants.UNPROCESSED).ToList());            
         }
 
         // GET: /Email/Details/5

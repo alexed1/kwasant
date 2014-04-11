@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DBTools">
+      <HintPath>..\Daemons\bin\Debug\DBTools.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>D:\Shnexy\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
