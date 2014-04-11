@@ -18,14 +18,14 @@ namespace Shnexy.Controllers
             return View();
         }
 
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult New(FormCollection form)
-        {
-            DateTime start = Convert.ToDateTime(form["Start"]);
-            DateTime end = Convert.ToDateTime(form["End"]);
-            new EventManager(this).EventCreate(start, end, form["Text"], null);
-            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
-        }        
+        //[AcceptVerbs(HttpVerbs.Post)]
+        //public ActionResult New(FormCollection form)
+        //{
+        //    DateTime start = Convert.ToDateTime(form["Start"]);
+        //    DateTime end = Convert.ToDateTime(form["End"]);
+        //    new EventManager(this).EventCreate(start, end, form["Text"], null);
+        //    return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+        //}        
 
         protected override void Dispose(bool disposing)
         {

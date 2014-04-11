@@ -6,6 +6,7 @@ using Data.DataAccessLayer.Interfaces;
 using Data.Models;
 using Data.DataAccessLayer.Repositories;
 using DayPilot.Web.Mvc.Json;
+using Shnexy.Controllers.Data;
 using Shnexy.Controllers.DayPilot;
 using StructureMap;
 
@@ -26,9 +27,22 @@ namespace Shnexy.Controllers
             var email = emailRepository.GetByKey(id);
             if (email != null)
             {
+                EventManager = new EventManager(this, email.From.Address);
                 return View(email);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        private EventManager EventManager
+        {
+            get
+            {
+                return Session["EventManager"] as EventManager;
+            }
+            set
+            {
+                Session["EventManager"] = value;
+            }
         }
 
         public ActionResult Rtl()
@@ -184,9 +198,9 @@ namespace Shnexy.Controllers
             return RedirectToAction("ThemeTraditional");
         }
 
-        public ActionResult Backend(int fromEmailAddressID)
+        public ActionResult Backend()
         {
-            return new DayPilotCalendarControl(fromEmailAddressID).CallBack(this);
+            return new DayPilotCalendarControl(EventManager).CallBack(this);
         }
 
         public ActionResult NavigatorBackend()
@@ -248,6 +262,8 @@ namespace Shnexy.Controllers
             var emailRepository = new EmailRepository(uow);
             Email existingEmail = emailRepository.GetByKey(emailID);
             existingEmail.StatusID = EmailStatusConstants.PROCESSED;
+            existingEmail.Invitation = invitation;
+
             invitation.StartDate = dtFromDate;
             invitation.EndDate = dtToDate;
             invitation.Location = strLocation;
@@ -260,6 +276,9 @@ namespace Shnexy.Controllers
             invitation.Summary = strSummary;
             invitation.Category = strCategory;
             uow.SaveChanges();
+
+            EventManager.EventAdd(invitation);
+            EventManager.Reload();
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }

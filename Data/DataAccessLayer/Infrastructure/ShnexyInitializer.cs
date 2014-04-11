@@ -16,6 +16,7 @@ namespace Data.DataAccessLayer.Infrastructure
             EmailStatusConstants.ApplySeedData(uow);
             uow.SaveChanges();
             SeedFakeEmail();
+            SeedFakeEmail();
         }
 
         private void SeedFakeEmail()

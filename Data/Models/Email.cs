@@ -28,6 +28,7 @@ namespace Data.Models
 
         [InverseProperty("Email")]
         public virtual List<Attachment> Attachments { get; set; }
+
         public virtual Invitation Invitation { get; set; }
     }
 }

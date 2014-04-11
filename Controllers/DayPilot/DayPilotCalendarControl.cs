@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using Data.DataAccessLayer.Interfaces;
-using Data.DataAccessLayer.Repositories;
 using Data.Models;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
@@ -11,344 +6,240 @@ using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Calendar;
 using DayPilot.Web.Mvc.Events.Common;
 using Shnexy.Controllers.Data;
-using StructureMap;
 
 namespace Shnexy.Controllers.DayPilot
 {
     public class DayPilotCalendarControl : DayPilotCalendar
     {
-        List<Invitation> relatedInvitations;
-        public DayPilotCalendarControl(int fromEmailAddressID)
+        private readonly EventManager _eventManager;
+        public DayPilotCalendarControl(EventManager eventManager)
         {
-            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            var invitationRepo = new InvitationRepository(uow);
-            
-            relatedInvitations = invitationRepo.GetQuery().Where(i => i.Emails.Any(e => e.From.EmailAddressID == fromEmailAddressID)).ToList();
-            relatedInvitations.First().StartDate
-            DataStartField = "start";
-            DataEndField = "end";
-            DataTextField = "text";
-            DataIdField = "id";
-            DataResourceField = "resource";
+            _eventManager = eventManager;
         }
 
-        //protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
-        //{
-        //    new EventManager(Controller).EventCreate(e.Start, e.End, "Click To Open Form", e.Resource);
-
+        protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
+        {
+            _eventManager.EventAdd(new Invitation
+            {
+                StartDate = e.Start,
+                EndDate = e.End,
+                Summary = "Click to Open Form"
+            });
             
+            Update();
+        }
 
-        //    Update();
-        //}
+        protected override void OnEventMove(EventMoveArgs e)
+        {
+            _eventManager.EventMove(e.Id, e.NewStart, e.NewEnd);
+            //if (new EventManager(Controller).Get(e.Id) != null)
+            //{
+            //    new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd);
+            //    MoveUpdateEventFile(e.Id, e.NewStart, e.NewEnd);
+            //}
+            //else // external drag&drop
+            //{
+            //    new EventManager(Controller).EventCreate(e.NewStart, e.NewEnd, e.Text, e.NewResource, e.Id);
+            //    MoveUpdateEventFile(e.Id, e.NewStart, e.NewEnd);
+            //}
 
-        //protected override void OnEventMove(EventMoveArgs e)
-        //{
-        //    if (new EventManager(Controller).Get(e.Id) != null)
-        //    {
-        //        new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd);
-        //        MoveUpdateEventFile(e.Id, e.NewStart, e.NewEnd);
-        //    }
-        //    else // external drag&drop
-        //    {
-        //        new EventManager(Controller).EventCreate(e.NewStart, e.NewEnd, e.Text, e.NewResource, e.Id);
-        //        MoveUpdateEventFile(e.Id, e.NewStart, e.NewEnd);
-        //    }
+            Update();
+        }
+        
+        protected override void OnEventDelete(EventDeleteArgs e)
+        {
+            _eventManager.EventDelete(e.Id);
+            Update();
+        }
 
-        //    Update();
-        //}
+        protected override void OnEventResize(EventResizeArgs e)
+        {
+            _eventManager.EventMove(e.Id, e.NewStart, e.NewEnd);
+            Update();
+        }
 
-        //private static string GetFormatedDate(DateTime date)
-        //{
-        //    return String.Format("{0}{1}{2}T{3}{4}00Z", date.ToUniversalTime().Year, date.ToUniversalTime().Month.ToString("00"), date.ToUniversalTime().Day.ToString("00"), date.ToUniversalTime().Hour.ToString("00"), date.ToUniversalTime().Minute.ToString("00"));
-        //}
+        protected override void OnEventBubble(EventBubbleArgs e)
+        {
+            e.BubbleHtml = "This is an event bubble for id: " + e.Id;
+        }
 
-        //private void MoveUpdateEventFile(String Id, DateTime StartDate, DateTime EndDate)
-        //{
+        protected override void OnEventMenuClick(EventMenuClickArgs e)
+        {
+            switch (e.Command)
+            {
+                case "Delete":
 
-        //    int DTSTART = 4;
-        //    int DTEND = 5;
+                    int intResultId;
+                    Boolean blnResult;
 
-        //    //EventFile evtFile = new EventFile();
+                    blnResult = Int32.TryParse(e.Id, out intResultId);
 
-        //    //if (eventFileRepository != null)
-        //    //{
-        //    //    int intResultId;
-        //    //    Boolean blnResult;
+                    _eventManager.EventDelete(e.Id);
+                    Update();
+                    break;
+            }
+        }
 
-        //    //    blnResult = Int32.TryParse(Id, out intResultId);
+        protected override void OnCommand(CommandArgs e)
+        {
+            switch (e.Command)
+            {
+                case "navigate":
+                    StartDate = (DateTime)e.Data["start"];
+                    Update(CallBackUpdateType.Full);
+                    break;
 
-        //    //    if (blnResult)
-        //    //    {
-        //    //        evtFile = eventFileRepository.GetByKey(intResultId);
+                case "refresh":
+                    UpdateWithMessage("Refreshed");
+                    break;
 
-        //    //        StringBuilder sb = new StringBuilder("");
+                case "selected":
+                    if (SelectedEvents.Count > 0)
+                    {
+                        EventInfo ei = SelectedEvents[0];
+                        SelectedEvents.RemoveAt(0);
+                        UpdateWithMessage("Event removed from selection: " + ei.Text);
+                    }
 
-        //    //        if (evtFile != null)
-        //    //        {
-        //    //            String strICSMessageBody = String.Empty;
-        //    //            strICSMessageBody = evtFile.Body;
+                    break;
 
-        //    //            String[] arrICSString = strICSMessageBody.Split(Environment.NewLine.ToCharArray());
+                case "delete":
+                    string id = (string)e.Data["id"];
+                    _eventManager.EventDelete(id);
+                    Update(CallBackUpdateType.EventsOnly);
+                    break;
 
-        //    //            String strStartDate = String.Format("\fDTSTART:{0}", GetFormatedDate(StartDate));
-        //    //            String strEndDate = String.Format("\fDTEND:{0}", GetFormatedDate(EndDate));
+            }
+        }
 
-        //    //            arrICSString[4] = strStartDate;
-        //    //            arrICSString[5] = strEndDate;
+        protected override void OnBeforeCellRender(BeforeCellRenderArgs e)
+        {
+            if (Id == "dpc_today")
+            {
+                if (e.Start.Date == DateTime.Today)
+                {
+                    if (e.IsBusiness)
+                    {
+                        e.BackgroundColor = "#ffaaaa";
+                    }
+                    else
+                    {
+                        e.BackgroundColor = "#ff6666";
+                    }
+                }
+            }
 
-        //    //            foreach (String strTemp in arrICSString)
-        //    //            {
-        //    //                sb.Append(strTemp);
-        //    //                sb.Append("\r");
-        //    //            }
-        //    //        }
+        }
 
-        //    //        EventFile newEventFile = new EventFile();
+        protected override void OnBeforeEventRender(BeforeEventRenderArgs e)
+        {
 
-        //    //        newEventFile.Id = intResultId;
-        //    //        newEventFile.Body = sb.ToString();
+            if (Id == "dpcg")  // Calendar/GoogleLike
+            {
+                if (e.Id == "6")
+                {
+                    e.BorderColor = "#1AAFE0";
+                    e.BackgroundColor = "#90D8F2";
+                }
+                if (e.Id == "8")
+                {
+                    e.BorderColor = "#068c14";
+                    e.BackgroundColor = "#08b81b";
+                }
+                if (e.Id == "2")
+                {
+                    e.BorderColor = "#990607";
+                    e.BackgroundColor = "#f60e13";
+                }
+            }
+            else if (Id == "dpc_menu")  // Calendar/ContextMenu
+            {
+                if (e.Id == "7")
+                {
+                    e.ContextMenuClientName = "menu2";
+                }
+            }
+            else if (Id == "dpc_areas")  // Calendar/ActiveAreas
+            {
+                e.CssClass = "calendar_white_event_withheader";
 
-        //    //        eventFileRepository.Update(newEventFile, evtFile);
-        //    //        eventFileRepository.UnitOfWork.SaveChanges();
-        //    //    }
-        //    //}
-        //}
+                e.Areas.Add(new Area().Right(3).Top(3).Width(15).Height(15).CssClass("event_action_delete").JavaScript("dpc_areas.eventDeleteCallBack(e);"));
+                e.Areas.Add(new Area().Right(20).Top(3).Width(15).Height(15).CssClass("event_action_menu").JavaScript("dpc_areas.bubble.showEvent(e, true);"));
+                e.Areas.Add(new Area().Left(0).Bottom(5).Right(0).Height(5).CssClass("event_action_bottomdrag").ResizeEnd());
+                e.Areas.Add(new Area().Left(15).Top(1).Right(46).Height(11).CssClass("event_action_move").Move());
+            }
 
+            if (e.Id == "7")
+            {
+                e.DurationBarColor = "red";
+            }
 
-        //protected override void OnEventClick(EventClickArgs e)
-        //{
-        //    //CalendarController.EventData._Id = e.Id;
+            if (e.Recurrent)
+            {
+                e.InnerHtml += " (R)";
+            }
+        }
 
-        //    //UpdateWithMessage("Event clicked: " + e.Text);
-        //    //Redirect("http://www.daypilot.org/");
-        //}
+        protected override void OnInit(InitArgs initArgs)
+        {
+            //Thread.Sleep(5000);
 
-        //protected override void OnEventDelete(EventDeleteArgs e)
-        //{
-        //    new EventManager(Controller).EventDelete(e.Id);
-        //    Update();
-        //}
+            UpdateWithMessage("Welcome!", CallBackUpdateType.Full);
 
-        //protected override void OnEventResize(EventResizeArgs e)
-        //{
-        //    new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd);
-        //    Update();
-        //}
+            if (Id == "days_resources")
+            {
+                Columns.Clear();
+                Column today = new Column(DateTime.Today.ToShortDateString(), DateTime.Today.ToString("s"));
+                today.Children.Add("A", "a", DateTime.Today);
+                today.Children.Add("B", "b", DateTime.Today);
+                Columns.Add(today);
 
-        //protected override void OnEventBubble(EventBubbleArgs e)
-        //{
-        //    //CalendarController.EventData._dtEditStartDate = e.Start;
-        //    //CalendarController.EventData._dtEditEndDate = e.End;
+                Column tomorrow = new Column(DateTime.Today.AddDays(1).ToShortDateString(), DateTime.Today.AddDays(1).ToString("s"));
+                tomorrow.Children.Add("A", "a", DateTime.Today.AddDays(1));
+                tomorrow.Children.Add("B", "b", DateTime.Today.AddDays(1));
+                Columns.Add(tomorrow);
 
-        //    //CalendarController.EventData._Id = e.Id;
-        //    e.BubbleHtml = "This is an event bubble for id: " + e.Id;
-        //    //EventData._dtStartDate = Convert.ToDateTime(e.Start);
-        //    //EventData._dtEndDate = Convert.ToDateTime(e.End);
-        //}
+            }
+            else if (Id == "resources")
+            {
+                Columns.Clear();
+                Columns.Add("A", "A");
+                Columns.Add("B", "B");
+                Columns.Add("C", "C");
+            }
+        }
 
-        //protected override void OnEventMenuClick(EventMenuClickArgs e)
-        //{
-        //    switch (e.Command)
-        //    {
-        //        case "Delete":
+        protected override void OnBeforeHeaderRender(BeforeHeaderRenderArgs e)
+        {
+            if (Id == "dpc_areas")
+            {
+                e.Areas.Add(new Area().Right(1).Top(0).Width(17).Bottom(1).CssClass("resource_action_menu").Html("<div><div></div></div>").JavaScript("alert(e.date);"));
+            }
+            if (Id == "dpc_autofit")
+            {
+                e.InnerHtml += " adding some longer text so the autofit can be tested";
+            }
 
-        //            int intResultId;
-        //            Boolean blnResult;
+            //CalendarController.EventData._dtCalenderEndDate = e.Date;
+        }
+        protected override void OnBeforeTimeHeaderRender(BeforeTimeHeaderRenderArgs e)
+        {
+        }
 
-        //            blnResult = Int32.TryParse(e.Id, out intResultId);
+        protected override void OnFinish()
+        {
+            // only load the data if an update was requested by an Update() call
+            if (UpdateType == CallBackUpdateType.None)
+            {
+                return;
+            }
+            
+            DataStartField = "StartDate";
+            DataEndField = "EndDate";
+            DataTextField = "Summary";
+            DataIdField = "InvitationID";
 
-        //            //if (blnResult)
-        //            //{
-        //            //    EventFile deleteEventFile;
-
-        //            //    deleteEventFile = eventFileRepository.GetByKey(intResultId);
-
-        //            //    if (deleteEventFile != null)
-        //            //    {
-        //            //        eventFileRepository.Remove(deleteEventFile);
-        //            //        eventFileRepository.UnitOfWork.SaveChanges();
-        //            //    }
-        //            //}
-
-        //            new EventManager(Controller).EventDelete(e.Id);
-        //            Update();
-        //            break;
-        //    }
-        //}
-
-        //protected override void OnCommand(CommandArgs e)
-        //{
-        //    switch (e.Command)
-        //    {
-        //        case "navigate":
-        //            StartDate = (DateTime)e.Data["start"];
-        //            Update(CallBackUpdateType.Full);
-        //            break;
-
-        //        case "refresh":
-        //            UpdateWithMessage("Refreshed");
-        //            break;
-
-        //        case "selected":
-        //            if (SelectedEvents.Count > 0)
-        //            {
-        //                EventInfo ei = SelectedEvents[0];
-        //                SelectedEvents.RemoveAt(0);
-        //                UpdateWithMessage("Event removed from selection: " + ei.Text);
-        //            }
-
-        //            break;
-
-        //        case "delete":
-        //            string id = (string)e.Data["id"];
-        //            new EventManager(Controller).EventDelete(id);
-        //            Update(CallBackUpdateType.EventsOnly);
-        //            break;
-
-        //    }
-        //}
-
-        //protected override void OnBeforeCellRender(BeforeCellRenderArgs e)
-        //{
-        //    if (Id == "dpc_today")
-        //    {
-        //        if (e.Start.Date == DateTime.Today)
-        //        {
-        //            if (e.IsBusiness)
-        //            {
-        //                e.BackgroundColor = "#ffaaaa";
-        //            }
-        //            else
-        //            {
-        //                e.BackgroundColor = "#ff6666";
-        //            }
-        //        }
-        //    }
-
-        //}
-
-        //protected override void OnBeforeEventRender(BeforeEventRenderArgs e)
-        //{
-
-        //    if (Id == "dpcg")  // Calendar/GoogleLike
-        //    {
-        //        if (e.Id == "6")
-        //        {
-        //            e.BorderColor = "#1AAFE0";
-        //            e.BackgroundColor = "#90D8F2";
-        //        }
-        //        if (e.Id == "8")
-        //        {
-        //            e.BorderColor = "#068c14";
-        //            e.BackgroundColor = "#08b81b";
-        //        }
-        //        if (e.Id == "2")
-        //        {
-        //            e.BorderColor = "#990607";
-        //            e.BackgroundColor = "#f60e13";
-        //        }
-        //    }
-        //    else if (Id == "dpc_menu")  // Calendar/ContextMenu
-        //    {
-        //        if (e.Id == "7")
-        //        {
-        //            e.ContextMenuClientName = "menu2";
-        //        }
-        //    }
-        //    else if (Id == "dpc_areas")  // Calendar/ActiveAreas
-        //    {
-        //        e.CssClass = "calendar_white_event_withheader";
-
-        //        e.Areas.Add(new Area().Right(3).Top(3).Width(15).Height(15).CssClass("event_action_delete").JavaScript("dpc_areas.eventDeleteCallBack(e);"));
-        //        e.Areas.Add(new Area().Right(20).Top(3).Width(15).Height(15).CssClass("event_action_menu").JavaScript("dpc_areas.bubble.showEvent(e, true);"));
-        //        e.Areas.Add(new Area().Left(0).Bottom(5).Right(0).Height(5).CssClass("event_action_bottomdrag").ResizeEnd());
-        //        e.Areas.Add(new Area().Left(15).Top(1).Right(46).Height(11).CssClass("event_action_move").Move());
-        //    }
-
-        //    if (e.Id == "7")
-        //    {
-        //        e.DurationBarColor = "red";
-        //    }
-
-        //    if (e.Recurrent)
-        //    {
-        //        e.InnerHtml += " (R)";
-        //    }
-        //}
-
-        //protected override void OnInit(InitArgs initArgs)
-        //{
-        //    //Thread.Sleep(5000);
-
-        //    UpdateWithMessage("Welcome!", CallBackUpdateType.Full);
-
-        //    if (Id == "days_resources")
-        //    {
-        //        Columns.Clear();
-        //        Column today = new Column(DateTime.Today.ToShortDateString(), DateTime.Today.ToString("s"));
-        //        today.Children.Add("A", "a", DateTime.Today);
-        //        today.Children.Add("B", "b", DateTime.Today);
-        //        Columns.Add(today);
-
-        //        Column tomorrow = new Column(DateTime.Today.AddDays(1).ToShortDateString(), DateTime.Today.AddDays(1).ToString("s"));
-        //        tomorrow.Children.Add("A", "a", DateTime.Today.AddDays(1));
-        //        tomorrow.Children.Add("B", "b", DateTime.Today.AddDays(1));
-        //        Columns.Add(tomorrow);
-
-        //    }
-        //    else if (Id == "resources")
-        //    {
-        //        Columns.Clear();
-        //        Columns.Add("A", "A");
-        //        Columns.Add("B", "B");
-        //        Columns.Add("C", "C");
-        //    }
-        //}
-
-        //protected override void OnBeforeHeaderRender(BeforeHeaderRenderArgs e)
-        //{
-        //    if (Id == "dpc_areas")
-        //    {
-        //        e.Areas.Add(new Area().Right(1).Top(0).Width(17).Bottom(1).CssClass("resource_action_menu").Html("<div><div></div></div>").JavaScript("alert(e.date);"));
-        //    }
-        //    if (Id == "dpc_autofit")
-        //    {
-        //        e.InnerHtml += " adding some longer text so the autofit can be tested";
-        //    }
-
-        //    //CalendarController.EventData._dtCalenderEndDate = e.Date;
-        //}
-        //protected override void OnBeforeTimeHeaderRender(BeforeTimeHeaderRenderArgs e)
-        //{
-        //}
-
-        //protected override void OnFinish()
-        //{
-        //    // only load the data if an update was requested by an Update() call
-        //    if (UpdateType == CallBackUpdateType.None)
-        //    {
-        //        return;
-        //    }
-
-        //    // this select is a really bad example, no where clause
-        //    if (Id == "dpc_recurring")
-        //    {
-        //        Events = new EventManager(Controller, "recurring").Data.AsEnumerable();
-        //        DataRecurrenceField = "recurrence";
-        //    }
-        //    else
-        //    {
-        //        Events = new EventManager(Controller).Data.AsEnumerable();
-        //    }
-
-        //    DataStartField = "start";
-        //    DataEndField = "end";
-        //    DataTextField = "text";
-        //    DataIdField = "id";
-        //    DataResourceField = "resource";
-
-        //    DataAllDayField = "allday";
-        //    //DataTagFields = "id, name";
-        //}
+            Events = _eventManager.Data;
+        }
     }
 }

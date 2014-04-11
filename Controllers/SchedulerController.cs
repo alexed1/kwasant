@@ -248,18 +248,18 @@ namespace Shnexy.Controllers
             return new Dps().CallBack(this);
         }
 
-        public ActionResult Edit(string id)
-        {
-            var e = new EventManager(this).Get(id) ?? new EventManager.Event();
-            return View(e);
-        }
+        //public ActionResult Edit(string id)
+        //{
+        //    var e = new EventManager(this).Get(id) ?? new EventManager.Event();
+        //    return View(e);
+        //}
 
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Edit(FormCollection form)
-        {
-            new EventManager(this).EventEdit(form["Id"], form["Text"]);
-            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
-        }
+        //[AcceptVerbs(HttpVerbs.Post)]
+        //public ActionResult Edit(FormCollection form)
+        //{
+        //    new EventManager(this).EventEdit(form["Id"], form["Text"]);
+        //    return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+        //}
 
         class Dps : DayPilotScheduler
         {
@@ -376,47 +376,47 @@ namespace Shnexy.Controllers
                 Update(CallBackUpdateType.Full);
             }
 
-            protected override void OnCommand(CommandArgs e)
-            {
-                switch (e.Command)
-                {
-                    case "filter":
-                        Update();
-                        break;
-                    case "refresh":
-                        UpdateWithMessage("Refreshed");
-                        break;
-                    case "next":
-                        StartDate = StartDate.AddYears(1);
-                        Days = Year.Days(StartDate);
-                        Update(CallBackUpdateType.Full);
-                        break;
-                    case "previous":
-                        StartDate = StartDate.AddYears(-1);
-                        Days = Year.Days(StartDate);
-                        Update(CallBackUpdateType.Full);
-                        break;
-                    case "this":
-                        StartDate = Year.First(DateTime.Today);
-                        Days = Year.Days(StartDate);
-                        Update(CallBackUpdateType.Full);
-                        break;
-                    case "selected":
-                        if (SelectedEvents.Count > 0)
-                        {
-                            EventInfo ei = SelectedEvents[0];
-                            SelectedEvents.RemoveAt(0);
-                            UpdateWithMessage("Event removed from selection: " + ei.Text);
-                        }
+            //protected override void OnCommand(CommandArgs e)
+            //{
+            //    switch (e.Command)
+            //    {
+            //        case "filter":
+            //            Update();
+            //            break;
+            //        case "refresh":
+            //            UpdateWithMessage("Refreshed");
+            //            break;
+            //        case "next":
+            //            StartDate = StartDate.AddYears(1);
+            //            Days = Year.Days(StartDate);
+            //            Update(CallBackUpdateType.Full);
+            //            break;
+            //        case "previous":
+            //            StartDate = StartDate.AddYears(-1);
+            //            Days = Year.Days(StartDate);
+            //            Update(CallBackUpdateType.Full);
+            //            break;
+            //        case "this":
+            //            StartDate = Year.First(DateTime.Today);
+            //            Days = Year.Days(StartDate);
+            //            Update(CallBackUpdateType.Full);
+            //            break;
+            //        case "selected":
+            //            if (SelectedEvents.Count > 0)
+            //            {
+            //                EventInfo ei = SelectedEvents[0];
+            //                SelectedEvents.RemoveAt(0);
+            //                UpdateWithMessage("Event removed from selection: " + ei.Text);
+            //            }
 
-                        break;
-                    case "delete":
-                        string id = (string)e.Data["id"];
-                        new EventManager(Controller).EventDelete(id);
-                        Update(CallBackUpdateType.EventsOnly);
-                        break;
-                }
-            }
+            //            break;
+            //        case "delete":
+            //            string id = (string)e.Data["id"];
+            //            new EventManager(Controller).EventDelete(id);
+            //            Update(CallBackUpdateType.EventsOnly);
+            //            break;
+            //    }
+            //}
 
             protected override void  OnBeforeCellRender(BeforeCellRenderArgs e)
             {
@@ -453,38 +453,38 @@ namespace Shnexy.Controllers
                 e.BubbleHtml = "Event details for id: " + e.Id + "<br/>" + e.Start + " " + e.End;
             }
 
-            protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
-            {
-                new EventManager(Controller).EventCreate(e.Start, e.End, "Default name", e.Resource);
-                UpdateWithMessage("New event created", CallBackUpdateType.EventsOnly);
-            }
+            //protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
+            //{
+            //    new EventManager(Controller).EventCreate(e.Start, e.End, "Default name", e.Resource);
+            //    UpdateWithMessage("New event created", CallBackUpdateType.EventsOnly);
+            //}
 
-            protected override void OnEventMove(EventMoveArgs e)
-            {
-                if (new EventManager(Controller).Get(e.Id) != null)
-                {
-                    new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd, e.NewResource);
-                }
-                else // external drag&drop
-                {
-                    new EventManager(Controller).EventCreate(e.NewStart, e.NewEnd, e.Text, e.NewResource, e.Id);
-                }
-                if (Id == "dps_position")
-                {
-                    UpdateWithMessage("Moved to position: " + e.Position);
-                }
-                else
-                {
-                    UpdateWithMessage("Event moved.");
-                }
+            //protected override void OnEventMove(EventMoveArgs e)
+            //{
+            //    if (new EventManager(Controller).Get(e.Id) != null)
+            //    {
+            //        new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd, e.NewResource);
+            //    }
+            //    else // external drag&drop
+            //    {
+            //        new EventManager(Controller).EventCreate(e.NewStart, e.NewEnd, e.Text, e.NewResource, e.Id);
+            //    }
+            //    if (Id == "dps_position")
+            //    {
+            //        UpdateWithMessage("Moved to position: " + e.Position);
+            //    }
+            //    else
+            //    {
+            //        UpdateWithMessage("Event moved.");
+            //    }
 
-            }
+            //}
 
-            protected override void OnEventResize(EventResizeArgs ea)
-            {
-                new EventManager(Controller).EventMove(ea.Id, ea.NewStart, ea.NewEnd, ea.Resource);
-                Update();
-            }
+            //protected override void OnEventResize(EventResizeArgs ea)
+            //{
+            //    new EventManager(Controller).EventMove(ea.Id, ea.NewStart, ea.NewEnd, ea.Resource);
+            //    Update();
+            //}
 
             protected override void OnBeforeEventRender(BeforeEventRenderArgs e)
             {
@@ -526,16 +526,16 @@ namespace Shnexy.Controllers
 
             }
 
-            protected override void OnEventMenuClick(EventMenuClickArgs e)
-            {
-                switch (e.Command)
-                {
-                    case "Delete":
-                        new EventManager(Controller).EventDelete(e.Id);
-                        Update();
-                        break;
-                }
-            }
+            //protected override void OnEventMenuClick(EventMenuClickArgs e)
+            //{
+            //    switch (e.Command)
+            //    {
+            //        case "Delete":
+            //            new EventManager(Controller).EventDelete(e.Id);
+            //            Update();
+            //            break;
+            //    }
+            //}
 
             protected override void OnEventClick(EventClickArgs e)
             {
@@ -596,44 +596,44 @@ namespace Shnexy.Controllers
             {
             }
 
-            protected override void OnFinish()
-            {
-                // only load the data if an update was requested by an Update() call
-                if (UpdateType == CallBackUpdateType.None)
-                {
-                    return;
-                }
+            //protected override void OnFinish()
+            //{
+            //    // only load the data if an update was requested by an Update() call
+            //    if (UpdateType == CallBackUpdateType.None)
+            //    {
+            //        return;
+            //    }
 
-                if (HeaderColumns.Count == 0)
-                {
-                    CornerHtml = String.Format("<div style='padding:5px; font-weight: bold; font-size:22px; text-align:center'>{0}</div>", Calendar.GetYear(StartDate));
-                }
+            //    if (HeaderColumns.Count == 0)
+            //    {
+            //        CornerHtml = String.Format("<div style='padding:5px; font-weight: bold; font-size:22px; text-align:center'>{0}</div>", Calendar.GetYear(StartDate));
+            //    }
 
-                DateTime start = DynamicLoading ? ViewPort.Start : StartDate;
-                DateTime end = DynamicLoading ? ViewPort.End : EndDate;
+            //    DateTime start = DynamicLoading ? ViewPort.Start : StartDate;
+            //    DateTime end = DynamicLoading ? ViewPort.End : EndDate;
 
-                if (Id == "dps_recurring")
-                {
-                    Events = new EventManager(Controller, "recurring").FilteredData(start, end, (string)ClientState["filter"]).AsEnumerable();
-                    DataRecurrenceField = "recurrence";
-                }
-                else
-                {
-                    Events = new EventManager(Controller).FilteredData(start, end, (string)ClientState["filter"]).AsEnumerable();
-                }
+            //    if (Id == "dps_recurring")
+            //    {
+            //        Events = new EventManager(Controller, "recurring").FilteredData(start, end, (string)ClientState["filter"]).AsEnumerable();
+            //        DataRecurrenceField = "recurrence";
+            //    }
+            //    else
+            //    {
+            //        Events = new EventManager(Controller).FilteredData(start, end, (string)ClientState["filter"]).AsEnumerable();
+            //    }
 
-                //Separators.Clear();
-                //Separators.Add(DateTime.Now, Color.Red);
+            //    //Separators.Clear();
+            //    //Separators.Add(DateTime.Now, Color.Red);
 
 
-                DataStartField = "start";
-                DataEndField = "end";
-                DataTextField = "text";
-                DataIdField = "id";
-                DataResourceField = "resource";
+            //    DataStartField = "start";
+            //    DataEndField = "end";
+            //    DataTextField = "text";
+            //    DataIdField = "id";
+            //    DataResourceField = "resource";
 
-                DataTagFields = "id, text, resource";
-            }
+            //    DataTagFields = "id, text, resource";
+            //}
 
         }
 
