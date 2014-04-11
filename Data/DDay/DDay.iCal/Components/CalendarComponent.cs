@@ -8,9 +8,8 @@ using Data.DDay.DDay.iCal.Interfaces.Components;
 using Data.DDay.DDay.iCal.Interfaces.General;
 using Data.DDay.DDay.iCal.Interfaces.Serialization;
 using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Components;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Shnexy.DDay.iCal
+namespace Data.DDay.DDay.iCal
 {
     /// <summary>
     /// This class is used by the parsing framework for iCalendar components.

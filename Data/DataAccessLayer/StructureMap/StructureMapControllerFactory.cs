@@ -11,10 +11,6 @@ namespace Data.DataAccessLayer.StructureMap
 
         protected override IController GetControllerInstance(RequestContext requestContext, Type controllerType)
         {
-            if (controllerType == null)
-                return null;
-
-            
             return ObjectFactory.GetInstance(controllerType) as IController;
         }
 

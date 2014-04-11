@@ -21,7 +21,7 @@ namespace Shnexy
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             // StructureMap Dependencies configuration
-            StructureMapBootStrapper.ConfigureDependencies("test"); //set to either "test" or "dev"            
+            StructureMapBootStrapper.ConfigureDependencies("test"); //set to either "test" or "dev"
             ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
 
             Database.SetInitializer(new ShnexyInitializer());
@@ -29,7 +29,6 @@ namespace Shnexy
             db.Database.Initialize(true);
 
            
-
 
 
             //issues: doing it this way, you have to derive a class to create a seed file. seems like the EF6 seed file approach is best, but it's not getting called. wrong assembly name?

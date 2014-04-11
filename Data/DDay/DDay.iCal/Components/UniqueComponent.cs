@@ -8,7 +8,6 @@ using Data.DDay.DDay.iCal.Factory;
 using Data.DDay.DDay.iCal.Interfaces.Components;
 using Data.DDay.DDay.iCal.Interfaces.DataTypes;
 using Data.DDay.DDay.iCal.Interfaces.General;
-using Shnexy.DDay.iCal;
 
 namespace Data.DDay.DDay.iCal
 {

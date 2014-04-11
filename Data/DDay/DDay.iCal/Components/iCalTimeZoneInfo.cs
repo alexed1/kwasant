@@ -9,7 +9,6 @@ using Data.DDay.DDay.iCal.Interfaces.DataTypes;
 using Data.DDay.DDay.iCal.Interfaces.Evaluation;
 using Data.DDay.DDay.iCal.Structs;
 using Data.DDay.DDay.iCal.Utility;
-using Shnexy.DDay.iCal;
 
 namespace Data.DDay.DDay.iCal
 {    

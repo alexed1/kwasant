@@ -2638,7 +2638,7 @@ namespace ShnexyTest.DDay.iCal.Test
         [Test, Category("Recurrence")]
         public void Bug3178652()
         {
-            var evt = new Event(_uow);
+            var evt = new Event();
             evt.Start = new iCalDateTime(2011, 1, 29, 11, 0, 0);
             evt.Duration = TimeSpan.FromHours(1.5);
             evt.Summary = "29th February Test";

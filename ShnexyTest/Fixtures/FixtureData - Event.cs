@@ -9,10 +9,9 @@ namespace ShnexyTest.Fixtures
 
         public  Event TestEvent()
         {
-            return new Event(_uow)
+            return new Event()
             {
-                Id = 1,
-                CustomerId = 1,
+                
                 //DTStart = (iCalDateTime)DateTime.Parse("20040117"),
                 DTStart = new iCalDateTime("20140517"),
                 DTEnd = new iCalDateTime("20140610"),
@@ -20,11 +19,7 @@ namespace ShnexyTest.Fixtures
                 Description = "First Ever Event",
                 Summary = "Here's a Summary",
                 WorkflowState = "Undispatched",
-                Attendees = new List<EmailAddress> {
-                    TestEmail1(),
-                    TestEmail2()
-                 }
-
+                
               //   DateTimeSerializer serializer = new DateTimeSerializer();
             //CopyFrom(serializer.Deserialize(new StringReader(value)) as ICopyable);
 

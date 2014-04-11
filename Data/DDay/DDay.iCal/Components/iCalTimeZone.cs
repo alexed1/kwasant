@@ -11,7 +11,6 @@ using Data.DDay.DDay.iCal.Interfaces.Components;
 using Data.DDay.DDay.iCal.Interfaces.DataTypes;
 using Data.DDay.DDay.iCal.Interfaces.General;
 using Data.DDay.DDay.iCal.Structs;
-using Shnexy.DDay.iCal;
 
 namespace Data.DDay.DDay.iCal
 {

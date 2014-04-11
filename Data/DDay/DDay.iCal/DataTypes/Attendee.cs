@@ -100,7 +100,6 @@ namespace Data.DDay.DDay.iCal.DataTypes
             set { Parameters.Set("DELEGATED-FROM", value); }
         }
         
-        [DataMember(Order = 1)]
         virtual public Uri Value { get; set; }
         
         #endregion        

@@ -28,7 +28,9 @@ using Data.Models;
 using NUnit.Framework;
 using StructureMap;
 using Attachment = Data.DDay.DDay.iCal.DataTypes.Attachment;
-using Shnexy.DDay.iCal;
+using Attendee = Data.DDay.DDay.iCal.DataTypes.Attendee;
+using IAttachment = Data.DDay.DDay.iCal.Interfaces.DataTypes.IAttachment;
+using IAttendee = Data.DDay.DDay.iCal.Interfaces.DataTypes.IAttendee;
 
 namespace ShnexyTest.DDay.iCal.Test
 {
@@ -582,7 +584,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
             var start = new DateTime(2000, 1, 1);
-            Event evt = new Event(_uow);
+            Event evt = new Event();
             evt.RecurrenceDates.Add(new PeriodList { new Period(new iCalDateTime(start), new iCalDateTime(new DateTime(2000, 1, 2))) });
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
