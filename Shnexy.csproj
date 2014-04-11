@@ -216,6 +216,8 @@
     <Compile Include="Controllers\BookingAgentController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\Data\EventManager.cs" />
+    <Compile Include="Controllers\DayPilot\DayPilotCalendarControl.cs" />
+    <Compile Include="Controllers\DayPilot\DayPilotNavigatorControl.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\Helpers\Log.cs" />
@@ -804,6 +806,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
+    <Folder Include="Views\BookingAgent\" />
     <Folder Include="Views\Engine\" />
     <Folder Include="Views\Schedule\" />
     <Folder Include="Views\Session\" />

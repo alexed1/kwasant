@@ -37,7 +37,7 @@
                 dpc.clearSelection();                
             };
 
-            var url = getBaseCalendarURL() + '/New/' + e.value();
+            var url = getBaseCalendarURL() + '/New/?emailID=' + @Model.EmailID + '&partStart=' + e.partStart() + '&partEnd=' + e.partEnd();
             m.showUrl(url);
         }            
 
@@ -46,7 +46,7 @@
 
 <div class="jumbotron">    
     <div class="row" style="font-size: 0.85em;">
-        <div class="col-md-5 container_box">
+        <div id="emailInfoBox" class="col-md-5 container_box">
             <br />
 
             <div class="row">
@@ -84,7 +84,7 @@
                 <div class="col-md-9">
                     <div class="bookingAgentFormControlBorder">
                         @{
-                            var toEmailAddresses = (string)ViewData["ToEmailAddresses"];
+                            var toEmailAddresses = String.Join(",", Model.To.Select(a => a.Address));
 
                             <span>@toEmailAddresses</span>
                         }
@@ -104,7 +104,7 @@
                 <div class="col-md-9">
                     <div class="bookingAgentFormControlBorder">
                         @{
-                            var cCEmailAddresses = (string)ViewData["CCEmailAddresses"];
+                            var cCEmailAddresses = String.Join(",", Model.CC.Select(a => a.Address));
 
                             <span>@cCEmailAddresses</span>
                         }
@@ -124,7 +124,7 @@
                 <div class="col-md-9">
                     <div class="bookingAgentFormControlBorder">
                         @{
-                            var bCCEmailAddresses = (string)ViewData["BCCEmailAddresses"];
+                            var bCCEmailAddresses = String.Join(",", Model.BCC.Select(a => a.Address));
 
                             <span>@bCCEmailAddresses</span>
                         }
@@ -173,12 +173,12 @@
                 @(Html.DayPilotCalendar("dpc", new DayPilotCalendarConfig
                     {
                         ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
-                        BackendUrl = Url.Content("~/Calendar/Backend"),
+                        BackendUrl = Url.Content("~/Calendar/Backend/?emailID=" + Model.From.EmailAddressID),
                         EventMoveHandling = EventMoveHandlingType.CallBack,
                         EventResizeHandling = EventResizeHandlingType.CallBack,
                         TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedHandlingType.CallBack,
                         ShowAllDayEvents = true,
-                        Height = 400,
+                        Height = 630,
                         HeightSpec = HeightSpec.BusinessHours,
                         EventBubble = "bubble",
                         EventClickJavaScript = "eventClick(e)",
