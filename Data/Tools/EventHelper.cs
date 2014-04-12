@@ -56,7 +56,7 @@ namespace Data.Tools
                     RSVP = true,
                     Value = new Uri("mailto:" + attendee.EmailAddress),
                 });
-                attendee.EventDo = eventDo;
+                attendee.Event = eventDo;
             }
             evnt.Organizer = new Organizer(fromEmail) { CommonName = fromName };
 

@@ -15,7 +15,7 @@ namespace Data.Models
         public String Text { get; set; }
 
         public int StatusID { get; set; }
-        public virtual EmailStatusDO StatusDO { get; set; }
+        public virtual EmailStatusDO Status { get; set; }
 
         public virtual EmailAddressDO From { get; set; }
 
@@ -29,6 +29,7 @@ namespace Data.Models
         [InverseProperty("Email")]
         public virtual List<AttachmentDO> Attachments { get; set; }
 
-        public virtual EventDO EventDo { get; set; }
+        [InverseProperty("Emails")]
+        public virtual List<EventDO> Events { get; set; }
     }
 }

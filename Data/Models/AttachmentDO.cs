@@ -11,7 +11,7 @@ namespace Data.Models
 
         public int EmailID { get; set; }
         [Required]
-        public EmailDO EmailDO { get; set; }
+        public EmailDO Email { get; set; }
         public String Type { get; set; }
     }
 }

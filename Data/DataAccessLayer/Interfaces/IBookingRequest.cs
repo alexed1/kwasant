@@ -6,6 +6,6 @@ namespace Data.DataAccessLayer.Interfaces
     public interface IBookingRequest : IEmail
     {
         [Required]
-        CustomerDO CustomerDO { get; set; }
+        CustomerDO Customer { get; set; }
     }
 }

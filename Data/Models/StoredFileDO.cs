@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO;
 using System.Text;
@@ -9,6 +10,7 @@ namespace Data.Models
 {
     public class StoredFileDO : ISaveHook
     {
+        [Key]
         public int StoredFileID { get; set; }
 
         public String OriginalName { get; set; }

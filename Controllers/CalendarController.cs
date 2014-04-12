@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Web.Mvc;
 using Data.Constants;
@@ -24,13 +25,13 @@ namespace Shnexy.Controllers
             PopulateCalender();
 
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            EmailRepository emailRepository = new EmailRepository(uow);
-            EmailDO email = emailRepository.GetByKey(id);
-            if (email == null) 
+            IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
+            BookingRequestDO bookingRequestDO = bookingRequestRepository.GetByKey(id);
+            if (bookingRequestDO == null) 
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Calendar = new Calendar(uow, email.From.Address);
-            return View(email);
+            Calendar = new Calendar(uow, bookingRequestDO.Customer);
+            return View(bookingRequestDO);
         }
 
         private Calendar Calendar
@@ -252,17 +253,19 @@ namespace Shnexy.Controllers
             int intSequence = GetValueFromForm(form, "Sequence", 0);
             string strSummary = GetValueFromForm(form, "Summary", String.Empty);
             string strCategory = GetValueFromForm(form, "Category", String.Empty);
-            int emailID = GetValueFromForm(form, "EmailID", 0);
+            int bookingRequestID = GetValueFromForm(form, "BookingRequestID", 0);
 
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             InvitationRepository invitationRepository = new InvitationRepository(uow);
             EventDO eventDo = new EventDO();
             invitationRepository.Add(eventDo);
 
-            EmailRepository emailRepository = new EmailRepository(uow);
-            EmailDO existingEmailDO = emailRepository.GetByKey(emailID);
-            existingEmailDO.StatusID = EmailStatusConstants.PROCESSED;
-            existingEmailDO.EventDo = eventDo;
+            BookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
+            BookingRequestDO bookingRequestDO = bookingRequestRepository.GetByKey(bookingRequestID);
+            bookingRequestDO.StatusID = EmailStatusConstants.PROCESSED;
+            if (bookingRequestDO.Events == null)
+                bookingRequestDO.Events = new List<EventDO>();
+            bookingRequestDO.Events.Add(eventDo);
 
             eventDo.StartDate = dtFromDate;
             eventDo.EndDate = dtToDate;
@@ -275,6 +278,7 @@ namespace Shnexy.Controllers
             eventDo.Sequence = intSequence;
             eventDo.Summary = strSummary;
             eventDo.Category = strCategory;
+            eventDo.BookingRequest = bookingRequestDO;
             uow.SaveChanges();
 
             Calendar.AddEvent(eventDo);

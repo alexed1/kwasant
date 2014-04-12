@@ -162,7 +162,7 @@
     <Compile Include="DDay.iCal\Compatibility\DebuggerDisplayAttribute.cs" />
     <Compile Include="DDay.iCal\Components\Alarm.cs" />
     <Compile Include="DDay.iCal\Components\CalendarComponent.cs" />
-    <Compile Include="DDay.iCal\Components\Event.cs" />
+    <Compile Include="DDay.iCal\Components\DDayEvent.cs" />
     <Compile Include="DDay.iCal\Components\FreeBusy.cs" />
     <Compile Include="DDay.iCal\Components\iCalTimeZone.cs" />
     <Compile Include="DDay.iCal\Components\iCalTimeZoneInfo.cs" />

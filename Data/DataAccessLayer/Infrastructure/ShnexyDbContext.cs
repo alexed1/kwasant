@@ -40,21 +40,28 @@ namespace Data.DataAccessLayer.Infrastructure
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<UserDO>().ToTable("Users");
+
+            modelBuilder.Entity<EventDO>()
+                .HasMany(ev => ev.Emails)
+                .WithMany(e => e.Events)
+                .Map(
+                    mapping => mapping.MapLeftKey("EventID").MapRightKey("EmailID").ToTable("EventEmail")
+                );
             
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(e => e.From);
             modelBuilder.Entity<EmailDO>()
-                .HasRequired(e => e.StatusDO)
+                .HasRequired(e => e.Status)
                 .WithMany(es => es.Emails)
                 .HasForeignKey(e => e.StatusID);
 
             modelBuilder.Entity<AttachmentDO>()
-                .HasRequired(a => a.EmailDO)
+                .HasRequired(a => a.Email)
                 .WithMany(e => e.Attachments)
                 .HasForeignKey(a => a.EmailID);
 
             modelBuilder.Entity<EmailAddressDO>()
-                .HasOptional(ea => ea.FromEmailDO)
+                .HasOptional(ea => ea.FromEmail)
                 .WithRequired(e => e.From)
                 .Map(x => x.MapKey("FromEmailAddressID"));
 

@@ -9,7 +9,7 @@ namespace Data.Models
     public class EventDO : IInvitation
     {
         [Key]
-        public int InvitationID { get; set; }
+        public int EventID { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Location { get; set; }
@@ -25,10 +25,12 @@ namespace Data.Models
         public virtual UserDO CreatedBy { get; set; }
         public bool IsAllDay { get; set; }
 
-        [InverseProperty("Invitation")]
+        [InverseProperty("Event")]
         public virtual List<AttendeeDO> Attendees { get; set; }
 
-        [InverseProperty("Invitation")]
+        [InverseProperty("Events")]
         public virtual List<EmailDO> Emails { get; set; }
+
+        public virtual BookingRequestDO BookingRequest { get; set; }
     }
 }

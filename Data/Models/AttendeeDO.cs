@@ -10,6 +10,6 @@ namespace Data.Models
         public int AttendeeID { get; set; }
         public String Name { get; set; }
         public String EmailAddress { get; set; }
-        public virtual EventDO EventDo { get; set; }
+        public virtual EventDO Event { get; set; }
     }
 }

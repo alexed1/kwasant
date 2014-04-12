@@ -12,7 +12,7 @@ namespace Data.Models
         public virtual EmailAddressDO Email { get; set; }
         public String FirstName { get; set; }
         public String LastName { get; set; }
-        public virtual UserDO UserDO { get; set; }
+        public virtual UserDO User { get; set; }
         public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
     }
 }

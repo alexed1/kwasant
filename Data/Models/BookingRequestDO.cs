@@ -6,6 +6,6 @@ namespace Data.Models
     public class BookingRequestDO : EmailDO, IBookingRequest
     {
         [Required]
-        public virtual CustomerDO CustomerDO { get; set; }
+        public virtual CustomerDO Customer { get; set; }
     }
 }

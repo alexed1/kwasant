@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Data.Models;
 
@@ -16,6 +17,6 @@ namespace Data.DataAccessLayer.Interfaces
         //IEnumerable<EmailAddress> BCC { get; set; }
         //IEnumerable<EmailAddress> CC { get; set; }
         //IEnumerable<Attachment> Attachments { get; set; }
-        EventDO EventDo { get; set; }
+        List<EventDO> Events { get; set; }
     }
 }

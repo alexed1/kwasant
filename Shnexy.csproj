@@ -215,7 +215,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BookingAgentController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
-    <Compile Include="Controllers\Data\EventManager.cs" />
+    <Compile Include="Controllers\Models\Calendar.cs" />
     <Compile Include="Controllers\DayPilot\DayPilotCalendarControl.cs" />
     <Compile Include="Controllers\DayPilot\DayPilotNavigatorControl.cs" />
     <Compile Include="Controllers\EmailController.cs" />

@@ -13,7 +13,7 @@ namespace Data.DataAccessLayer.Interfaces
         EmailAddressDO Email { get; set; }
         String FirstName { get; set; }
         String LastName { get; set; }
-        UserDO UserDO { get; set; }
+        UserDO User { get; set; }
         IEnumerable<BookingRequestDO> BookingRequests { get; set; }
     }
 }

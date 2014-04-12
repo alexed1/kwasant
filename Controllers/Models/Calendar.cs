@@ -14,28 +14,28 @@ namespace Shnexy.Controllers.Models
     /// </summary>
     public class Calendar
     {
-        private readonly string _fromEmailAddress;
+        private readonly CustomerDO _customer;
         private readonly IUnitOfWork _uow;
         private InvitationRepository _invitationRepo;
 
-        public Calendar(IUnitOfWork uow, string fromEmailAddress)
+        public Calendar(IUnitOfWork uow, CustomerDO customer)
         {
             _uow = uow;
-            _fromEmailAddress = fromEmailAddress;
-            LoadData(_fromEmailAddress);
+            _customer = customer;
+            LoadData(_customer);
         }
 
         public List<EventDO> EventsList;
         
-        private void LoadData(String fromEmailAddress)
+        private void LoadData(CustomerDO customer)
         {
             _invitationRepo = new InvitationRepository(_uow);
-            EventsList = _invitationRepo.GetQuery().Where(i => i.Emails.Any(e => e.From.Address == fromEmailAddress)).ToList();
+            EventsList = _invitationRepo.GetQuery().Where(i => i.BookingRequest.Customer.CustomerID == customer.CustomerID).ToList();
         }
 
         public void Reload()
         {
-            LoadData(_fromEmailAddress);
+            LoadData(_customer);
         }
 
         public void AddEvent(EventDO eventDo)
@@ -46,7 +46,7 @@ namespace Shnexy.Controllers.Models
         public void DeleteEvent(String idStr)
         {
             int id = idStr.ToInt();
-            EventDO eventToDelete = EventsList.FirstOrDefault(inv => inv.InvitationID == id);
+            EventDO eventToDelete = EventsList.FirstOrDefault(inv => inv.EventID == id);
             if (eventToDelete != null)
             {
                 EventsList.Remove(eventToDelete);
@@ -70,7 +70,7 @@ namespace Shnexy.Controllers.Models
         public void MoveEvent(String idStr, DateTime newStart, DateTime newEnd)
         {
             int id = Int32.Parse(idStr);
-            EventDO itemToMove = EventsList.FirstOrDefault(inv => inv.InvitationID == id);
+            EventDO itemToMove = EventsList.FirstOrDefault(inv => inv.EventID == id);
             if (itemToMove != null)
             {
                 itemToMove.StartDate = newStart;

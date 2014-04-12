@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net.Mail;
+using System.Runtime.InteropServices;
 using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
@@ -13,7 +14,13 @@ namespace Data.Tools
     {
         public static EmailDO ConvertMailMessageToEmail(IEmailRepository emailRepository, MailMessage mailAddress)
         {
-            EmailDO emailDO = new EmailDO
+            return ConvertMailMessageToEmail<EmailDO>(emailRepository, mailAddress);
+        }
+
+        public static TEmailType ConvertMailMessageToEmail<TEmailType>(IGenericRepository<TEmailType> emailRepository, MailMessage mailAddress)
+            where TEmailType : EmailDO, new()
+        {
+            TEmailType emailDO = new TEmailType
             {
                 From = GetEmailAddress(mailAddress.From),
                 BCC = mailAddress.Bcc.Select(GetEmailAddress).ToList(),
@@ -22,11 +29,11 @@ namespace Data.Tools
                 Text = mailAddress.Body,
                 Attachments = mailAddress.Attachments.Select(CreateNewAttachment).ToList(),
                 To = mailAddress.To.Select(GetEmailAddress).ToList(),
-                EventDo = null
+                Events = null
             };
-            emailDO.To.ForEach(a => a.ToEmailDO = emailDO);
-            emailDO.CC.ForEach(a => a.BccEmailDO = emailDO);
-            emailDO.BCC.ForEach(a => a.CcEmailDO = emailDO);
+            emailDO.To.ForEach(a => a.ToEmail = emailDO);
+            emailDO.CC.ForEach(a => a.BccEmail = emailDO);
+            emailDO.BCC.ForEach(a => a.CcEmail = emailDO);
             emailDO.StatusID = EmailStatusConstants.QUEUED;
 
             emailRepository.Add(emailDO);

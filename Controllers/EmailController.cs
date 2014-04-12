@@ -17,17 +17,22 @@ namespace Shnexy.Controllers
     public class EmailController : Controller
     {
         private IUnitOfWork _uow;
-
-        private IEmail curEmail;
-        private IEmailRepository curEmailRepo;
+        private IBookingRequestRepository curBookingRequestRepository;
         private ShnexyPackager API;
 
         ShnexyDbContext db = new ShnexyDbContext();
 
+        public EmailController(IUnitOfWork uow)
+        {
+            _uow = uow;
+            curBookingRequestRepository = new BookingRequestRepository(_uow);
+            API = new ShnexyPackager();
+        }
+
         // GET: /Email/
         public ActionResult Index()
         {
-            return View(curEmailRepo.GetAll().Where(e => e.StatusID == EmailStatusConstants.UNPROCESSED).ToList());            
+            return View(curBookingRequestRepository.GetAll().Where(e => e.StatusID == EmailStatusConstants.UNPROCESSED).ToList());            
         }
 
         // GET: /Email/Details/5
@@ -37,9 +42,9 @@ namespace Shnexy.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            EmailDO emailDO = curEmailRepo.GetByKey(id);
+            BookingRequestDO bookingRequestDO = curBookingRequestRepository.GetByKey(id);
 
-            if (emailDO == null)
+            if (bookingRequestDO == null)
             {
                 return HttpNotFound();
             }
@@ -51,23 +56,13 @@ namespace Shnexy.Controllers
             //return View(email);
         }
 
-        public EmailController(IUnitOfWork uow)
-        {
-            _uow = uow;
-            curEmailRepo = new EmailRepository(_uow);
-            curEmail = new EmailDO();
-            API = new ShnexyPackager();
-        }
-
-
-
         // GET: /Email/
         [HttpGet]
         public string ProcessGetEmail(string requestString)
         {
             Dictionary<string, string> param = new Dictionary<string, string>();
             API.UnpackGetEmail(requestString, out param);
-            EmailDO thisEmailDO = curEmailRepo.GetByKey(param["Id"].ToInt());
+            EmailDO thisEmailDO = curBookingRequestRepository.GetByKey(param["Id"].ToInt());
             return API.PackResponseGetEmail(thisEmailDO);
         }
     }

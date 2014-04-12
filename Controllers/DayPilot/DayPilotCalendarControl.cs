@@ -237,7 +237,7 @@ namespace Shnexy.Controllers.DayPilot
             DataStartField = "StartDate";
             DataEndField = "EndDate";
             DataTextField = "Summary";
-            DataIdField = "InvitationID";
+            DataIdField = "EventID";
 
             Events = _calendar.EventsList;
         }
