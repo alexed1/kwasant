@@ -15,7 +15,7 @@ namespace Data.DataAccessLayer.Infrastructure
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             EmailStatusConstants.ApplySeedData(uow);
             uow.SaveChanges();
-            var customer = SeedFakeCustomer();
+            CustomerDO customer = SeedFakeCustomer();
             SeedFakeBookingRequest(customer);
             SeedFakeBookingRequest(customer);
         }
