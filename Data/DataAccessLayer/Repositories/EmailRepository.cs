@@ -17,9 +17,6 @@ namespace Data.DataAccessLayer.Repositories
 
     public interface IEmailRepository : IGenericRepository<Email>
     {
-        IUnitOfWork UnitOfWork { get; }
-
-        void Add(Email entity);
-   
+      
     }
 }

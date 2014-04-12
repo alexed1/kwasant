@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.Models;
-using Data.Services.APIManager.Packagers.Shnexy;
+using DBTools.Managers.APIManager.Packagers.Shnexy;
 using UtilitiesLib;
 
 namespace Shnexy.Controllers
@@ -29,7 +24,7 @@ namespace Shnexy.Controllers
         {
             _uow = uow;
             curEmailRepo = new EmailRepository(_uow);
-            curEmail = new Email(curEmailRepo); //why is repo null?
+            
             API = new ShnexyPackager();
         }
 
@@ -41,7 +36,7 @@ namespace Shnexy.Controllers
         {
             Dictionary<string, string> param = new Dictionary<string, string>();
             API.UnpackGetEmail(requestString, out param);
-            Email thisEmail = curEmail.GetByKey(param["Id"].ToInt());
+            Email thisEmail = curEmailRepo.GetByKey(param["Id"].ToInt());
             return API.PackResponseGetEmail(thisEmail);
         }
 
@@ -51,7 +46,7 @@ namespace Shnexy.Controllers
         {
             
             IEnumerable<Email> curEmails = new List<Email>();
-            curEmails = curEmail.GetAll();
+            curEmails = curEmailRepo.GetAll();
             return View("Index", curEmails);
         }
 
@@ -62,7 +57,7 @@ namespace Shnexy.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            curEmail = curEmail.GetByKey(Id);
+            curEmail = curEmailRepo.GetByKey(Id);
             if (curEmail == null)
             {
                 return HttpNotFound();

@@ -1,5 +1,8 @@
 ﻿using System;
+using Data.Constants;
+using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
+using DBTools;
 using StructureMap;
 
 namespace Daemons
@@ -20,11 +23,12 @@ namespace Daemons
         protected override void Run()
         {
             while (ProcessNextEventNoWait()) { }
-            var emailRepo = ObjectFactory.GetInstance<IEmailRepository>();
+            var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+            var emailRepository = new EmailRepository(unitOfWork);
 
-            foreach (var email in emailRepo.FindList(e => e.Status == "queued"))
+            foreach (var email in emailRepository.FindList(e => e.Status.EmailStatusID == EmailStatusConstants.QUEUED))
             {
-                email.Send();
+                EmailHelper.SendEmail(email);
             }
         }
     }

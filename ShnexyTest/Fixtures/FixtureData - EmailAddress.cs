@@ -12,10 +12,10 @@ namespace ShnexyTest.Fixtures
         public EmailAddress TestEmail1()
         {
 
-            return new EmailAddress(emailAddressRepo)
+            return new EmailAddress()
             {
-                Email = "alexlucre1@gmail.com",
-                Id = 1,
+                Address = "alexlucre1@gmail.com",
+                EmailAddressID = 1,
                 Name = "Alex Lucre1"
             };
         }
@@ -23,10 +23,10 @@ namespace ShnexyTest.Fixtures
         public EmailAddress TestEmail2()
         {
 
-            return new EmailAddress(emailAddressRepo)
+            return new EmailAddress()
             {
-                Email = "joetest2@edelstein.org",
-                Id = 2,
+                Address = "joetest2@edelstein.org",
+                EmailAddressID = 2,
                 Name = "Joe Test Account 2"
             };
         }

@@ -51,7 +51,7 @@
   <ItemGroup>
     <Compile Include="Daemon.cs" />
     <Compile Include="EventExposers\ExposedEvent.cs" />
-    <Compile Include="InboundEmailHander.cs" />
+    <Compile Include="InboundEmailHandler.cs" />
     <Compile Include="OutboundEmailHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -61,8 +61,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">
-      <Project>{0bd2e27e-8bc3-400b-8560-b67015b4cfac}</Project>
+      <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DBTools\DBTools.csproj">
+      <Project>{066ed602-b036-489c-b616-63682348a750}</Project>
+      <Name>DBTools</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

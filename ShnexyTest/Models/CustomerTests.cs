@@ -46,13 +46,12 @@ namespace ShnexyTest.Models
         {
             //create a customer from fixture data
             Customer curCustomer = _fixture.TestCustomer();
-            curCustomer.Add();
+            customerRepo.Add(curCustomer);
             customerRepo.UnitOfWork.SaveChanges();
             //check that it was saved to the db
-            Customer savedCustomer = new Customer(customerRepo);
-            savedCustomer = savedCustomer.GetByKey(curCustomer.Id);
+            Customer savedCustomer = customerRepo.GetByKey(curCustomer.CustomerID);
             Assert.AreEqual(curCustomer.FirstName,savedCustomer.FirstName);
-            Assert.AreEqual(curCustomer.emailAddr.Email, savedCustomer.emailAddr.Email);
+            Assert.AreEqual(curCustomer.Email, savedCustomer.Email);
 
             //call Customer#Add
             //does event get called?

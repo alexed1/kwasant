@@ -11,11 +11,11 @@
 	<hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Body)
+            @Html.DisplayNameFor(model => model.Text)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Body)
+            @Html.DisplayFor(model => model.Text)
         </dd>
 
         <dt>
@@ -29,6 +29,6 @@
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.EmailID }) |
     @Html.ActionLink("Back to List", "Index")
 </p>

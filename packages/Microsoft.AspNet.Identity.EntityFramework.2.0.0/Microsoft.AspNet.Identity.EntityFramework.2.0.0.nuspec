@@ -10,9 +10,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <description>ASP.NET Identity providers that use Entity Framework.</description>
     <summary>ASP.NET Identity providers that use Entity Framework.</summary>
-    <releaseNotes />
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
-    <language />
     <tags>Identity Membership</tags>
     <dependencies>
       <dependency id="Microsoft.AspNet.Identity.Core" version="2.0.0" />

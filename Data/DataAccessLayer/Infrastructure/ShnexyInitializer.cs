@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using Data.Constants;
+using Data.DataAccessLayer.Interfaces;
+using StructureMap;
 
 namespace Data.DataAccessLayer.Infrastructure
 {
@@ -7,8 +9,9 @@ namespace Data.DataAccessLayer.Infrastructure
 
         protected override void Seed(ShnexyDbContext context)
         {
-            
-            Debug.WriteLine("in seed");
+            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailStatusConstants.ApplySeedData(uow);
+            uow.SaveChanges();
         }
     }
 }

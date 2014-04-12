@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Data.DataAccessLayer.Repositories;
 using Data.Models;
+using DBTools;
 using S22.Imap;
 using Shnexy.Fixtures;
 using System;
@@ -50,8 +51,8 @@ namespace Shnexy.Controllers
             }
             foreach (var message in messages)
             {
-                var curEmail = new Email(message, _emailRepo);
-                curEmail.Save();
+                EmailHelper.AddNewEmailToRepository(_emailRepo, message);
+                _emailRepo.UnitOfWork.SaveChanges();
             }
 
           
@@ -61,8 +62,6 @@ namespace Shnexy.Controllers
 
         public ActionResult ProcessQueues()
         {
-
-            Engine curEngine = new Engine();
             //curEngine.ProcessQueues();
             return View();
         }

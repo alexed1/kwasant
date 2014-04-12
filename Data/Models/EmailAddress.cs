@@ -1,46 +1,21 @@
-﻿using System.Net.Mail;
-using Data.DataAccessLayer.Repositories;
-using Newtonsoft.Json;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models
 {
-    public interface IEmailAddress
-    {
-        [JsonIgnore]
-        int Id { get; set; }
-        string Name { get; set; }
-        string Email { get; set; }
-    }
-
     public class EmailAddress : IEmailAddress
     {
+        [Key]
+        public int EmailAddressID { get; set; }
 
-        public int Id {get; set; }
-        public string Name {get; set;}
-        public string Email { get; set; }
+        public String Name { get; set; }
+        public String Address { get; set; }
 
-        private IEmailAddressRepository _emailAddressRepo;
-
-        //This is the constructor when building an EmailAddress from an imported IMAP address (the library we're using uses MailAddress)
-        public EmailAddress(MailAddress importedAddress)
-        {
-            Name = importedAddress.DisplayName;
-            Email = importedAddress.Address;
-
-        }
-
-        //This is the constructor when building an EmailAddress from our own Db
-        public EmailAddress(IEmailAddressRepository emailAddressRepo)
-        {
-            _emailAddressRepo = emailAddressRepo;
-
-        }
-
-        public EmailAddress()
-        {
-            
-        }
-      
- 
+        public Email FromEmail { get; set; }
+        public Email ToEmail { get; set; }
+        public Email BCCEmail { get; set; }
+        public Email CCEmail { get; set; }
     }
 }
