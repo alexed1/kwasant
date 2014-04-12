@@ -63,7 +63,7 @@ namespace ShnexyTest.DDay.Collections.Test
 
         virtual public void SetValue(string value)
         {
-            var removedValues = Values;
+            IEnumerable<string> removedValues = Values;
             _InternalValues.Clear();
             if (value != null)
             {
@@ -74,7 +74,7 @@ namespace ShnexyTest.DDay.Collections.Test
 
         virtual public void SetValue(IEnumerable<string> values)
         {
-            var removedValues = Values;
+            IEnumerable<string> removedValues = Values;
             _InternalValues = new List<string>(values);
             OnValueChanged(removedValues, _InternalValues);
         }

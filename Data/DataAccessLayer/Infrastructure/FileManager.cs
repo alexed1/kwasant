@@ -9,33 +9,33 @@ namespace Data.DataAccessLayer.Infrastructure
     {
         static string GetAbsolutePath(String relativePath)
         {
-            var directory = ConfigurationManager.AppSettings["LocalFileStorageDirectory"];
+            string directory = ConfigurationManager.AppSettings["LocalFileStorageDirectory"];
             directory = Path.GetFullPath(directory);
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
             return Path.Combine(directory, relativePath);
         }
 
-        public static void SaveFile(StoredFile file)
+        public static void SaveFile(StoredFileDO fileDO)
         {
-            if (String.IsNullOrEmpty(file.StoredName))
-                file.StoredName = Path.GetRandomFileName();
+            if (String.IsNullOrEmpty(fileDO.StoredName))
+                fileDO.StoredName = Path.GetRandomFileName();
 
-            var fileStream = new FileStream(GetAbsolutePath(file.StoredName), FileMode.Create);
-            file.GetData().CopyTo(fileStream);
+            FileStream fileStream = new FileStream(GetAbsolutePath(fileDO.StoredName), FileMode.Create);
+            fileDO.GetData().CopyTo(fileStream);
             fileStream.Close();
         }
 
-        public static void LoadFile(StoredFile file)
+        public static void LoadFile(StoredFileDO fileDO)
         {
-            if (String.IsNullOrEmpty(file.StoredName))
+            if (String.IsNullOrEmpty(fileDO.StoredName))
                 throw new Exception("File does not have a stored name");
 
-            var memoryStream = new MemoryStream();
-            var fileStream = new FileStream(GetAbsolutePath(file.StoredName), FileMode.Open);
+            MemoryStream memoryStream = new MemoryStream();
+            FileStream fileStream = new FileStream(GetAbsolutePath(fileDO.StoredName), FileMode.Open);
             fileStream.CopyTo(memoryStream);
             fileStream.Close();
-            file.SetData(memoryStream);
+            fileDO.SetData(memoryStream);
         }
     }
 }

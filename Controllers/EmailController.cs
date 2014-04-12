@@ -37,9 +37,9 @@ namespace Shnexy.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Email email = curEmailRepo.GetByKey(id);
+            EmailDO emailDO = curEmailRepo.GetByKey(id);
 
-            if (email == null)
+            if (emailDO == null)
             {
                 return HttpNotFound();
             }
@@ -55,7 +55,7 @@ namespace Shnexy.Controllers
         {
             _uow = uow;
             curEmailRepo = new EmailRepository(_uow);
-            curEmail = new Email();
+            curEmail = new EmailDO();
             API = new ShnexyPackager();
         }
 
@@ -67,8 +67,8 @@ namespace Shnexy.Controllers
         {
             Dictionary<string, string> param = new Dictionary<string, string>();
             API.UnpackGetEmail(requestString, out param);
-            Email thisEmail = curEmailRepo.GetByKey(param["Id"].ToInt());
-            return API.PackResponseGetEmail(thisEmail);
+            EmailDO thisEmailDO = curEmailRepo.GetByKey(param["Id"].ToInt());
+            return API.PackResponseGetEmail(thisEmailDO);
         }
     }
 }

@@ -1,14 +1,15 @@
 ﻿using Data.DDay.DDay.iCal.DataTypes;
 using Data.Models;
+using DDay.DDay.iCal.Components;
 
 namespace ShnexyTest.Fixtures
 {
     partial class FixtureData
     {
 
-        public  Event TestEvent()
+        public  DDayEvent TestEvent()
         {
-            return new Event()
+            return new DDayEvent()
             {
                 
                 //DTStart = (iCalDateTime)DateTime.Parse("20040117"),

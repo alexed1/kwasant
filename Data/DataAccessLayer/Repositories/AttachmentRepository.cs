@@ -3,7 +3,7 @@ using Data.Models;
 
 namespace Data.DataAccessLayer.Repositories
 {
-    public class AttachmentRepository : GenericRepository<Attachment>, IAttachmentRepository
+    public class AttachmentRepository : GenericRepository<AttachmentDO>, IAttachmentRepository
     {
 
         public AttachmentRepository(IUnitOfWork uow)
@@ -14,7 +14,7 @@ namespace Data.DataAccessLayer.Repositories
     }
 
 
-    public interface IAttachmentRepository : IGenericRepository<Attachment>
+    public interface IAttachmentRepository : IGenericRepository<AttachmentDO>
     {
 
     }

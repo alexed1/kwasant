@@ -6,7 +6,7 @@ using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models
 {
-    public class Invitation : IInvitation
+    public class EventDO : IInvitation
     {
         [Key]
         public int InvitationID { get; set; }
@@ -22,13 +22,13 @@ namespace Data.Models
         public string Summary { get; set; }
         public string Category { get; set; }
         
-        public virtual User CreatedBy { get; set; }
+        public virtual UserDO CreatedBy { get; set; }
         public bool IsAllDay { get; set; }
 
         [InverseProperty("Invitation")]
-        public virtual List<Attendee> Attendees { get; set; }
+        public virtual List<AttendeeDO> Attendees { get; set; }
 
         [InverseProperty("Invitation")]
-        public virtual List<Email> Emails { get; set; }
+        public virtual List<EmailDO> Emails { get; set; }
     }
 }

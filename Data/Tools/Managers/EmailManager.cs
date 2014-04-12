@@ -30,15 +30,15 @@ namespace Data.Tools.Managers
         /// <summary>
         /// This implementation of Send uses the Mandrill API
         /// </summary>
-        public void SendTemplate(string templateName, Email message, Dictionary<string, string> mergeFields)
+        public void SendTemplate(string templateName, EmailDO message, Dictionary<string, string> mergeFields)
         {
             string results = MandrillAPI.PostMessageSendTemplate(templateName, message, mergeFields);
         }
 
-        public void Send(Email curEmail)
+        public void Send(EmailDO curEmailDO)
         {
 
-            string results = MandrillAPI.PostMessageSend(curEmail);
+            string results = MandrillAPI.PostMessageSend(curEmailDO);
            
         }
 

@@ -5,21 +5,21 @@ using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Calendar;
 using DayPilot.Web.Mvc.Events.Common;
-using Shnexy.Controllers.Data;
+using Shnexy.Controllers.Models;
 
 namespace Shnexy.Controllers.DayPilot
 {
     public class DayPilotCalendarControl : DayPilotCalendar
     {
-        private readonly EventManager _eventManager;
-        public DayPilotCalendarControl(EventManager eventManager)
+        private readonly Calendar _calendar;
+        public DayPilotCalendarControl(Calendar calendar)
         {
-            _eventManager = eventManager;
+            _calendar = calendar;
         }
 
         protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
         {
-            _eventManager.EventAdd(new Invitation
+            _calendar.AddEvent(new EventDO
             {
                 StartDate = e.Start,
                 EndDate = e.End,
@@ -31,7 +31,7 @@ namespace Shnexy.Controllers.DayPilot
 
         protected override void OnEventMove(EventMoveArgs e)
         {
-            _eventManager.EventMove(e.Id, e.NewStart, e.NewEnd);
+            _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
             //if (new EventManager(Controller).Get(e.Id) != null)
             //{
             //    new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd);
@@ -48,13 +48,13 @@ namespace Shnexy.Controllers.DayPilot
         
         protected override void OnEventDelete(EventDeleteArgs e)
         {
-            _eventManager.EventDelete(e.Id);
+            _calendar.DeleteEvent(e.Id);
             Update();
         }
 
         protected override void OnEventResize(EventResizeArgs e)
         {
-            _eventManager.EventMove(e.Id, e.NewStart, e.NewEnd);
+            _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
         }
 
@@ -74,7 +74,7 @@ namespace Shnexy.Controllers.DayPilot
 
                     blnResult = Int32.TryParse(e.Id, out intResultId);
 
-                    _eventManager.EventDelete(e.Id);
+                    _calendar.DeleteEvent(e.Id);
                     Update();
                     break;
             }
@@ -105,7 +105,7 @@ namespace Shnexy.Controllers.DayPilot
 
                 case "delete":
                     string id = (string)e.Data["id"];
-                    _eventManager.EventDelete(id);
+                    _calendar.DeleteEvent(id);
                     Update(CallBackUpdateType.EventsOnly);
                     break;
 
@@ -239,7 +239,7 @@ namespace Shnexy.Controllers.DayPilot
             DataTextField = "Summary";
             DataIdField = "InvitationID";
 
-            Events = _eventManager.Data;
+            Events = _calendar.EventsList;
         }
     }
 }

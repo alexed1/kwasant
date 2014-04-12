@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Events.Navigator;
-using Shnexy.Controllers.Data;
 
 namespace Shnexy.Controllers.DayPilot
 {

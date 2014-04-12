@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Data.DDay.DDay.iCal;
@@ -357,9 +358,9 @@ namespace ShnexyTest.DDay.iCal.Test
             // Per Jon Udell's test, we should be able to get all 
             // system time zones on the machine and ensure they
             // are properly translated.
-            var zones = System.TimeZoneInfo.GetSystemTimeZones();
+            ReadOnlyCollection<TimeZoneInfo> zones = System.TimeZoneInfo.GetSystemTimeZones();
             TimeZoneInfo tzinfo;
-            foreach (var zone in zones)
+            foreach (TimeZoneInfo zone in zones)
             {
                 tzinfo = null;
                 try
@@ -373,7 +374,7 @@ namespace ShnexyTest.DDay.iCal.Test
 
                 if (tzinfo != null)
                 {
-                    var ical_tz = iCalTimeZone.FromSystemTimeZone(tzinfo);
+                    iCalTimeZone ical_tz = iCalTimeZone.FromSystemTimeZone(tzinfo);
                     Assert.AreNotEqual(0, ical_tz.TimeZoneInfos.Count, zone.StandardName + ": no time zone information was extracted.");
                 }
             }

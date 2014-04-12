@@ -5,14 +5,14 @@ using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models
 {
-    public class Customer : ICustomer
+    public class CustomerDO : ICustomer
     {
         [Key]
         public int CustomerID { get; set; }
-        public virtual EmailAddress Email { get; set; }
+        public virtual EmailAddressDO Email { get; set; }
         public String FirstName { get; set; }
         public String LastName { get; set; }
-        public virtual User User { get; set; }
-        public virtual IEnumerable<BookingRequest> BookingRequests { get; set; }
+        public virtual UserDO UserDO { get; set; }
+        public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
     }
 }

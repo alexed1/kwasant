@@ -1,97 +1,19 @@
-﻿using System;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using System.Net.Mail;
-using System.Net.Mime;
-using System.Text;
 using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
-using Data.DDay.DDay.iCal;
-using Data.DDay.DDay.iCal.DataTypes;
-using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
 using Data.Models;
 using Data.Tools.Managers;
 using StructureMap;
-using Attachment = Data.Models.Attachment;
-using Attendee = Data.DDay.DDay.iCal.DataTypes.Attendee;
 
 namespace Data.Tools
 {
     public static class EmailHelper
     {
-        public static void DispatchInvitation(IUnitOfWork uow, Invitation invitation)
+        public static EmailDO ConvertMailMessageToEmail(IEmailRepository emailRepository, MailMessage mailAddress)
         {
-            EmailRepository emailRepo = new EmailRepository(uow);
-
-            string fromEmail = "lucreorganizer@gmail.com";
-            string fromName = "Booqit Organizer";
-
-            MailMessage mailMessage = new MailMessage { From = new MailAddress(fromEmail, fromName) };
-            foreach (Data.Models.Attendee attendee in invitation.Attendees)
-                mailMessage.To.Add(new MailAddress(attendee.EmailAddress, attendee.Name));
-            mailMessage.Subject = "Invitation via Booqit: " + invitation.Summary + "@ " + invitation.StartDate;
-            mailMessage.Body = "This is a Booqit Event Request. For more information, see https://foo.com";
-
-            iCalendar calendar = new iCalendar();
-            Event evnt = new Event();
-            if (invitation.IsAllDay)
-            {
-                evnt.IsAllDay = true;
-            }
-            else
-            {
-                evnt.DTStart = new iCalDateTime(invitation.StartDate);
-                evnt.DTEnd = new iCalDateTime(invitation.EndDate);
-            }
-            evnt.DTStamp = new iCalDateTime(DateTime.Now);
-            evnt.LastModified = new iCalDateTime(DateTime.Now);
-
-            evnt.Location = invitation.Location;
-            evnt.Description = invitation.Description;
-            evnt.Summary = invitation.Summary;
-            foreach (Data.Models.Attendee attendee in invitation.Attendees)
-            {
-                evnt.Attendees.Add(new Attendee
-                {
-                    CommonName = attendee.Name,
-                    Type = "INDIVIDUAL",
-                    Role = "REQ-PARTICIPANT",
-                    ParticipationStatus = ParticipationStatus.NeedsAction,
-                    RSVP = true,
-                    Value = new Uri("mailto:" + attendee.EmailAddress),
-                });
-                attendee.Invitation = invitation;
-            }
-            evnt.Organizer = new Organizer(fromEmail) { CommonName = fromName };
-
-            calendar.Events.Add(evnt);
-            
-            Email email = ConvertMailMessageToEmail(emailRepo, mailMessage);
-            AttachCalendarToEmail(calendar, email);
-            invitation.Emails.Add(email);
-
-            uow.SaveChanges();
-            SendEmail(email);
-        }
-
-        public static void AttachCalendarToEmail(iCalendar iCal, Email email)
-        {
-            iCalendarSerializer serializer = new iCalendarSerializer(iCal);
-            string fileToAttach = serializer.Serialize(iCal);
-
-            Attachment attachment = CreateNewAttachment(
-                new System.Net.Mail.Attachment(
-                    new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
-                    new ContentType {MediaType = "application/calendar", Name = "invite.ics"}
-                ));
-
-            email.Attachments.Add(attachment);
-        }
-
-        public static Email ConvertMailMessageToEmail(IEmailRepository emailRepository, MailMessage mailAddress)
-        {
-            Email email = new Email
+            EmailDO emailDO = new EmailDO
             {
                 From = GetEmailAddress(mailAddress.From),
                 BCC = mailAddress.Bcc.Select(GetEmailAddress).ToList(),
@@ -100,25 +22,25 @@ namespace Data.Tools
                 Text = mailAddress.Body,
                 Attachments = mailAddress.Attachments.Select(CreateNewAttachment).ToList(),
                 To = mailAddress.To.Select(GetEmailAddress).ToList(),
-                Invitation = null
+                EventDo = null
             };
-            email.To.ForEach(a => a.ToEmail = email);
-            email.CC.ForEach(a => a.BCCEmail = email);
-            email.BCC.ForEach(a => a.CCEmail = email);
-            email.StatusID = EmailStatusConstants.QUEUED;
+            emailDO.To.ForEach(a => a.ToEmailDO = emailDO);
+            emailDO.CC.ForEach(a => a.BccEmailDO = emailDO);
+            emailDO.BCC.ForEach(a => a.CcEmailDO = emailDO);
+            emailDO.StatusID = EmailStatusConstants.QUEUED;
 
-            emailRepository.Add(email);
-            return email;
+            emailRepository.Add(emailDO);
+            return emailDO;
         }
 
-        private static EmailAddress GetEmailAddress(MailAddress address)
+        private static EmailAddressDO GetEmailAddress(MailAddress address)
         {
-            return new EmailAddress { Address = address.Address, Name = address.DisplayName };
+            return new EmailAddressDO { Address = address.Address, Name = address.DisplayName };
         }
 
-        private static Attachment CreateNewAttachment(System.Net.Mail.Attachment attachment)
+        internal static AttachmentDO CreateNewAttachment(Attachment attachment)
         {
-            var att = new Attachment
+            AttachmentDO att = new AttachmentDO
             {
                 OriginalName = attachment.Name,
                 Type = attachment.ContentType.MediaType,
@@ -127,12 +49,12 @@ namespace Data.Tools
             return att;
         }
 
-        public static void SendEmail(Email email)
+        public static void SendEmail(EmailDO emailDO)
         {
-            new EmailManager().Send(email);
+            new EmailManager().Send(emailDO);
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
-            email.StatusID = EmailStatusConstants.SENT;
+            emailDO.StatusID = EmailStatusConstants.SENT;
             uow.SaveChanges();
         }
     }

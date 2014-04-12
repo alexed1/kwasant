@@ -27,15 +27,15 @@ namespace Data.DataAccessLayer.StructureMap
         {
             public ShnexyCoreRegistry()
             {
-                For<IAttachment>().Use<Attachment>();
-                For<IAttendee>().Use<Attendee>();
-                For<IBookingRequest>().Use<BookingRequest>();
-                For<ICustomer>().Use<Customer>();
-                For<IEmail>().Use<Email>();
-                For<IEmailAddress>().Use<EmailAddress>();
-                For<IEmailStatus>().Use<EmailStatus>();
-                For<IInvitation>().Use<Invitation>();
-                For<IUser>().Use<User>();
+                For<IAttachment>().Use<AttachmentDO>();
+                For<IAttendee>().Use<AttendeeDO>();
+                For<IBookingRequest>().Use<BookingRequestDO>();
+                For<ICustomer>().Use<CustomerDO>();
+                For<IEmail>().Use<EmailDO>();
+                For<IEmailAddress>().Use<EmailAddressDO>();
+                For<IEmailStatus>().Use<EmailStatusDO>();
+                For<IInvitation>().Use<EventDO>();
+                For<IUser>().Use<UserDO>();
             }
         }
 

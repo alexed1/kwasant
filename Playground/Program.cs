@@ -26,10 +26,10 @@ namespace Playground
             db.Database.Initialize(true);
 
 
-            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            var emailRepository = new EmailRepository(uow);
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailRepository emailRepository = new EmailRepository(uow);
 
-            var mailMessage = new MailMessage(new MailAddress("AClient@gmail.com", "Client Smith"),
+            MailMessage mailMessage = new MailMessage(new MailAddress("AClient@gmail.com", "Client Smith"),
                 new MailAddress("kwa@sant.com", "Booqit Service"))
             {
                 Subject = "Book me a meeting!",

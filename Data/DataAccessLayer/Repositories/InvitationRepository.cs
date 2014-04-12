@@ -5,7 +5,7 @@ namespace Data.DataAccessLayer.Repositories
 {
 
 
-    public class InvitationRepository : GenericRepository<Invitation>, IInvitationRepository
+    public class InvitationRepository : GenericRepository<EventDO>, IInvitationRepository
     {
 
         public InvitationRepository(IUnitOfWork uow)
@@ -16,7 +16,7 @@ namespace Data.DataAccessLayer.Repositories
     }
 
 
-    public interface IInvitationRepository : IGenericRepository<Invitation>
+    public interface IInvitationRepository : IGenericRepository<EventDO>
     {
 
     }

@@ -6,12 +6,12 @@ using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models
 {
-    public class EmailStatus : IEmailStatus
+    public class EmailStatusDO : IEmailStatus
     {
         [Key]
         public int EmailStatusID { get; set; }
         public String Value { get; set; }
 
-        public virtual ICollection<Email> Emails { get; set; }
+        public virtual ICollection<EmailDO> Emails { get; set; }
     }
 }

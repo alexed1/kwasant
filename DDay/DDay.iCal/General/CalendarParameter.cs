@@ -146,7 +146,7 @@ namespace Data.DDay.DDay.iCal.General
         virtual public void SetValue(IEnumerable<string> values)
         {                        
             // Remove all previous values
-            var removedValues = _Values.ToList();
+            List<string> removedValues = _Values.ToList();
             _Values.Clear();
             _Values.AddRange(values);
             OnValueChanged(removedValues, values);

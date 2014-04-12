@@ -29,11 +29,11 @@ namespace ShnexyTest.DDay.Collections.Test
 
         private IList<string> AddCategories()
         {
-            var categories = _Properties.GetMany<string>("CATEGORIES");
+            IList<string> categories = _Properties.GetMany<string>("CATEGORIES");
             categories.Add("Work");
             categories.Add("Personal");
 
-            var property = new Property();
+            Property property = new Property();
             property.Group = "CATEGORIES";
             property.SetValue(new string[] { "A", "Few", "More" });
             _Properties.Add(property);
@@ -58,13 +58,13 @@ namespace ShnexyTest.DDay.Collections.Test
         {
             int itemsAdded = 0;
             _Properties.ItemAdded += (s, e) => itemsAdded++;
-            var categories = _Properties.GetMany<string>("CATEGORIES");
+            IList<string> categories = _Properties.GetMany<string>("CATEGORIES");
 
             Assert.AreEqual(0, itemsAdded);
             _Properties.Set("CATEGORIES", new string[] { "Work", "Personal" });
             Assert.AreEqual(1, itemsAdded);
 
-            var items = categories.ToArray();
+            string[] items = categories.ToArray();
             Assert.AreEqual(2, categories.Count);
         }
 
@@ -105,7 +105,7 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void AddProxy1()
         {
-            var proxy = _Properties.GetMany<string>("CATEGORIES");
+            IList<string> proxy = _Properties.GetMany<string>("CATEGORIES");
             Assert.AreEqual(0, proxy.Count);
             proxy.Add("Work");
             Assert.AreEqual(1, proxy.Count);
@@ -131,9 +131,9 @@ namespace ShnexyTest.DDay.Collections.Test
 
             // Get a proxy for categories, and add items to it, ensuring
             // the items are added propertly afterward.            
-            var proxy = _Properties.GetMany<string>("CATEGORIES");
+            IList<string> proxy = _Properties.GetMany<string>("CATEGORIES");
 
-            foreach (var category in Categories)
+            foreach (string category in Categories)
                 proxy.Add(category);
 
             Assert.IsTrue(Categories.SequenceEqual(proxy.ToArray()));
@@ -151,7 +151,7 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void ContainsProxy1()
         {
-            var proxy = _Properties.GetMany<string>("CATEGORIES");
+            IList<string> proxy = _Properties.GetMany<string>("CATEGORIES");
             Assert.IsFalse(proxy.Contains("Work"));
             proxy.Add("Work");
             Assert.IsTrue(proxy.Contains("Work"));
@@ -160,7 +160,7 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void CopyToProxy1()
         {
-            var categories = AddCategories();
+            IList<string> categories = AddCategories();
 
             string[] values = new string[5];
             categories.CopyTo(values, 0);
@@ -170,14 +170,14 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void CountProxy1()
         {
-            var categories = AddCategories();
+            IList<string> categories = AddCategories();
             Assert.AreEqual(5, categories.Count);
         }
 
         [Test]
         public void RemoveProxy1()
         {
-            var categories = AddCategories();
+            IList<string> categories = AddCategories();
             Assert.AreEqual(5, categories.Count);
 
             categories.Remove("Work");
@@ -205,7 +205,7 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void IndexOfProxy1()
         {
-            var categories = AddCategories();
+            IList<string> categories = AddCategories();
             Assert.AreEqual(0, categories.IndexOf("Work"));
             Assert.AreEqual(1, categories.IndexOf("Personal"));
             Assert.AreEqual(2, categories.IndexOf("A"));
@@ -216,7 +216,7 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void InsertProxy1()
         {
-            var categories = AddCategories();
+            IList<string> categories = AddCategories();
 
             Assert.AreEqual(5, categories.Count);
             Assert.AreEqual("Work", categories.First());
@@ -232,7 +232,7 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void RemoveAtProxy1()
         {
-            var categories = AddCategories();
+            IList<string> categories = AddCategories();
 
             Assert.AreEqual(5, categories.Count);
             categories.RemoveAt(0);
@@ -250,7 +250,7 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void RemoveAtProxy2()
         {
-            var categories = AddCategories();
+            IList<string> categories = AddCategories();
 
             Assert.AreEqual(5, categories.Count);
             categories.RemoveAt(1);
@@ -268,7 +268,7 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void IndexerProxy1()
         {
-            var categories = AddCategories();
+            IList<string> categories = AddCategories();
 
             Assert.AreEqual("Work", categories[0]);
             Assert.AreEqual(5, categories.Count);

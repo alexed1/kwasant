@@ -2,7 +2,7 @@ using Data.Models;
 
 namespace Data.DataAccessLayer.Interfaces
 {
-    public interface ICustomerRepository : IRepository<Customer>
+    public interface ICustomerRepository : IRepository<CustomerDO>
     {
         
     }

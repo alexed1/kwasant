@@ -2,6 +2,7 @@
 using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
+using Data.Models;
 using Data.Tools;
 using StructureMap;
 
@@ -23,10 +24,10 @@ namespace Daemons
         protected override void Run()
         {
             while (ProcessNextEventNoWait()) { }
-            var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-            var emailRepository = new EmailRepository(unitOfWork);
+            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailRepository emailRepository = new EmailRepository(unitOfWork);
 
-            foreach (var email in emailRepository.FindList(e => e.Status.EmailStatusID == EmailStatusConstants.QUEUED))
+            foreach (EmailDO email in emailRepository.FindList(e => e.StatusDO.EmailStatusID == EmailStatusConstants.QUEUED))
             {
                 EmailHelper.SendEmail(email);
             }

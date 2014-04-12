@@ -15,7 +15,6 @@ using DayPilot.Web.Mvc.Events.Scheduler;
 using DayPilot.Web.Mvc.Json;
 using DayPilot.Web.Mvc.Recurrence;
 using DayPilot.Web.Mvc.Utils;
-using Shnexy.Controllers.Data;
 
 namespace Shnexy.Controllers
 {
@@ -284,7 +283,7 @@ namespace Shnexy.Controllers
                 }
                 if (Id == "dps_jquery") // Scheduler/JQuery
                 {
-                    for (var i = 'A'; i < 'Z'; i++)
+                    for (char i = 'A'; i < 'Z'; i++)
                     {
                         Resources.Add("" + i, i.ToString());
                     }

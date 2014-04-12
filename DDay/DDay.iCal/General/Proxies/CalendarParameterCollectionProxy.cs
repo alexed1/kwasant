@@ -49,7 +49,7 @@ namespace Data.DDay.DDay.iCal.General.Proxies
 
         virtual public string Get(string name)
         {
-            var parameter = RealObject
+            ICalendarParameter parameter = RealObject
                 .AllOf(name)
                 .FirstOrDefault();
 
@@ -68,7 +68,7 @@ namespace Data.DDay.DDay.iCal.General.Proxies
 
         virtual public void Set(string name, string value)
         {
-            var parameter = RealObject
+            ICalendarParameter parameter = RealObject
                 .AllOf(name)
                 .FirstOrDefault();
 
@@ -84,7 +84,7 @@ namespace Data.DDay.DDay.iCal.General.Proxies
 
         virtual public void Set(string name, IEnumerable<string> values)
         {
-            var parameter = RealObject
+            ICalendarParameter parameter = RealObject
                 .AllOf(name)
                 .FirstOrDefault();
 

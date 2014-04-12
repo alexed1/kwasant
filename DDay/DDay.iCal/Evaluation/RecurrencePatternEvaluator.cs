@@ -81,7 +81,7 @@ namespace Data.DDay.DDay.iCal.Evaluation
             if (r.Until != DateTime.MinValue)
             {
                 // Build an iCalDateTime with the correct time zone & calendar
-                var until = new iCalDateTime(r.Until, referenceDate.TZID);
+                iCalDateTime until = new iCalDateTime(r.Until, referenceDate.TZID);
                 until.AssociatedObject = referenceDate.AssociatedObject;
 
                 // Convert back to local time so time zone comparisons match

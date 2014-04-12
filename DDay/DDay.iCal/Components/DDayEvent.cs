@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Data.DataAccessLayer.Interfaces;
 using Data.DDay.DDay.iCal;
 using Data.DDay.DDay.iCal.Evaluation;
 using Data.DDay.DDay.iCal.Interfaces.DataTypes;
-using Data.DataAccessLayer.Interfaces;
 
-namespace Data.Models
+namespace DDay.DDay.iCal.Components
 {
     /// <summary>
     /// A class that represents an RFC 5545 VEVENT component.
@@ -24,7 +24,7 @@ namespace Data.Models
     /// </note>
 
     [Serializable]    
-    public class Event : 
+    public class DDayEvent : 
         RecurringComponent,
         IEvent
     {
@@ -223,7 +223,7 @@ namespace Data.Models
         #region Constructors
 
         //there are things deep within DDay that create Events, and we don't want to force the unit of work down there.
-        public Event()
+        public DDayEvent()
             : base()
         {
             Initialize();
@@ -232,7 +232,7 @@ namespace Data.Models
 
         private void Initialize()
         {
-            this.Name = Components.EVENT;
+            this.Name = Data.DDay.DDay.iCal.Components.EVENT;
 
             m_Evaluator = new EventEvaluator(this);
             SetService(m_Evaluator);
@@ -281,7 +281,7 @@ namespace Data.Models
         }
 
         /// <summary>
-        /// Determines whether or not the <see cref="Event"/> is actively displayed
+        /// Determines whether or not the <see cref="DDayEvent"/> is actively displayed
         /// as an upcoming or occurred event.
         /// </summary>
         /// <returns>True if the event has not been cancelled, False otherwise.</returns>

@@ -3,7 +3,7 @@ using Data.Models;
 
 namespace Data.DataAccessLayer.Repositories
 {
-    public class StoredFileRepository : GenericRepository<StoredFile>, IStoredFileRepository
+    public class StoredFileRepository : GenericRepository<StoredFileDO>, IStoredFileRepository
     {
 
         public StoredFileRepository(IUnitOfWork uow)
@@ -14,7 +14,7 @@ namespace Data.DataAccessLayer.Repositories
     }
 
 
-    public interface IStoredFileRepository : IGenericRepository<StoredFile>
+    public interface IStoredFileRepository : IGenericRepository<StoredFileDO>
     {
 
     }

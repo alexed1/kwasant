@@ -6,7 +6,7 @@ using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models
 {
-    public class Email : IEmail
+    public class EmailDO : IEmail
     {
         [Key]
         public int EmailID { get; set; }
@@ -15,20 +15,20 @@ namespace Data.Models
         public String Text { get; set; }
 
         public int StatusID { get; set; }
-        public virtual EmailStatus Status { get; set; }
+        public virtual EmailStatusDO StatusDO { get; set; }
 
-        public virtual EmailAddress From { get; set; }
+        public virtual EmailAddressDO From { get; set; }
 
         [InverseProperty("ToEmail")]
-        public virtual List<EmailAddress> To { get; set; }
+        public virtual List<EmailAddressDO> To { get; set; }
         [InverseProperty("CCEmail")]
-        public virtual List<EmailAddress> CC { get; set; }
+        public virtual List<EmailAddressDO> CC { get; set; }
         [InverseProperty("BCCEmail")]
-        public virtual List<EmailAddress> BCC { get; set; }
+        public virtual List<EmailAddressDO> BCC { get; set; }
 
         [InverseProperty("Email")]
-        public virtual List<Attachment> Attachments { get; set; }
+        public virtual List<AttachmentDO> Attachments { get; set; }
 
-        public virtual Invitation Invitation { get; set; }
+        public virtual EventDO EventDo { get; set; }
     }
 }

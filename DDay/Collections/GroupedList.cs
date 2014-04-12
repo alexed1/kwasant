@@ -67,7 +67,7 @@ namespace Data.DDay.Collections
                     if (_Lists.Count > 0)
                     {
                         // Attach the list to our list chain
-                        var previous = _Lists[_Lists.Count - 1];
+                        IMultiLinkedList<TItem> previous = _Lists[_Lists.Count - 1];
                         previous.SetNext(list);
                         list.SetPrevious(previous);
                     }
@@ -85,9 +85,9 @@ namespace Data.DDay.Collections
 
         IMultiLinkedList<TItem> ListForIndex(int index, out int relativeIndex)
         {
-            foreach (var list in _Lists)
+            foreach (IMultiLinkedList<TItem> list in _Lists)
             {
-                var startIndex = list.StartIndex;
+                int startIndex = list.StartIndex;
                 if (list.StartIndex <= index &&
                     list.ExclusiveEnd > index)
                 {
@@ -174,7 +174,7 @@ namespace Data.DDay.Collections
                 TGroup group = GroupModifier(item.Group);
 
                 // Add a new list if necessary
-                var list = EnsureList(group, true);
+                IMultiLinkedList<TItem> list = EnsureList(group, true);
                 int index = list.Count;
                 list.Add(SubscribeToKeyChanges(item));
                 OnItemAdded(item, list.StartIndex + index);
@@ -188,7 +188,7 @@ namespace Data.DDay.Collections
             if (_Dictionary.ContainsKey(group))
             {
                 // Get the list associated with this object's group
-                var list = _Dictionary[group];
+                IMultiLinkedList<TItem> list = _Dictionary[group];
 
                 // Find the object within the list.
                 int index = list.IndexOf(item);
@@ -207,7 +207,7 @@ namespace Data.DDay.Collections
             if (_Dictionary.ContainsKey(group))
             {
                 // Get the list associated with the group
-                var list = _Dictionary[group].ToArray();
+                TItem[] list = _Dictionary[group].ToArray();
                 
                 // Save the number of items in the list
                 int count = list.Length;
@@ -228,7 +228,7 @@ namespace Data.DDay.Collections
         virtual public void Clear()
         {
             // Get a list of items that are being cleared
-            var items = _Lists.SelectMany(i => i).ToArray();
+            TItem[] items = _Lists.SelectMany(i => i).ToArray();
 
             // Clear our lists out
             _Dictionary.Clear();
@@ -279,7 +279,7 @@ namespace Data.DDay.Collections
             TGroup group = GroupModifier(obj.Group);
             if (_Dictionary.ContainsKey(group))
             {
-                var items = _Dictionary[group];
+                IMultiLinkedList<TItem> items = _Dictionary[group];
                 int index = items.IndexOf(obj);
 
                 if (index >= 0)
@@ -298,11 +298,11 @@ namespace Data.DDay.Collections
             group = GroupModifier(group);
             if (_Dictionary.ContainsKey(group))
             {
-                var list = _Dictionary[group];
+                IMultiLinkedList<TItem> list = _Dictionary[group];
 
                 for (int i = list.Count - 1; i >= 0; i--)
                 {
-                    var obj = list[i];
+                    TItem obj = list[i];
                     list.RemoveAt(i);
                     OnItemRemoved(UnsubscribeFromKeyChanges(obj), list.StartIndex + i);
                 }
@@ -320,7 +320,7 @@ namespace Data.DDay.Collections
             IMultiLinkedList<TItem> previous = null;
             foreach (TGroup group in _Dictionary.Keys.OrderBy(k => k, comparer))
             {
-                var list = _Dictionary[group];
+                IMultiLinkedList<TItem> list = _Dictionary[group];
                 if (previous == null)
                 {
                     previous = list;
@@ -343,7 +343,7 @@ namespace Data.DDay.Collections
 
         virtual public bool Contains(TItem item)
         {
-            var group = GroupModifier(item.Group);
+            TGroup group = GroupModifier(item.Group);
             if (_Dictionary.ContainsKey(group))
                 return _Dictionary[group].Contains(item);
             return false;
@@ -403,7 +403,7 @@ namespace Data.DDay.Collections
                 if (list != null)
                 {
                     // Remove the item at that index and replace it
-                    var item = list[relativeIndex];
+                    TItem item = list[relativeIndex];
                     list.RemoveAt(relativeIndex);
                     list.Insert(relativeIndex, value);
                     OnItemRemoved(item, index);

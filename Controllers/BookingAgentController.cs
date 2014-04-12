@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
 using DayPilot.Web.Mvc.Json;
-using Shnexy.Controllers.Data;
 
 
 namespace Shnexy.Controllers

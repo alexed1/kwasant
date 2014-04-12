@@ -1,4 +1,5 @@
-﻿using Data.DataAccessLayer.Interfaces;
+﻿using System.Reflection;
+using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.Models;
 
@@ -13,13 +14,13 @@ namespace Data.Constants
         
         public static void ApplySeedData(IUnitOfWork uow)
         {
-            var constants = typeof (EmailStatusConstants).GetFields();
-            var emailStatusRepo = new EmailStatusRepository(uow);
-            foreach (var constant in constants)
+            FieldInfo[] constants = typeof (EmailStatusConstants).GetFields();
+            EmailStatusRepository emailStatusRepo = new EmailStatusRepository(uow);
+            foreach (FieldInfo constant in constants)
             {
-                var name = constant.Name;
-                var value = constant.GetValue(null);
-                emailStatusRepo.Add(new EmailStatus
+                string name = constant.Name;
+                object value = constant.GetValue(null);
+                emailStatusRepo.Add(new EmailStatusDO
                 {
                     EmailStatusID = (int)value,
                     Value = name

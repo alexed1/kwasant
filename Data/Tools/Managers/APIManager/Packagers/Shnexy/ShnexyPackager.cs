@@ -39,9 +39,9 @@ namespace Data.Tools.Managers.APIManager.Packagers.Shnexy
            
         }
 
-        public string PackResponseGetEmail(Email curEmail)
+        public string PackResponseGetEmail(EmailDO curEmailDO)
         {
-          return jsonSerializer.Serialize(curEmail);
+          return jsonSerializer.Serialize(curEmailDO);
            
         }
 

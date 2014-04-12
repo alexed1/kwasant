@@ -46,9 +46,9 @@ namespace Shnexy.Controllers
                 messages = Client.GetMessages(uids);               
             }
 
-            var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-            var emailRepository = new EmailRepository(unitOfWork);
-            foreach (var message in messages)
+            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailRepository emailRepository = new EmailRepository(unitOfWork);
+            foreach (MailMessage message in messages)
             {
                 EmailHelper.ConvertMailMessageToEmail(emailRepository, message);
             }

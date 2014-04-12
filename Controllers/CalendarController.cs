@@ -6,8 +6,8 @@ using Data.DataAccessLayer.Interfaces;
 using Data.Models;
 using Data.DataAccessLayer.Repositories;
 using DayPilot.Web.Mvc.Json;
-using Shnexy.Controllers.Data;
 using Shnexy.Controllers.DayPilot;
+using Shnexy.Controllers.Models;
 using StructureMap;
 
 namespace Shnexy.Controllers
@@ -23,21 +23,21 @@ namespace Shnexy.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             PopulateCalender();
 
-            var emailRepository = new EmailRepository(ObjectFactory.GetInstance<IUnitOfWork>());
-            var email = emailRepository.GetByKey(id);
-            if (email != null)
-            {
-                EventManager = new EventManager(this, email.From.Address);
-                return View(email);
-            }
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailRepository emailRepository = new EmailRepository(uow);
+            EmailDO email = emailRepository.GetByKey(id);
+            if (email == null) 
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            Calendar = new Calendar(uow, email.From.Address);
+            return View(email);
         }
 
-        private EventManager EventManager
+        private Calendar Calendar
         {
             get
             {
-                return Session["EventManager"] as EventManager;
+                return Session["EventManager"] as Calendar;
             }
             set
             {
@@ -200,7 +200,7 @@ namespace Shnexy.Controllers
 
         public ActionResult Backend()
         {
-            return new DayPilotCalendarControl(EventManager).CallBack(this);
+            return new DayPilotCalendarControl(Calendar).CallBack(this);
         }
 
         public ActionResult NavigatorBackend()
@@ -222,11 +222,11 @@ namespace Shnexy.Controllers
 
         private static T GetValueFromForm<T>(FormCollection form, String name, T defaultValue = default(T))
         {
-            var obj = form[name];
+            string obj = form[name];
             if (obj == null)
                 return defaultValue;
 
-            var returnType = typeof (T);
+            Type returnType = typeof (T);
             if (returnType == typeof (String))
                 return (T)(object)obj;
             if (returnType == typeof(DateTime))
@@ -241,44 +241,44 @@ namespace Shnexy.Controllers
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult New(FormCollection form)
         {
-            var dtFromDate = GetValueFromForm(form, "DateStart", DateTime.MinValue);
-            var dtToDate = GetValueFromForm(form, "DateEnd", DateTime.MinValue);
-            var strLocation = GetValueFromForm(form, "Location", String.Empty);
-            var strStatus = GetValueFromForm(form, "Status", String.Empty);
-            var strTransparency = GetValueFromForm(form, "TransparencyType", String.Empty);
-            var strClass = GetValueFromForm(form, "Class", String.Empty);
-            var strDescription = GetValueFromForm(form, "Description", String.Empty);
-            var intPriority = GetValueFromForm(form, "Priority", 0);
-            var intSequence = GetValueFromForm(form, "Sequence", 0);
-            var strSummary = GetValueFromForm(form, "Summary", String.Empty);
-            var strCategory = GetValueFromForm(form, "Category", String.Empty);
-            var emailID = GetValueFromForm(form, "EmailID", 0);
+            DateTime dtFromDate = GetValueFromForm(form, "DateStart", DateTime.MinValue);
+            DateTime dtToDate = GetValueFromForm(form, "DateEnd", DateTime.MinValue);
+            string strLocation = GetValueFromForm(form, "Location", String.Empty);
+            string strStatus = GetValueFromForm(form, "Status", String.Empty);
+            string strTransparency = GetValueFromForm(form, "TransparencyType", String.Empty);
+            string strClass = GetValueFromForm(form, "Class", String.Empty);
+            string strDescription = GetValueFromForm(form, "Description", String.Empty);
+            int intPriority = GetValueFromForm(form, "Priority", 0);
+            int intSequence = GetValueFromForm(form, "Sequence", 0);
+            string strSummary = GetValueFromForm(form, "Summary", String.Empty);
+            string strCategory = GetValueFromForm(form, "Category", String.Empty);
+            int emailID = GetValueFromForm(form, "EmailID", 0);
 
-            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            var invitationRepository = new InvitationRepository(uow);
-            Invitation invitation = new Invitation();
-            invitationRepository.Add(invitation);
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            InvitationRepository invitationRepository = new InvitationRepository(uow);
+            EventDO eventDo = new EventDO();
+            invitationRepository.Add(eventDo);
 
-            var emailRepository = new EmailRepository(uow);
-            Email existingEmail = emailRepository.GetByKey(emailID);
-            existingEmail.StatusID = EmailStatusConstants.PROCESSED;
-            existingEmail.Invitation = invitation;
+            EmailRepository emailRepository = new EmailRepository(uow);
+            EmailDO existingEmailDO = emailRepository.GetByKey(emailID);
+            existingEmailDO.StatusID = EmailStatusConstants.PROCESSED;
+            existingEmailDO.EventDo = eventDo;
 
-            invitation.StartDate = dtFromDate;
-            invitation.EndDate = dtToDate;
-            invitation.Location = strLocation;
-            invitation.Status = strStatus;
-            invitation.Transparency = strTransparency;
-            invitation.Class = strClass;
-            invitation.Description = strDescription;
-            invitation.Priority = intPriority;
-            invitation.Sequence = intSequence;
-            invitation.Summary = strSummary;
-            invitation.Category = strCategory;
+            eventDo.StartDate = dtFromDate;
+            eventDo.EndDate = dtToDate;
+            eventDo.Location = strLocation;
+            eventDo.Status = strStatus;
+            eventDo.Transparency = strTransparency;
+            eventDo.Class = strClass;
+            eventDo.Description = strDescription;
+            eventDo.Priority = intPriority;
+            eventDo.Sequence = intSequence;
+            eventDo.Summary = strSummary;
+            eventDo.Category = strCategory;
             uow.SaveChanges();
 
-            EventManager.EventAdd(invitation);
-            EventManager.Reload();
+            Calendar.AddEvent(eventDo);
+            Calendar.Reload();
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }

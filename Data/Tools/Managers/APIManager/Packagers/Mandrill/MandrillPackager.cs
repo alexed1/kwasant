@@ -44,7 +44,7 @@ namespace Data.Tools.Managers.APIManager.Packagers.Mandrill
         ///Mandrill's API essentially inserts an array of email addresses inside a message which is put with a key inside what we'll call a "package"
         ///See https://mandrillapp.com/api/docs/messages.JSON.html#method=send
         /// </summary>
-        public string PostMessageSendTemplate(String templateName, Email message, Dictionary<string, string> mergeFields)
+        public string PostMessageSendTemplate(String templateName, EmailDO message, Dictionary<string, string> mergeFields)
         {
             RestfulCall curCall = new RestfulCall(baseURL, "/messages/send-template.json", Method.POST);
             MandrillTemplatePackage curTemplatePackage = new MandrillTemplatePackage(MandrillKey, message);
@@ -76,7 +76,7 @@ namespace Data.Tools.Managers.APIManager.Packagers.Mandrill
 
         //======================================================
         //simple send with no merge variables or templates
-        public string PostMessageSend(Email message)
+        public string PostMessageSend(EmailDO message)
         {
             RestfulCall curCall = new RestfulCall(baseURL, "/messages/send.json", Method.POST);
             MandrillBasePackage curBasePackage = new MandrillBasePackage(MandrillKey, message);
@@ -159,17 +159,17 @@ namespace Data.Tools.Managers.APIManager.Packagers.Mandrill
 
         public string Key;
         [JsonIgnore]
-        public Email Email;
+        public EmailDO EmailDO;
 
         public MandrilEmail Message;
 
         #endregion
 
         #region Constructor
-        public MandrillBasePackage(string curKey, Email message)
+        public MandrillBasePackage(string curKey, EmailDO message)
         {
             Key = curKey;
-            Email = message;
+            EmailDO = message;
 
             Message = new MandrilEmail
             {
@@ -214,7 +214,7 @@ namespace Data.Tools.Managers.APIManager.Packagers.Mandrill
         #endregion
 
         #region Constructor
-        public MandrillTemplatePackage(string curKey, Email email) : base(curKey, email)
+        public MandrillTemplatePackage(string curKey, EmailDO emailDO) : base(curKey, emailDO)
         {
  
         }

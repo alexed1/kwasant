@@ -3,9 +3,9 @@ using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models
 {
-    public class BookingRequest : Email, IBookingRequest
+    public class BookingRequestDO : EmailDO, IBookingRequest
     {
         [Required]
-        public virtual Customer Customer { get; set; }
+        public virtual CustomerDO CustomerDO { get; set; }
     }
 }

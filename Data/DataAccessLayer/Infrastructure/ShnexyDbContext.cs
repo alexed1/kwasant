@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.Models;
 
@@ -19,7 +20,7 @@ namespace Data.DataAccessLayer.Infrastructure
         public override int SaveChanges()
         {
             ChangeTracker.DetectChanges();
-            foreach (var entity in ChangeTracker.Entries<ISaveHook>())
+            foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>())
             {
                 entity.Entity.SaveHook();
             }
@@ -29,48 +30,56 @@ namespace Data.DataAccessLayer.Infrastructure
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<BookingRequest>().ToTable("BookingRequests");
-            modelBuilder.Entity<Attachment>().ToTable("Attachments");
-
-            modelBuilder.Entity<Email>()
+            modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
+            modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
+            modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
+            modelBuilder.Entity<CustomerDO>().ToTable("Customers");
+            modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
+            modelBuilder.Entity<EmailDO>().ToTable("Emails");
+            modelBuilder.Entity<EmailStatusDO>().ToTable("EmailStatuses");
+            modelBuilder.Entity<EventDO>().ToTable("Events");
+            modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
+            modelBuilder.Entity<UserDO>().ToTable("Users");
+            
+            modelBuilder.Entity<EmailDO>()
                 .HasRequired(e => e.From);
-            modelBuilder.Entity<Email>()
-                .HasRequired(e => e.Status)
+            modelBuilder.Entity<EmailDO>()
+                .HasRequired(e => e.StatusDO)
                 .WithMany(es => es.Emails)
                 .HasForeignKey(e => e.StatusID);
 
-            modelBuilder.Entity<Attachment>()
-                .HasRequired(a => a.Email)
+            modelBuilder.Entity<AttachmentDO>()
+                .HasRequired(a => a.EmailDO)
                 .WithMany(e => e.Attachments)
                 .HasForeignKey(a => a.EmailID);
 
-            modelBuilder.Entity<EmailAddress>()
-                .HasOptional(ea => ea.FromEmail)
+            modelBuilder.Entity<EmailAddressDO>()
+                .HasOptional(ea => ea.FromEmailDO)
                 .WithRequired(e => e.From)
                 .Map(x => x.MapKey("FromEmailAddressID"));
 
             base.OnModelCreating(modelBuilder);
         }
 
-        public DbSet<Attachment> Attachments { get; set; }
+        public DbSet<AttachmentDO> Attachments { get; set; }
 
-        public DbSet<Attendee> Attendees { get; set; }
+        public DbSet<AttendeeDO> Attendees { get; set; }
 
-        public DbSet<BookingRequest> BookingRequests { get; set; }
+        public DbSet<BookingRequestDO> BookingRequests { get; set; }
 
-        public DbSet<Customer> Customers { get; set; }
+        public DbSet<CustomerDO> Customers { get; set; }
 
-        public DbSet<Email> Emails { get; set; }
+        public DbSet<EmailDO> Emails { get; set; }
 
-        public DbSet<EmailAddress> EmailAddresses { get; set; }
+        public DbSet<EmailAddressDO> EmailAddresses { get; set; }
 
-        public DbSet<EmailStatus> EmailStatuses { get; set; }
+        public DbSet<EmailStatusDO> EmailStatuses { get; set; }
         
-        public DbSet<Invitation> Invitations { get; set; }
+        public DbSet<EventDO> Invitations { get; set; }
 
-        public DbSet<StoredFile> StoredFiles { get; set; }
+        public DbSet<StoredFileDO> StoredFiles { get; set; }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<UserDO> Users { get; set; }
         
     }
 }

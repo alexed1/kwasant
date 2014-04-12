@@ -7,7 +7,7 @@ using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models
 {
-    public class StoredFile : ISaveHook
+    public class StoredFileDO : ISaveHook
     {
         public int StoredFileID { get; set; }
 
@@ -36,7 +36,7 @@ namespace Data.Models
             }
             set
             {
-                var memStream = new MemoryStream(Encoding.UTF8.GetBytes(value));
+                MemoryStream memStream = new MemoryStream(Encoding.UTF8.GetBytes(value));
                 SetData(memStream);
             }
         }
@@ -46,7 +46,7 @@ namespace Data.Models
         {
             get
             {
-                var memoryStream = new MemoryStream();
+                MemoryStream memoryStream = new MemoryStream();
                 GetData().CopyTo(memoryStream);
                 return memoryStream.ToArray();
             }

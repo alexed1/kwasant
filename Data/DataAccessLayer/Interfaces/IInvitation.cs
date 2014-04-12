@@ -13,6 +13,6 @@ namespace Data.DataAccessLayer.Interfaces
         string Location { get; set; }
         DateTime StartDate { get; set; }
         DateTime EndDate { get; set; }
-        User CreatedBy { get; set; }
+        UserDO CreatedBy { get; set; }
     }
 }

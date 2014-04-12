@@ -124,7 +124,7 @@ namespace Data.DDay.DDay.iCal.Evaluation
 
                         // Adjust our reference date to never fall out of bounds with
                         // the time zone information
-                        var tziReferenceDate = referenceDate;
+                        IDateTime tziReferenceDate = referenceDate;
                         if (tziReferenceDate.LessThan(curr.Start))
                             tziReferenceDate = curr.Start;
 

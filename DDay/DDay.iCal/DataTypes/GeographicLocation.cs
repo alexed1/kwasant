@@ -4,13 +4,13 @@ using System.IO;
 using Data.DDay.DDay.iCal.Interfaces.DataTypes;
 using Data.DDay.DDay.iCal.Interfaces.General;
 using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
-using Data.Models;
+using DDay.DDay.iCal.Components;
 
 namespace Data.DDay.DDay.iCal.DataTypes
 {
     /// <summary>
     /// A class that represents the geographical location of an
-    /// <see cref="Event"/> or <see cref="Data.DDay.DDay.iCal.Components.Todo"/> item.
+    /// <see cref="DDayEvent"/> or <see cref="Data.DDay.DDay.iCal.Components.Todo"/> item.
     /// </summary>
     [DebuggerDisplay("{Latitude};{Longitude}")]
 #if !SILVERLIGHT

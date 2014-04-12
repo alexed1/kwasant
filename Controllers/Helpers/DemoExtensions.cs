@@ -47,7 +47,7 @@ namespace App_Code.Helpers
 
         private static string Resolve(HtmlHelper helper, string url)
         {
-            var urlHelper = new UrlHelper(helper.ViewContext.RequestContext);
+            UrlHelper urlHelper = new UrlHelper(helper.ViewContext.RequestContext);
             return urlHelper.Content(url);            
         }
 

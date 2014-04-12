@@ -36,7 +36,7 @@ namespace Data.DDay.DDay.iCal.General.Proxies
                 return _Lookup[uid];
             }
 
-            var item = this
+            TComponentType item = this
                 .OfType<TComponentType>()
                 .Where(c => string.Equals(c.UID, uid))
                 .FirstOrDefault();
@@ -62,7 +62,7 @@ namespace Data.DDay.DDay.iCal.General.Proxies
             set
             {
                 // Find the item matching the UID
-                var item = Search(uid);
+                TComponentType item = Search(uid);
 
                 if (item != null)
                     Remove(item);

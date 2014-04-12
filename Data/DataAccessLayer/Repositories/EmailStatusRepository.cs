@@ -3,7 +3,7 @@ using Data.Models;
 
 namespace Data.DataAccessLayer.Repositories
 {
-    public class EmailStatusRepository : GenericRepository<EmailStatus>, IEmailStatusRepository
+    public class EmailStatusRepository : GenericRepository<EmailStatusDO>, IEmailStatusRepository
     {
         public EmailStatusRepository(IUnitOfWork uow)
             : base(uow)
@@ -13,7 +13,7 @@ namespace Data.DataAccessLayer.Repositories
     }
 
 
-    public interface IEmailStatusRepository : IGenericRepository<EmailStatus>
+    public interface IEmailStatusRepository : IGenericRepository<EmailStatusDO>
     {
         IUnitOfWork UnitOfWork { get; }
 

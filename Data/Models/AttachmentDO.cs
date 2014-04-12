@@ -4,14 +4,14 @@ using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models
 {
-    public class Attachment : StoredFile, IAttachment
+    public class AttachmentDO : StoredFileDO, IAttachment
     {
         [Key]
         public int AttachmentID { get; set; }
 
         public int EmailID { get; set; }
         [Required]
-        public Email Email { get; set; }
+        public EmailDO EmailDO { get; set; }
         public String Type { get; set; }
     }
 }

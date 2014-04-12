@@ -1,4 +1,4 @@
-﻿@model Data.Models.Email
+﻿@model Data.Models.EmailDO
 
 @using DayPilot.Web.Mvc
 @using DayPilot.Web.Mvc.Enums
@@ -84,7 +84,7 @@
                 <div class="col-md-9">
                     <div class="bookingAgentFormControlBorder">
                         @{
-                            var toEmailAddresses = String.Join(",", Model.To.Select(a => a.Address));
+                            string toEmailAddresses = String.Join(",", Model.To.Select(a => a.Address));
 
                             <span>@toEmailAddresses</span>
                         }
@@ -104,7 +104,7 @@
                 <div class="col-md-9">
                     <div class="bookingAgentFormControlBorder">
                         @{
-                            var cCEmailAddresses = String.Join(",", Model.CC.Select(a => a.Address));
+                            string cCEmailAddresses = String.Join(",", Model.CC.Select(a => a.Address));
 
                             <span>@cCEmailAddresses</span>
                         }
@@ -124,7 +124,7 @@
                 <div class="col-md-9">
                     <div class="bookingAgentFormControlBorder">
                         @{
-                            var bCCEmailAddresses = String.Join(",", Model.BCC.Select(a => a.Address));
+                            string bCCEmailAddresses = String.Join(",", Model.BCC.Select(a => a.Address));
 
                             <span>@bCCEmailAddresses</span>
                         }

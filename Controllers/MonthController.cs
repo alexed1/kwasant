@@ -11,7 +11,6 @@ using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events;
 using DayPilot.Web.Mvc.Events.Common;
 using DayPilot.Web.Mvc.Events.Month;
-using Shnexy.Controllers.Data;
 
 namespace Shnexy.Controllers
 {

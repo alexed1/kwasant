@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.Tools;
@@ -49,12 +51,12 @@ namespace Daemons
 
         protected override void Run()
         {
-            var uids = _client.Search(SearchCondition.Unseen());
-            var messages = _client.GetMessages(uids).ToList();
+            IEnumerable<uint> uids = _client.Search(SearchCondition.Unseen());
+            List<MailMessage> messages = _client.GetMessages(uids).ToList();
 
-            var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-            var emailRepository = new EmailRepository(unitOfWork);
-            foreach (var message in messages)
+            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailRepository emailRepository = new EmailRepository(unitOfWork);
+            foreach (MailMessage message in messages)
             {
                 EmailHelper.ConvertMailMessageToEmail(emailRepository, message);
             }

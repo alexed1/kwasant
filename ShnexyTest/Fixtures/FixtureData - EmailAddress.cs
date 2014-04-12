@@ -9,10 +9,10 @@ namespace ShnexyTest.Fixtures
 
 
    
-        public EmailAddress TestEmail1()
+        public EmailAddressDO TestEmail1()
         {
 
-            return new EmailAddress()
+            return new EmailAddressDO()
             {
                 Address = "alexlucre1@gmail.com",
                 EmailAddressID = 1,
@@ -20,10 +20,10 @@ namespace ShnexyTest.Fixtures
             };
         }
 
-        public EmailAddress TestEmail2()
+        public EmailAddressDO TestEmail2()
         {
 
-            return new EmailAddress()
+            return new EmailAddressDO()
             {
                 Address = "joetest2@edelstein.org",
                 EmailAddressID = 2,

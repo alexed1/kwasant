@@ -1,4 +1,4 @@
-﻿using Data.Models;
+﻿using DDay.DDay.iCal.Components;
 
 namespace Data.DDay.DDay.iCal
 {
@@ -57,7 +57,7 @@ namespace Data.DDay.DDay.iCal
     }
 
     /// <summary>
-    /// Status codes available to an <see cref="Event"/> item
+    /// Status codes available to an <see cref="DDayEvent"/> item
     /// </summary>
     public enum EventStatus
     {
