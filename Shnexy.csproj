@@ -297,6 +297,7 @@
     <Content Include="Website\images\Management\alexhead.png" />
     <Content Include="Website\images\older-calendar.jpg" />
     <Content Include="Website\images\Process\1Step.png" />
+    <Content Include="Website\images\Process\ComposeEmail.png" />
     <Content Include="Website\images\Process\workflow.png" />
     <Content Include="Website\images\Process\Workflowv2.png" />
     <Content Include="Website\images\screen.jpg" />
