@@ -82,12 +82,14 @@
     <Compile Include="DDay.iCal.Test\SerializationTest.cs" />
     <Compile Include="DDay.iCal.Test\Startup.cs" />
     <Compile Include="DDay.iCal.Test\TodoTest.cs" />
+    <Compile Include="Fixtures\FixtureData - Attendee.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Customer.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />
     <Compile Include="Fixtures\FixtureData.cs" />
     <Compile Include="Models\EngineTests.cs" />
     <Compile Include="Models\CustomerTests.cs" />
+    <Compile Include="Models\EventTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\EventRepositoryTests.cs" />
   </ItemGroup>

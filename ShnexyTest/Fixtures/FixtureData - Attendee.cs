@@ -9,20 +9,20 @@ namespace ShnexyTest.Fixtures
 
 
 
-        public Attendee TestAttendee1()
+        public AttendeeDO TestAttendee1()
         {
 
-            return new Attendee()
+            return new AttendeeDO()
             {
                 EmailAddress = "alexlucre1@gmail.com",
                 Name = "Alex Lucre1"
             };
         }
 
-        public Attendee TestAttendee2()
+        public AttendeeDO TestAttendee2()
         {
 
-            return new Attendee()
+            return new AttendeeDO()
             {
                 EmailAddress = "joetest2@edelstein.org",
                 Name = "Joe Test Account 2"

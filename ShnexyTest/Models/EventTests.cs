@@ -6,7 +6,6 @@ using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.StructureMap;
 using Data.Models;
-using DBTools;
 using NUnit.Framework;
 using ShnexyTest.Fixtures;
 using StructureMap;
@@ -16,7 +15,7 @@ namespace ShnexyTest.Models
 
 
     [TestFixture]
-    public class InvitationTests
+    public class EventTests
     {
         public ICustomerRepository customerRepo;
         public IUnitOfWork _uow;
@@ -49,26 +48,27 @@ namespace ShnexyTest.Models
         {
             InvitationRepository invRepo = new InvitationRepository(_uow);
             AttendeeRepository attendeesRepo = new AttendeeRepository(_uow);
-            List<Attendee> attendees =
-                new List<Attendee>
+            List<AttendeeDO> attendees =
+                new List<AttendeeDO>
                 {
                     _fixture.TestAttendee1(),
                     _fixture.TestAttendee2()
                 };
             attendees.ForEach(attendeesRepo.Add);
 
-            Invitation invitation = new Invitation
+            EventDO invitation = new EventDO
             {
                 Description = "This is my test invitation",
                 Summary = @"My test invitation",
-                Where = @"Some place!",
+                Location = @"Some place!",
                 StartDate = DateTime.Today.AddMinutes(5),
                 EndDate = DateTime.Today.AddMinutes(15),
                 Attendees = attendees,
-                Emails = new List<Email>()
+                Emails = new List<EmailDO>()
             };
             invRepo.Add(invitation);
-            EmailHelper.DispatchInvitation(_uow, invitation);
+            Calendar.DispatchEvent(_uow, invitation);
+
             //Verify success
             //use imap to load unread messages from the test customer account
             //verify that one of the messages is a proper ICS message

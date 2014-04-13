@@ -124,6 +124,7 @@
     <Compile Include="Models\AttachmentDO.cs" />
     <Compile Include="Models\AttendeeDO.cs" />
     <Compile Include="Models\BookingRequestDO.cs" />
+    <Compile Include="Models\Calendar.cs" />
     <Compile Include="Models\CustomerDO.cs" />
     <Compile Include="Models\EmailDO.cs" />
     <Compile Include="Models\EmailAddressDO.cs" />

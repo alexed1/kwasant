@@ -6,11 +6,10 @@ using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
 using Data.Models;
 using Data.DataAccessLayer.Repositories;
-using Data.Tools;
 using DayPilot.Web.Mvc.Json;
 using Shnexy.Controllers.DayPilot;
-using Shnexy.Controllers.Models;
 using StructureMap;
+using Calendar = Data.Models.Calendar;
 
 namespace Shnexy.Controllers
 {
