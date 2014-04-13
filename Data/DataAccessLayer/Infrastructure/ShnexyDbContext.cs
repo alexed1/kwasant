@@ -55,6 +55,19 @@ namespace Data.DataAccessLayer.Infrastructure
                 .WithMany(es => es.Emails)
                 .HasForeignKey(e => e.StatusID);
 
+            modelBuilder.Entity<EmailDO>()
+                .HasMany(e => e.To)
+                .WithOptional(ea => ea.ToEmail)
+                .Map(m => m.MapKey("ToEmailID"));
+            modelBuilder.Entity<EmailDO>()
+                .HasMany(e => e.BCC)
+                .WithOptional(ea => ea.BCCEmail)
+                .Map(m => m.MapKey("BCCmailID"));
+            modelBuilder.Entity<EmailDO>()
+                .HasMany(e => e.CC)
+                .WithOptional(ea => ea.CCEmail)
+                .Map(m => m.MapKey("CCEmailID"));
+
             modelBuilder.Entity<AttachmentDO>()
                 .HasRequired(a => a.Email)
                 .WithMany(e => e.Attachments)

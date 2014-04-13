@@ -19,11 +19,8 @@ namespace Data.Models
 
         public virtual EmailAddressDO From { get; set; }
 
-        [InverseProperty("ToEmail")]
         public virtual List<EmailAddressDO> To { get; set; }
-        [InverseProperty("CCEmail")]
         public virtual List<EmailAddressDO> CC { get; set; }
-        [InverseProperty("BCCEmail")]
         public virtual List<EmailAddressDO> BCC { get; set; }
 
         [InverseProperty("Email")]

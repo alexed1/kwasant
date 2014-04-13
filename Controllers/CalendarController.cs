@@ -6,6 +6,7 @@ using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
 using Data.Models;
 using Data.DataAccessLayer.Repositories;
+using Data.Tools;
 using DayPilot.Web.Mvc.Json;
 using Shnexy.Controllers.DayPilot;
 using Shnexy.Controllers.Models;
@@ -267,6 +268,15 @@ namespace Shnexy.Controllers
                 bookingRequestDO.Events = new List<EventDO>();
             bookingRequestDO.Events.Add(eventDo);
 
+            eventDo.Attendees = new List<AttendeeDO>();
+            eventDo.Attendees.Add(new AttendeeDO
+            {
+                EmailAddress = bookingRequestDO.From.Address,
+                Name = bookingRequestDO.From.Name,
+                Event = eventDo
+            });
+            //We also need to have the form show attendees
+
             eventDo.StartDate = dtFromDate;
             eventDo.EndDate = dtToDate;
             eventDo.Location = strLocation;
@@ -279,10 +289,8 @@ namespace Shnexy.Controllers
             eventDo.Summary = strSummary;
             eventDo.Category = strCategory;
             eventDo.BookingRequest = bookingRequestDO;
-            uow.SaveChanges();
 
-            Calendar.AddEvent(eventDo);
-            Calendar.Reload();
+            Calendar.DispatchEvent(eventDo);
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }

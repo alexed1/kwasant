@@ -14,7 +14,7 @@ namespace Data.Models
 
         public virtual EmailDO FromEmail { get; set; }
         public virtual EmailDO ToEmail { get; set; }
-        public virtual EmailDO BccEmail { get; set; }
-        public virtual EmailDO CcEmail { get; set; }
+        public virtual EmailDO BCCEmail { get; set; }
+        public virtual EmailDO CCEmail { get; set; }
     }
 }

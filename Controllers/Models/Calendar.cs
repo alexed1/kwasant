@@ -1,10 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Mail;
+using System.Net.Mime;
+using System.Text;
 using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
+using Data.DDay.DDay.iCal;
+using Data.DDay.DDay.iCal.DataTypes;
+using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
 using Data.Models;
+using Data.Tools;
+using DDay.DDay.iCal.Components;
 using UtilitiesLib;
 
 namespace Shnexy.Controllers.Models
@@ -38,9 +47,85 @@ namespace Shnexy.Controllers.Models
             LoadData(_customer);
         }
 
+        public void DispatchEvent(EventDO eventDo)
+        {
+            if(eventDo.Attendees == null)
+                eventDo.Attendees = new List<AttendeeDO>();
+
+            string fromEmail = "lucreorganizer@gmail.com";
+            string fromName = "Booqit Organizer";
+
+            EmailDO outboundEmail = new EmailDO();
+            outboundEmail.From = new EmailAddressDO {Address = fromEmail, Name = fromName};
+            outboundEmail.To = eventDo.Attendees.Select(a => new EmailAddressDO { Address = a.EmailAddress, Name = a.Name}).ToList();
+            outboundEmail.Subject = "Invitation via Booqit: " + eventDo.Summary + "@ " + eventDo.StartDate;
+            outboundEmail.Text = "This is a Booqit Event Request. For more information, see https://foo.com";
+            outboundEmail.StatusID = EmailStatusConstants.QUEUED;
+
+            iCalendar ddayCalendar = new iCalendar();
+            DDayEvent dDayEvent = new DDayEvent();
+            if (eventDo.IsAllDay)
+            {
+                dDayEvent.IsAllDay = true;
+            }
+            else
+            {
+                dDayEvent.DTStart = new iCalDateTime(eventDo.StartDate);
+                dDayEvent.DTEnd = new iCalDateTime(eventDo.EndDate);
+            }
+            dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
+            dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
+
+            dDayEvent.Location = eventDo.Location;
+            dDayEvent.Description = eventDo.Description;
+            dDayEvent.Summary = eventDo.Summary;
+            foreach (AttendeeDO attendee in eventDo.Attendees)
+            {
+                dDayEvent.Attendees.Add(new Attendee
+                {
+                    CommonName = attendee.Name,
+                    Type = "INDIVIDUAL",
+                    Role = "REQ-PARTICIPANT",
+                    ParticipationStatus = ParticipationStatus.NeedsAction,
+                    RSVP = true,
+                    Value = new Uri("mailto:" + attendee.EmailAddress),
+                });
+                attendee.Event = eventDo;
+            }
+            dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
+
+            ddayCalendar.Events.Add(dDayEvent);
+
+            AttachCalendarToEmail(ddayCalendar, outboundEmail);
+
+            if (eventDo.Emails == null)
+                eventDo.Emails = new List<EmailDO>();
+            eventDo.Emails.Add(outboundEmail);
+
+            _uow.SaveChanges();
+            Reload();
+        }
+
+        private static void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)
+        {
+            iCalendarSerializer serializer = new iCalendarSerializer(iCal);
+            string fileToAttach = serializer.Serialize(iCal);
+
+            AttachmentDO attachmentDO = EmailHelper.CreateNewAttachment(
+                new System.Net.Mail.Attachment(
+                    new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
+                    new ContentType { MediaType = "application/calendar", Name = "invite.ics" }
+                ));
+
+            if(emailDO.Attachments == null)
+                emailDO.Attachments = new List<AttachmentDO>();
+
+            emailDO.Attachments.Add(attachmentDO);
+        }
+
         public void AddEvent(EventDO eventDo)
         {
-            EventsList.Add(eventDo);
+            EventsList.Add(eventDo);   
         }
 
         public void DeleteEvent(String idStr)
@@ -49,22 +134,10 @@ namespace Shnexy.Controllers.Models
             EventDO eventToDelete = EventsList.FirstOrDefault(inv => inv.EventID == id);
             if (eventToDelete != null)
             {
-                EventsList.Remove(eventToDelete);
-                /* To be confirmed. Currently, if an event is deleted, the booking requests (emails) are set back to unprocessed. We may be immediately dispatching an event, 
-                * which means this code is invalid. */
-                List<EmailDO> previouslyProcessedEmails = eventToDelete.Emails.Where(e => e.StatusID == EmailStatusConstants.PROCESSED).ToList();
-                if (previouslyProcessedEmails.Any())
-                {
-                    foreach (EmailDO previouslyProcessedEmail in previouslyProcessedEmails)
-                    {
-                        previouslyProcessedEmail.StatusID = EmailStatusConstants.UNPROCESSED;
-                    }
-                }
-
                 _invitationRepo.Remove(eventToDelete);
-                
                 _uow.SaveChanges();
             }
+            Reload();
         }
 
         public void MoveEvent(String idStr, DateTime newStart, DateTime newEnd)
@@ -77,6 +150,7 @@ namespace Shnexy.Controllers.Models
                 itemToMove.EndDate = newEnd;
                 _uow.SaveChanges();
             }
+            Reload();
         }
     }
 }

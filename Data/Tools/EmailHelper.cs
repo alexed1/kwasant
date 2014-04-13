@@ -32,8 +32,8 @@ namespace Data.Tools
                 Events = null
             };
             emailDO.To.ForEach(a => a.ToEmail = emailDO);
-            emailDO.CC.ForEach(a => a.BccEmail = emailDO);
-            emailDO.BCC.ForEach(a => a.CcEmail = emailDO);
+            emailDO.CC.ForEach(a => a.BCCEmail = emailDO);
+            emailDO.BCC.ForEach(a => a.CCEmail = emailDO);
             emailDO.StatusID = EmailStatusConstants.QUEUED;
 
             emailRepository.Add(emailDO);
@@ -45,7 +45,7 @@ namespace Data.Tools
             return new EmailAddressDO { Address = address.Address, Name = address.DisplayName };
         }
 
-        internal static AttachmentDO CreateNewAttachment(Attachment attachment)
+        public static AttachmentDO CreateNewAttachment(Attachment attachment)
         {
             AttachmentDO att = new AttachmentDO
             {

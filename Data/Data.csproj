@@ -141,7 +141,6 @@
     <Compile Include="Models\UserDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tools\EmailHelper.cs" />
-    <Compile Include="Tools\EventHelper.cs" />
     <Compile Include="Tools\Managers\AlertManager.cs" />
     <Compile Include="Tools\Managers\APIManager\Packagers\Mandrill\MandrillPackager.cs" />
     <Compile Include="Tools\Managers\APIManager\Packagers\Shnexy\ShnexyPackager.cs" />
