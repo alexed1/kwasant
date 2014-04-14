@@ -17,7 +17,7 @@ using Data.DDay.DDay.iCal.Interfaces.Serialization;
 using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
 using Data.DDay.DDay.iCal.Structs;
 using Data.DataAccessLayer.Interfaces;
-using Data.Models;
+using DDay.DDay.iCal.Components;
 
 namespace Data.DDay.DDay.iCal
 {
@@ -510,7 +510,7 @@ namespace Data.DDay.DDay.iCal
         }
 
         /// <summary>
-        /// A collection of <see cref="Event"/> components in the iCalendar.
+        /// A collection of <see cref="DDayEvent"/> components in the iCalendar.
         /// </summary>
         virtual public IUniqueComponentList<IEvent> Events
         {
@@ -838,7 +838,7 @@ namespace Data.DDay.DDay.iCal
                 {
                     if (child is IUniqueComponent)
                     {
-                        var component = UniqueComponents[((IUniqueComponent)child).UID];
+                        IUniqueComponent component = UniqueComponents[((IUniqueComponent)child).UID];
                         if (component == null)
                         {
                             this.AddChild(child.Copy<ICalendarObject>());

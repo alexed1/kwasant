@@ -1,11 +1,10 @@
-﻿using System;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.StructureMap;
 using Data.Models;
-using Data.Services.CommunicationManager;
+using Data.Tools.Managers.CommunicationManager;
 using NUnit.Framework;
 using ShnexyTest.Fixtures;
 using StructureMap;
@@ -38,20 +37,20 @@ namespace ShnexyTest.Models
             _fixture = new FixtureData(_uow);
 
             //initialize CommunicationManager and register for event
-            var commManager = new CommunicationManager();
+            CommunicationManager commManager = new CommunicationManager();
             commManager.SubscribeToAlerts();
         }
         [Test]
         public void Customer_Add_CanCreateCustomer()
         {
             //create a customer from fixture data
-            Customer curCustomer = _fixture.TestCustomer();
-            customerRepo.Add(curCustomer);
+            CustomerDO curCustomerDO = _fixture.TestCustomer();
+            customerRepo.Add(curCustomerDO);
             customerRepo.UnitOfWork.SaveChanges();
             //check that it was saved to the db
-            Customer savedCustomer = customerRepo.GetByKey(curCustomer.CustomerID);
-            Assert.AreEqual(curCustomer.FirstName,savedCustomer.FirstName);
-            Assert.AreEqual(curCustomer.Email, savedCustomer.Email);
+            CustomerDO savedCustomerDO = customerRepo.GetByKey(curCustomerDO.CustomerID);
+            Assert.AreEqual(curCustomerDO.FirstName,savedCustomerDO.FirstName);
+            Assert.AreEqual(curCustomerDO.Email, savedCustomerDO.Email);
 
             //call Customer#Add
             //does event get called?

@@ -5,7 +5,7 @@ namespace Data.DataAccessLayer.Repositories
 {
 
 
-    public class EmailRepository : GenericRepository<Email>,  IEmailRepository
+    public class EmailRepository : GenericRepository<EmailDO>,  IEmailRepository
     {
 
         public EmailRepository(IUnitOfWork uow) : base(uow)
@@ -15,7 +15,7 @@ namespace Data.DataAccessLayer.Repositories
     }
 
 
-    public interface IEmailRepository : IGenericRepository<Email>
+    public interface IEmailRepository : IGenericRepository<EmailDO>
     {
       
     }

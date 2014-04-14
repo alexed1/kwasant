@@ -2,7 +2,7 @@
 using Data.DDay.DDay.iCal.Interfaces.Components;
 using Data.DDay.DDay.iCal.Interfaces.Serialization.Factory;
 using Data.DDay.DDay.iCal.Utility;
-using Data.Models;
+using DDay.DDay.iCal.Components;
 
 namespace Data.DDay.DDay.iCal.Serialization.Factory
 {
@@ -22,7 +22,7 @@ namespace Data.DDay.DDay.iCal.Serialization.Factory
                     type = typeof(Alarm);
                     break;
                 case Components.EVENT: 
-                    type = typeof(Event);
+                    type = typeof(DDayEvent);
                     break;
                 case Components.FREEBUSY:
                     type = typeof(FreeBusy);

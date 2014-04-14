@@ -1,0 +1,216 @@
+﻿@model Data.Models.EmailDO
+
+@using DayPilot.Web.Mvc
+@using DayPilot.Web.Mvc.Enums
+@using DayPilot.Web.Mvc.Enums.Calendar
+@using DayPilot.Web.Mvc.Events.Calendar
+
+@{
+    ViewBag.Title = "Event ";
+}
+
+<header>
+    <script type="text/javascript">
+        function modal(url) {
+            var m = new DayPilot.Modal();
+
+            m.closed = function () {
+                if (this.result == "OK") {
+                    dps.commandCallBack('refresh');
+                }
+                dps.clearSelection();
+            };
+            m.showUrl(url);
+        }
+
+        function eventClick(e) {
+            // only fire the server-side event if the ID is 5 or status field is set to tentative
+            //if (e.value() == "5" || e.tag("status") == "tentative") {
+            //    dpc.eventClickCallBack(e);
+            //}
+
+            var m = new DayPilot.Modal();
+            m.closed = function () {
+                if (this.result == "OK") {
+                    dpc.commandCallBack('refresh');
+                }
+                dpc.clearSelection();                
+            };
+
+            var url = getBaseCalendarURL() + '/New/?emailID=' + @Model.EmailID + '&partStart=' + e.partStart() + '&partEnd=' + e.partEnd();
+            m.showUrl(url);
+        }            
+
+    </script>
+</header>
+
+<div class="jumbotron">    
+    <div class="row" style="font-size: 0.85em;">
+        <div id="emailInfoBox" class="col-md-5 container_box">
+            <br />
+
+            <div class="row">
+                <div class="col-md-2 label_vertical_alignment">
+                    <div>From:</div>
+                </div>
+                <div class="col-md-9 label_vertical_alignment">
+                    <div class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.From.Address)</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-10 divider_height">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2 label_vertical_alignment">
+                    <div>Subject:</div>
+                </div>
+                <div class="col-md-9 label_vertical_alignment">
+                    <div class="bookingAgentFormControlBorder">@Html.DisplayFor(model => model.Subject)</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-10 divider_height">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2 label_vertical_alignment">
+                    <div>To:</div>
+                </div>
+                <div class="col-md-9">
+                    <div class="bookingAgentFormControlBorder">
+                        @{
+                            string toEmailAddresses = String.Join(",", Model.To.Select(a => a.Address));
+
+                            <span>@toEmailAddresses</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-10 divider_height">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2 label_vertical_alignment">
+                    <div>CC:</div>
+                </div>
+                <div class="col-md-9">
+                    <div class="bookingAgentFormControlBorder">
+                        @{
+                            string cCEmailAddresses = String.Join(",", Model.CC.Select(a => a.Address));
+
+                            <span>@cCEmailAddresses</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-10 divider_height">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2 label_vertical_alignment">
+                    <div>Bcc:</div>
+                </div>
+                <div class="col-md-9">
+                    <div class="bookingAgentFormControlBorder">
+                        @{
+                            string bCCEmailAddresses = String.Join(",", Model.BCC.Select(a => a.Address));
+
+                            <span>@bCCEmailAddresses</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-10 divider_height">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2 label_vertical_alignment">
+                    <div>Body:</div>
+                </div>
+                <div class="col-md-9">
+                    <div style="height: 200px" class="bookingAgentFormControlBorder">
+                        @Html.DisplayFor(model => model.Text)                        
+                    </div>                    
+                </div>
+            </div>
+
+            <br />
+        </div>
+        <div class="col-md-7 container_box">
+            <div class="row">
+                @Html.DayPilotMenu("menu1", new DayPilotMenuConfig
+                {
+                    Items = new DayPilot.Web.Mvc.MenuItemCollection()
+                    {
+                        new DayPilot.Web.Mvc.MenuItem { Text = "Delete", Action = MenuItemAction.CallBack, Command = "Delete"}
+                    }
+                })
+
+                @Html.DayPilotMenu("menu2", new DayPilotMenuConfig
+                {
+                    Items = new DayPilot.Web.Mvc.MenuItemCollection()
+                    {
+                        new DayPilot.Web.Mvc.MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "alert(e.value());"}
+                    }
+                })
+
+                @Html.DayPilotBubble("bubble")
+
+                @(Html.DayPilotCalendar("dpc", new DayPilotCalendarConfig
+                    {
+                        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+                        BackendUrl = Url.Content("~/Calendar/Backend/"),
+                        EventMoveHandling = EventMoveHandlingType.CallBack,
+                        EventResizeHandling = EventResizeHandlingType.CallBack,
+                        TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedHandlingType.CallBack,
+                        ShowAllDayEvents = true,
+                        Height = 630,
+                        HeightSpec = HeightSpec.BusinessHours,
+                        EventBubble = "bubble",
+                        EventClickJavaScript = "eventClick(e)",
+                        EventClickHandling = EventClickHandlingType.JavaScript,
+                        HeaderClickHandling = HeaderClickHandlingType.JavaScript,
+                        ContextMenu = "menu1",
+                        HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"
+                    }))
+                
+
+                <script type="text/javascript">
+                    function modal(url) {
+                        var m = new DayPilot.Modal();
+                        m.closed = function () {
+                            if (this.result == "OK") {
+                                dps.commandCallBack('refresh');
+                            }
+                            dps.clearSelection();
+                        };
+                        m.showUrl(url);
+                    }
+                </script>
+
+            </div>
+            <br />
+            <div class="Row" style="height:179px;">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    @Html.ActionLink("Show Users", "Index", "User");
+</div>

@@ -99,8 +99,8 @@ namespace UtilitiesLib
         public static string ToUnixTime()
         {
             DateTime currentTime = DateTime.UtcNow;
-            var timeSpan = (currentTime - new DateTime(1970, 1, 1));
-            var timestamp = timeSpan.TotalSeconds.ToString();
+            TimeSpan timeSpan = (currentTime - new DateTime(1970, 1, 1));
+            string timestamp = timeSpan.TotalSeconds.ToString();
 
             return timestamp;
         }

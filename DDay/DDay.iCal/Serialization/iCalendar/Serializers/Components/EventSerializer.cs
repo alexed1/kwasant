@@ -1,6 +1,6 @@
 ﻿using System;
 using Data.DDay.DDay.iCal.Interfaces.Serialization;
-using Data.Models;
+using DDay.DDay.iCal.Components;
 
 namespace Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Components
 {
@@ -24,14 +24,14 @@ namespace Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Components
 
         public override Type TargetType
         {
-            get { return typeof(Event); }
+            get { return typeof(DDayEvent); }
         }
 
         public override string SerializeToString(object obj)
         {
-            if (obj is Event)
+            if (obj is DDayEvent)
             {
-                Event evt = ((Event)obj).Copy<Event>();
+                DDayEvent evt = ((DDayEvent)obj).Copy<DDayEvent>();
 
                 // NOTE: DURATION and DTEND cannot co-exist on an event.
                 // Some systems do not support DURATION, so we serialize

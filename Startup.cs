@@ -19,7 +19,7 @@ namespace Shnexy
 
         private static void ConfigureDaemons()
         {
-            var daemonConfig = ConfigurationManager.GetSection("daemonSettings") as DaemonSettings;
+            DaemonSettings daemonConfig = ConfigurationManager.GetSection("daemonSettings") as DaemonSettings;
             if (daemonConfig != null)
             {
                 if (daemonConfig.Enabled)
@@ -28,8 +28,8 @@ namespace Shnexy
                     {
                         if (daemon.Enabled)
                         {
-                            var type = Type.GetType(daemon.InitClass, true);
-                            var obj = Activator.CreateInstance(type) as Daemon;
+                            Type type = Type.GetType(daemon.InitClass, true);
+                            Daemon obj = Activator.CreateInstance(type) as Daemon;
                             if (obj == null)
                                 throw new ArgumentException(
                                     string.Format(

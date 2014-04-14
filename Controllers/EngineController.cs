@@ -1,16 +1,12 @@
-﻿using System.Collections;
+﻿using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
-using Data.Models;
-using DBTools;
+using Data.Tools;
 using S22.Imap;
-using Shnexy.Fixtures;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net.Mail;
-using System.Web;
 using System.Web.Mvc;
+using StructureMap;
 
 namespace Shnexy.Controllers
 {
@@ -46,15 +42,17 @@ namespace Shnexy.Controllers
             using (ImapClient Client = new ImapClient("imap.gmail.com", 993, username, password, AuthMethod.Login, true))
             {
                 Debug.WriteLine("We are connected!");
-                IEnumerable<uint> uids = Client.Search(SearchCondition.Unseen());
-                messages = Client.GetMessages(uids);
-            }
-            foreach (var message in messages)
-            {
-                EmailHelper.AddNewEmailToRepository(_emailRepo, message);
-                _emailRepo.UnitOfWork.SaveChanges();
+                IEnumerable<uint> uids = Client.Search(SearchCondition.Unseen());                
+                messages = Client.GetMessages(uids);               
             }
 
+            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailRepository emailRepository = new EmailRepository(unitOfWork);
+            foreach (MailMessage message in messages)
+            {
+                EmailHelper.ConvertMailMessageToEmail(emailRepository, message);
+            }
+            emailRepository.UnitOfWork.SaveChanges();
           
             return RedirectToAction("Index", "Admin");
 

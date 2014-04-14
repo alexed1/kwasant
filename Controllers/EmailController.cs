@@ -1,34 +1,60 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.Models;
-using DBTools.Managers.APIManager.Packagers.Shnexy;
+using Data.Tools.Managers.APIManager.Packagers.Shnexy;
 using UtilitiesLib;
+using Data.DataAccessLayer.Infrastructure;
+using System.Web.Routing;
+
 
 namespace Shnexy.Controllers
 {
     public class EmailController : Controller
     {
-        
-
         private IUnitOfWork _uow;
-
-        private IEmail curEmail;
-        private IEmailRepository curEmailRepo;
+        private IBookingRequestRepository curBookingRequestRepository;
         private ShnexyPackager API;
-        
+
+        ShnexyDbContext db = new ShnexyDbContext();
 
         public EmailController(IUnitOfWork uow)
         {
             _uow = uow;
-            curEmailRepo = new EmailRepository(_uow);
-            
+            curBookingRequestRepository = new BookingRequestRepository(_uow);
             API = new ShnexyPackager();
         }
 
+        // GET: /Email/
+        public ActionResult Index()
+        {
+            return View(curBookingRequestRepository.GetAll().Where(e => e.StatusID == EmailStatusConstants.UNPROCESSED).ToList());            
+        }
 
+        // GET: /Email/Details/5
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            BookingRequestDO bookingRequestDO = curBookingRequestRepository.GetByKey(id);
+
+            if (bookingRequestDO == null)
+            {
+                return HttpNotFound();
+            }
+            else
+            {
+                //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
+                return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Calendar", action = "Index", id = id }));
+            }
+            //return View(email);
+        }
 
         // GET: /Email/
         [HttpGet]
@@ -36,35 +62,8 @@ namespace Shnexy.Controllers
         {
             Dictionary<string, string> param = new Dictionary<string, string>();
             API.UnpackGetEmail(requestString, out param);
-            Email thisEmail = curEmailRepo.GetByKey(param["Id"].ToInt());
-            return API.PackResponseGetEmail(thisEmail);
+            EmailDO thisEmailDO = curBookingRequestRepository.GetByKey(param["Id"].ToInt());
+            return API.PackResponseGetEmail(thisEmailDO);
         }
-
-
-
-        public ActionResult Index()
-        {
-            
-            IEnumerable<Email> curEmails = new List<Email>();
-            curEmails = curEmailRepo.GetAll();
-            return View("Index", curEmails);
-        }
-
-        // GET: /Email/Details/5
-        public ActionResult Details(int Id)
-        {
-            if (Id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            curEmail = curEmailRepo.GetByKey(Id);
-            if (curEmail == null)
-            {
-                return HttpNotFound();
-            }
-            return View(curEmail);
-        }
-
-       
     }
 }

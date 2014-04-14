@@ -69,21 +69,21 @@ namespace Data.DDay.DDay.iCal
 
         public static iCalTimeZone FromSystemTimeZone(System.TimeZoneInfo tzinfo, DateTime earlistDateTimeToSupport, bool includeHistoricalData)
         {
-            var adjustmentRules = tzinfo.GetAdjustmentRules();
-            var utcOffset = tzinfo.BaseUtcOffset;
-            var dday_tz = new iCalTimeZone();
+            TimeZoneInfo.AdjustmentRule[] adjustmentRules = tzinfo.GetAdjustmentRules();
+            TimeSpan utcOffset = tzinfo.BaseUtcOffset;
+            iCalTimeZone dday_tz = new iCalTimeZone();
             dday_tz.TZID = tzinfo.Id;
 
             IDateTime earliest = new iCalDateTime(earlistDateTimeToSupport);
-            foreach (var adjustmentRule in adjustmentRules)
+            foreach (TimeZoneInfo.AdjustmentRule adjustmentRule in adjustmentRules)
             {
                 // Only include historical data if asked to do so.  Otherwise,
                 // use only the most recent adjustment rule available.
                 if (!includeHistoricalData && adjustmentRule.DateEnd < earlistDateTimeToSupport)
                     continue;
 
-                var delta = adjustmentRule.DaylightDelta;
-                var dday_tzinfo_standard = new iCalTimeZoneInfo();
+                TimeSpan delta = adjustmentRule.DaylightDelta;
+                iCalTimeZoneInfo dday_tzinfo_standard = new iCalTimeZoneInfo();
                 dday_tzinfo_standard.Name = "STANDARD";
                 dday_tzinfo_standard.TimeZoneName = tzinfo.StandardName;
                 dday_tzinfo_standard.Start = new iCalDateTime(new DateTime(adjustmentRule.DateStart.Year, adjustmentRule.DaylightTransitionEnd.Month, adjustmentRule.DaylightTransitionEnd.Day, adjustmentRule.DaylightTransitionEnd.TimeOfDay.Hour, adjustmentRule.DaylightTransitionEnd.TimeOfDay.Minute, adjustmentRule.DaylightTransitionEnd.TimeOfDay.Second).AddDays(1));
@@ -98,7 +98,7 @@ namespace Data.DDay.DDay.iCal
 
                 if (tzinfo.SupportsDaylightSavingTime)
                 {
-                    var dday_tzinfo_daylight = new iCalTimeZoneInfo();
+                    iCalTimeZoneInfo dday_tzinfo_daylight = new iCalTimeZoneInfo();
                     dday_tzinfo_daylight.Name = "DAYLIGHT";
                     dday_tzinfo_daylight.TimeZoneName = tzinfo.DaylightName;
                     dday_tzinfo_daylight.Start = new iCalDateTime(new DateTime(adjustmentRule.DateStart.Year, adjustmentRule.DaylightTransitionStart.Month, adjustmentRule.DaylightTransitionStart.Day, adjustmentRule.DaylightTransitionStart.TimeOfDay.Hour, adjustmentRule.DaylightTransitionStart.TimeOfDay.Minute, adjustmentRule.DaylightTransitionStart.TimeOfDay.Second));
@@ -118,7 +118,7 @@ namespace Data.DDay.DDay.iCal
             // base time zone information.
             if (dday_tz.TimeZoneInfos.Count == 0)
             {
-                var dday_tzinfo_standard = new iCalTimeZoneInfo();
+                iCalTimeZoneInfo dday_tzinfo_standard = new iCalTimeZoneInfo();
                 dday_tzinfo_standard.Name = "STANDARD";
                 dday_tzinfo_standard.TimeZoneName = tzinfo.StandardName;
                 dday_tzinfo_standard.Start = earliest;                

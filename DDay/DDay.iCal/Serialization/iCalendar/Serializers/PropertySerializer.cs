@@ -118,14 +118,14 @@ namespace Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers
                         // is non-null.
                         if (v != null)
                         {
-                            var valueType = v.GetType();
+                            Type valueType = v.GetType();
 
                             // Use the determined type of the value if the property
                             // mapping didn't yield any results.
                             if (serializedType == null)
                                 serializedType = valueType;
 
-                            var genericListOfSerializedType = typeof(IEnumerable<>).MakeGenericType(new Type[] { serializedType });
+                            Type genericListOfSerializedType = typeof(IEnumerable<>).MakeGenericType(new Type[] { serializedType });
                             if (genericListOfSerializedType.IsAssignableFrom(valueType))
                             {
                                 // Serialize an enumerable list of properties

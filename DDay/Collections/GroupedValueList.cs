@@ -19,7 +19,7 @@ namespace Data.DDay.Collections
             IEnumerable<TInterface> items = AllOf(group);
             if (items != null)
             {
-                var container = items.FirstOrDefault();
+                TInterface container = items.FirstOrDefault();
                 if (container != null)
                 {
                     // Add a value to the first matching item in the list
@@ -38,14 +38,14 @@ namespace Data.DDay.Collections
 
         virtual public void Set(TGroup group, TValueType value)
         {
-            var values = new TValueType[] { value };
+            TValueType[] values = new TValueType[] { value };
 
             // If this object is a valid container, and we don't
             // already have a container for this group, then
             // let's reuse the existing container.
             if (value is TInterface)
             {
-                var container = value as TInterface;
+                TInterface container = value as TInterface;
 
                 // If we can't consolidate our value with another container,
                 // or another container doesn't exist yet, then let's use
@@ -97,7 +97,7 @@ namespace Data.DDay.Collections
 
         virtual public TType Get<TType>(TGroup group)
         {
-            var firstItem = AllOf(group).FirstOrDefault();
+            TInterface firstItem = AllOf(group).FirstOrDefault();
             if (firstItem != null &&
                 firstItem.Values != null)
             {

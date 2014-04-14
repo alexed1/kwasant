@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Data.Models.Email>
+﻿@using Data.Models
+@model IEnumerable<Data.Models.EmailDO>
 
 @{
     ViewBag.Title = "Index";
@@ -20,7 +21,7 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
+@foreach (EmailDO item in Model) {
     <tr>
         <td>
             @Html.DisplayFor(modelItem => item.Text)

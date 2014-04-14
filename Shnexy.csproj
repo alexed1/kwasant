@@ -214,11 +214,16 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\BookingAgentController.cs" />
-    <Compile Include="Controllers\Data\EventManager.cs" />
+    <Compile Include="Controllers\CalendarController.cs" />
+    <Compile Include="Controllers\Models\Calendar.cs" />
+    <Compile Include="Controllers\DayPilot\DayPilotCalendarControl.cs" />
+    <Compile Include="Controllers\DayPilot\DayPilotNavigatorControl.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\Helpers\Log.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MonthController.cs" />
+    <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="DependencyResolution\IoC.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
     <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
@@ -767,11 +772,42 @@
     <Content Include="Views\Email\Details.cshtml" />
     <Content Include="Views\Email\Edit.cshtml" />
     <Content Include="Views\Email\Index.cshtml" />
-    <Content Include="Views\BookingAgent\Index.cshtml" />
+    <Content Include="Views\Calendar\ActiveAreas.cshtml" />
+    <Content Include="Views\Calendar\AutoHide.cshtml" />
+    <Content Include="Views\Calendar\AutoRefresh.cshtml" />
+    <Content Include="Views\Calendar\Columns50.cshtml" />
+    <Content Include="Views\Calendar\ContextMenu.cshtml" />
+    <Content Include="Views\Calendar\Crosshair.cshtml" />
+    <Content Include="Views\Calendar\DayRange.cshtml" />
+    <Content Include="Views\Calendar\DaysResources.cshtml" />
+    <Content Include="Views\Calendar\EventArrangement.cshtml" />
+    <Content Include="Views\Calendar\EventSelecting.cshtml" />
+    <Content Include="Views\Calendar\ExternalDragDrop.cshtml" />
+    <Content Include="Views\Calendar\GoogleLike.cshtml" />
+    <Content Include="Views\Calendar\HeaderAutoFit.cshtml" />
+    <Content Include="Views\Calendar\Height100Pct.cshtml" />
+    <Content Include="Views\Calendar\Index.cshtml" />
+    <Content Include="Views\Calendar\JQuery.cshtml" />
+    <Content Include="Views\Calendar\Message.cshtml" />
+    <Content Include="Views\Calendar\Navigation.json" />
+    <Content Include="Views\Calendar\New.cshtml" />
+    <Content Include="Views\Calendar\Notify.cshtml" />
+    <Content Include="Views\Calendar\Open.cshtml" />
+    <Content Include="Views\Calendar\RecurringEvents.cshtml" />
+    <Content Include="Views\Calendar\Resources.cshtml" />
+    <Content Include="Views\Calendar\Rtl.cshtml" />
+    <Content Include="Views\Calendar\ThemeBlue.cshtml" />
+    <Content Include="Views\Calendar\ThemeGreen.cshtml" />
+    <Content Include="Views\Calendar\ThemeTraditional.cshtml" />
+    <Content Include="Views\Calendar\ThemeTransparent.cshtml" />
+    <Content Include="Views\Calendar\ThemeWhite.cshtml" />
+    <Content Include="Views\Calendar\TimeHeaderCellDuration.cshtml" />
+    <Content Include="Views\Calendar\Today.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
+    <Folder Include="Views\BookingAgent\" />
     <Folder Include="Views\Engine\" />
     <Folder Include="Views\Schedule\" />
     <Folder Include="Views\Session\" />
@@ -795,9 +831,9 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="DBTools\DBTools.csproj">
-      <Project>{066ED602-B036-489C-B616-63682348A750}</Project>
-      <Name>DBTools</Name>
+    <ProjectReference Include="DDay\DDay.csproj">
+      <Project>{D940EFCA-2D57-466C-8103-54DB173F1BD2}</Project>
+      <Name>DDay</Name>
     </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

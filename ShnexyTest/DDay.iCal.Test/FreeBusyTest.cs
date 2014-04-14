@@ -4,6 +4,7 @@ using Data.DDay.DDay.iCal.Interfaces;
 using Data.DDay.DDay.iCal.Interfaces.Components;
 using Data.DataAccessLayer.Interfaces;
 using Data.Models;
+using DDay.DDay.iCal.Components;
 using NUnit.Framework;
 
 namespace ShnexyTest.DDay.iCal.Test
@@ -27,7 +28,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
 
-            IEvent evt = iCal.Create<Event>();
+            IEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test event";
             evt.Start = new iCalDateTime(2010, 10, 1, 8, 0, 0);
             evt.End = new iCalDateTime(2010, 10, 1, 9, 0, 0);

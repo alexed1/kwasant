@@ -13,7 +13,7 @@ namespace ShnexyTest.Daemons
         [Test]
         public void CannotStartDaemonTwice()
         {
-            var mockDaemon = new Mock<Daemon>().Object;
+            Daemon mockDaemon = new Mock<Daemon>().Object;
             Assert.True(mockDaemon.Start());
             Assert.False(mockDaemon.Start());
         }
@@ -40,9 +40,9 @@ namespace ShnexyTest.Daemons
 
         private Daemon StartDaemonAndAwaitStartup(Action daemonAction, out Thread workingThread)
         {
-            var threadLocker = new object();
+            object threadLocker = new object();
             Thread workerThread = null;
-            var mockDaemon = new TestDaemon(
+            TestDaemon mockDaemon = new TestDaemon(
                 () =>
                     {
                         lock (threadLocker)
@@ -69,9 +69,9 @@ namespace ShnexyTest.Daemons
         public void DaemonGracefullyShutsDown()
         {
             const int threadExecuteTime = 3000;
-            var hasFinished = false;
+            bool hasFinished = false;
             Thread workerThread;
-            var mockDaemon = StartDaemonAndAwaitStartup(() =>
+            Daemon mockDaemon = StartDaemonAndAwaitStartup(() =>
                 {
                     Thread.Sleep(threadExecuteTime);
                     hasFinished = true;
@@ -86,12 +86,12 @@ namespace ShnexyTest.Daemons
         [Test]
         public void DaemonHandlesExceptionsAndDoesNotCrash()
         {
-            var workLock = new object();
+            object workLock = new object();
             int workNumber = 0;
-            var finished = false;
+            bool finished = false;
             Thread workerThread;
             const string testException = "Test exception";
-            var mockDaemon = StartDaemonAndAwaitStartup(() =>
+            Daemon mockDaemon = StartDaemonAndAwaitStartup(() =>
             {
                 lock (workLock)
                 {

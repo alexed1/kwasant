@@ -1,0 +1,198 @@
+﻿@model Shnexy.Controllers.CalendarController.CreateInvitationInfo
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+
+<header>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript">
+        $(document).ready(function () {
+            //function validate() {
+            //    if ($("#divName").val().trim() == '') {
+            //        $("#divName").val("Name is required.");
+            //        return false;
+            //    }
+            //}
+        });
+
+        /* Wild Char Check Start*/
+        function checkWildCar(texBox, IsNoteType) {
+            var oTextBox = document.getElementById(texBox);
+
+            var specialChars = "!@@#$^&%*()+=-[]\/{}|:<>?,.";
+
+            for (var i = 0; i < specialChars.length; i++) {
+                if (IsNoteType) {
+                    oTextBox.value = oTextBox.value.replace(/[^\w\,\s\.\#\-]/gi, '')
+                }
+                else {
+                    oTextBox.value = oTextBox.value.replace(/[^\w\s\.]/gi, '')
+                }
+            }
+        }
+
+        function Validate() {
+
+            var bFlag = false;
+
+            var name = document.getElementById('Name');
+            var dName = document.getElementById('divName');
+
+            if (name != null) {
+                if (name.value.trim() == '') {
+                    dName.innerHTML = 'Name is required.';
+                    bFlag = false;
+                }
+                else {
+                    dName.innerHTML = '';
+                    bFlag = true;
+                }
+            }
+
+            var location = document.getElementById('Location');
+            var dLocation = document.getElementById('divLocation');
+
+            if (location != null) {
+                if (location.value.trim() == '') {
+                    dLocation.innerHTML = 'Location is required.';
+                    bFlag = false;
+                }
+                else {
+                    dLocation.innerHTML = '';
+                    bFlag = true;
+                }
+            }
+
+            return bFlag;
+        }
+
+    </script>
+</header>
+<form id="f" method="post" action="@Url.Action("New")">
+    <h3>New Event</h3>
+    <hr />
+    <br />
+
+    <div>Location</div>
+    <div>
+        @Html.TextBox("Location", String.Empty, new { @class = "form-control col-md-1" })
+        <div id="divLocation"></div>
+    </div>
+
+    <br />
+    @{
+        List<SelectListItem> itemsStatus = new List<SelectListItem>();
+
+        itemsStatus.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+        itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "Tentative" });
+        itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "Confirmed" });
+        itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "Cancelled" });
+    }
+    <br />
+    <div>Status</div>
+    <div style="width:200px"> @Html.DropDownList("Status", itemsStatus, new { @class = "form-control col-md-1" })</div>
+    <br />
+    @{
+        List<SelectListItem> itemsTransparency = new List<SelectListItem>();
+
+        itemsTransparency.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+        itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "Opaque" });
+        itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "Transparent" });
+    }
+    <br />
+    <div>Transparency Type</div>
+    <div style="width:200px">@Html.DropDownList("TransparencyType", itemsTransparency, new { @class = "form-control col-md-1" })</div>
+    <br /><br />
+    @{
+        List<SelectListItem> itemsClass = new List<SelectListItem>();
+
+        itemsClass.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+        itemsClass.Add(new SelectListItem { Text = "PUBLIC", Value = "PUBLIC" });
+        itemsClass.Add(new SelectListItem { Text = "PRIVATE", Value = "PRIVATE" });
+        itemsClass.Add(new SelectListItem { Text = "CONFIDENTIAL", Value = "CONFIDENTIAL" });
+    }
+    <div>Class</div>
+    <div style="width:200px">@Html.DropDownList("Class", itemsClass, new { @class = "form-control col-md-1" })</div>
+    <br />
+    <div>Description</div>
+    <div>@Html.TextArea("Description", String.Empty, 5, 31, new { @class = "form-control col-md-1" })</div>
+    @{
+        List<SelectListItem> itemsPriority = new List<SelectListItem>();
+
+        itemsPriority.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+        itemsPriority.Add(new SelectListItem { Text = "High", Value = "1" });
+        itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2" });
+        itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3" });
+    }
+    <br />
+    <div>Priority</div>
+    <div style="width:200px">@Html.DropDownList("Priority", itemsPriority, new { @class = "form-control col-md-1" })</div>
+    <br />
+    @{
+        List<SelectListItem> itemsSequence = new List<SelectListItem>();
+
+
+        itemsSequence.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
+        itemsSequence.Add(new SelectListItem { Text = "One", Value = "1" });
+        itemsSequence.Add(new SelectListItem { Text = "Two", Value = "2" });
+    }
+    <br />
+    <div>Sequence</div>
+    <div style="width:200px">@Html.DropDownList("Sequence", itemsSequence, new { @class = "form-control col-md-1" })</div>
+    <br /><br />
+    <div>Summary</div>
+    <div>@Html.TextArea("Summary", String.Empty, 5, 31, new { @class = "form-control col-md-1" })</div>
+    <br /><br />
+    <div>Category</div>
+    <div>
+        @Html.TextBox("Category", String.Empty, new { @class = "form-control col-md-1" })
+        <div id="divCategory"></div>
+
+    </div>
+    <br />
+    @{
+        <div style="display:none">
+            @Html.TextBox("BookingRequestID", @Model.EmailID, new { @class = "form-control col-md-1" })
+            @Html.TextBox("DateStart", @Model.DateStart, new { @class = "form-control col-md-1" })
+            @Html.TextBox("DateEnd", @Model.DateEnd, new { @class = "form-control col-md-1" })
+        </div>
+    }
+    <hr />
+    <div class="space">
+        <div style="clear:both">
+            <div style="float:left">
+                <input id="btnSave" type="submit" value="OK" style="width: 100px; height: 30px; border: 2px solid black; margin-right:20px" onclick="return Validate()" />
+            </div>
+            <div style="float:left">
+                <a href="javascript:close()"><div style="width: 100px;">Cancel</div></a>
+            </div>
+        </div>
+        <br />
+        <br />
+    </div>
+</form>
+
+<script type="text/javascript">
+    function close(result) {
+        if (parent && parent.DayPilot && parent.DayPilot.ModalStatic) {
+            parent.DayPilot.ModalStatic.close(result);
+        }
+    }
+
+    $("#f").submit(function () {
+        var f = $("#f");
+        $.post(f.action, f.serialize(), function (result) {
+            close(eval(result));
+        });
+        return false;
+    });
+
+    $(document).ready(function () {
+        $("#Location").focus();
+
+        $("Location").blur(function () {
+            //var oTextBox = document.getElementById('Location');
+            //checkWildCar(oTextBox, false);
+        });
+
+    });
+
+</script>

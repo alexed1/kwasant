@@ -132,7 +132,7 @@ namespace Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes
                         // NOTE: Fixes bug #3534283 - DateTimeSerializer bug on deserializing dates without time
                         if (dt.Parameters.ContainsKey("VALUE"))
                         {
-                            var valueType = dt.Parameters.Get("VALUE");
+                            string valueType = dt.Parameters.Get("VALUE");
                             if (valueType != "DATE")
                                 dt.HasTime = true;
                         }

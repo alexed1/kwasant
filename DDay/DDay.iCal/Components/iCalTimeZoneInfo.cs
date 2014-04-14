@@ -167,7 +167,7 @@ namespace Data.DDay.DDay.iCal
 
                     // NOTE: We avoid using period.Contains here, because we want to avoid
                     // doing an inadvertent time zone lookup with it.
-                    var period = m_Evaluator
+                    IPeriod period = m_Evaluator
                         .Periods
                         .FirstOrDefault(p =>
                             p.StartTime.Value <= normalizedDt &&

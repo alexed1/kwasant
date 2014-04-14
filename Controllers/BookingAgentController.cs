@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web;
 using System.Web.Mvc;
+using DayPilot.Web.Mvc.Json;
+
 
 namespace Shnexy.Controllers
 {
@@ -21,7 +17,14 @@ namespace Shnexy.Controllers
             return View();
         }
 
-        
+        //[AcceptVerbs(HttpVerbs.Post)]
+        //public ActionResult New(FormCollection form)
+        //{
+        //    DateTime start = Convert.ToDateTime(form["Start"]);
+        //    DateTime end = Convert.ToDateTime(form["End"]);
+        //    new EventManager(this).EventCreate(start, end, form["Text"], null);
+        //    return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+        //}        
 
         protected override void Dispose(bool disposing)
         {

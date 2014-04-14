@@ -25,6 +25,7 @@ using Data.DDay.DDay.iCal.Structs;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.StructureMap;
 using Data.Models;
+using DDay.DDay.iCal.Components;
 using NUnit.Framework;
 using StructureMap;
 using Attachment = Data.DDay.DDay.iCal.DataTypes.Attachment;
@@ -82,8 +83,8 @@ namespace ShnexyTest.DDay.iCal.Test
 
             for (int i = 0; i < iCal1.Children.Count; i++)
             {
-                var component1 = iCal1.Children[i] as ICalendarComponent;
-                var component2 = iCal2.Children[i] as ICalendarComponent;
+                ICalendarComponent component1 = iCal1.Children[i] as ICalendarComponent;
+                ICalendarComponent component2 = iCal2.Children[i] as ICalendarComponent;
                 if (component1 != null && component2 != null)
                 {
                     CompareComponents(component1, component2);
@@ -150,7 +151,7 @@ namespace ShnexyTest.DDay.iCal.Test
             iCalendar iCal = new iCalendar();
 
             // Create the event, and add it to the iCalendar
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
 
             evt.Start = new iCalDateTime(2010, 7, 3, 8, 0, 0);
             evt.End = evt.Start.AddHours(1);
@@ -183,7 +184,7 @@ namespace ShnexyTest.DDay.iCal.Test
             IICalendar iCal = new iCalendar();
 
             // Create a test event
-            IEvent evt = iCal.Create<Event>();
+            IEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test Event";
             evt.Start = new iCalDateTime(2007, 10, 15, 8, 0, 0);
             evt.Duration = TimeSpan.FromHours(1);
@@ -215,7 +216,7 @@ namespace ShnexyTest.DDay.iCal.Test
             IICalendar iCal = new iCalendar();
 
             // Create a test event
-            IEvent evt = iCal.Create<Event>();
+            IEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test Event";
             evt.Start = new iCalDateTime(2007, 10, 15, 8, 0, 0);
             evt.Duration = TimeSpan.FromHours(1);
@@ -351,7 +352,7 @@ namespace ShnexyTest.DDay.iCal.Test
         public void Attendee3()
         {
             IICalendar iCal = new iCalendar();
-            IEvent evt = iCal.Create<Event>();
+            IEvent evt = iCal.Create<DDayEvent>();
 
             evt.Summary = "Test event";
             evt.Start = new iCalDateTime(2010, 7, 3, 8, 0, 0);
@@ -419,8 +420,8 @@ namespace ShnexyTest.DDay.iCal.Test
         [Test, Category("Serialization")]
         public void Bug3177278()
         {
-            var calendar = new iCalendar();
-            var serializer = new iCalendarSerializer();
+            iCalendar calendar = new iCalendar();
+            iCalendarSerializer serializer = new iCalendarSerializer();
 
             MemoryStream ms = new MemoryStream();
             serializer.Serialize(calendar, ms, Encoding.UTF8);
@@ -435,10 +436,10 @@ namespace ShnexyTest.DDay.iCal.Test
         [Test, Category("Serialization")]
         public void Bug3211934()
         {
-            var calendar = new iCalendar();
-            var serializer = new iCalendarSerializer();
+            iCalendar calendar = new iCalendar();
+            iCalendarSerializer serializer = new iCalendarSerializer();
 
-            var filename = "Bug3211934.ics";
+            string filename = "Bug3211934.ics";
 
             if (File.Exists(filename))
             {
@@ -453,7 +454,7 @@ namespace ShnexyTest.DDay.iCal.Test
             File.SetAttributes(filename, FileAttributes.ReadOnly);
 
             // Load the calendar from file, and ensure the read-only attribute doesn't affect the load
-            var calendars = iCalendar.LoadFromFile(filename, Encoding.UTF8, serializer);
+            IICalendarCollection calendars = iCalendar.LoadFromFile(filename, Encoding.UTF8, serializer);
             Assert.IsNotNull(calendars);
 
             // Reset the file attributes and delete
@@ -467,8 +468,8 @@ namespace ShnexyTest.DDay.iCal.Test
         [Test, Category("Serialization")]
         public void Bug3354307()
         {
-            var now = DateTime.Now;
-            var dt = new iCalDateTime(now);
+            DateTime now = DateTime.Now;
+            iCalDateTime dt = new iCalDateTime(now);
             Assert.AreEqual(dt, (object)now);
         }
 
@@ -495,10 +496,10 @@ namespace ShnexyTest.DDay.iCal.Test
         [Test, Category("Serialization")]
         public void Bug3373224()
         {
-            var attendee = new Attendee();
-            var serializer = new AttendeeSerializer();
+            Attendee attendee = new Attendee();
+            AttendeeSerializer serializer = new AttendeeSerializer();
 
-            var serialized = serializer.SerializeToString(attendee);
+            string serialized = serializer.SerializeToString(attendee);
             Assert.IsNull(serialized);
 
             attendee.Value = new Uri("mailto:test@test.com");
@@ -519,7 +520,7 @@ namespace ShnexyTest.DDay.iCal.Test
         public void Bug3485766()
         {
             IICalendar calendar = new iCalendar();
-            IEvent evt = calendar.Create<Event>();
+            IEvent evt = calendar.Create<DDayEvent>();
             evt.Start = new iCalDateTime(2012, 5, 23, 8, 0, 0);
             evt.Duration = TimeSpan.FromMinutes(30);
 
@@ -530,8 +531,8 @@ namespace ShnexyTest.DDay.iCal.Test
             evt.DTStamp = new iCalDateTime(evt.DTStamp.Local);
 
             // Serialize the calendar
-            var serializer = new iCalendarSerializer();
-            var serialized = serializer.SerializeToString(calendar);
+            iCalendarSerializer serializer = new iCalendarSerializer();
+            string serialized = serializer.SerializeToString(calendar);
             IICalendarCollection calendars = serializer.Deserialize(new StringReader(serialized)) as IICalendarCollection;
             calendar = calendars.First();
             evt = calendar.Events[0];
@@ -545,13 +546,13 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             IICalendar calendar = new iCalendar();
             calendar.Method = "PUBLISH";
-            IEvent evt = calendar.Create<Event>();
+            IEvent evt = calendar.Create<DDayEvent>();
             evt.Summary = "Test Event";
             evt.Start = new iCalDateTime(2012, 3, 27, 22, 00, 00);
             evt.Duration = TimeSpan.FromHours(1);
 
-            var attendees = new List<IAttendee>();
-            var attendee = new Attendee("MAILTO:someid@test.com")
+            List<IAttendee> attendees = new List<IAttendee>();
+            Attendee attendee = new Attendee("MAILTO:someid@test.com")
             {
                 CommonName = "Test Name",
                 Role = "OPT-PARTICIPANT",
@@ -562,10 +563,10 @@ namespace ShnexyTest.DDay.iCal.Test
             evt.Attendees = attendees;
 
             // Serialize (save) the iCalendar 
-            var serializer = new iCalendarSerializer(calendar);
-            var result = serializer.SerializeToString(calendar);
+            iCalendarSerializer serializer = new iCalendarSerializer(calendar);
+            string result = serializer.SerializeToString(calendar);
 
-            var calendars = serializer.Deserialize(new StringReader(result)) as IICalendarCollection;
+            IICalendarCollection calendars = serializer.Deserialize(new StringReader(result)) as IICalendarCollection;
             calendar = calendars.First();
             evt = calendar.Events.First();
 
@@ -583,8 +584,8 @@ namespace ShnexyTest.DDay.iCal.Test
         public void Bug3534283()
         {
             IICalendar iCal = new iCalendar();
-            var start = new DateTime(2000, 1, 1);
-            Event evt = new Event();
+            DateTime start = new DateTime(2000, 1, 1);
+            DDayEvent evt = new DDayEvent();
             evt.RecurrenceDates.Add(new PeriodList { new Period(new iCalDateTime(start), new iCalDateTime(new DateTime(2000, 1, 2))) });
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
@@ -594,9 +595,9 @@ namespace ShnexyTest.DDay.iCal.Test
 
             Assert.That(((IEvent)iCal.Children[0]).RecurrenceDates[0][0].StartTime.Local, Is.EqualTo(start));
 
-            var bar = new iCalendarSerializer().SerializeToString(iCal);
+            string bar = new iCalendarSerializer().SerializeToString(iCal);
 
-            var foobar = iCalendar.LoadFromStream(new StringReader(bar)).First().Events.First();
+            IEvent foobar = iCalendar.LoadFromStream(new StringReader(bar)).First().Events.First();
 
             Assert.That(foobar.RecurrenceDates[0][0].StartTime.Local, Is.EqualTo(start));
         }
@@ -607,10 +608,10 @@ namespace ShnexyTest.DDay.iCal.Test
         [Test, Category("Serialization")]
         public void BugFromForumTopic3355446()
         {
-            var ical = new iCalendar();
-            var evt = ical.Create<Event>();
+            iCalendar ical = new iCalendar();
+            DDayEvent evt = ical.Create<DDayEvent>();
             
-            var altDescProp = new CalendarProperty("X-ALT-DESC");
+            CalendarProperty altDescProp = new CalendarProperty("X-ALT-DESC");
             altDescProp.AddParameter("FMTTYPE", "text/html");
             altDescProp.Value = "<a href=\"http://test.com\">some html</a>";
             evt.AddProperty(altDescProp);
@@ -620,8 +621,8 @@ namespace ShnexyTest.DDay.iCal.Test
             evt.Start = new iCalDateTime(2012, 7, 30, 8, 0, 0);
             evt.Duration = TimeSpan.FromHours(1);
 
-            var serializer = new iCalendarSerializer();
-            var serializedString = serializer.SerializeToString(ical);
+            iCalendarSerializer serializer = new iCalendarSerializer();
+            string serializedString = serializer.SerializeToString(ical);
 
             Assert.IsTrue(serializedString.Contains("FMTTYPE=text/html"));
         }
@@ -822,7 +823,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             iCalendar iCal = new iCalendar();
 
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test event title";
             evt.Start = new iCalDateTime(2007, 3, 19);
             evt.Start.IsUniversalTime = true;
@@ -843,7 +844,7 @@ namespace ShnexyTest.DDay.iCal.Test
             EventSerializer eventSerializer = new EventSerializer();
             string evtString = eventSerializer.SerializeToString(evt);
 
-            var target = "BEGIN:VEVENT\r\nCREATED:20070319T000000Z\r\nDTEND;VALUE=DATE:20070320\r\nDTSTAMP:20070319T000000Z\r\nDTSTART;VALUE=DATE:20070319\r\nRRULE:FREQ=WEEKLY;INTERVAL=3;COUNT=4;BYDAY=TU,FR,SU\r\nSEQUENCE:0\r\nSUMMARY:Test event title\r\nUID:123456789\r\nEND:VEVENT\r\n";
+            string target = "BEGIN:VEVENT\r\nCREATED:20070319T000000Z\r\nDTEND;VALUE=DATE:20070320\r\nDTSTAMP:20070319T000000Z\r\nDTSTART;VALUE=DATE:20070319\r\nRRULE:FREQ=WEEKLY;INTERVAL=3;COUNT=4;BYDAY=TU,FR,SU\r\nSEQUENCE:0\r\nSUMMARY:Test event title\r\nUID:123456789\r\nEND:VEVENT\r\n";
             Assert.AreEqual(target, evtString, "ComponentBaseSerializer.SerializeToString() serialized incorrectly");
 
             serializer.Serialize(iCal, @"Calendars\Serialization\Event5.ics");
@@ -855,7 +856,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             iCalendar iCal = new iCalendar();
 
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test event title";
             evt.Start = new iCalDateTime(2007, 4, 29);
             evt.End = evt.Start.AddDays(1);
@@ -873,7 +874,7 @@ namespace ShnexyTest.DDay.iCal.Test
             iCalendar iCal1 = new iCalendar();
 
             fs = new FileStream(@"Calendars\Serialization\Event6.ics", FileMode.Open, FileAccess.Read);
-            Event evt1 = CalendarComponent.LoadFromStream<Event>(fs, Encoding.UTF8);
+            DDayEvent evt1 = CalendarComponent.LoadFromStream<DDayEvent>(fs, Encoding.UTF8);
             fs.Close();
 
             CompareComponents(evt, evt1);
@@ -969,7 +970,7 @@ END:VCALENDAR
         {
             IICalendar iCal = new iCalendar();
 
-            IEvent evt = iCal.Create<Event>();
+            IEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test event";
             evt.Start = new iCalDateTime(2010, 10, 1, 8, 0, 0);
             evt.End = new iCalDateTime(2010, 10, 1, 9, 0, 0);
@@ -989,7 +990,7 @@ END:VCALENDAR
         {
             IICalendar iCal = new iCalendar();
 
-            IEvent evt = iCal.Create<Event>();
+            IEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test event";
             evt.Start = new iCalDateTime(2010, 10, 1, 8, 0, 0);
             evt.End = new iCalDateTime(2010, 10, 1, 9, 0, 0);
@@ -1123,7 +1124,7 @@ END:VCALENDAR
         public void String1()
         {
             IICalendar iCal = new iCalendar();
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
             evt.Start = iCalDateTime.Now;
             evt.Duration = TimeSpan.FromHours(1);
             evt.Summary = @"
@@ -1363,7 +1364,7 @@ Ticketmaster UK Limited Registration in England No 2662632, Registered Office, 4
         public void XProperty3()
         {
             iCalendar iCal = new iCalendar();
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
 
             StringBuilder htmlBuilder = new StringBuilder();
             htmlBuilder.Append("<HTML><HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html;charset=iso-8859-1\"></HEAD><BODY>");
@@ -1390,7 +1391,7 @@ Ticketmaster UK Limited Registration in England No 2662632, Registered Office, 4
             iCal.ProductID = "-//DDAYTEST//NONSGML www.test.com//EN";
 
             // Create an event in the iCalendar
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
 
             // Populate the properties
             evt.Start = new iCalDateTime(2009, 6, 28, 8, 0, 0);
@@ -1611,7 +1612,7 @@ Ticketmaster UK Limited Registration in England No 2662632, Registered Office, 4
         {
             string longName = "The Exceptionally Long Named Meeting Room Whose Name Wraps Over Several Lines When Exported From Leading Calendar and Office Software Application Microsoft Office 2007";
             IICalendar iCal = iCalendar.LoadFromFile(@"Calendars/Serialization/Outlook2007LineFolds.ics")[0];
-            IList<Occurrence> events = iCal.GetOccurrences<Event>(new iCalDateTime(2009, 06, 20), new iCalDateTime(2009, 06, 22));
+            IList<Occurrence> events = iCal.GetOccurrences<DDayEvent>(new iCalDateTime(2009, 06, 20), new iCalDateTime(2009, 06, 22));
             Assert.AreEqual(longName, ((IEvent)events[0].Source).Location);
         }
 

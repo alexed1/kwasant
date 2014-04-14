@@ -30,7 +30,7 @@ namespace Data.DataAccessLayer.StructureMap
             HttpControllerDescriptor controllerDescriptor,
             Type controllerType)
         {
-            var nestedContainer = _container.GetNestedContainer();
+            IContainer nestedContainer = _container.GetNestedContainer();
             request.RegisterForDispose(nestedContainer);
             return (IHttpController) nestedContainer.GetInstance(controllerType);
         }

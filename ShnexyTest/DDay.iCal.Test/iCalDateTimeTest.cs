@@ -15,10 +15,10 @@ namespace ShnexyTest.DDay.iCal.Test
         [Test]
         public void Bug3191956()
         {
-            var queue = new Queue<iCalDateTime>();
+            Queue<iCalDateTime> queue = new Queue<iCalDateTime>();
             for (int i = 0; i < 4; i++)
             {
-                var dateTime = new iCalDateTime(2011, 1, 1);
+                iCalDateTime dateTime = new iCalDateTime(2011, 1, 1);
                 dateTime.HasTime = false;
                 queue.Enqueue(dateTime);
             }

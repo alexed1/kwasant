@@ -10,10 +10,10 @@ namespace ShnexyTest.Fixtures
 
 
         [Test]
-        public Customer TestCustomer()
+        public CustomerDO TestCustomer()
         {
 
-            return new Customer()
+            return new CustomerDO()
             {
                 CustomerID = 1,
                 FirstName = "Jack",

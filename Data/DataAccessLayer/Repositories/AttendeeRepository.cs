@@ -5,7 +5,7 @@ namespace Data.DataAccessLayer.Repositories
 {
 
 
-    public class AttendeeRepository : GenericRepository<Attendee>, IAttendeeRepository
+    public class AttendeeRepository : GenericRepository<AttendeeDO>, IAttendeeRepository
     {
 
         public AttendeeRepository(IUnitOfWork uow)
@@ -16,7 +16,7 @@ namespace Data.DataAccessLayer.Repositories
     }
 
 
-    public interface IAttendeeRepository : IGenericRepository<Attendee>
+    public interface IAttendeeRepository : IGenericRepository<AttendeeDO>
     {
 
     }

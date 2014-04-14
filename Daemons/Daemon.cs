@@ -50,7 +50,7 @@ namespace Daemons
         protected void RegisterEvent<TEventArgs>(EventInfo eventInfo, Action<Object, TEventArgs> callback)
             where TEventArgs : EventArgs
         {
-            var action = new Action<object, TEventArgs>((sender, args) =>
+            Action<object, TEventArgs> action = new Action<object, TEventArgs>((sender, args) =>
                 {
                     lock (_eventQueue)
                     {
@@ -59,7 +59,7 @@ namespace Daemons
                     }
                 });
 
-            var handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, action.Target, action.Method);
+            Delegate handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, action.Target, action.Method);
             eventInfo.AddEventHandler(this, handler);
 
             _activeEventHandlers.Add(eventInfo);
@@ -109,15 +109,15 @@ namespace Daemons
 
             IsStopping = false;
 
-            var workerThread = new Thread(() =>
+            Thread workerThread = new Thread(() =>
                 {
-                    var firstExecution = true;
-                    var lastExecutionTime = DateTime.Now;
+                    bool firstExecution = true;
+                    DateTime lastExecutionTime = DateTime.Now;
                     while (!IsStopping)
                     {
                         try
                         {
-                            var currTime = DateTime.Now;    
+                            DateTime currTime = DateTime.Now;    
                             if (firstExecution ||
                                 (currTime - lastExecutionTime).TotalMilliseconds > WaitTimeBetweenExecution)
                             {
@@ -128,7 +128,7 @@ namespace Daemons
                             else
                             {
                                 //Sleep until the approximate time that we're ready
-                                var waitTime = (WaitTimeBetweenExecution - (currTime - lastExecutionTime).TotalMilliseconds);
+                                double waitTime = (WaitTimeBetweenExecution - (currTime - lastExecutionTime).TotalMilliseconds);
                                 Thread.Sleep((int)waitTime);
                             }
                             

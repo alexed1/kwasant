@@ -20,6 +20,7 @@ using Data.DDay.DDay.iCal.Utility;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.StructureMap;
 using Data.Models;
+using DDay.DDay.iCal.Components;
 using NUnit.Framework;
 using StructureMap;
 
@@ -375,8 +376,8 @@ namespace ShnexyTest.DDay.iCal.Test
             IICalendar iCal2 = iCalendar.LoadFromFile(@"Calendars\Recurrence\ByMonth2.ics")[0];
             ProgramTest.TestCal(iCal1);
             ProgramTest.TestCal(iCal2);
-            IEvent evt1 = (Event)iCal1.Events.First();
-            IEvent evt2 = (Event)iCal2.Events.First();
+            IEvent evt1 = (DDayEvent)iCal1.Events.First();
+            IEvent evt2 = (DDayEvent)iCal2.Events.First();
 
             IList<Occurrence> evt1Occurrences = evt1.GetOccurrences(new iCalDateTime(1997, 9, 1), new iCalDateTime(2000, 12, 31));
             IList<Occurrence> evt2Occurrences = evt2.GetOccurrences(new iCalDateTime(1997, 9, 1), new iCalDateTime(2000, 12, 31));
@@ -1899,7 +1900,7 @@ namespace ShnexyTest.DDay.iCal.Test
             daylight.TimeZoneName = "EDT";            
             CalendarObjectExtensions.AddChild(tz, daylight);
 
-            IEvent evt = iCal.Create<Event>();
+            IEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test event";
             evt.Start = new iCalDateTime(2007, 1, 24, 8, 0, 0, tzid);
             evt.Duration = TimeSpan.FromHours(1);
@@ -2638,12 +2639,12 @@ namespace ShnexyTest.DDay.iCal.Test
         [Test, Category("Recurrence")]
         public void Bug3178652()
         {
-            var evt = new Event();
+            DDayEvent evt = new DDayEvent();
             evt.Start = new iCalDateTime(2011, 1, 29, 11, 0, 0);
             evt.Duration = TimeSpan.FromHours(1.5);
             evt.Summary = "29th February Test";
 
-            var pattern = new RecurrencePattern()
+            RecurrencePattern pattern = new RecurrencePattern()
             {
                 Frequency = FrequencyType.Monthly,
                 Until = new DateTime(2011, 12, 25, 0, 0, 0, DateTimeKind.Utc),
@@ -2653,7 +2654,7 @@ namespace ShnexyTest.DDay.iCal.Test
 
             evt.RecurrenceRules.Add(pattern);
 
-            var occurrences = evt.GetOccurrences(new DateTime(2011, 1, 1), new DateTime(2012, 1, 1));
+            IList<Occurrence> occurrences = evt.GetOccurrences(new DateTime(2011, 1, 1), new DateTime(2012, 1, 1));
             Assert.AreEqual(10, occurrences.Count, "There should be 10 occurrences of this event, one for each month except February and December.");
         }
 
@@ -2667,7 +2668,7 @@ namespace ShnexyTest.DDay.iCal.Test
             using (StringReader sr = new StringReader("FREQ=WEEKLY;UNTIL=20251126"))
             {
                 RecurrencePatternSerializer serializer = new RecurrencePatternSerializer();
-                var rp = (RecurrencePattern)serializer.Deserialize(sr);
+                RecurrencePattern rp = (RecurrencePattern)serializer.Deserialize(sr);
 
                 Assert.IsNotNull(rp);
                 Assert.AreEqual(new DateTime(2025, 11, 26), rp.Until);
@@ -2681,8 +2682,8 @@ namespace ShnexyTest.DDay.iCal.Test
             iCalDateTime from = new iCalDateTime(2013, 1, 1, true);
             iCalDateTime to = new iCalDateTime(2015, 12, 31, true);
 
-            var occurrences = calendar.GetOccurrences(from, to);
-            var daysDifference = to.Subtract(from).Days;
+            IList<Occurrence> occurrences = calendar.GetOccurrences(from, to);
+            int daysDifference = to.Subtract(from).Days;
             Assert.AreEqual(daysDifference, occurrences.Count);
         }
 
@@ -2697,7 +2698,7 @@ namespace ShnexyTest.DDay.iCal.Test
             iCalDateTime from = new iCalDateTime(2010, 1, 1, true);
             iCalDateTime to = new iCalDateTime(2011, 12, 31, true);
 
-            var occurrences = calendar.GetOccurrences(from, to);
+            IList<Occurrence> occurrences = calendar.GetOccurrences(from, to);
             Assert.AreEqual(1, occurrences.Count);
             Assert.AreEqual(0, occurrences[0].Period.Duration.Ticks);
         }
@@ -2709,7 +2710,7 @@ namespace ShnexyTest.DDay.iCal.Test
             iCalDateTime from = new iCalDateTime(2011, 6, 1) { HasTime = true };
             iCalDateTime to = new iCalDateTime(2012, 7, 1) { HasTime = true };
 
-            var occurrences = calendar.GetOccurrences(from, to);
+            IList<Occurrence> occurrences = calendar.GetOccurrences(from, to);
             Assert.AreEqual(59, occurrences.Count);
         }
 
@@ -2721,7 +2722,7 @@ namespace ShnexyTest.DDay.iCal.Test
         public void Bug3414862()
         {
             IICalendar iCal = new iCalendar();
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
             RecurrencePattern rPattern = new RecurrencePattern();
             rPattern.Frequency = FrequencyType.Weekly;
             FrequencyOccurrence frequencyOccurrence = FrequencyOccurrence.First;
@@ -2749,10 +2750,10 @@ namespace ShnexyTest.DDay.iCal.Test
         [Test, Category("Recurrence")]
         public void Bug3517553()
         {
-            var calendars = iCalendar.LoadFromFile(@"Calendars\Recurrence\Bug3517553.ics");
+            IICalendarCollection calendars = iCalendar.LoadFromFile(@"Calendars\Recurrence\Bug3517553.ics");
             
-            var from = new DateTime(2012, 1, 1);
-            var to = from.AddDays(365);
+            DateTime from = new DateTime(2012, 1, 1);
+            DateTime to = from.AddDays(365);
             IList<Occurrence> occurrences = calendars.GetOccurrences(from, to);
 
             // There are exactly 19 events (no recurrences) in the test file.
@@ -2819,7 +2820,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             iCalendar iCal = new iCalendar();
 
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test event";
             evt.Start = new iCalDateTime(2006, 10, 1, 9, 0, 0);
             evt.Duration = new TimeSpan(1, 0, 0);
@@ -2858,7 +2859,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             iCalendar iCal = new iCalendar();
 
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test event";
             evt.Start = new iCalDateTime(2006, 10, 1, 9, 0, 0);
             evt.Duration = new TimeSpan(1, 0, 0);
@@ -2896,7 +2897,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             iCalendar iCal = new iCalendar();
 
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test event";
             evt.Start = new iCalDateTime(2006, 1, 1, 9, 0, 0);
             evt.Duration = new TimeSpan(1, 0, 0);
@@ -2935,7 +2936,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             iCalendar iCal = new iCalendar();
 
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test event";
             evt.Start = new iCalDateTime(2006, 1, 1, 9, 0, 0);
             evt.Duration = new TimeSpan(1, 0, 0);
@@ -2972,7 +2973,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             iCalendar iCal = new iCalendar();
 
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test event";
             evt.Start = new iCalDateTime(2006, 1, 1, 9, 0, 0);
             evt.Duration = new TimeSpan(1, 0, 0);
@@ -3010,7 +3011,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             iCalendar iCal = new iCalendar();
 
-            Event evt = iCal.Create<Event>();
+            DDayEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Test event";
             evt.Start = new iCalDateTime(2006, 1, 1, 9, 0, 0);
             evt.Duration = new TimeSpan(1, 0, 0);
@@ -3050,7 +3051,7 @@ namespace ShnexyTest.DDay.iCal.Test
         public void Evaluate1()
         {
             IICalendar iCal = new iCalendar();
-            IEvent evt = iCal.Create<Event>();
+            IEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Event summary";
 
             // Start at midnight, UTC time
@@ -3120,7 +3121,7 @@ namespace ShnexyTest.DDay.iCal.Test
         public void GetOccurrences1()
         {
             IICalendar iCal = new iCalendar();
-            IEvent evt = iCal.Create<Event>();
+            IEvent evt = iCal.Create<DDayEvent>();
             evt.Start = new iCalDateTime(2009, 11, 18, 5, 0, 0);
             evt.End = new iCalDateTime(2009, 11, 18, 5, 10, 0);
             evt.RecurrenceRules.Add(new RecurrencePattern(FrequencyType.Daily));
@@ -3170,7 +3171,7 @@ namespace ShnexyTest.DDay.iCal.Test
         public void Test1()
         {
             IICalendar iCal = new iCalendar();
-            IEvent evt = iCal.Create<Event>();
+            IEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Event summary";
             evt.Start = new iCalDateTime(DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc));
 
@@ -3189,7 +3190,7 @@ namespace ShnexyTest.DDay.iCal.Test
         public void Test2()
         {
             IICalendar iCal = new iCalendar();
-            IEvent evt = iCal.Create<Event>();
+            IEvent evt = iCal.Create<DDayEvent>();
             evt.Summary = "Event summary";
             evt.Start = new iCalDateTime(DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc));
 
@@ -3210,7 +3211,7 @@ namespace ShnexyTest.DDay.iCal.Test
         public void Test3()
         {
             IICalendar iCal = new iCalendar();
-            IEvent evt = iCal.Create<Event>();
+            IEvent evt = iCal.Create<DDayEvent>();
 
             evt.Start = new iCalDateTime(2008, 10, 18, 10, 30, 0);
             evt.Summary = "Test Event";

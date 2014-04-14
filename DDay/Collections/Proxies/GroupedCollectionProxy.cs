@@ -118,7 +118,7 @@ namespace Data.DDay.Collections.Proxies
             // Only clear items of this type
             // that match the predicate.
 
-            var items = _RealObject
+            TNew[] items = _RealObject
                 .OfType<TNew>()
                 .Where(_Predicate)
                 .ToArray();

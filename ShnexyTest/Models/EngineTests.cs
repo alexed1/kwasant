@@ -1,5 +1,4 @@
 ﻿using Data.DataAccessLayer.Interfaces;
-using Data.Models;
 using Moq;
 using NUnit.Framework;
 

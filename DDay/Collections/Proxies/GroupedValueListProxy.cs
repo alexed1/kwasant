@@ -48,7 +48,7 @@ namespace Data.DDay.Collections.Proxies
                 // If no item is found, create a new object and add it to the list
                 if (object.Equals(_Container, default(TInterface)))
                 {
-                    var container = new TItem();
+                    TItem container = new TItem();
                     if (!(container is TInterface))
                         throw new Exception("Could not create a container for the value - the container is not of type " + typeof(TInterface).GetType().Name);
                     _Container = (TInterface)(object)container;
@@ -62,10 +62,10 @@ namespace Data.DDay.Collections.Proxies
         void IterateValues(Func<IValueObject<TOriginalValue>, int, int, bool> action)
         {
             int i = 0;
-            foreach (var obj in _RealObject)
+            foreach (TInterface obj in _RealObject)
             {
                 // Get the number of items of the target value i this object
-                var count = obj.Values != null ? obj.Values.OfType<TNewValue>().Count() : 0;
+                int count = obj.Values != null ? obj.Values.OfType<TNewValue>().Count() : 0;
 
                 // Perform some action on this item
                 if (!action(obj, i, count))
@@ -113,14 +113,14 @@ namespace Data.DDay.Collections.Proxies
             // Add the value to the object
             if (item is TOriginalValue)
             {
-                var value = (TOriginalValue)(object)item;
+                TOriginalValue value = (TOriginalValue)(object)item;
                 EnsureContainer().AddValue(value);
             }
         }
 
         virtual public void Clear()
         {
-            var items = Items.Where(o => o.Values != null);
+            IEnumerable<TInterface> items = Items.Where(o => o.Values != null);
 
             foreach (TInterface original in items)
             {
@@ -166,9 +166,9 @@ namespace Data.DDay.Collections.Proxies
         {
             if (item is TOriginalValue)
             {
-                var value = (TOriginalValue)(object)item;
+                TOriginalValue value = (TOriginalValue)(object)item;
 
-                var container = Items
+                TInterface container = Items
                     .Where(o => o.ContainsValue(value))
                     .FirstOrDefault();
 
@@ -197,12 +197,12 @@ namespace Data.DDay.Collections.Proxies
 
             if (item is TOriginalValue)
             {
-                var value = (TOriginalValue)(object)item;
+                TOriginalValue value = (TOriginalValue)(object)item;
                 IterateValues((o, i, count) =>
                     {
                         if (o.Values != null && o.Values.Contains(value))
                         {
-                            var list = o.Values.ToList();
+                            List<TOriginalValue> list = o.Values.ToList();
                             index = i + list.IndexOf(value);
                             return false;
                         }
@@ -217,13 +217,13 @@ namespace Data.DDay.Collections.Proxies
         {
             IterateValues((o, i, count) =>
                 {
-                    var value = (TOriginalValue)(object)item;
+                    TOriginalValue value = (TOriginalValue)(object)item;
 
                     // Determine if this index is found within this object
                     if (index >= i && index < count)
                     {
                         // Convert the items to a list
-                        var items = o.Values.ToList();
+                        List<TOriginalValue> items = o.Values.ToList();
                         // Insert the item at the relative index within the list
                         items.Insert(index - i, value);
                         // Set the new list
@@ -242,7 +242,7 @@ namespace Data.DDay.Collections.Proxies
                 if (index >= i && index < count)
                 {
                     // Convert the items to a list
-                    var items = o.Values.ToList();
+                    List<TOriginalValue> items = o.Values.ToList();
                     // Remove the item at the relative index within the list
                     items.RemoveAt(index - i);
                     // Set the new list

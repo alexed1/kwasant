@@ -5,6 +5,7 @@ using Data.DDay.DDay.iCal.Interfaces;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.StructureMap;
 using Data.Models;
+using DDay.DDay.iCal.Components;
 using NUnit.Framework;
 using StructureMap;
 
@@ -32,7 +33,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
             
-            Event evt = new Event();
+            DDayEvent evt = new DDayEvent();
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
             evt.End = new iCalDateTime(2010, 3, 26);
@@ -50,7 +51,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
 
-            Event evt = new Event();
+            DDayEvent evt = new DDayEvent();
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
             evt.End = new iCalDateTime(2010, 3, 26);
@@ -72,7 +73,7 @@ namespace ShnexyTest.DDay.iCal.Test
         {
             IICalendar iCal = new iCalendar();
 
-            Event evt = new Event();
+            DDayEvent evt = new DDayEvent();
             evt.Summary = "Testing";
             evt.Start = new iCalDateTime(2010, 3, 25);
             evt.End = new iCalDateTime(2010, 3, 26);

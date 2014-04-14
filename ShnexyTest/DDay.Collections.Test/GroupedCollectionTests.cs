@@ -44,7 +44,7 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void Add1()
         {
-            var newDoctor = new Doctor() { Group = 5, Name = "New Doctor", ProviderNumber = "23456" };
+            Doctor newDoctor = new Doctor() { Group = 5, Name = "New Doctor", ProviderNumber = "23456" };
             Assert.AreEqual(5, _People.Count);
             Assert.AreEqual(2, _Doctors.Count);
             _People.Add(newDoctor);
@@ -103,9 +103,9 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void Enumeration1()
         {
-            var people = new Person[] { _ForrestGump, _JonSchmidt, _BobRoss, _DoogieHowser, _MichaelJackson };
+            Person[] people = new Person[] { _ForrestGump, _JonSchmidt, _BobRoss, _DoogieHowser, _MichaelJackson };
             int i = 0;
-            foreach (var person in _People)
+            foreach (Person person in _People)
             {
                 Assert.AreSame(people[i++], person);
             }
@@ -140,7 +140,7 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void ProxyOrder2()
         {
-            var newDoctor = new Doctor() { Group = 5, Name = "New Doctor", ProviderNumber = "23456" };
+            Doctor newDoctor = new Doctor() { Group = 5, Name = "New Doctor", ProviderNumber = "23456" };
             _Doctors.Add(newDoctor);
             Person[] list = { _ForrestGump, _DoogieHowser, newDoctor };
 
@@ -153,7 +153,7 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void ProxyOrder3()
         {
-            var newDoctor = new Doctor() { Group = 5, Name = "New Doctor", ProviderNumber = "23456" };
+            Doctor newDoctor = new Doctor() { Group = 5, Name = "New Doctor", ProviderNumber = "23456" };
             _People.Insert(0, newDoctor);
             Person[] list = { newDoctor, _ForrestGump, _DoogieHowser };
 
@@ -166,7 +166,7 @@ namespace ShnexyTest.DDay.Collections.Test
         [Test]
         public void ProxyOrder4()
         {
-            var newDoctor = new Doctor() { Group = 5, Name = "New Doctor", ProviderNumber = "23456" };
+            Doctor newDoctor = new Doctor() { Group = 5, Name = "New Doctor", ProviderNumber = "23456" };
             _People.Insert(3, newDoctor);
             Person[] list = { _ForrestGump, newDoctor, _DoogieHowser };
 
@@ -192,14 +192,14 @@ namespace ShnexyTest.DDay.Collections.Test
             Assert.AreEqual(5, _People.Count);
             Assert.AreEqual(2, _Doctors.Count);
 
-            var newDoctor = new Doctor() { Group = 5, Name = "New Doctor", ProviderNumber = "23456" };
+            Doctor newDoctor = new Doctor() { Group = 5, Name = "New Doctor", ProviderNumber = "23456" };
             _People.Insert(0, newDoctor);
 
             Assert.AreEqual(6, _People.Count);
             Assert.AreEqual(3, _Doctors.Count);
             Assert.AreEqual(newDoctor, _Doctors.First());
 
-            var middleDoctor = new Doctor() { Group = 5, Name = "Middle Doctor", ProviderNumber = "23456" };
+            Doctor middleDoctor = new Doctor() { Group = 5, Name = "Middle Doctor", ProviderNumber = "23456" };
             _People.Insert(2, middleDoctor);
 
             Assert.AreEqual(7, _People.Count);
@@ -244,7 +244,7 @@ namespace ShnexyTest.DDay.Collections.Test
             _People.SortKeys();
             
             long group = -1;
-            foreach (var person in _People)
+            foreach (Person person in _People)
             {
                 Assert.LessOrEqual(group, person.Group);
                 group = person.Group;

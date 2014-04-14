@@ -329,7 +329,7 @@ _loop24_breakloop:			;
 		{
 					// We deserialized a list - add each value to the
 					// resulting object.
-		foreach (var item in (IEnumerable)deserialized)
+		foreach (object item in (IEnumerable)deserialized)
 		p.AddValue(item);
 		}
 		else

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using Daemons;
+﻿using System.Data.Entity;
+using System.Net.Mail;
+using System.Web.Mvc;
 using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.StructureMap;
-using Data.Models;
-using DBTools;
+using Data.Tools;
 using StructureMap;
 
 namespace Playground
@@ -21,9 +18,26 @@ namespace Playground
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            StructureMapBootStrapper.ConfigureDependencies(String.Empty);
-            var con = new ShnexyDbContext();
-            con.Database.Initialize(true);
+            StructureMapBootStrapper.ConfigureDependencies("test"); //set to either "test" or "dev"
+            ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
+
+            Database.SetInitializer(new ShnexyInitializer());
+            ShnexyDbContext db = new ShnexyDbContext();
+            db.Database.Initialize(true);
+
+
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailRepository emailRepository = new EmailRepository(uow);
+
+            MailMessage mailMessage = new MailMessage(new MailAddress("AClient@gmail.com", "Client Smith"),
+                new MailAddress("kwa@sant.com", "Booqit Service"))
+            {
+                Subject = "Book me a meeting!",
+                Body = "Book it in office A at 10:30am on Tuesday"
+            };
+
+            EmailHelper.ConvertMailMessageToEmail(emailRepository, mailMessage);
+            emailRepository.UnitOfWork.SaveChanges();
         }
     }
 }

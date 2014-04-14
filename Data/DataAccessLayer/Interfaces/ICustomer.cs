@@ -10,10 +10,10 @@ namespace Data.DataAccessLayer.Interfaces
         [Key]
         int CustomerID { get; set; }
 
-        EmailAddress Email { get; set; }
+        EmailAddressDO Email { get; set; }
         String FirstName { get; set; }
         String LastName { get; set; }
-        User User { get; set; }
-        IEnumerable<BookingRequest> BookingRequests { get; set; }
+        UserDO User { get; set; }
+        IEnumerable<BookingRequestDO> BookingRequests { get; set; }
     }
 }
