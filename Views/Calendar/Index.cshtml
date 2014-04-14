@@ -32,10 +32,11 @@
             var m = new DayPilot.Modal();
             m.closed = function () {
                 if (this.result == "OK") {
-                    dpc.commandCallBack('refresh');
+                    dpcg.commandCallBack('refresh');
                 }
-                dpc.clearSelection();                
+                dpcg.clearSelection();
             };
+            
 
             var url = getBaseCalendarURL() + '/New/?emailID=' + @Model.EmailID + '&partStart=' + e.partStart() + '&partEnd=' + e.partEnd();
             m.showUrl(url);
@@ -170,7 +171,7 @@
 
                 @Html.DayPilotBubble("bubble")
 
-                @(Html.DayPilotCalendar("dpc", new DayPilotCalendarConfig
+                @(Html.DayPilotCalendar("dpcg", new DayPilotCalendarConfig
                     {
                         ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
                         BackendUrl = Url.Content("~/Calendar/Backend/"),

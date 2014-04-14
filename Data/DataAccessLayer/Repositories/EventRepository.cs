@@ -5,10 +5,10 @@ namespace Data.DataAccessLayer.Repositories
 {
 
 
-    public class InvitationRepository : GenericRepository<EventDO>, IInvitationRepository
+    public class EventRepository : GenericRepository<EventDO>, IInvitationRepository
     {
 
-        public InvitationRepository(IUnitOfWork uow)
+        public EventRepository(IUnitOfWork uow)
             : base(uow)
         {
 

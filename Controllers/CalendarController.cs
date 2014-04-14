@@ -240,7 +240,7 @@ namespace Shnexy.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult New(FormCollection form)
+        public ActionResult Confirm(FormCollection form)
         {
             DateTime dtFromDate = GetValueFromForm(form, "DateStart", DateTime.MinValue);
             DateTime dtToDate = GetValueFromForm(form, "DateEnd", DateTime.MinValue);
@@ -256,9 +256,9 @@ namespace Shnexy.Controllers
             int bookingRequestID = GetValueFromForm(form, "BookingRequestID", 0);
 
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            InvitationRepository invitationRepository = new InvitationRepository(uow);
+            EventRepository eventRepository = new EventRepository(uow);
             EventDO eventDo = new EventDO();
-            invitationRepository.Add(eventDo);
+            eventRepository.Add(eventDo);
 
             BookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
             BookingRequestDO bookingRequestDO = bookingRequestRepository.GetByKey(bookingRequestID);
@@ -289,7 +289,25 @@ namespace Shnexy.Controllers
             eventDo.Category = strCategory;
             eventDo.BookingRequest = bookingRequestDO;
 
-            Calendar.DispatchEvent(eventDo);
+            String key = Guid.NewGuid().ToString();
+            Session["ConfirmingEvent_" + key] = eventDo;
+            return View(
+                new ConfirmInfo
+                {
+                    Key = key,
+                    IsNew = true,
+                    Event = eventDo
+                }
+            );
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult New(FormCollection form)
+        {
+            string strKey = GetValueFromForm(form, "Key", String.Empty);
+            EventDO confirmingEvent = Session["ConfirmingEvent_" + strKey] as EventDO;
+
+            Calendar.DispatchEvent(confirmingEvent);
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }
@@ -304,6 +322,13 @@ namespace Shnexy.Controllers
         }
 
         #endregion "Method"
+
+        public class ConfirmInfo
+        {
+            public String Key;
+            public bool IsNew;
+            public EventDO Event;
+        }
 
         public class CreateInvitationInfo
         {

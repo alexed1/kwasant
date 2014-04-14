@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -23,12 +24,13 @@ namespace Data.Models
     {
         private readonly CustomerDO _customer;
         private readonly IUnitOfWork _uow;
-        private InvitationRepository _invitationRepo;
+        private EventRepository _eventRepo;
 
         public Calendar(IUnitOfWork uow, CustomerDO customer)
         {
             _uow = uow;
             _customer = customer;
+            _eventRepo = new EventRepository(_uow);
             LoadData(_customer);
         }
 
@@ -36,13 +38,14 @@ namespace Data.Models
         
         private void LoadData(CustomerDO customer)
         {
-            _invitationRepo = new InvitationRepository(_uow);
-            EventsList = _invitationRepo.GetQuery().Where(i => i.BookingRequest.Customer.CustomerID == customer.CustomerID).ToList();
+            EventsList = _eventRepo.GetQuery().Where(i => i.BookingRequest.Customer.CustomerID == customer.CustomerID).ToList();
         }
 
         public void Reload()
         {
+            var tempEvents = EventsList.Where(e => _eventRepo.IsDetached(e));
             LoadData(_customer);
+            EventsList.AddRange(tempEvents);
         }
 
         public void DispatchEvent(EventDO eventDO)
@@ -135,9 +138,9 @@ namespace Data.Models
         {
             int id = idStr.ToInt();
             EventDO eventToDelete = EventsList.FirstOrDefault(inv => inv.EventID == id);
-            if (eventToDelete != null)
+            if (eventToDelete != null && !_eventRepo.IsDetached(eventToDelete))
             {
-                _invitationRepo.Remove(eventToDelete);
+                _eventRepo.Remove(eventToDelete);
                 _uow.SaveChanges();
             }
             Reload();

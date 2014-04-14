@@ -114,7 +114,7 @@
     <Compile Include="DataAccessLayer\Repositories\GenericRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\ICustomerRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IGenericRepository.cs" />
-    <Compile Include="DataAccessLayer\Repositories\InvitationRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\EventRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\StoredFileRepository.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapControllerFactory.cs" />

@@ -55,13 +55,21 @@ namespace Data.DataAccessLayer.Repositories
 
         }
 
+        public bool IsDetached(TEntity entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException("entity");
+            }
+            return _unitOfWork.Db.Entry(entity).State == EntityState.Detached;
+        }
+
         public void Attach(TEntity entity)
         {
             if (entity == null)
             {
                 throw new ArgumentNullException("entity");
             }
-
             dbSet.Attach(entity);
             _unitOfWork.Db.Entry(entity).State = EntityState.Modified;
         }

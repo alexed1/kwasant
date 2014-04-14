@@ -66,51 +66,15 @@
 
     </script>
 </header>
-<form id="f" method="post" action="@Url.Action("New")">
+<form id="f" method="post" action="@Url.Action("Confirm")">
     <h3>New Event</h3>
     <hr />
-    <br />
 
     <div>Location</div>
     <div>
         @Html.TextBox("Location", String.Empty, new { @class = "form-control col-md-1" })
         <div id="divLocation"></div>
     </div>
-
-    <br />
-    @{
-        List<SelectListItem> itemsStatus = new List<SelectListItem>();
-
-        itemsStatus.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
-        itemsStatus.Add(new SelectListItem { Text = "Tentative", Value = "Tentative" });
-        itemsStatus.Add(new SelectListItem { Text = "Confirmed", Value = "Confirmed" });
-        itemsStatus.Add(new SelectListItem { Text = "Cancelled", Value = "Cancelled" });
-    }
-    <br />
-    <div>Status</div>
-    <div style="width:200px"> @Html.DropDownList("Status", itemsStatus, new { @class = "form-control col-md-1" })</div>
-    <br />
-    @{
-        List<SelectListItem> itemsTransparency = new List<SelectListItem>();
-
-        itemsTransparency.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
-        itemsTransparency.Add(new SelectListItem { Text = "Opaque", Value = "Opaque" });
-        itemsTransparency.Add(new SelectListItem { Text = "Transparent", Value = "Transparent" });
-    }
-    <br />
-    <div>Transparency Type</div>
-    <div style="width:200px">@Html.DropDownList("TransparencyType", itemsTransparency, new { @class = "form-control col-md-1" })</div>
-    <br /><br />
-    @{
-        List<SelectListItem> itemsClass = new List<SelectListItem>();
-
-        itemsClass.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
-        itemsClass.Add(new SelectListItem { Text = "PUBLIC", Value = "PUBLIC" });
-        itemsClass.Add(new SelectListItem { Text = "PRIVATE", Value = "PRIVATE" });
-        itemsClass.Add(new SelectListItem { Text = "CONFIDENTIAL", Value = "CONFIDENTIAL" });
-    }
-    <div>Class</div>
-    <div style="width:200px">@Html.DropDownList("Class", itemsClass, new { @class = "form-control col-md-1" })</div>
     <br />
     <div>Description</div>
     <div>@Html.TextArea("Description", String.Empty, 5, 31, new { @class = "form-control col-md-1" })</div>
@@ -126,27 +90,8 @@
     <div>Priority</div>
     <div style="width:200px">@Html.DropDownList("Priority", itemsPriority, new { @class = "form-control col-md-1" })</div>
     <br />
-    @{
-        List<SelectListItem> itemsSequence = new List<SelectListItem>();
-
-
-        itemsSequence.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
-        itemsSequence.Add(new SelectListItem { Text = "One", Value = "1" });
-        itemsSequence.Add(new SelectListItem { Text = "Two", Value = "2" });
-    }
-    <br />
-    <div>Sequence</div>
-    <div style="width:200px">@Html.DropDownList("Sequence", itemsSequence, new { @class = "form-control col-md-1" })</div>
-    <br /><br />
     <div>Summary</div>
     <div>@Html.TextArea("Summary", String.Empty, 5, 31, new { @class = "form-control col-md-1" })</div>
-    <br /><br />
-    <div>Category</div>
-    <div>
-        @Html.TextBox("Category", String.Empty, new { @class = "form-control col-md-1" })
-        <div id="divCategory"></div>
-
-    </div>
     <br />
     @{
         <div style="display:none">
@@ -179,8 +124,19 @@
 
     $("#f").submit(function () {
         var f = $("#f");
-        $.post(f.action, f.serialize(), function (result) {
-            close(eval(result));
+        $.post(f.prop('action'), f.serialize(), function (result) {
+            close();
+
+            var m = new parent.DayPilot.Modal();
+            m.closed = function () {
+                if (this.result == "OK") {
+                    dpcg.commandCallBack('refresh');
+                }
+                dpcg.clearSelection();
+            };
+            
+            m.showHtml(result);
+            
         });
         return false;
     });

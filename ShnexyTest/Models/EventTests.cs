@@ -46,7 +46,7 @@ namespace ShnexyTest.Models
         [Category("Invitation")]
         public void Event_Dispatch_CanSendICS()
         {
-            InvitationRepository invRepo = new InvitationRepository(_uow);
+            EventRepository invRepo = new EventRepository(_uow);
             AttendeeRepository attendeesRepo = new AttendeeRepository(_uow);
             List<AttendeeDO> attendees =
                 new List<AttendeeDO>

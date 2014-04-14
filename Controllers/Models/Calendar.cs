@@ -25,7 +25,7 @@ namespace Shnexy.Controllers.Models
     {
         private readonly CustomerDO _customer;
         private readonly IUnitOfWork _uow;
-        private InvitationRepository _invitationRepo;
+        private EventRepository _eventRepo;
 
         public Calendar(IUnitOfWork uow, CustomerDO customer)
         {
@@ -38,8 +38,8 @@ namespace Shnexy.Controllers.Models
         
         private void LoadData(CustomerDO customer)
         {
-            _invitationRepo = new InvitationRepository(_uow);
-            EventsList = _invitationRepo.GetQuery().Where(i => i.BookingRequest.Customer.CustomerID == customer.CustomerID).ToList();
+            _eventRepo = new EventRepository(_uow);
+            EventsList = _eventRepo.GetQuery().Where(i => i.BookingRequest.Customer.CustomerID == customer.CustomerID).ToList();
         }
 
         public void Reload()
@@ -134,7 +134,7 @@ namespace Shnexy.Controllers.Models
             EventDO eventToDelete = EventsList.FirstOrDefault(inv => inv.EventID == id);
             if (eventToDelete != null)
             {
-                _invitationRepo.Remove(eventToDelete);
+                _eventRepo.Remove(eventToDelete);
                 _uow.SaveChanges();
             }
             Reload();
