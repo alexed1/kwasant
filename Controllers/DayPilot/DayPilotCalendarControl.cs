@@ -6,6 +6,7 @@ using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Calendar;
 using DayPilot.Web.Mvc.Events.Common;
 using Shnexy.Controllers.Models;
+using Calendar = Data.Models.Calendar;
 
 namespace Shnexy.Controllers.DayPilot
 {
