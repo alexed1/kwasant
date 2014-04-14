@@ -10,7 +10,7 @@ namespace Data.DataAccessLayer.Interfaces
         [Key]
         int CustomerID { get; set; }
 
-        EmailAddressDO Email { get; set; }
+        String EmailAddress { get; set; }
         String FirstName { get; set; }
         String LastName { get; set; }
         UserDO User { get; set; }

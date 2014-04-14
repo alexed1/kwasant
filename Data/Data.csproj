@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\EmailStatusConstants.cs" />
+    <Compile Include="Constants\InstructionConstants.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\FileManager.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyDbContext.cs" />
     <Compile Include="DataAccessLayer\Infrastructure\ShnexyInitializer.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="DataAccessLayer\Repositories\GenericRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\ICustomerRepository.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IGenericRepository.cs" />
+    <Compile Include="DataAccessLayer\Repositories\InstructionRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\InvitationRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\StoredFileRepository.cs" />
     <Compile Include="DataAccessLayer\StructureMap\StructureMapBootStrapper.cs" />
@@ -138,6 +140,7 @@
     <Compile Include="DataAccessLayer\Interfaces\IInvitation.cs" />
     <Compile Include="Models\EventDO.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IUser.cs" />
+    <Compile Include="Models\InstructionDO.cs" />
     <Compile Include="Models\StoredFileDO.cs" />
     <Compile Include="Models\UserDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -149,6 +152,7 @@
     <Compile Include="Tools\Managers\APIManager\Transmitters\Restful\RestfulCall.cs" />
     <Compile Include="Tools\Managers\APIManager\Transmitters\Restful\RestfulResponse.cs" />
     <Compile Include="Tools\Managers\APIManager\Transmitters\Restful\RestfulTransmitter.cs" />
+    <Compile Include="Tools\Managers\BookingRequestManager.cs" />
     <Compile Include="Tools\Managers\CommunicationManager\CommunicationManager.cs" />
     <Compile Include="Tools\Managers\EmailManager.cs" />
   </ItemGroup>

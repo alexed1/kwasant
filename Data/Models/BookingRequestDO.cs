@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models
@@ -7,5 +9,7 @@ namespace Data.Models
     {
         [Required]
         public virtual CustomerDO Customer { get; set; }
+
+        public List<InstructionDO> Instructions { get; set; }
     }
 }

@@ -38,6 +38,7 @@ namespace Data.DataAccessLayer.Infrastructure
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EmailStatusDO>().ToTable("EmailStatuses");
             modelBuilder.Entity<EventDO>().ToTable("Events");
+            modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<UserDO>().ToTable("Users");
 
@@ -47,6 +48,15 @@ namespace Data.DataAccessLayer.Infrastructure
                 .Map(
                     mapping => mapping.MapLeftKey("EventID").MapRightKey("EmailID").ToTable("EventEmail")
                 );
+
+
+            modelBuilder.Entity<BookingRequestDO>()
+                .HasMany(ev => ev.Instructions)
+                .WithMany()
+                .Map(
+                    mapping => mapping.MapLeftKey("BookingRequestID").MapRightKey("InstructionID").ToTable("BookingRequestInstruction")
+                );
+            
             
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(e => e.From);

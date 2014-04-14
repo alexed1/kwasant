@@ -50,7 +50,7 @@ namespace ShnexyTest.Models
             //check that it was saved to the db
             CustomerDO savedCustomerDO = customerRepo.GetByKey(curCustomerDO.CustomerID);
             Assert.AreEqual(curCustomerDO.FirstName,savedCustomerDO.FirstName);
-            Assert.AreEqual(curCustomerDO.Email, savedCustomerDO.Email);
+            Assert.AreEqual(curCustomerDO.EmailAddress, savedCustomerDO.EmailAddress);
 
             //call Customer#Add
             //does event get called?

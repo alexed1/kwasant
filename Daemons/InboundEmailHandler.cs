@@ -5,6 +5,7 @@ using System.Net.Mail;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.Tools;
+using Data.Tools.Managers;
 using S22.Imap;
 
 using StructureMap;
@@ -58,7 +59,7 @@ namespace Daemons
             EmailRepository emailRepository = new EmailRepository(unitOfWork);
             foreach (MailMessage message in messages)
             {
-                EmailHelper.ConvertMailMessageToEmail(emailRepository, message);
+                BookingRequestManager.ConvertEmail(unitOfWork, message);
             }
             emailRepository.UnitOfWork.SaveChanges();
         }

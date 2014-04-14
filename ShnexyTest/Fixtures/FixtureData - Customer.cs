@@ -18,7 +18,7 @@ namespace ShnexyTest.Fixtures
                 CustomerID = 1,
                 FirstName = "Jack",
                 LastName = "Maginot",
-                Email = TestEmail1()
+                EmailAddress = "JackMaginot@gmail.com"
 
             };
         }

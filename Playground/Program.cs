@@ -1,11 +1,12 @@
 ﻿using System.Data.Entity;
 using System.Net.Mail;
-using System.Web.Mvc;
+using Daemons;
 using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.StructureMap;
 using Data.Tools;
+using Data.Tools.Managers;
 using StructureMap;
 
 namespace Playground
@@ -19,25 +20,20 @@ namespace Playground
         private static void Main(string[] args)
         {
             StructureMapBootStrapper.ConfigureDependencies("test"); //set to either "test" or "dev"
-            ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
-
+            
             Database.SetInitializer(new ShnexyInitializer());
             ShnexyDbContext db = new ShnexyDbContext();
             db.Database.Initialize(true);
 
+            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailRepository emailRepository = new EmailRepository(unitOfWork);
 
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            EmailRepository emailRepository = new EmailRepository(uow);
-
-            MailMessage mailMessage = new MailMessage(new MailAddress("AClient@gmail.com", "Client Smith"),
-                new MailAddress("kwa@sant.com", "Booqit Service"))
+            var message = new MailMessage( new MailAddress("rjrudman@gmail.com", "Robert Rudman"), new MailAddress("kwa@sant.com", "Booqit Services"))
             {
-                Subject = "Book me a meeting!",
-                Body = "Book it in office A at 10:30am on Tuesday"
+                Body = "ccADE"
             };
 
-            EmailHelper.ConvertMailMessageToEmail(emailRepository, mailMessage);
-            emailRepository.UnitOfWork.SaveChanges();
+            BookingRequestManager.ConvertEmail(unitOfWork, message);
         }
     }
 }
