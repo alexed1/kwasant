@@ -22,7 +22,7 @@ namespace Shnexy.Controllers
         {
             if (id <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            PopulateCalender();
+            
 
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
@@ -45,6 +45,18 @@ namespace Shnexy.Controllers
                 Session["EventManager"] = value;
             }
         }
+
+
+        public ActionResult Day()
+        {
+            return new DayPilotCalendarControl(Calendar).CallBack(this);
+        }
+
+
+        public ActionResult Month()
+        {
+            return new DayPilotMonthControl(Calendar).CallBack(this);
+        }    
 
         public ActionResult Rtl()
         {
@@ -296,14 +308,7 @@ namespace Shnexy.Controllers
 
         #endregion "Action"
 
-        #region "Method"
-
-        private void PopulateCalender()
-        {
-            
-        }
-
-        #endregion "Method"
+        
 
         public class CreateInvitationInfo
         {
