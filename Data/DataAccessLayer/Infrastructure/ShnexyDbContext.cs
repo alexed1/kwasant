@@ -21,6 +21,7 @@ namespace Data.DataAccessLayer.Infrastructure
         public override int SaveChanges()
         {
             ChangeTracker.DetectChanges();
+            var entries = ChangeTracker.Entries().ToList();//For debugging
             foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>())
             {
                 entity.Entity.SaveHook();

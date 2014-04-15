@@ -220,6 +220,8 @@ namespace Shnexy.Controllers
                 return defaultValue;
 
             Type returnType = typeof (T);
+            if (returnType == typeof (bool))
+                return (T)(object)(obj == "on" || obj == "1" || obj == "true");
             if (returnType == typeof (String))
                 return (T)(object)obj;
             if (returnType == typeof(DateTime))
@@ -233,18 +235,19 @@ namespace Shnexy.Controllers
 
         public ActionResult BeforeSave(FormCollection form)
         {
-            DateTime dtFromDate = GetValueFromForm(form, "DateStart", DateTime.MinValue);
-            DateTime dtToDate = GetValueFromForm(form, "DateEnd", DateTime.MinValue);
-            string strLocation = GetValueFromForm(form, "Location", String.Empty);
-            string strStatus = GetValueFromForm(form, "Status", String.Empty);
-            string strTransparency = GetValueFromForm(form, "TransparencyType", String.Empty);
-            string strClass = GetValueFromForm(form, "Class", String.Empty);
-            string strDescription = GetValueFromForm(form, "Description", String.Empty);
-            int intPriority = GetValueFromForm(form, "Priority", 0);
-            int intSequence = GetValueFromForm(form, "Sequence", 0);
-            string strSummary = GetValueFromForm(form, "Summary", String.Empty);
-            string strCategory = GetValueFromForm(form, "Category", String.Empty);
-            int eventID = GetValueFromForm(form, "EventID", 0);
+            DateTime dtFromDate = GetValueFromForm(Request.QueryString, "DateStart", DateTime.MinValue);
+            DateTime dtToDate = GetValueFromForm(Request.QueryString, "DateEnd", DateTime.MinValue);
+            bool isAllDay = GetValueFromForm(Request.QueryString, "IsAllDay", false);
+            string strLocation = GetValueFromForm(Request.QueryString, "Location", String.Empty);
+            string strStatus = GetValueFromForm(Request.QueryString, "Status", String.Empty);
+            string strTransparency = GetValueFromForm(Request.QueryString, "TransparencyType", String.Empty);
+            string strClass = GetValueFromForm(Request.QueryString, "Class", String.Empty);
+            string strDescription = GetValueFromForm(Request.QueryString, "Description", String.Empty);
+            int intPriority = GetValueFromForm(Request.QueryString, "Priority", 0);
+            int intSequence = GetValueFromForm(Request.QueryString, "Sequence", 0);
+            string strSummary = GetValueFromForm(Request.QueryString, "Summary", String.Empty);
+            string strCategory = GetValueFromForm(Request.QueryString, "Category", String.Empty);
+            int eventID = GetValueFromForm(Request.QueryString, "EventID", 0);
 
             //This is a fake event that will be thrown away if Confirm() is not called
             var eventDO = new EventDO();
@@ -254,8 +257,18 @@ namespace Shnexy.Controllers
 
             //We also need to have the form show attendees
 
-            eventDO.StartDate = dtFromDate;
-            eventDO.EndDate = dtToDate;
+            if (isAllDay)
+            {
+                eventDO.IsAllDay = true;
+                eventDO.StartDate = dtFromDate.Date;
+                eventDO.EndDate = dtFromDate.Date.AddDays(1);
+            }
+            else
+            {
+                eventDO.IsAllDay = false;
+                eventDO.StartDate = dtFromDate;
+                eventDO.EndDate = dtToDate;
+            }
             eventDO.Location = strLocation;
             eventDO.Status = strStatus;
             eventDO.Transparency = strTransparency;
@@ -266,15 +279,18 @@ namespace Shnexy.Controllers
             eventDO.Summary = strSummary;
             eventDO.Category = strCategory;
 
-            eventDO.Attendees = new List<AttendeeDO>
+            if (eventDO.StatusID == EmailStatusConstants.EVENT_UNSET)
             {
-                new AttendeeDO
+                eventDO.Attendees = new List<AttendeeDO>
                 {
-                    EmailAddress = eventDO.BookingRequest.From.Address,
-                    Name = eventDO.BookingRequest.From.Name,
-                    Event = eventDO
-                }
-            };
+                    new AttendeeDO
+                    {
+                        EmailAddress = eventDO.BookingRequest.From.Address,
+                        Name = eventDO.BookingRequest.From.Name,
+                        Event = eventDO
+                    }
+                };
+            }
 
             var key = Guid.NewGuid().ToString();
             Session["FakedEvent_" + key] = eventDO;

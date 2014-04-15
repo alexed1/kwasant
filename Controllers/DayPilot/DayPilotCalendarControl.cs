@@ -93,7 +93,7 @@ namespace Shnexy.Controllers.DayPilot
                     break;
 
                 case "refresh":
-                    UpdateWithMessage("Refreshed");
+                    Update();
                     break;
 
                 case "selected":
@@ -148,8 +148,7 @@ namespace Shnexy.Controllers.DayPilot
         protected override void OnInit(InitArgs initArgs)
         {
             //Thread.Sleep(5000);
-
-            UpdateWithMessage("Welcome!", CallBackUpdateType.Full);
+            Update(CallBackUpdateType.Full);
 
             if (Id == "days_resources")
             {
@@ -203,6 +202,7 @@ namespace Shnexy.Controllers.DayPilot
             DataEndField = "EndDate";
             DataTextField = "Summary";
             DataIdField = "EventID";
+            DataAllDayField = "IsAllDay";
 
             Events = _calendar.EventsList;
         }

@@ -5,12 +5,15 @@
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript">
         $(document).ready(function () {
-            //function validate() {
-            //    if ($("#divName").val().trim() == '') {
-            //        $("#divName").val("Name is required.");
-            //        return false;
-            //    }
-            //}
+            var hideShowDates = function() {
+                if ($('#chkAllDay').attr('checked')) {
+                    $('#dateGroup').hide();
+                } else {
+                    $('#dateGroup').show();
+                }
+            };
+            $('#chkAllDay').click(hideShowDates);
+            hideShowDates();
         });
 
         /* Wild Char Check Start*/
@@ -21,10 +24,10 @@
 
             for (var i = 0; i < specialChars.length; i++) {
                 if (IsNoteType) {
-                    oTextBox.value = oTextBox.value.replace(/[^\w\,\s\.\#\-]/gi, '')
+                    oTextBox.value = oTextBox.value.replace(/[^\w\,\s\.\#\-]/gi, '');
                 }
                 else {
-                    oTextBox.value = oTextBox.value.replace(/[^\w\s\.]/gi, '')
+                    oTextBox.value = oTextBox.value.replace(/[^\w\s\.]/gi, '');
                 }
             }
         }
@@ -72,32 +75,43 @@
 
     <div>Location</div>
     <div>
-        @Html.TextBox("Location", String.Empty, new { @class = "form-control col-md-1" })
+        @Html.TextBox("Location", @Model.Location, new { @class = "form-control col-md-1" })
         <div id="divLocation"></div>
     </div>
     <br />
+    <div>
+        <div>
+            <label><input id="chkAllDay" type="checkbox" name="IsAllDay" @Html.Raw(Model.IsAllDay ? "checked='checked'" : String.Empty) /> All day event</label>
+        </div>
+        <div id="dateGroup">
+            <div>
+                <label>Start @Html.TextBox("DateStart", @Model.StartDate, new { @class = "form-control col-md-1" })</label>
+            </div>
+            <div>
+                <label>Start @Html.TextBox("DateEnd", @Model.EndDate, new { @class = "form-control col-md-1" })</label>
+            </div>
+        </div>
+    </div>
     <div>Description</div>
-    <div>@Html.TextArea("Description", String.Empty, 5, 31, new { @class = "form-control col-md-1" })</div>
+    <div>@Html.TextArea("Description", @Model.Description, 5, 31, new { @class = "form-control col-md-1" })</div>
     @{
         List<SelectListItem> itemsPriority = new List<SelectListItem>();
 
-        itemsPriority.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = true });
-        itemsPriority.Add(new SelectListItem { Text = "High", Value = "1" });
-        itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2" });
-        itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3" });
+        itemsPriority.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = Model.Priority == 0 });
+        itemsPriority.Add(new SelectListItem { Text = "High", Value = "1", Selected = Model.Priority == 1 });
+        itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2", Selected = Model.Priority == 2 });
+        itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3", Selected = Model.Priority == 3 });
     }
     <br />
     <div>Priority</div>
     <div style="width:200px">@Html.DropDownList("Priority", itemsPriority, new { @class = "form-control col-md-1" })</div>
     <br />
     <div>Summary</div>
-    <div>@Html.TextArea("Summary", String.Empty, 5, 31, new { @class = "form-control col-md-1" })</div>
+    <div>@Html.TextArea("Summary", @Model.Summary, 5, 31, new { @class = "form-control col-md-1" })</div>
     <br />
     @{
         <div style="display:none">
             @Html.TextBox("EventID", @Model.EventID, new { @class = "form-control col-md-1" })
-            @Html.TextBox("DateStart", @Model.StartDate, new { @class = "form-control col-md-1" })
-            @Html.TextBox("DateEnd", @Model.EndDate, new { @class = "form-control col-md-1" })
         </div>
     }
     <hr />
@@ -124,17 +138,16 @@
 
     $("#f").submit(function () {
         var f = $("#f");
-        $.post(f.prop('action'), f.serialize(), function (result) {
-            var m = new parent.DayPilot.Modal();
-            m.closed = function () {
-                if (this.result == "OK") {
-                    close();
-                }
-            };
+        var url = f.prop('action') + '/?' + f.serialize();        
+        var m = new parent.DayPilot.Modal();
+        m.closed = function () {
+            if (this.result == "OK") {
+                close(this.result);
+            }
+        };
 
-            m.showHtml(result);
+        m.showUrl(url);
 
-        });
         return false;
     });
 
