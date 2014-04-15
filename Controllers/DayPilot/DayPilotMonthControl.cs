@@ -15,7 +15,7 @@ using DayPilot.Web.Mvc.Events.Calendar;
 using MonthNamespace = DayPilot.Web.Mvc.Events.Month;
 
 namespace Shnexy.Controllers.DayPilot
-{
+{ 
     public class DayPilotMonthControl : DayPilotMonth
     {
         private readonly Calendar _calendar;

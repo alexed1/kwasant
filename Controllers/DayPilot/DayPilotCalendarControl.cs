@@ -17,7 +17,7 @@ namespace Shnexy.Controllers.DayPilot
         {
             _calendar = calendar;
         }
-
+         
         protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
         {
             _calendar.AddEvent(new EventDO
