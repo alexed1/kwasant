@@ -7,7 +7,7 @@
 <form id="f" method="post" style="margin:10px" action="@Url.Action("Confirm")">
     <h3>Confirm Changes</h3>
     <hr />
-    <div>You are @Html.Raw(Model.EventDO.StatusID == EmailStatusConstants.EVENT_UNSET ? "<b>creating a new<b/>" : "<b>editting an existing</b>");Event.</div>
+    <div>You are <b>@Html.Raw(Model.EventDO.StatusID == EmailStatusConstants.EVENT_UNSET ? "creating a new" : "editting an existing")</b> event.</div>
     <div>Location: @Model.EventDO.Location</div>
     <div>Description: @Model.EventDO.Description</div>
     <div>Summary: @Model.EventDO.Summary</div>

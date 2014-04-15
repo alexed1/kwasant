@@ -45,5 +45,6 @@ namespace Data.Models
                 prop.SetValue(this, prop.GetValue(eventDO));
             }
         }
+
     }
 }

@@ -298,7 +298,7 @@ namespace Shnexy.Controllers
             
             eventDO.StatusID = EmailStatusConstants.EVENT_SET;
 
-            if(eventDO.BookingRequest.Events.All(e => eventDO.StatusID == EmailStatusConstants.EVENT_SET))
+            if (eventDO.BookingRequest.Events.ToList().All(ev => ev.StatusID == EmailStatusConstants.EVENT_SET))
                 eventDO.BookingRequest.StatusID = EmailStatusConstants.PROCESSED;
 
             Calendar.DispatchEvent(eventDO);
