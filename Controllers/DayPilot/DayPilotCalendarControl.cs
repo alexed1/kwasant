@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Drawing;
+using Data.Constants;
 using Data.Models;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
@@ -134,50 +136,12 @@ namespace Shnexy.Controllers.DayPilot
 
         protected override void OnBeforeEventRender(BeforeEventRenderArgs e)
         {
-
-            if (Id == "dpcg")  // Calendar/GoogleLike
+            var eventDO = (e.DataItem.Source as EventDO);
+            if (eventDO == null)
+                return;
+            if (eventDO.StatusID == EmailStatusConstants.EVENT_UNSET)
             {
-                if (e.Id == "6")
-                {
-                    e.BorderColor = "#1AAFE0";
-                    e.BackgroundColor = "#90D8F2";
-                }
-                if (e.Id == "8")
-                {
-                    e.BorderColor = "#068c14";
-                    e.BackgroundColor = "#08b81b";
-                }
-                if (e.Id == "2")
-                {
-                    e.BorderColor = "#990607";
-                    e.BackgroundColor = "#f60e13";
-                }
-            }
-            else if (Id == "dpc_menu")  // Calendar/ContextMenu
-            {
-                if (e.Id == "7")
-                {
-                    e.ContextMenuClientName = "menu2";
-                }
-            }
-            else if (Id == "dpc_areas")  // Calendar/ActiveAreas
-            {
-                e.CssClass = "calendar_white_event_withheader";
-
-                e.Areas.Add(new Area().Right(3).Top(3).Width(15).Height(15).CssClass("event_action_delete").JavaScript("dpc_areas.eventDeleteCallBack(e);"));
-                e.Areas.Add(new Area().Right(20).Top(3).Width(15).Height(15).CssClass("event_action_menu").JavaScript("dpc_areas.bubble.showEvent(e, true);"));
-                e.Areas.Add(new Area().Left(0).Bottom(5).Right(0).Height(5).CssClass("event_action_bottomdrag").ResizeEnd());
-                e.Areas.Add(new Area().Left(15).Top(1).Right(46).Height(11).CssClass("event_action_move").Move());
-            }
-
-            if (e.Id == "7")
-            {
-                e.DurationBarColor = "red";
-            }
-
-            if (e.Recurrent)
-            {
-                e.InnerHtml += " (R)";
+                e.BackgroundColor = "#B33A3A";
             }
         }
 

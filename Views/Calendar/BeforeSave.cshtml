@@ -1,0 +1,51 @@
+﻿@using Data.Constants
+@model Shnexy.Controllers.CalendarController.ConfirmEvent
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.1.min.js")"></script>
+<form id="f" method="post" style="margin:10px" action="@Url.Action("Confirm")">
+    <h3>Confirm Changes</h3>
+    <hr />
+    <div>You are @Html.Raw(Model.EventDO.StatusID == EmailStatusConstants.EVENT_UNSET ? "<b>creating a new<b/>" : "<b>editting an existing</b>");Event.</div>
+    <div>Location: @Model.EventDO.Location</div>
+    <div>Description: @Model.EventDO.Description</div>
+    <div>Summary: @Model.EventDO.Summary</div>
+    @{
+        <div style="display:none">
+            @Html.TextBox("Key", @Model.Key, new { @class = "form-control col-md-1" })
+        </div>
+    }
+    <hr />
+    <div class="space">
+        <div style="clear:both">
+            <div style="float:left">
+                <input id="btnSave" type="submit" value="CONFIRM" style="width: 100px; height: 30px; border: 2px solid black; margin-right:20px" />
+            </div>
+            <div style="float:left">
+                <a href="javascript:close()"><div style="width: 100px;">REJECT</div></a>
+            </div>
+        </div>
+        <br />
+        <br />
+    </div>
+</form>
+
+<script type="text/javascript">
+    function close(result) {
+        if (parent && parent.DayPilot && parent.DayPilot.ModalStatic) {
+            parent.DayPilot.ModalStatic.close(result);
+        }
+    }
+
+    $(function () {
+        $("#f").submit(function () {
+            var f = $("#f");
+            $.post(f.prop('action'), f.serialize(), function (result) {
+                var evaledRes = eval(result);
+                close(evaledRes);
+            });
+            return false;
+        });
+    });
+</script>

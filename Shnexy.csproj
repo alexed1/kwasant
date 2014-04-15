@@ -113,6 +113,7 @@
     <Reference Include="StructureMap, Version=2.6.4.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebApi.Client.4.0.30506.0\lib\net40\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
@@ -790,7 +791,6 @@
     <Content Include="Views\Calendar\JQuery.cshtml" />
     <Content Include="Views\Calendar\Message.cshtml" />
     <Content Include="Views\Calendar\Navigation.json" />
-    <Content Include="Views\Calendar\New.cshtml" />
     <Content Include="Views\Calendar\Notify.cshtml" />
     <Content Include="Views\Calendar\Open.cshtml" />
     <Content Include="Views\Calendar\RecurringEvents.cshtml" />
@@ -804,7 +804,7 @@
     <Content Include="Views\Calendar\TimeHeaderCellDuration.cshtml" />
     <Content Include="Views\Calendar\Today.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
-    <Content Include="Views\Calendar\Confirm.cshtml" />
+    <Content Include="Views\Calendar\BeforeSave.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

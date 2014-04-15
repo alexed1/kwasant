@@ -11,24 +11,7 @@
 
 <header>
     <script type="text/javascript">
-        function modal(url) {
-            var m = new DayPilot.Modal();
-
-            m.closed = function () {
-                if (this.result == "OK") {
-                    dps.commandCallBack('refresh');
-                }
-                dps.clearSelection();
-            };
-            m.showUrl(url);
-        }
-
         function eventClick(e) {
-            // only fire the server-side event if the ID is 5 or status field is set to tentative
-            //if (e.value() == "5" || e.tag("status") == "tentative") {
-            //    dpc.eventClickCallBack(e);
-            //}
-
             var m = new DayPilot.Modal();
             m.closed = function () {
                 if (this.result == "OK") {
@@ -36,9 +19,9 @@
                 }
                 dpcg.clearSelection();
             };
-            
 
-            var url = getBaseCalendarURL() + '/New/?emailID=' + @Model.EmailID + '&partStart=' + e.partStart() + '&partEnd=' + e.partEnd();
+
+            var url = getBaseCalendarURL() + '/Open/?eventID=' + e.id();
             m.showUrl(url);
         }            
 
@@ -188,21 +171,6 @@
                         ContextMenu = "menu1",
                         HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"
                     }))
-                
-
-                <script type="text/javascript">
-                    function modal(url) {
-                        var m = new DayPilot.Modal();
-                        m.closed = function () {
-                            if (this.result == "OK") {
-                                dps.commandCallBack('refresh');
-                            }
-                            dps.clearSelection();
-                        };
-                        m.showUrl(url);
-                    }
-                </script>
-
             </div>
             <br />
             <div class="Row" style="height:179px;">

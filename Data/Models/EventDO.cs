@@ -13,6 +13,9 @@ namespace Data.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Location { get; set; }
+
+        [ForeignKey("Status")]
+        public int StatusID { get; set; }
         public string Status { get; set; }
         public string Transparency { get; set; }
         public string Class { get; set; }
@@ -32,5 +35,15 @@ namespace Data.Models
         public virtual List<EmailDO> Emails { get; set; }
 
         public virtual BookingRequestDO BookingRequest { get; set; }
+
+        public void CopyFrom(EventDO eventDO)
+        {
+            //We can't called GetType() because EF mocks our object
+            var props = typeof(EventDO).GetProperties();
+            foreach (var prop in props)
+            {
+                prop.SetValue(this, prop.GetValue(eventDO));
+            }
+        }
     }
 }

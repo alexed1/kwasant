@@ -87,12 +87,11 @@ namespace Data.DataAccessLayer.Repositories
 
 
         }
+
         //http://stackoverflow.com/a/12587752/1915866
         public virtual void Update(TEntity entity, TEntity existingEntity)
         {
-
             _unitOfWork.Db.Entry(existingEntity).CurrentValues.SetValues(entity);
-
         }
 
         public TEntity FindOne(Expression<Func<TEntity, bool>> criteria)

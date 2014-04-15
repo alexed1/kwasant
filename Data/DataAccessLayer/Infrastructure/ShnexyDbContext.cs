@@ -78,6 +78,11 @@ namespace Data.DataAccessLayer.Infrastructure
                 .WithRequired(e => e.From)
                 .Map(x => x.MapKey("FromEmailAddressID"));
 
+            modelBuilder.Entity<EventDO>()
+                .HasMany(e => e.Attendees)
+                .WithRequired(a => a.Event)
+                .WillCascadeOnDelete(true);
+
             base.OnModelCreating(modelBuilder);
         }
 

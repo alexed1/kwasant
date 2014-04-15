@@ -22,30 +22,40 @@ namespace Data.Models
     /// </summary>
     public class Calendar
     {
-        private readonly CustomerDO _customer;
+        private readonly BookingRequestDO _bookingRequestDO;
         private readonly IUnitOfWork _uow;
         private EventRepository _eventRepo;
-
-        public Calendar(IUnitOfWork uow, CustomerDO customer)
+        
+        public Calendar(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
         {
             _uow = uow;
-            _customer = customer;
+            _bookingRequestDO = bookingRequestDO;
             _eventRepo = new EventRepository(_uow);
-            LoadData(_customer);
+            LoadData();
         }
 
-        public List<EventDO> EventsList;
-        
-        private void LoadData(CustomerDO customer)
+        private Dictionary<int, EventDO> _events;
+        public List<EventDO> EventsList
         {
-            EventsList = _eventRepo.GetQuery().Where(i => i.BookingRequest.Customer.CustomerID == customer.CustomerID).ToList();
+            get
+            {
+                return _events.Values.ToList();
+            }
+        }
+
+        private void LoadData()
+        {
+            _events = _eventRepo.GetQuery().Where(i => i.BookingRequest.Customer.CustomerID == _bookingRequestDO.Customer.CustomerID).ToDictionary(e => e.EventID, e => e);
+        }
+
+        private void SaveData()
+        {
+            _uow.Db.SaveChanges();
         }
 
         public void Reload()
         {
-            var tempEvents = EventsList.Where(e => _eventRepo.IsDetached(e));
-            LoadData(_customer);
-            EventsList.AddRange(tempEvents);
+            LoadData();
         }
 
         public void DispatchEvent(EventDO eventDO)
@@ -129,9 +139,22 @@ namespace Data.Models
             emailDO.Attachments.Add(attachmentDO);
         }
 
-        public void AddEvent(EventDO eventDo)
+        public EventDO GetEvent(int eventID)
         {
-            EventsList.Add(eventDo);   
+            return _events[eventID];
+        }
+
+        public void AddEvent(EventDO eventDO)
+        {
+            if (_bookingRequestDO.Events == null)
+                _bookingRequestDO.Events = new List<EventDO>();
+            _bookingRequestDO.Events.Add(eventDO);
+
+            eventDO.BookingRequest = _bookingRequestDO;
+            eventDO.StatusID = EmailStatusConstants.EVENT_UNSET;
+            _eventRepo.Add(eventDO);
+            _uow.SaveChanges();
+            Reload();
         }
 
         public void DeleteEvent(String idStr)
