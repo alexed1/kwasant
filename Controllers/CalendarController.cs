@@ -216,16 +216,16 @@ namespace Shnexy.Controllers
 
         public ActionResult RequiresConfirmationForMove(int eventID)
         {
-            var actualEventDO = Calendar.GetEvent(eventID);
+            EventDO actualEventDO = Calendar.GetEvent(eventID);
             return JavaScript(SimpleJsonSerializer.Serialize(actualEventDO.StatusID == EmailStatusConstants.EVENT_SET));
         }
 
         public ActionResult MoveEventNoConfirm(int eventID, String newStart, String newEnd)
         {
-            var newStartDT = DateTime.Parse(newStart);
-            var newEndDT = DateTime.Parse(newEnd);
+            DateTime newStartDT = DateTime.Parse(newStart);
+            DateTime newEndDT = DateTime.Parse(newEnd);
 
-            var actualEventDO = Calendar.GetEvent(eventID);
+            EventDO actualEventDO = Calendar.GetEvent(eventID);
             if(actualEventDO.StatusID == EmailStatusConstants.EVENT_SET)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
@@ -236,18 +236,18 @@ namespace Shnexy.Controllers
         public ActionResult MoveEvent(int eventID, String newStart, String newEnd)
         {
             //This is a fake event that will be thrown away if Confirm() is not called
-            var eventDO = new EventDO();
+            EventDO eventDO = new EventDO();
             eventDO.EventID = eventID;
-            var actualEventDO = Calendar.GetEvent(eventID);
+            EventDO actualEventDO = Calendar.GetEvent(eventID);
             eventDO.CopyFrom(actualEventDO);
 
-            var newStartDT = DateTime.Parse(newStart);
-            var newEndDT = DateTime.Parse(newEnd);
+            DateTime newStartDT = DateTime.Parse(newStart);
+            DateTime newEndDT = DateTime.Parse(newEnd);
 
             eventDO.StartDate = newStartDT;
             eventDO.EndDate = newEndDT;
 
-            var key = Guid.NewGuid().ToString();
+            string key = Guid.NewGuid().ToString();
             Session["FakedEvent_" + key] = eventDO;
             return View("~/Views/Calendar/BeforeSave.cshtml", new ConfirmEvent
             {
@@ -294,9 +294,9 @@ namespace Shnexy.Controllers
             int eventID = GetValueFromForm(Request.QueryString, "EventID", 0);
 
             //This is a fake event that will be thrown away if Confirm() is not called
-            var eventDO = new EventDO();
+            EventDO eventDO = new EventDO();
             eventDO.EventID = eventID;
-            var actualEventDO = Calendar.GetEvent(eventID);
+            EventDO actualEventDO = Calendar.GetEvent(eventID);
             eventDO.CopyFrom(actualEventDO);
 
             //We also need to have the form show attendees
@@ -336,7 +336,7 @@ namespace Shnexy.Controllers
 
             eventDO.StatusID = EmailStatusConstants.EVENT_SET;
 
-            var key = Guid.NewGuid().ToString();
+            string key = Guid.NewGuid().ToString();
             Session["FakedEvent_" + key] = eventDO;
             return View(
                 new ConfirmEvent
@@ -352,8 +352,8 @@ namespace Shnexy.Controllers
         {
             string key = GetValueFromForm(form, "key", string.Empty);
 
-            var fakedEvent = Session["FakedEvent_" + key] as EventDO;
-            var eventDO = Calendar.GetEvent(fakedEvent.EventID);
+            EventDO fakedEvent = Session["FakedEvent_" + key] as EventDO;
+            EventDO eventDO = Calendar.GetEvent(fakedEvent.EventID);
             eventDO.CopyFrom(fakedEvent);
             
             if (eventDO.BookingRequest.Events.ToList().All(ev => ev.StatusID == EmailStatusConstants.EVENT_SET))

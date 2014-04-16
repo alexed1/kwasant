@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using Data.DataAccessLayer.Interfaces;
@@ -21,7 +22,7 @@ namespace Data.DataAccessLayer.Infrastructure
         public override int SaveChanges()
         {
             ChangeTracker.DetectChanges();
-            var entries = ChangeTracker.Entries().ToList();//For debugging
+            List<DbEntityEntry> entries = ChangeTracker.Entries().ToList();//For debugging
             foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
             {
                 entity.Entity.SaveHook(entity);

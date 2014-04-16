@@ -136,7 +136,7 @@ namespace Shnexy.Controllers.DayPilot
 
         protected override void OnBeforeEventRender(BeforeEventRenderArgs e)
         {
-            var eventDO = (e.DataItem.Source as EventDO);
+            EventDO eventDO = (e.DataItem.Source as EventDO);
             if (eventDO == null)
                 return;
             if (eventDO.StatusID == EmailStatusConstants.EVENT_UNSET)

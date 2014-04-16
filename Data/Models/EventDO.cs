@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Reflection;
 using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models
@@ -39,8 +40,8 @@ namespace Data.Models
         public void CopyFrom(EventDO eventDO)
         {
             //We can't called GetType() because EF mocks our object
-            var props = typeof(EventDO).GetProperties();
-            foreach (var prop in props)
+            PropertyInfo[] props = typeof(EventDO).GetProperties();
+            foreach (PropertyInfo prop in props)
             {
                 prop.SetValue(this, prop.GetValue(eventDO));
             }
