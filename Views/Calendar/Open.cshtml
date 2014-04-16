@@ -3,8 +3,10 @@
 
 <header>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/Media/select2.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/select2.js")"></script>
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             var hideShowDates = function() {
                 if ($('#chkAllDay').attr('checked')) {
                     $('#dateGroup').hide();
@@ -14,6 +16,23 @@
             };
             $('#chkAllDay').click(hideShowDates);
             hideShowDates();
+
+            $('#attendeesSel').select2({
+                createSearchChoice: function(term, data) {
+                    return { id: term, text: term };
+                },
+                validateFormat: function(term) {
+                    var atPos = term.indexOf('@@');
+                    var dotPos = term.indexOf('.');
+                    if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 3 <= dotPos)) {
+                        return "Invalid Email";
+                    }
+                    return null;
+                },
+                multiple: true,
+                data: [],
+                width: '100%',
+            }).onSelect();
         });
 
         /* Wild Char Check Start*/
@@ -108,6 +127,11 @@
     <br />
     <div>Summary</div>
     <div>@Html.TextArea("Summary", @Model.Summary, 5, 31, new { @class = "form-control col-md-1" })</div>
+    <br />
+    <div>Attendees</div>
+    <div>
+        <input type="hidden" name="attendeesSel" id="attendeesSel"></input>
+    </div>
     <br />
     @{
         <div style="display:none">
