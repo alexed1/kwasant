@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using Data.Constants;
 using Data.Models;
@@ -7,6 +8,7 @@ using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Calendar;
 using DayPilot.Web.Mvc.Events.Common;
+using Microsoft.Ajax.Utilities;
 using Shnexy.Controllers.Models;
 using Calendar = Data.Models.Calendar;
 
@@ -22,12 +24,13 @@ namespace Shnexy.Controllers.DayPilot
 
         protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
         {
-            _calendar.AddEvent(new EventDO
+            var eventDO = new EventDO
             {
                 StartDate = e.Start,
                 EndDate = e.End,
                 Summary = "Click to Open Form"
-            });
+            };
+            _calendar.AddEvent(eventDO);
             
             Update();
         }

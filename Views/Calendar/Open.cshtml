@@ -16,15 +16,18 @@
             };
             $('#chkAllDay').click(hideShowDates);
             hideShowDates();
-
+            var data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a => 
+                       "{id: '" + a.EmailAddress + "', text: '" + a.EmailAddress + "'}"
+                    )))];
+            
             $('#attendeesSel').select2({
                 createSearchChoice: function(term, data) {
                     return { id: term, text: term };
                 },
                 validateFormat: function(term) {
                     var atPos = term.indexOf('@@');
-                    var dotPos = term.indexOf('.');
-                    if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 3 <= dotPos)) {
+                    var dotPos = term.lastIndexOf('.');
+                    if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 2 <= dotPos)) {
                         return "Invalid Email";
                     }
                     return null;
@@ -32,7 +35,8 @@
                 multiple: true,
                 data: [],
                 width: '100%',
-            }).onSelect();
+            });
+            $('#attendeesSel').select2('data', data);
         });
 
         /* Wild Char Check Start*/
@@ -130,7 +134,7 @@
     <br />
     <div>Attendees</div>
     <div>
-        <input type="hidden" name="attendeesSel" id="attendeesSel"></input>
+        <input type="hidden" name="Attendees" id="attendeesSel"></input>
     </div>
     <br />
     @{

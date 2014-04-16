@@ -34,6 +34,14 @@ namespace Data.Models
             LoadData();
         }
 
+        public IUnitOfWork UnitOfWork
+        {
+            get
+            {
+                return _uow;
+            }
+        }
+
         private Dictionary<int, EventDO> _events;
         public List<EventDO> EventsList
         {
@@ -152,6 +160,17 @@ namespace Data.Models
 
             eventDO.BookingRequest = _bookingRequestDO;
             eventDO.StatusID = EmailStatusConstants.EVENT_UNSET;
+
+            eventDO.Attendees = new List<AttendeeDO>
+            {
+                new AttendeeDO
+                {
+                    EmailAddress = eventDO.BookingRequest.From.Address,
+                    Name = eventDO.BookingRequest.From.Name,
+                    Event = eventDO
+                }
+            };
+
             _eventRepo.Add(eventDO);
             _uow.SaveChanges();
             Reload();

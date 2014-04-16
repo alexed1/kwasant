@@ -312,6 +312,7 @@ namespace Shnexy.Controllers
             string strSummary = GetValueFromForm(Request.QueryString, "Summary", String.Empty);
             string strCategory = GetValueFromForm(Request.QueryString, "Category", String.Empty);
             int eventID = GetValueFromForm(Request.QueryString, "EventID", 0);
+            var attendeesStr = GetValueFromForm(Request.QueryString, "Attendees", String.Empty);
 
             //This is a fake event that will be thrown away if Confirm() is not called
             EventDO eventDO = new EventDO();
@@ -340,20 +341,10 @@ namespace Shnexy.Controllers
             eventDO.Sequence = intSequence;
             eventDO.Summary = strSummary;
             eventDO.Category = strCategory;
+            
+            ManageAttendees(eventDO, attendeesStr);
 
-            if (eventDO.StatusID == EmailStatusConstants.EVENT_UNSET)
-            {
-                eventDO.Attendees = new List<AttendeeDO>
-                {
-                    new AttendeeDO
-                    {
-                        EmailAddress = eventDO.BookingRequest.From.Address,
-                        Name = eventDO.BookingRequest.From.Name,
-                        Event = eventDO
-                    }
-                };
-            }
-
+            //eventDO.Attendees = attendeesStr.Split(',').Where(email => !String.IsNullOrEmpty(email)).Select(email => new AttendeeDO { EmailAddress = email }).ToList();
             eventDO.StatusID = EmailStatusConstants.EVENT_SET;
 
             string key = Guid.NewGuid().ToString();
@@ -365,6 +356,39 @@ namespace Shnexy.Controllers
                     EventDO = eventDO
                 }
             );
+        }
+
+        //Manages adds/deletes and persists of attendees.
+        private void ManageAttendees(EventDO eventDO, string attendeesStr)
+        {
+            var originalAttendees = new List<AttendeeDO>(eventDO.Attendees);
+            var newAttendees = new List<AttendeeDO>();
+            foreach (var email in attendeesStr.Split(','))
+            {
+                if (String.IsNullOrEmpty(email))
+                    continue;
+
+                var sameAttendees = originalAttendees.Where(oa => oa.EmailAddress == email).ToList();
+                if (sameAttendees.Any())
+                {
+                    newAttendees.AddRange(sameAttendees);
+                }
+                else
+                {
+                    newAttendees.Add(new AttendeeDO
+                    {
+                        EmailAddress = email
+                    });
+                }
+            }
+            var attendeesToDelete = originalAttendees.Where(originalAttendee => !newAttendees.Select(a => a.EmailAddress).Contains(originalAttendee.EmailAddress)).ToList();
+            if (attendeesToDelete.Any())
+            {
+                var attendeeRepo = new AttendeeRepository(Calendar.UnitOfWork);
+                foreach (var attendeeToDelete in attendeesToDelete)
+                    attendeeRepo.Remove(attendeeToDelete);
+            }
+            eventDO.Attendees = newAttendees;
         }
 
         [AcceptVerbs(HttpVerbs.Post)]

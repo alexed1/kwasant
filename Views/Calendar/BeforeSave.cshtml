@@ -17,7 +17,11 @@
     <div>Location: @Model.EventDO.Location</div>
     <div>Summary: @Model.EventDO.Summary</div>
     <div>Description: @Model.EventDO.Description</div>
-    <div>Attendees: @String.Join(", ", Model.EventDO.Attendees.Select(a => a.Name + " (" + a.EmailAddress + ")"))</div>
+    <div>Attendees: @String.Join(", ", Model.EventDO.Attendees.Select(a => 
+                   String.IsNullOrEmpty(a.Name) ?
+                   a.EmailAddress :
+                   a.Name + " (" + a.EmailAddress + ")"
+                ))</div>
     
     @{
         <div style="display:none">
