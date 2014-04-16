@@ -72,15 +72,7 @@
 
 <div class="jumbotron" style="padding-left:20px; padding-right:20px;">
     <div class="row" style="font-size:0.84em">
-        <div class="col-lg-2 container_box" style="padding-top:53px; padding-bottom:101px">
-            @Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
-            {
-                CssOnly = true,
-                CssClassPrefix = "navigator_white",
-                ShowMonths = 3,
-                SkipMonths = 3
-            })
-        </div>
+        
         <div id="emailInfoBox" class="col-md-4 container_box" style="padding-top:45px; padding-bottom:39px;">
             <div class="row">
                 <div class="col-md-2 label_vertical_alignment">
@@ -181,7 +173,6 @@
                 </div>
             </div>
         </div>
-
         <div id="divCalender" class="col-md-6 container_box" style="padding-bottom: 79px;">
             <div class="row">
                 <div id="toolbar" style="position:relative; left:-10px">
@@ -284,6 +275,17 @@
                 </script>
             </div>
         </div>
+
+        <div class="col-lg-2 container_box" style="padding-top:53px; padding-bottom:101px">
+            @Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
+            {
+                CssOnly = true,
+                CssClassPrefix = "navigator_white",
+                ShowMonths = 3,
+                SkipMonths = 3
+            })
+        </div>
+
     </div>
 </div>
 
