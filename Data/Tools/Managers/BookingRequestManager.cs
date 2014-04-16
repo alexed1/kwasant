@@ -14,11 +14,11 @@ namespace Data.Tools.Managers
     {
         public static void ConvertEmail(IUnitOfWork uow, MailMessage currMessage)
         {
-            var existingCustomer = GetOrCreateCustomer(uow, currMessage);
+            var curCustomer = GetOrCreateCustomer(uow, currMessage);
 
             var bookingRequestRepo = new BookingRequestRepository(uow);
             var bookingRequest = EmailHelper.ConvertMailMessageToEmail(bookingRequestRepo, currMessage);
-            bookingRequest.Customer = existingCustomer;
+            bookingRequest.Customer = curCustomer;
             bookingRequest.Instructions = ProcessShortHand(uow, currMessage.Body);
             uow.SaveChanges();
         }
@@ -27,15 +27,15 @@ namespace Data.Tools.Managers
         {
             var fromEmailAddress = currMessage.From.Address;
             var customerRepo = new CustomerRepository(uow);
-            var existingCustomer = customerRepo.GetQuery().FirstOrDefault(c => c.EmailAddress == fromEmailAddress);
-            if (existingCustomer == null)
+            var curCustomer = customerRepo.GetQuery().FirstOrDefault(c => c.EmailAddress == fromEmailAddress);
+            if (curCustomer == null)
             {
-                existingCustomer = new CustomerDO();
-                existingCustomer.EmailAddress = fromEmailAddress;
-                existingCustomer.FirstName = currMessage.From.DisplayName;
-                customerRepo.Add(existingCustomer);
+                curCustomer = new CustomerDO();
+                curCustomer.EmailAddress = fromEmailAddress;
+                curCustomer.FirstName = currMessage.From.DisplayName;
+                customerRepo.Add(curCustomer);
             }
-            return existingCustomer;
+            return curCustomer;
         }
 
         private static List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)

@@ -37,6 +37,7 @@ namespace ShnexyTest.Managers
         }
 
         [Test]
+        [Category("BRM")]
         public void NewCustomerCreated()
         {
             List<CustomerDO> customersNow = _customerRepo.GetAll().ToList();
@@ -55,6 +56,7 @@ namespace ShnexyTest.Managers
         }
 
         [Test]
+        [Category("BRM")]
         public void ExistingCustomerNotCreatedButUsed()
         {
             List<CustomerDO> customersNow = _customerRepo.GetAll().ToList();
@@ -80,6 +82,7 @@ namespace ShnexyTest.Managers
         }
 
         [Test]
+        [Category("BRM")]
         public void ParseAllDay()
         {
 
@@ -97,6 +100,7 @@ namespace ShnexyTest.Managers
         }
 
         [Test]
+        [Category("BRM")]
         public void Parse30MinsInAdvance()
         {
 
@@ -114,6 +118,7 @@ namespace ShnexyTest.Managers
         }
 
         [Test]
+        [Category("BRM")]
         public void Parse60MinsInAdvance()
         {
 
@@ -131,6 +136,7 @@ namespace ShnexyTest.Managers
         }
 
         [Test]
+        [Category("BRM")]
         public void Parse90MinsInAdvance()
         {
 
@@ -148,6 +154,7 @@ namespace ShnexyTest.Managers
         }
 
         [Test]
+        [Category("BRM")]
         public void Parse120MinsInAdvance()
         {
 
