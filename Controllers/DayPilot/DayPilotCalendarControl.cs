@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
 using Data.Constants;
 using Data.Models;
 using DayPilot.Web.Mvc;
@@ -8,8 +6,6 @@ using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Calendar;
 using DayPilot.Web.Mvc.Events.Common;
-using Microsoft.Ajax.Utilities;
-using Shnexy.Controllers.Models;
 using Calendar = Data.Models.Calendar;
 
 namespace Shnexy.Controllers.DayPilot
@@ -24,7 +20,7 @@ namespace Shnexy.Controllers.DayPilot
 
         protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
         {
-            var eventDO = new EventDO
+            EventDO eventDO = new EventDO
             {
                 StartDate = e.Start,
                 EndDate = e.End,
@@ -38,17 +34,6 @@ namespace Shnexy.Controllers.DayPilot
         protected override void OnEventMove(EventMoveArgs e)
         {
             _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
-            //if (new EventManager(Controller).Get(e.Id) != null)
-            //{
-            //    new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd);
-            //    MoveUpdateEventFile(e.Id, e.NewStart, e.NewEnd);
-            //}
-            //else // external drag&drop
-            //{
-            //    new EventManager(Controller).EventCreate(e.NewStart, e.NewEnd, e.Text, e.NewResource, e.Id);
-            //    MoveUpdateEventFile(e.Id, e.NewStart, e.NewEnd);
-            //}
-
             Update();
         }
         

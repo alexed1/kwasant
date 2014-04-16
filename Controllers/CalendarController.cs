@@ -25,8 +25,7 @@ namespace Shnexy.Controllers
         {
             if (id <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            PopulateCalender();
-
+            
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
             BookingRequestDO bookingRequestDO = bookingRequestRepository.GetByKey(id);
@@ -297,6 +296,11 @@ namespace Shnexy.Controllers
             throw new Exception("Invalid type provided");
         }
 
+        /// <summary>
+        /// This method creates a template eventDO which we store. This event is presented to the user to review & confirm changes. If they confirm, Confirm(FormCollection form) is invoked
+        /// </summary>
+        /// <param name="form"></param>
+        /// <returns></returns>
         public ActionResult BeforeSave(FormCollection form)
         {
             DateTime dtFromDate = GetValueFromForm(Request.QueryString, "DateStart", DateTime.MinValue);
@@ -312,15 +316,13 @@ namespace Shnexy.Controllers
             string strSummary = GetValueFromForm(Request.QueryString, "Summary", String.Empty);
             string strCategory = GetValueFromForm(Request.QueryString, "Category", String.Empty);
             int eventID = GetValueFromForm(Request.QueryString, "EventID", 0);
-            var attendeesStr = GetValueFromForm(Request.QueryString, "Attendees", String.Empty);
+            string attendeesStr = GetValueFromForm(Request.QueryString, "Attendees", String.Empty);
 
             //This is a fake event that will be thrown away if Confirm() is not called
             EventDO eventDO = new EventDO();
             eventDO.EventID = eventID;
             EventDO actualEventDO = Calendar.GetEvent(eventID);
             eventDO.CopyFrom(actualEventDO);
-
-            //We also need to have the form show attendees
 
             if (isAllDay)
             {
@@ -344,7 +346,6 @@ namespace Shnexy.Controllers
             
             ManageAttendees(eventDO, attendeesStr);
 
-            //eventDO.Attendees = attendeesStr.Split(',').Where(email => !String.IsNullOrEmpty(email)).Select(email => new AttendeeDO { EmailAddress = email }).ToList();
             eventDO.StatusID = EmailStatusConstants.EVENT_SET;
 
             string key = Guid.NewGuid().ToString();
@@ -361,14 +362,14 @@ namespace Shnexy.Controllers
         //Manages adds/deletes and persists of attendees.
         private void ManageAttendees(EventDO eventDO, string attendeesStr)
         {
-            var originalAttendees = new List<AttendeeDO>(eventDO.Attendees);
-            var newAttendees = new List<AttendeeDO>();
-            foreach (var email in attendeesStr.Split(','))
+            List<AttendeeDO> originalAttendees = new List<AttendeeDO>(eventDO.Attendees);
+            List<AttendeeDO> newAttendees = new List<AttendeeDO>();
+            foreach (string email in attendeesStr.Split(','))
             {
                 if (String.IsNullOrEmpty(email))
                     continue;
 
-                var sameAttendees = originalAttendees.Where(oa => oa.EmailAddress == email).ToList();
+                List<AttendeeDO> sameAttendees = originalAttendees.Where(oa => oa.EmailAddress == email).ToList();
                 if (sameAttendees.Any())
                 {
                     newAttendees.AddRange(sameAttendees);
@@ -381,11 +382,11 @@ namespace Shnexy.Controllers
                     });
                 }
             }
-            var attendeesToDelete = originalAttendees.Where(originalAttendee => !newAttendees.Select(a => a.EmailAddress).Contains(originalAttendee.EmailAddress)).ToList();
+            List<AttendeeDO> attendeesToDelete = originalAttendees.Where(originalAttendee => !newAttendees.Select(a => a.EmailAddress).Contains(originalAttendee.EmailAddress)).ToList();
             if (attendeesToDelete.Any())
             {
-                var attendeeRepo = new AttendeeRepository(Calendar.UnitOfWork);
-                foreach (var attendeeToDelete in attendeesToDelete)
+                AttendeeRepository attendeeRepo = new AttendeeRepository(Calendar.UnitOfWork);
+                foreach (AttendeeDO attendeeToDelete in attendeesToDelete)
                     attendeeRepo.Remove(attendeeToDelete);
             }
             eventDO.Attendees = newAttendees;
@@ -409,15 +410,6 @@ namespace Shnexy.Controllers
         }
 
         #endregion "Action"
-
-        #region "Method"
-
-        private void PopulateCalender()
-        {
-            
-        }
-
-        #endregion "Method"
 
         public class ConfirmEvent
         {
