@@ -169,9 +169,8 @@ namespace Data.Models
             Reload();
         }
 
-        public void MoveEvent(String idStr, DateTime newStart, DateTime newEnd)
+        public void MoveEvent(int id, DateTime newStart, DateTime newEnd)
         {
-            int id = Int32.Parse(idStr);
             EventDO itemToMove = EventsList.FirstOrDefault(inv => inv.EventID == id);
             if (itemToMove != null)
             {
@@ -180,6 +179,12 @@ namespace Data.Models
                 _uow.SaveChanges();
             }
             Reload();
+        }
+
+        public void MoveEvent(String idStr, DateTime newStart, DateTime newEnd)
+        {
+            int id = Int32.Parse(idStr);
+            MoveEvent(id, newStart, newEnd);
         }
     }
 }

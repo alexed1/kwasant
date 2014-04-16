@@ -9,6 +9,7 @@ using Data.DataAccessLayer.Interfaces;
 using Data.Models;
 using Data.DataAccessLayer.Repositories;
 using DayPilot.Web.Mvc.Json;
+using DayPilot.Web.Ui;
 using Shnexy.Controllers.DayPilot;
 using StructureMap;
 using Calendar = Data.Models.Calendar;
@@ -213,6 +214,49 @@ namespace Shnexy.Controllers
                 );
         }
 
+        public ActionResult RequiresConfirmationForMove(int eventID)
+        {
+            var actualEventDO = Calendar.GetEvent(eventID);
+            return JavaScript(SimpleJsonSerializer.Serialize(actualEventDO.StatusID == EmailStatusConstants.EVENT_SET));
+        }
+
+        public ActionResult MoveEventNoConfirm(int eventID, String newStart, String newEnd)
+        {
+            var newStartDT = DateTime.Parse(newStart);
+            var newEndDT = DateTime.Parse(newEnd);
+
+            var actualEventDO = Calendar.GetEvent(eventID);
+            if(actualEventDO.StatusID == EmailStatusConstants.EVENT_SET)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            Calendar.MoveEvent(eventID, newStartDT, newEndDT);
+            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+        }
+
+        public ActionResult MoveEvent(int eventID, String newStart, String newEnd)
+        {
+            //This is a fake event that will be thrown away if Confirm() is not called
+            var eventDO = new EventDO();
+            eventDO.EventID = eventID;
+            var actualEventDO = Calendar.GetEvent(eventID);
+            eventDO.CopyFrom(actualEventDO);
+
+            var newStartDT = DateTime.Parse(newStart);
+            var newEndDT = DateTime.Parse(newEnd);
+
+            eventDO.StartDate = newStartDT;
+            eventDO.EndDate = newEndDT;
+
+            var key = Guid.NewGuid().ToString();
+            Session["FakedEvent_" + key] = eventDO;
+            return View("~/Views/Calendar/BeforeSave.cshtml", new ConfirmEvent
+            {
+                RequiresConfirmation = true,
+                Key = key,
+                EventDO = eventDO
+            });
+        }
+
         private static T GetValueFromForm<T>(NameValueCollection collection, String name, T defaultValue = default(T))
         {
             string obj = collection[name];
@@ -277,6 +321,8 @@ namespace Shnexy.Controllers
             eventDO.Summary = strSummary;
             eventDO.Category = strCategory;
 
+            eventDO.StatusID = EmailStatusConstants.EVENT_SET;
+
             if (eventDO.StatusID == EmailStatusConstants.EVENT_UNSET)
             {
                 eventDO.Attendees = new List<AttendeeDO>
@@ -310,8 +356,6 @@ namespace Shnexy.Controllers
             var eventDO = Calendar.GetEvent(fakedEvent.EventID);
             eventDO.CopyFrom(fakedEvent);
             
-            eventDO.StatusID = EmailStatusConstants.EVENT_SET;
-
             if (eventDO.BookingRequest.Events.ToList().All(ev => ev.StatusID == EmailStatusConstants.EVENT_SET))
                 eventDO.BookingRequest.StatusID = EmailStatusConstants.PROCESSED;
 
@@ -333,6 +377,7 @@ namespace Shnexy.Controllers
 
         public class ConfirmEvent
         {
+            public bool RequiresConfirmation { get; set; }
             public string Key;
             public EventDO EventDO;
         }

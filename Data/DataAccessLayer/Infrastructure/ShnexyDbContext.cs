@@ -22,9 +22,9 @@ namespace Data.DataAccessLayer.Infrastructure
         {
             ChangeTracker.DetectChanges();
             var entries = ChangeTracker.Entries().ToList();//For debugging
-            foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>())
+            foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
             {
-                entity.Entity.SaveHook();
+                entity.Entity.SaveHook(entity);
             }
 
             return base.SaveChanges();
