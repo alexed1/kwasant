@@ -214,7 +214,28 @@ namespace Shnexy.Controllers
                 );
         }
 
-        public ActionResult RequiresConfirmationForMove(int eventID)
+        public ActionResult DeleteEvent(int eventID)
+        {
+            EventDO actualEventDO = Calendar.GetEvent(eventID);
+            return View(actualEventDO);
+        }
+
+        public ActionResult ConfirmDelete(int eventID)
+        {
+            Calendar.DeleteEvent(eventID);
+            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+        }
+
+        public ActionResult DeleteEventNoConfirm(int eventID)
+        {
+            EventDO actualEventDO = Calendar.GetEvent(eventID);
+            if (actualEventDO.StatusID == EmailStatusConstants.EVENT_SET)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            return ConfirmDelete(eventID);
+        }
+
+        public ActionResult RequiresConfirmation(int eventID)
         {
             EventDO actualEventDO = Calendar.GetEvent(eventID);
             return JavaScript(SimpleJsonSerializer.Serialize(actualEventDO.StatusID == EmailStatusConstants.EVENT_SET));
@@ -251,7 +272,6 @@ namespace Shnexy.Controllers
             Session["FakedEvent_" + key] = eventDO;
             return View("~/Views/Calendar/BeforeSave.cshtml", new ConfirmEvent
             {
-                RequiresConfirmation = true,
                 Key = key,
                 EventDO = eventDO
             });
@@ -377,7 +397,6 @@ namespace Shnexy.Controllers
 
         public class ConfirmEvent
         {
-            public bool RequiresConfirmation { get; set; }
             public string Key;
             public EventDO EventDO;
         }

@@ -157,9 +157,8 @@ namespace Data.Models
             Reload();
         }
 
-        public void DeleteEvent(String idStr)
+        public void DeleteEvent(int id)
         {
-            int id = idStr.ToInt();
             EventDO eventToDelete = EventsList.FirstOrDefault(inv => inv.EventID == id);
             if (eventToDelete != null && !_eventRepo.IsDetached(eventToDelete))
             {
@@ -167,6 +166,12 @@ namespace Data.Models
                 _uow.SaveChanges();
             }
             Reload();
+        }
+
+        public void DeleteEvent(String idStr)
+        {
+            int id = idStr.ToInt();
+            DeleteEvent(id);
         }
 
         public void MoveEvent(int id, DateTime newStart, DateTime newEnd)

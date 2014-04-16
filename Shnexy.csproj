@@ -805,6 +805,7 @@
     <Content Include="Views\Calendar\Today.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
     <Content Include="Views\Calendar\BeforeSave.cshtml" />
+    <Content Include="Views\Calendar\DeleteEvent.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
