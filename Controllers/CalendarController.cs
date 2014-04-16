@@ -260,8 +260,6 @@ namespace Shnexy.Controllers
             if (isAllDay)
             {
                 eventDO.IsAllDay = true;
-                eventDO.StartDate = dtFromDate.Date;
-                eventDO.EndDate = dtFromDate.Date.AddDays(1);
             }
             else
             {

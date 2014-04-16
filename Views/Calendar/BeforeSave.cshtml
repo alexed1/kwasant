@@ -7,9 +7,18 @@
     <h3>Confirm Changes</h3>
     <hr />
     <div>You are <b>@Html.Raw(Model.EventDO.StatusID == EmailStatusConstants.EVENT_UNSET ? "creating a new" : "editting an existing")</b> event.</div>
+    <div style="@Html.Raw(Model.EventDO.IsAllDay ? String.Empty : "display:none;")">
+        <div>* All day event *</div>
+    </div>
+    <div style="@Html.Raw(Model.EventDO.IsAllDay ? "display:none;" : String.Empty)">
+        <div>Start Date: @Model.EventDO.StartDate</div>
+        <div>End Date: @Model.EventDO.EndDate</div>
+    </div>
     <div>Location: @Model.EventDO.Location</div>
-    <div>Description: @Model.EventDO.Description</div>
     <div>Summary: @Model.EventDO.Summary</div>
+    <div>Description: @Model.EventDO.Description</div>
+    <div>Attendees: @String.Join(", ", Model.EventDO.Attendees.Select(a => a.Name + " (" + a.EmailAddress + ")"))</div>
+    
     @{
         <div style="display:none">
             @Html.TextBox("Key", @Model.Key, new { @class = "form-control col-md-1" })

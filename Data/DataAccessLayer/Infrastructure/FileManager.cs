@@ -11,7 +11,7 @@ namespace Data.DataAccessLayer.Infrastructure
         {
             string directory = ConfigurationManager.AppSettings["LocalFileStorageDirectory"];
             if (String.IsNullOrEmpty(directory))
-                directory = ".";
+                directory = Path.GetTempPath();
 
             directory = Path.GetFullPath(directory);
             if (!Directory.Exists(directory))
