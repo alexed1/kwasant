@@ -321,8 +321,6 @@ namespace Shnexy.Controllers
             eventDO.Summary = strSummary;
             eventDO.Category = strCategory;
 
-            eventDO.StatusID = EmailStatusConstants.EVENT_SET;
-
             if (eventDO.StatusID == EmailStatusConstants.EVENT_UNSET)
             {
                 eventDO.Attendees = new List<AttendeeDO>
@@ -335,6 +333,8 @@ namespace Shnexy.Controllers
                     }
                 };
             }
+
+            eventDO.StatusID = EmailStatusConstants.EVENT_SET;
 
             var key = Guid.NewGuid().ToString();
             Session["FakedEvent_" + key] = eventDO;

@@ -93,7 +93,7 @@ namespace Shnexy.Controllers.DayPilot
                     break;
 
                 case "refresh":
-                    Update();
+                    UpdateWithMessage("Changes Saved.");
                     break;
 
                 case "selected":
@@ -141,7 +141,7 @@ namespace Shnexy.Controllers.DayPilot
                 return;
             if (eventDO.StatusID == EmailStatusConstants.EVENT_UNSET)
             {
-                e.BackgroundColor = "#B33A3A";
+                e.BackgroundColor = "#F09030";
             }
         }
 
