@@ -32,8 +32,8 @@ namespace Shnexy.Controllers
         // GET: /Email/
         public ActionResult Index()
         {
-            return View(curBookingRequestRepository.GetAll().Where(e => e.StatusID == EmailStatusConstants.UNPROCESSED).ToList());                        
-            
+            //return View(curBookingRequestRepository.GetAll().Where(e => e.StatusID == EmailStatusConstants.UNPROCESSED).ToList());                        
+            return View(curBookingRequestRepository.GetAll().ToList()); 
         }
 
         // GET: /Email/Details/5

@@ -33,13 +33,18 @@ namespace Shnexy.Controllers.DayPilot
         {
             _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
-        }        
+        }
 
         protected override void OnEventMove(MonthNamespace.EventMoveArgs e)
         {
             _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
         }
+
+        //protected override void OnEventSelect(MonthNamespace.EventSelectArgs e)
+        //{
+        //    base.OnEventSelect(e);
+        //}
 
         protected override void OnEventMenuClick(MonthNamespace.EventMenuClickArgs e)
         {

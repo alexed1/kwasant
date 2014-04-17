@@ -85,12 +85,9 @@ namespace Shnexy.Controllers.DayPilot
         {
             switch (e.Command)
             {
-                case "navigate":
-                    if (e.Data["start"] != null)
-                    {
-                        StartDate = (DateTime)e.Data["start"];
-                        Update(CallBackUpdateType.Full);                        
-                    }
+                case "navigate":                                       
+                        StartDate = (DateTime)e.Data["day"];
+                        Update(CallBackUpdateType.Full);                                       
                     break;
 
                 case "refresh":

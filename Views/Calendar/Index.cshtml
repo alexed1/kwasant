@@ -249,7 +249,7 @@
         HeaderHeight = 50,
         EventHeight = 50,
         Height = "550",
-        CssOnly = true,
+        CssOnly = true,        
         ContextMenu = "menu1",
         CssClassPrefix = "calendar_white",
         EventClickHandling = DayPilot.Web.Mvc.Events.Month.EventClickHandlingType.JavaScript,
@@ -281,8 +281,7 @@
             {
                 CssOnly = true,
                 CssClassPrefix = "navigator_white",
-                ShowMonths = 3,
-                SkipMonths = 3
+                ShowMonths = 1                              
             })
         </div>
 
@@ -322,7 +321,7 @@
     }
 
 
-    var switcher = new DayPilot.Switcher();
+    var switcher = new DayPilot.Switcher();    
 
     switcher.addView(dp_day);
     switcher.addView(dp_week);
@@ -330,10 +329,10 @@
 
     switcher.addButton("toolbar_day", dp_day);
     switcher.addButton("toolbar_week", dp_week);
-    switcher.addButton("toolbar_month", dp_month);
+    switcher.addButton("toolbar_month", dp_month);    
 
     switcher.addNavigator(dp_navigator);
 
-    switcher.show(dp_day);
+    switcher.show(dp_day);    
 
 </script>
