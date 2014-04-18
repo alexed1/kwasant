@@ -17,7 +17,7 @@ namespace Shnexy.Controllers
     public class CalendarController : Controller
     {
         #region "Action"
-
+         
         public ActionResult Index(int id = 0)
         {
             if (id <= 0)
