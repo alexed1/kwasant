@@ -11,9 +11,7 @@ namespace Data.Constants
         public const int SENT = 2;
         public const int UNPROCESSED = 3;
         public const int PROCESSED = 4;
-        public const int EVENT_UNSET = 5;
-        public const int EVENT_SET = 6;
-        
+
         public static void ApplySeedData(IUnitOfWork uow)
         {
             FieldInfo[] constants = typeof (EmailStatusConstants).GetFields();

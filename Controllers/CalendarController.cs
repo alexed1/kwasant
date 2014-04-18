@@ -28,12 +28,12 @@ namespace Shnexy.Controllers
             
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
-            BookingRequestDO bookingRequestDO = bookingRequestRepository.GetByKey(id);
-            if (bookingRequestDO == null) 
+            BookingRequestDO = bookingRequestRepository.GetByKey(id);
+            if (BookingRequestDO == null) 
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Calendar = new Calendar(uow, bookingRequestDO);
-            return View(bookingRequestDO);
+            Calendar = new Calendar(uow, BookingRequestDO);
+            return View(BookingRequestDO);
         }
 
         private Calendar Calendar
@@ -45,6 +45,18 @@ namespace Shnexy.Controllers
             set
             {
                 Session["EventManager"] = value;
+            }
+        }
+
+        private BookingRequestDO BookingRequestDO
+        {
+            get
+            {
+                return Session["BookingRequestDO"] as BookingRequestDO;
+            }
+            set
+            {
+                Session["BookingRequestDO"] = value;
             }
         }
 
@@ -206,6 +218,28 @@ namespace Shnexy.Controllers
             return new DayPilotNavigatorControl().CallBack(this);
         }
 
+        public ActionResult New(string start, string end)
+        {
+            EventDO eventDO = new EventDO
+            {
+                StartDate = DateTime.Parse(start),
+                EndDate = DateTime.Parse(end),
+                BookingRequest = BookingRequestDO,
+            };
+
+            eventDO.Attendees = new List<AttendeeDO>
+            {
+                new AttendeeDO
+                {
+                    EmailAddress = BookingRequestDO.From.Address,
+                    Name = BookingRequestDO.From.Name,
+                    Event = eventDO
+                }
+            };
+
+            return View("~/Views/Calendar/Open.cshtml", eventDO);
+        }
+
         public ActionResult Open(int eventID)
         {
             return View(
@@ -222,34 +256,6 @@ namespace Shnexy.Controllers
         public ActionResult ConfirmDelete(int eventID)
         {
             Calendar.DeleteEvent(eventID);
-            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
-        }
-
-        public ActionResult DeleteEventNoConfirm(int eventID)
-        {
-            EventDO actualEventDO = Calendar.GetEvent(eventID);
-            if (actualEventDO.StatusID == EmailStatusConstants.EVENT_SET)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            return ConfirmDelete(eventID);
-        }
-
-        public ActionResult RequiresConfirmation(int eventID)
-        {
-            EventDO actualEventDO = Calendar.GetEvent(eventID);
-            return JavaScript(SimpleJsonSerializer.Serialize(actualEventDO.StatusID == EmailStatusConstants.EVENT_SET));
-        }
-
-        public ActionResult MoveEventNoConfirm(int eventID, String newStart, String newEnd)
-        {
-            DateTime newStartDT = DateTime.Parse(newStart);
-            DateTime newEndDT = DateTime.Parse(newEnd);
-
-            EventDO actualEventDO = Calendar.GetEvent(eventID);
-            if(actualEventDO.StatusID == EmailStatusConstants.EVENT_SET)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            Calendar.MoveEvent(eventID, newStartDT, newEndDT);
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }
 
@@ -321,8 +327,6 @@ namespace Shnexy.Controllers
             //This is a fake event that will be thrown away if Confirm() is not called
             EventDO eventDO = new EventDO();
             eventDO.EventID = eventID;
-            EventDO actualEventDO = Calendar.GetEvent(eventID);
-            eventDO.CopyFrom(actualEventDO);
 
             if (isAllDay)
             {
@@ -346,8 +350,6 @@ namespace Shnexy.Controllers
             
             ManageAttendees(eventDO, attendeesStr);
 
-            eventDO.StatusID = EmailStatusConstants.EVENT_SET;
-
             string key = Guid.NewGuid().ToString();
             Session["FakedEvent_" + key] = eventDO;
             return View(
@@ -362,6 +364,9 @@ namespace Shnexy.Controllers
         //Manages adds/deletes and persists of attendees.
         private void ManageAttendees(EventDO eventDO, string attendeesStr)
         {
+            if(eventDO.Attendees == null)
+                eventDO.Attendees = new List<AttendeeDO>();
+
             List<AttendeeDO> originalAttendees = new List<AttendeeDO>(eventDO.Attendees);
             List<AttendeeDO> newAttendees = new List<AttendeeDO>();
             foreach (string email in attendeesStr.Split(','))
@@ -397,13 +402,18 @@ namespace Shnexy.Controllers
         {
             string key = GetValueFromForm(form, "key", string.Empty);
 
-            EventDO fakedEvent = Session["FakedEvent_" + key] as EventDO;
-            EventDO eventDO = Calendar.GetEvent(fakedEvent.EventID);
-            eventDO.CopyFrom(fakedEvent);
+            EventDO eventDO = Session["FakedEvent_" + key] as EventDO;
+            if (eventDO.EventID == 0)
+            {
+                Calendar.AddEvent(eventDO);
+            }
+            else
+            {
+                var oldEvent = Calendar.GetEvent(eventDO.EventID);
+                oldEvent.CopyFrom(eventDO);
+                eventDO = oldEvent;
+            }
             
-            if (eventDO.BookingRequest.Events.ToList().All(ev => ev.StatusID == EmailStatusConstants.EVENT_SET))
-                eventDO.BookingRequest.StatusID = EmailStatusConstants.PROCESSED;
-
             Calendar.DispatchEvent(eventDO);
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));

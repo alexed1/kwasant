@@ -11,88 +11,33 @@
 <header>
     <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.1.min.js")"></script>
     <script type="text/javascript">
-        function eventClick(e) {
+        
+        function displayForm(url) {
             var m = new DayPilot.Modal();
-            m.closed = function() {
+            m.closed = function () {
                 if (this.result == "OK") {
                     dpcg.commandCallBack('refresh');
                 }
                 dpcg.clearSelection();
             };
 
-
-            var url = getBaseCalendarURL() + '/Open/?eventID=' + e.id();
             m.showUrl(url);
+        }
+        
+        function eventClick(e) {
+            displayForm(getBaseCalendarURL() + '/Open/?eventID=' + e.id());
+        }
+        
+        function eventNew(start,end) {
+            displayForm(getBaseCalendarURL() + '/New/?start=' + start + '&end=' + end);
         }
 
         function eventMove(e, newStart, newEnd) {
-            var requiresConfirmURL = getBaseCalendarURL() + '/RequiresConfirmationForMove';
-            $.get(
-                requiresConfirmURL,
-                { eventID: e.id() },
-                function(requiresConfirm) {
-                    var url;
-                    if (requiresConfirm) {
-                        var m = new DayPilot.Modal();
-                        m.closed = function() {
-                            if (this.result == "OK") {
-                                dpcg.commandCallBack('refresh');
-                            }
-                            dpcg.clearSelection();
-                        };
-
-                        url = getBaseCalendarURL() + '/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd;
-                        m.showUrl(url);
-                    } else {
-                        url = getBaseCalendarURL() + '/MoveEventNoConfirm';
-                        $.get(url, {
-                                eventID: e.id(),
-                                newStart: newStart.value,
-                                newEnd: newEnd.value
-                            }, function(update) {
-                                if (update == "OK") {
-                                    dpcg.commandCallBack('refresh');
-                                }
-                                dpcg.clearSelection();
-                            }, 'json');
-                    }
-                },
-                'json'
-            );
+            displayForm(getBaseCalendarURL() + '/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
         }
 
         function eventDelete(e) {
-            var requiresConfirmURL = getBaseCalendarURL() + '/RequiresConfirmation';
-            $.get(
-                requiresConfirmURL,
-                { eventID: e.id() },
-                function(requiresConfirm) {
-                    var url;
-                    if (requiresConfirm) {
-                        var m = new DayPilot.Modal();
-                        m.closed = function() {
-                            if (this.result == "OK") {
-                                dpcg.commandCallBack('refresh');
-                            }
-                            dpcg.clearSelection();
-                        };
-
-                        url = getBaseCalendarURL() + '/DeleteEvent/?eventID=' + e.id();
-                        m.showUrl(url);
-                    } else {
-                        url = getBaseCalendarURL() + '/DeleteEventNoConfirm';
-                        $.get(url, {
-                                eventID: e.id(),
-                            }, function(update) {
-                                if (update == "OK") {
-                                    dpcg.commandCallBack('refresh');
-                                }
-                                dpcg.clearSelection();
-                            }, 'json');
-                    }
-                },
-                'json'
-            );
+            displayForm(getBaseCalendarURL() + '/DeleteEvent/?eventID=' + e.id());
         }
 
     </script>
@@ -231,7 +176,7 @@
                     BackendUrl = Url.Content("~/Calendar/Backend/"),
                     EventMoveHandling = EventMoveHandlingType.JavaScript,
                     EventResizeHandling = EventResizeHandlingType.JavaScript,
-                    TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.CallBack,
+                    TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
                     EventClickHandling = EventClickHandlingType.JavaScript,
                     HeaderClickHandling = HeaderClickHandlingType.JavaScript,
                     EventDeleteHandling = EventDeleteHandlingType.JavaScript,	
@@ -243,6 +188,7 @@
                     EventClickJavaScript = "eventClick(e)",
                     EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
                     EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
+                    TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
                     EventDeleteJavaScript = "eventDelete(e)",
                     ContextMenu = "menu1",
                     HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"

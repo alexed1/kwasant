@@ -18,19 +18,6 @@ namespace Shnexy.Controllers.DayPilot
             _calendar = calendar;
         }
 
-        protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
-        {
-            EventDO eventDO = new EventDO
-            {
-                StartDate = e.Start,
-                EndDate = e.End,
-                Summary = "Click to Open Form"
-            };
-            _calendar.AddEvent(eventDO);
-            
-            Update();
-        }
-
         protected override void OnEventMove(EventMoveArgs e)
         {
             _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
@@ -121,18 +108,7 @@ namespace Shnexy.Controllers.DayPilot
             }
 
         }
-
-        protected override void OnBeforeEventRender(BeforeEventRenderArgs e)
-        {
-            EventDO eventDO = (e.DataItem.Source as EventDO);
-            if (eventDO == null)
-                return;
-            if (eventDO.StatusID == EmailStatusConstants.EVENT_UNSET)
-            {
-                e.BackgroundColor = "#F09030";
-            }
-        }
-
+        
         protected override void OnInit(InitArgs initArgs)
         {
             //Thread.Sleep(5000);
