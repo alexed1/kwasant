@@ -142,7 +142,8 @@ namespace KwasantCore.Services
 
             if(emailDO.Attachments == null)
                 emailDO.Attachments = new List<AttachmentDO>();
-
+            
+            attachmentDO.Email = emailDO;
             emailDO.Attachments.Add(attachmentDO);
         }
 

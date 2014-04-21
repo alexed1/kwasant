@@ -116,9 +116,6 @@
     <Compile Include="DataAccessLayer\Interfaces\IGenericRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\InvitationRepository.cs" />
     <Compile Include="DataAccessLayer\Repositories\StoredFileRepository.cs" />
-    <Compile Include="DataAccessLayer\StructureMap\StructureMapBootStrapper.cs" />
-    <Compile Include="DataAccessLayer\StructureMap\StructureMapControllerFactory.cs" />
-    <Compile Include="DataAccessLayer\StructureMap\StructureMapHttpControllerActivator.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IEmailAddress.cs" />
     <Compile Include="DataAccessLayer\Interfaces\IUnitOfWork.cs" />
     <Compile Include="Models\AttachmentDO.cs" />

@@ -44,7 +44,7 @@
     $(function () {
         $("#f").submit(function () {
             var f = $("#f");
-            $.get(f.prop('action'), { eventID: @Model.InivitationID }, function(result) {
+            $.get(f.prop('action'), { invitationID: @Model.InvitationID }, function(result) {
                 close(result);
             }, 'json');
             return false;

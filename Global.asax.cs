@@ -3,7 +3,8 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Data.Entity;
 using Data.DataAccessLayer.Infrastructure;
-using Data.DataAccessLayer.StructureMap;
+using KwasantCore.StructureMap;
+using Shnexy.Controllers;
 
 namespace Shnexy
 {

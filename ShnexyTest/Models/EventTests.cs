@@ -4,7 +4,7 @@ using System.Data.Entity;
 using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
-using Data.DataAccessLayer.StructureMap;
+using KwasantCore.StructureMap;
 using Data.Models;
 using KwasantCore.Services;
 using NUnit.Framework;

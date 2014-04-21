@@ -12,13 +12,25 @@
     <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.1.min.js")"></script>
     <script type="text/javascript">
 
+
+        
     function displayForm(url) {
         var m = new DayPilot.Modal();
         m.closed = function () {
+            var daypilotControls = [
+                dp_day,
+                dp_week,
+                dp_month
+            ];
+
             if (this.result == "OK") {
-                dpcg.commandCallBack('refresh');
+                $.each(daypilotControls, function(i, ele) {
+                    ele.commandCallBack('refresh');
+                });
             }
-            dpcg.clearSelection();
+            $.each(daypilotControls, function (i, ele) {
+                ele.clearSelection('refresh');
+            });
         };
 
         m.showUrl(url);
@@ -189,8 +201,14 @@
                     @Html.DayPilotCalendar("dp_day", new DayPilotCalendarConfig
                     {
                         BackendUrl = Url.Content("~/Calendar/Day"),
-                        EventResizeHandling = EventResizeHandlingType.CallBack,
-                        EventMoveHandling = EventMoveHandlingType.CallBack,
+                        
+                        EventMoveHandling = EventMoveHandlingType.JavaScript,
+                        EventResizeHandling = EventResizeHandlingType.JavaScript,
+                        TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
+                        EventClickHandling = EventClickHandlingType.JavaScript,
+                        HeaderClickHandling = HeaderClickHandlingType.JavaScript,
+                        EventDeleteHandling = EventDeleteHandlingType.JavaScript,
+                        
                         Height = 550,
                         HeaderHeight = 50,
                         CellHeight = 25,
@@ -198,15 +216,19 @@
                         ContextMenu = "menu1",
                         CssClassPrefix = "calendar_white",
                         ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Day,
-                        EventClickHandling = EventClickHandlingType.JavaScript,
+
                         EventClickJavaScript = "eventClick(e)",
-                        TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedHandlingType.CallBack
+                        EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
+                        EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
+                        TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
+                        EventDeleteJavaScript = "eventDelete(e)",
                     })
 
                     @Html.DayPilotCalendar("dp_week", new DayPilotCalendarConfig
                     {
                         ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
                         BackendUrl = Url.Content("~/Calendar/Backend/"),
+                        
                         EventMoveHandling = EventMoveHandlingType.JavaScript,
                         EventResizeHandling = EventResizeHandlingType.JavaScript,
                         TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
@@ -230,8 +252,14 @@
                     @Html.DayPilotMonth("dp_month", new DayPilotMonthConfig
                     {
                         BackendUrl = Url.Content("~/Calendar/Month"),
-                        EventResizeHandling = DayPilot.Web.Mvc.Events.Month.EventResizeHandlingType.CallBack,
-                        EventMoveHandling = DayPilot.Web.Mvc.Events.Month.EventMoveHandlingType.CallBack,
+
+                        EventMoveHandling = DayPilot.Web.Mvc.Events.Month.EventMoveHandlingType.JavaScript,
+                        EventResizeHandling = DayPilot.Web.Mvc.Events.Month.EventResizeHandlingType.JavaScript,
+                        TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedHandlingType.JavaScript,
+                        EventClickHandling = DayPilot.Web.Mvc.Events.Month.EventClickHandlingType.JavaScript,
+                        HeaderClickHandling = DayPilot.Web.Mvc.Events.Month.HeaderClickHandlingType.JavaScript,
+                        
+                        
                         CellHeaderFontSize = "10",
                         CellHeight = 90,
                         HeaderHeight = 50,
@@ -240,9 +268,10 @@
                         CssOnly = true,
                         ContextMenu = "menu1",
                         CssClassPrefix = "calendar_white",
-                        EventClickHandling = DayPilot.Web.Mvc.Events.Month.EventClickHandlingType.JavaScript,
+
                         EventClickJavaScript = "eventClick(e)",
-                        TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedHandlingType.JavaScript,
+                        EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
+                        EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
                         TimeRangeSelectedJavaScript = "eventNew(start, end)",
                     })
                 </div>

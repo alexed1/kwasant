@@ -84,6 +84,7 @@ namespace KwasantCore.Services
             emailDO.To.ForEach(a => a.ToEmail = emailDO);
             emailDO.CC.ForEach(a => a.BCCEmail = emailDO);
             emailDO.BCC.ForEach(a => a.CCEmail = emailDO);
+            emailDO.Attachments.ForEach(a => a.Email = emailDO);
             emailDO.StatusID = EmailStatusConstants.QUEUED;
 
             emailRepository.Add(emailDO);

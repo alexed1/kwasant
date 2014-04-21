@@ -4,8 +4,9 @@ using System.Web.Mvc;
 using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
-using Data.DataAccessLayer.StructureMap;
 using KwasantCore.Services;
+using KwasantCore.StructureMap;
+using Shnexy.Controllers;
 using StructureMap;
 
 namespace Playground

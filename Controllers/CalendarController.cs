@@ -4,12 +4,10 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
-using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
 using Data.Models;
 using Data.DataAccessLayer.Repositories;
 using DayPilot.Web.Mvc.Json;
-using DayPilot.Web.Ui;
 using KwasantCore.Services;
 using Shnexy.Controllers.DayPilot;
 using StructureMap;
@@ -255,10 +253,10 @@ namespace Shnexy.Controllers
             return View("~/Views/Calendar/Open.cshtml", invitationDO);
         }
 
-        public ActionResult Open(int eventID)
+        public ActionResult Open(int invitationID)
         {
             return View(
-                Calendar.GetEvent(eventID)
+                Calendar.GetEvent(invitationID)
                 );
         }
 
@@ -340,28 +338,22 @@ namespace Shnexy.Controllers
             string attendeesStr = GetValueFromForm(Request.QueryString, "Attendees", String.Empty);
 
             //This is a fake event that will be thrown away if Confirm() is not called
-            InvitationDO eventDO = new InvitationDO();
-            eventDO.InvitationID = invitationID;
-
-            if (isAllDay)
+            InvitationDO eventDO = new InvitationDO
             {
-                eventDO.IsAllDay = true;
-            }
-            else
-            {
-                eventDO.IsAllDay = false;
-                eventDO.StartDate = dtFromDate;
-                eventDO.EndDate = dtToDate;
-            }
-            eventDO.Location = strLocation;
-            eventDO.Status = strStatus;
-            eventDO.Transparency = strTransparency;
-            eventDO.Class = strClass;
-            eventDO.Description = strDescription;
-            eventDO.Priority = intPriority;
-            eventDO.Sequence = intSequence;
-            eventDO.Summary = strSummary;
-            eventDO.Category = strCategory;
+                InvitationID = invitationID,
+                IsAllDay = isAllDay,
+                StartDate = dtFromDate,
+                EndDate = dtToDate,
+                Location = strLocation,
+                Status = strStatus,
+                Transparency = strTransparency,
+                Class = strClass,
+                Description = strDescription,
+                Priority = intPriority,
+                Sequence = intSequence,
+                Summary = strSummary,
+                Category = strCategory
+            };
 
             ManageAttendees(eventDO, attendeesStr);
 
@@ -379,10 +371,16 @@ namespace Shnexy.Controllers
         //Manages adds/deletes and persists of attendees.
         private void ManageAttendees(InvitationDO eventDO, string attendeesStr)
         {
-            if (eventDO.Attendees == null)
-                eventDO.Attendees = new List<AttendeeDO>();
-
-            List<AttendeeDO> originalAttendees = new List<AttendeeDO>(eventDO.Attendees);
+            List<AttendeeDO> originalAttendees;
+            if (eventDO.InvitationID != 0)
+            {
+                var oldEvent = Calendar.GetEvent(eventDO.InvitationID);
+                originalAttendees = new List<AttendeeDO>(oldEvent.Attendees);
+            }
+            else
+            {
+                originalAttendees = new List<AttendeeDO>();
+            }
             List<AttendeeDO> newAttendees = new List<AttendeeDO>();
             foreach (string email in attendeesStr.Split(','))
             {
@@ -428,6 +426,8 @@ namespace Shnexy.Controllers
                 oldEvent.CopyFrom(invitationDO);
                 invitationDO = oldEvent;
             }
+
+            invitationDO.BookingRequest = BookingRequestDO;
 
             Calendar.DispatchEvent(invitationDO);
 

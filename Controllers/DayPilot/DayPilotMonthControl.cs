@@ -65,7 +65,7 @@ namespace Shnexy.Controllers.DayPilot
 
         protected override void OnBeforeEventRender(MonthNamespace.BeforeEventRenderArgs e)
         {
-            e.Areas.Add(new Area().Right(3).Top(3).Width(15).Height(15).CssClass("event_action_delete").JavaScript("switcher.active.control.commandCallBack('delete', {'e': e});"));
+            e.Areas.Add(new Area().Right(3).Top(3).Width(15).Height(15).CssClass("event_action_delete").JavaScript("eventDelete(e);"));
         }
 
         protected override void OnCommand(MonthNamespace.CommandArgs e)

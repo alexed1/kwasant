@@ -3,7 +3,7 @@ using Data.DDay.DDay.iCal.DataTypes;
 using Data.DDay.DDay.iCal.ExtensionMethods;
 using Data.DDay.DDay.iCal.Interfaces;
 using Data.DataAccessLayer.Interfaces;
-using Data.DataAccessLayer.StructureMap;
+using KwasantCore.StructureMap;
 using Data.Models;
 using DDay.DDay.iCal.Components;
 using NUnit.Framework;

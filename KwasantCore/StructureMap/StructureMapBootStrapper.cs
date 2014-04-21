@@ -4,7 +4,7 @@ using Data.Models;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
-namespace Data.DataAccessLayer.StructureMap
+namespace KwasantCore.StructureMap
 {
     public class StructureMapBootStrapper
     {

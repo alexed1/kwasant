@@ -92,6 +92,11 @@ namespace Shnexy.Controllers.DayPilot
             }
         }
 
+        protected override void OnBeforeEventRender(BeforeEventRenderArgs e)
+        {
+            e.Areas.Add(new Area().Right(3).Top(3).Width(15).Height(15).CssClass("event_action_delete").JavaScript("eventDelete(e);"));
+        }
+
         protected override void OnBeforeCellRender(BeforeCellRenderArgs e)
         {
             if (Id == "dpc_today")
@@ -167,7 +172,7 @@ namespace Shnexy.Controllers.DayPilot
             DataStartField = "StartDate";
             DataEndField = "EndDate";
             DataTextField = "Summary";
-            DataIdField = "EventID";
+            DataIdField = "InvitationID";
             DataAllDayField = "IsAllDay";
 
             Events = _calendar.EventsList;

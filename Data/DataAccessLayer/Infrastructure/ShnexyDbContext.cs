@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -22,7 +23,35 @@ namespace Data.DataAccessLayer.Infrastructure
         public override int SaveChanges()
         {
             ChangeTracker.DetectChanges();
-            List<DbEntityEntry> entries = ChangeTracker.Entries().ToList();//For debugging
+            var adds = ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();
+            var deletes = ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToList();
+            var modifies = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified)
+                .Select(e =>
+                {
+                    const string displayChange = "[{0}]: [{1}] -> [{2}]";
+                    var changedValues = new List<String>();
+                    foreach (var prop in e.OriginalValues.PropertyNames)
+                    {
+                        object originalValue = e.OriginalValues[prop];
+                        object currentValue = e.CurrentValues[prop];
+                        if ((originalValue == null && currentValue != null) || (originalValue != null && !originalValue.Equals(currentValue)))
+                        {
+                            changedValues.Add(String.Format(displayChange, prop, originalValue,
+                                currentValue));
+                        }
+                    }
+
+                    var actualName = (e.Entity.GetType().FullName.StartsWith("System.Data.Entity.DynamicProxies") && e.Entity.GetType().BaseType != null)
+                        ? e.Entity.GetType().BaseType.Name
+                        : e.Entity.GetType().FullName;
+                    return new
+                    {
+                        EntityName = actualName,
+                        ChangedValue = changedValues
+                    };
+                })
+                .Where(e => e.ChangedValue != null && e.ChangedValue.Count > 0)
+                .ToList();
             foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
             {
                 entity.Entity.SaveHook(entity);

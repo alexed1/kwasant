@@ -2,7 +2,7 @@
 using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
-using Data.DataAccessLayer.StructureMap;
+using KwasantCore.StructureMap;
 using NUnit.Framework;
 using ShnexyTest.Fixtures;
 using StructureMap;

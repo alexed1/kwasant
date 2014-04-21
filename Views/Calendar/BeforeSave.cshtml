@@ -8,7 +8,7 @@
     <hr />
     <div>You are <b>@Html.Raw(Model.InvitationDO.InvitationID == 0 ? "creating a new" : "editting an existing")</b> event.</div>
     <div style="@Html.Raw(Model.InvitationDO.IsAllDay ? String.Empty : "display:none;")">
-        <div>* All day event *</div>
+        <div>* All day event * - @Model.InvitationDO.StartDate.ToShortDateString()</div>
     </div>
     <div style="@Html.Raw(Model.InvitationDO.IsAllDay ? "display:none;" : String.Empty)">
         <div>Start Date: @Model.InvitationDO.StartDate</div>
