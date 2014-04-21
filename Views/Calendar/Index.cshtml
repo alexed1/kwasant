@@ -9,66 +9,13 @@
 }
 
 <header>
-    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.1.min.js")"></script>
-    <script type="text/javascript">
-
-
-        
-    function displayForm(url) {
-        var m = new DayPilot.Modal();
-        m.closed = function () {
-            var daypilotControls = [
-                dp_day,
-                dp_week,
-                dp_month
-            ];
-
-            if (this.result == "OK") {
-                $.each(daypilotControls, function(i, ele) {
-                    ele.commandCallBack('refresh');
-                });
-            }
-            $.each(daypilotControls, function (i, ele) {
-                ele.clearSelection('refresh');
-            });
-        };
-
-        m.showUrl(url);
-    }
-
-    function eventClick(e) {
-        displayForm(getBaseCalendarURL() + '/Open/?invitationID=' + e.id());
-    }
-
-    function eventNew(start, end) {
-        displayForm(getBaseCalendarURL() + '/New/?start=' + start + '&end=' + end);
-    }
-
-    function eventMove(e, newStart, newEnd) {
-        displayForm(getBaseCalendarURL() + '/MoveEvent/?invitationID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
-    }
-
-    function eventDelete(e) {
-        displayForm(getBaseCalendarURL() + '/DeleteEvent/?invitationID=' + e.id());
-    }
-
-    </script>
-
+    @*<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.1.min.js")"></script>*@
     <link href="@Url.Content("~/Content/Daypilot.css")" rel="stylesheet" />
 
 </header>
 
-<div class="jumbotron" style="padding-left:20px; padding-right:20px;">
+<div class="jumbotron" style="padding-left:20px; padding-right:20px; min-width: 1130px;">
     <div class="row" style="font-size:0.84em">
-        @*<div class="col-lg-2 container_box" style="padding-top:53px; padding-bottom:101px">
-            @Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
-            {
-                CssOnly = true,
-                CssClassPrefix = "navigator_white",
-                ShowMonths = 3,
-                SkipMonths = 3
-            })
-        </div>*@
         <div id="emailInfoBox" class="col-md-4 container_box" style="padding-top:45px; padding-bottom:39px;">
             <div class="row">
                 <div class="col-md-2 label_vertical_alignment">
@@ -237,7 +184,11 @@
                         EventDeleteHandling = EventDeleteHandlingType.JavaScript,
 
                         ShowAllDayEvents = true,
-                        Height = 630,
+                        AllowMultiSelect = true,
+                        Height = 550,
+                        HeaderHeight = 20,
+                        CssOnly = true,
+                        CssClassPrefix = "calendar_white",
                         HeightSpec = HeightSpec.BusinessHours,
                         EventBubble = "bubble",
                         EventClickJavaScript = "eventClick(e)",
@@ -278,6 +229,16 @@
                 
             </div>
         </div>
+        
+        <div class="col-lg-2 container_box" style="padding-top:53px; padding-bottom:101px; position:relative; float:left;">
+            @Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
+            {
+                CssOnly = true,
+                CssClassPrefix = "navigator_white",
+                ShowMonths = 1
+            })
+        </div>
+
     </div>
 </div>
 <div class="row">
@@ -312,8 +273,47 @@
     switcher.addButton("toolbar_week", dp_week);
     switcher.addButton("toolbar_month", dp_month);
 
-    //switcher.addNavigator(dp_navigator);
+    switcher.addNavigator(dp_navigator);
 
     switcher.show(dp_day);
+    
+
+    function displayForm(url) {
+        var m = new DayPilot.Modal();
+        m.closed = function () {
+            var daypilotControls = [
+                dp_day,
+                dp_week,
+                dp_month
+            ];
+
+            if (this.result == "OK") {
+                $.each(daypilotControls, function (i, ele) {
+                    ele.commandCallBack('refresh');
+                });
+            }
+            $.each(daypilotControls, function (i, ele) {
+                ele.clearSelection('refresh');
+            });
+        };
+
+        m.showUrl(url);
+    }
+
+    function eventClick(e) {
+        displayForm(getBaseCalendarURL() + '/Open/?invitationID=' + e.id());
+    }
+
+    function eventNew(start, end) {
+        displayForm(getBaseCalendarURL() + '/New/?start=' + start + '&end=' + end);
+    }
+
+    function eventMove(e, newStart, newEnd) {
+        displayForm(getBaseCalendarURL() + '/MoveEvent/?invitationID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
+    }
+
+    function eventDelete(e) {
+        displayForm(getBaseCalendarURL() + '/DeleteEvent/?invitationID=' + e.id());
+    }
 
 </script>

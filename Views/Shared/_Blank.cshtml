@@ -1,10 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@using App_Code.Helpers
+<!DOCTYPE html>
 <html>
 <head>
     <title>@ViewBag.Title</title>
+    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Media/layout.css")?v=@Html.GetBuild()" />    
     <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.1.min.js")"></script>
 </head>
-<body style="margin: 10px">
+<body style="padding: 10px">
 @RenderBody()
 </body>
 </html>
