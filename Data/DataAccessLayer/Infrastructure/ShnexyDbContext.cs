@@ -13,9 +13,9 @@ namespace Data.DataAccessLayer.Infrastructure
     public class ShnexyDbContext : DbContext
     {       
         //see web.config for connection string names.
-        //azure is AzureDbContext
+        //azure is AzureAlexTestDb
         public ShnexyDbContext()
-            : base("name=ShnexyTESTLocalDb")
+            : base("name=AzureAlexTestDb")
         {
             
         }
