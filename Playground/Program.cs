@@ -5,7 +5,7 @@ using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.StructureMap;
-using Data.Tools;
+using KwasantCore.Services;
 using StructureMap;
 
 namespace Playground
@@ -36,7 +36,7 @@ namespace Playground
                 Body = "Book it in office A at 10:30am on Tuesday"
             };
 
-            EmailHelper.ConvertMailMessageToEmail(emailRepository, mailMessage);
+            EmailServices.ConvertMailMessageToEmail(emailRepository, mailMessage);
             emailRepository.UnitOfWork.SaveChanges();
         }
     }

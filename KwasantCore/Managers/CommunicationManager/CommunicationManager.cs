@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Data.Tools.Managers.CommunicationManager
+namespace KwasantCore.Managers.CommunicationManager
 {
     public class CommunicationManager
     {

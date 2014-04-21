@@ -4,7 +4,7 @@ using System.Linq;
 
 //We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
 
-namespace Data.Tools.Managers
+namespace KwasantCore.Managers
 {
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Models;
-using Data.Tools.Managers.APIManager.Serializers.Json;
+using KwasantCore.Managers.APIManager.Serializers.Json;
 using UtilitiesLib;
 
-namespace Data.Tools.Managers.APIManager.Packagers.Shnexy
+namespace KwasantCore.Managers.APIManager.Packagers.Shnexy
 {
     /// <summary>
     /// This class converts JSON to Objects and vice versa, so that RESTful calls can be processed.

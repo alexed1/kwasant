@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Data.Constants;
@@ -9,10 +7,9 @@ using Data.DataAccessLayer.Interfaces;
 using Data.Models;
 using Data.DataAccessLayer.Repositories;
 using DayPilot.Web.Mvc.Json;
-using DayPilot.Web.Ui;
+using KwasantCore.Services;
 using Shnexy.Controllers.DayPilot;
 using StructureMap;
-using Calendar = Data.Models.Calendar;
 
 namespace Shnexy.Controllers
 {
@@ -20,27 +17,29 @@ namespace Shnexy.Controllers
     public class CalendarController : Controller
     {
         #region "Action"
-
+         
         public ActionResult Index(int id = 0)
         {
             if (id <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             
+
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
-            BookingRequestDO = bookingRequestRepository.GetByKey(id);
-            if (BookingRequestDO == null) 
+            BookingRequestDO bookingRequestDO = bookingRequestRepository.GetByKey(id);
+            if (bookingRequestDO == null) 
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Calendar = new Calendar(uow, BookingRequestDO);
-            return View(BookingRequestDO);
+            Calendar = new CalendarServices(uow, bookingRequestDO.Customer);
+            return View(bookingRequestDO);                       
+
         }
 
-        private Calendar Calendar
+        private CalendarServices Calendar
         {
             get
             {
-                return Session["EventManager"] as Calendar;
+                return Session["EventManager"] as CalendarServices;
             }
             set
             {
@@ -48,17 +47,16 @@ namespace Shnexy.Controllers
             }
         }
 
-        private BookingRequestDO BookingRequestDO
+        public ActionResult Day()
         {
-            get
-            {
-                return Session["BookingRequestDO"] as BookingRequestDO;
-            }
-            set
-            {
-                Session["BookingRequestDO"] = value;
-            }
+            return new DayPilotCalendarControl(Calendar).CallBack(this);
         }
+
+
+        public ActionResult Month()
+        {
+            return new DayPilotMonthControl(Calendar).CallBack(this);
+        } 
 
         public ActionResult Rtl()
         {
@@ -132,7 +130,12 @@ namespace Shnexy.Controllers
         {
             return View();
         }
-        
+
+        public ActionResult Open()
+        {
+            return View();
+        }
+
         public ActionResult EventArrangement()
         {
             return View();
@@ -218,79 +221,25 @@ namespace Shnexy.Controllers
             return new DayPilotNavigatorControl().CallBack(this);
         }
 
-        public ActionResult New(string start, string end)
-        {
-            EventDO eventDO = new EventDO
-            {
-                StartDate = DateTime.Parse(start),
-                EndDate = DateTime.Parse(end),
-                BookingRequest = BookingRequestDO,
-            };
-
-            eventDO.Attendees = new List<AttendeeDO>
-            {
-                new AttendeeDO
-                {
-                    EmailAddress = BookingRequestDO.From.Address,
-                    Name = BookingRequestDO.From.Name,
-                    Event = eventDO
-                }
-            };
-
-            return View("~/Views/Calendar/Open.cshtml", eventDO);
-        }
-
-        public ActionResult Open(int eventID)
+        public ActionResult New(int emailID, string partStart, string partEnd)
         {
             return View(
-                Calendar.GetEvent(eventID)
-                );
+                new CreateInvitationInfo
+                {
+                    EmailID = emailID,
+                    DateStart = partStart,
+                    DateEnd = partEnd
+                }
+            );
         }
 
-        public ActionResult DeleteEvent(int eventID)
+        private static T GetValueFromForm<T>(FormCollection form, String name, T defaultValue = default(T))
         {
-            EventDO actualEventDO = Calendar.GetEvent(eventID);
-            return View(actualEventDO);
-        }
-
-        public ActionResult ConfirmDelete(int eventID)
-        {
-            Calendar.DeleteEvent(eventID);
-            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
-        }
-
-        public ActionResult MoveEvent(int eventID, String newStart, String newEnd)
-        {
-            //This is a fake event that will be thrown away if Confirm() is not called
-            EventDO eventDO = new EventDO();
-            eventDO.EventID = eventID;
-            EventDO actualEventDO = Calendar.GetEvent(eventID);
-            eventDO.CopyFrom(actualEventDO);
-
-            DateTime newStartDT = DateTime.Parse(newStart);
-            DateTime newEndDT = DateTime.Parse(newEnd);
-
-            eventDO.StartDate = newStartDT;
-            eventDO.EndDate = newEndDT;
-
-            string key = Guid.NewGuid().ToString();
-            Session["FakedEvent_" + key] = eventDO;
-            return View("~/Views/Calendar/BeforeSave.cshtml", new ConfirmEvent
-            {
-                Key = key,
-                EventDO = eventDO
-            });
-        }
-
-        private static T GetValueFromForm<T>(NameValueCollection collection, String name, T defaultValue = default(T))
-        {
-            string obj = collection[name];
+            string obj = form[name];
             if (obj == null)
                 return defaultValue;
 
             Type returnType = typeof (T);
-            if (returnType == typeof (bool))
-                return (T)(object)(obj == "on" || obj == "1" || obj == "true");
             if (returnType == typeof (String))
                 return (T)(object)obj;
             if (returnType == typeof(DateTime))
@@ -302,129 +251,71 @@ namespace Shnexy.Controllers
             throw new Exception("Invalid type provided");
         }
 
-        /// <summary>
-        /// This method creates a template eventDO which we store. This event is presented to the user to review & confirm changes. If they confirm, Confirm(FormCollection form) is invoked
-        /// </summary>
-        /// <param name="form"></param>
-        /// <returns></returns>
-        public ActionResult BeforeSave(FormCollection form)
-        {
-            DateTime dtFromDate = GetValueFromForm(Request.QueryString, "DateStart", DateTime.MinValue);
-            DateTime dtToDate = GetValueFromForm(Request.QueryString, "DateEnd", DateTime.MinValue);
-            bool isAllDay = GetValueFromForm(Request.QueryString, "IsAllDay", false);
-            string strLocation = GetValueFromForm(Request.QueryString, "Location", String.Empty);
-            string strStatus = GetValueFromForm(Request.QueryString, "Status", String.Empty);
-            string strTransparency = GetValueFromForm(Request.QueryString, "TransparencyType", String.Empty);
-            string strClass = GetValueFromForm(Request.QueryString, "Class", String.Empty);
-            string strDescription = GetValueFromForm(Request.QueryString, "Description", String.Empty);
-            int intPriority = GetValueFromForm(Request.QueryString, "Priority", 0);
-            int intSequence = GetValueFromForm(Request.QueryString, "Sequence", 0);
-            string strSummary = GetValueFromForm(Request.QueryString, "Summary", String.Empty);
-            string strCategory = GetValueFromForm(Request.QueryString, "Category", String.Empty);
-            int eventID = GetValueFromForm(Request.QueryString, "EventID", 0);
-            string attendeesStr = GetValueFromForm(Request.QueryString, "Attendees", String.Empty);
-
-            //This is a fake event that will be thrown away if Confirm() is not called
-            EventDO eventDO = new EventDO();
-            eventDO.EventID = eventID;
-
-            if (isAllDay)
-            {
-                eventDO.IsAllDay = true;
-            }
-            else
-            {
-                eventDO.IsAllDay = false;
-                eventDO.StartDate = dtFromDate;
-                eventDO.EndDate = dtToDate;
-            }
-            eventDO.Location = strLocation;
-            eventDO.Status = strStatus;
-            eventDO.Transparency = strTransparency;
-            eventDO.Class = strClass;
-            eventDO.Description = strDescription;
-            eventDO.Priority = intPriority;
-            eventDO.Sequence = intSequence;
-            eventDO.Summary = strSummary;
-            eventDO.Category = strCategory;
-            
-            ManageAttendees(eventDO, attendeesStr);
-
-            string key = Guid.NewGuid().ToString();
-            Session["FakedEvent_" + key] = eventDO;
-            return View(
-                new ConfirmEvent
-                {
-                    Key = key,
-                    EventDO = eventDO
-                }
-            );
-        }
-
-        //Manages adds/deletes and persists of attendees.
-        private void ManageAttendees(EventDO eventDO, string attendeesStr)
-        {
-            if(eventDO.Attendees == null)
-                eventDO.Attendees = new List<AttendeeDO>();
-
-            List<AttendeeDO> originalAttendees = new List<AttendeeDO>(eventDO.Attendees);
-            List<AttendeeDO> newAttendees = new List<AttendeeDO>();
-            foreach (string email in attendeesStr.Split(','))
-            {
-                if (String.IsNullOrEmpty(email))
-                    continue;
-
-                List<AttendeeDO> sameAttendees = originalAttendees.Where(oa => oa.EmailAddress == email).ToList();
-                if (sameAttendees.Any())
-                {
-                    newAttendees.AddRange(sameAttendees);
-                }
-                else
-                {
-                    newAttendees.Add(new AttendeeDO
-                    {
-                        EmailAddress = email
-                    });
-                }
-            }
-            List<AttendeeDO> attendeesToDelete = originalAttendees.Where(originalAttendee => !newAttendees.Select(a => a.EmailAddress).Contains(originalAttendee.EmailAddress)).ToList();
-            if (attendeesToDelete.Any())
-            {
-                AttendeeRepository attendeeRepo = new AttendeeRepository(Calendar.UnitOfWork);
-                foreach (AttendeeDO attendeeToDelete in attendeesToDelete)
-                    attendeeRepo.Remove(attendeeToDelete);
-            }
-            eventDO.Attendees = newAttendees;
-        }
-
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Confirm(FormCollection form)
+        public ActionResult New(FormCollection form)
         {
-            string key = GetValueFromForm(form, "key", string.Empty);
+            DateTime dtFromDate = GetValueFromForm(form, "DateStart", DateTime.MinValue);
+            DateTime dtToDate = GetValueFromForm(form, "DateEnd", DateTime.MinValue);
+            string strLocation = GetValueFromForm(form, "Location", String.Empty);
+            string strStatus = GetValueFromForm(form, "Status", String.Empty);
+            string strTransparency = GetValueFromForm(form, "TransparencyType", String.Empty);
+            string strClass = GetValueFromForm(form, "Class", String.Empty);
+            string strDescription = GetValueFromForm(form, "Description", String.Empty);
+            int intPriority = GetValueFromForm(form, "Priority", 0);
+            int intSequence = GetValueFromForm(form, "Sequence", 0);
+            string strSummary = GetValueFromForm(form, "Summary", String.Empty);
+            string strCategory = GetValueFromForm(form, "Category", String.Empty);
+            int bookingRequestID = GetValueFromForm(form, "BookingRequestID", 0);
 
-            EventDO eventDO = Session["FakedEvent_" + key] as EventDO;
-            if (eventDO.EventID == 0)
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            InvitationRepository invitationRepository = new InvitationRepository(uow);
+            EventDO eventDo = new EventDO();
+            invitationRepository.Add(eventDo);
+
+            BookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
+            BookingRequestDO bookingRequestDO = bookingRequestRepository.GetByKey(bookingRequestID);
+            bookingRequestDO.StatusID = EmailStatusConstants.PROCESSED;
+            if (bookingRequestDO.Events == null)
+                bookingRequestDO.Events = new List<EventDO>();
+            bookingRequestDO.Events.Add(eventDo);
+
+            eventDo.Attendees = new List<AttendeeDO>();
+            eventDo.Attendees.Add(new AttendeeDO
             {
-                Calendar.AddEvent(eventDO);
-            }
-            else
-            {
-                var oldEvent = Calendar.GetEvent(eventDO.EventID);
-                oldEvent.CopyFrom(eventDO);
-                eventDO = oldEvent;
-            }
-            
-            Calendar.DispatchEvent(eventDO);
+                EmailAddress = bookingRequestDO.From.Address,
+                Name = bookingRequestDO.From.Name,
+                Event = eventDo
+            });
+            //We also need to have the form show attendees
+
+            eventDo.StartDate = dtFromDate;
+            eventDo.EndDate = dtToDate;
+            eventDo.Location = strLocation;
+            eventDo.Status = strStatus;
+            eventDo.Transparency = strTransparency;
+            eventDo.Class = strClass;
+            eventDo.Description = strDescription;
+            eventDo.Priority = intPriority;
+            eventDo.Sequence = intSequence;
+            eventDo.Summary = strSummary;
+            eventDo.Category = strCategory;
+            eventDo.BookingRequest = bookingRequestDO;
+
+            Calendar.DispatchEvent(eventDo);
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }
 
         #endregion "Action"
 
-        public class ConfirmEvent
+        
+
+        public class CreateInvitationInfo
         {
-            public string Key;
-            public EventDO EventDO;
+            public int EmailID;
+            public string DateStart;
+            public string DateEnd;
         }
+
     }
 }

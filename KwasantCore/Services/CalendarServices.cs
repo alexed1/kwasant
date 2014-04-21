@@ -11,22 +11,22 @@ using Data.DataAccessLayer.Repositories;
 using Data.DDay.DDay.iCal;
 using Data.DDay.DDay.iCal.DataTypes;
 using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
-using Data.Tools;
+using Data.Models;
 using DDay.DDay.iCal.Components;
 using UtilitiesLib;
 
-namespace Data.Models
+namespace KwasantCore.Services
 {
     /// <summary>
     /// Summary description for EventManager
     /// </summary>
-    public class Calendar
+    public class CalendarServices
     {
         private readonly BookingRequestDO _bookingRequestDO;
         private readonly IUnitOfWork _uow;
-        private EventRepository _eventRepo;
-        
-        public Calendar(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
+        private InvitationRepository _invitationRepo;
+
+        public CalendarServices(IUnitOfWork uow, CustomerDO customer)
         {
             _uow = uow;
             _bookingRequestDO = bookingRequestDO;
@@ -135,7 +135,7 @@ namespace Data.Models
             iCalendarSerializer serializer = new iCalendarSerializer(iCal);
             string fileToAttach = serializer.Serialize(iCal);
 
-            AttachmentDO attachmentDO = EmailHelper.CreateNewAttachment(
+            AttachmentDO attachmentDO = EmailServices.CreateNewAttachment(
                 new System.Net.Mail.Attachment(
                     new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
                     new ContentType { MediaType = "application/calendar", Name = "invite.ics" }

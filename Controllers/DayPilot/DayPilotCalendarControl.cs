@@ -6,14 +6,15 @@ using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Calendar;
 using DayPilot.Web.Mvc.Events.Common;
-using Calendar = Data.Models.Calendar;
+using KwasantCore.Services;
+
 
 namespace Shnexy.Controllers.DayPilot
 {
     public class DayPilotCalendarControl : DayPilotCalendar
     {
-        private readonly Calendar _calendar;
-        public DayPilotCalendarControl(Calendar calendar)
+        private readonly CalendarServices _calendar;
+        public DayPilotCalendarControl(CalendarServices calendar)
         {
             _calendar = calendar;
         }

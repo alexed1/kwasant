@@ -2,7 +2,7 @@
 using System.IO;
 using System.Net;
 
-namespace Data.Tools.Managers.APIManager.Transmitters.Restful
+namespace KwasantCore.Managers.APIManager.Transmitters.Restful
 {
     /// <summary>
     /// This is a common Class for call any Restful Call.Contains the methods that call the API , Get the response and 

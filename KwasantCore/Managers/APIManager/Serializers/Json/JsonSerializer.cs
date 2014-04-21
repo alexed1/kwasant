@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 
-namespace Data.Tools.Managers.APIManager.Serializers.Json
+namespace KwasantCore.Managers.APIManager.Serializers.Json
 {
     /// <summary>
     /// Default JSON serializer

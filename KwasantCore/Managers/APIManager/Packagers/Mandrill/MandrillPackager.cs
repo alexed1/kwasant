@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using Data.Models;
-using Data.Tools.Managers.APIManager.Transmitters.Restful;
+using KwasantCore.Managers.APIManager.Transmitters.Restful;
 using Newtonsoft.Json;
 using UtilitiesLib;
-using JsonSerializer = Data.Tools.Managers.APIManager.Serializers.Json.JsonSerializer;
+using JsonSerializer = KwasantCore.Managers.APIManager.Serializers.Json.JsonSerializer;
 
-namespace Data.Tools.Managers.APIManager.Packagers.Mandrill
+namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
 { //uses the Mandrill API at https://mandrillapp.com/settings/index
     public class MandrillPackager
     {

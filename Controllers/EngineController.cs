@@ -1,6 +1,6 @@
 ﻿using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
-using Data.Tools;
+using KwasantCore.Services;
 using S22.Imap;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -50,7 +50,7 @@ namespace Shnexy.Controllers
             EmailRepository emailRepository = new EmailRepository(unitOfWork);
             foreach (MailMessage message in messages)
             {
-                EmailHelper.ConvertMailMessageToEmail(emailRepository, message);
+                EmailServices.ConvertMailMessageToEmail(emailRepository, message);
             }
             emailRepository.UnitOfWork.SaveChanges();
           

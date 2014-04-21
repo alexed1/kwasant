@@ -4,7 +4,7 @@ using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.DataAccessLayer.StructureMap;
 using Data.Models;
-using Data.Tools.Managers.CommunicationManager;
+using KwasantCore.Managers.CommunicationManager;
 using NUnit.Framework;
 using ShnexyTest.Fixtures;
 using StructureMap;
