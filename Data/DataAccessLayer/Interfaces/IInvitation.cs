@@ -7,7 +7,7 @@ namespace Data.DataAccessLayer.Interfaces
     public interface IInvitation
     {
         [Key]
-        int InivitationID { get; set; }
+        int InvitationID { get; set; }
 
         string Summary { get; set; }
         string Location { get; set; }

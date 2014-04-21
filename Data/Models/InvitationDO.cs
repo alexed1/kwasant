@@ -10,7 +10,7 @@ namespace Data.Models
     public class InvitationDO : IInvitation
     {
         [Key]
-        public int InivitationID { get; set; }
+        public int InvitationID { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Location { get; set; }

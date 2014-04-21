@@ -55,7 +55,7 @@ namespace KwasantCore.Services
             _events = _invitationRepo.GetQuery()
                 .Where(invitationDO => invitationDO.BookingRequest.Customer.CustomerID == _bookingRequestDO.Customer.CustomerID)
                 .ToDictionary(
-                    invitationDO => invitationDO.InivitationID,
+                    invitationDO => invitationDO.InvitationID,
                     invitationDO => invitationDO);
 
         }
@@ -166,7 +166,7 @@ namespace KwasantCore.Services
 
         public void DeleteEvent(int id)
         {
-            InvitationDO invitationToDelete = EventsList.FirstOrDefault(inv => inv.InivitationID == id);
+            InvitationDO invitationToDelete = EventsList.FirstOrDefault(inv => inv.InvitationID == id);
             if (invitationToDelete != null && !_invitationRepo.IsDetached(invitationToDelete))
             {
                 _invitationRepo.Remove(invitationToDelete);
@@ -183,7 +183,7 @@ namespace KwasantCore.Services
 
         public void MoveEvent(int id, DateTime newStart, DateTime newEnd)
         {
-            InvitationDO itemToMove = EventsList.FirstOrDefault(inv => inv.InivitationID == id);
+            InvitationDO itemToMove = EventsList.FirstOrDefault(inv => inv.InvitationID == id);
             if (itemToMove != null)
             {
                 itemToMove.StartDate = newStart;

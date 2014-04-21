@@ -6,18 +6,18 @@
 <form id="f" method="post" style="margin:10px" action="@Url.Action("Confirm")">
     <h3>Confirm Changes</h3>
     <hr />
-    <div>You are <b>@Html.Raw(Model.EventDO.EventID == 0 ? "creating a new" : "editting an existing")</b> event.</div>
-    <div style="@Html.Raw(Model.EventDO.IsAllDay ? String.Empty : "display:none;")">
+    <div>You are <b>@Html.Raw(Model.InvitationDO.InvitationID == 0 ? "creating a new" : "editting an existing")</b> event.</div>
+    <div style="@Html.Raw(Model.InvitationDO.IsAllDay ? String.Empty : "display:none;")">
         <div>* All day event *</div>
     </div>
-    <div style="@Html.Raw(Model.EventDO.IsAllDay ? "display:none;" : String.Empty)">
-        <div>Start Date: @Model.EventDO.StartDate</div>
-        <div>End Date: @Model.EventDO.EndDate</div>
+    <div style="@Html.Raw(Model.InvitationDO.IsAllDay ? "display:none;" : String.Empty)">
+        <div>Start Date: @Model.InvitationDO.StartDate</div>
+        <div>End Date: @Model.InvitationDO.EndDate</div>
     </div>
-    <div>Location: @Model.EventDO.Location</div>
-    <div>Summary: @Model.EventDO.Summary</div>
-    <div>Description: @Model.EventDO.Description</div>
-    <div>Attendees: @String.Join(", ", Model.EventDO.Attendees.Select(a => 
+    <div>Location: @Model.InvitationDO.Location</div>
+    <div>Summary: @Model.InvitationDO.Summary</div>
+    <div>Description: @Model.InvitationDO.Description</div>
+    <div>Attendees: @String.Join(", ", Model.InvitationDO.Attendees.Select(a => 
                    String.IsNullOrEmpty(a.Name) ?
                    a.EmailAddress :
                    a.Name + " (" + a.EmailAddress + ")"
