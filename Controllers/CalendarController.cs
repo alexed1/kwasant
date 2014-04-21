@@ -47,10 +47,17 @@ namespace Shnexy.Controllers
             }
         }
 
+
         public ActionResult Day()
         {
             return new DayPilotCalendarControl(Calendar).CallBack(this);
         }
+
+
+        public ActionResult Month()
+        {
+            return new DayPilotMonthControl(Calendar).CallBack(this);
+        }    
 
         public ActionResult Rtl()
         {

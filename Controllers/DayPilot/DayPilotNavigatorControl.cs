@@ -3,7 +3,7 @@ using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Events.Navigator;
 
 namespace Shnexy.Controllers.DayPilot
-{
+{ 
     public class DayPilotNavigatorControl : DayPilotNavigator
     {
         //protected override void OnVisibleRangeChanged(VisibleRangeChangedArgs visibleRangeChangedArgs)

@@ -1,17 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
 using Data.Models;
+using Data;
+using DayPilot.Web;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
-using KwasantCore.Services;
+using Shnexy.Controllers.DayPilot;
+using DayPilot.Web.Mvc.Events.Calendar;
 using MonthNamespace = DayPilot.Web.Mvc.Events.Month;
 
 namespace Shnexy.Controllers.DayPilot
 { 
     public class DayPilotMonthControl : DayPilotMonth
     {
-        private readonly CalendarServices _calendar;
-        public DayPilotMonthControl(CalendarServices calendar)
+        private readonly Calendar _calendar;
+        public DayPilotMonthControl(Calendar calendar)
         {
             _calendar = calendar;
         }
@@ -25,18 +33,13 @@ namespace Shnexy.Controllers.DayPilot
         {
             _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
-        }
+        }        
 
         protected override void OnEventMove(MonthNamespace.EventMoveArgs e)
         {
             _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
         }
-
-        //protected override void OnEventSelect(MonthNamespace.EventSelectArgs e)
-        //{
-        //    base.OnEventSelect(e);
-        //}
 
         protected override void OnEventMenuClick(MonthNamespace.EventMenuClickArgs e)
         {
@@ -102,7 +105,7 @@ namespace Shnexy.Controllers.DayPilot
             DataStartField = "StartDate";
             DataEndField = "EndDate";
             DataTextField = "Summary";
-            DataIdField = "EventID";
+            DataIdField = "InvitationID";
 
             Events = _calendar.EventsList;
             
