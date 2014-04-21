@@ -12,8 +12,8 @@ namespace Data.Models
         public String Name { get; set; }
         public String EmailAddress { get; set; }
 
-        [ForeignKey("Event")]
-        public int EventID { get; set; }
-        public virtual EventDO Event { get; set; }
+        [ForeignKey("Invitation")]
+        public int InvitationID { get; set; }
+        public virtual InvitationDO Invitation { get; set; }
     }
 }

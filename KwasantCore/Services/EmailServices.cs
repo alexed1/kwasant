@@ -79,7 +79,7 @@ namespace KwasantCore.Services
                 Text = mailAddress.Body,
                 Attachments = mailAddress.Attachments.Select(CreateNewAttachment).ToList(),
                 To = mailAddress.To.Select(GetEmailAddress).ToList(),
-                Events = null
+                Invitations = null
             };
             emailDO.To.ForEach(a => a.ToEmail = emailDO);
             emailDO.CC.ForEach(a => a.BCCEmail = emailDO);

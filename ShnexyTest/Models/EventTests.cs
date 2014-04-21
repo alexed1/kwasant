@@ -47,7 +47,7 @@ namespace ShnexyTest.Models
         [Category("Invitation")]
         public void Event_Dispatch_CanSendICS()
         {
-            EventRepository invRepo = new EventRepository(_uow);
+            InvitationRepository invRepo = new InvitationRepository(_uow);
             AttendeeRepository attendeesRepo = new AttendeeRepository(_uow);
             List<AttendeeDO> attendees =
                 new List<AttendeeDO>
@@ -57,7 +57,7 @@ namespace ShnexyTest.Models
                 };
             attendees.ForEach(attendeesRepo.Add);
 
-            EventDO invitation = new EventDO
+            InvitationDO invitation = new InvitationDO
             {
                 Description = "This is my test invitation",
                 Summary = @"My test invitation",

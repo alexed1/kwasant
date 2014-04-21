@@ -1,6 +1,4 @@
 ﻿using System;
-using Data.Constants;
-using Data.Models;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;

@@ -7,10 +7,10 @@ using Data.DataAccessLayer.Interfaces;
 
 namespace Data.Models
 {
-    public class EventDO : IInvitation
+    public class InvitationDO : IInvitation
     {
         [Key]
-        public int EventID { get; set; }
+        public int InivitationID { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Location { get; set; }
@@ -29,21 +29,21 @@ namespace Data.Models
         public virtual UserDO CreatedBy { get; set; }
         public bool IsAllDay { get; set; }
 
-        [InverseProperty("Event")]
+        [InverseProperty("Invitation")]
         public virtual List<AttendeeDO> Attendees { get; set; }
 
-        [InverseProperty("Events")]
+        [InverseProperty("Invitations")]
         public virtual List<EmailDO> Emails { get; set; }
 
         public virtual BookingRequestDO BookingRequest { get; set; }
 
-        public void CopyFrom(EventDO eventDO)
+        public void CopyFrom(InvitationDO invitationDO)
         {
             //We can't called GetType() because EF mocks our object
-            PropertyInfo[] props = typeof(EventDO).GetProperties();
+            PropertyInfo[] props = typeof(InvitationDO).GetProperties();
             foreach (PropertyInfo prop in props)
             {
-                prop.SetValue(this, prop.GetValue(eventDO));
+                prop.SetValue(this, prop.GetValue(invitationDO));
             }
         }
 

@@ -40,13 +40,13 @@ namespace Data.DataAccessLayer.Infrastructure
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EmailStatusDO>().ToTable("EmailStatuses");
-            modelBuilder.Entity<EventDO>().ToTable("Events");
+            modelBuilder.Entity<InvitationDO>().ToTable("Events");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<UserDO>().ToTable("Users");
 
-            modelBuilder.Entity<EventDO>()
+            modelBuilder.Entity<InvitationDO>()
                 .HasMany(ev => ev.Emails)
-                .WithMany(e => e.Events)
+                .WithMany(e => e.Invitations)
                 .Map(
                     mapping => mapping.MapLeftKey("EventID").MapRightKey("EmailID").ToTable("EventEmail")
                 );
@@ -81,9 +81,9 @@ namespace Data.DataAccessLayer.Infrastructure
                 .WithRequired(e => e.From)
                 .Map(x => x.MapKey("FromEmailAddressID"));
 
-            modelBuilder.Entity<EventDO>()
+            modelBuilder.Entity<InvitationDO>()
                 .HasMany(e => e.Attendees)
-                .WithRequired(a => a.Event)
+                .WithRequired(a => a.Invitation)
                 .WillCascadeOnDelete(true);
 
             base.OnModelCreating(modelBuilder);
@@ -103,7 +103,7 @@ namespace Data.DataAccessLayer.Infrastructure
 
         public DbSet<EmailStatusDO> EmailStatuses { get; set; }
         
-        public DbSet<EventDO> Invitations { get; set; }
+        public DbSet<InvitationDO> Invitations { get; set; }
 
         public DbSet<StoredFileDO> StoredFiles { get; set; }
 

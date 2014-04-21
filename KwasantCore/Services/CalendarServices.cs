@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
@@ -24,13 +23,13 @@ namespace KwasantCore.Services
     {
         private readonly BookingRequestDO _bookingRequestDO;
         private readonly IUnitOfWork _uow;
-        private InvitationRepository _invitationRepo;
+        private readonly InvitationRepository _invitationRepo;
 
-        public CalendarServices(IUnitOfWork uow, CustomerDO customer)
+        public CalendarServices(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
             _uow = uow;
-            _bookingRequestDO = bookingRequestDO;
-            _eventRepo = new EventRepository(_uow);
+            _bookingRequestDO = bookingRequest;
+            _invitationRepo = new InvitationRepository(_uow);
             LoadData();
         }
 
@@ -42,8 +41,8 @@ namespace KwasantCore.Services
             }
         }
 
-        private Dictionary<int, EventDO> _events;
-        public List<EventDO> EventsList
+        private Dictionary<int, InvitationDO> _events;
+        public List<InvitationDO> EventsList
         {
             get
             {
@@ -53,12 +52,12 @@ namespace KwasantCore.Services
 
         private void LoadData()
         {
-            _events = _eventRepo.GetQuery().Where(i => i.BookingRequest.Customer.CustomerID == _bookingRequestDO.Customer.CustomerID).ToDictionary(e => e.EventID, e => e);
-        }
+            _events = _invitationRepo.GetQuery()
+                .Where(invitationDO => invitationDO.BookingRequest.Customer.CustomerID == _bookingRequestDO.Customer.CustomerID)
+                .ToDictionary(
+                    invitationDO => invitationDO.InivitationID,
+                    invitationDO => invitationDO);
 
-        private void SaveData()
-        {
-            _uow.Db.SaveChanges();
         }
 
         public void Reload()
@@ -66,45 +65,45 @@ namespace KwasantCore.Services
             LoadData();
         }
 
-        public void DispatchEvent(EventDO eventDO)
+        public void DispatchEvent(InvitationDO invitationDO)
         {
-            DispatchEvent(_uow, eventDO);
+            DispatchEvent(_uow, invitationDO);
             Reload();
         }
 
-        public static void DispatchEvent(IUnitOfWork uow, EventDO eventDo)
+        public static void DispatchEvent(IUnitOfWork uow, InvitationDO invitationDO)
         {
-            if(eventDo.Attendees == null)
-                eventDo.Attendees = new List<AttendeeDO>();
+            if(invitationDO.Attendees == null)
+                invitationDO.Attendees = new List<AttendeeDO>();
 
             string fromEmail = "lucreorganizer@gmail.com";
             string fromName = "Booqit Organizer";
 
             EmailDO outboundEmail = new EmailDO();
             outboundEmail.From = new EmailAddressDO {Address = fromEmail, Name = fromName};
-            outboundEmail.To = eventDo.Attendees.Select(a => new EmailAddressDO { Address = a.EmailAddress, Name = a.Name}).ToList();
-            outboundEmail.Subject = "Invitation via Booqit: " + eventDo.Summary + "@ " + eventDo.StartDate;
+            outboundEmail.To = invitationDO.Attendees.Select(a => new EmailAddressDO { Address = a.EmailAddress, Name = a.Name}).ToList();
+            outboundEmail.Subject = "Invitation via Booqit: " + invitationDO.Summary + "@ " + invitationDO.StartDate;
             outboundEmail.Text = "This is a Booqit Event Request. For more information, see https://foo.com";
             outboundEmail.StatusID = EmailStatusConstants.QUEUED;
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();
-            if (eventDo.IsAllDay)
+            if (invitationDO.IsAllDay)
             {
                 dDayEvent.IsAllDay = true;
             }
             else
             {
-                dDayEvent.DTStart = new iCalDateTime(eventDo.StartDate);
-                dDayEvent.DTEnd = new iCalDateTime(eventDo.EndDate);
+                dDayEvent.DTStart = new iCalDateTime(invitationDO.StartDate);
+                dDayEvent.DTEnd = new iCalDateTime(invitationDO.EndDate);
             }
             dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
             dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
 
-            dDayEvent.Location = eventDo.Location;
-            dDayEvent.Description = eventDo.Description;
-            dDayEvent.Summary = eventDo.Summary;
-            foreach (AttendeeDO attendee in eventDo.Attendees)
+            dDayEvent.Location = invitationDO.Location;
+            dDayEvent.Description = invitationDO.Description;
+            dDayEvent.Summary = invitationDO.Summary;
+            foreach (AttendeeDO attendee in invitationDO.Attendees)
             {
                 dDayEvent.Attendees.Add(new Attendee
                 {
@@ -115,7 +114,7 @@ namespace KwasantCore.Services
                     RSVP = true,
                     Value = new Uri("mailto:" + attendee.EmailAddress),
                 });
-                attendee.Event = eventDo;
+                attendee.Invitation = invitationDO;
             }
             dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
 
@@ -123,9 +122,9 @@ namespace KwasantCore.Services
 
             AttachCalendarToEmail(ddayCalendar, outboundEmail);
 
-            if (eventDo.Emails == null)
-                eventDo.Emails = new List<EmailDO>();
-            eventDo.Emails.Add(outboundEmail);
+            if (invitationDO.Emails == null)
+                invitationDO.Emails = new List<EmailDO>();
+            invitationDO.Emails.Add(outboundEmail);
 
             uow.SaveChanges();
         }
@@ -147,30 +146,30 @@ namespace KwasantCore.Services
             emailDO.Attachments.Add(attachmentDO);
         }
 
-        public EventDO GetEvent(int eventID)
+        public InvitationDO GetEvent(int eventID)
         {
             return _events[eventID];
         }
 
-        public void AddEvent(EventDO eventDO)
+        public void AddEvent(InvitationDO invitationDO)
         {
-            if (_bookingRequestDO.Events == null)
-                _bookingRequestDO.Events = new List<EventDO>();
-            _bookingRequestDO.Events.Add(eventDO);
+            if (_bookingRequestDO.Invitations == null)
+                _bookingRequestDO.Invitations = new List<InvitationDO>();
+            _bookingRequestDO.Invitations.Add(invitationDO);
 
-            eventDO.BookingRequest = _bookingRequestDO;
+            invitationDO.BookingRequest = _bookingRequestDO;
 
-            _eventRepo.Add(eventDO);
+            _invitationRepo.Add(invitationDO);
             _uow.SaveChanges();
             Reload();
         }
 
         public void DeleteEvent(int id)
         {
-            EventDO eventToDelete = EventsList.FirstOrDefault(inv => inv.EventID == id);
-            if (eventToDelete != null && !_eventRepo.IsDetached(eventToDelete))
+            InvitationDO invitationToDelete = EventsList.FirstOrDefault(inv => inv.InivitationID == id);
+            if (invitationToDelete != null && !_invitationRepo.IsDetached(invitationToDelete))
             {
-                _eventRepo.Remove(eventToDelete);
+                _invitationRepo.Remove(invitationToDelete);
                 _uow.SaveChanges();
             }
             Reload();
@@ -184,7 +183,7 @@ namespace KwasantCore.Services
 
         public void MoveEvent(int id, DateTime newStart, DateTime newEnd)
         {
-            EventDO itemToMove = EventsList.FirstOrDefault(inv => inv.EventID == id);
+            InvitationDO itemToMove = EventsList.FirstOrDefault(inv => inv.InivitationID == id);
             if (itemToMove != null)
             {
                 itemToMove.StartDate = newStart;

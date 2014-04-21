@@ -30,7 +30,7 @@ namespace Shnexy.Controllers
             if (bookingRequestDO == null) 
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Calendar = new CalendarServices(uow, bookingRequestDO.Customer);
+            Calendar = new CalendarServices(uow, bookingRequestDO);
             return View(bookingRequestDO);                       
 
         }
@@ -51,12 +51,6 @@ namespace Shnexy.Controllers
         {
             return new DayPilotCalendarControl(Calendar).CallBack(this);
         }
-
-
-        public ActionResult Month()
-        {
-            return new DayPilotMonthControl(Calendar).CallBack(this);
-        } 
 
         public ActionResult Rtl()
         {
@@ -269,39 +263,39 @@ namespace Shnexy.Controllers
 
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             InvitationRepository invitationRepository = new InvitationRepository(uow);
-            EventDO eventDo = new EventDO();
-            invitationRepository.Add(eventDo);
+            InvitationDO invitationDO = new InvitationDO();
+            invitationRepository.Add(invitationDO);
 
             BookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
             BookingRequestDO bookingRequestDO = bookingRequestRepository.GetByKey(bookingRequestID);
             bookingRequestDO.StatusID = EmailStatusConstants.PROCESSED;
-            if (bookingRequestDO.Events == null)
-                bookingRequestDO.Events = new List<EventDO>();
-            bookingRequestDO.Events.Add(eventDo);
+            if (bookingRequestDO.Invitations == null)
+                bookingRequestDO.Invitations = new List<InvitationDO>();
+            bookingRequestDO.Invitations.Add(invitationDO);
 
-            eventDo.Attendees = new List<AttendeeDO>();
-            eventDo.Attendees.Add(new AttendeeDO
+            invitationDO.Attendees = new List<AttendeeDO>();
+            invitationDO.Attendees.Add(new AttendeeDO
             {
                 EmailAddress = bookingRequestDO.From.Address,
                 Name = bookingRequestDO.From.Name,
-                Event = eventDo
+                Invitation = invitationDO
             });
             //We also need to have the form show attendees
 
-            eventDo.StartDate = dtFromDate;
-            eventDo.EndDate = dtToDate;
-            eventDo.Location = strLocation;
-            eventDo.Status = strStatus;
-            eventDo.Transparency = strTransparency;
-            eventDo.Class = strClass;
-            eventDo.Description = strDescription;
-            eventDo.Priority = intPriority;
-            eventDo.Sequence = intSequence;
-            eventDo.Summary = strSummary;
-            eventDo.Category = strCategory;
-            eventDo.BookingRequest = bookingRequestDO;
+            invitationDO.StartDate = dtFromDate;
+            invitationDO.EndDate = dtToDate;
+            invitationDO.Location = strLocation;
+            invitationDO.Status = strStatus;
+            invitationDO.Transparency = strTransparency;
+            invitationDO.Class = strClass;
+            invitationDO.Description = strDescription;
+            invitationDO.Priority = intPriority;
+            invitationDO.Sequence = intSequence;
+            invitationDO.Summary = strSummary;
+            invitationDO.Category = strCategory;
+            invitationDO.BookingRequest = bookingRequestDO;
 
-            Calendar.DispatchEvent(eventDo);
+            Calendar.DispatchEvent(invitationDO);
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }

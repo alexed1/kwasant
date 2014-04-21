@@ -34,7 +34,7 @@ namespace Data.DataAccessLayer.StructureMap
                 For<IEmail>().Use<EmailDO>();
                 For<IEmailAddress>().Use<EmailAddressDO>();
                 For<IEmailStatus>().Use<EmailStatusDO>();
-                For<IInvitation>().Use<EventDO>();
+                For<IInvitation>().Use<InvitationDO>();
                 For<IUser>().Use<UserDO>();
             }
         }

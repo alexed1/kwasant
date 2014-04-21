@@ -27,6 +27,6 @@ namespace Data.Models
         public virtual List<AttachmentDO> Attachments { get; set; }
 
         [InverseProperty("Emails")]
-        public virtual List<EventDO> Events { get; set; }
+        public virtual List<InvitationDO> Invitations { get; set; }
     }
 }
