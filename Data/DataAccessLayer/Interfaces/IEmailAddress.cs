@@ -2,7 +2,7 @@
 
 namespace Data.DataAccessLayer.Interfaces
 {
-    interface IEmailAddress
+    public interface IEmailAddress
     {
         String Name { get; set; }
         String Address { get; set; }

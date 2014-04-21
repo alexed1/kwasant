@@ -1,25 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
 using Data.Models;
-using Data;
-using DayPilot.Web;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
-using Shnexy.Controllers.DayPilot;
-using DayPilot.Web.Mvc.Events.Calendar;
+using KwasantCore.Services;
 using MonthNamespace = DayPilot.Web.Mvc.Events.Month;
 
 namespace Shnexy.Controllers.DayPilot
 { 
     public class DayPilotMonthControl : DayPilotMonth
     {
-        private readonly Calendar _calendar;
-        public DayPilotMonthControl(Calendar calendar)
+        private readonly CalendarServices _calendar;
+        public DayPilotMonthControl(CalendarServices calendar)
         {
             _calendar = calendar;
         }
@@ -33,18 +25,13 @@ namespace Shnexy.Controllers.DayPilot
         {
             _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
-        }
+        }        
 
         protected override void OnEventMove(MonthNamespace.EventMoveArgs e)
         {
             _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
         }
-
-        //protected override void OnEventSelect(MonthNamespace.EventSelectArgs e)
-        //{
-        //    base.OnEventSelect(e);
-        //}
 
         protected override void OnEventMenuClick(MonthNamespace.EventMenuClickArgs e)
         {
@@ -66,7 +53,7 @@ namespace Shnexy.Controllers.DayPilot
 
         protected override void OnTimeRangeSelected(MonthNamespace.TimeRangeSelectedArgs e)
         {
-            _calendar.AddEvent(new EventDO
+            _calendar.AddEvent(new InvitationDO
             {
                 StartDate = e.Start,
                 EndDate = e.End,
@@ -78,7 +65,7 @@ namespace Shnexy.Controllers.DayPilot
 
         protected override void OnBeforeEventRender(MonthNamespace.BeforeEventRenderArgs e)
         {
-            e.Areas.Add(new Area().Right(3).Top(3).Width(15).Height(15).CssClass("event_action_delete").JavaScript("switcher.active.control.commandCallBack('delete', {'e': e});"));
+            e.Areas.Add(new Area().Right(3).Top(3).Width(15).Height(15).CssClass("event_action_delete").JavaScript("eventDelete(e);"));
         }
 
         protected override void OnCommand(MonthNamespace.CommandArgs e)
@@ -110,7 +97,7 @@ namespace Shnexy.Controllers.DayPilot
             DataStartField = "StartDate";
             DataEndField = "EndDate";
             DataTextField = "Summary";
-            DataIdField = "EventID";
+            DataIdField = "InvitationID";
 
             Events = _calendar.EventsList;
             

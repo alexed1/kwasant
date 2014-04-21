@@ -6,7 +6,7 @@
 .container_box {
     border: 2px solid gray;
     padding-left: 20px;
-    min-height: 800px; 
+    min-height: 600px; 
     font-size:0.85em;    
 }
 
@@ -39,18 +39,18 @@
     position: relative;
 }
 
-    #toolbar a {
-        display: inline-block;
-        height: 35px;
-        text-decoration: none;
-        padding: 5px;
-        color: #666;
-        border: 1px solid #aaa;
-        background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e2e2e2));
-        background: -webkit-linear-gradient(top, #fafafa 0%, #e2e2e2);
-        background: -moz-linear-gradient(top, #fafafa 0%, #e2e2e2);
-        background: -ms-linear-gradient(top, #fafafa 0%, #e2e2e2);
-        background: -o-linear-gradient(top, #fafafa 0%, #e2e2e2);
-        background: linear-gradient(top, #fafafa 0%, #e2e2e2);
-        filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#fafafa", endColorStr="#e2e2e2");
-    }
+#toolbar a {
+    display: inline-block;
+    height: 35px;
+    text-decoration: none;
+    padding: 5px;
+    color: #666;
+    border: 1px solid #aaa;
+    background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e2e2e2));
+    background: -webkit-linear-gradient(top, #fafafa 0%, #e2e2e2);
+    background: -moz-linear-gradient(top, #fafafa 0%, #e2e2e2);
+    background: -ms-linear-gradient(top, #fafafa 0%, #e2e2e2);
+    background: -o-linear-gradient(top, #fafafa 0%, #e2e2e2);
+    background: linear-gradient(top, #fafafa 0%, #e2e2e2);
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#fafafa", endColorStr="#e2e2e2");
+}

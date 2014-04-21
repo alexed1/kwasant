@@ -1,5 +1,4 @@
 ﻿@model Data.Models.EmailDO
-
 @using DayPilot.Web.Mvc
 @using DayPilot.Web.Mvc.Enums
 @using DayPilot.Web.Mvc.Enums.Calendar
@@ -10,59 +9,48 @@
 }
 
 <header>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.8.1.min.js")"></script>
     <script type="text/javascript">
-        function modal(url) {
-            var m = new DayPilot.Modal();
-
-            m.closed = function () {
-                if (this.result == "OK") {
-                    dps.commandCallBack('refresh');
-                }
-                dps.clearSelection();
-            };
-            m.showUrl(url);
-        }
 
 
-        function dp_day_eventClick(e) {
-            var m = new DayPilot.Modal();
-            m.closed = function () {
-                if (this.result == "OK") {
-                    dp_day.commandCallBack('refresh');
-                }
-                dp_day.clearSelection();
-            };
+        
+    function displayForm(url) {
+        var m = new DayPilot.Modal();
+        m.closed = function () {
+            var daypilotControls = [
+                dp_day,
+                dp_week,
+                dp_month
+            ];
 
-            var url = getBaseCalendarURL() + '/New/?emailID=' + @Model.EmailID + '&partStart=' + e.partStart() + '&partEnd=' + e.partEnd();
-            m.showUrl(url);
-        }
+            if (this.result == "OK") {
+                $.each(daypilotControls, function(i, ele) {
+                    ele.commandCallBack('refresh');
+                });
+            }
+            $.each(daypilotControls, function (i, ele) {
+                ele.clearSelection('refresh');
+            });
+        };
 
-        function dp_week_eventClick(e) {
-            var m = new DayPilot.Modal();
-            m.closed = function () {
-                if (this.result == "OK") {
-                    dp_week.commandCallBack('refresh');
-                }
-                dp_week.clearSelection();
-            };
+        m.showUrl(url);
+    }
 
-            var url = getBaseCalendarURL() + '/New/?emailID=' + @Model.EmailID + '&partStart=' + e.partStart() + '&partEnd=' + e.partEnd();
-            m.showUrl(url);
-        }
+    function eventClick(e) {
+        displayForm(getBaseCalendarURL() + '/Open/?invitationID=' + e.id());
+    }
 
+    function eventNew(start, end) {
+        displayForm(getBaseCalendarURL() + '/New/?start=' + start + '&end=' + end);
+    }
 
-        function dp_month_eventClick(e) {
-            var m = new DayPilot.Modal();
-            m.closed = function () {
-                if (this.result == "OK") {
-                    dp_month.commandCallBack('refresh');
-                }
-                dp_month.clearSelection();
-            };
+    function eventMove(e, newStart, newEnd) {
+        displayForm(getBaseCalendarURL() + '/MoveEvent/?invitationID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
+    }
 
-            var url = getBaseCalendarURL() + '/New/?emailID=' + @Model.EmailID + '&partStart=' + e.partStart() + '&partEnd=' + e.partEnd();
-            m.showUrl(url);
-        }
+    function eventDelete(e) {
+        displayForm(getBaseCalendarURL() + '/DeleteEvent/?invitationID=' + e.id());
+    }
 
     </script>
 
@@ -72,7 +60,15 @@
 
 <div class="jumbotron" style="padding-left:20px; padding-right:20px;">
     <div class="row" style="font-size:0.84em">
-        
+        @*<div class="col-lg-2 container_box" style="padding-top:53px; padding-bottom:101px">
+            @Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
+            {
+                CssOnly = true,
+                CssClassPrefix = "navigator_white",
+                ShowMonths = 3,
+                SkipMonths = 3
+            })
+        </div>*@
         <div id="emailInfoBox" class="col-md-4 container_box" style="padding-top:45px; padding-bottom:39px;">
             <div class="row">
                 <div class="col-md-2 label_vertical_alignment">
@@ -173,6 +169,7 @@
                 </div>
             </div>
         </div>
+
         <div id="divCalender" class="col-md-6 container_box" style="padding-bottom: 79px;">
             <div class="row">
                 <div id="toolbar" style="position:relative; left:-10px">
@@ -184,111 +181,110 @@
             <div class="row">
                 <div style="padding-right:5px">
                     @Html.DayPilotMenu("menu1", new DayPilotMenuConfig
-                {
-                    Items = new DayPilot.Web.Mvc.MenuItemCollection()
                     {
-                        new DayPilot.Web.Mvc.MenuItem { Text = "Delete", Action = MenuItemAction.CallBack, Command = "Delete"}
-                    }
-                })
+                        Items = new MenuItemCollection()
+                        {
+                            new MenuItem { Text = "Delete", Action = MenuItemAction.JavaScript, JavaScript = "eventDelete(e)"}
+                        }
+                    })
 
                     @Html.DayPilotMenu("menu2", new DayPilotMenuConfig
-                {
-                    Items = new DayPilot.Web.Mvc.MenuItemCollection()
                     {
-                        new DayPilot.Web.Mvc.MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "alert(e.value());"}
-                    }
-                })
+                        Items = new MenuItemCollection()
+                        {
+                            new MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "alert(e.value());"}
+                        }
+                    })
 
                     @Html.DayPilotBubble("bubble")
 
                     @Html.DayPilotCalendar("dp_day", new DayPilotCalendarConfig
-                {
-                    BackendUrl = Url.Content("~/Calendar/Day"),
-                    EventResizeHandling = EventResizeHandlingType.CallBack,
-                    EventMoveHandling = EventMoveHandlingType.CallBack,
-                    Height = 550,
-                    HeaderHeight = 50,
-                    CellHeight = 25,
-                    CssOnly = true,
-                    ContextMenu = "menu1",
-                    CssClassPrefix = "calendar_white",
-                    ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Day,
-                    EventClickHandling = EventClickHandlingType.JavaScript,
-                    EventClickJavaScript = "dp_day_eventClick(e)",
-                    TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedHandlingType.CallBack
-                })
+                    {
+                        BackendUrl = Url.Content("~/Calendar/Day"),
+                        
+                        EventMoveHandling = EventMoveHandlingType.JavaScript,
+                        EventResizeHandling = EventResizeHandlingType.JavaScript,
+                        TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
+                        EventClickHandling = EventClickHandlingType.JavaScript,
+                        HeaderClickHandling = HeaderClickHandlingType.JavaScript,
+                        EventDeleteHandling = EventDeleteHandlingType.JavaScript,
+                        
+                        Height = 550,
+                        HeaderHeight = 50,
+                        CellHeight = 25,
+                        CssOnly = true,
+                        ContextMenu = "menu1",
+                        CssClassPrefix = "calendar_white",
+                        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Day,
 
-                    @(Html.DayPilotCalendar("dp_week", new DayPilotCalendarConfig
-    {
-        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
-        BackendUrl = Url.Content("~/Calendar/Backend/"),
-        EventMoveHandling = EventMoveHandlingType.CallBack,
-        EventResizeHandling = EventResizeHandlingType.CallBack,
-        TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Calendar.TimeRangeSelectedHandlingType.CallBack,
-        ShowAllDayEvents = true,
-        AllowMultiSelect=true,       
-        Height = 550,
-        HeaderHeight = 20,
-        CssOnly = true,
-        CssClassPrefix = "calendar_white",
-        HeightSpec = HeightSpec.BusinessHours,
-        EventBubble = "bubble",
-        EventClickJavaScript = "dp_week_eventClick(e)",
-        EventClickHandling = EventClickHandlingType.JavaScript,
-        HeaderClickHandling = HeaderClickHandlingType.JavaScript,
-        ContextMenu = "menu1",
-        HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"
-    }))
+                        EventClickJavaScript = "eventClick(e)",
+                        EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
+                        EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
+                        TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
+                        EventDeleteJavaScript = "eventDelete(e)",
+                    })
+
+                    @Html.DayPilotCalendar("dp_week", new DayPilotCalendarConfig
+                    {
+                        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+                        BackendUrl = Url.Content("~/Calendar/Backend/"),
+                        
+                        EventMoveHandling = EventMoveHandlingType.JavaScript,
+                        EventResizeHandling = EventResizeHandlingType.JavaScript,
+                        TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
+                        EventClickHandling = EventClickHandlingType.JavaScript,
+                        HeaderClickHandling = HeaderClickHandlingType.JavaScript,
+                        EventDeleteHandling = EventDeleteHandlingType.JavaScript,
+
+                        ShowAllDayEvents = true,
+                        Height = 630,
+                        HeightSpec = HeightSpec.BusinessHours,
+                        EventBubble = "bubble",
+                        EventClickJavaScript = "eventClick(e)",
+                        EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
+                        EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
+                        TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
+                        EventDeleteJavaScript = "eventDelete(e)",
+                        ContextMenu = "menu1",
+                        HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"
+                    })
 
                     @Html.DayPilotMonth("dp_month", new DayPilotMonthConfig
-    {
-        BackendUrl = Url.Content("~/Calendar/Month"),
-        EventResizeHandling = DayPilot.Web.Mvc.Events.Month.EventResizeHandlingType.CallBack,
-        EventMoveHandling = DayPilot.Web.Mvc.Events.Month.EventMoveHandlingType.CallBack,
-        CellHeaderFontSize = "10",
-        CellHeight = 90,
-        HeaderHeight = 50,
-        EventHeight = 50,
-        Height = "550",
-        CssOnly = true,        
-        ContextMenu = "menu1",
-        CssClassPrefix = "calendar_white",
-        EventClickHandling = DayPilot.Web.Mvc.Events.Month.EventClickHandlingType.JavaScript,
-        EventClickJavaScript = "dp_month_eventClick(e)",
-        TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedHandlingType.JavaScript,
-        TimeRangeSelectedJavaScript = "create(start, end)",
-    })
+                    {
+                        BackendUrl = Url.Content("~/Calendar/Month"),
+
+                        EventMoveHandling = DayPilot.Web.Mvc.Events.Month.EventMoveHandlingType.JavaScript,
+                        EventResizeHandling = DayPilot.Web.Mvc.Events.Month.EventResizeHandlingType.JavaScript,
+                        TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedHandlingType.JavaScript,
+                        EventClickHandling = DayPilot.Web.Mvc.Events.Month.EventClickHandlingType.JavaScript,
+                        HeaderClickHandling = DayPilot.Web.Mvc.Events.Month.HeaderClickHandlingType.JavaScript,
+                        
+                        
+                        CellHeaderFontSize = "10",
+                        CellHeight = 90,
+                        HeaderHeight = 50,
+                        EventHeight = 50,
+                        Height = "550",
+                        CssOnly = true,
+                        ContextMenu = "menu1",
+                        CssClassPrefix = "calendar_white",
+
+                        EventClickJavaScript = "eventClick(e)",
+                        EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
+                        EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
+                        TimeRangeSelectedJavaScript = "eventNew(start, end)",
+                    })
                 </div>
-
-
-
-                <script type="text/javascript">
-                    function modal(url) {
-                        var m = new DayPilot.Modal();
-                        m.closed = function () {
-                            if (this.result == "OK") {
-                                dps.commandCallBack('refresh');
-                            }
-                            dps.clearSelection();
-                        };
-                        m.showUrl(url);
-                    }
-                </script>
+                
             </div>
-        </div>
-        <div class="col-lg-2 container_box" style="padding-top:53px; padding-bottom:101px">
-            @Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
-            {
-                CssOnly = true,
-                CssClassPrefix = "navigator_white",
-                ShowMonths = 1                              
-            })
         </div>
     </div>
 </div>
-
 <div class="row">
-    @Html.ActionLink("Show Users", "Index", "User");
+    @Html.ActionLink("Back to booking requests", "Index", "Email")
+</div>
+<div class="row">
+    @Html.ActionLink("Show Users", "Index", "User")
 </div>
 
 
@@ -306,21 +302,7 @@
         $("#divCalender").css("padding-bottom", "79px");
     });
 
-    function create(start, end) {
-        var m = new DayPilot.Modal();
-        m.closed = function () {
-            if (this.result == "OK") {
-                switcher.active.control.commandCallBack('refresh');
-            }
-            switcher.active.control.clearSelection();
-        };
-
-        var url = getBaseCalendarURL() + '/New/?emailID=' + @Model.EmailID + '&partStart=' + start + '&partEnd=' + end;
-        m.showUrl(url);
-    }
-
-
-    var switcher = new DayPilot.Switcher();    
+    var switcher = new DayPilot.Switcher();
 
     switcher.addView(dp_day);
     switcher.addView(dp_week);
@@ -328,10 +310,10 @@
 
     switcher.addButton("toolbar_day", dp_day);
     switcher.addButton("toolbar_week", dp_week);
-    switcher.addButton("toolbar_month", dp_month);    
+    switcher.addButton("toolbar_month", dp_month);
 
-    switcher.addNavigator(dp_navigator);
+    //switcher.addNavigator(dp_navigator);
 
-    switcher.show(dp_day);    
+    switcher.show(dp_day);
 
 </script>

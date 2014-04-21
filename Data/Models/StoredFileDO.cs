@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Infrastructure;
 using System.IO;
 using System.Text;
 using Data.DataAccessLayer.Infrastructure;
@@ -58,7 +59,7 @@ namespace Data.Models
             }
         }
 
-        void ISaveHook.SaveHook()
+        void ISaveHook.SaveHook(DbEntityEntry<ISaveHook> entity)
         {
             FileManager.SaveFile(this);
         }

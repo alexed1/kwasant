@@ -3,7 +3,7 @@ using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using Data.Models;
-using Data.Tools;
+using KwasantCore.Services;
 using StructureMap;
 
 namespace Daemons
@@ -29,7 +29,7 @@ namespace Daemons
 
             foreach (EmailDO email in emailRepository.FindList(e => e.Status.EmailStatusID == EmailStatusConstants.QUEUED))
             {
-                EmailHelper.SendEmail(email);
+                new EmailServices(unitOfWork, email).Send();
             }
         }
     }
