@@ -21,16 +21,9 @@ namespace ShnexyTest.Models
         [SetUp]
         public void Setup()
         {
-
-
             Database.SetInitializer(new DropCreateDatabaseAlways<ShnexyDbContext>());
-
-
             StructureMapBootStrapper.ConfigureDependencies("test");
-
-
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-
             _uow.Db.Database.Initialize(true);
 
             customerRepo = new CustomerRepository(_uow);
@@ -40,21 +33,24 @@ namespace ShnexyTest.Models
             CommunicationManager commManager = new CommunicationManager();
             commManager.SubscribeToAlerts();
         }
+
         [Test]
+        [Category("Customer")]
         public void Customer_Add_CanCreateCustomer()
         {
+            //SETUP
             //create a customer from fixture data
             CustomerDO curCustomerDO = _fixture.TestCustomer();
+
+            //EXECUTE
             customerRepo.Add(curCustomerDO);
             customerRepo.UnitOfWork.SaveChanges();
+
+            //VERIFY
             //check that it was saved to the db
             CustomerDO savedCustomerDO = customerRepo.GetByKey(curCustomerDO.CustomerID);
             Assert.AreEqual(curCustomerDO.FirstName,savedCustomerDO.FirstName);
             Assert.AreEqual(curCustomerDO.Email, savedCustomerDO.Email);
-
-            //call Customer#Add
-            //does event get called?
-
 
 
         }

@@ -27,18 +27,13 @@ namespace ShnexyTest.Models
         {
 
             
-            Database.SetInitializer(new DropCreateDatabaseAlways<ShnexyDbContext>());
-             
-       
+            Database.SetInitializer(new DropCreateDatabaseAlways<ShnexyDbContext>());             
             StructureMapBootStrapper.ConfigureDependencies("test");
 
-
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-
             _uow.Db.Database.Initialize(true);
 
             customerRepo = new CustomerRepository(_uow);
-
             _fixture = new FixtureData(_uow);
         }
 
