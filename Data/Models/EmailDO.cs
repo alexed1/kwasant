@@ -14,6 +14,7 @@ namespace Data.Models
         public String Subject { get; set; }
         public String Text { get; set; }
 
+        [ForeignKey("Status")]
         public int StatusID { get; set; }
         public virtual EmailStatusDO Status { get; set; }
 

@@ -64,6 +64,7 @@
     <Compile Include="Managers\APIManager\Transmitters\Restful\RestfulTransmitter.cs" />
     <Compile Include="Managers\CommunicationManager\CommunicationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\BookingRequestServices.cs" />
     <Compile Include="Services\CalendarServices.cs" />
     <Compile Include="Services\EmailServices.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />

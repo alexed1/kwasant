@@ -5,7 +5,6 @@ using System.Net.Mail;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
 using KwasantCore.Services;
-using Data.Tools.Managers;
 using S22.Imap;
 
 using StructureMap;

@@ -140,17 +140,6 @@
     <Compile Include="Models\StoredFileDO.cs" />
     <Compile Include="Models\UserDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tools\EmailHelper.cs" />
-    <Compile Include="Tools\Managers\AlertManager.cs" />
-    <Compile Include="Tools\Managers\APIManager\Packagers\Mandrill\MandrillPackager.cs" />
-    <Compile Include="Tools\Managers\APIManager\Packagers\Shnexy\ShnexyPackager.cs" />
-    <Compile Include="Tools\Managers\APIManager\Serializers\Json\JsonSerializer.cs" />
-    <Compile Include="Tools\Managers\APIManager\Transmitters\Restful\RestfulCall.cs" />
-    <Compile Include="Tools\Managers\APIManager\Transmitters\Restful\RestfulResponse.cs" />
-    <Compile Include="Tools\Managers\APIManager\Transmitters\Restful\RestfulTransmitter.cs" />
-    <Compile Include="Tools\Managers\BookingRequestManager.cs" />
-    <Compile Include="Tools\Managers\CommunicationManager\CommunicationManager.cs" />
-    <Compile Include="Tools\Managers\EmailManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

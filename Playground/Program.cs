@@ -7,7 +7,6 @@ using Data.DataAccessLayer.Repositories;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using Shnexy.Controllers;
-using Data.Tools.Managers;
 using StructureMap;
 
 namespace Playground

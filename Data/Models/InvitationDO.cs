@@ -15,8 +15,6 @@ namespace Data.Models
         public DateTime EndDate { get; set; }
         public string Location { get; set; }
 
-        [ForeignKey("Status")]
-        public int StatusID { get; set; }
         public string Status { get; set; }
         public string Transparency { get; set; }
         public string Class { get; set; }
