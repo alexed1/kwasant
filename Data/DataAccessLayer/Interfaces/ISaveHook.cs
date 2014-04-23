@@ -1,7 +1,9 @@
-﻿namespace Data.DataAccessLayer.Interfaces
+﻿using System.Data.Entity.Infrastructure;
+
+namespace Data.DataAccessLayer.Interfaces
 {
     public interface ISaveHook
     {
-        void SaveHook();
+        void SaveHook(DbEntityEntry<ISaveHook> entity);
     }
 }

@@ -23,9 +23,9 @@
 #cboxOverlay{background:rgba(0,0,0,0.7);}
 #colorbox{outline:0;}
     #cboxContent{margin-top:20px;background:#000;}
-        .cboxIframe{background:#D7D7D7;}
+        .cboxIframe{background:#F2E9DF;}
         #cboxError{padding:50px; border:1px solid #ccc;}
-        #cboxLoadedContent{border:5px solid #000; background:#D7D7D7;}
+        #cboxLoadedContent{border:5px solid #000; background:#F2E9DF;}
         #cboxTitle{position:absolute; top:-20px; left:0; color:#ccc;}
         #cboxCurrent{position:absolute; top:-20px; right:0px; color:#ccc;}
         #cboxLoadingGraphic{background:url(img/loading.gif) no-repeat center center;}
@@ -36,7 +36,7 @@
         /* avoid outlines on :active (mouseclick), but preserve outlines on :focus (tabbed navigating) */
         #cboxPrevious:active, #cboxNext:active, #cboxSlideshow:active, #cboxClose:active {outline:0;}
         
-        #cboxSlideshow{position:absolute; top:-20px; right:90px; color:#D7D7D7;}
+        #cboxSlideshow{position:absolute; top:-20px; right:90px; color:#F2E9DF;}
         #cboxPrevious{position:absolute; top:50%; left:5px; margin-top:-32px; background:url(img/controls.png) no-repeat top left; width:28px; height:65px; text-indent:-9999px;}
         #cboxPrevious:hover{background-position:bottom left;}
         #cboxNext{position:absolute; top:50%; right:5px; margin-top:-32px; background:url(img/controls.png) no-repeat top right; width:28px; height:65px; text-indent:-9999px;}

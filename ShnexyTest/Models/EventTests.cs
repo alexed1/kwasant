@@ -4,8 +4,9 @@ using System.Data.Entity;
 using Data.DataAccessLayer.Infrastructure;
 using Data.DataAccessLayer.Interfaces;
 using Data.DataAccessLayer.Repositories;
-using Data.DataAccessLayer.StructureMap;
+using KwasantCore.StructureMap;
 using Data.Models;
+using KwasantCore.Services;
 using NUnit.Framework;
 using ShnexyTest.Fixtures;
 using StructureMap;
@@ -56,7 +57,7 @@ namespace ShnexyTest.Models
                 };
             attendees.ForEach(attendeesRepo.Add);
 
-            EventDO invitation = new EventDO
+            InvitationDO invitation = new InvitationDO
             {
                 Description = "This is my test invitation",
                 Summary = @"My test invitation",
@@ -67,7 +68,7 @@ namespace ShnexyTest.Models
                 Emails = new List<EmailDO>()
             };
             invRepo.Add(invitation);
-            Calendar.DispatchEvent(_uow, invitation);
+            CalendarServices.DispatchEvent(_uow, invitation);
 
             //Verify success
             //use imap to load unread messages from the test customer account

@@ -23,7 +23,7 @@ using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
 using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers.Other;
 using Data.DDay.DDay.iCal.Structs;
 using Data.DataAccessLayer.Interfaces;
-using Data.DataAccessLayer.StructureMap;
+using KwasantCore.StructureMap;
 using Data.Models;
 using DDay.DDay.iCal.Components;
 using NUnit.Framework;

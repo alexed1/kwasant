@@ -1,5 +1,8 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Linq;
 using Data.DataAccessLayer.Interfaces;
 using Data.Models;
 
@@ -10,9 +13,9 @@ namespace Data.DataAccessLayer.Infrastructure
     public class ShnexyDbContext : DbContext
     {       
         //see web.config for connection string names.
-        //azure is AzureDbContext
+        //azure is AzureAlexTestDb
         public ShnexyDbContext()
-            : base("name=ShnexyTESTLocalDb")
+            : base("name=AzureAlexTestDb")
         {
             
         }
@@ -20,9 +23,38 @@ namespace Data.DataAccessLayer.Infrastructure
         public override int SaveChanges()
         {
             ChangeTracker.DetectChanges();
-            foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>())
+            var adds = ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();
+            var deletes = ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToList();
+            var modifies = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified)
+                .Select(e =>
             {
-                entity.Entity.SaveHook();
+                    const string displayChange = "[{0}]: [{1}] -> [{2}]";
+                    var changedValues = new List<String>();
+                    foreach (var prop in e.OriginalValues.PropertyNames)
+                    {
+                        object originalValue = e.OriginalValues[prop];
+                        object currentValue = e.CurrentValues[prop];
+                        if ((originalValue == null && currentValue != null) || (originalValue != null && !originalValue.Equals(currentValue)))
+                        {
+                            changedValues.Add(String.Format(displayChange, prop, originalValue,
+                                currentValue));
+            }
+                    }
+
+                    var actualName = (e.Entity.GetType().FullName.StartsWith("System.Data.Entity.DynamicProxies") && e.Entity.GetType().BaseType != null)
+                        ? e.Entity.GetType().BaseType.Name
+                        : e.Entity.GetType().FullName;
+                    return new
+                    {
+                        EntityName = actualName,
+                        ChangedValue = changedValues
+                    };
+                })
+                .Where(e => e.ChangedValue != null && e.ChangedValue.Count > 0)
+                .ToList();
+            foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
+            {
+                entity.Entity.SaveHook(entity);
             }
 
             return base.SaveChanges();
@@ -37,14 +69,14 @@ namespace Data.DataAccessLayer.Infrastructure
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EmailStatusDO>().ToTable("EmailStatuses");
-            modelBuilder.Entity<EventDO>().ToTable("Events");
+            modelBuilder.Entity<InvitationDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<UserDO>().ToTable("Users");
 
-            modelBuilder.Entity<EventDO>()
+            modelBuilder.Entity<InvitationDO>()
                 .HasMany(ev => ev.Emails)
-                .WithMany(e => e.Events)
+                .WithMany(e => e.Invitations)
                 .Map(
                     mapping => mapping.MapLeftKey("EventID").MapRightKey("EmailID").ToTable("EventEmail")
                 );
@@ -88,6 +120,11 @@ namespace Data.DataAccessLayer.Infrastructure
                 .WithRequired(e => e.From)
                 .Map(x => x.MapKey("FromEmailAddressID"));
 
+            modelBuilder.Entity<InvitationDO>()
+                .HasMany(e => e.Attendees)
+                .WithRequired(a => a.Invitation)
+                .WillCascadeOnDelete(true);
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -105,7 +142,7 @@ namespace Data.DataAccessLayer.Infrastructure
 
         public DbSet<EmailStatusDO> EmailStatuses { get; set; }
         
-        public DbSet<EventDO> Invitations { get; set; }
+        public DbSet<InvitationDO> Invitations { get; set; }
 
         public DbSet<StoredFileDO> StoredFiles { get; set; }
 

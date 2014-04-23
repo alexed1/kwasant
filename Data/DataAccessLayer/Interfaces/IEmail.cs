@@ -17,6 +17,6 @@ namespace Data.DataAccessLayer.Interfaces
         //IEnumerable<EmailAddress> BCC { get; set; }
         //IEnumerable<EmailAddress> CC { get; set; }
         //IEnumerable<Attachment> Attachments { get; set; }
-        List<EventDO> Events { get; set; }
+        List<InvitationDO> Invitations { get; set; }
     }
 }

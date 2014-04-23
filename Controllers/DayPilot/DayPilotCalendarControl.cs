@@ -1,49 +1,26 @@
 ﻿using System;
-using Data.Models;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Calendar;
 using DayPilot.Web.Mvc.Events.Common;
-using Shnexy.Controllers.Models;
+using KwasantCore.Services;
 using Calendar = Data.Models.Calendar;
+
 
 namespace Shnexy.Controllers.DayPilot
 {
     public class DayPilotCalendarControl : DayPilotCalendar
     {
-        private readonly Calendar _calendar;
-        public DayPilotCalendarControl(Calendar calendar)
+        private readonly CalendarServices _calendar;
+        public DayPilotCalendarControl(CalendarServices calendar)
         {
             _calendar = calendar;
-        }
-
-        protected override void OnTimeRangeSelected(TimeRangeSelectedArgs e)
-        {
-            _calendar.AddEvent(new EventDO
-            {
-                StartDate = e.Start,
-                EndDate = e.End,
-                Summary = "Click to Open Form"
-            });
-            
-            Update();
         }
 
         protected override void OnEventMove(EventMoveArgs e)
         {
             _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
-            //if (new EventManager(Controller).Get(e.Id) != null)
-            //{
-            //    new EventManager(Controller).EventMove(e.Id, e.NewStart, e.NewEnd);
-            //    MoveUpdateEventFile(e.Id, e.NewStart, e.NewEnd);
-            //}
-            //else // external drag&drop
-            //{
-            //    new EventManager(Controller).EventCreate(e.NewStart, e.NewEnd, e.Text, e.NewResource, e.Id);
-            //    MoveUpdateEventFile(e.Id, e.NewStart, e.NewEnd);
-            //}
-
             Update();
         }
         
@@ -86,12 +63,15 @@ namespace Shnexy.Controllers.DayPilot
             switch (e.Command)
             {
                 case "navigate":
-                    StartDate = (DateTime)e.Data["start"];
+                    if (e.Data["day"] != null)
+                    {
+                        StartDate = (DateTime)e.Data["day"];
+                    }
                     Update(CallBackUpdateType.Full);
                     break;
 
                 case "refresh":
-                    UpdateWithMessage("Refreshed");
+                    UpdateWithMessage("Changes Saved.");
                     break;
 
                 case "selected":
@@ -113,6 +93,11 @@ namespace Shnexy.Controllers.DayPilot
             }
         }
 
+        protected override void OnBeforeEventRender(BeforeEventRenderArgs e)
+        {
+            e.Areas.Add(new Area().Right(3).Top(3).Width(15).Height(15).CssClass("event_action_delete").JavaScript("eventDelete(e);"));
+        }
+
         protected override void OnBeforeCellRender(BeforeCellRenderArgs e)
         {
             if (Id == "dpc_today")
@@ -132,60 +117,10 @@ namespace Shnexy.Controllers.DayPilot
 
         }
 
-        protected override void OnBeforeEventRender(BeforeEventRenderArgs e)
-        {
-
-            if (Id == "dpcg")  // Calendar/GoogleLike
-            {
-                if (e.Id == "6")
-                {
-                    e.BorderColor = "#1AAFE0";
-                    e.BackgroundColor = "#90D8F2";
-                }
-                if (e.Id == "8")
-                {
-                    e.BorderColor = "#068c14";
-                    e.BackgroundColor = "#08b81b";
-                }
-                if (e.Id == "2")
-                {
-                    e.BorderColor = "#990607";
-                    e.BackgroundColor = "#f60e13";
-                }
-            }
-            else if (Id == "dpc_menu")  // Calendar/ContextMenu
-            {
-                if (e.Id == "7")
-                {
-                    e.ContextMenuClientName = "menu2";
-                }
-            }
-            else if (Id == "dpc_areas")  // Calendar/ActiveAreas
-            {
-                e.CssClass = "calendar_white_event_withheader";
-
-                e.Areas.Add(new Area().Right(3).Top(3).Width(15).Height(15).CssClass("event_action_delete").JavaScript("dpc_areas.eventDeleteCallBack(e);"));
-                e.Areas.Add(new Area().Right(20).Top(3).Width(15).Height(15).CssClass("event_action_menu").JavaScript("dpc_areas.bubble.showEvent(e, true);"));
-                e.Areas.Add(new Area().Left(0).Bottom(5).Right(0).Height(5).CssClass("event_action_bottomdrag").ResizeEnd());
-                e.Areas.Add(new Area().Left(15).Top(1).Right(46).Height(11).CssClass("event_action_move").Move());
-            }
-
-            if (e.Id == "7")
-            {
-                e.DurationBarColor = "red";
-            }
-
-            if (e.Recurrent)
-            {
-                e.InnerHtml += " (R)";
-            }
-        }
-
         protected override void OnInit(InitArgs initArgs)
         {
             //Thread.Sleep(5000);
-
-            UpdateWithMessage("Welcome!", CallBackUpdateType.Full);
+            Update(CallBackUpdateType.Full);
 
             if (Id == "days_resources")
             {
@@ -238,7 +173,8 @@ namespace Shnexy.Controllers.DayPilot
             DataStartField = "StartDate";
             DataEndField = "EndDate";
             DataTextField = "Summary";
-            DataIdField = "EventID";
+            DataIdField = "InvitationID";
+            DataAllDayField = "IsAllDay";
 
             Events = _calendar.EventsList;
         }
