@@ -58,7 +58,10 @@ namespace Daemons
             EmailRepository emailRepository = new EmailRepository(unitOfWork);
             foreach (MailMessage message in messages)
             {
-                BookingRequestManager.ConvertEmail(unitOfWork, message);
+                var bookingRequestRepo = new BookingRequestRepository(unitOfWork);
+                var bookingRequest = EmailServices.ConvertMailMessageToEmail(bookingRequestRepo, message);
+
+                BookingRequestManager.CommitEmail(unitOfWork, bookingRequest);
             }
             emailRepository.UnitOfWork.SaveChanges();
         }

@@ -33,7 +33,7 @@ namespace Playground
                 Body = "ccADE"
             };
 
-            BookingRequestManager.ConvertEmail(unitOfWork, message);
+            BookingRequestManager.ProcessBookingRequest(unitOfWork, message);
         }
     }
 }

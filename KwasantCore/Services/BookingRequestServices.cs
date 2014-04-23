@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
 using System.Text.RegularExpressions;
 using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
@@ -12,27 +11,25 @@ namespace KwasantCore.Services
 {
     public static class BookingRequestManager
     {
-        public static void ConvertEmail(IUnitOfWork uow, MailMessage currMessage)
+        public static void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-            var curCustomer = GetOrCreateCustomer(uow, currMessage);
-
-            var bookingRequestRepo = new BookingRequestRepository(uow);
-            var bookingRequest = EmailServices.ConvertMailMessageToEmail(bookingRequestRepo, currMessage);
+            CustomerDO curCustomer = GetOrCreateCustomer(uow, bookingRequest);
+            
             bookingRequest.Customer = curCustomer;
-            bookingRequest.Instructions = ProcessShortHand(uow, currMessage.Body);
+            bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.Text);
             uow.SaveChanges();
         }
 
-        private static CustomerDO GetOrCreateCustomer(IUnitOfWork uow, MailMessage currMessage)
+        private static CustomerDO GetOrCreateCustomer(IUnitOfWork uow, BookingRequestDO currMessage)
         {
-            var fromEmailAddress = currMessage.From.Address;
-            var customerRepo = new CustomerRepository(uow);
-            var curCustomer = customerRepo.GetQuery().FirstOrDefault(c => c.EmailAddress == fromEmailAddress);
+            string fromEmailAddress = currMessage.From.Address;
+            CustomerRepository customerRepo = new CustomerRepository(uow);
+            CustomerDO curCustomer = customerRepo.GetQuery().FirstOrDefault(c => c.EmailAddress == fromEmailAddress);
             if (curCustomer == null)
             {
                 curCustomer = new CustomerDO();
                 curCustomer.EmailAddress = fromEmailAddress;
-                curCustomer.FirstName = currMessage.From.DisplayName;
+                curCustomer.FirstName = currMessage.From.Name;
                 customerRepo.Add(curCustomer);
             }
             return curCustomer;
@@ -40,10 +37,10 @@ namespace KwasantCore.Services
 
         private static List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)
         {
-            var instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?) travelTime).ToList();
+            List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?) travelTime).ToList();
             instructionIDs.Add(ProcessAllDay(emailBody));
             instructionIDs = instructionIDs.Where(i => i.HasValue).Distinct().ToList();
-            var instructionRepo = new InstructionRepository(uow);
+            InstructionRepository instructionRepo = new InstructionRepository(uow);
             return instructionRepo.GetQuery().Where(i => instructionIDs.Contains(i.InstructionID)).ToList();
         }
 
@@ -51,7 +48,7 @@ namespace KwasantCore.Services
         {
             const string regex = "{0}CC|CC{0}";
 
-            var travelTimeMapping = new Dictionary<int, int>
+            Dictionary<int, int> travelTimeMapping = new Dictionary<int, int>
             {
                 {30, InstructionConstants.TravelTime.Add30MinutesTravelTime},
                 {60, InstructionConstants.TravelTime.Add60MinutesTravelTime},
@@ -59,12 +56,12 @@ namespace KwasantCore.Services
                 {120, InstructionConstants.TravelTime.Add120MinutesTravelTime}
             };
 
-            var instructions = new List<int>();
+            List<int> instructions = new List<int>();
 
             //Matches cc[number] or [number]cc. Not case sensitive
-            foreach (var allowedDuration in travelTimeMapping.Keys)
+            foreach (int allowedDuration in travelTimeMapping.Keys)
             {
-                var reg = new Regex(String.Format(regex, allowedDuration), RegexOptions.IgnoreCase);
+                Regex reg = new Regex(String.Format(regex, allowedDuration), RegexOptions.IgnoreCase);
                 if (reg.IsMatch(emailBody))
                 {
                     instructions.Add(travelTimeMapping[allowedDuration]);
@@ -78,7 +75,7 @@ namespace KwasantCore.Services
         {
             const string regex = "(ccADE)";
 
-            var reg = new Regex(regex, RegexOptions.IgnoreCase);
+            Regex reg = new Regex(regex, RegexOptions.IgnoreCase);
             if (reg.IsMatch(emailBody))
             {
                 return InstructionConstants.EventDuration.MarkAsAllDayEvent;

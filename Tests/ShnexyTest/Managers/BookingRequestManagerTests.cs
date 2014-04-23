@@ -47,7 +47,7 @@ namespace ShnexyTest.Managers
             {
             };
 
-            BookingRequestManager.ConvertEmail(_uow, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, message);
 
             customersNow = _customerRepo.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
@@ -73,7 +73,7 @@ namespace ShnexyTest.Managers
             {
             };
 
-            BookingRequestManager.ConvertEmail(_uow, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, message);
 
             customersNow = _customerRepo.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
@@ -91,7 +91,7 @@ namespace ShnexyTest.Managers
                 Body = "CCADE",
             };
 
-            BookingRequestManager.ConvertEmail(_uow, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, message);
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
             BookingRequestDO bookingRequest = bookingRequestRepo.GetAll().ToList().First();
@@ -109,7 +109,7 @@ namespace ShnexyTest.Managers
                 Body = "cc30",
             };
 
-            BookingRequestManager.ConvertEmail(_uow, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, message);
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
             BookingRequestDO bookingRequest = bookingRequestRepo.GetAll().ToList().First();
@@ -127,7 +127,7 @@ namespace ShnexyTest.Managers
                 Body = "cc60",
             };
 
-            BookingRequestManager.ConvertEmail(_uow, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, message);
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
             BookingRequestDO bookingRequest = bookingRequestRepo.GetAll().ToList().First();
@@ -145,7 +145,7 @@ namespace ShnexyTest.Managers
                 Body = "cc90",
             };
 
-            BookingRequestManager.ConvertEmail(_uow, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, message);
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
             BookingRequestDO bookingRequest = bookingRequestRepo.GetAll().ToList().First();
@@ -163,7 +163,7 @@ namespace ShnexyTest.Managers
                 Body = "cc120",
             };
 
-            BookingRequestManager.ConvertEmail(_uow, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, message);
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
             BookingRequestDO bookingRequest = bookingRequestRepo.GetAll().ToList().First();
