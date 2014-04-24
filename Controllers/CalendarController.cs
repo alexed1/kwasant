@@ -374,7 +374,7 @@ namespace Shnexy.Controllers
             List<AttendeeDO> originalAttendees;
             if (eventDO.InvitationID != 0)
             {
-                var oldEvent = Calendar.GetEvent(eventDO.InvitationID);
+                InvitationDO oldEvent = Calendar.GetEvent(eventDO.InvitationID);
                 originalAttendees = new List<AttendeeDO>(oldEvent.Attendees);
             }
             else
@@ -422,7 +422,7 @@ namespace Shnexy.Controllers
             }
             else
             {
-                var oldEvent = Calendar.GetEvent(invitationDO.InvitationID);
+                InvitationDO oldEvent = Calendar.GetEvent(invitationDO.InvitationID);
                 oldEvent.CopyFrom(invitationDO);
                 invitationDO = oldEvent;
             }

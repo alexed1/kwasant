@@ -23,14 +23,14 @@ namespace Data.DataAccessLayer.Infrastructure
         public override int SaveChanges()
         {
             ChangeTracker.DetectChanges();
-            var adds = ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();
-            var deletes = ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToList();
+            List<object> adds = ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();
+            List<object> deletes = ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToList();
             var modifies = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified)
                 .Select(e =>
             {
                     const string displayChange = "[{0}]: [{1}] -> [{2}]";
-                    var changedValues = new List<String>();
-                    foreach (var prop in e.OriginalValues.PropertyNames)
+                    List<string> changedValues = new List<String>();
+                    foreach (string prop in e.OriginalValues.PropertyNames)
                     {
                         object originalValue = e.OriginalValues[prop];
                         object currentValue = e.CurrentValues[prop];
@@ -41,7 +41,7 @@ namespace Data.DataAccessLayer.Infrastructure
             }
                     }
 
-                    var actualName = (e.Entity.GetType().FullName.StartsWith("System.Data.Entity.DynamicProxies") && e.Entity.GetType().BaseType != null)
+                    string actualName = (e.Entity.GetType().FullName.StartsWith("System.Data.Entity.DynamicProxies") && e.Entity.GetType().BaseType != null)
                         ? e.Entity.GetType().BaseType.Name
                         : e.Entity.GetType().FullName;
                     return new

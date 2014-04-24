@@ -25,15 +25,6 @@ namespace Playground
             ShnexyDbContext db = new ShnexyDbContext();
             db.Database.Initialize(true);
 
-            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-            EmailRepository emailRepository = new EmailRepository(unitOfWork);
-
-            var message = new MailMessage( new MailAddress("rjrudman@gmail.com", "Robert Rudman"), new MailAddress("kwa@sant.com", "Booqit Services"))
-            {
-                Body = "ccADE"
-            };
-
-            BookingRequestManager.ProcessBookingRequest(unitOfWork, message);
         }
     }
 }

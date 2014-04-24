@@ -47,7 +47,9 @@ namespace ShnexyTest.Managers
             {
             };
 
-            BookingRequestManager.ProcessBookingRequest(_uow, message);
+            BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
+            BookingRequestDO bookingRequest = EmailServices.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, bookingRequest);
 
             customersNow = _customerRepo.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
@@ -73,7 +75,9 @@ namespace ShnexyTest.Managers
             {
             };
 
-            BookingRequestManager.ProcessBookingRequest(_uow, message);
+            BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
+            BookingRequestDO bookingRequest = EmailServices.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, bookingRequest);
 
             customersNow = _customerRepo.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
@@ -91,10 +95,11 @@ namespace ShnexyTest.Managers
                 Body = "CCADE",
             };
 
-            BookingRequestManager.ProcessBookingRequest(_uow, message);
-
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = bookingRequestRepo.GetAll().ToList().First();
+            BookingRequestDO bookingRequest = EmailServices.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, bookingRequest);
+
+            bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
             Assert.AreEqual(InstructionConstants.EventDuration.MarkAsAllDayEvent, bookingRequest.Instructions.First().InstructionID);
         }
@@ -109,10 +114,11 @@ namespace ShnexyTest.Managers
                 Body = "cc30",
             };
 
-            BookingRequestManager.ProcessBookingRequest(_uow, message);
-
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = bookingRequestRepo.GetAll().ToList().First();
+            BookingRequestDO bookingRequest = EmailServices.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, bookingRequest);
+
+            bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
             Assert.AreEqual(InstructionConstants.TravelTime.Add30MinutesTravelTime, bookingRequest.Instructions.First().InstructionID);
         }
@@ -127,10 +133,11 @@ namespace ShnexyTest.Managers
                 Body = "cc60",
             };
 
-            BookingRequestManager.ProcessBookingRequest(_uow, message);
-
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = bookingRequestRepo.GetAll().ToList().First();
+            BookingRequestDO bookingRequest = EmailServices.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, bookingRequest);
+
+            bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
             Assert.AreEqual(InstructionConstants.TravelTime.Add60MinutesTravelTime, bookingRequest.Instructions.First().InstructionID);
         }
@@ -145,10 +152,11 @@ namespace ShnexyTest.Managers
                 Body = "cc90",
             };
 
-            BookingRequestManager.ProcessBookingRequest(_uow, message);
-
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = bookingRequestRepo.GetAll().ToList().First();
+            BookingRequestDO bookingRequest = EmailServices.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, bookingRequest);
+
+            bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
             Assert.AreEqual(InstructionConstants.TravelTime.Add90MinutesTravelTime, bookingRequest.Instructions.First().InstructionID);
         }
@@ -163,10 +171,11 @@ namespace ShnexyTest.Managers
                 Body = "cc120",
             };
 
-            BookingRequestManager.ProcessBookingRequest(_uow, message);
-
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = bookingRequestRepo.GetAll().ToList().First();
+            BookingRequestDO bookingRequest = EmailServices.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestManager.ProcessBookingRequest(_uow, bookingRequest);
+
+            bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
             Assert.AreEqual(InstructionConstants.TravelTime.Add120MinutesTravelTime, bookingRequest.Instructions.First().InstructionID);
         }
