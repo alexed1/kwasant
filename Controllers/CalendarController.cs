@@ -5,8 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Data.DataAccessLayer.Interfaces;
-using Data.Models;
-using Data.DataAccessLayer.Repositories;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Services;
 using Shnexy.Controllers.DayPilot;
@@ -30,15 +31,15 @@ namespace Shnexy.Controllers
             if (BookingRequestDO == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Calendar = new CalendarServices(uow, BookingRequestDO);
+            Calendar = new Calendar(uow, BookingRequestDO);
             return View(BookingRequestDO);
         }
 
-        private CalendarServices Calendar
+        private Calendar Calendar
         {
             get
             {
-                return Session["CalendarServices"] as CalendarServices;
+                return Session["CalendarServices"] as Calendar;
             }
             set
             {
@@ -229,55 +230,55 @@ namespace Shnexy.Controllers
 
         public ActionResult New(string start, string end)
         {
-            InvitationDO invitationDO = new InvitationDO
+            EventDO eventDO = new EventDO
             {
                 StartDate = DateTime.Parse(start),
                 EndDate = DateTime.Parse(end),
                 BookingRequest = BookingRequestDO,
             };
             //If there's no time component for the start date (ie starting at midnight), and the end is exactly 1 day ahead, it's an all-day-event
-            if (invitationDO.StartDate.Equals(invitationDO.StartDate.Date) &&
-                invitationDO.StartDate.AddDays(1).Equals(invitationDO.EndDate))
-                invitationDO.IsAllDay = true;
+            if (eventDO.StartDate.Equals(eventDO.StartDate.Date) &&
+                eventDO.StartDate.AddDays(1).Equals(eventDO.EndDate))
+                eventDO.IsAllDay = true;
 
-            invitationDO.Attendees = new List<AttendeeDO>
+            eventDO.Attendees = new List<AttendeeDO>
             {
                 new AttendeeDO
                 {
                     EmailAddress = BookingRequestDO.From.Address,
                     Name = BookingRequestDO.From.Name,
-                    Invitation = invitationDO
+                    Event = eventDO
                 }
             };
 
-            return View("~/Views/Calendar/Open.cshtml", invitationDO);
+            return View("~/Views/Calendar/Open.cshtml", eventDO);
         }
 
-        public ActionResult Open(int invitationID)
+        public ActionResult Open(int eventID)
         {
             return View(
-                Calendar.GetEvent(invitationID)
+                Calendar.GetEvent(eventID)
                 );
         }
 
-        public ActionResult DeleteEvent(int invitationID)
+        public ActionResult DeleteEvent(int eventID)
         {
-            InvitationDO actualInvitationDO = Calendar.GetEvent(invitationID);
-            return View(actualInvitationDO);
+            EventDO actualEventDO = Calendar.GetEvent(eventID);
+            return View(actualEventDO);
         }
 
-        public ActionResult ConfirmDelete(int invitationID)
+        public ActionResult ConfirmDelete(int eventID)
         {
-            Calendar.DeleteEvent(invitationID);
+            Calendar.DeleteEvent(eventID);
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }
 
-        public ActionResult MoveEvent(int invitationID, String newStart, String newEnd)
+        public ActionResult MoveEvent(int eventID, String newStart, String newEnd)
         {
             //This is a fake event that will be thrown away if Confirm() is not called
-            InvitationDO eventDO = new InvitationDO();
-            eventDO.InvitationID = invitationID;
-            InvitationDO actualEventDO = Calendar.GetEvent(invitationID);
+            EventDO eventDO = new EventDO();
+            eventDO.EventID = eventID;
+            EventDO actualEventDO = Calendar.GetEvent(eventID);
             eventDO.CopyFrom(actualEventDO);
 
             DateTime newStartDT = DateTime.Parse(newStart);
@@ -291,7 +292,7 @@ namespace Shnexy.Controllers
             return View("~/Views/Calendar/BeforeSave.cshtml", new ConfirmEvent
             {
                 Key = key,
-                InvitationDO = eventDO
+                EventDO = eventDO
             });
         }
 
@@ -334,13 +335,13 @@ namespace Shnexy.Controllers
             int intSequence = GetValueFromForm(Request.QueryString, "Sequence", 0);
             string strSummary = GetValueFromForm(Request.QueryString, "Summary", String.Empty);
             string strCategory = GetValueFromForm(Request.QueryString, "Category", String.Empty);
-            int invitationID = GetValueFromForm(Request.QueryString, "InvitationID", 0);
+            int eventID = GetValueFromForm(Request.QueryString, "EventID", 0);
             string attendeesStr = GetValueFromForm(Request.QueryString, "Attendees", String.Empty);
 
             //This is a fake event that will be thrown away if Confirm() is not called
-            InvitationDO eventDO = new InvitationDO
+            EventDO eventDO = new EventDO
             {
-                InvitationID = invitationID,
+                EventID = eventID,
                 IsAllDay = isAllDay,
                 StartDate = dtFromDate,
                 EndDate = dtToDate,
@@ -363,18 +364,18 @@ namespace Shnexy.Controllers
                 new ConfirmEvent
                 {
                     Key = key,
-                    InvitationDO = eventDO
+                    EventDO = eventDO
                 }
             );
         }
 
         //Manages adds/deletes and persists of attendees.
-        private void ManageAttendees(InvitationDO eventDO, string attendeesStr)
+        private void ManageAttendees(EventDO eventDO, string attendeesStr)
         {
             List<AttendeeDO> originalAttendees;
-            if (eventDO.InvitationID != 0)
+            if (eventDO.EventID != 0)
             {
-                InvitationDO oldEvent = Calendar.GetEvent(eventDO.InvitationID);
+                EventDO oldEvent = Calendar.GetEvent(eventDO.EventID);
                 originalAttendees = new List<AttendeeDO>(oldEvent.Attendees);
             }
             else
@@ -415,21 +416,21 @@ namespace Shnexy.Controllers
         {
             string key = GetValueFromForm(form, "key", string.Empty);
 
-            InvitationDO invitationDO = Session["FakedEvent_" + key] as InvitationDO;
-            if (invitationDO.InvitationID == 0)
+            EventDO eventDO = Session["FakedEvent_" + key] as EventDO;
+            if (eventDO.EventID == 0)
             {
-                Calendar.AddEvent(invitationDO);
+                Calendar.AddEvent(eventDO);
             }
             else
             {
-                InvitationDO oldEvent = Calendar.GetEvent(invitationDO.InvitationID);
-                oldEvent.CopyFrom(invitationDO);
-                invitationDO = oldEvent;
+                EventDO oldEvent = Calendar.GetEvent(eventDO.EventID);
+                oldEvent.CopyFrom(eventDO);
+                eventDO = oldEvent;
             }
 
-            invitationDO.BookingRequest = BookingRequestDO;
+            eventDO.BookingRequest = BookingRequestDO;
 
-            Calendar.DispatchEvent(invitationDO);
+            Calendar.DispatchEvent(eventDO);
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }
@@ -439,7 +440,7 @@ namespace Shnexy.Controllers
         public class ConfirmEvent
         {
             public string Key;
-            public InvitationDO InvitationDO;
+            public EventDO EventDO;
         }
     }
 }

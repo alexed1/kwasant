@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Models;
+using Data.Entities;
 using KwasantCore.Managers.APIManager.Transmitters.Restful;
 using Newtonsoft.Json;
 using UtilitiesLib;

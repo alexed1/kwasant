@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Data.Models;
+using Data.Entities;
 using KwasantCore.Managers.APIManager.Serializers.Json;
 using UtilitiesLib;
 

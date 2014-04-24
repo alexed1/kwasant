@@ -12,11 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{99D5A9
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C440467C-ADB6-49C7-8A06-DC7A525A98CC}"
-	ProjectSection(SolutionItems) = preProject
-		TestSettings1.testsettings = TestSettings1.testsettings
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Daemons", "Daemons\Daemons.csproj", "{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}"
@@ -33,13 +28,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KwasantCore", "KwasantCore\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShnexyTest", "Tests\ShnexyTest\ShnexyTest.csproj", "{8D38298A-9246-4AB9-80C4-9A830213346C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DDay", "DDay", "{BDA2D765-2D19-4828-BE75-FB4B820A7375}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDay.iCal.Test", "Tests\DDay\DDay.iCal.Test\DDay.iCal.Test.csproj", "{66DBDDDF-98FB-44B0-85A3-062A37C33BC5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDay.Collections.Test", "Tests\DDay\DDay.Collections.Test\DDay.Collections.Test.csproj", "{B8DF17ED-924B-4526-9B94-B96DF7B5CB80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KwasantTest", "Tests\KwasantTest\KwasantTest.csproj", "{8D38298A-9246-4AB9-80C4-9A830213346C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,12 +92,6 @@ Global
 		{9891496C-8512-4708-925A-EE9D0F9199D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9891496C-8512-4708-925A-EE9D0F9199D4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9891496C-8512-4708-925A-EE9D0F9199D4}.Release|x86.ActiveCfg = Release|Any CPU
-		{8D38298A-9246-4AB9-80C4-9A830213346C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D38298A-9246-4AB9-80C4-9A830213346C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8D38298A-9246-4AB9-80C4-9A830213346C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8D38298A-9246-4AB9-80C4-9A830213346C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8D38298A-9246-4AB9-80C4-9A830213346C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8D38298A-9246-4AB9-80C4-9A830213346C}.Release|x86.ActiveCfg = Release|Any CPU
 		{66DBDDDF-98FB-44B0-85A3-062A37C33BC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{66DBDDDF-98FB-44B0-85A3-062A37C33BC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66DBDDDF-98FB-44B0-85A3-062A37C33BC5}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -117,13 +106,19 @@ Global
 		{B8DF17ED-924B-4526-9B94-B96DF7B5CB80}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8DF17ED-924B-4526-9B94-B96DF7B5CB80}.Release|x86.ActiveCfg = Release|x86
 		{B8DF17ED-924B-4526-9B94-B96DF7B5CB80}.Release|x86.Build.0 = Release|x86
+		{8D38298A-9246-4AB9-80C4-9A830213346C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D38298A-9246-4AB9-80C4-9A830213346C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D38298A-9246-4AB9-80C4-9A830213346C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8D38298A-9246-4AB9-80C4-9A830213346C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D38298A-9246-4AB9-80C4-9A830213346C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D38298A-9246-4AB9-80C4-9A830213346C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{8D38298A-9246-4AB9-80C4-9A830213346C} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{BDA2D765-2D19-4828-BE75-FB4B820A7375} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
+		{8D38298A-9246-4AB9-80C4-9A830213346C} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{66DBDDDF-98FB-44B0-85A3-062A37C33BC5} = {BDA2D765-2D19-4828-BE75-FB4B820A7375}
 		{B8DF17ED-924B-4526-9B94-B96DF7B5CB80} = {BDA2D765-2D19-4828-BE75-FB4B820A7375}
 	EndGlobalSection

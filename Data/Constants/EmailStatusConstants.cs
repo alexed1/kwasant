@@ -1,7 +1,8 @@
 ﻿using System.Reflection;
 using Data.DataAccessLayer.Interfaces;
-using Data.DataAccessLayer.Repositories;
-using Data.Models;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Repositories;
 
 namespace Data.Constants
 {

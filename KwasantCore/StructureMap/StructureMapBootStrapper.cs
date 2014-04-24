@@ -1,8 +1,10 @@
-﻿using Data.DataAccessLayer.Infrastructure;
-using Data.DataAccessLayer.Interfaces;
-using Data.Models;
+﻿using Data.DataAccessLayer.Interfaces;
+using Data.Entities;
+using Data.Infrastructure;
+using Data.Interfaces;
 using StructureMap;
 using StructureMap.Configuration.DSL;
+using IEvent = Data.Interfaces.IEvent;
 
 namespace KwasantCore.StructureMap
 {
@@ -34,7 +36,7 @@ namespace KwasantCore.StructureMap
                 For<IEmail>().Use<EmailDO>();
                 For<IEmailAddress>().Use<EmailAddressDO>();
                 For<IEmailStatus>().Use<EmailStatusDO>();
-                For<IInvitation>().Use<InvitationDO>();
+                For<IEvent>().Use<EventDO>();
                 For<IUser>().Use<UserDO>();
             }
         }

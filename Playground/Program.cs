@@ -1,9 +1,7 @@
 ﻿using System.Data.Entity;
 using System.Net.Mail;
 using Daemons;
-using Data.DataAccessLayer.Infrastructure;
-using Data.DataAccessLayer.Interfaces;
-using Data.DataAccessLayer.Repositories;
+using Data.Infrastructure;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using Shnexy.Controllers;

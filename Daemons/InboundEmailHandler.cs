@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
-using Data.DataAccessLayer.Interfaces;
-using Data.DataAccessLayer.Repositories;
-using Data.Models;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Repositories;
 using KwasantCore.Services;
 using S22.Imap;
 
@@ -60,9 +60,9 @@ namespace Daemons
             foreach (MailMessage message in messages)
             {
                 BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
-                BookingRequestDO bookingRequest = EmailServices.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
 
-                BookingRequestManager.ProcessBookingRequest(unitOfWork, bookingRequest);
+                BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
             }
             emailRepository.UnitOfWork.SaveChanges();
         }

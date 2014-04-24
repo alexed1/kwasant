@@ -1,8 +1,8 @@
 ﻿using System;
 using Data.Constants;
-using Data.DataAccessLayer.Interfaces;
-using Data.DataAccessLayer.Repositories;
-using Data.Models;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Repositories;
 using KwasantCore.Services;
 using StructureMap;
 
@@ -29,7 +29,7 @@ namespace Daemons
 
             foreach (EmailDO email in emailRepository.FindList(e => e.Status.EmailStatusID == EmailStatusConstants.QUEUED))
             {
-                new EmailServices(unitOfWork, email).Send();
+                new Email(unitOfWork, email).Send();
             }
         }
     }

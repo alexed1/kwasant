@@ -1,4 +1,4 @@
-﻿@model Data.Models.EmailDO
+﻿@model Data.Entities.EmailDO
 @using DayPilot.Web.Mvc
 @using DayPilot.Web.Mvc.Enums
 @using DayPilot.Web.Mvc.Enums.Calendar
@@ -301,7 +301,7 @@
     }
 
     function eventClick(e) {
-        displayForm(getBaseCalendarURL() + '/Open/?invitationID=' + e.id());
+        displayForm(getBaseCalendarURL() + '/Open/?eventID=' + e.id());
     }
 
     function eventNew(start, end) {
@@ -309,11 +309,11 @@
     }
 
     function eventMove(e, newStart, newEnd) {
-        displayForm(getBaseCalendarURL() + '/MoveEvent/?invitationID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
+        displayForm(getBaseCalendarURL() + '/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
     }
 
     function eventDelete(e) {
-        displayForm(getBaseCalendarURL() + '/DeleteEvent/?invitationID=' + e.id());
+        displayForm(getBaseCalendarURL() + '/DeleteEvent/?eventID=' + e.id());
     }
 
 </script>

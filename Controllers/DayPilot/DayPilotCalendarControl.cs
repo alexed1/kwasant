@@ -10,8 +10,8 @@ namespace Shnexy.Controllers.DayPilot
 {
     public class DayPilotCalendarControl : DayPilotCalendar
     {
-        private readonly CalendarServices _calendar;
-        public DayPilotCalendarControl(CalendarServices calendar)
+        private readonly Calendar _calendar;
+        public DayPilotCalendarControl(Calendar calendar)
         {
             _calendar = calendar;
         }
@@ -171,7 +171,7 @@ namespace Shnexy.Controllers.DayPilot
             DataStartField = "StartDate";
             DataEndField = "EndDate";
             DataTextField = "Summary";
-            DataIdField = "InvitationID";
+            DataIdField = "EventID";
             DataAllDayField = "IsAllDay";
 
             Events = _calendar.EventsList;

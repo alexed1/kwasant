@@ -1,5 +1,5 @@
 ﻿@using Data.Constants
-@model Data.Models.InvitationDO
+@model Data.Entities.EventDO
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 
 <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -44,7 +44,7 @@
     $(function () {
         $("#f").submit(function () {
             var f = $("#f");
-            $.get(f.prop('action'), { invitationID: @Model.InvitationID }, function(result) {
+            $.get(f.prop('action'), { eventID: @Model.EventID }, function(result) {
                 close(result);
             }, 'json');
             return false;

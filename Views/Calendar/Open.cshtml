@@ -1,4 +1,4 @@
-﻿@model Data.Models.InvitationDO
+﻿@model Data.Entities.EventDO
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 
 <header>
@@ -139,7 +139,7 @@
     <br />
     @{
         <div style="display:none">
-            @Html.TextBox("InvitationID", @Model.InvitationID, new { @class = "form-control col-md-1" })
+            @Html.TextBox("EventID", @Model.EventID, new { @class = "form-control col-md-1" })
         </div>
     }
     <hr />

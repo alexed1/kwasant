@@ -1,5 +1,5 @@
 ﻿using System;
-using Data.Models;
+using Data.Entities;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
@@ -10,8 +10,8 @@ namespace Shnexy.Controllers.DayPilot
 { 
     public class DayPilotMonthControl : DayPilotMonth
     {
-        private readonly CalendarServices _calendar;
-        public DayPilotMonthControl(CalendarServices calendar)
+        private readonly Calendar _calendar;
+        public DayPilotMonthControl(Calendar calendar)
         {
             _calendar = calendar;
         }
@@ -53,7 +53,7 @@ namespace Shnexy.Controllers.DayPilot
 
         protected override void OnTimeRangeSelected(MonthNamespace.TimeRangeSelectedArgs e)
         {
-            _calendar.AddEvent(new InvitationDO
+            _calendar.AddEvent(new EventDO
             {
                 StartDate = e.Start,
                 EndDate = e.End,
@@ -97,7 +97,7 @@ namespace Shnexy.Controllers.DayPilot
             DataStartField = "StartDate";
             DataEndField = "EndDate";
             DataTextField = "Summary";
-            DataIdField = "InvitationID";
+            DataIdField = "EventID";
 
             Events = _calendar.EventsList;
             

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Reflection;
-using Data.DataAccessLayer.Interfaces;
-using Data.DataAccessLayer.Repositories;
-using Data.Models;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Repositories;
 
 namespace Data.Constants
 {
@@ -22,8 +22,8 @@ namespace Data.Constants
         }
 
 
-        //Generates seed data for invitations.
-        //Invitations must be in a nested class to derive the category. If they're not in a nested class _they will not be seeded_.
+        //Generates seed data for instructions.
+        //Instructions must be in a nested class to derive the category. If they're not in a nested class _they will not be seeded_.
         public static void ApplySeedData(IUnitOfWork uow)
         {
             Type[] nestedTypes = typeof (InstructionConstants).GetNestedTypes();

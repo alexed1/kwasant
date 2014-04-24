@@ -5,8 +5,9 @@ using Configuration;
 using Daemons;
 using Data.Constants;
 using Data.DataAccessLayer.Interfaces;
-using Data.DataAccessLayer.Repositories;
-using Data.Models;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Repositories;
 using KwasantCore.Services;
 using Microsoft.Owin;
 using Owin;
@@ -79,7 +80,7 @@ namespace Shnexy
                 Body = "Book it in office A at 10:30am on Tuesday"
             };
 
-            BookingRequestDO email = EmailServices.ConvertMailMessageToEmail(emailRepository, mailMessage);
+            BookingRequestDO email = Email.ConvertMailMessageToEmail(emailRepository, mailMessage);
             email.Customer = customer;
             email.StatusID = EmailStatusConstants.UNPROCESSED;
 

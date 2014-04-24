@@ -214,26 +214,18 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AdminController.cs" />
-    <Compile Include="Controllers\BookingAgentController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\DayPilot\DayPilotMonthControl.cs" />
     <Compile Include="Controllers\DayPilot\DayPilotCalendarControl.cs" />
     <Compile Include="Controllers\DayPilot\DayPilotNavigatorControl.cs" />
     <Compile Include="Controllers\EmailController.cs" />
-    <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
-    <Compile Include="Controllers\Helpers\Log.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MonthController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\StructureMapControllerFactory.cs" />
-    <Compile Include="DependencyResolution\IoC.cs" />
-    <Compile Include="DependencyResolution\StructureMapDependencyResolver.cs" />
-    <Compile Include="DependencyResolution\StructureMapDependencyScope.cs" />
-    <Compile Include="Fixtures\Seed.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Controllers\EngineController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -818,10 +810,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
     <Folder Include="Controllers\Models\" />
-    <Folder Include="Views\BookingAgent\" />
-    <Folder Include="Views\Engine\" />
-    <Folder Include="Views\Schedule\" />
-    <Folder Include="Views\Session\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

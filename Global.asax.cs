@@ -2,7 +2,7 @@
 using System.Web.Optimization;
 using System.Web.Routing;
 using System.Data.Entity;
-using Data.DataAccessLayer.Infrastructure;
+using Data.Infrastructure;
 using KwasantCore.StructureMap;
 using Shnexy.Controllers;
 
