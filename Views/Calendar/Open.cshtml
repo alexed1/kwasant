@@ -1,4 +1,5 @@
-﻿@model Data.Entities.EventDO
+﻿@using System.Diagnostics.Eventing.Reader
+@model Data.Entities.EventDO
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 
 <header>
@@ -38,70 +39,16 @@
             });
             $('#attendeesSel').select2('data', data);
         });
-
-        /* Wild Char Check Start*/
-        function checkWildCar(texBox, IsNoteType) {
-            var oTextBox = document.getElementById(texBox);
-
-            var specialChars = "!@@#$^&%*()+=-[]\/{}|:<>?,.";
-
-            for (var i = 0; i < specialChars.length; i++) {
-                if (IsNoteType) {
-                    oTextBox.value = oTextBox.value.replace(/[^\w\,\s\.\#\-]/gi, '');
-                }
-                else {
-                    oTextBox.value = oTextBox.value.replace(/[^\w\s\.]/gi, '');
-                }
-            }
-        }
-
-        function Validate() {
-
-            var bFlag = false;
-
-            var name = document.getElementById('Name');
-            var dName = document.getElementById('divName');
-
-            if (name != null) {
-                if (name.value.trim() == '') {
-                    dName.innerHTML = 'Name is required.';
-                    bFlag = false;
-                }
-                else {
-                    dName.innerHTML = '';
-                    bFlag = true;
-                }
-            }
-
-            var location = document.getElementById('Location');
-            var dLocation = document.getElementById('divLocation');
-
-            if (location != null) {
-                if (location.value.trim() == '') {
-                    dLocation.innerHTML = 'Location is required.';
-                    bFlag = false;
-                }
-                else {
-                    dLocation.innerHTML = '';
-                    bFlag = true;
-                }
-            }
-
-            return bFlag;
-        }
-
     </script>
 </header>
 <form id="f" method="post" action="@Url.Action("BeforeSave")">
-    <h3>New Event</h3>
+    <h3>@Html.Raw(Model.EventID == 0 ? "New Event" : "Editing Event")</h3>
     <hr />
-
-    <div>Location</div>
-    <div>
-        @Html.TextBox("Location", @Model.Location, new { @class = "form-control col-md-1" })
-        <div id="divLocation"></div>
-    </div>
-    <br />
+    
+    <div>Summary</div>
+    <br/>
+    <div>@Html.TextBox("Summary", @Model.Summary, new { @class = "form-control col-md-1", Required = true })</div>
+    <br />    
     <div>
         <div>
             <label><input id="chkAllDay" type="checkbox" name="IsAllDay" @Html.Raw(Model.IsAllDay ? "checked='checked'" : String.Empty) /> All day event</label>
@@ -115,23 +62,16 @@
             </div>
         </div>
     </div>
+    <div>Location</div>
+    <div>
+        @Html.TextBox("Location", @Model.Location, new { @class = "form-control col-md-1", Required = true })
+        <div id="divLocation"></div>
+    </div>
+    <br />
     <div>Description</div>
     <div>@Html.TextArea("Description", @Model.Description, 5, 31, new { @class = "form-control col-md-1" })</div>
-    @{
-        List<SelectListItem> itemsPriority = new List<SelectListItem>();
+    <br />
 
-        itemsPriority.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = Model.Priority == 0 });
-        itemsPriority.Add(new SelectListItem { Text = "High", Value = "1", Selected = Model.Priority == 1 });
-        itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2", Selected = Model.Priority == 2 });
-        itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3", Selected = Model.Priority == 3 });
-    }
-    <br />
-    <div>Priority</div>
-    <div style="width:200px">@Html.DropDownList("Priority", itemsPriority, new { @class = "form-control col-md-1" })</div>
-    <br />
-    <div>Summary</div>
-    <div>@Html.TextArea("Summary", @Model.Summary, 5, 31, new { @class = "form-control col-md-1" })</div>
-    <br />
     <div>Attendees</div>
     <div>
         <input type="hidden" name="Attendees" id="attendeesSel"></input>
@@ -146,7 +86,7 @@
     <div class="space">
         <div style="clear:both">
             <div style="float:left">
-                <input id="btnSave" type="submit" value="OK" style="width: 100px; height: 30px; border: 2px solid black; margin-right:20px" onclick="return Validate()" />
+                <input id="btnSave" type="submit" value="OK" style="width: 100px; height: 30px; border: 2px solid black; margin-right:20px" />
             </div>
             <div style="float:left">
                 <a href="javascript:close()"><div style="width: 100px;">Cancel</div></a>
@@ -180,13 +120,8 @@
     });
 
     $(document).ready(function () {
-        $("#Location").focus();
-
-        $("Location").blur(function () {
-            //var oTextBox = document.getElementById('Location');
-            //checkWildCar(oTextBox, false);
-        });
-
+        $("#Summary").focus();
+        $('#f').validate();
     });
 
 </script>

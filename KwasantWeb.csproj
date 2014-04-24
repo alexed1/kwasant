@@ -219,6 +219,7 @@
     <Compile Include="Controllers\DayPilot\DayPilotCalendarControl.cs" />
     <Compile Include="Controllers\DayPilot\DayPilotNavigatorControl.cs" />
     <Compile Include="Controllers\EmailController.cs" />
+    <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MonthController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
