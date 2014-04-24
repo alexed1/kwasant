@@ -8,17 +8,28 @@
     
     <!-- jQuery.Validate -->
     <script type="text/javascript" src="/Scripts/jquery.validate.js"> </script>
+    
+    <!-- bootstrap -->
+    <script type="text/javascript" src="/Scripts/bootstrap.js"> </script>
 
-    <!-- bootstrap.datepicker -->
-    <script type="text/javascript" src="/Scripts/bootstrap-datepicker.js"> </script>
-    <link href="/Content/bootstrap-datepicker.css" rel="stylesheet" type="text/css" />
+    <!-- bootstrap.datetimepicker -->
+    <script type="text/javascript" src="/Scripts/moment.js"> </script>
+    <script type="text/javascript" src="/Scripts/bootstrap-datetimepicker.js"> </script>
+    <link href="/Content/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
+    
+    <style>
+        .glyphicon-calendar:before {
+            content: "\e109"; /* This was broken in the bootstrap css...?? */
+        }
+    </style>
+    
     <script type="text/javascript">
         $(document).ready(function() {
             var hideShowDates = function() {
                 if ($('#chkAllDay').attr('checked')) {
-                    $('#dateGroup').hide();
+                    $('#dateGroup').slideUp();
                 } else {
-                    $('#dateGroup').show();
+                    $('#dateGroup').slideDown();
                 }
             };
             $('#chkAllDay').click(hideShowDates);
@@ -53,11 +64,11 @@
     </h3>
     <hr />
     <div>Summary</div>
-    <br/>
+    <br />
     <div>
-        <input id="summary" name="Summary" class="form-control col-md-1" value="@Model.Summary" required/>
+        <input id="summary" name="Summary" class="form-control col-md-1" value="@Model.Summary" required />
     </div>
-    <br />    
+    <br />
     <div>
         <div style="display:inline-flex">
             <p style="padding-right:15px;">When</p>
@@ -65,26 +76,35 @@
                 <input id="chkAllDay" type="checkbox" name="IsAllDay" @Html.Raw(Model.IsAllDay ? "checked='checked'" : String.Empty) /> All day event
             </label>
         </div>
-        <div class="span5 col-md-5" style="padding: 0;">
-            <div class="input-daterange input-group" id="dateGroup">
-                <input type="text" class="input-sm form-control" name="dateStart" />
-                <span class="input-group-addon">to</span>
-                <input type="text" class="input-sm form-control" name="dateEnd" />
-                @*<div>
-                    <label>Start
-                        <input id="dateStart" name="DateStart" class="form-control col-md-1" value="@Model.StartDate" required/>
-                    </label>
+    </div>
+    <div id="dateGroup">
+        <div style="display:inline-flex">
+            <div class='col-md-4' style="padding-left: 0">
+                <div class="form-group">
+                    <div class='input-group date' id='fromDate' data-date-format="MM/DD/YYYY hh:mm a">
+                        <input type='text' name="DateStart" class="form-control" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
                 </div>
-                <div>
-                    <label>
-                        End
-                        <input id="dateEnd" name="DateEnd" class="form-control col-md-1" value="@Model.EndDate" required />
-                    </label>
-                </div>*@
+            </div>
+            <div class='col-md-4' style="padding-left: 4px;">
+                <label style="padding-top: 6px; font-weight: normal">to</label>
+            </div>
+            <div class='col-md-4' style="padding-right: 0">
+                <div class="form-group">
+                    <div class='input-group date' id='toDate' data-date-format="MM/DD/YYYY hh:mm a">
+                        <input type='text' name="DateEnd" class="form-control" />
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <br/>
+    <br />
     <div>Location</div>
     <div>
         <input id="location" name="Location" class="form-control col-md-1" value="@Model.Location" required />
@@ -92,7 +112,7 @@
     <br />
     <div>Description</div>
     <div>
-        <textarea id="description" name="Description" cols="31" rows="3" class="form-control col-md-1" required >@Html.Raw(Model.Description)</textarea>
+        <textarea id="description" name="Description" cols="31" rows="3" class="form-control col-md-1" required>@Html.Raw(Model.Description)</textarea>
     </div>
     <br />
 
@@ -103,7 +123,7 @@
     <br />
     @{
         <div style="display: none">
-            @Html.TextBox("EventID", @Model.EventID, new {@class = "form-control col-md-1"})
+            @Html.TextBox("EventID", @Model.EventID, new { @class = "form-control col-md-1" })
         </div>
     }
     <hr />
@@ -128,8 +148,11 @@
         }
     }
 
-    $("#f").submit(function() {
+    $("#f").submit(function () {
         var f = $("#f");
+        if (!f.valid())
+            return false;
+        
         var url = f.prop('action') + '/?' + f.serialize();
         var m = new parent.DayPilot.Modal();
         m.closed = function() {
@@ -143,11 +166,27 @@
         return false;
     });
 
-    $(document).ready(function() {
+    $(function() {
         $("#summary").focus();
         $('#f').validate();
+    });
+    
+    $(function () {
+        var fromDate = $('#fromDate');
+        var toDate = $('#toDate');
 
-        $('#dateGroup').datepicker({});
+        fromDate.datetimepicker();
+        toDate.datetimepicker();
+        
+        $("#fromDate").on("dp.change", function (e) {
+            toDate.data("DateTimePicker").setMinDate(e.date);
+        });
+        $("#toDate").on("dp.change", function (e) {
+            fromDate.data("DateTimePicker").setMaxDate(e.date);
+        });
+
+        fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString("MM/dd/yyyy hh:mm tt")');
+        toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString("MM/dd/yyyy hh:mm tt")');
     });
 
 </script>
