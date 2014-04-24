@@ -21,19 +21,38 @@
         .glyphicon-calendar:before {
             content: "\e109"; /* This was broken in the bootstrap css...?? */
         }
+
+        .formItem {
+            display: inline-flex;
+            width: 100%;
+            padding-top: 15px;
+        }
+
+        .formLabel {
+            width: 100px;
+            min-width: 100px;
+            padding-top: 5px;
+        }
+
     </style>
     
     <script type="text/javascript">
+        var hideShowDates = function () {
+            var fromDate = $('#fromDate');
+            var toDate = $('#toDate');
+
+            if ($('#chkAllDay').attr('checked')) {
+                fromDate.data("DateTimePicker").disable();
+                toDate.data("DateTimePicker").disable();
+            } else {
+                fromDate.data("DateTimePicker").enable();
+                toDate.data("DateTimePicker").enable();
+            }
+        };
+
         $(document).ready(function() {
-            var hideShowDates = function() {
-                if ($('#chkAllDay').attr('checked')) {
-                    $('#dateGroup').slideUp();
-                } else {
-                    $('#dateGroup').slideDown();
-                }
-            };
             $('#chkAllDay').click(hideShowDates);
-            hideShowDates();
+            
             var data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a =>
                             "{id: '" + a.EmailAddress + "', text: '" + a.EmailAddress + "'}"
                             )))];
@@ -63,64 +82,65 @@
         @Html.Raw(Model.EventID == 0 ? "New Event" : "Editing Event")
     </h3>
     <hr />
-    <div>Summary</div>
-    <br />
-    <div>
+    <div class="formItem">
+        <div class="formLabel">
+            Summary
+        </div>
         <input id="summary" name="Summary" class="form-control col-md-1" value="@Model.Summary" required />
     </div>
-    <br />
-    <div>
-        <div style="display:inline-flex">
-            <p style="padding-right:15px;">When</p>
-            <label>
-                <input id="chkAllDay" type="checkbox" name="IsAllDay" @Html.Raw(Model.IsAllDay ? "checked='checked'" : String.Empty) /> All day event
-            </label>
+    <div class="formItem">
+        <div class="formLabel">
+            When
         </div>
+        <label style="padding-top:5px;">
+            <input id="chkAllDay" type="checkbox" name="IsAllDay" @Html.Raw(Model.IsAllDay ? "checked='checked'" : String.Empty) /> All day event
+        </label>
     </div>
-    <div id="dateGroup">
-        <div style="display:inline-flex">
-            <div class='col-md-4' style="padding-left: 0">
-                <div class="form-group">
-                    <div class='input-group date' id='fromDate' data-date-format="MM/DD/YYYY hh:mm a">
-                        <input type='text' name="DateStart" class="form-control" />
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                        </span>
-                    </div>
-                </div>
+    <div id="dateGroup" class="formItem" style="padding-top:10px;">
+        <div class="formLabel">
+            <!-- Align the date pickers -->
+        </div>
+        <div class='col-md-4' style="padding-left: 0; padding-right:5px;">
+            <div class='input-group date' id='fromDate' data-date-format="MM/DD/YYYY hh:mm a">
+                <input type='text' name="DateStart" class="form-control" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
             </div>
-            <div class='col-md-4' style="padding-left: 4px;">
-                <label style="padding-top: 6px; font-weight: normal">to</label>
-            </div>
-            <div class='col-md-4' style="padding-right: 0">
-                <div class="form-group">
-                    <div class='input-group date' id='toDate' data-date-format="MM/DD/YYYY hh:mm a">
-                        <input type='text' name="DateEnd" class="form-control" />
-                        <span class="input-group-addon">
-                            <span class="glyphicon glyphicon-calendar"></span>
-                        </span>
-                    </div>
-                </div>
+        </div>
+        <div class='col-md-4' style="padding-left: 4px; ">
+            <label style="padding-top: 6px; font-weight: normal">to</label>
+        </div>
+        <div class='col-md-4' style="padding-right: 0; padding-left:5px;">
+            <div class='input-group date' id='toDate' data-date-format="MM/DD/YYYY hh:mm a">
+                <input type='text' name="DateEnd" class="form-control" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
             </div>
         </div>
     </div>
-    <br />
-    <div>Location</div>
-    <div>
+    
+    <div class="formItem">
+        <div class="formLabel">
+            Location
+        </div>
         <input id="location" name="Location" class="form-control col-md-1" value="@Model.Location" required />
     </div>
-    <br />
-    <div>Description</div>
-    <div>
+    
+    <div class="formItem">
+        <div class="formLabel">
+            Description
+        </div>
         <textarea id="description" name="Description" cols="31" rows="3" class="form-control col-md-1" required>@Html.Raw(Model.Description)</textarea>
     </div>
-    <br />
-
-    <div>Attendees</div>
-    <div>
+    
+    <div class="formItem">
+        <div class="formLabel">
+            Attendees
+        </div>
         <input type="hidden" name="Attendees" id="attendeesSel" />
     </div>
-    <br />
     @{
         <div style="display: none">
             @Html.TextBox("EventID", @Model.EventID, new { @class = "form-control col-md-1" })
@@ -187,6 +207,8 @@
 
         fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString("MM/dd/yyyy hh:mm tt")');
         toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString("MM/dd/yyyy hh:mm tt")');
+        
+        hideShowDates();
     });
 
 </script>
