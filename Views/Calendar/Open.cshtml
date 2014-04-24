@@ -1,11 +1,10 @@
-﻿@using System.Diagnostics.Eventing.Reader
-@model Data.Entities.EventDO
+﻿@model Data.Entities.EventDO
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 
 <header>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="~/Media/select2.css" rel="stylesheet" type="text/css" />
-    <script type="text/javascript" src="@Url.Content("~/Scripts/select2.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/select2.js")"> </script>
     <script type="text/javascript">
         $(document).ready(function() {
             var hideShowDates = function() {
@@ -17,12 +16,12 @@
             };
             $('#chkAllDay').click(hideShowDates);
             hideShowDates();
-            var data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a => 
-                       "{id: '" + a.EmailAddress + "', text: '" + a.EmailAddress + "'}"
-                    )))];
-            
+            var data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a =>
+                            "{id: '" + a.EmailAddress + "', text: '" + a.EmailAddress + "'}"
+                            )))];
+
             $('#attendeesSel').select2({
-                createSearchChoice: function(term, data) {
+                createSearchChoice: function(term) {
                     return { id: term, text: term };
                 },
                 validateFormat: function(term) {
@@ -42,53 +41,64 @@
     </script>
 </header>
 <form id="f" method="post" action="@Url.Action("BeforeSave")">
-    <h3>@Html.Raw(Model.EventID == 0 ? "New Event" : "Editing Event")</h3>
+    <h3>
+        @Html.Raw(Model.EventID == 0 ? "New Event" : "Editing Event")
+    </h3>
     <hr />
-    
     <div>Summary</div>
     <br/>
-    <div>@Html.TextBox("Summary", @Model.Summary, new { @class = "form-control col-md-1", Required = true })</div>
+    <div>
+        <input id="summary" name="Summary" class="form-control col-md-1" value="@Model.Summary" required/>
+    </div>
     <br />    
     <div>
         <div>
-            <label><input id="chkAllDay" type="checkbox" name="IsAllDay" @Html.Raw(Model.IsAllDay ? "checked='checked'" : String.Empty) /> All day event</label>
+            <label>
+                <input id="chkAllDay" type="checkbox" name="IsAllDay" @Html.Raw(Model.IsAllDay ? "checked='checked'" : String.Empty) /> All day event
+            </label>
         </div>
         <div id="dateGroup">
             <div>
-                <label>Start @Html.TextBox("DateStart", @Model.StartDate, new { @class = "form-control col-md-1" })</label>
+                <label>Start 
+                    <input id="dateStart" name="DateStart" class="form-control col-md-1" value="@Model.StartDate" required/>    
+                </label>
             </div>
             <div>
-                <label>End @Html.TextBox("DateEnd", @Model.EndDate, new { @class = "form-control col-md-1" })</label>
+                <label>
+                    End
+                    <input id="dateEnd" name="DateEnd" class="form-control col-md-1" value="@Model.EndDate" required />
+                </label>
             </div>
         </div>
     </div>
     <div>Location</div>
     <div>
-        @Html.TextBox("Location", @Model.Location, new { @class = "form-control col-md-1", Required = true })
-        <div id="divLocation"></div>
+        <input id="location" name="Location" class="form-control col-md-1" value="@Model.Location" required />
     </div>
     <br />
     <div>Description</div>
-    <div>@Html.TextArea("Description", @Model.Description, 5, 31, new { @class = "form-control col-md-1" })</div>
+    <div>
+        <textarea id="description" name="Description" cols="31" rows="3" class="form-control col-md-1" required >@Html.Raw(Model.Description)</textarea>
+    </div>
     <br />
 
     <div>Attendees</div>
     <div>
-        <input type="hidden" name="Attendees" id="attendeesSel"></input>
+        <input type="hidden" name="Attendees" id="attendeesSel" />
     </div>
     <br />
     @{
-        <div style="display:none">
-            @Html.TextBox("EventID", @Model.EventID, new { @class = "form-control col-md-1" })
+        <div style="display: none">
+            @Html.TextBox("EventID", @Model.EventID, new {@class = "form-control col-md-1"})
         </div>
     }
     <hr />
     <div class="space">
-        <div style="clear:both">
-            <div style="float:left">
-                <input id="btnSave" type="submit" value="OK" style="width: 100px; height: 30px; border: 2px solid black; margin-right:20px" />
+        <div style="clear: both">
+            <div style="float: left">
+                <input id="btnSave" type="submit" value="OK" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
             </div>
-            <div style="float:left">
+            <div style="float: left">
                 <a href="javascript:close()"><div style="width: 100px;">Cancel</div></a>
             </div>
         </div>
@@ -104,11 +114,11 @@
         }
     }
 
-    $("#f").submit(function () {
+    $("#f").submit(function() {
         var f = $("#f");
-        var url = f.prop('action') + '/?' + f.serialize();        
+        var url = f.prop('action') + '/?' + f.serialize();
         var m = new parent.DayPilot.Modal();
-        m.closed = function () {
+        m.closed = function() {
             if (this.result == "OK") {
                 close(this.result);
             }
@@ -119,8 +129,8 @@
         return false;
     });
 
-    $(document).ready(function () {
-        $("#Summary").focus();
+    $(document).ready(function() {
+        $("#summary").focus();
         $('#f').validate();
     });
 
