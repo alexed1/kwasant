@@ -4,7 +4,14 @@
 <header>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="~/Media/select2.css" rel="stylesheet" type="text/css" />
-    <script type="text/javascript" src="@Url.Content("~/Scripts/select2.js")"> </script>
+    <script type="text/javascript" src="/Scripts/select2.js"> </script>
+    
+    <!-- jQuery.Validate -->
+    <script type="text/javascript" src="/Scripts/jquery.validate.js"> </script>
+
+    <!-- bootstrap.datepicker -->
+    <script type="text/javascript" src="/Scripts/bootstrap-datepicker.js"> </script>
+    <link href="/Content/bootstrap-datepicker.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript">
         $(document).ready(function() {
             var hideShowDates = function() {
@@ -52,25 +59,32 @@
     </div>
     <br />    
     <div>
-        <div>
+        <div style="display:inline-flex">
+            <p style="padding-right:15px;">When</p>
             <label>
                 <input id="chkAllDay" type="checkbox" name="IsAllDay" @Html.Raw(Model.IsAllDay ? "checked='checked'" : String.Empty) /> All day event
             </label>
         </div>
-        <div id="dateGroup">
-            <div>
-                <label>Start 
-                    <input id="dateStart" name="DateStart" class="form-control col-md-1" value="@Model.StartDate" required/>    
-                </label>
-            </div>
-            <div>
-                <label>
-                    End
-                    <input id="dateEnd" name="DateEnd" class="form-control col-md-1" value="@Model.EndDate" required />
-                </label>
+        <div class="span5 col-md-5" style="padding: 0;">
+            <div class="input-daterange input-group" id="dateGroup">
+                <input type="text" class="input-sm form-control" name="dateStart" />
+                <span class="input-group-addon">to</span>
+                <input type="text" class="input-sm form-control" name="dateEnd" />
+                @*<div>
+                    <label>Start
+                        <input id="dateStart" name="DateStart" class="form-control col-md-1" value="@Model.StartDate" required/>
+                    </label>
+                </div>
+                <div>
+                    <label>
+                        End
+                        <input id="dateEnd" name="DateEnd" class="form-control col-md-1" value="@Model.EndDate" required />
+                    </label>
+                </div>*@
             </div>
         </div>
     </div>
+    <br/>
     <div>Location</div>
     <div>
         <input id="location" name="Location" class="form-control col-md-1" value="@Model.Location" required />
@@ -132,6 +146,8 @@
     $(document).ready(function() {
         $("#summary").focus();
         $('#f').validate();
+
+        $('#dateGroup').datepicker({});
     });
 
 </script>
