@@ -1,8 +1,10 @@
 ﻿using System.Data.Entity;
 using System.Linq;
+using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
+using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using StructureMap;
 
@@ -25,8 +27,10 @@ namespace Playground
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();
             var trackingStatusRepo = new TrackingStatusRepository(uow);
             var emailRepo = new EmailRepository(uow);
-            var res = trackingStatusRepo.GetForeignEntitiesWithoutStatus(emailRepo).ToList();
-            var resTwo = trackingStatusRepo.GetForeignEntitiesWithStatus(emailRepo, "ASD").ToList();
+
+            var ts = new TrackingStatus<EmailDO>(trackingStatusRepo, emailRepo);
+            var res = ts.GetForeignEntitiesWithoutStatus();
+            var resThree = ts.GetForeignEntitiesWhereTrackingStatus(trackingStatusDO => trackingStatusDO.Value == "ASD");
             var t = 1;
         }
     }
