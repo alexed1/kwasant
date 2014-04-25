@@ -1,10 +1,9 @@
 ﻿using System.Data.Entity;
-using System.Net.Mail;
-using Daemons;
+using System.Linq;
 using Data.Infrastructure;
-using KwasantCore.Services;
+using Data.Interfaces;
+using Data.Repositories;
 using KwasantCore.StructureMap;
-using Shnexy.Controllers;
 using StructureMap;
 
 namespace Playground
@@ -23,6 +22,12 @@ namespace Playground
             ShnexyDbContext db = new ShnexyDbContext();
             db.Database.Initialize(true);
 
+            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            var trackingStatusRepo = new TrackingStatusRepository(uow);
+            var emailRepo = new EmailRepository(uow);
+            var res = trackingStatusRepo.GetForeignEntitiesWithoutStatus(emailRepo).ToList();
+            var resTwo = trackingStatusRepo.GetForeignEntitiesWithStatus(emailRepo, "ASD").ToList();
+            var t = 1;
         }
     }
 }

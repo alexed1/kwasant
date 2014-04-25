@@ -120,6 +120,13 @@ namespace Data.Infrastructure
                 .WithRequired(a => a.Event)
                 .WillCascadeOnDelete(true);
 
+            modelBuilder.Entity<TrackingStatusDO>()
+                .HasKey(ts => new
+                {
+                    ts.ForeignTableID,
+                    ts.ForeignTableName
+                });
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -140,6 +147,8 @@ namespace Data.Infrastructure
         public DbSet<StoredFileDO> StoredFiles { get; set; }
 
         public DbSet<UserDO> Users { get; set; }
+
+        public DbSet<TrackingStatusDO> TrackingStatuses { get; set; }
         
     }
 }

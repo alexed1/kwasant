@@ -99,6 +99,7 @@
   <ItemGroup>
     <Compile Include="Constants\InstructionConstants.cs" />
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
+    <Compile Include="Entities\TrackingStatusDO.cs" />
     <Compile Include="Infrastructure\FileManager.cs" />
     <Compile Include="Infrastructure\ShnexyDbContext.cs" />
     <Compile Include="Infrastructure\ShnexyInitializer.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="Entities\StoredFileDO.cs" />
     <Compile Include="Entities\UserDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\TrackingStatusRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
