@@ -219,6 +219,7 @@
     <Compile Include="Controllers\DayPilot\DayPilotCalendarControl.cs" />
     <Compile Include="Controllers\DayPilot\DayPilotNavigatorControl.cs" />
     <Compile Include="Controllers\EmailController.cs" />
+    <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MonthController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
@@ -232,6 +233,7 @@
   <ItemGroup>
     <Content Include="Content\Booking Details.png" />
     <Content Include="Content\BookingAgent.css" />
+    <Content Include="Content\bootstrap-datetimepicker.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Index.css" />
@@ -239,6 +241,8 @@
     <Content Include="Content\slider.css" />
     <Content Include="Media\select2.png" />
     <Content Include="Media\select2.css" />
+    <Content Include="Scripts\bootstrap-datetimepicker.js" />
+    <Content Include="Scripts\moment.js" />
     <Content Include="Scripts\select2.js" />
     <Content Include="Website\backgroundsize.min.htc" />
     <Content Include="Website\css\bootstrap-responsive.css" />
@@ -380,6 +384,9 @@
     <Content Include="Website\font\fontawesome-webfont.woff" />
     <Content Include="Website\font\FontAwesome.otf" />
     <Content Include="Website\images\blue_tag.psd" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <None Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2-vsdoc.js" />
     <Content Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2.js" />
     <Content Include="packages\jQuery.1.10.2\Content\Scripts\jquery-1.10.2.min.js" />
@@ -812,9 +819,6 @@
     <Folder Include="Controllers\Models\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -42,7 +42,7 @@ namespace ShnexyTest.Models
         [Category("Invitation")]
         public void Event_Dispatch_CanSendICS()
         {
-            EventRepository invRepo = new EventRepository(_uow);
+            EventRepository eventRepo = new EventRepository(_uow);
             AttendeeRepository attendeesRepo = new AttendeeRepository(_uow);
             List<AttendeeDO> attendees =
                 new List<AttendeeDO>
@@ -52,7 +52,7 @@ namespace ShnexyTest.Models
                 };
             attendees.ForEach(attendeesRepo.Add);
 
-            EventDO invitation = new EventDO
+            EventDO eventDO = new EventDO
             {
                 Description = "This is my test invitation",
                 Summary = @"My test invitation",
@@ -62,8 +62,8 @@ namespace ShnexyTest.Models
                 Attendees = attendees,
                 Emails = new List<EmailDO>()
             };
-            invRepo.Add(invitation);
-            Calendar.DispatchEvent(_uow, invitation);
+            eventRepo.Add(eventDO);
+            Calendar.DispatchEvent(_uow, eventDO);
 
             //Verify success
             //use imap to load unread messages from the test customer account

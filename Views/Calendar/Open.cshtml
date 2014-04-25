@@ -4,24 +4,61 @@
 <header>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="~/Media/select2.css" rel="stylesheet" type="text/css" />
-    <script type="text/javascript" src="@Url.Content("~/Scripts/select2.js")"></script>
+    <script type="text/javascript" src="/Scripts/select2.js"> </script>
+    
+    <!-- jQuery.Validate -->
+    <script type="text/javascript" src="/Scripts/jquery.validate.js"> </script>
+    
+    <!-- bootstrap -->
+    <script type="text/javascript" src="/Scripts/bootstrap.js"> </script>
+
+    <!-- bootstrap.datetimepicker -->
+    <script type="text/javascript" src="/Scripts/moment.js"> </script>
+    <script type="text/javascript" src="/Scripts/bootstrap-datetimepicker.js"> </script>
+    <link href="/Content/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
+    
+    <style>
+        .glyphicon-calendar:before {
+            content: "\e109"; /* This was broken in the bootstrap css...?? */
+        }
+
+        .formItem {
+            display: inline-flex;
+            width: 100%;
+            padding-top: 15px;
+        }
+
+        .formLabel {
+            width: 100px;
+            min-width: 100px;
+            padding-top: 5px;
+        }
+
+    </style>
+    
     <script type="text/javascript">
+        var hideShowDates = function () {
+            var fromDate = $('#fromDate');
+            var toDate = $('#toDate');
+
+            if ($('#chkAllDay').attr('checked')) {
+                fromDate.data("DateTimePicker").disable();
+                toDate.data("DateTimePicker").disable();
+            } else {
+                fromDate.data("DateTimePicker").enable();
+                toDate.data("DateTimePicker").enable();
+            }
+        };
+
         $(document).ready(function() {
-            var hideShowDates = function() {
-                if ($('#chkAllDay').attr('checked')) {
-                    $('#dateGroup').hide();
-                } else {
-                    $('#dateGroup').show();
-                }
-            };
             $('#chkAllDay').click(hideShowDates);
-            hideShowDates();
-            var data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a => 
-                       "{id: '" + a.EmailAddress + "', text: '" + a.EmailAddress + "'}"
-                    )))];
             
+            var data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a =>
+                            "{id: '" + a.EmailAddress + "', text: '" + a.EmailAddress + "'}"
+                            )))];
+
             $('#attendeesSel').select2({
-                createSearchChoice: function(term, data) {
+                createSearchChoice: function(term) {
                     return { id: term, text: term };
                 },
                 validateFormat: function(term) {
@@ -38,117 +75,84 @@
             });
             $('#attendeesSel').select2('data', data);
         });
-
-        /* Wild Char Check Start*/
-        function checkWildCar(texBox, IsNoteType) {
-            var oTextBox = document.getElementById(texBox);
-
-            var specialChars = "!@@#$^&%*()+=-[]\/{}|:<>?,.";
-
-            for (var i = 0; i < specialChars.length; i++) {
-                if (IsNoteType) {
-                    oTextBox.value = oTextBox.value.replace(/[^\w\,\s\.\#\-]/gi, '');
-                }
-                else {
-                    oTextBox.value = oTextBox.value.replace(/[^\w\s\.]/gi, '');
-                }
-            }
-        }
-
-        function Validate() {
-
-            var bFlag = false;
-
-            var name = document.getElementById('Name');
-            var dName = document.getElementById('divName');
-
-            if (name != null) {
-                if (name.value.trim() == '') {
-                    dName.innerHTML = 'Name is required.';
-                    bFlag = false;
-                }
-                else {
-                    dName.innerHTML = '';
-                    bFlag = true;
-                }
-            }
-
-            var location = document.getElementById('Location');
-            var dLocation = document.getElementById('divLocation');
-
-            if (location != null) {
-                if (location.value.trim() == '') {
-                    dLocation.innerHTML = 'Location is required.';
-                    bFlag = false;
-                }
-                else {
-                    dLocation.innerHTML = '';
-                    bFlag = true;
-                }
-            }
-
-            return bFlag;
-        }
-
     </script>
 </header>
 <form id="f" method="post" action="@Url.Action("BeforeSave")">
-    <h3>New Event</h3>
+    <h3>
+        @Html.Raw(Model.EventID == 0 ? "New Event" : "Editing Event")
+    </h3>
     <hr />
-
-    <div>Location</div>
-    <div>
-        @Html.TextBox("Location", @Model.Location, new { @class = "form-control col-md-1" })
-        <div id="divLocation"></div>
-    </div>
-    <br />
-    <div>
-        <div>
-            <label><input id="chkAllDay" type="checkbox" name="IsAllDay" @Html.Raw(Model.IsAllDay ? "checked='checked'" : String.Empty) /> All day event</label>
+    <div class="formItem">
+        <div class="formLabel">
+            Summary
         </div>
-        <div id="dateGroup">
-            <div>
-                <label>Start @Html.TextBox("DateStart", @Model.StartDate, new { @class = "form-control col-md-1" })</label>
+        <input id="summary" name="Summary" class="form-control col-md-1" value="@Model.Summary" required />
+    </div>
+    <div class="formItem">
+        <div class="formLabel">
+            When
+        </div>
+        <label style="padding-top:5px;">
+            <input id="chkAllDay" type="checkbox" name="IsAllDay" @Html.Raw(Model.IsAllDay ? "checked='checked'" : String.Empty) /> All day event
+        </label>
+    </div>
+    <div id="dateGroup" class="formItem" style="padding-top:10px;">
+        <div class="formLabel">
+            <!-- Align the date pickers -->
+        </div>
+        <div class='col-md-4' style="padding-left: 0; padding-right:5px;">
+            <div class='input-group date' id='fromDate' data-date-format="MM/DD/YYYY hh:mm a">
+                <input type='text' name="DateStart" class="form-control" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
             </div>
-            <div>
-                <label>End @Html.TextBox("DateEnd", @Model.EndDate, new { @class = "form-control col-md-1" })</label>
+        </div>
+        <div class='col-md-4' style="padding-left: 4px; ">
+            <label style="padding-top: 6px; font-weight: normal">to</label>
+        </div>
+        <div class='col-md-4' style="padding-right: 0; padding-left:5px;">
+            <div class='input-group date' id='toDate' data-date-format="MM/DD/YYYY hh:mm a">
+                <input type='text' name="DateEnd" class="form-control" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
             </div>
         </div>
     </div>
-    <div>Description</div>
-    <div>@Html.TextArea("Description", @Model.Description, 5, 31, new { @class = "form-control col-md-1" })</div>
-    @{
-        List<SelectListItem> itemsPriority = new List<SelectListItem>();
-
-        itemsPriority.Add(new SelectListItem { Text = "--Select--", Value = "0", Selected = Model.Priority == 0 });
-        itemsPriority.Add(new SelectListItem { Text = "High", Value = "1", Selected = Model.Priority == 1 });
-        itemsPriority.Add(new SelectListItem { Text = "Medium", Value = "2", Selected = Model.Priority == 2 });
-        itemsPriority.Add(new SelectListItem { Text = "Low", Value = "3", Selected = Model.Priority == 3 });
-    }
-    <br />
-    <div>Priority</div>
-    <div style="width:200px">@Html.DropDownList("Priority", itemsPriority, new { @class = "form-control col-md-1" })</div>
-    <br />
-    <div>Summary</div>
-    <div>@Html.TextArea("Summary", @Model.Summary, 5, 31, new { @class = "form-control col-md-1" })</div>
-    <br />
-    <div>Attendees</div>
-    <div>
-        <input type="hidden" name="Attendees" id="attendeesSel"></input>
+    
+    <div class="formItem">
+        <div class="formLabel">
+            Location
+        </div>
+        <input id="location" name="Location" class="form-control col-md-1" value="@Model.Location" required />
     </div>
-    <br />
+    
+    <div class="formItem">
+        <div class="formLabel">
+            Description
+        </div>
+        <textarea id="description" name="Description" cols="31" rows="3" class="form-control col-md-1" required>@Html.Raw(Model.Description)</textarea>
+    </div>
+    
+    <div class="formItem">
+        <div class="formLabel">
+            Attendees
+        </div>
+        <input type="hidden" name="Attendees" id="attendeesSel" />
+    </div>
     @{
-        <div style="display:none">
+        <div style="display: none">
             @Html.TextBox("EventID", @Model.EventID, new { @class = "form-control col-md-1" })
         </div>
     }
     <hr />
     <div class="space">
-        <div style="clear:both">
-            <div style="float:left">
-                <input id="btnSave" type="submit" value="OK" style="width: 100px; height: 30px; border: 2px solid black; margin-right:20px" onclick="return Validate()" />
+        <div style="clear: both">
+            <div style="float: left">
+                <input id="btnSave" type="submit" value="OK" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
             </div>
-            <div style="float:left">
+            <div style="float: left">
                 <a href="javascript:close()"><div style="width: 100px;">Cancel</div></a>
             </div>
         </div>
@@ -166,9 +170,12 @@
 
     $("#f").submit(function () {
         var f = $("#f");
-        var url = f.prop('action') + '/?' + f.serialize();        
+        if (!f.valid())
+            return false;
+        
+        var url = f.prop('action') + '/?' + f.serialize();
         var m = new parent.DayPilot.Modal();
-        m.closed = function () {
+        m.closed = function() {
             if (this.result == "OK") {
                 close(this.result);
             }
@@ -179,14 +186,29 @@
         return false;
     });
 
-    $(document).ready(function () {
-        $("#Location").focus();
+    $(function() {
+        $("#summary").focus();
+        $('#f').validate();
+    });
+    
+    $(function () {
+        var fromDate = $('#fromDate');
+        var toDate = $('#toDate');
 
-        $("Location").blur(function () {
-            //var oTextBox = document.getElementById('Location');
-            //checkWildCar(oTextBox, false);
+        fromDate.datetimepicker();
+        toDate.datetimepicker();
+        
+        $("#fromDate").on("dp.change", function (e) {
+            toDate.data("DateTimePicker").setMinDate(e.date);
+        });
+        $("#toDate").on("dp.change", function (e) {
+            fromDate.data("DateTimePicker").setMaxDate(e.date);
         });
 
+        fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString("MM/dd/yyyy hh:mm tt")');
+        toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString("MM/dd/yyyy hh:mm tt")');
+        
+        hideShowDates();
     });
 
 </script>

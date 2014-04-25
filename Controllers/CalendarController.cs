@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -8,9 +9,10 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
-using KwasantCore.Services;
 using Shnexy.Controllers.DayPilot;
 using StructureMap;
+using UtilitiesLib;
+using Calendar = KwasantCore.Services.Calendar;
 
 namespace Shnexy.Controllers
 {
@@ -308,10 +310,10 @@ namespace Shnexy.Controllers
                 return (T)(object)obj;
             if (returnType == typeof(DateTime))
             {
-                return (T)(object)Convert.ToDateTime(obj);
+                return (T)(object)DateTime.ParseExact(obj, "MM/dd/yyyy hh:mm tt", CultureInfo.CurrentCulture);
             }
-            if (returnType == typeof(int))
-                return (T)(object)Convert.ToInt32(obj);
+            if (returnType == typeof (int))
+                return (T) (object) obj.ToInt();
             throw new Exception("Invalid type provided");
         }
 
