@@ -1,5 +1,5 @@
-﻿using Data.DDay.DDay.iCal.DataTypes;
-using DDay.DDay.iCal.Components;
+﻿using KwasantICS.DDay.iCal;
+using KwasantICS.DDay.iCal.DataTypes;
 
 namespace ShnexyTest.Fixtures
 {

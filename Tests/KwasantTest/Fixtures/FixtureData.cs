@@ -1,5 +1,4 @@
-﻿using Data.DataAccessLayer.Interfaces;
-using Data.Interfaces;
+﻿using Data.Interfaces;
 using Data.Repositories;
 
 namespace ShnexyTest.Fixtures

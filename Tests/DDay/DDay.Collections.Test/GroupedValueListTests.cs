@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Data.DDay.Collections;
+using KwasantICS.Collections;
 using NUnit.Framework;
 
 namespace DDay.Collections.Test

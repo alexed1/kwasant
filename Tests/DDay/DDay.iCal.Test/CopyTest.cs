@@ -1,5 +1,5 @@
-using Data.DDay.DDay.iCal;
-using Data.DDay.DDay.iCal.Interfaces;
+using KwasantICS.DDay.iCal;
+using KwasantICS.DDay.iCal.Interfaces;
 using NUnit.Framework;
 
 namespace DDay.iCal.Test

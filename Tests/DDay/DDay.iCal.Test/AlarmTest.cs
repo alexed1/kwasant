@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using Data.DataAccessLayer.Interfaces;
-using Data.DDay.DDay.iCal;
-using Data.DDay.DDay.iCal.DataTypes;
-using Data.DDay.DDay.iCal.Interfaces;
-using Data.DDay.DDay.iCal.Interfaces.DataTypes;
-using Data.DDay.DDay.iCal.Structs;
+using KwasantICS.DDay.iCal;
+using KwasantICS.DDay.iCal.DataTypes;
+using KwasantICS.DDay.iCal.Interfaces;
+using KwasantICS.DDay.iCal.Interfaces.DataTypes;
+using KwasantICS.DDay.iCal.Structs;
 using NUnit.Framework;
 
 namespace DDay.iCal.Test

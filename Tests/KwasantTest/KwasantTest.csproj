@@ -106,13 +106,13 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\DDay\DDay.csproj">
-      <Project>{d940efca-2d57-466c-8103-54db173f1bd2}</Project>
-      <Name>DDay</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\KwasantCore\KwasantCore.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>KwasantCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\KwasantICS\KwasantICS.csproj">
+      <Project>{d940efca-2d57-466c-8103-54db173f1bd2}</Project>
+      <Name>KwasantICS</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

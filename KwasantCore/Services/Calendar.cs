@@ -5,14 +5,12 @@ using System.Linq;
 using System.Net.Mime;
 using System.Text;
 using Data.Constants;
-using Data.DataAccessLayer.Interfaces;
-using Data.DDay.DDay.iCal;
-using Data.DDay.DDay.iCal.DataTypes;
-using Data.DDay.DDay.iCal.Serialization.iCalendar.Serializers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
-using DDay.DDay.iCal.Components;
+using KwasantICS.DDay.iCal;
+using KwasantICS.DDay.iCal.DataTypes;
+using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using UtilitiesLib;
 
 namespace KwasantCore.Services

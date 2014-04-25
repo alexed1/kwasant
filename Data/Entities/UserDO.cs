@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Data.DataAccessLayer.Interfaces;
 using Data.Interfaces;
 
 namespace Data.Entities

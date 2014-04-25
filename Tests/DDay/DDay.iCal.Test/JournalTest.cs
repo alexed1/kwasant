@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
-using Data.DDay.DDay.iCal;
-using Data.DDay.DDay.iCal.Interfaces;
-using Data.DDay.DDay.iCal.Interfaces.Components;
+using KwasantICS.DDay.iCal;
+using KwasantICS.DDay.iCal.Interfaces;
+using KwasantICS.DDay.iCal.Interfaces.Components;
 using NUnit.Framework;
 
 namespace DDay.iCal.Test

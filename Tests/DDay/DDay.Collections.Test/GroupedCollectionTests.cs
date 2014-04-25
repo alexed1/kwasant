@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using Data.DDay.Collections;
-using Data.DDay.Collections.Interfaces;
-using Data.DDay.Collections.Proxies;
+using KwasantICS.Collections;
+using KwasantICS.Collections.Interfaces;
+using KwasantICS.Collections.Proxies;
 using NUnit.Framework;
 
 namespace DDay.Collections.Test

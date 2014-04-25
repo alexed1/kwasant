@@ -1,5 +1,4 @@
-﻿using Data.DataAccessLayer.Interfaces;
-using Data.Entities;
+﻿using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using StructureMap;

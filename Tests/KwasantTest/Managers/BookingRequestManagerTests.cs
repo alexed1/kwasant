@@ -3,7 +3,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net.Mail;
 using Data.Constants;
-using Data.DataAccessLayer.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;

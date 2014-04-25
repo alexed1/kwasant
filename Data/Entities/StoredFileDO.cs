@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
 using System.IO;
 using System.Text;
-using Data.DataAccessLayer.Interfaces;
 using Data.Infrastructure;
 using Data.Interfaces;
 

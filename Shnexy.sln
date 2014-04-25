@@ -22,8 +22,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data", "Data\Data.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Playground.csproj", "{A8F63C89-FD17-492F-A022-69D31B94510E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDay", "DDay\DDay.csproj", "{D940EFCA-2D57-466C-8103-54DB173F1BD2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KwasantCore", "KwasantCore\KwasantCore.csproj", "{9891496C-8512-4708-925A-EE9D0F9199D4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}"
@@ -35,6 +33,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DDay.Collections.Test", "Tests\DDay\DDay.Collections.Test\DDay.Collections.Test.csproj", "{B8DF17ED-924B-4526-9B94-B96DF7B5CB80}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KwasantTest", "Tests\KwasantTest\KwasantTest.csproj", "{8D38298A-9246-4AB9-80C4-9A830213346C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KwasantICS", "KwasantICS\KwasantICS.csproj", "{D940EFCA-2D57-466C-8103-54DB173F1BD2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,12 +80,6 @@ Global
 		{A8F63C89-FD17-492F-A022-69D31B94510E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8F63C89-FD17-492F-A022-69D31B94510E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A8F63C89-FD17-492F-A022-69D31B94510E}.Release|x86.ActiveCfg = Release|Any CPU
-		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Release|x86.ActiveCfg = Release|Any CPU
 		{9891496C-8512-4708-925A-EE9D0F9199D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9891496C-8512-4708-925A-EE9D0F9199D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9891496C-8512-4708-925A-EE9D0F9199D4}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -112,6 +106,12 @@ Global
 		{8D38298A-9246-4AB9-80C4-9A830213346C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D38298A-9246-4AB9-80C4-9A830213346C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8D38298A-9246-4AB9-80C4-9A830213346C}.Release|x86.ActiveCfg = Release|Any CPU
+		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

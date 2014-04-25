@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Data.DDay.Collections;
-using Data.DDay.Collections.Interfaces;
+using KwasantICS.Collections;
+using KwasantICS.Collections.Interfaces;
 
 namespace DDay.Collections.Test
 {

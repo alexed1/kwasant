@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using Data.DataAccessLayer.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -43,7 +42,7 @@ namespace ShnexyTest.Models
         [Category("Invitation")]
         public void Event_Dispatch_CanSendICS()
         {
-            InvitationRepository invRepo = new InvitationRepository(_uow);
+            EventRepository invRepo = new EventRepository(_uow);
             AttendeeRepository attendeesRepo = new AttendeeRepository(_uow);
             List<AttendeeDO> attendees =
                 new List<AttendeeDO>
@@ -53,7 +52,7 @@ namespace ShnexyTest.Models
                 };
             attendees.ForEach(attendeesRepo.Add);
 
-            InvitationDO invitation = new InvitationDO
+            EventDO invitation = new EventDO
             {
                 Description = "This is my test invitation",
                 Summary = @"My test invitation",

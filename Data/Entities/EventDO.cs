@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
-using Data.DataAccessLayer.Interfaces;
 using Data.Interfaces;
 using IEvent = Data.Interfaces.IEvent;
 

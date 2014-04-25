@@ -1,9 +1,7 @@
-using Data.DataAccessLayer.Interfaces;
-using Data.DDay.DDay.iCal;
-using Data.DDay.DDay.iCal.DataTypes;
-using Data.DDay.DDay.iCal.Interfaces;
-using Data.DDay.DDay.iCal.Interfaces.Components;
-using DDay.DDay.iCal.Components;
+using KwasantICS.DDay.iCal;
+using KwasantICS.DDay.iCal.DataTypes;
+using KwasantICS.DDay.iCal.Interfaces;
+using KwasantICS.DDay.iCal.Interfaces.Components;
 using NUnit.Framework;
 
 namespace DDay.iCal.Test

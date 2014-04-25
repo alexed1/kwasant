@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Data.DDay.DDay.iCal.DataTypes;
-using Data.DDay.DDay.iCal.Interfaces.DataTypes;
+using KwasantICS.DDay.iCal.DataTypes;
+using KwasantICS.DDay.iCal.Interfaces.DataTypes;
 using NUnit.Framework;
 
 namespace DDay.iCal.Test
