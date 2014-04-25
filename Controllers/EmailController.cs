@@ -4,6 +4,7 @@ using System.Net;
 using System.Web.Mvc;
 using Data.Constants;
 using Data.Entities;
+using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
@@ -32,7 +33,7 @@ namespace Shnexy.Controllers
         // GET: /Email/
         public ActionResult Index()
         {
-            return View(curBookingRequestRepository.GetAll().Where(e => e.StatusID == EmailStatusConstants.UNPROCESSED).ToList());    
+            return View(curBookingRequestRepository.GetAll().Where(e => e.Status == EmailStatus.UNPROCESSED).ToList());    
                                 
         }
 

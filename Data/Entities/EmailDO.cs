@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 
 namespace Data.Entities
@@ -14,9 +15,7 @@ namespace Data.Entities
         public String Subject { get; set; }
         public String Text { get; set; }
 
-        [ForeignKey("Status")]
-        public int StatusID { get; set; }
-        public virtual EmailStatusDO Status { get; set; }
+        public virtual EmailStatus Status { get; set; }
 
         public virtual EmailAddressDO From { get; set; }
 

@@ -6,6 +6,7 @@ using System.Net.Mime;
 using System.Text;
 using Data.Constants;
 using Data.Entities;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantICS.DDay.iCal;
@@ -83,7 +84,7 @@ namespace KwasantCore.Services
             outboundEmail.To = eventDO.Attendees.Select(a => new EmailAddressDO { Address = a.EmailAddress, Name = a.Name}).ToList();
             outboundEmail.Subject = "Invitation via Booqit: " + eventDO.Summary + "@ " + eventDO.StartDate;
             outboundEmail.Text = "This is a Booqit Event Request. For more information, see https://foo.com";
-            outboundEmail.StatusID = EmailStatusConstants.QUEUED;
+            outboundEmail.Status = EmailStatus.QUEUED;
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();

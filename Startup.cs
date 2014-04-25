@@ -5,6 +5,7 @@ using Configuration;
 using Daemons;
 using Data.Constants;
 using Data.Entities;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
@@ -81,7 +82,7 @@ namespace Shnexy
 
             BookingRequestDO email = Email.ConvertMailMessageToEmail(emailRepository, mailMessage);
             email.Customer = customer;
-            email.StatusID = EmailStatusConstants.UNPROCESSED;
+            email.Status = EmailStatus.UNPROCESSED;
 
             emailRepository.UnitOfWork.SaveChanges();
         }

@@ -9,7 +9,6 @@ namespace Data.Infrastructure
         protected override void Seed(ShnexyDbContext context)
         {
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            EmailStatusConstants.ApplySeedData(uow);
             InstructionConstants.ApplySeedData(uow);
             uow.SaveChanges();
         }

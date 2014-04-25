@@ -68,7 +68,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<CustomerDO>().ToTable("Customers");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
-            modelBuilder.Entity<EmailStatusDO>().ToTable("EmailStatuses");
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
@@ -92,10 +91,6 @@ namespace Data.Infrastructure
             
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(e => e.From);
-            modelBuilder.Entity<EmailDO>()
-                .HasRequired(e => e.Status)
-                .WithMany(es => es.Emails)
-                .HasForeignKey(e => e.StatusID);
 
             modelBuilder.Entity<EmailDO>()
                 .HasMany(e => e.To)
@@ -139,8 +134,6 @@ namespace Data.Infrastructure
         public DbSet<EmailDO> Emails { get; set; }
 
         public DbSet<EmailAddressDO> EmailAddresses { get; set; }
-
-        public DbSet<EmailStatusDO> EmailStatuses { get; set; }
         
         public DbSet<EventDO> Events { get; set; }
 

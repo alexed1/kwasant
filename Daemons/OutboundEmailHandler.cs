@@ -1,6 +1,7 @@
 ﻿using System;
 using Data.Constants;
 using Data.Entities;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
@@ -27,7 +28,7 @@ namespace Daemons
             IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
             EmailRepository emailRepository = new EmailRepository(unitOfWork);
 
-            foreach (EmailDO email in emailRepository.FindList(e => e.Status.EmailStatusID == EmailStatusConstants.QUEUED))
+            foreach (EmailDO email in emailRepository.FindList(e => e.Status == EmailStatus.QUEUED))
             {
                 new Email(unitOfWork, email).Send();
             }

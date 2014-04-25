@@ -97,8 +97,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants\EmailStatusConstants.cs" />
     <Compile Include="Constants\InstructionConstants.cs" />
+    <Compile Include="Entities\Enumerations\EmailStatus.cs" />
     <Compile Include="Infrastructure\FileManager.cs" />
     <Compile Include="Infrastructure\ShnexyDbContext.cs" />
     <Compile Include="Infrastructure\ShnexyInitializer.cs" />
@@ -111,7 +111,6 @@
     <Compile Include="Repositories\CustomerRepository.cs" />
     <Compile Include="Repositories\EmailAddressRepository.cs" />
     <Compile Include="Repositories\EmailRepository.cs" />
-    <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\GenericRepository.cs" />
     <Compile Include="Interfaces\ICustomerRepository.cs" />
     <Compile Include="Interfaces\IGenericRepository.cs" />
@@ -126,13 +125,11 @@
     <Compile Include="Entities\CustomerDO.cs" />
     <Compile Include="Entities\EmailDO.cs" />
     <Compile Include="Entities\EmailAddressDO.cs" />
-    <Compile Include="Entities\EmailStatusDO.cs" />
     <Compile Include="Interfaces\IAttachment.cs" />
     <Compile Include="Interfaces\IAttendee.cs" />
     <Compile Include="Interfaces\IBookingRequest.cs" />
     <Compile Include="Interfaces\ICustomer.cs" />
     <Compile Include="Interfaces\IEmail.cs" />
-    <Compile Include="Interfaces\IEmailStatus.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Entities\EventDO.cs" />
     <Compile Include="Interfaces\IUser.cs" />

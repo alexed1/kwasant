@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Mail;
 using Data.Constants;
 using Data.Entities;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
@@ -48,7 +49,7 @@ namespace KwasantCore.Services
         public void Send()
         {
             _mandrillApi.PostMessageSend(_emailDO);
-            _emailDO.StatusID = EmailStatusConstants.SENT;
+            _emailDO.Status = EmailStatus.SENT;
             _uow.SaveChanges();
         }
 
@@ -85,7 +86,7 @@ namespace KwasantCore.Services
             emailDO.CC.ForEach(a => a.BCCEmail = emailDO);
             emailDO.BCC.ForEach(a => a.CCEmail = emailDO);
             emailDO.Attachments.ForEach(a => a.Email = emailDO);
-            emailDO.StatusID = EmailStatusConstants.QUEUED;
+            emailDO.Status = EmailStatus.QUEUED;
 
             emailRepository.Add(emailDO);
             return emailDO;

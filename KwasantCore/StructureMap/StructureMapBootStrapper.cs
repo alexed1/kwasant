@@ -34,7 +34,6 @@ namespace KwasantCore.StructureMap
                 For<ICustomer>().Use<CustomerDO>();
                 For<IEmail>().Use<EmailDO>();
                 For<IEmailAddress>().Use<EmailAddressDO>();
-                For<IEmailStatus>().Use<EmailStatusDO>();
                 For<IEvent>().Use<EventDO>();
                 For<IUser>().Use<UserDO>();
             }
