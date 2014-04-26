@@ -23,22 +23,86 @@ namespace KwasantCore.Services
 
         public IQueryable<TForeignEntity> GetEntitiesWithoutStatus()
         {
-            return GetForeignEntitiesWhere(null, null, jr => jr.TrackingStatusDO == null);
+            return GetEntities(null, null, jr => jr.TrackingStatusDO == null);
         }
 
         public IQueryable<TForeignEntity> GetEntitiesWithStatus()
         {
-            return GetForeignEntitiesWhere(null, null);
+            return GetEntities();
         }
 
         public IQueryable<TForeignEntity> GetEntitiesWhereTrackingStatus(Expression<Func<TrackingStatusDO, bool>> trackingStatusPredicate)
         {
-            return GetForeignEntitiesWhere(trackingStatusPredicate, null);
+            return GetEntities(trackingStatusPredicate);
         }
 
-        private IQueryable<TForeignEntity> GetForeignEntitiesWhere(
-            Expression<Func<TrackingStatusDO, bool>> trackingStatusPredicate, 
-            Expression<Func<TForeignEntity, bool>> foreignEntityPredicate,
+        public void SetStatus(TForeignEntity entityDO, String status)
+        {
+            SetStatus(GetKey(entityDO), status);
+        }
+
+        private void SetStatus(int entityID, String status)
+        {
+            var currentStatus = GetStatus(entityID);
+            if (currentStatus == null)
+            {
+                currentStatus = new TrackingStatusDO
+                {
+                    ForeignTableID = entityID,
+                    ForeignTableName = typeof(TForeignEntity).Name,
+                };
+                _trackingStatusRepository.Add(currentStatus);
+            }
+            currentStatus.Value = status;
+        }
+
+        public void DeleteStatus(TForeignEntity entityDO)
+        {
+            DeleteStatus(GetKey(entityDO));
+        }
+
+        private void DeleteStatus(int entityID)
+        {
+            var currentStatus = GetStatus(entityID);
+            if (currentStatus != null)
+            {
+                _trackingStatusRepository.Remove(currentStatus);
+            }
+        }
+
+        public TrackingStatusDO GetStatus(TForeignEntity entity)
+        {
+            var inMemoryID = GetKey(entity);
+            return GetStatus(inMemoryID);
+        }
+
+        private TrackingStatusDO GetStatus(int entityEntityID)
+        {
+            var foreignTableType = typeof(TForeignEntity);
+            var foreignTableKey = foreignTableType.GetProperties().First(p => p.CustomAttributes.Any(ca => ca.AttributeType == typeof(KeyAttribute)));
+
+            var foreignProp = Expression.Parameter(foreignTableType);
+            var propertyAccessor = Expression.Property(foreignProp, foreignTableKey);
+
+            var equalExpression = Expression.Equal(propertyAccessor, Expression.Constant(entityEntityID));
+            var foreignKeyComparer = Expression.Lambda(equalExpression, new[] { foreignProp }) as Expression<Func<TForeignEntity, bool>>;
+
+            return GetJoinResult(null, foreignKeyComparer).Select(jr => jr.TrackingStatusDO).FirstOrDefault();
+        }
+
+
+        private IQueryable<TForeignEntity> GetEntities(
+            Expression<Func<TrackingStatusDO, bool>> trackingStatusPredicate = null, 
+            Expression<Func<TForeignEntity, bool>> foreignEntityPredicate = null,
+            Expression<Func<JoinResult<TForeignEntity>, bool>> joinPredicate = null)
+        {
+            return GetJoinResult(trackingStatusPredicate, foreignEntityPredicate, joinPredicate)
+                .Select(a => a.ForeignDO);
+        }
+
+        private IQueryable<JoinResult<TForeignEntity>> GetJoinResult(
+            Expression<Func<TrackingStatusDO, bool>> trackingStatusPredicate = null,
+            Expression<Func<TForeignEntity, bool>> foreignEntityPredicate = null,
             Expression<Func<JoinResult<TForeignEntity>, bool>> joinPredicate = null)
         {
             if (trackingStatusPredicate == null)
@@ -56,8 +120,7 @@ namespace KwasantCore.Services
 
             return
                 MakeJoin(ourQuery, foreignQuery)
-                    .Where(joinPredicate)
-                    .Select(a => a.ForeignDO);
+                    .Where(joinPredicate);
         }
 
         /// <summary>
@@ -84,14 +147,7 @@ namespace KwasantCore.Services
         /// <returns></returns>
         private static IQueryable<JoinResult<TForeignEntity>> MakeJoin(IQueryable<TrackingStatusDO> trackingStatusQuery, IQueryable<TForeignEntity> foreignQuery)
         {
-            var foreignTableType = typeof(TForeignEntity);
-            var foreignTableKey = foreignTableType.GetProperties().First(p => p.CustomAttributes.Any(ca => ca.AttributeType == typeof(KeyAttribute)));
-
-            var foreignProp = Expression.Parameter(foreignTableType);
-            var propertyAccessor = Expression.Property(foreignProp, foreignTableKey);
-            var foreignKeySelector = Expression.Lambda(propertyAccessor, new[] { foreignProp }) as Expression<Func<TForeignEntity, int>>;
-            if(foreignKeySelector == null)
-                throw new Exception("Query failed.");
+            var foreignKeySelector = GetForeignKeySelectorExpression();
 
             return foreignQuery.GroupJoin
                 (
@@ -106,7 +162,25 @@ namespace KwasantCore.Services
                         }
                 );
         }
-        
+
+        private static int GetKey(TForeignEntity entity)
+        {
+            return GetForeignKeySelectorExpression().Compile().Invoke(entity);
+        }
+       
+        private static Expression<Func<TForeignEntity, int>> GetForeignKeySelectorExpression()
+        {
+            var foreignTableType = typeof (TForeignEntity);
+            var foreignTableKey =
+                foreignTableType.GetProperties()
+                    .First(p => p.CustomAttributes.Any(ca => ca.AttributeType == typeof (KeyAttribute)));
+
+            var foreignProp = Expression.Parameter(foreignTableType);
+            var propertyAccessor = Expression.Property(foreignProp, foreignTableKey);
+            var foreignKeySelector = Expression.Lambda(propertyAccessor, new[] {foreignProp}) as Expression<Func<TForeignEntity, int>>;
+            return foreignKeySelector;
+        }
+
         class JoinResult<TForeignEntityType>
             where TForeignEntityType : class
         {
