@@ -29,8 +29,10 @@ namespace Playground
             var emailRepo = new EmailRepository(uow);
 
             var ts = new TrackingStatus<EmailDO>(trackingStatusRepo, emailRepo);
-            var res = ts.GetForeignEntitiesWithoutStatus();
-            var resThree = ts.GetForeignEntitiesWhereTrackingStatus(trackingStatusDO => trackingStatusDO.Value == "ASD");
+            var res = ts.GetEntitiesWithoutStatus().ToList();
+            var resTwo = ts.GetEntitiesWhereTrackingStatus(trackingStatusDO => trackingStatusDO.Value == "ASD");
+            var resThree = ts.GetEntitiesWithStatus().Where(emailDO => emailDO.Text == "Hello");
+            var resFour = ts.GetEntitiesWithStatus();
             var t = 1;
         }
     }
