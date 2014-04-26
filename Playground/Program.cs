@@ -31,6 +31,8 @@ namespace Playground
 
             TrackingStatus<EmailDO> ts = new TrackingStatus<EmailDO>(trackingStatusRepo, emailRepo);
 
+            ts.SetStatus(null, "Hello!");
+
             List<EmailDO> res = ts.GetEntitiesWithoutStatus().ToList();
             IQueryable<EmailDO> resTwo = ts.GetEntitiesWhereTrackingStatus(trackingStatusDO => trackingStatusDO.Value == "ASD");
             IQueryable<EmailDO> resThree = ts.GetEntitiesWithStatus().Where(emailDO => emailDO.Text == "Hello");
