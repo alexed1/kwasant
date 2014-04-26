@@ -151,22 +151,18 @@ namespace Data.Entities
             if (foreignEntityPredicate == null)
                 foreignEntityPredicate = foreignEntityDO => true;
 
-            //By default, we only return entities who have a custom field. The exception to this is GetEntitiesWithoutStatus, which provides its own join predicate
-            if (joinPredicate == null)
-                joinPredicate = jr => jr.CustomFieldDO != null;
-
             // 1. Make sure we join to the table name (otherwise we'll get incorrect entities).
             // 2. Provide our tracking status predicate
-            // 3. DefaultIfEmpty() turns the query into a left join, rather than inner (since we do sometimes want to return entities without statuses).
-            var ourQuery = _trackingStatusRepo.GetQuery().Where(o => o.ForeignTableName == typeof(TForeignEntity).Name).Where(customFieldStatus).DefaultIfEmpty();
+            var ourQuery = _trackingStatusRepo.GetQuery().Where(o => o.ForeignTableName == typeof(TForeignEntity).Name).Where(customFieldStatus);
 
             //Apply our foreign entity predicate
             var foreignQuery = _foreignRepo.GetQuery().Where(foreignEntityPredicate);
 
-            //Make the join and apply our join predicate
-            return
-                MakeJoin(ourQuery, foreignQuery)
-                    .Where(joinPredicate);
+            //If we have a join predicate, it means we need a left join executed (which means that we use a INNER join to return ALL the entities based on our predicate; whether they have a custom field or not).
+            //If we don't have a join predicate, it means we don't care about entities without a custom field, so we use a LEFT join
+            return joinPredicate != null
+                ? MakeLeftJoin(ourQuery, foreignQuery).Where(joinPredicate)
+                : MakeInnerJoin(ourQuery, foreignQuery);
         }
 
         /// <summary>
@@ -187,12 +183,10 @@ namespace Data.Entities
         /// This also applies to customFieldQuery.
         /// The below method is just a helper, and users can provide predicates using the above methods
         /// </summary>
-        /// <typeparam name="TForeignEntity"></typeparam>
-        /// <param name="customFieldQuery"></param>
-        /// <param name="foreignQuery"></param>
-        /// <returns></returns>
-        protected static IQueryable<JoinResult> MakeJoin(IQueryable<TCustomFieldType> customFieldQuery, IQueryable<TForeignEntity> foreignQuery)
+        protected static IQueryable<JoinResult> MakeLeftJoin(IQueryable<TCustomFieldType> customFieldQuery, IQueryable<TForeignEntity> foreignQuery)
         {
+            customFieldQuery = customFieldQuery.DefaultIfEmpty();
+
             //Grab our foreign key selector (in the form of (e) => e.[PrimaryKeyProperty]) - where PrimaryKeyProperty is the primary key of the entity
             var foreignKeySelector = GetForeignKeySelectorExpression();
 
@@ -207,6 +201,29 @@ namespace Data.Entities
                         {
                             ForeignDO = foreignDO,
                             CustomFieldDO = customFieldDO.FirstOrDefault()
+                        }
+                );
+        }
+
+        /// <summary>
+        /// This works as above, but for an INNER join
+        /// </summary>
+        protected static IQueryable<JoinResult> MakeInnerJoin(IQueryable<TCustomFieldType> customFieldQuery, IQueryable<TForeignEntity> foreignQuery)
+        {
+            //Grab our foreign key selector (in the form of (e) => e.[PrimaryKeyProperty]) - where PrimaryKeyProperty is the primary key of the entity
+            var foreignKeySelector = GetForeignKeySelectorExpression();
+
+            //Make the join!
+            return foreignQuery.Join
+                (
+                    customFieldQuery,
+                    foreignKeySelector,
+                    ts => ts.ForeignTableID,
+                    (foreignDO, customFieldDO) =>
+                        new JoinResult
+                        {
+                            ForeignDO = foreignDO,
+                            CustomFieldDO = customFieldDO
                         }
                 );
         }
