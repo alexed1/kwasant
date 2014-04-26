@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Data.Entities;
 using Data.Infrastructure;
@@ -24,21 +25,17 @@ namespace Playground
             ShnexyDbContext db = new ShnexyDbContext();
             db.Database.Initialize(true);
 
-            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            var trackingStatusRepo = new TrackingStatusRepository(uow);
-            var emailRepo = new EmailRepository(uow);
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            TrackingStatusRepository trackingStatusRepo = new TrackingStatusRepository(uow);
+            EmailRepository emailRepo = new EmailRepository(uow);
 
-            var ts = new TrackingStatus<EmailDO>(trackingStatusRepo, emailRepo);
+            TrackingStatus<EmailDO> ts = new TrackingStatus<EmailDO>(trackingStatusRepo, emailRepo);
 
-            ts.DeleteStatus(4);
-
-            uow.SaveChanges();
-
-            var res = ts.GetEntitiesWithoutStatus().ToList();
-            var resTwo = ts.GetEntitiesWhereTrackingStatus(trackingStatusDO => trackingStatusDO.Value == "ASD");
-            var resThree = ts.GetEntitiesWithStatus().Where(emailDO => emailDO.Text == "Hello");
-            var resFour = ts.GetEntitiesWithStatus();
-            var t = 1;
+            List<EmailDO> res = ts.GetEntitiesWithoutStatus().ToList();
+            IQueryable<EmailDO> resTwo = ts.GetEntitiesWhereTrackingStatus(trackingStatusDO => trackingStatusDO.Value == "ASD");
+            IQueryable<EmailDO> resThree = ts.GetEntitiesWithStatus().Where(emailDO => emailDO.Text == "Hello");
+            IQueryable<EmailDO> resFour = ts.GetEntitiesWithStatus();
+            int t = 1;
         }
     }
 }

@@ -1,18 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class TrackingStatusDO
+    public class TrackingStatusDO : ICustomField<String>
     {
-        //[Key]
-        //public int TrackingStatusID { get; set; }
-
-        //[Key][Column(Order=0)]
         public int ForeignTableID { get; set; }
-        //[Key][Column(Order=1)]
         public string ForeignTableName { get; set; }
-
         public string Value { get; set; }
     }
 }

@@ -23,25 +23,28 @@ namespace Data.Infrastructure
         public override int SaveChanges()
         {
             ChangeTracker.DetectChanges();
+            //Debug code!
             List<object> adds = ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();
             List<object> deletes = ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToList();
             var modifies = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified)
                 .Select(e =>
-            {
+                {
                     const string displayChange = "[{0}]: [{1}] -> [{2}]";
                     List<string> changedValues = new List<String>();
                     foreach (string prop in e.OriginalValues.PropertyNames)
                     {
                         object originalValue = e.OriginalValues[prop];
                         object currentValue = e.CurrentValues[prop];
-                        if ((originalValue == null && currentValue != null) || (originalValue != null && !originalValue.Equals(currentValue)))
+                        if ((originalValue == null && currentValue != null) ||
+                            (originalValue != null && !originalValue.Equals(currentValue)))
                         {
                             changedValues.Add(String.Format(displayChange, prop, originalValue,
                                 currentValue));
-            }
+                        }
                     }
 
-                    string actualName = (e.Entity.GetType().FullName.StartsWith("System.Data.Entity.DynamicProxies") && e.Entity.GetType().BaseType != null)
+                    string actualName = (e.Entity.GetType().FullName.StartsWith("System.Data.Entity.DynamicProxies") &&
+                                         e.Entity.GetType().BaseType != null)
                         ? e.Entity.GetType().BaseType.Name
                         : e.Entity.GetType().FullName;
                     return new
@@ -52,6 +55,7 @@ namespace Data.Infrastructure
                 })
                 .Where(e => e.ChangedValue != null && e.ChangedValue.Count > 0)
                 .ToList();
+
             foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
             {
                 entity.Entity.SaveHook(entity);
@@ -71,6 +75,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
+            modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<UserDO>().ToTable("Users");
 
             modelBuilder.Entity<EventDO>()
