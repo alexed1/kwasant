@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Entities.Enumerations;
@@ -21,10 +22,10 @@ namespace Daemons
         {
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             TrackingStatusRepository trackingStatusRepo = new TrackingStatusRepository(uow);
-            BookingRequestRepository emailRepo = new BookingRequestRepository(uow);
+            BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(uow);
 
-            TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(trackingStatusRepo, emailRepo);
-            var unprocessedBookingRequests = ts.GetUnprocessedEntities().ToList();
+            TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(trackingStatusRepo, bookingRequestRepo);
+            List<BookingRequestDO> unprocessedBookingRequests = ts.GetUnprocessedEntities().ToList();
             if (!unprocessedBookingRequests.Any()) 
                 return;
 

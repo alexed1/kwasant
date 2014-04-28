@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -67,9 +68,7 @@ namespace Data.Entities
 
         private TCustomFieldType GetOrCreateCustomField(int entityID)
         {
-            if (entityID == 0)
-                throw new Exception("Cannot be applied to new entities. Entities must be saved to the database before applying a custom field.");
-            var currentStatus = GetCustomField(entityID);
+            TCustomFieldType currentStatus = GetCustomField(entityID);
             if (currentStatus == null)
             {
                 currentStatus = new TCustomFieldType
@@ -93,7 +92,7 @@ namespace Data.Entities
 
         protected void DeleteCustomField(int entityID)
         {
-            var currentStatus = GetCustomField(entityID);
+            TCustomFieldType currentStatus = GetCustomField(entityID);
             if (currentStatus != null)
             {
                 _trackingStatusRepo.Remove(currentStatus);
@@ -106,7 +105,7 @@ namespace Data.Entities
         /// <param name="entityDO">The custom field of the provided entity</param>
         protected TCustomFieldType GetCustomField(TForeignEntity entityDO)
         {
-            var inMemoryID = GetKey(entityDO);
+            int inMemoryID = GetKey(entityDO);
             return GetCustomField(inMemoryID);
         }
 
@@ -115,36 +114,36 @@ namespace Data.Entities
             //This effectively builds a lambda as follows:
             // e => e.[PrimaryKeyProperty] == entityID
 
-            var foreignTableType = typeof(TForeignEntity);
-            var foreignTableKey = EntityPrimaryKeyPropertyInfo;
+            Type foreignTableType = typeof(TForeignEntity);
+            PropertyInfo foreignTableKey = EntityPrimaryKeyPropertyInfo;
 
-            var foreignProp = Expression.Parameter(foreignTableType);
-            var propertyAccessor = Expression.Property(foreignProp, foreignTableKey);
+            ParameterExpression foreignProp = Expression.Parameter(foreignTableType);
+            MemberExpression propertyAccessor = Expression.Property(foreignProp, foreignTableKey);
 
-            var equalExpression = Expression.Equal(propertyAccessor, Expression.Constant(entityID));
-            var foreignKeyComparer = Expression.Lambda(equalExpression, new[] { foreignProp }) as Expression<Func<TForeignEntity, bool>>;
+            BinaryExpression equalExpression = Expression.Equal(propertyAccessor, Expression.Constant(entityID));
+            Expression<Func<TForeignEntity, bool>> foreignKeyComparer = Expression.Lambda(equalExpression, new[] { foreignProp }) as Expression<Func<TForeignEntity, bool>>;
 
             return GetJoinResult(null, foreignKeyComparer).Select(jr => jr.CustomFieldDO).FirstOrDefault();
         }
 
 
         protected IQueryable<TForeignEntity> GetEntities(
-            Expression<Func<TCustomFieldType, bool>> customFieldStatus = null,
+            Expression<Func<TCustomFieldType, bool>> customFieldPredicate = null,
             Expression<Func<TForeignEntity, bool>> foreignEntityPredicate = null,
             Expression<Func<JoinResult, bool>> joinPredicate = null)
         {
-            return GetJoinResult(customFieldStatus, foreignEntityPredicate, joinPredicate)
+            return GetJoinResult(customFieldPredicate, foreignEntityPredicate, joinPredicate)
                 .Select(a => a.ForeignDO);
         }
 
         protected IQueryable<JoinResult> GetJoinResult(
-            Expression<Func<TCustomFieldType, bool>> customFieldStatus = null,
+            Expression<Func<TCustomFieldType, bool>> customFieldPredicate = null,
             Expression<Func<TForeignEntity, bool>> foreignEntityPredicate = null,
             Expression<Func<JoinResult, bool>> joinPredicate = null)
         {
             //If we don't have a predicate on the tracking status, set it to always true (Linq2SQL removes the redundant 'return true' predicate, so no performance is lost)
-            if (customFieldStatus == null)
-                customFieldStatus = customFieldDO => true;
+            if (customFieldPredicate == null)
+                customFieldPredicate = customFieldDO => true;
 
             //If we don't have a predicate on the foreign entity, set it to always true (Linq2SQL removes the redundant 'return true' predicate, so no performance is lost)
             if (foreignEntityPredicate == null)
@@ -152,10 +151,10 @@ namespace Data.Entities
 
             // 1. Make sure we join to the table name (otherwise we'll get incorrect entities).
             // 2. Provide our tracking status predicate
-            var ourQuery = _trackingStatusRepo.GetQuery().Where(o => o.ForeignTableName == EntityName).Where(customFieldStatus);
+            IQueryable<TCustomFieldType> ourQuery = _trackingStatusRepo.GetQuery().Where(o => o.ForeignTableName == EntityName).Where(customFieldPredicate);
 
             //Apply our foreign entity predicate
-            var foreignQuery = _foreignRepo.GetQuery().Where(foreignEntityPredicate);
+            IQueryable<TForeignEntity> foreignQuery = _foreignRepo.GetQuery().Where(foreignEntityPredicate);
 
             //If we have a join predicate, it means we need a left join executed (which means that we use a INNER join to return ALL the entities based on our predicate; whether they have a custom field or not).
             //If we don't have a join predicate, it means we don't care about entities without a custom field, so we use a LEFT join
@@ -187,7 +186,7 @@ namespace Data.Entities
             customFieldQuery = customFieldQuery.DefaultIfEmpty();
 
             //Grab our foreign key selector (in the form of (e) => e.[PrimaryKeyProperty]) - where PrimaryKeyProperty is the primary key of the entity
-            var foreignKeySelector = GetForeignKeySelectorExpression();
+            Expression<Func<TForeignEntity, int>> foreignKeySelector = GetForeignKeySelectorExpression();
 
             //Make the join!
             return foreignQuery.GroupJoin
@@ -210,7 +209,7 @@ namespace Data.Entities
         protected IQueryable<JoinResult> MakeInnerJoin(IQueryable<TCustomFieldType> customFieldQuery, IQueryable<TForeignEntity> foreignQuery)
         {
             //Grab our foreign key selector (in the form of (e) => e.[PrimaryKeyProperty]) - where PrimaryKeyProperty is the primary key of the entity
-            var foreignKeySelector = GetForeignKeySelectorExpression();
+            Expression<Func<TForeignEntity, int>> foreignKeySelector = GetForeignKeySelectorExpression();
 
             //Make the join!
             return foreignQuery.Join
@@ -232,7 +231,10 @@ namespace Data.Entities
         /// </summary>
         protected int GetKey(TForeignEntity entity)
         {
-            return GetForeignKeySelectorExpression().Compile().Invoke(entity);
+            int id = GetForeignKeySelectorExpression().Compile().Invoke(entity);
+            if (id == 0)
+                throw new Exception("Cannot be applied to new entities. Entities must be saved to the database before applying a custom field.");
+            return id;
         }
 
         /// <summary>
@@ -240,16 +242,16 @@ namespace Data.Entities
         /// </summary>
         protected Expression<Func<TForeignEntity, int>> GetForeignKeySelectorExpression()
         {
-            var foreignTableType = typeof(TForeignEntity);
-            var foreignTableKey = EntityPrimaryKeyPropertyInfo;
+            Type foreignTableType = typeof(TForeignEntity);
+            PropertyInfo foreignTableKey = EntityPrimaryKeyPropertyInfo;
 
             //The following three lines generates the following in LINQ syntax:
             // (e) => e.[PrimaryKeyProperty]; - where PrimaryKeyProperty is the primary key of the entity
             // Example of EmailDO:
             // (e) => e.EmailID;
-            var foreignProp = Expression.Parameter(foreignTableType);
-            var propertyAccessor = Expression.Property(foreignProp, foreignTableKey);
-            var foreignKeySelector = Expression.Lambda(propertyAccessor, new[] { foreignProp }) as Expression<Func<TForeignEntity, int>>;
+            ParameterExpression foreignProp = Expression.Parameter(foreignTableType);
+            MemberExpression propertyAccessor = Expression.Property(foreignProp, foreignTableKey);
+            Expression<Func<TForeignEntity, int>> foreignKeySelector = Expression.Lambda(propertyAccessor, new[] { foreignProp }) as Expression<Func<TForeignEntity, int>>;
             return foreignKeySelector;
         }
 
@@ -269,7 +271,7 @@ namespace Data.Entities
             {
                 if (_entityPrimaryKeyPropertyInfo == null)
                 {
-                    var keys = typeof(TForeignEntity).GetProperties().Where(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).ToList();
+                    List<PropertyInfo> keys = typeof(TForeignEntity).GetProperties().Where(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).ToList();
                     if (keys.Count > 1)
                     throw new Exception("Linked entity MUST have a single primary key. Composite keys are not supported.");
                     //If no primary key exists, we cannot use it
