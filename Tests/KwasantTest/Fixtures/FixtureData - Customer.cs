@@ -5,11 +5,6 @@ namespace ShnexyTest.Fixtures
 {
     partial class FixtureData
     {
-
-
-
-
-        [Test]
         public CustomerDO TestCustomer()
         {
 
