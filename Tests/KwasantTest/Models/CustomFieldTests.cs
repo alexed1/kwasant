@@ -1,6 +1,7 @@
 ﻿using System.Data.Entity;
 using System.Linq;
 using Data.Entities;
+using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
@@ -50,7 +51,7 @@ namespace ShnexyTest.Models
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
 
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Value = "New Status"});
+            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED});
             _uow.SaveChanges();
 
             var t = _trackingStatus.GetEntitiesWithoutStatus().ToList();
@@ -68,11 +69,11 @@ namespace ShnexyTest.Models
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
 
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Value = "New Status" });
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailTwo.EmailID, ForeignTableName = "EmailDO", Value = "Other Status" });
+            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED });
+            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailTwo.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.PROCESSED });
             _uow.SaveChanges();
 
-            var t = _trackingStatus.GetEntitiesWhereTrackingStatus(ts => ts.Value == "Other Status").ToList();
+            var t = _trackingStatus.GetEntitiesWhereTrackingStatus(ts => ts.Status == TrackingStatus.PROCESSED).ToList();
             Assert.AreEqual(2, _emailRepo.GetAll().Count());
             Assert.AreEqual(1, t.Count);
             Assert.AreEqual(emailTwo.EmailID, t.First().EmailID);
@@ -87,8 +88,8 @@ namespace ShnexyTest.Models
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
 
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Value = "New Status" });
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailTwo.EmailID, ForeignTableName = "EmailDO", Value = "Other Status" });
+            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED });
+            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailTwo.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.PROCESSED });
             _uow.SaveChanges();
 
             var t = _trackingStatus.GetEntitiesWithStatus().ToList();
@@ -107,12 +108,12 @@ namespace ShnexyTest.Models
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
 
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Value = "New Status" });
+            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED });
             _uow.SaveChanges();
 
             var firstStatus = _trackingStatus.GetStatus(emailOne);
             Assert.NotNull(firstStatus);
-            Assert.AreEqual("New Status", firstStatus.Value);
+            Assert.AreEqual(TrackingStatus.UNPROCESSED, firstStatus.Status);
 
             var secondStatus = _trackingStatus.GetStatus(emailTwo);
             Assert.Null(secondStatus);
@@ -131,20 +132,20 @@ namespace ShnexyTest.Models
             var status = _trackingStatus.GetStatus(emailOne);
             Assert.Null(status);
             
-            _trackingStatus.SetStatus(emailOne, "Test A");
+            _trackingStatus.SetStatus(emailOne, TrackingStatus.UNPROCESSED);
             _uow.SaveChanges();
 
             status = _trackingStatus.GetStatus(emailOne);
             Assert.NotNull(status);
-            Assert.AreEqual("Test A", status.Value);
+            Assert.AreEqual(TrackingStatus.UNPROCESSED, status.Status);
             Assert.AreEqual(1, _trackingStatusRepository.GetAll().Count());
 
-            _trackingStatus.SetStatus(emailOne, "Test B");
+            _trackingStatus.SetStatus(emailOne, TrackingStatus.PROCESSED);
             _uow.SaveChanges();
 
             status = _trackingStatus.GetStatus(emailOne);
             Assert.NotNull(status);
-            Assert.AreEqual("Test B", status.Value);
+            Assert.AreEqual(TrackingStatus.PROCESSED, status.Status);
             Assert.AreEqual(1, _trackingStatusRepository.GetAll().Count());
         }
 
@@ -156,7 +157,7 @@ namespace ShnexyTest.Models
 
             _emailRepo.Add(emailOne);
 
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Value = "New Status" });
+            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED });
             _uow.SaveChanges();
 
             Assert.AreEqual(1, _trackingStatusRepository.GetAll().Count());
