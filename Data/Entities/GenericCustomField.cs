@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -13,9 +14,8 @@ namespace Data.Entities
     /// </summary>
     /// <typeparam name="TForeignEntity">The type of the linked entity (<see cref="EmailDO"></see>, for example)</typeparam>
     /// <typeparam name="TCustomFieldType">The type of the custom field (<see cref="TrackingStatusDO"></see> for example</typeparam>
-    /// <typeparam name="TCustomFieldValueType">The type of the custom field value </typeparam>
-    public class GenericCustomField<TCustomFieldType, TForeignEntity, TCustomFieldValueType>
-        where TCustomFieldType : class, ICustomField<TCustomFieldValueType>, new()
+    public class GenericCustomField<TCustomFieldType, TForeignEntity>
+        where TCustomFieldType : class, ICustomField, new()
         where TForeignEntity : class
     {
         private readonly IGenericRepository<TCustomFieldType> _trackingStatusRepo;
@@ -56,19 +56,18 @@ namespace Data.Entities
         }
 
         /// <summary>
-        /// Sets the custom field of an entity. If an existing custom field exists for the entity, the status will be updated. If not, a custom field will be created.
+        /// Gets the custom field of an entity. If a custom field does not exist, it will be created.
         /// Entities _MUST_ already exist in the database.
         /// </summary>
         /// <param name="entityDO">Entity to set the custom field on</param>
-        /// <param name="status">Value of the custom field</param>
-        protected void SetCustomField(TForeignEntity entityDO, TCustomFieldValueType status)
+        protected TCustomFieldType GetOrCreateCustomField(TForeignEntity entityDO)
         {
-            SetCustomField(GetKey(entityDO), status);
+            return GetOrCreateCustomField(GetKey(entityDO));
         }
 
-        protected void SetCustomField(int entityID, TCustomFieldValueType status)
+        private TCustomFieldType GetOrCreateCustomField(int entityID)
         {
-            if(entityID == 0)
+            if (entityID == 0)
                 throw new Exception("Cannot be applied to new entities. Entities must be saved to the database before applying a custom field.");
             var currentStatus = GetCustomField(entityID);
             if (currentStatus == null)
@@ -76,11 +75,11 @@ namespace Data.Entities
                 currentStatus = new TCustomFieldType
                 {
                     ForeignTableID = entityID,
-                    ForeignTableName = typeof(TForeignEntity).Name,
+                    ForeignTableName = EntityName,
                 };
                 _trackingStatusRepo.Add(currentStatus);
             }
-            currentStatus.Value = status;
+            return currentStatus;
         }
 
         /// <summary>
@@ -117,7 +116,7 @@ namespace Data.Entities
             // e => e.[PrimaryKeyProperty] == entityID
 
             var foreignTableType = typeof(TForeignEntity);
-            var foreignTableKey = GetForeignTableKeyPropertyInfo(foreignTableType);
+            var foreignTableKey = EntityPrimaryKeyPropertyInfo;
 
             var foreignProp = Expression.Parameter(foreignTableType);
             var propertyAccessor = Expression.Property(foreignProp, foreignTableKey);
@@ -153,7 +152,7 @@ namespace Data.Entities
 
             // 1. Make sure we join to the table name (otherwise we'll get incorrect entities).
             // 2. Provide our tracking status predicate
-            var ourQuery = _trackingStatusRepo.GetQuery().Where(o => o.ForeignTableName == typeof(TForeignEntity).Name).Where(customFieldStatus);
+            var ourQuery = _trackingStatusRepo.GetQuery().Where(o => o.ForeignTableName == EntityName).Where(customFieldStatus);
 
             //Apply our foreign entity predicate
             var foreignQuery = _foreignRepo.GetQuery().Where(foreignEntityPredicate);
@@ -183,7 +182,7 @@ namespace Data.Entities
         /// This also applies to customFieldQuery.
         /// The below method is just a helper, and users can provide predicates using the above methods
         /// </summary>
-        protected static IQueryable<JoinResult> MakeLeftJoin(IQueryable<TCustomFieldType> customFieldQuery, IQueryable<TForeignEntity> foreignQuery)
+        protected IQueryable<JoinResult> MakeLeftJoin(IQueryable<TCustomFieldType> customFieldQuery, IQueryable<TForeignEntity> foreignQuery)
         {
             customFieldQuery = customFieldQuery.DefaultIfEmpty();
 
@@ -208,7 +207,7 @@ namespace Data.Entities
         /// <summary>
         /// This works as above, but for an INNER join
         /// </summary>
-        protected static IQueryable<JoinResult> MakeInnerJoin(IQueryable<TCustomFieldType> customFieldQuery, IQueryable<TForeignEntity> foreignQuery)
+        protected IQueryable<JoinResult> MakeInnerJoin(IQueryable<TCustomFieldType> customFieldQuery, IQueryable<TForeignEntity> foreignQuery)
         {
             //Grab our foreign key selector (in the form of (e) => e.[PrimaryKeyProperty]) - where PrimaryKeyProperty is the primary key of the entity
             var foreignKeySelector = GetForeignKeySelectorExpression();
@@ -231,7 +230,7 @@ namespace Data.Entities
         /// <summary>
         /// This method returns the primary key of the provided entity. Retrieves value based on the first property with the [Key] attribute.
         /// </summary>
-        protected static int GetKey(TForeignEntity entity)
+        protected int GetKey(TForeignEntity entity)
         {
             return GetForeignKeySelectorExpression().Compile().Invoke(entity);
         }
@@ -239,10 +238,10 @@ namespace Data.Entities
         /// <summary>
         /// This method returns an expression which retrives the primary key of an entity. This is not executed immediately. When passed to Linq2SQL, it is translated into a SQL call (not in memory).
         /// </summary>
-        protected static Expression<Func<TForeignEntity, int>> GetForeignKeySelectorExpression()
+        protected Expression<Func<TForeignEntity, int>> GetForeignKeySelectorExpression()
         {
             var foreignTableType = typeof(TForeignEntity);
-            var foreignTableKey = GetForeignTableKeyPropertyInfo(foreignTableType);
+            var foreignTableKey = EntityPrimaryKeyPropertyInfo;
 
             //The following three lines generates the following in LINQ syntax:
             // (e) => e.[PrimaryKeyProperty]; - where PrimaryKeyProperty is the primary key of the entity
@@ -254,21 +253,34 @@ namespace Data.Entities
             return foreignKeySelector;
         }
 
-        protected static PropertyInfo GetForeignTableKeyPropertyInfo(Type foreignTableType)
+        private String _entityName;
+        public String EntityName
         {
-            //Get the first primary key we see on the entity
-            var foreignTableKeys =
-                foreignTableType.GetProperties()
-                    .Where(p => p.CustomAttributes.Any(ca => ca.AttributeType == typeof(KeyAttribute)))
-                    .ToList();
-            if (foreignTableKeys.Count > 1)
-                throw new Exception("Linked entity MUST have a single primary key. Composite keys are not supported.");
-            //If no primary key exists, we cannot use it
-            if (foreignTableKeys.Count == 0)
-                throw new Exception(
-                    "Linked entity MUST have a single primary key. Entities without primary keys are not supported.");
+            get
+            {
+                return _entityName ?? (_entityName = typeof (TForeignEntity).Name);
+            }
+        }
 
-            return foreignTableKeys.First();
+        private PropertyInfo _entityPrimaryKeyPropertyInfo;
+        public PropertyInfo EntityPrimaryKeyPropertyInfo
+        {
+            get
+            {
+                if (_entityPrimaryKeyPropertyInfo == null)
+                {
+                    var keys = typeof(TForeignEntity).GetProperties().Where(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).ToList();
+                    if (keys.Count > 1)
+                    throw new Exception("Linked entity MUST have a single primary key. Composite keys are not supported.");
+                    //If no primary key exists, we cannot use it
+                    if (keys.Count == 0)
+                    throw new Exception(
+                        "Linked entity MUST have a single primary key. Entities without primary keys are not supported.");
+
+                    _entityPrimaryKeyPropertyInfo = keys.First();
+                }
+                return _entityPrimaryKeyPropertyInfo;
+            }
         }
 
         /// <summary>

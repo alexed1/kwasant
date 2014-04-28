@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
+using Daemons;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -25,19 +27,24 @@ namespace Playground
             ShnexyDbContext db = new ShnexyDbContext();
             db.Database.Initialize(true);
 
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            TrackingStatusRepository trackingStatusRepo = new TrackingStatusRepository(uow);
-            EmailRepository emailRepo = new EmailRepository(uow);
+            var omd = new OperationsMonitoringDaemon();
+            omd.Start();
+            //IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            //TrackingStatusRepository trackingStatusRepo = new TrackingStatusRepository(uow);
+            //EmailRepository emailRepo = new EmailRepository(uow);
 
-            TrackingStatus<EmailDO> ts = new TrackingStatus<EmailDO>(trackingStatusRepo, emailRepo);
+            //TrackingStatus<EmailDO> ts = new TrackingStatus<EmailDO>(trackingStatusRepo, emailRepo);
 
-            ts.SetStatus(null, "Hello!");
+            ////ts.SetStatus(null, "Hello!");
 
-            List<EmailDO> res = ts.GetEntitiesWithoutStatus().ToList();
-            IQueryable<EmailDO> resTwo = ts.GetEntitiesWhereTrackingStatus(trackingStatusDO => trackingStatusDO.Value == "ASD");
-            IQueryable<EmailDO> resThree = ts.GetEntitiesWithStatus().Where(emailDO => emailDO.Text == "Hello");
-            IQueryable<EmailDO> resFour = ts.GetEntitiesWithStatus();
-            int t = 1;
+            ////List<EmailDO> res = ts.GetEntitiesWithoutStatus().ToList();
+            ////IQueryable<EmailDO> resTwo = ts.GetEntitiesWhereTrackingStatus(trackingStatusDO => trackingStatusDO.Value == "ASD");
+            ////IQueryable<EmailDO> resFive = ts.GetEntitiesWhereTrackingStatus(trackingStatusDO => trackingStatusDO.Value == "ASD").Where(emailDO => emailDO.Text == "Hello");
+            ////IQueryable<EmailDO> resThree = ts.GetEntitiesWithStatus().Where(emailDO => emailDO.Text == "Hello");
+            ////IQueryable<EmailDO> resFour = ts.GetEntitiesWithStatus();
+
+            //var keys = (emailRepo.UnitOfWork.Db as IObjectContextAdapter).ObjectContext.CreateObjectSet<EmailDO>().EntitySet.ElementType.FullName;
+            //int t = 1;
         }
     }
 }

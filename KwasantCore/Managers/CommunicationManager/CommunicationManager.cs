@@ -1,4 +1,7 @@
-﻿using System.Diagnostics;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using Data.Entities;
 
 namespace KwasantCore.Managers.CommunicationManager
 {
@@ -22,6 +25,9 @@ namespace KwasantCore.Managers.CommunicationManager
             Debug.WriteLine("NewCustomer has been created.");
         }
 
-
+        public void ProcessBRNotifications(IList<BookingRequestDO> bookingRequests)
+        {
+            
+        }
     }
 }

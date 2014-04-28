@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Data.Entities;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 
@@ -33,7 +34,7 @@ namespace KwasantCore.Services
     /// It's a generic implementation, and as such, can be used with any entity in the database, so long as it has a single primary key. Composite keys are not supported.
     /// </summary>
     /// <typeparam name="TForeignEntity">The type of the linked entity (<see cref="EmailDO"></see>, for example)</typeparam>
-    public class TrackingStatus<TForeignEntity> : GenericCustomField<TrackingStatusDO, TForeignEntity, String> 
+    public class TrackingStatus<TForeignEntity> : GenericCustomField<TrackingStatusDO, TForeignEntity> 
         where TForeignEntity : class
     {
         public TrackingStatus(TrackingStatusRepository trackingStatusRepo, IGenericRepository<TForeignEntity> foreignRepo) 
@@ -48,6 +49,12 @@ namespace KwasantCore.Services
         public IQueryable<TForeignEntity> GetEntitiesWithoutStatus()
         {
             return GetEntitiesWithoutCustomFields();
+        }
+
+        public IQueryable<TForeignEntity> GetUnprocessedEntities()
+        {
+            //Get entities without a status, or with a status marked 'Unprocessed'
+            return GetJoinResult(null, null, jr => jr.CustomFieldDO == null || jr.CustomFieldDO.Status == TrackingStatus.UNPROCESSED).Select(jr => jr.ForeignDO);
         }
 
         /// <summary>
@@ -73,9 +80,9 @@ namespace KwasantCore.Services
         /// </summary>
         /// <param name="entityDO">Entity to set the status on</param>
         /// <param name="status">Value of the status</param>
-        public void SetStatus(TForeignEntity entityDO, String status)
+        public void SetStatus(TForeignEntity entityDO, TrackingStatus status)
         {
-            SetCustomField(entityDO, status);
+            GetOrCreateCustomField(entityDO).Status = status;
         }
 
         /// <summary>

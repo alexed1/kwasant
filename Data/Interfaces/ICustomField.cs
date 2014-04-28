@@ -1,9 +1,8 @@
 ﻿namespace Data.Interfaces
 {
-    public interface ICustomField<TValueType>
+    public interface ICustomField
     {
         int ForeignTableID { get; set; }
         string ForeignTableName { get; set; }
-        TValueType Value { get; set; }
     }
 }

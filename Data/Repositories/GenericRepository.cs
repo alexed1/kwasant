@@ -14,7 +14,7 @@ namespace Data.Repositories
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
         private readonly IUnitOfWork _unitOfWork;
-        internal DbSet<TEntity> dbSet;
+        public DbSet<TEntity> dbSet;
 
         public GenericRepository(IUnitOfWork unitOfWork)
         {
