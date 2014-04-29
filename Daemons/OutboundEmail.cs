@@ -9,9 +9,9 @@ using StructureMap;
 
 namespace Daemons
 {
-    public class OutboundEmailHandler : Daemon
+    public class OutboundEmail : Daemon
     {
-        public OutboundEmailHandler()
+        public OutboundEmail()
         {
             //register alertEmailSent event
             //register alertEmailRejected event

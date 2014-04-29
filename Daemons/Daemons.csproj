@@ -51,9 +51,9 @@
   <ItemGroup>
     <Compile Include="Daemon.cs" />
     <Compile Include="EventExposers\ExposedEvent.cs" />
-    <Compile Include="InboundEmailHandler.cs" />
-    <Compile Include="OperationsMonitoringDaemon.cs" />
-    <Compile Include="OutboundEmailHandler.cs" />
+    <Compile Include="InboundEmail.cs" />
+    <Compile Include="OperationsMonitor.cs" />
+    <Compile Include="OutboundEmail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

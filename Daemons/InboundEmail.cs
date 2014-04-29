@@ -12,7 +12,7 @@ using StructureMap;
 
 namespace Daemons
 {
-    public class InboundEmailHandler : Daemon
+    public class InboundEmail : Daemon
     {
         private readonly ImapClient _client;
 
@@ -40,7 +40,7 @@ namespace Daemons
             return true;
         }
 
-        public InboundEmailHandler()
+        public InboundEmail()
         {
             _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
         }

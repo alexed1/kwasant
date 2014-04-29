@@ -6,7 +6,7 @@ using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 
-namespace KwasantCore.Services
+namespace Data.Infrastructure
 {
     /* Usage example
      

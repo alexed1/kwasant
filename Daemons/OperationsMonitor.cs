@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Entities.Enumerations;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.CommunicationManager;
@@ -11,7 +12,11 @@ using StructureMap;
 
 namespace Daemons
 {
-    public class OperationsMonitoringDaemon : Daemon
+    /// <summary>
+    /// This Daemon looks for new booking requests, or unprocessed booking requests based on TrackingStatusDO.
+    /// New booking requests are sent to the communication manager, which will then send off emails/smses to specific people
+    /// </summary>
+    public class OperationsMonitor : Daemon
     {
         public override int WaitTimeBetweenExecution
         {

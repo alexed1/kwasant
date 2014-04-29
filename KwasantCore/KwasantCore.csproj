@@ -67,7 +67,6 @@
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Calendar.cs" />
     <Compile Include="Services\Email.cs" />
-    <Compile Include="Services\TrackingStatus.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>
   <ItemGroup>
