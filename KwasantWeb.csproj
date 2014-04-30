@@ -816,6 +816,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
+    <Folder Include="Content\images\" />
     <Folder Include="Controllers\Models\" />
   </ItemGroup>
   <ItemGroup>
