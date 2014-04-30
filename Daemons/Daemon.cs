@@ -9,6 +9,9 @@ namespace Daemons
     //For more information, see https://maginot.atlassian.net/wiki/display/SH/Design+Document%3A+SH-21
     public abstract class Daemon
     {
+        public delegate void DaemonExecutedEventHandler();
+        public event DaemonExecutedEventHandler DaemonExecuted;
+
         public abstract int WaitTimeBetweenExecution { get; }
 
         public bool IsRunning { get; private set; }
@@ -50,14 +53,14 @@ namespace Daemons
         protected void RegisterEvent<TEventArgs>(EventInfo eventInfo, Action<Object, TEventArgs> callback)
             where TEventArgs : EventArgs
         {
-            Action<object, TEventArgs> action = new Action<object, TEventArgs>((sender, args) =>
+            Action<object, TEventArgs> action = (sender, args) =>
+            {
+                lock (_eventQueue)
                 {
-                    lock (_eventQueue)
-                    {
-                        _eventQueue.Enqueue(() => callback(sender, args));
-                        Monitor.Pulse(_eventQueue);
-                    }
-                });
+                    _eventQueue.Enqueue(() => callback(sender, args));
+                    Monitor.Pulse(_eventQueue);
+                }
+            };
 
             Delegate handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, action.Target, action.Method);
             eventInfo.AddEventHandler(this, handler);
@@ -124,6 +127,8 @@ namespace Daemons
                                 lastExecutionTime = currTime;
                                 firstExecution = false;
                                 Run();
+                                if (DaemonExecuted != null)
+                                    DaemonExecuted();
                             }
                             else
                             {

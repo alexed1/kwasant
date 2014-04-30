@@ -170,5 +170,30 @@ namespace ShnexyTest.Models
             _uow.SaveChanges();
             Assert.AreEqual(0, _trackingStatusRepository.GetAll().Count());
         }
+
+        [Test]
+        public void TestGetUnprocessedEntities()
+        {
+            var emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
+            var emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmail1() };
+            var emailThree = new EmailDO() { EmailID = 3, From = _fixture.TestEmail1() };
+
+            _emailRepo.Add(emailOne);
+            _emailRepo.Add(emailTwo);
+            _emailRepo.Add(emailThree);
+
+            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.PROCESSED });
+            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailTwo.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED });
+
+            _uow.SaveChanges();
+
+            var unprocessed = _trackingStatus.GetUnprocessedEntities().ToList();
+
+            Assert.AreEqual(2, unprocessed.Count);
+            Assert.IsNotNull(unprocessed.First());
+            Assert.AreEqual(TrackingStatus.UNPROCESSED, _trackingStatus.GetStatus(unprocessed.First()).Status);
+
+            Assert.Null(_trackingStatus.GetStatus(unprocessed.Skip(1).First()));
+        }
     }
 }

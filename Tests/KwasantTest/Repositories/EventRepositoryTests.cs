@@ -30,5 +30,11 @@ namespace ShnexyTest.Repositories
             customerRepo = new CustomerRepository(_uow);
             _fixture = new FixtureData(_uow);
         }
+
+        [Test]
+        public void Test()
+        {
+            
+        }
     }
 }
