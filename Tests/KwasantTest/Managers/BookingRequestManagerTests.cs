@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Net.Mail;
 using Data.Constants;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
@@ -13,7 +11,7 @@ using NUnit.Framework;
 using ShnexyTest.Fixtures;
 using StructureMap;
 
-namespace ShnexyTest.Managers
+namespace KwasantTest.Managers
 {
     [TestFixture]
     public class BookingRequestManagerTests
@@ -25,12 +23,9 @@ namespace ShnexyTest.Managers
         [SetUp]
         public void Setup()
         {
-            Database.SetInitializer(new ShnexyInitializer());
             StructureMapBootStrapper.ConfigureDependencies("test");
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _uow.Db.Database.Delete();
-            _uow.Db.Database.Initialize(true);
-            
+            InstructionConstants.ApplySeedData(_uow);
 
             _customerRepo = new CustomerRepository(_uow);
             _fixture = new FixtureData(_uow);

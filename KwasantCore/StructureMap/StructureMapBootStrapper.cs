@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using Data.Constants;
+using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using StructureMap;
@@ -52,8 +53,7 @@ namespace KwasantCore.StructureMap
         {
             public TestMode()
             {
-                For<IUnitOfWork>().Use(new UnitOfWork(new ShnexyDbContext()));
-
+                For<IUnitOfWork>().Use(new UnitOfWork(new MockedDBContext()));
             }
         }
 

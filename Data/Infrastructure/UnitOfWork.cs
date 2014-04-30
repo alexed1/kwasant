@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Transactions;
 using Data.Interfaces;
 
@@ -8,10 +7,10 @@ namespace Data.Infrastructure
      public class UnitOfWork : IUnitOfWork
     {
         private TransactionScope transaction;
-        public DbContext db;
+        public IDBContext db;
 
 
-        public UnitOfWork(DbContext curDbContext)
+        public UnitOfWork(IDBContext curDbContext)
         {
             db = curDbContext;
         }
@@ -53,7 +52,7 @@ namespace Data.Infrastructure
 
         }
 
-        public DbContext Db
+        public IDBContext Db
         {
             get { return db; }
         }

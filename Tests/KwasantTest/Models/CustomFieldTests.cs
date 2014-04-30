@@ -25,13 +25,9 @@ namespace ShnexyTest.Models
         [SetUp]
         public void Setup()
         {
-            Database.SetInitializer(new ShnexyInitializer());
             StructureMapBootStrapper.ConfigureDependencies("test");
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _uow.Db.Database.Delete();
-            _uow.Db.Database.Initialize(true);
-
-
+          
             _trackingStatusRepository = new TrackingStatusRepository(_uow);
             _emailRepo = new EmailRepository(_uow);
 

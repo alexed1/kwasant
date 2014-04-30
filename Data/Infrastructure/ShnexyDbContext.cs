@@ -10,7 +10,7 @@ namespace Data.Infrastructure
 {
 
 
-    public class ShnexyDbContext : DbContext
+    public class ShnexyDbContext : DbContext, IDBContext
     {       
         //see web.config for connection string names.
         //azure is AzureAlexTestDb
@@ -62,6 +62,11 @@ namespace Data.Infrastructure
             }
 
             return base.SaveChanges();
+        }
+
+        public IDbSet<TEntity> Set<TEntity>() where TEntity : class
+        {
+            return base.Set<TEntity>();
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -154,6 +159,5 @@ namespace Data.Infrastructure
         public DbSet<UserDO> Users { get; set; }
 
         public DbSet<TrackingStatusDO> TrackingStatuses { get; set; }
-        
     }
 }

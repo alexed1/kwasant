@@ -23,12 +23,8 @@ namespace ShnexyTest.Services
         [SetUp]
         public void Setup()
         {
-            Database.SetInitializer(new ShnexyInitializer());
             StructureMapBootStrapper.ConfigureDependencies("test");
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _uow.Db.Database.Delete();
-            _uow.Db.Database.Initialize(true);
-
 
             _bookingRequestRepo = new BookingRequestRepository(_uow);
             _fixture = new FixtureData(_uow);
@@ -41,7 +37,7 @@ namespace ShnexyTest.Services
             var eventRepo = new EventRepository(_uow);
 
             var customerOne = _fixture.TestCustomer();
-            var customerTwo = _fixture.TestCustomer();
+            var customerTwo = _fixture.TestCustomer2();
             
             customerRepo.Add(customerOne);
             customerRepo.Add(customerTwo);
@@ -280,7 +276,7 @@ namespace ShnexyTest.Services
             _uow.SaveChanges();
 
             var emails = new EmailRepository(_uow).GetAll().ToList();
-            Assert.AreEqual(1, emails.Count);
+            Assert.AreEqual(0, emails.Count);
 
             var calendar = new Calendar(_uow, bookingRequestOne);
             var events = calendar.EventsList;
@@ -299,7 +295,7 @@ namespace ShnexyTest.Services
             _uow.SaveChanges();
 
             emails = new EmailRepository(_uow).GetAll().ToList();
-            Assert.AreEqual(2, emails.Count);
+            Assert.AreEqual(1, emails.Count);
         }
     }
 }

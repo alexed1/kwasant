@@ -14,7 +14,7 @@ namespace Data.Repositories
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
         private readonly IUnitOfWork _unitOfWork;
-        public DbSet<TEntity> dbSet;
+        public IDbSet<TEntity> dbSet;
 
         public GenericRepository(IUnitOfWork unitOfWork)
         {
@@ -27,7 +27,7 @@ namespace Data.Repositories
 
         #region Property
         public IUnitOfWork UnitOfWork { get { return _unitOfWork; } }
-        internal DbContext Database { get { return _unitOfWork.Db; } }
+        internal IDBContext Database { get { return _unitOfWork.Db; } }
 
         #endregion
 

@@ -88,6 +88,7 @@
     <Compile Include="Infrastructure\ShnexyDbContext.cs" />
     <Compile Include="Infrastructure\ShnexyInitializer.cs" />
     <Compile Include="Infrastructure\UnitOfWork.cs" />
+    <Compile Include="Interfaces\IDBContext.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\ISaveHook.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />

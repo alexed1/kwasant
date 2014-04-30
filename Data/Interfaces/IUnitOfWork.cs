@@ -15,7 +15,7 @@ namespace Data.Interfaces
         /// <summary>
         /// Return the database reference for this UOW
         /// </summary>
-        DbContext Db { get; }
+        IDBContext Db { get; }
 
         /// <summary>
         /// Starts a transaction on this unit of work

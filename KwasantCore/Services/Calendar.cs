@@ -52,6 +52,7 @@ namespace KwasantCore.Services
 
         private void LoadData()
         {
+            var test = _eventRepo.GetAll();
             _events = _eventRepo.GetQuery()
                 .Where(eventDO => eventDO.BookingRequest.Customer.CustomerID == _bookingRequestDO.Customer.CustomerID)
                 .ToDictionary(
@@ -168,7 +169,7 @@ namespace KwasantCore.Services
         public void DeleteEvent(int id)
         {
             EventDO eventToDelete = EventsList.FirstOrDefault(inv => inv.EventID == id);
-            if (eventToDelete != null && !_eventRepo.IsDetached(eventToDelete))
+            if (eventToDelete != null)
             {
                 _eventRepo.Remove(eventToDelete);
                 _uow.SaveChanges();

@@ -18,7 +18,18 @@ namespace ShnexyTest.Fixtures
             };
         }
 
+        public CustomerDO TestCustomer2()
+        {
 
+            return new CustomerDO()
+            {
+                CustomerID = 2,
+                FirstName = "Rob",
+                LastName = "Maginot",
+                EmailAddress = "RobMaginot@gmail.com"
+
+            };
+        }
 
     }
 }

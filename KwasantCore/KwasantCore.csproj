@@ -72,6 +72,8 @@
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Calendar.cs" />
     <Compile Include="Services\Email.cs" />
+    <Compile Include="StructureMap\MockedDBContext.cs" />
+    <Compile Include="StructureMap\MockedDbSet.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>
   <ItemGroup>
