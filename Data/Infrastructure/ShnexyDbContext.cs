@@ -12,10 +12,9 @@ namespace Data.Infrastructure
 
     public class ShnexyDbContext : DbContext, IDBContext
     {       
-        //see web.config for connection string names.
-        //azure is AzureAlexTestDb
+        //Do not change this value! If you want to change the database you connect to, edit your web.config file
         public ShnexyDbContext()
-            : base("name=AzureAlexTestDb")
+            : base("name=KwasantDB")
         {
             
         }
