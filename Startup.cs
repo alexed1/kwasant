@@ -1,17 +1,9 @@
 ﻿using System;
 using System.Configuration;
-using System.Net.Mail;
 using Configuration;
 using Daemons;
-using Data.Constants;
-using Data.Entities;
-using Data.Entities.Enumerations;
-using Data.Interfaces;
-using Data.Repositories;
-using KwasantCore.Services;
 using Microsoft.Owin;
 using Owin;
-using StructureMap;
 
 [assembly: OwinStartupAttribute(typeof(Shnexy.Startup))]
 
@@ -22,12 +14,6 @@ namespace Shnexy
         public void Configuration(IAppBuilder app)
         {
             ConfigureDaemons();
-
-            //ConfigureAuth(app);
-
-            CustomerDO customer = SeedFakeCustomer();
-            SeedFakeBookingRequest(customer);
-            SeedFakeBookingRequest(customer);
         }
 
         private static void ConfigureDaemons()
@@ -53,38 +39,6 @@ namespace Shnexy
                     }
                 }
             }
-        }
-
-        private static CustomerDO SeedFakeCustomer()
-        {
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            CustomerRepository customerRepository = new CustomerRepository(uow);
-            CustomerDO newCustomer = new CustomerDO
-            {
-                FirstName = "Mr",
-                LastName = "Client"
-            };
-            customerRepository.Add(newCustomer);
-            return newCustomer;
-        }
-
-        private static void SeedFakeBookingRequest(CustomerDO customer)
-        {
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            BookingRequestRepository emailRepository = new BookingRequestRepository(uow);
-
-            MailMessage mailMessage = new MailMessage(new MailAddress("AClient@gmail.com", "Client Smith"),
-                new MailAddress("kwa@sant.com", "Booqit Service"))
-            {
-                Subject = "Book me a meeting!",
-                Body = "Book it in office A at 10:30am on Tuesday"
-            };
-
-            BookingRequestDO email = Email.ConvertMailMessageToEmail(emailRepository, mailMessage);
-            email.Customer = customer;
-            email.Status = EmailStatus.UNPROCESSED;
-
-            emailRepository.UnitOfWork.SaveChanges();
         }
     }
 }
