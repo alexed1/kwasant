@@ -236,6 +236,7 @@
     <Content Include="Content\bootstrap-datetimepicker.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\images\Croissant\croissant_nolic.jpg" />
     <Content Include="Content\Index.css" />
     <Content Include="Content\justified-nav.css" />
     <Content Include="Content\slider.css" />
@@ -816,7 +817,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
-    <Folder Include="Content\images\" />
     <Folder Include="Controllers\Models\" />
   </ItemGroup>
   <ItemGroup>
