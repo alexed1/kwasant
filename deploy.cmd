@@ -95,10 +95,10 @@ IF !ERRORLEVEL! NEQ 0 goto error
 echo Running tests
 vstest.console.exe "%DEPLOYMENT_SOURCE%\Tests\KwasantTest\bin\Debug\KwasantTest.dll"
 IF !ERRORLEVEL! NEQ 0 goto error
-vstest.console.exe "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.Collections.Test\bin\Debug\DDay.Collections.Test.dll"
-IF !ERRORLEVEL! NEQ 0 goto error
-vstest.console.exe "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.iCal.Test\bin\Debug\DDay.iCal.Test.dll"
-IF !ERRORLEVEL! NEQ 0 goto error
+:: vstest.console.exe "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.Collections.Test\bin\Debug\DDay.Collections.Test.dll"
+:: IF !ERRORLEVEL! NEQ 0 goto error
+:: vstest.console.exe "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.iCal.Test\bin\Debug\DDay.iCal.Test.dll"
+:: IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 5. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
