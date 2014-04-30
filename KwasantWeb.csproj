@@ -260,7 +260,7 @@
     <Content Include="Content\css\img\ie-black-bg.png" />
     <Content Include="Content\css\img\loading.gif" />
     <Content Include="Content\css\main.css" />
-    <Content Include="Website\font\fontawesome-webfont.svg" />
+    <Content Include="Content\font\fontawesome-webfont.svg" />
     <Content Include="Website\gadegets.xml" />
     <Content Include="Website\images\bg1.jpg" />
     <Content Include="Website\images\bg2.jpg" />
@@ -379,10 +379,10 @@
     <Content Include="packages\EntityFramework.6.1.0\tools\EntityFramework.PowerShell.Utility.dll" />
     <Content Include="packages\EntityFramework.6.1.0\tools\migrate.exe" />
     <Content Include="Website\.htaccess" />
-    <Content Include="Website\font\fontawesome-webfont.eot" />
-    <Content Include="Website\font\fontawesome-webfont.ttf" />
-    <Content Include="Website\font\fontawesome-webfont.woff" />
-    <Content Include="Website\font\FontAwesome.otf" />
+    <Content Include="Content\font\fontawesome-webfont.eot" />
+    <Content Include="Content\font\fontawesome-webfont.ttf" />
+    <Content Include="Content\font\fontawesome-webfont.woff" />
+    <Content Include="Content\font\FontAwesome.otf" />
     <Content Include="Website\images\blue_tag.psd" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
