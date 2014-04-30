@@ -45,12 +45,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="DayPilot">
-      <HintPath>packages\DayPilot.4.1.264\lib\DayPilot.dll</HintPath>
-    </Reference>
-    <Reference Include="DayPilot.Web.Mvc, Version=7.7.5658.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\DayPilot.Web.Mvc.dll</HintPath>
+    <Reference Include="DayPilot.Web.Mvc">
+      <HintPath>lib\DayPilot.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
