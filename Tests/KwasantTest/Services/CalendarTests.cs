@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using Data.Entities;
@@ -33,22 +34,22 @@ namespace ShnexyTest.Services
         [Test]
         public void TestCalendarLoadsRelatedEvents()
         {
-            var customerRepo = new CustomerRepository(_uow);
-            var eventRepo = new EventRepository(_uow);
+            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            EventRepository eventRepo = new EventRepository(_uow);
 
-            var customerOne = _fixture.TestCustomer();
-            var customerTwo = _fixture.TestCustomer2();
+            CustomerDO customerOne = _fixture.TestCustomer();
+            CustomerDO customerTwo = _fixture.TestCustomer2();
             
             customerRepo.Add(customerOne);
             customerRepo.Add(customerTwo);
 
-            var bookingRequestOne = new BookingRequestDO()
+            BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 EmailID = 1,
                 Customer = customerOne,
                 From = new EmailAddressDO()
             };
-            var bookingRequestTwo = new BookingRequestDO()
+            BookingRequestDO bookingRequestTwo = new BookingRequestDO()
             {
                 EmailID = 2,
                 Customer = customerTwo,
@@ -58,7 +59,7 @@ namespace ShnexyTest.Services
             _bookingRequestRepo.Add(bookingRequestOne);
             _bookingRequestRepo.Add(bookingRequestTwo);
 
-            var eventOne = new EventDO()
+            EventDO eventOne = new EventDO()
             {
                 EventID = 1,
                 StartDate = DateTime.Now,
@@ -66,7 +67,7 @@ namespace ShnexyTest.Services
                 BookingRequest = bookingRequestOne
             };
 
-            var eventTwo = new EventDO()
+            EventDO eventTwo = new EventDO()
             {
                 EventID = 2,
                 StartDate = DateTime.Now,
@@ -79,8 +80,8 @@ namespace ShnexyTest.Services
 
             _uow.SaveChanges();
 
-            var calendar = new Calendar(_uow, bookingRequestOne);
-            var events = calendar.EventsList;
+            Calendar calendar = new Calendar(_uow, bookingRequestOne);
+            List<EventDO> events = calendar.EventsList;
             Assert.AreEqual(1, events.Count);
             Assert.AreEqual(1, events.First().EventID);
             Assert.AreEqual(1, events.First().BookingRequest.EmailID);
@@ -89,14 +90,14 @@ namespace ShnexyTest.Services
         [Test]
         public void TestMoveAndReload()
         {
-            var customerRepo = new CustomerRepository(_uow);
-            var eventRepo = new EventRepository(_uow);
+            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            EventRepository eventRepo = new EventRepository(_uow);
 
-            var customerOne = _fixture.TestCustomer();
+            CustomerDO customerOne = _fixture.TestCustomer();
             
             customerRepo.Add(customerOne);
             
-            var bookingRequestOne = new BookingRequestDO()
+            BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 EmailID = 1,
                 Customer = customerOne,
@@ -105,7 +106,7 @@ namespace ShnexyTest.Services
             
             _bookingRequestRepo.Add(bookingRequestOne);
             
-            var eventOne = new EventDO()
+            EventDO eventOne = new EventDO()
             {
                 EventID = 1,
                 StartDate = DateTime.Today,
@@ -116,8 +117,8 @@ namespace ShnexyTest.Services
 
             _uow.SaveChanges();
 
-            var calendar = new Calendar(_uow, bookingRequestOne);
-            var events = calendar.EventsList;
+            Calendar calendar = new Calendar(_uow, bookingRequestOne);
+            List<EventDO> events = calendar.EventsList;
             Assert.AreEqual(1, events.Count);
             Assert.AreEqual(DateTime.Today, events.First().StartDate);
 
@@ -137,14 +138,14 @@ namespace ShnexyTest.Services
         [Test]
         public void TestDelete()
         {
-            var customerRepo = new CustomerRepository(_uow);
-            var eventRepo = new EventRepository(_uow);
+            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            EventRepository eventRepo = new EventRepository(_uow);
 
-            var customerOne = _fixture.TestCustomer();
+            CustomerDO customerOne = _fixture.TestCustomer();
 
             customerRepo.Add(customerOne);
 
-            var bookingRequestOne = new BookingRequestDO()
+            BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 EmailID = 1,
                 Customer = customerOne,
@@ -153,7 +154,7 @@ namespace ShnexyTest.Services
 
             _bookingRequestRepo.Add(bookingRequestOne);
 
-            var eventOne = new EventDO()
+            EventDO eventOne = new EventDO()
             {
                 EventID = 1,
                 StartDate = DateTime.Today,
@@ -164,8 +165,8 @@ namespace ShnexyTest.Services
 
             _uow.SaveChanges();
 
-            var calendar = new Calendar(_uow, bookingRequestOne);
-            var events = calendar.EventsList;
+            Calendar calendar = new Calendar(_uow, bookingRequestOne);
+            List<EventDO> events = calendar.EventsList;
             Assert.AreEqual(1, events.Count);
             Assert.AreEqual(DateTime.Today, events.First().StartDate);
 
@@ -181,13 +182,13 @@ namespace ShnexyTest.Services
         [Test]
         public void TestAdd()
         {
-            var customerRepo = new CustomerRepository(_uow);
+            CustomerRepository customerRepo = new CustomerRepository(_uow);
 
-            var customerOne = _fixture.TestCustomer();
+            CustomerDO customerOne = _fixture.TestCustomer();
 
             customerRepo.Add(customerOne);
 
-            var bookingRequestOne = new BookingRequestDO()
+            BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 EmailID = 1,
                 Customer = customerOne,
@@ -198,8 +199,8 @@ namespace ShnexyTest.Services
 
             _uow.SaveChanges();
 
-            var calendar = new Calendar(_uow, bookingRequestOne);
-            var events = calendar.EventsList;
+            Calendar calendar = new Calendar(_uow, bookingRequestOne);
+            List<EventDO> events = calendar.EventsList;
             Assert.AreEqual(0, events.Count);
 
             calendar.AddEvent(new EventDO
@@ -220,14 +221,14 @@ namespace ShnexyTest.Services
         [Test]
         public void TestGet()
         {
-            var customerRepo = new CustomerRepository(_uow);
-            var eventRepo = new EventRepository(_uow);
+            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            EventRepository eventRepo = new EventRepository(_uow);
 
-            var customerOne = _fixture.TestCustomer();
+            CustomerDO customerOne = _fixture.TestCustomer();
 
             customerRepo.Add(customerOne);
 
-            var bookingRequestOne = new BookingRequestDO()
+            BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 EmailID = 1,
                 Customer = customerOne,
@@ -236,7 +237,7 @@ namespace ShnexyTest.Services
 
             _bookingRequestRepo.Add(bookingRequestOne);
 
-            var eventOne = new EventDO()
+            EventDO eventOne = new EventDO()
             {
                 EventID = 1,
                 StartDate = DateTime.Today,
@@ -247,8 +248,8 @@ namespace ShnexyTest.Services
 
             _uow.SaveChanges();
 
-            var calendar = new Calendar(_uow, bookingRequestOne);
-            var events = calendar.EventsList;
+            Calendar calendar = new Calendar(_uow, bookingRequestOne);
+            List<EventDO> events = calendar.EventsList;
             Assert.AreEqual(1, events.Count);
             Assert.AreEqual(DateTime.Today, events.First().StartDate);
 
@@ -258,13 +259,13 @@ namespace ShnexyTest.Services
         [Test]
         public void TestDispatch()
         {
-            var customerRepo = new CustomerRepository(_uow);
+            CustomerRepository customerRepo = new CustomerRepository(_uow);
 
-            var customerOne = _fixture.TestCustomer();
+            CustomerDO customerOne = _fixture.TestCustomer();
 
             customerRepo.Add(customerOne);
 
-            var bookingRequestOne = new BookingRequestDO()
+            BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 EmailID = 1,
                 Customer = customerOne,
@@ -275,11 +276,11 @@ namespace ShnexyTest.Services
 
             _uow.SaveChanges();
 
-            var emails = new EmailRepository(_uow).GetAll().ToList();
+            List<EmailDO> emails = new EmailRepository(_uow).GetAll().ToList();
             Assert.AreEqual(0, emails.Count);
 
-            var calendar = new Calendar(_uow, bookingRequestOne);
-            var events = calendar.EventsList;
+            Calendar calendar = new Calendar(_uow, bookingRequestOne);
+            List<EventDO> events = calendar.EventsList;
             Assert.AreEqual(0, events.Count);
 
             calendar.AddEvent(new EventDO

@@ -67,9 +67,9 @@ namespace KwasantCore.StructureMap
             if (!(keyValues[0] is int))
                 throw new Exception("Only support int-based keys.");
 
-            var entityPrimaryKey = (int) keyValues[0];
+            int entityPrimaryKey = (int) keyValues[0];
 
-            var compiledSelector = GetEntityKeySelector().Compile();
+            Func<TEntity, int> compiledSelector = GetEntityKeySelector().Compile();
             return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
         }
 

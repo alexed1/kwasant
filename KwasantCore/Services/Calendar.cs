@@ -52,7 +52,7 @@ namespace KwasantCore.Services
 
         private void LoadData()
         {
-            var test = _eventRepo.GetAll();
+            IEnumerable<EventDO> test = _eventRepo.GetAll();
             _events = _eventRepo.GetQuery()
                 .Where(eventDO => eventDO.BookingRequest.Customer.CustomerID == _bookingRequestDO.Customer.CustomerID)
                 .ToDictionary(

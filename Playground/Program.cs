@@ -36,7 +36,7 @@ namespace Playground
 
             TrackingStatus<EmailDO> ts = new TrackingStatus<EmailDO>(trackingStatusRepo, emailRepo);
 
-            var newEmail = new EmailDO() {From = new EmailAddressDO()};
+            EmailDO newEmail = new EmailDO() {From = new EmailAddressDO()};
             emailRepo.Add(newEmail);
             ts.SetStatus(newEmail, TrackingStatus.PROCESSED);
             uow.SaveChanges();

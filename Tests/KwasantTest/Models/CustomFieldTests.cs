@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using Data.Entities;
 using Data.Entities.Enumerations;
@@ -41,8 +42,8 @@ namespace ShnexyTest.Models
         [Test]
         public void TestWithoutStatus()
         {
-            var emailOne = new EmailDO() {EmailID = 1, From = _fixture.TestEmail1()};
-            var emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmail1() };
+            EmailDO emailOne = new EmailDO() {EmailID = 1, From = _fixture.TestEmail1()};
+            EmailDO emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmail1() };
 
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
@@ -50,7 +51,7 @@ namespace ShnexyTest.Models
             _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED});
             _uow.SaveChanges();
 
-            var t = _trackingStatus.GetEntitiesWithoutStatus().ToList();
+            List<EmailDO> t = _trackingStatus.GetEntitiesWithoutStatus().ToList();
             Assert.AreEqual(2, _emailRepo.GetAll().Count());
             Assert.AreEqual(1, t.Count);
             Assert.AreEqual(emailTwo.EmailID, t.First().EmailID);
@@ -59,8 +60,8 @@ namespace ShnexyTest.Models
         [Test]
         public void TestWhereTrackingStatus()
         {
-            var emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
-            var emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmail1() };
+            EmailDO emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
+            EmailDO emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmail1() };
 
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
@@ -69,7 +70,7 @@ namespace ShnexyTest.Models
             _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailTwo.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.PROCESSED });
             _uow.SaveChanges();
 
-            var t = _trackingStatus.GetEntitiesWhereTrackingStatus(ts => ts.Status == TrackingStatus.PROCESSED).ToList();
+            List<EmailDO> t = _trackingStatus.GetEntitiesWhereTrackingStatus(ts => ts.Status == TrackingStatus.PROCESSED).ToList();
             Assert.AreEqual(2, _emailRepo.GetAll().Count());
             Assert.AreEqual(1, t.Count);
             Assert.AreEqual(emailTwo.EmailID, t.First().EmailID);
@@ -78,8 +79,8 @@ namespace ShnexyTest.Models
         [Test]
         public void TestWithStatus()
         {
-            var emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
-            var emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmail1() };
+            EmailDO emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
+            EmailDO emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmail1() };
 
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
@@ -88,7 +89,7 @@ namespace ShnexyTest.Models
             _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailTwo.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.PROCESSED });
             _uow.SaveChanges();
 
-            var t = _trackingStatus.GetEntitiesWithStatus().ToList();
+            List<EmailDO> t = _trackingStatus.GetEntitiesWithStatus().ToList();
             Assert.AreEqual(2, _emailRepo.GetAll().Count());
             Assert.AreEqual(2, t.Count);
             Assert.AreEqual(emailOne.EmailID, t.First().EmailID);
@@ -98,8 +99,8 @@ namespace ShnexyTest.Models
         [Test]
         public void TestGetStatus()
         {
-            var emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
-            var emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmail1() };
+            EmailDO emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
+            EmailDO emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmail1() };
 
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
@@ -107,25 +108,25 @@ namespace ShnexyTest.Models
             _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED });
             _uow.SaveChanges();
 
-            var firstStatus = _trackingStatus.GetStatus(emailOne);
+            TrackingStatusDO firstStatus = _trackingStatus.GetStatus(emailOne);
             Assert.NotNull(firstStatus);
             Assert.AreEqual(TrackingStatus.UNPROCESSED, firstStatus.Status);
 
-            var secondStatus = _trackingStatus.GetStatus(emailTwo);
+            TrackingStatusDO secondStatus = _trackingStatus.GetStatus(emailTwo);
             Assert.Null(secondStatus);
         }
 
         [Test]
         public void TestSetStatus()
         {
-            var emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
+            EmailDO emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
 
             _emailRepo.Add(emailOne);
             _uow.SaveChanges();
 
             Assert.AreEqual(0, _trackingStatusRepository.GetAll().Count());
 
-            var status = _trackingStatus.GetStatus(emailOne);
+            TrackingStatusDO status = _trackingStatus.GetStatus(emailOne);
             Assert.Null(status);
             
             _trackingStatus.SetStatus(emailOne, TrackingStatus.UNPROCESSED);
@@ -149,7 +150,7 @@ namespace ShnexyTest.Models
         [Test]
         public void TestDeleteStatus()
         {
-            var emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
+            EmailDO emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
 
             _emailRepo.Add(emailOne);
 
@@ -170,9 +171,9 @@ namespace ShnexyTest.Models
         [Test]
         public void TestGetUnprocessedEntities()
         {
-            var emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
-            var emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmail1() };
-            var emailThree = new EmailDO() { EmailID = 3, From = _fixture.TestEmail1() };
+            EmailDO emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmail1() };
+            EmailDO emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmail1() };
+            EmailDO emailThree = new EmailDO() { EmailID = 3, From = _fixture.TestEmail1() };
 
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
@@ -183,7 +184,7 @@ namespace ShnexyTest.Models
 
             _uow.SaveChanges();
 
-            var unprocessed = _trackingStatus.GetUnprocessedEntities().ToList();
+            List<EmailDO> unprocessed = _trackingStatus.GetUnprocessedEntities().ToList();
 
             Assert.AreEqual(2, unprocessed.Count);
             Assert.IsNotNull(unprocessed.First());

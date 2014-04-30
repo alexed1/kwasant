@@ -34,7 +34,7 @@ namespace Daemons
             if (!unprocessedBookingRequests.Any()) 
                 return;
 
-            var cm = new CommunicationManager();
+            CommunicationManager cm = new CommunicationManager();
             cm.ProcessBRNotifications(unprocessedBookingRequests);
             unprocessedBookingRequests.ForEach(br => ts.SetStatus(br, TrackingStatus.PROCESSED));
 
