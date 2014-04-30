@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Reflection;
 using Data.Interfaces;
 using StructureMap.TypeRules;
 
@@ -28,18 +29,18 @@ namespace KwasantCore.StructureMap
 
         private int AddForeignValues()
         {
-            var numAdded = 0;
-            foreach (var set in _cachedSets.ToList())
+            int numAdded = 0;
+            foreach (KeyValuePair<Type, object> set in _cachedSets.ToList())
             {
-                foreach (var row in set.Value as IEnumerable)
+                foreach (object row in set.Value as IEnumerable)
                 {
-                    var props = row.GetType().GetProperties();
-                    foreach (var prop in props)
+                    PropertyInfo[] props = row.GetType().GetProperties();
+                    foreach (PropertyInfo prop in props)
                     {
                         if (IsEntity(prop.PropertyType))
                         {
                             //It's a normal foreign key
-                            var value = prop.GetValue(row);
+                            object value = prop.GetValue(row);
                             if (value == null)
                                 continue;
 
@@ -50,11 +51,11 @@ namespace KwasantCore.StructureMap
                                  IsEntity(prop.PropertyType.GetGenericArguments()[0]))
                         {
                             //It's a collection!
-                            var collection = prop.GetValue(row) as IEnumerable;
+                            IEnumerable collection = prop.GetValue(row) as IEnumerable;
                             if (collection == null)
                                 continue;
 
-                            foreach (var value in collection)
+                            foreach (object value in collection)
                             {
                                 if (AddValueToForeignSet(value))
                                     numAdded++;
@@ -68,20 +69,20 @@ namespace KwasantCore.StructureMap
 
         private bool AddValueToForeignSet(Object value)
         {
-            var checkSet = Set(value.GetType());
+            object checkSet = Set(value.GetType());
             if ((checkSet as IEnumerable<object>).Contains(value))
             {
                 return false;
             }
 
-            var methodToCall = checkSet.GetType().GetMethod("Add", new[] {value.GetType()});
+            MethodInfo methodToCall = checkSet.GetType().GetMethod("Add", new[] {value.GetType()});
             methodToCall.Invoke(checkSet, new[] {value});
             return true;
         }
 
         public IDbSet<TEntity> Set<TEntity>() where TEntity : class
         {
-            var entityType = typeof (TEntity);
+            Type entityType = typeof (TEntity);
             return (IDbSet<TEntity>) (Set(entityType));
         }
 
