@@ -15,7 +15,7 @@ namespace Data.Infrastructure
         //see web.config for connection string names.
         //azure is AzureAlexTestDb
         public ShnexyDbContext()
-            : base("name=ShnexyTESTLocalDb")
+            : base("name=AzureAlexTestDb")
         {
             
         }
