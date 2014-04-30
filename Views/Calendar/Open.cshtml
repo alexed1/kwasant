@@ -173,9 +173,23 @@
         if (!f.valid())
             return false;
         
+        var fromDate = $('#fromDate');
+        var toDate = $('#toDate');
+
+        fromDate.data("DateTimePicker").enable();
+        toDate.data("DateTimePicker").enable();
+        
         var url = f.prop('action') + '/?' + f.serialize();
         var m = new parent.DayPilot.Modal();
-        m.closed = function() {
+        m.closed = function () {
+            if ($('#chkAllDay').attr('checked')) {
+                fromDate.data("DateTimePicker").disable();
+                toDate.data("DateTimePicker").disable();
+            } else {
+                fromDate.data("DateTimePicker").enable();
+                toDate.data("DateTimePicker").enable();
+            }
+
             if (this.result == "OK") {
                 close(this.result);
             }
