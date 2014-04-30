@@ -7,7 +7,7 @@ namespace Shnexy.Controllers
     {
         public ActionResult Index()
         {
-            return Redirect("/Website/index.html");
+            return Redirect("/index.html");
         }
 
         public ActionResult About()
