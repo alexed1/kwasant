@@ -14,6 +14,13 @@ namespace KwasantCore.StructureMap
         private Dictionary<Type, object> _cachedSets = new Dictionary<Type, object>();
         public int SaveChanges()
         {
+            //When we save in memory, we need to make sure foreign entities are saved. An example:
+            //eventDO.Emails.Add(new EmailDO();
+            //This new EmailDO is added to the event's Email collection - however, it's not automatically added to a set.
+            //When we save, we parse all the row's foreign links, including collections. We then add missing rows to the collection
+            //We loop, because in this instance:
+            //eventDO.Emails.Add(new EmailDO { Customer = new CustomerDO }) - once we've added the email, we still haven't added the customer.
+            //Looping causes us to pickup each foreign link and be sure everything is persisted in memory
             while (AddForeignValues() > 0) ;
 
             return 1;

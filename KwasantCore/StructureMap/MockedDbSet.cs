@@ -156,9 +156,5 @@ namespace KwasantCore.StructureMap
             }
         }
 
-        private bool IsEntity(Type type)
-        {
-            return type.Namespace == "Data.Entities";
-        }
     }
 }
