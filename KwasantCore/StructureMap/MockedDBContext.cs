@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -24,7 +25,40 @@ namespace KwasantCore.StructureMap
             //Looping causes us to pickup each foreign link and be sure everything is persisted in memory
             while (AddForeignValues() > 0) ;
 
+            AssignIDs();
+
             return 1;
+        }
+
+        private void AssignIDs()
+        {
+            foreach (var set in _cachedSets)
+            {
+                int maxIDAlready = 0;
+                if ((set.Value as IEnumerable<object>).Any())
+                {
+                    maxIDAlready = (set.Value as IEnumerable<object>).Max<object, int>(a =>
+                    {
+                        var propInfo = EntityPrimaryKeyPropertyInfo(a);
+                        if (propInfo == null)
+                            return 0;
+
+                        return (int) propInfo.GetValue(a);
+                    });
+                }
+
+                foreach (object row in set.Value as IEnumerable)
+                {
+                    var propInfo = EntityPrimaryKeyPropertyInfo(row);
+                    if (propInfo == null)
+                        continue;
+
+                    if ((int) propInfo.GetValue(row) == 0)
+                    {
+                        propInfo.SetValue(row, ++maxIDAlready);
+                    }
+                }
+            }
         }
 
         private int AddForeignValues()
@@ -104,5 +138,19 @@ namespace KwasantCore.StructureMap
         {
             return type.Namespace == "Data.Entities";
         }
+
+        public PropertyInfo EntityPrimaryKeyPropertyInfo(object entity)
+        {
+            var entityType = entity.GetType();
+            List<PropertyInfo> keys = entityType.GetProperties().Where(p => p.GetCustomAttributes(typeof (KeyAttribute), true).Any()).ToList();
+            if (keys.Count > 1)
+                return null;
+            //If no primary key exists, we cannot use it
+            if (keys.Count == 0)
+                return null;
+
+            return keys.First();
+        }
+
     }
 }

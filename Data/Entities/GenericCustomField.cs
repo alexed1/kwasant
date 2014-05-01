@@ -151,7 +151,8 @@ namespace Data.Entities
 
             // 1. Make sure we join to the table name (otherwise we'll get incorrect entities).
             // 2. Provide our tracking status predicate
-            IQueryable<TCustomFieldType> ourQuery = _trackingStatusRepo.GetQuery().Where(o => o.ForeignTableName == EntityName).Where(customFieldPredicate);
+            var en = EntityName;
+            IQueryable<TCustomFieldType> ourQuery = _trackingStatusRepo.GetQuery().Where(o => o.ForeignTableName == en).Where(customFieldPredicate);
 
             //Apply our foreign entity predicate
             IQueryable<TForeignEntity> foreignQuery = _foreignRepo.GetQuery().Where(foreignEntityPredicate);
@@ -193,7 +194,7 @@ namespace Data.Entities
                 (
                     customFieldQuery,
                     foreignKeySelector,
-                    ts => ts.ForeignTableID,
+                    ts => ts == null ? -1 : ts.ForeignTableID, // Null check is for our in-memory mocked queries
                     (foreignDO, customFieldDO) =>
                         new JoinResult
                         {

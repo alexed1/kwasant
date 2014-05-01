@@ -21,7 +21,7 @@ namespace KwasantTest.Daemons
         }
 
         [Test]
-        public void TestInboundEmail()
+        public void TestOutboundEmail()
         {
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();
             var emailRepo = new EmailRepository(uow);
