@@ -69,6 +69,10 @@
       <HintPath>..\..\packages\NUnitTestAdapter.WithFramework.1.0\lib\NUnit.VisualStudio.TestAdapter.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="S22.Imap, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\S22.Imap.3.6.0.0\lib\net40\S22.Imap.dll</HintPath>
+    </Reference>
     <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
@@ -89,12 +93,15 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Daemons\DaemonTests.cs" />
+    <Compile Include="Daemons\InboundEmailTests.cs" />
+    <Compile Include="Daemons\OutboundEmailTests.cs" />
     <Compile Include="Fixtures\FixtureData - Attendee.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Customer.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />
     <Compile Include="Fixtures\FixtureData.cs" />
     <Compile Include="Managers\BookingRequestManagerTests.cs" />
+    <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Models\CustomerTests.cs" />
     <Compile Include="Models\CustomFieldTests.cs" />
     <Compile Include="Models\EventTests.cs" />

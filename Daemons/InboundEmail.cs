@@ -14,7 +14,7 @@ namespace Daemons
 {
     public class InboundEmail : Daemon
     {
-        private readonly ImapClient _client;
+        private readonly IImapClient _client;
 
         private static string GetIMAPServer()
         {
@@ -26,11 +26,11 @@ namespace Daemons
             return 993;
         }
 
-        private string GetUserName()
+        private static string GetUserName()
         {
             return "alexlucre1";
         }
-        private string GetPassword()
+        private static string GetPassword()
         {
             return "lucrelucre";
         }
@@ -41,8 +41,14 @@ namespace Daemons
         }
 
         public InboundEmail()
+            : this(new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL()))
         {
-            _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
+         
+        }
+
+        public InboundEmail(IImapClient client)
+        {
+            _client = client;
         }
 
         public override int WaitTimeBetweenExecution

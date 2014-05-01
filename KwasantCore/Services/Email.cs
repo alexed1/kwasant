@@ -8,6 +8,7 @@ using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
+using StructureMap;
 
 namespace KwasantCore.Services
 {
@@ -31,7 +32,7 @@ namespace KwasantCore.Services
         {
             _uow = uow;
             _emailDO = emailDO;
-            _mandrillApi = new MandrillPackager();
+            _mandrillApi = ObjectFactory.GetInstance<MandrillPackager>();
         }
 
         #endregion

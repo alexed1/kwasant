@@ -76,7 +76,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
 
         //======================================================
         //simple send with no merge variables or templates
-        public string PostMessageSend(EmailDO message)
+        public virtual string PostMessageSend(EmailDO message)
         {
             RestfulCall curCall = new RestfulCall(baseURL, "/messages/send.json", Method.POST);
             MandrillBasePackage curBasePackage = new MandrillBasePackage(MandrillKey, message);

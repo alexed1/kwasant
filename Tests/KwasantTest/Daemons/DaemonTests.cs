@@ -1,15 +1,22 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using Daemons;
 using Moq;
 using NUnit.Framework;
 
-namespace ShnexyTest.Daemons
+namespace KwasantTest.Daemons
 {
     [TestFixture]
     public class DaemonTests
     {
+        public static void RunDaemonOnce<TDaemon>(TDaemon daemon)
+            where TDaemon : Daemon
+        {
+            typeof (TDaemon).GetMethod("Run", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).Invoke(daemon, null);
+        }
+
         [Test]
         public void CannotStartDaemonTwice()
         {
@@ -112,6 +119,7 @@ namespace ShnexyTest.Daemons
             Assert.True(finished);
             Assert.AreEqual(1, mockDaemon.LoggedExceptions.Count);
             Assert.AreEqual(testException, mockDaemon.LoggedExceptions.First().Message);
+            mockDaemon.Stop(); //If we don't stop it - the test runner won't ever finished since the thread is still spinning
         }
     }
 }

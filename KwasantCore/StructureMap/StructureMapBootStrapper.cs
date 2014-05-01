@@ -1,7 +1,7 @@
-﻿using Data.Constants;
-using Data.Entities;
+﻿using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using IEvent = Data.Interfaces.IEvent;
@@ -29,6 +29,7 @@ namespace KwasantCore.StructureMap
         {
             public ShnexyCoreRegistry()
             {
+                For<MandrillPackager>().Use<MandrillPackager>();
                 For<IAttachment>().Use<AttachmentDO>();
                 For<IAttendee>().Use<AttendeeDO>();
                 For<IBookingRequest>().Use<BookingRequestDO>();

@@ -7,7 +7,6 @@ using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
-using KwasantCore.Services;
 using StructureMap;
 using Twilio;
 
