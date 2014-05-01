@@ -43,6 +43,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
@@ -52,17 +55,22 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="Twilio.Api">
+      <HintPath>..\packages\Twilio.3.6.11\lib\3.5\Twilio.Api.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Managers\AlertManager.cs" />
     <Compile Include="Managers\APIManager\Packagers\Mandrill\MandrillPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\Shnexy\ShnexyPackager.cs" />
+    <Compile Include="Managers\APIManager\Packagers\Twilio\TwilioPackager.cs" />
     <Compile Include="Managers\APIManager\Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Managers\APIManager\Transmitters\Restful\RestfulCall.cs" />
     <Compile Include="Managers\APIManager\Transmitters\Restful\RestfulResponse.cs" />
