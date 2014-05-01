@@ -30,9 +30,9 @@ namespace KwasantCore.Managers.APIManager.Packagers.Twilio
             _twilio = new TwilioRestClient(accountSID, accountAuthKey);
         }
 
-        public void SendSMS(String number, String message)
+        public SMSMessage SendSMS(String number, String message)
         {
-            _twilio.SendSmsMessage(_twilioFromNumber, number, message);
+            return _twilio.SendSmsMessage(_twilioFromNumber, number, message);
         }
     }
 }

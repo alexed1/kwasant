@@ -1,20 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
 using Daemons;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.Services;
+using KwasantCore.Managers.CommunicationManager;
 using KwasantCore.StructureMap;
 using StructureMap;
 
 namespace Playground
 {
-    class Program
+    public class Program
     {
         /// <summary>
         /// This is a sandbox for devs to use. Useful for directly calling some library without needing to launch the main application
@@ -22,25 +20,33 @@ namespace Playground
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            StructureMapBootStrapper.ConfigureDependencies("test"); //set to either "test" or "dev"
+            StructureMapBootStrapper.ConfigureDependencies("dev"); //set to either "test" or "dev"
             
             Database.SetInitializer(new ShnexyInitializer());
             ShnexyDbContext db = new ShnexyDbContext();
             db.Database.Initialize(true);
 
-            //var omd = new OperationsMonitoringDaemon();
-            //omd.Start();
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            TrackingStatusRepository trackingStatusRepo = new TrackingStatusRepository(uow);
-            EmailRepository emailRepo = new EmailRepository(uow);
+            //var uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            //var commConfigRepo = new CommunicationConfigurationRepository(uow);
+            //var commConfigDO = new CommunicationConfigurationDO
+            //{
+            //    Type = CommunicationType.EMAIL,
+            //    ToAddress = "rjrudman@gmail.com"
+            //};
+            //commConfigRepo.Add(commConfigDO);
 
-            TrackingStatus<EmailDO> ts = new TrackingStatus<EmailDO>(trackingStatusRepo, emailRepo);
+            //commConfigDO = new CommunicationConfigurationDO
+            //{
+            //    Type = CommunicationType.SMS,
+            //    ToAddress = "+79818602721"
+            //};
+            //commConfigRepo.Add(commConfigDO);
 
-            EmailDO newEmail = new EmailDO() {From = new EmailAddressDO()};
-            emailRepo.Add(newEmail);
-            ts.SetStatus(newEmail, TrackingStatus.PROCESSED);
-            uow.SaveChanges();
-            ;
+            //uow.SaveChanges();
+
+            //var commManager = new CommunicationManager();
+            //commManager.ProcessBRNotifications(new List<BookingRequestDO> { new BookingRequestDO { From = new EmailAddressDO { Address = "temp@gmail.com"}} });
+            var oe = new OutboundEmail().Start();
         }
     }
 }

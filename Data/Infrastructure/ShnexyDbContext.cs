@@ -73,6 +73,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
+            modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<CustomerDO>().ToTable("Customers");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
@@ -144,6 +145,8 @@ namespace Data.Infrastructure
         public DbSet<AttendeeDO> Attendees { get; set; }
 
         public DbSet<BookingRequestDO> BookingRequests { get; set; }
+
+        public DbSet<CommunicationConfigurationDO> CommunicationConfigurations { get; set; }
 
         public DbSet<CustomerDO> Customers { get; set; }
 

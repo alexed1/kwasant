@@ -180,7 +180,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
                 To = message.To.Select(t => new MandrilEmail.MandrilEmailAddress {Email = t.Address, Name = t.Name, Type = "to"}).ToList(),
                 Headers = null,
                 Important = false,
-                Attachments = message.Attachments.Select(a =>
+                Attachments = message.Attachments == null ? null : message.Attachments.Select(a =>
                 {
                     byte[] file = a.Bytes;
                     string base64Version = Convert.ToBase64String(file, 0, file.Length);
