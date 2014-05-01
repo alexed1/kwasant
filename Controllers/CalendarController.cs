@@ -31,13 +31,14 @@ namespace Shnexy.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             Calendar = new Calendar(uow, bookingRequestDO.Customer);
-            return View(bookingRequestDO);
+            return View(bookingRequestDO);                       
+
         }
 
         private Calendar Calendar
         {
             get
-            {
+            {   
                 return Session["EventManager"] as Calendar;
             }
             set
