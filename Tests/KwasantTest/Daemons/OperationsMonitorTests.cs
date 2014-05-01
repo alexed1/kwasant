@@ -1,4 +1,5 @@
-﻿using Daemons;
+﻿using System.Linq;
+using Daemons;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
@@ -18,17 +19,22 @@ namespace KwasantTest.Daemons
         }
 
         [Test]
-        public void TestInboundEmail()
+        public void TestOperationManager()
         {
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(uow);
+            TrackingStatusRepository trackingStatusRepository = new TrackingStatusRepository(uow);
             var bookingRequestDO = new BookingRequestDO();
             bookingRequestRepo.Add(bookingRequestDO);
 
             uow.SaveChanges();
 
+            Assert.AreEqual(0, trackingStatusRepository.GetAll().Count());
+
             var om = new OperationsMonitor();
             DaemonTests.RunDaemonOnce(om);
+
+            Assert.AreEqual(1, trackingStatusRepository.GetAll().Count());
         }
     }
 }
