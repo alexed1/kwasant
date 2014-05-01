@@ -9,6 +9,7 @@ using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantCore.Services;
 using StructureMap;
+using Twilio;
 
 namespace KwasantCore.Managers.CommunicationManager
 {
@@ -32,7 +33,7 @@ namespace KwasantCore.Managers.CommunicationManager
         {
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             CommunicationConfigurationRepository communicationConfigurationRepo = new CommunicationConfigurationRepository(uow);
-            foreach (var communicationConfig in communicationConfigurationRepo.GetAll().ToList())
+            foreach (CommunicationConfigurationDO communicationConfig in communicationConfigurationRepo.GetAll().ToList())
             {
                 if (communicationConfig.Type == CommunicationType.SMS)
                 {
@@ -51,11 +52,11 @@ namespace KwasantCore.Managers.CommunicationManager
 
         private void SendBRSMSes(String toAddress, IEnumerable<BookingRequestDO> bookingRequests)
         {
-            var twil = new TwilioPackager();
+            TwilioPackager twil = new TwilioPackager();
             const string message = "A new booking request has been created. From '{0}'.";
-            foreach (var bookingRequest in bookingRequests)
+            foreach (BookingRequestDO bookingRequest in bookingRequests)
             {
-                var result = twil.SendSMS(toAddress, String.Format(message, bookingRequest.From.Address));
+                SMSMessage result = twil.SendSMS(toAddress, String.Format(message, bookingRequest.From.Address));
                 if (result.RestException != null)
                     throw new Exception(result.RestException.Message);
             }
@@ -63,16 +64,18 @@ namespace KwasantCore.Managers.CommunicationManager
 
         private void SendBREmails(String toAddress, IEnumerable<BookingRequestDO> bookingRequests, IUnitOfWork uow)
         {
-            var emailRepo = new EmailRepository(uow);
+            EmailRepository emailRepo = new EmailRepository(uow);
             const string message = "A new booking request has been created. From '{0}'.";
-            foreach (var bookingRequest in bookingRequests)
+            foreach (BookingRequestDO bookingRequest in bookingRequests)
             {
-                EmailDO outboundEmail = new EmailDO();
-                outboundEmail.From = new EmailAddressDO {Address = "service@kwasant.com"};
-                outboundEmail.To = new List<EmailAddressDO> {new EmailAddressDO {Address = toAddress}};
-                outboundEmail.Subject =  "New booking request!";
-                outboundEmail.Text = String.Format(message, bookingRequest.From.Address);
-                outboundEmail.Status = EmailStatus.QUEUED;
+                EmailDO outboundEmail = new EmailDO
+                {
+                    From = new EmailAddressDO {Address = "service@kwasant.com"},
+                    To = new List<EmailAddressDO> {new EmailAddressDO {Address = toAddress}},
+                    Subject = "New booking request!",
+                    Text = String.Format(message, bookingRequest.From.Address),
+                    Status = EmailStatus.QUEUED
+                };
 
                 emailRepo.Add(outboundEmail);
             }

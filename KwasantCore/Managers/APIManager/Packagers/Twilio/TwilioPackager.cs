@@ -14,8 +14,8 @@ namespace KwasantCore.Managers.APIManager.Packagers.Twilio
         private readonly String _twilioFromNumber;
         public TwilioPackager()
         {
-            var accountSID = ConfigurationManager.AppSettings[AccountSIDWebConfigName];
-            var accountAuthKey = ConfigurationManager.AppSettings[AuthTokenWebConfigName];
+            string accountSID = ConfigurationManager.AppSettings[AccountSIDWebConfigName];
+            string accountAuthKey = ConfigurationManager.AppSettings[AuthTokenWebConfigName];
             _twilioFromNumber = ConfigurationManager.AppSettings[FromNumberWebConfigName];
 
             if (String.IsNullOrEmpty(accountSID))

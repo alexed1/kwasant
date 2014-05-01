@@ -1,14 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Data.Entity;
-using Daemons;
-using Data.Entities;
-using Data.Entities.Enumerations;
+﻿using System.Data.Entity;
 using Data.Infrastructure;
-using Data.Interfaces;
-using Data.Repositories;
-using KwasantCore.Managers.CommunicationManager;
 using KwasantCore.StructureMap;
-using StructureMap;
 
 namespace Playground
 {
@@ -25,28 +17,6 @@ namespace Playground
             Database.SetInitializer(new ShnexyInitializer());
             ShnexyDbContext db = new ShnexyDbContext();
             db.Database.Initialize(true);
-
-            //var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            //var commConfigRepo = new CommunicationConfigurationRepository(uow);
-            //var commConfigDO = new CommunicationConfigurationDO
-            //{
-            //    Type = CommunicationType.EMAIL,
-            //    ToAddress = "rjrudman@gmail.com"
-            //};
-            //commConfigRepo.Add(commConfigDO);
-
-            //commConfigDO = new CommunicationConfigurationDO
-            //{
-            //    Type = CommunicationType.SMS,
-            //    ToAddress = "+79818602721"
-            //};
-            //commConfigRepo.Add(commConfigDO);
-
-            //uow.SaveChanges();
-
-            //var commManager = new CommunicationManager();
-            //commManager.ProcessBRNotifications(new List<BookingRequestDO> { new BookingRequestDO { From = new EmailAddressDO { Address = "temp@gmail.com"}} });
-            var oe = new OutboundEmail().Start();
         }
     }
 }
