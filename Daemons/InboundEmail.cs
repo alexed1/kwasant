@@ -28,11 +28,11 @@ namespace Daemons
 
         private static string GetUserName()
         {
-            return "alexlucre1";
+            return "kwasantintake";
         }
         private static string GetPassword()
         {
-            return "lucrelucre";
+            return "lucrereggio23";
         }
 
         private static bool UseSSL()
