@@ -252,7 +252,6 @@
     <Content Include="Content\bootstrap-datetimepicker.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
-    <Content Include="Content\images\1 Step.png" />
     <Content Include="Content\images\background-match.jpg" />
     <Content Include="Content\images\background-test5.jpg" />
     <Content Include="Content\images\background-test6.jpg" />
@@ -411,7 +410,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="Content\images\1 Step.vsdx" />
     <Content Include="Content\images\blue_tag.psd" />
     <Content Include="Content\images\Email thread .docx" />
     <Content Include="Content\images\Workflow.vsdx" />

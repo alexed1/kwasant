@@ -2,6 +2,7 @@
 using System.Web.Optimization;
 using System.Web.Routing;
 using System.Data.Entity;
+using Daemons;
 using Data.Infrastructure;
 using KwasantCore.StructureMap;
 using Shnexy.Controllers;
@@ -25,8 +26,8 @@ namespace Shnexy
             ShnexyDbContext db = new ShnexyDbContext();
             db.Database.Initialize(true);
 
-           
 
+            var emailDaemon = new InboundEmail();
 
             //issues: doing it this way, you have to derive a class to create a seed file. seems like the EF6 seed file approach is best, but it's not getting called. wrong assembly name?
         }
