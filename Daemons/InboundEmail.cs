@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
@@ -18,26 +19,32 @@ namespace Daemons
 
         private static string GetIMAPServer()
         {
-            return "imap.gmail.com";
+            return ConfigurationManager.AppSettings["InboundEmailHost"];
         }
 
         private static int GetIMAPPort()
         {
-            return 993;
+            int port;
+            if (int.TryParse(ConfigurationManager.AppSettings["InboundEmailPort"], out port))
+                return port;
+            throw new Exception("Invalid value for 'InboundEmailPort'");
         }
 
         private static string GetUserName()
         {
-            return "kwasantintake";
+            return ConfigurationManager.AppSettings["InboundEmailUserName"];
         }
         private static string GetPassword()
         {
-            return "lucrereggio23";
+            return ConfigurationManager.AppSettings["InboundEmailPassword"];
         }
 
         private static bool UseSSL()
         {
-            return true;
+            bool useSSL;
+            if (bool.TryParse(ConfigurationManager.AppSettings["InboundEmailUseSSL"], out useSSL))
+                return useSSL;
+            throw new Exception("Invalid value for 'InboundEmailUseSSL'");
         }
 
         public InboundEmail()
