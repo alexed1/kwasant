@@ -36,22 +36,15 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <PackagesProjectConfig>packages.$(MSBuildProjectName.Replace(' ', '_')).config</PackagesProjectConfig>
+      <PackagesProjectConfig Condition=" '$(OS)' == 'Windows_NT'">$(MSBuildProjectDirectory)\packages.$(MSBuildProjectName.Replace(' ', '_')).config</PackagesProjectConfig>
+      <PackagesProjectConfig Condition=" '$(OS)' != 'Windows_NT'">$(MSBuildProjectDirectory)\packages.$(MSBuildProjectName).config</PackagesProjectConfig>
     </PropertyGroup>
 
-    <Choose>
-        <When Condition="Exists('$(PackagesProjectConfig)')">
-            <PropertyGroup>
-                <PackagesConfig>$(PackagesProjectConfig)</PackagesConfig>
-            </PropertyGroup>
-        </When>
-        <When Condition="Exists('packages.config')">
-            <PropertyGroup>
-                <PackagesConfig>packages.config</PackagesConfig>
-            </PropertyGroup>
-        </When>
-    </Choose>
-    
+    <PropertyGroup>
+      <PackagesConfig Condition="Exists('$(PackagesProjectConfig)')">$(PackagesProjectConfig)</PackagesConfig>
+      <PackagesConfig Condition="Exists('$(MSBuildProjectDirectory)\packages.config')">$(MSBuildProjectDirectory)\packages.config</PackagesConfig>
+    </PropertyGroup>
+  
     <PropertyGroup>
         <!-- NuGet command -->
         <NuGetExePath Condition=" '$(NuGetExePath)' == '' ">$(NuGetToolsPath)\NuGet.exe</NuGetExePath>

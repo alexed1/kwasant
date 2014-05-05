@@ -5,6 +5,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Migrations;
 
 namespace Data.Infrastructure
 {
@@ -16,7 +17,7 @@ namespace Data.Infrastructure
         public ShnexyDbContext()
             : base("name=KwasantDB")
         {
-            
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ShnexyDbContext, MigrationConfiguration>()); 
         }
 
         public override int SaveChanges()
@@ -140,26 +141,28 @@ namespace Data.Infrastructure
             base.OnModelCreating(modelBuilder);
         }
 
-        public DbSet<AttachmentDO> Attachments { get; set; }
+        public IDbSet<AttachmentDO> Attachments { get; set; }
 
-        public DbSet<AttendeeDO> Attendees { get; set; }
+        public IDbSet<AttendeeDO> Attendees { get; set; }
 
-        public DbSet<BookingRequestDO> BookingRequests { get; set; }
+        public IDbSet<BookingRequestDO> BookingRequests { get; set; }
 
-        public DbSet<CommunicationConfigurationDO> CommunicationConfigurations { get; set; }
+        public IDbSet<CommunicationConfigurationDO> CommunicationConfigurations { get; set; }
 
-        public DbSet<CustomerDO> Customers { get; set; }
+        public IDbSet<CustomerDO> Customers { get; set; }
 
-        public DbSet<EmailDO> Emails { get; set; }
+        public IDbSet<EmailDO> Emails { get; set; }
 
-        public DbSet<EmailAddressDO> EmailAddresses { get; set; }
-        
-        public DbSet<EventDO> Events { get; set; }
+        public IDbSet<EmailAddressDO> EmailAddresses { get; set; }
 
-        public DbSet<StoredFileDO> StoredFiles { get; set; }
+        public IDbSet<EventDO> Events { get; set; }
 
-        public DbSet<UserDO> Users { get; set; }
+        public IDbSet<InstructionDO> Instructions { get; set; }
 
-        public DbSet<TrackingStatusDO> TrackingStatuses { get; set; }
+        public IDbSet<StoredFileDO> StoredFiles { get; set; }
+
+        public IDbSet<UserDO> Users { get; set; }
+
+        public IDbSet<TrackingStatusDO> TrackingStatuses { get; set; }
     }
 }

@@ -17,12 +17,13 @@ namespace KwasantTest.Daemons
             typeof (TDaemon).GetMethod("Run", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).Invoke(daemon, null);
         }
 
-        [Test]
+        [Test, Category("Threaded")]
         public void CannotStartDaemonTwice()
         {
             Daemon mockDaemon = new Mock<Daemon>().Object;
             Assert.True(mockDaemon.Start());
             Assert.False(mockDaemon.Start());
+            mockDaemon.Stop();
         }
 
         private class TestDaemon : Daemon
@@ -72,7 +73,7 @@ namespace KwasantTest.Daemons
             return mockDaemon;
         }
 
-        [Test]
+        [Test, Category("Threaded")]
         public void DaemonGracefullyShutsDown()
         {
             const int threadExecuteTime = 3000;
@@ -88,9 +89,11 @@ namespace KwasantTest.Daemons
             workerThread.Join();
             
             Assert.True(hasFinished);
+
+            workerThread.Join();
         }
 
-        [Test]
+        [Test, Category("Threaded")]
         public void DaemonHandlesExceptionsAndDoesNotCrash()
         {
             object workLock = new object();
@@ -119,7 +122,14 @@ namespace KwasantTest.Daemons
             Assert.True(finished);
             Assert.AreEqual(1, mockDaemon.LoggedExceptions.Count);
             Assert.AreEqual(testException, mockDaemon.LoggedExceptions.First().Message);
+            
             mockDaemon.Stop(); //If we don't stop it - the test runner won't ever finished since the thread is still spinning
+
+            try
+            {
+                workerThread.Abort();
+            }
+            catch {}
         }
     }
 }

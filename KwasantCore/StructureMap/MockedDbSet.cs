@@ -11,19 +11,19 @@ using Data.Interfaces;
 
 namespace KwasantCore.StructureMap
 {
-    public class MockedDbSet<TEntity> : IDbSet<TEntity>
-        where TEntity : class
+    public class MockedDbSet<TEntityType> : IDbSet<TEntityType>
+        where TEntityType : class
     {
         private readonly IDBContext _dbContext;
-        private HashSet<TEntity> _set = new HashSet<TEntity>();
+        private HashSet<TEntityType> _set = new HashSet<TEntityType>();
 
         public MockedDbSet(IDBContext dbContext)
         {
             _dbContext = dbContext;
-            _set = new HashSet<TEntity>();
+            _set = new HashSet<TEntityType>();
         }
 
-        public IEnumerator<TEntity> GetEnumerator()
+        public IEnumerator<TEntityType> GetEnumerator()
         {
             return _set.GetEnumerator();
         }
@@ -58,7 +58,7 @@ namespace KwasantCore.StructureMap
             }
             private set { }
         }
-        public TEntity Find(params object[] keyValues)
+        public TEntityType Find(params object[] keyValues)
         {
             if (keyValues.Length == 0)
                 throw new Exception("No primary key found on " + EntityName);
@@ -69,38 +69,38 @@ namespace KwasantCore.StructureMap
 
             int entityPrimaryKey = (int) keyValues[0];
 
-            Func<TEntity, int> compiledSelector = GetEntityKeySelector().Compile();
+            Func<TEntityType, int> compiledSelector = GetEntityKeySelector().Compile();
             return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
         }
 
-        public TEntity Add(TEntity entity)
+        public TEntityType Add(TEntityType entity)
         {
             _set.Add(entity);
             return entity;
         }
 
-        public TEntity Remove(TEntity entity)
+        public TEntityType Remove(TEntityType entity)
         {
             _set.Remove(entity);
             return entity;
         }
 
-        public TEntity Attach(TEntity entity)
+        public TEntityType Attach(TEntityType entity)
         {
             return entity;
         }
 
-        public TEntity Create()
+        public TEntityType Create()
         {
             throw new Exception("Not supported yet!");
         }
 
-        public TDerivedEntity Create<TDerivedEntity>() where TDerivedEntity : class, TEntity
+        public TDerivedEntity Create<TDerivedEntity>() where TDerivedEntity : class, TEntityType
         {
             throw new Exception("Not supported yet!");
         }
 
-        public ObservableCollection<TEntity> Local
+        public ObservableCollection<TEntityType> Local
         {
             get
             {
@@ -111,9 +111,9 @@ namespace KwasantCore.StructureMap
 
 
 
-        protected Expression<Func<TEntity, int>> GetEntityKeySelector()
+        protected Expression<Func<TEntityType, int>> GetEntityKeySelector()
         {
-            Type entityType = typeof(TEntity);
+            Type entityType = typeof(TEntityType);
             PropertyInfo tableKey = EntityPrimaryKeyPropertyInfo;
 
             //The following three lines generates the following in LINQ syntax:
@@ -122,7 +122,7 @@ namespace KwasantCore.StructureMap
             // (e) => e.EmailID;
             ParameterExpression proe = Expression.Parameter(entityType);
             MemberExpression propertyAccessor = Expression.Property(proe, tableKey);
-            Expression<Func<TEntity, int>> entityKeySelector = Expression.Lambda(propertyAccessor, new[] { proe }) as Expression<Func<TEntity, int>>;
+            Expression<Func<TEntityType, int>> entityKeySelector = Expression.Lambda(propertyAccessor, new[] { proe }) as Expression<Func<TEntityType, int>>;
             return entityKeySelector;
         }
 
@@ -131,7 +131,7 @@ namespace KwasantCore.StructureMap
         {
             get
             {
-                return _entityName ?? (_entityName = typeof(TEntity).Name);
+                return _entityName ?? (_entityName = typeof(TEntityType).Name);
             }
         }
 
@@ -142,7 +142,7 @@ namespace KwasantCore.StructureMap
             {
                 if (_entityPrimaryKeyPropertyInfo == null)
                 {
-                    List<PropertyInfo> keys = typeof(TEntity).GetProperties().Where(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).ToList();
+                    List<PropertyInfo> keys = typeof(TEntityType).GetProperties().Where(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).ToList();
                     if (keys.Count > 1)
                         throw new Exception("Linked entity MUST have a single primary key. Composite keys are not supported.");
                     //If no primary key exists, we cannot use it
@@ -155,6 +155,22 @@ namespace KwasantCore.StructureMap
                 return _entityPrimaryKeyPropertyInfo;
             }
         }
+
+        public void AddOrUpdate(
+            Expression<Func<TEntityType, Object>> identifierExpression,
+            params TEntityType[] entities
+            )
+        {
+            var lambda = identifierExpression.Compile();
+            foreach (var entity in entities)
+            {
+                if (!this.Any(dbEntity => lambda(dbEntity).Equals(lambda(entity))))
+                {
+                    Add(entity);
+                }
+            }
+        }
+
 
     }
 }

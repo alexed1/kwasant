@@ -12,6 +12,8 @@ namespace Daemons
         public delegate void DaemonExecutedEventHandler();
         public event DaemonExecutedEventHandler DaemonExecuted;
 
+        private Thread m_RunningThread;
+
         public abstract int WaitTimeBetweenExecution { get; }
 
         public bool IsRunning { get; private set; }
@@ -112,7 +114,7 @@ namespace Daemons
 
             IsStopping = false;
 
-            Thread workerThread = new Thread(() =>
+            m_RunningThread = new Thread(() =>
                 {
                     bool firstExecution = true;
                     DateTime lastExecutionTime = DateTime.Now;
@@ -144,17 +146,22 @@ namespace Daemons
                         }
                     }
 
-                    CleanUp();
+                    CleanupInternal();
                     IsRunning = false;
                 });
 
-            workerThread.Start();
+            m_RunningThread.Start();
             return true;
         }
 
         public void Stop()
         {
             IsStopping = true;
+        }
+
+        private void CleanupInternal()
+        {
+            CleanUp();
         }
 
         /// <summary>

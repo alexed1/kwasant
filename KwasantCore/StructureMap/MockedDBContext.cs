@@ -5,14 +5,22 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using Data.Entities;
 using Data.Interfaces;
+using Data.Migrations;
 using StructureMap.TypeRules;
 
 namespace KwasantCore.StructureMap
 {
     public class MockedDBContext : IDBContext
     {
+        public MockedDBContext()
+        {
+            MigrationConfiguration.Seed(this);
+        }
+
         private Dictionary<Type, object> _cachedSets = new Dictionary<Type, object>();
         public int SaveChanges()
         {
@@ -152,5 +160,8 @@ namespace KwasantCore.StructureMap
             return keys.First();
         }
 
+
+        /* DBSets */
+        public IDbSet<InstructionDO> Instructions { get { return Set<InstructionDO>(); } } 
     }
 }

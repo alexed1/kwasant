@@ -21,8 +21,6 @@ namespace Shnexy
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies("dev"); //set to either "test" or "dev"
             ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
-
-            Database.SetInitializer(new ShnexyInitializer());
             ShnexyDbContext db = new ShnexyDbContext();
             db.Database.Initialize(true);
 

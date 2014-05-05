@@ -62,9 +62,12 @@ namespace KwasantCore.Services
             foreach (int allowedDuration in travelTimeMapping.Keys)
             {
                 Regex reg = new Regex(String.Format(regex, allowedDuration), RegexOptions.IgnoreCase);
-                if (reg.IsMatch(emailBody))
+                if (!String.IsNullOrEmpty(emailBody))
                 {
-                    instructions.Add(travelTimeMapping[allowedDuration]);
+                    if (reg.IsMatch(emailBody))
+                    {
+                        instructions.Add(travelTimeMapping[allowedDuration]);
+                    }
                 }
             }
             return instructions;
@@ -76,9 +79,12 @@ namespace KwasantCore.Services
             const string regex = "(ccADE)";
 
             Regex reg = new Regex(regex, RegexOptions.IgnoreCase);
-            if (reg.IsMatch(emailBody))
+            if (!String.IsNullOrEmpty(emailBody))
             {
-                return InstructionConstants.EventDuration.MarkAsAllDayEvent;
+                if (reg.IsMatch(emailBody))
+                {
+                    return InstructionConstants.EventDuration.MarkAsAllDayEvent;
+                }
             }
             return null;
         }
