@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using Daemons;
 using Data.Infrastructure;
 using KwasantCore.StructureMap;
 
@@ -17,6 +18,8 @@ namespace Playground
             Database.SetInitializer(new ShnexyInitializer());
             ShnexyDbContext db = new ShnexyDbContext();
             db.Database.Initialize(true);
+
+            new InboundEmail().Start();
         }
     }
 }
