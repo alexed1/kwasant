@@ -1,13 +1,14 @@
-﻿using System.Web.Mvc;
+﻿using System.Data.Entity;
+using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using System.Data.Entity;
 using Daemons;
 using Data.Infrastructure;
 using KwasantCore.StructureMap;
-using Shnexy.Controllers;
+using KwasantWeb.App_Start;
+using KwasantWeb.Controllers;
 
-namespace Shnexy
+namespace KwasantWeb
 {
     public class MvcApplication : System.Web.HttpApplication
     {
@@ -23,7 +24,7 @@ namespace Shnexy
             ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
 
             Database.SetInitializer(new ShnexyInitializer());
-            ShnexyDbContext db = new ShnexyDbContext();
+            KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);
 
 

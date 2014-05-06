@@ -2,12 +2,13 @@
 using System.Configuration;
 using Configuration;
 using Daemons;
+using KwasantWeb;
 using Microsoft.Owin;
 using Owin;
 
-[assembly: OwinStartupAttribute(typeof(Shnexy.Startup))]
+[assembly: OwinStartup(typeof(Startup))]
 
-namespace Shnexy
+namespace KwasantWeb
 {
     public partial class Startup
     {

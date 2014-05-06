@@ -6,7 +6,7 @@ using DayPilot.Web.Mvc.Events.Calendar;
 using DayPilot.Web.Mvc.Events.Common;
 using KwasantCore.Services;
 
-namespace Shnexy.Controllers.DayPilot
+namespace KwasantWeb.Controllers.DayPilot
 {
     public class DayPilotCalendarControl : DayPilotCalendar
     {

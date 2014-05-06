@@ -4,9 +4,9 @@ using StructureMap;
 
 namespace Data.Infrastructure
 {
-    public class ShnexyInitializer : System.Data.Entity.DropCreateDatabaseIfModelChanges<ShnexyDbContext>
+    public class ShnexyInitializer : System.Data.Entity.DropCreateDatabaseIfModelChanges<KwasantDbContext>
     {
-        protected override void Seed(ShnexyDbContext context)
+        protected override void Seed(KwasantDbContext context)
         {
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             InstructionConstants.ApplySeedData(uow);

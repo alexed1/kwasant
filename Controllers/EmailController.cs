@@ -2,32 +2,30 @@
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
-using Data.Constants;
+using System.Web.Routing;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.Managers.APIManager.Packagers.Shnexy;
+using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using UtilitiesLib;
-using System.Web.Routing;
 
-
-namespace Shnexy.Controllers
+namespace KwasantWeb.Controllers
 {
     public class EmailController : Controller
     {
         private IUnitOfWork _uow;
         private IBookingRequestRepository curBookingRequestRepository;
-        private ShnexyPackager API;
+        private KwasantPackager API;
 
-        ShnexyDbContext db = new ShnexyDbContext();
+        KwasantDbContext db = new KwasantDbContext();
 
         public EmailController(IUnitOfWork uow)
         {
             _uow = uow;
             curBookingRequestRepository = new BookingRequestRepository(_uow);
-            API = new ShnexyPackager();
+            API = new KwasantPackager();
         }
 
         // GET: /Email/

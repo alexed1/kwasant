@@ -1,6 +1,6 @@
 ﻿using Data.Entities;
 
-namespace ShnexyTest.Fixtures
+namespace KwasantTest.Fixtures
 {
     partial class FixtureData
     {

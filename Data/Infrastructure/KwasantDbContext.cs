@@ -10,10 +10,10 @@ namespace Data.Infrastructure
 {
 
 
-    public class ShnexyDbContext : DbContext, IDBContext
+    public class KwasantDbContext : DbContext, IDBContext
     {       
         //Do not change this value! If you want to change the database you connect to, edit your web.config file
-        public ShnexyDbContext()
+        public KwasantDbContext()
             : base("name=KwasantDB")
         {
             

@@ -61,7 +61,7 @@ namespace KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers
 
 
         //====================================
-        //shnexy code
+        //Kwasant code
         //We don't want to go straight into a file. We want to take the text stream and persist it in a db
         public virtual string Serialize(IICalendar iCal)
         {

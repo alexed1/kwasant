@@ -4,17 +4,17 @@ using Data.Entities;
 using KwasantCore.Managers.APIManager.Serializers.Json;
 using UtilitiesLib;
 
-namespace KwasantCore.Managers.APIManager.Packagers.Shnexy
+namespace KwasantCore.Managers.APIManager.Packagers.Kwasant
 {
     /// <summary>
     /// This class converts JSON to Objects and vice versa, so that RESTful calls can be processed.
     /// </summary>
-    public class ShnexyPackager
+    public class KwasantPackager
     {
         private string baseUrl;
         private JsonSerializer jsonSerializer;
 
-        public ShnexyPackager()
+        public KwasantPackager()
         {
            
             jsonSerializer = new JsonSerializer();
@@ -61,7 +61,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Shnexy
             }
             else
             {
-                curError.Name = "Shnexy API Error";
+                curError.Name = "Kwasant API Error";
                 curError.Message = "The call to the API could not be processed";
             }
             result = jsonSerializer.Serialize(curError);

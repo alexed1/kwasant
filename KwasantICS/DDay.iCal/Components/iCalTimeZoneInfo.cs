@@ -14,7 +14,7 @@ namespace KwasantICS.DDay.iCal
 {    
     /// <summary>
     /// A class that contains time zone information, and is usually accessed
-    /// from an iCalendar object using the <see cref="Shnexy.iCalendareZone"/> method.        
+    /// from an iCalendar object using the <see cref="Kwaant.iCalendareZone"/> method.        
     /// </summary>
 #if !SILVERLIGHT
     [Serializable]

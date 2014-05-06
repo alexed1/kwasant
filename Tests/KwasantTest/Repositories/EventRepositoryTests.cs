@@ -1,13 +1,9 @@
-﻿using System.Data.Entity;
-using Data.Infrastructure;
-using Data.Interfaces;
+﻿using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.StructureMap;
-using NUnit.Framework;
-using ShnexyTest.Fixtures;
-using StructureMap;
+using KwasantTest.Fixtures;
 
-namespace ShnexyTest.Repositories
+namespace KwasantTest.Repositories
 {
     [TestFixture]
     public class EventRepositoryTests

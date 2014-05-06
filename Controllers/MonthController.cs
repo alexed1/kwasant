@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading;
-using System.Web;
 using System.Web.Mvc;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
-using DayPilot.Web.Mvc.Events;
-using DayPilot.Web.Mvc.Events.Common;
 using DayPilot.Web.Mvc.Events.Month;
 
-namespace Shnexy.Controllers
+namespace KwasantWeb.Controllers
 {
     [HandleError]
     public class MonthController : Controller

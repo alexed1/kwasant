@@ -7,8 +7,8 @@ using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
+using KwasantTest.Fixtures;
 using NUnit.Framework;
-using ShnexyTest.Fixtures;
 using StructureMap;
 
 namespace KwasantTest.Managers
