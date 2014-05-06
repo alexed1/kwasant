@@ -7,6 +7,8 @@ using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
+using NUnit.Framework;
+using StructureMap;
 
 namespace KwasantTest.Models
 {
