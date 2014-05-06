@@ -1,18 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.Services;
 using KwasantCore.StructureMap;
+using KwasantTest.Fixtures;
 using NUnit.Framework;
-using ShnexyTest.Fixtures;
 using StructureMap;
 
-namespace ShnexyTest.Models
+namespace KwasantTest.Models
 {
     [TestFixture]
     class CustomFieldTests

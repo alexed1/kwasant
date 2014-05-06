@@ -1,7 +1,7 @@
 ﻿using Data.Interfaces;
 using Data.Repositories;
 
-namespace ShnexyTest.Fixtures
+namespace KwasantTest.Fixtures
 {
     partial class FixtureData
     {

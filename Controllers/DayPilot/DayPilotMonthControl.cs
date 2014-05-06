@@ -4,9 +4,8 @@ using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
 using KwasantCore.Services;
-using MonthNamespace = DayPilot.Web.Mvc.Events.Month;
 
-namespace Shnexy.Controllers.DayPilot
+namespace KwasantWeb.Controllers.DayPilot
 { 
     public class DayPilotMonthControl : DayPilotMonth
     {
@@ -16,24 +15,24 @@ namespace Shnexy.Controllers.DayPilot
             _calendar = calendar;
         }
 
-        protected override void OnInit(MonthNamespace.InitArgs e)
+        protected override void OnInit(global::DayPilot.Web.Mvc.Events.Month.InitArgs e)
         {
             Update();
         }
 
-        protected override void OnEventResize(MonthNamespace.EventResizeArgs e)
+        protected override void OnEventResize(global::DayPilot.Web.Mvc.Events.Month.EventResizeArgs e)
         {
             _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
         }        
 
-        protected override void OnEventMove(MonthNamespace.EventMoveArgs e)
+        protected override void OnEventMove(global::DayPilot.Web.Mvc.Events.Month.EventMoveArgs e)
         {
             _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
         }
 
-        protected override void OnEventMenuClick(MonthNamespace.EventMenuClickArgs e)
+        protected override void OnEventMenuClick(global::DayPilot.Web.Mvc.Events.Month.EventMenuClickArgs e)
         {
 
             switch (e.Command)
@@ -51,7 +50,7 @@ namespace Shnexy.Controllers.DayPilot
             }
         }
 
-        protected override void OnTimeRangeSelected(MonthNamespace.TimeRangeSelectedArgs e)
+        protected override void OnTimeRangeSelected(global::DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedArgs e)
         {
             _calendar.AddEvent(new EventDO
             {
@@ -63,12 +62,12 @@ namespace Shnexy.Controllers.DayPilot
             Update();
         }
 
-        protected override void OnBeforeEventRender(MonthNamespace.BeforeEventRenderArgs e)
+        protected override void OnBeforeEventRender(global::DayPilot.Web.Mvc.Events.Month.BeforeEventRenderArgs e)
         {
             e.Areas.Add(new Area().Right(3).Top(3).Width(15).Height(15).CssClass("event_action_delete").JavaScript("eventDelete(e);"));
         }
 
-        protected override void OnCommand(MonthNamespace.CommandArgs e)
+        protected override void OnCommand(global::DayPilot.Web.Mvc.Events.Month.CommandArgs e)
         {
             switch (e.Command)
             {

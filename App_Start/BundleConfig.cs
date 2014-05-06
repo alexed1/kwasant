@@ -1,6 +1,6 @@
 ﻿using System.Web.Optimization;
 
-namespace Shnexy
+namespace KwasantWeb.App_Start
 {
     public class BundleConfig
     {

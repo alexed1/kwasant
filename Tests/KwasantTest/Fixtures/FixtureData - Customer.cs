@@ -1,7 +1,6 @@
 ﻿using Data.Entities;
-using NUnit.Framework;
 
-namespace ShnexyTest.Fixtures
+namespace KwasantTest.Fixtures
 {
     partial class FixtureData
     {

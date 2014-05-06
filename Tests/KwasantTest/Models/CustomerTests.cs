@@ -1,15 +1,13 @@
-﻿using System.Data.Entity;
-using Data.Entities;
-using Data.Infrastructure;
+﻿using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.StructureMap;
 using KwasantCore.Managers.CommunicationManager;
+using KwasantCore.StructureMap;
+using KwasantTest.Fixtures;
 using NUnit.Framework;
-using ShnexyTest.Fixtures;
 using StructureMap;
 
-namespace ShnexyTest.Models
+namespace KwasantTest.Models
 {
     [TestFixture]
     public class CustomerTests

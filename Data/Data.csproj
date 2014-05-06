@@ -88,7 +88,7 @@
     <Compile Include="Interfaces\ICustomField.cs" />
     <Compile Include="Entities\TrackingStatusDO.cs" />
     <Compile Include="Infrastructure\FileManager.cs" />
-    <Compile Include="Infrastructure\ShnexyDbContext.cs" />
+    <Compile Include="Infrastructure\KwasantDbContext.cs" />
     <Compile Include="Infrastructure\UnitOfWork.cs" />
     <Compile Include="Interfaces\IDBContext.cs" />
     <Compile Include="Interfaces\IRepository.cs" />

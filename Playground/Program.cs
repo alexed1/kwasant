@@ -14,7 +14,7 @@ namespace Playground
         {
             StructureMapBootStrapper.ConfigureDependencies("dev"); //set to either "test" or "dev"
             
-            ShnexyDbContext db = new ShnexyDbContext();
+            KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-namespace Shnexy
+namespace KwasantWeb.App_Start
 {
     public class FilterConfig
     {

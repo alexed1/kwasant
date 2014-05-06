@@ -1,22 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
 using System.Globalization;
-using System.Threading;
 using System.Web.Mvc;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
-using DayPilot.Web.Mvc.Enums.Scheduler;
 using DayPilot.Web.Mvc.Events;
 using DayPilot.Web.Mvc.Events.Common;
 using DayPilot.Web.Mvc.Events.Scheduler;
-using DayPilot.Web.Mvc.Json;
-using DayPilot.Web.Mvc.Recurrence;
 using DayPilot.Web.Mvc.Utils;
 
-namespace Shnexy.Controllers
+namespace KwasantWeb.Controllers
 {
     [HandleError]
     public class SchedulerController : Controller

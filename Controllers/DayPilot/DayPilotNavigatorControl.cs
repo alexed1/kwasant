@@ -1,8 +1,6 @@
-﻿using System.Data;
-using DayPilot.Web.Mvc;
-using DayPilot.Web.Mvc.Events.Navigator;
+﻿using DayPilot.Web.Mvc;
 
-namespace Shnexy.Controllers.DayPilot
+namespace KwasantWeb.Controllers.DayPilot
 { 
     public class DayPilotNavigatorControl : DayPilotNavigator
     {

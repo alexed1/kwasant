@@ -9,12 +9,12 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
-using Shnexy.Controllers.DayPilot;
+using KwasantWeb.Controllers.DayPilot;
 using StructureMap;
 using UtilitiesLib;
 using Calendar = KwasantCore.Services.Calendar;
 
-namespace Shnexy.Controllers
+namespace KwasantWeb.Controllers
 {
     [HandleError]
     public class CalendarController : Controller

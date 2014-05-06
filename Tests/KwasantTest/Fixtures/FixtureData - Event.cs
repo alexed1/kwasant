@@ -1,7 +1,7 @@
 ﻿using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 
-namespace ShnexyTest.Fixtures
+namespace KwasantTest.Fixtures
 {
     partial class FixtureData
     {
