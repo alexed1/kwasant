@@ -1,6 +1,6 @@
 @echo off
 
-".nuget/nuget.exe" restore Shnexy.sln
+".nuget/nuget.exe" restore Kwasant.sln
 if not "%ERRORLEVEL%" == "0" goto :ERROR
 "C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" Kwasant.sln
 if not "%ERRORLEVEL%" == "0" goto :ERROR
