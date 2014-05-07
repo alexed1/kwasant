@@ -11,14 +11,13 @@ using StructureMap;
 
 namespace KwasantTest.Models
 {
-
-
     [TestFixture]
     public class EventTests
     {
         public ICustomerRepository customerRepo;
+        private IEventRepository eventRepo;
         public IUnitOfWork _uow;
-        private FixtureData _fixture;
+        private FixtureData _fixture;        
 
         [SetUp]
         public void Setup()
@@ -28,6 +27,7 @@ namespace KwasantTest.Models
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
             customerRepo = new CustomerRepository(_uow);
+            eventRepo = new EventRepository(_uow);
             _fixture = new FixtureData(_uow);
         }
 
@@ -76,6 +76,30 @@ namespace KwasantTest.Models
 
 
 
+        }
+
+        [Test]
+        [Category("Event")]
+        public void Event_Add_CanAddEventWithRequiredFields()
+        {
+            //SETUP      
+            //EventDO originalEventDO = SetupCalendarForTests();
+
+            EventDO originalEventDO = new EventDO {
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddHours(1),
+                Priority =1,
+                Sequence =1,
+                IsAllDay =false
+            };
+
+            //EXECUTE
+            eventRepo.Add(originalEventDO);
+            eventRepo.UnitOfWork.SaveChanges();
+
+            //VERIFY
+            EventDO retrievedEventDO = eventRepo.GetByKey(originalEventDO.EventID);
+            Assert.AreEqual(originalEventDO.EventID, retrievedEventDO.EventID);
         }
     }
 }
