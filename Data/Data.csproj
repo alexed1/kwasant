@@ -78,12 +78,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\InstructionConstants.cs" />
+    <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\Enumerations\CommunicationType.cs" />
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingStatus.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
+    <Compile Include="Entities\PersonDO.cs" />
     <Compile Include="Infrastructure\TrackingStatus.cs" />
+    <Compile Include="Interfaces\ICalendar.cs" />
+    <Compile Include="Interfaces\ICalendarRepository.cs" />
     <Compile Include="Interfaces\ICustomField.cs" />
     <Compile Include="Entities\TrackingStatusDO.cs" />
     <Compile Include="Infrastructure\FileManager.cs" />
@@ -91,11 +95,13 @@
     <Compile Include="Infrastructure\ShnexyInitializer.cs" />
     <Compile Include="Infrastructure\UnitOfWork.cs" />
     <Compile Include="Interfaces\IDBContext.cs" />
+    <Compile Include="Interfaces\IPerson.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\ISaveHook.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\AttendeeRepository.cs" />
     <Compile Include="Repositories\BookingRequestRepository.cs" />
+    <Compile Include="Repositories\CalendarRepository.cs" />
     <Compile Include="Repositories\CommunicationRepository.cs" />
     <Compile Include="Repositories\CustomerRepository.cs" />
     <Compile Include="Repositories\EmailAddressRepository.cs" />
@@ -105,6 +111,7 @@
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />
     <Compile Include="Repositories\EventRepository.cs" />
+    <Compile Include="Repositories\PersonRepository.cs" />
     <Compile Include="Repositories\StoredFileRepository.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />

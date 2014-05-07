@@ -100,9 +100,11 @@
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Customer.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />
+    <Compile Include="Fixtures\FixtureData - Person.cs" />
     <Compile Include="Fixtures\FixtureData.cs" />
     <Compile Include="Managers\BookingRequestManagerTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
+    <Compile Include="Models\CalendarTest.cs" />
     <Compile Include="Models\CustomerTests.cs" />
     <Compile Include="Models\CustomFieldTests.cs" />
     <Compile Include="Models\EventTests.cs" />

@@ -82,6 +82,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<UserDO>().ToTable("Users");
+            modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
+            modelBuilder.Entity<PersonDO>().ToTable("Persons");
 
             modelBuilder.Entity<EventDO>()
                 .HasMany(ev => ev.Emails)

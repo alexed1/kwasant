@@ -38,6 +38,8 @@ namespace KwasantCore.StructureMap
                 For<IEmailAddress>().Use<EmailAddressDO>();
                 For<IEvent>().Use<EventDO>();
                 For<IUser>().Use<UserDO>();
+                For<ICalendar>().Use<CalendarDO>();
+                For<IPerson>().Use<PersonDO>();
             }
         }
 
