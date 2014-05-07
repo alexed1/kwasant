@@ -83,8 +83,6 @@ namespace KwasantTest.Models
         public void Event_Add_CanAddEventWithRequiredFields()
         {
             //SETUP      
-            //EventDO originalEventDO = SetupCalendarForTests();
-
             EventDO originalEventDO = new EventDO {
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddHours(1),
