@@ -23,6 +23,7 @@ namespace Data.Entities
         {
             if (_data == null)
                 FileManager.LoadFile(this);
+            _data.Position = 0;
             return _data;
         }
         public void SetData(Stream value)
