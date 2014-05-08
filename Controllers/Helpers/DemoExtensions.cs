@@ -6,10 +6,11 @@ using System.Web;
 using System.Web.Mvc;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Json;
+
 //using DayPilot.Web.Ui;
 
 
-namespace App_Code.Helpers
+namespace KwasantWeb.Controllers.Helpers
 {
     public static class DemoExtensions
     {
@@ -20,7 +21,7 @@ namespace App_Code.Helpers
 
         public static string GetBuild(this HtmlHelper helper)
         {
-            return Assembly.GetAssembly(typeof(DayPilot.Web.Mvc.DayPilotCalendar)).GetName().Version.ToString();
+            return Assembly.GetAssembly(typeof(global::DayPilot.Web.Mvc.DayPilotCalendar)).GetName().Version.ToString();
         }
 
         public static string GetDownloadName(this HtmlHelper helper)

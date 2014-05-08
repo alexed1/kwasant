@@ -25,9 +25,9 @@ namespace KwasantCore.StructureMap
             }
         }
 
-        public class ShnexyCoreRegistry : Registry
+        public class KwasantCoreRegistry : Registry
         {
-            public ShnexyCoreRegistry()
+            public KwasantCoreRegistry()
             {
                 For<MandrillPackager>().Use<MandrillPackager>();
                 For<IAttachment>().Use<AttachmentDO>();
@@ -41,16 +41,16 @@ namespace KwasantCore.StructureMap
             }
         }
 
-        public class DevMode : ShnexyCoreRegistry 
+        public class DevMode : KwasantCoreRegistry 
         {
             public DevMode()
             {
-                For<IUnitOfWork>().Use(new UnitOfWork(new ShnexyDbContext()));
+                For<IUnitOfWork>().Use(new UnitOfWork(new KwasantDbContext()));
 
             }
         }
 
-        public class TestMode : ShnexyCoreRegistry
+        public class TestMode : KwasantCoreRegistry
         {
             public TestMode()
             {

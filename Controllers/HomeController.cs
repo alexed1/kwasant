@@ -1,7 +1,6 @@
 ﻿using System.Web.Mvc;
 
-
-namespace Shnexy.Controllers
+namespace KwasantWeb.Controllers
 {
     public class HomeController : Controller
     {

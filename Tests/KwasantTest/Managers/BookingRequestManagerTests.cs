@@ -7,8 +7,8 @@ using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
+using KwasantTest.Fixtures;
 using NUnit.Framework;
-using ShnexyTest.Fixtures;
 using StructureMap;
 
 namespace KwasantTest.Managers
@@ -25,7 +25,6 @@ namespace KwasantTest.Managers
         {
             StructureMapBootStrapper.ConfigureDependencies("test");
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            InstructionConstants.ApplySeedData(_uow);
 
             _customerRepo = new CustomerRepository(_uow);
             _fixture = new FixtureData(_uow);

@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using StructureMap;
 
-namespace Shnexy.Controllers
+namespace KwasantWeb.Controllers
 {
     public class StructureMapControllerFactory : DefaultControllerFactory
     {

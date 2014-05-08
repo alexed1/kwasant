@@ -516,7 +516,7 @@ namespace KwasantICS.DDay.iCal
         }
 
         /// <summary>
-        /// A collection of <see cref="Shnexy.Data.DDay.DDay.iCal.Components.FreeBusyponents in the iCalendar.
+        /// A collection of <see cref="KwasantICS.DDay.iCal.FreeBusyponents in the iCalendar.
         /// </summary>
         virtual public IUniqueComponentList<IFreeBusy> FreeBusy
         {
@@ -524,7 +524,7 @@ namespace KwasantICS.DDay.iCal
         }
 
         /// <summary>
-        /// A collection of <see cref="Data.DDay.DDay.iCal.Components.Journal"/> components in the iCalendar.
+        /// A collection of <see cref="KwasantICS.DDay.iCal.Journal"/> components in the iCalendar.
         /// </summary>
         virtual public ICalendarObjectList<IJournal> Journals
         {
@@ -532,7 +532,7 @@ namespace KwasantICS.DDay.iCal
         }
 
         /// <summary>
-        /// A collection of <see cref="DDay.iCal.TimeZone"/> components in the iCalendar.
+        /// A collection of <see cref="KwasantICS.DDay.iCal.Evaluation.TimeZoneEvaluator.TimeZone"/> components in the iCalendar.
         /// </summary>
         virtual public ICalendarObjectList<ITimeZone> TimeZones
         {

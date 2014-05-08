@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Data.Entities;
 
 namespace Data.Interfaces
 {
@@ -18,6 +14,8 @@ namespace Data.Interfaces
         DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity)
             where TEntity : class;
 
-        //TEntity Entry<TEntity>();
+
+        /* DBSets */
+        IDbSet<InstructionDO> Instructions { get; }
     }
 }
