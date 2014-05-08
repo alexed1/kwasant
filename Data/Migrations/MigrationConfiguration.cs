@@ -9,7 +9,7 @@ using Data.Interfaces;
 
 namespace Data.Migrations
 {
-    public sealed class MigrationConfiguration : DbMigrationsConfiguration<ShnexyDbContext>
+    public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasantDbContext>
     {
         public MigrationConfiguration()
         {
@@ -17,7 +17,7 @@ namespace Data.Migrations
             ContextKey = "Data.Infrastructure.ShnexyDbContext";
         }
 
-        protected override void Seed(ShnexyDbContext context)
+        protected override void Seed(KwasantDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 

@@ -17,7 +17,7 @@ namespace Data.Infrastructure
         public KwasantDbContext()
             : base("name=KwasantDB")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<ShnexyDbContext, MigrationConfiguration>()); 
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<KwasantDbContext, MigrationConfiguration>()); 
         }
 
         public override int SaveChanges()
