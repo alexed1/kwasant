@@ -78,13 +78,13 @@ namespace KwasantCore.Services
                 eventDO.Attendees = new List<AttendeeDO>();
 
             string fromEmail = "lucreorganizer@gmail.com";
-            string fromName = "Booqit Organizer";
+            string fromName = "Kwasant Scheduling";
 
             EmailDO outboundEmail = new EmailDO();
             outboundEmail.From = new EmailAddressDO {Address = fromEmail, Name = fromName};
             outboundEmail.To = eventDO.Attendees.Select(a => new EmailAddressDO { Address = a.EmailAddress, Name = a.Name}).ToList();
-            outboundEmail.Subject = "Invitation via Booqit: " + eventDO.Summary + "@ " + eventDO.StartDate;
-            outboundEmail.Text = "This is a Booqit Event Request. For more information, see https://foo.com";
+            outboundEmail.Subject = "Invitation via Kwasant: " + eventDO.Summary + "@ " + eventDO.StartDate;
+            outboundEmail.Text = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";
             outboundEmail.Status = EmailStatus.QUEUED;
 
             iCalendar ddayCalendar = new iCalendar();

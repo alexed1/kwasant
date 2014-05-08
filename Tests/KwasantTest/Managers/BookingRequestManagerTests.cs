@@ -38,7 +38,7 @@ namespace KwasantTest.Managers
             List<CustomerDO> customersNow = _customerRepo.GetAll().ToList();
             Assert.AreEqual(0, customersNow.Count);
 
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
+            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Kwasant"))
             {
             };
 
@@ -66,7 +66,7 @@ namespace KwasantTest.Managers
             customersNow = _customerRepo.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
 
-            MailMessage message = new MailMessage(new MailAddress(customer.EmailAddress, customer.FirstName), new MailAddress("kwa@sant.com", "Booqit Services"))
+            MailMessage message = new MailMessage(new MailAddress(customer.EmailAddress, customer.FirstName), new MailAddress("kwa@sant.com", "Kwasant"))
             {
             };
 
@@ -85,7 +85,7 @@ namespace KwasantTest.Managers
         public void ParseAllDay()
         {
 
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
+            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Kwasant"))
             {
                 Body = "CCADE",
             };
@@ -104,7 +104,7 @@ namespace KwasantTest.Managers
         public void Parse30MinsInAdvance()
         {
 
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
+            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Kwasant"))
             {
                 Body = "cc30",
             };
@@ -123,7 +123,7 @@ namespace KwasantTest.Managers
         public void Parse60MinsInAdvance()
         {
 
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
+            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Kwasant"))
             {
                 Body = "cc60",
             };
@@ -142,7 +142,7 @@ namespace KwasantTest.Managers
         public void Parse90MinsInAdvance()
         {
 
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
+            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Kwasant"))
             {
                 Body = "cc90",
             };
@@ -161,7 +161,7 @@ namespace KwasantTest.Managers
         public void Parse120MinsInAdvance()
         {
 
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
+            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Kwasant"))
             {
                 Body = "cc120",
             };
