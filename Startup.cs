@@ -7,7 +7,7 @@ using Microsoft.Owin;
 using Owin;
 
 [assembly: OwinStartup(typeof(Startup))]
-
+[assembly: OwinStartupAttribute(typeof(KwasantWeb.Startup))]
 namespace KwasantWeb
 {
     public partial class Startup
