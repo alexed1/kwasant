@@ -32,25 +32,25 @@ namespace KwasantTest.Services
         [Test]
         public void TestCalendarLoadsRelatedEvents()
         {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            UserRepository userRepo = new UserRepository(_uow);
             EventRepository eventRepo = new EventRepository(_uow);
 
-            CustomerDO customerOne = _fixture.TestCustomer();
-            CustomerDO customerTwo = _fixture.TestCustomer2();
-            
-            customerRepo.Add(customerOne);
-            customerRepo.Add(customerTwo);
+            UserDO userOne = _fixture.TestUser();
+            UserDO userTwo = _fixture.TestUser2();
+
+            userRepo.Add(userOne);
+            userRepo.Add(userTwo);
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 EmailID = 1,
-                Customer = customerOne,
+                User = userOne,
                 From = new EmailAddressDO()
             };
             BookingRequestDO bookingRequestTwo = new BookingRequestDO()
             {
                 EmailID = 2,
-                Customer = customerTwo,
+                User = userTwo,
                 From = new EmailAddressDO()
             };
 
@@ -88,17 +88,17 @@ namespace KwasantTest.Services
         [Test]
         public void TestMoveAndReload()
         {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            UserRepository userRepo = new UserRepository(_uow);
             EventRepository eventRepo = new EventRepository(_uow);
 
-            CustomerDO customerOne = _fixture.TestCustomer();
-            
-            customerRepo.Add(customerOne);
+            UserDO userOne = _fixture.TestUser();
+
+            userRepo.Add(userOne);
             
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 EmailID = 1,
-                Customer = customerOne,
+                User = userOne,
                 From = new EmailAddressDO()
             };
             
@@ -136,17 +136,17 @@ namespace KwasantTest.Services
         [Test]
         public void TestDelete()
         {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            UserRepository userRepo = new UserRepository(_uow);
             EventRepository eventRepo = new EventRepository(_uow);
 
-            CustomerDO customerOne = _fixture.TestCustomer();
+            UserDO userOne = _fixture.TestUser();
 
-            customerRepo.Add(customerOne);
+            userRepo.Add(userOne);
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 EmailID = 1,
-                Customer = customerOne,
+                User = userOne,
                 From = new EmailAddressDO()
             };
 
@@ -180,16 +180,16 @@ namespace KwasantTest.Services
         [Test]
         public void TestAdd()
         {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            UserRepository userRepo = new UserRepository(_uow);
 
-            CustomerDO customerOne = _fixture.TestCustomer();
+            UserDO userOne = _fixture.TestUser();
 
-            customerRepo.Add(customerOne);
+            userRepo.Add(userOne);
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 EmailID = 1,
-                Customer = customerOne,
+                User = userOne,
                 From = new EmailAddressDO()
             };
 
@@ -219,17 +219,17 @@ namespace KwasantTest.Services
         [Test]
         public void TestGet()
         {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            UserRepository userRepo = new UserRepository(_uow);
             EventRepository eventRepo = new EventRepository(_uow);
 
-            CustomerDO customerOne = _fixture.TestCustomer();
+            UserDO userOne = _fixture.TestUser();
 
-            customerRepo.Add(customerOne);
+            userRepo.Add(userOne);
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 EmailID = 1,
-                Customer = customerOne,
+                User = userOne,
                 From = new EmailAddressDO()
             };
 
@@ -257,16 +257,16 @@ namespace KwasantTest.Services
         [Test]
         public void TestDispatch()
         {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            UserRepository customerRepo = new UserRepository(_uow);
 
-            CustomerDO customerOne = _fixture.TestCustomer();
+            UserDO userOne = _fixture.TestUser();
 
-            customerRepo.Add(customerOne);
+            customerRepo.Add(userOne);
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 EmailID = 1,
-                Customer = customerOne,
+                User = userOne,
                 From = new EmailAddressDO()
             };
 

@@ -4,11 +4,6 @@ namespace KwasantTest.Fixtures
 {
     partial class FixtureData
     {
-
-
-
-
-   
         public EmailAddressDO TestEmail1()
         {
 
@@ -31,6 +26,38 @@ namespace KwasantTest.Fixtures
             };
         }
 
+        public EmailAddressDO TestEmail3()
+        {
+
+            return new EmailAddressDO()
+            {
+                Address = "pabitra@hotmail.com",
+                EmailAddressID = 3,
+                Name = "Person Test account"
+            };
+        }
+
+        public EmailAddressDO TestEmail4()
+        {
+
+            return new EmailAddressDO()
+            {
+                Address = "JackMaginot@gmail.com",
+                EmailAddressID = 4,
+                Name = "Jack Test account"
+            };
+        }
+
+        public EmailAddressDO TestEmail5()
+        {
+
+            return new EmailAddressDO()
+            {
+                Address = "RobMaginot@gmail.com",
+                EmailAddressID = 5,
+                Name = "Jack Test account"
+            };
+        }
     }
 }
 

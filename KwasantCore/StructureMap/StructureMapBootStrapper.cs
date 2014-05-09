@@ -33,10 +33,10 @@ namespace KwasantCore.StructureMap
                 For<IAttachment>().Use<AttachmentDO>();
                 For<IAttendee>().Use<AttendeeDO>();
                 For<IBookingRequest>().Use<BookingRequestDO>();
-                For<ICustomer>().Use<CustomerDO>();
                 For<IEmail>().Use<EmailDO>();
                 For<IEmailAddress>().Use<EmailAddressDO>();
                 For<IEvent>().Use<EventDO>();
+                For<IPerson>().Use<PersonDO>();
                 For<IUser>().Use<UserDO>();
             }
         }

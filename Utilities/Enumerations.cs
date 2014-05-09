@@ -110,6 +110,19 @@ namespace UtilitiesLib
         PUT,
     }
 
+    public enum RegistrationStatus
+    {
+        Successful,
+        UserAlreadyExists,
+    }
+
+    public enum LoginStatus
+    {
+        Successful,
+        InvalidCredential,
+        ImplicitUser,
+        UnregisteredUser,
+    }
 }
   
 

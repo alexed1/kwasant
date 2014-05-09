@@ -16,7 +16,7 @@ namespace KwasantTest.Models
     [TestFixture]
     public class EventTests
     {
-        public ICustomerRepository customerRepo;
+        public IUserRepository userRepo;
         public IUnitOfWork _uow;
         private FixtureData _fixture;
 
@@ -27,7 +27,7 @@ namespace KwasantTest.Models
 
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
-            customerRepo = new CustomerRepository(_uow);
+            userRepo = new UserRepository(_uow);
             _fixture = new FixtureData(_uow);
         }
 

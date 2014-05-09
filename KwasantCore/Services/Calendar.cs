@@ -54,7 +54,7 @@ namespace KwasantCore.Services
         {
             IEnumerable<EventDO> test = _eventRepo.GetAll();
             _events = _eventRepo.GetQuery()
-                .Where(eventDO => eventDO.BookingRequest.Customer.CustomerID == _bookingRequestDO.Customer.CustomerID)
+                .Where(eventDO => eventDO.BookingRequest.User.Id == _bookingRequestDO.User.Id)
                 .ToDictionary(
                     eventDO => eventDO.EventID,
                     eventDO => eventDO);

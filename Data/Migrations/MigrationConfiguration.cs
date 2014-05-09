@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Reflection;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+
 using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
@@ -14,7 +17,7 @@ namespace Data.Migrations
         public MigrationConfiguration()
         {
             AutomaticMigrationsEnabled = true;
-            ContextKey = "Data.Infrastructure.ShnexyDbContext";
+            ContextKey = "Data.Infrastructure.KwasantDbContext";
         }
 
         protected override void Seed(KwasantDbContext context)
@@ -24,6 +27,9 @@ namespace Data.Migrations
             /* Be sure to use AddOrUpdate when creating seed data - otherwise we will get duplicates! */
 
             Seed(context);
+
+            AddRoles(context);
+            AddAdmins(context);
         }
 
         //Method to let us seed into memory as well
@@ -56,6 +62,54 @@ namespace Data.Migrations
                     i => i.InstructionID,
                     instructionsToAdd.ToArray()
                 );
+        }
+
+        /// <summary>
+        /// Add roles of type 'Admin' and 'Customer' in DB
+        /// </summary>
+        /// <param name="context"></param>
+        private void AddRoles(KwasantDbContext context)
+        {
+            var RoleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+
+            IdentityResult roleresult;
+            if (RoleManager.RoleExists("Admin") == false)
+            {
+                roleresult = RoleManager.Create(new IdentityRole("Admin"));
+            }
+
+            if (RoleManager.RoleExists("Customer") == false)
+            {
+                roleresult = RoleManager.Create(new IdentityRole("Customer"));
+            }
+        }
+
+        /// <summary>
+        /// Add 'Admin' roles. Curretly only user with Email "alex@kwasant.com" and password 'alex@1234'
+        /// has been added.
+        /// </summary>
+        /// <param name="context">of type ShnexyDbContext</param>
+        /// <returns>True if created successfully otherwise false</returns>
+        private bool AddAdmins(KwasantDbContext context)
+        {
+            IdentityResult ir;
+            var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+
+            var um = new UserManager<UserDO>(new UserStore<UserDO>(context));
+
+            var user = new UserDO()
+            {
+                UserName = "alex@kwasant.com",
+                EmailConfirmed = true
+            };
+
+            ir = um.Create(user, "alex@1234");
+            if (ir.Succeeded == false)
+                return ir.Succeeded;
+
+            ir = um.AddToRole(user.Id, "Admin");
+
+            return ir.Succeeded;
         }
     }
 }

@@ -1,10 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Web;
+using Data.Entities;
+using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace Data.Interfaces
 {
     public interface IUser
     {
-        [Key]
-        int UserID { get; set; }
+        string Password { get; set;}
+        IEnumerable<BookingRequestDO> BookingRequests { get; set; }
     }
 }

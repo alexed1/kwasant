@@ -15,6 +15,7 @@ namespace KwasantWeb
         public void Configuration(IAppBuilder app)
         {
             ConfigureDaemons();
+            ConfigureAuth(app);
         }
 
         private static void ConfigureDaemons()

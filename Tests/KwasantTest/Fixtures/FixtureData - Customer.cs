@@ -4,28 +4,26 @@ namespace KwasantTest.Fixtures
 {
     partial class FixtureData
     {
-        public CustomerDO TestCustomer()
+        public UserDO TestUser()
         {
 
-            return new CustomerDO()
+            return new UserDO()
             {
-                CustomerID = 1,
                 FirstName = "Jack",
                 LastName = "Maginot",
-                EmailAddress = "JackMaginot@gmail.com"
+                EmailAddress = TestEmail4()
 
             };
         }
 
-        public CustomerDO TestCustomer2()
+        public UserDO TestUser2()
         {
 
-            return new CustomerDO()
+            return new UserDO()
             {
-                CustomerID = 2,
                 FirstName = "Rob",
                 LastName = "Maginot",
-                EmailAddress = "RobMaginot@gmail.com"
+                EmailAddress = TestEmail5()
 
             };
         }

@@ -16,7 +16,7 @@ namespace KwasantTest.Managers
     [TestFixture]
     public class BookingRequestManagerTests
     {
-        public ICustomerRepository _customerRepo;
+        public IUserRepository _userRepo;
         public IUnitOfWork _uow;
         private FixtureData _fixture;
 
@@ -26,7 +26,7 @@ namespace KwasantTest.Managers
             StructureMapBootStrapper.ConfigureDependencies("test");
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
-            _customerRepo = new CustomerRepository(_uow);
+            _userRepo = new UserRepository(_uow);
             _fixture = new FixtureData(_uow);
         }
 
@@ -34,7 +34,7 @@ namespace KwasantTest.Managers
         [Category("BRM")]
         public void NewCustomerCreated()
         {
-            List<CustomerDO> customersNow = _customerRepo.GetAll().ToList();
+            List<UserDO> customersNow = _userRepo.GetAll().ToList();
             Assert.AreEqual(0, customersNow.Count);
 
             MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
@@ -45,7 +45,7 @@ namespace KwasantTest.Managers
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
-            customersNow = _customerRepo.GetAll().ToList();
+            customersNow = _userRepo.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
             Assert.AreEqual("customer@gmail.com", customersNow.First().EmailAddress);
             Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
@@ -55,17 +55,17 @@ namespace KwasantTest.Managers
         [Category("BRM")]
         public void ExistingCustomerNotCreatedButUsed()
         {
-            List<CustomerDO> customersNow = _customerRepo.GetAll().ToList();
+            List<UserDO> customersNow = _userRepo.GetAll().ToList();
             Assert.AreEqual(0, customersNow.Count);
 
-            CustomerDO customer = _fixture.TestCustomer();
-            _customerRepo.Add(customer);
+            UserDO user = _fixture.TestUser();
+            _userRepo.Add(user);
             _uow.SaveChanges();
 
-            customersNow = _customerRepo.GetAll().ToList();
+            customersNow = _userRepo.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
 
-            MailMessage message = new MailMessage(new MailAddress(customer.EmailAddress, customer.FirstName), new MailAddress("kwa@sant.com", "Booqit Services"))
+            MailMessage message = new MailMessage(new MailAddress(user.EmailAddress.Address, user.FirstName), new MailAddress("kwa@sant.com", "Booqit Services"))
             {
             };
 
@@ -73,10 +73,10 @@ namespace KwasantTest.Managers
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
-            customersNow = _customerRepo.GetAll().ToList();
+            customersNow = _userRepo.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
-            Assert.AreEqual(customer.EmailAddress, customersNow.First().EmailAddress);
-            Assert.AreEqual(customer.FirstName, customersNow.First().FirstName);
+            Assert.AreEqual(user.EmailAddress, customersNow.First().EmailAddress);
+            Assert.AreEqual(user.FirstName, customersNow.First().FirstName);
         }
 
         [Test]

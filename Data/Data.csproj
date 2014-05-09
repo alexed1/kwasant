@@ -38,6 +38,12 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\..\Kwasant Dev\packages\Microsoft.AspNet.Identity.Core.2.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\..\Kwasant Dev\packages\Microsoft.AspNet.Identity.EntityFramework.2.0.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -84,6 +90,7 @@
     <Compile Include="Entities\Enumerations\TrackingStatus.cs" />
     <Compile Include="Entities\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
+    <Compile Include="Entities\PersonDO.cs" />
     <Compile Include="Infrastructure\TrackingStatus.cs" />
     <Compile Include="Interfaces\ICustomField.cs" />
     <Compile Include="Entities\TrackingStatusDO.cs" />
@@ -91,34 +98,34 @@
     <Compile Include="Infrastructure\KwasantDbContext.cs" />
     <Compile Include="Infrastructure\UnitOfWork.cs" />
     <Compile Include="Interfaces\IDBContext.cs" />
+    <Compile Include="Interfaces\IPerson.cs" />
+    <Compile Include="Interfaces\IPersonRepository.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\ISaveHook.cs" />
+    <Compile Include="Interfaces\IUserRepository.cs" />
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\AttendeeRepository.cs" />
     <Compile Include="Repositories\BookingRequestRepository.cs" />
     <Compile Include="Repositories\CommunicationRepository.cs" />
-    <Compile Include="Repositories\CustomerRepository.cs" />
     <Compile Include="Repositories\EmailAddressRepository.cs" />
     <Compile Include="Repositories\EmailRepository.cs" />
     <Compile Include="Repositories\GenericRepository.cs" />
-    <Compile Include="Interfaces\ICustomerRepository.cs" />
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />
     <Compile Include="Repositories\EventRepository.cs" />
+    <Compile Include="Repositories\PersonRepository.cs" />
     <Compile Include="Repositories\StoredFileRepository.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />
     <Compile Include="Entities\AttachmentDO.cs" />
     <Compile Include="Entities\AttendeeDO.cs" />
     <Compile Include="Entities\BookingRequestDO.cs" />
-    <Compile Include="Entities\CustomerDO.cs" />
     <Compile Include="Entities\EmailDO.cs" />
     <Compile Include="Entities\EmailAddressDO.cs" />
     <Compile Include="Interfaces\IAttachment.cs" />
     <Compile Include="Interfaces\IAttendee.cs" />
     <Compile Include="Interfaces\IBookingRequest.cs" />
-    <Compile Include="Interfaces\ICustomer.cs" />
     <Compile Include="Interfaces\IEmail.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Entities\EventDO.cs" />
@@ -128,6 +135,7 @@
     <Compile Include="Entities\UserDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\TrackingStatusRepository.cs" />
+    <Compile Include="Repositories\UserRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
