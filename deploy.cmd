@@ -68,8 +68,8 @@ IF NOT DEFINED MSBUILD_PATH (
 echo Handling .NET Web Application deployment.
 
 :: 1. Restore NuGet packages
-IF /I "Shnexy.sln" NEQ "" (
-  call :ExecuteCmd "%NUGET_EXE%" restore "%DEPLOYMENT_SOURCE%\Shnexy.sln" -Verbosity quiet
+IF /I "Kwasant.sln" NEQ "" (
+  call :ExecuteCmd "%NUGET_EXE%" restore "%DEPLOYMENT_SOURCE%\Kwasant.sln" -Verbosity quiet
   IF !ERRORLEVEL! NEQ 0 goto error
 )
 
