@@ -31,6 +31,7 @@ namespace KwasantCore.Services
             _bookingRequestDO = bookingRequest;
             _eventRepo = new EventRepository(_uow);
             LoadData();
+            //foo
         }
 
         public IUnitOfWork UnitOfWork
