@@ -6,7 +6,7 @@ using KwasantWeb;
 using Microsoft.Owin;
 using Owin;
 
-[assembly: OwinStartup(typeof(Startup))]
+[assembly: OwinStartup(typeof(KwasantWeb.Startup))]
 
 namespace KwasantWeb
 {
