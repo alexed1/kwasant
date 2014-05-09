@@ -6,11 +6,11 @@ using KwasantWeb;
 using Microsoft.Owin;
 using Owin;
 
-[assembly: OwinStartup(typeof(Startup))]
-[assembly: OwinStartupAttribute(typeof(KwasantWeb.Startup))]
+[assembly: OwinStartup(typeof(KwasantStartup))]
+
 namespace KwasantWeb
 {
-    public partial class Startup
+    public partial class KwasantStartup
     {
         public void Configuration(IAppBuilder app)
         {
