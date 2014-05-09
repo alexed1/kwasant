@@ -32,7 +32,7 @@ namespace KwasantTest.Models
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies("test");
-            _uow = ObjectFactory.GetInstance<IUnitOfWork>();            
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
             emailAddressRepo = new EmailAddressRepository(_uow);
             personRepo = new PersonRepository(_uow);
@@ -40,97 +40,103 @@ namespace KwasantTest.Models
             _fixture = new FixtureData(_uow);
         }
 
-        public  CalendarDO SetupCalendarForTests()
+        public CalendarDO SetupCalendarForTests()
         {
-            PersonDO personDO = _fixture.TestPerson1();
-            personRepo.Add(personDO);
+            PersonDO curPersonDO = _fixture.TestPerson1();
+            personRepo.Add(curPersonDO);
             personRepo.UnitOfWork.SaveChanges();
 
             CalendarDO calendarDO = new CalendarDO()
             {
                 Name = "Calendar Test",
-                PersonId = personDO.PersonId
+                PersonId = curPersonDO.PersonId
             };
 
             return calendarDO;
-        }       
+        }
 
         [Test]
-        [Category("Calendar")]
+        [Category("CALENDAR")]
         public void Calendar_Create_CanCreateCalendar()
         {
             //SETUP      
-            CalendarDO originalCalendarDO = SetupCalendarForTests();
+            CalendarDO curOriginalCalendarDO = SetupCalendarForTests();
 
             //EXECUTE
-            calendarRepo.Create(originalCalendarDO);
+            calendarRepo.Create(curOriginalCalendarDO);
             calendarRepo.UnitOfWork.SaveChanges();
 
             //VERIFY
-            CalendarDO retrievedCalendarDO = calendarRepo.GetByKey(originalCalendarDO.CalendarId);
-            Assert.AreEqual(originalCalendarDO.CalendarId, retrievedCalendarDO.CalendarId);
+            CalendarDO curRetrievedCalendarDO = calendarRepo.GetByKey(curOriginalCalendarDO.CalendarId);
+            Assert.AreEqual(curOriginalCalendarDO.CalendarId, curRetrievedCalendarDO.CalendarId);
         }
 
         [Test]
-        [Category("Calendar")]
+        [Category("CALENDAR")]
         public void Calendar_Create_FailsWithoutName()
         {
-            String strErrorMessage = String.Empty;
-
             //SETUP      
-            CalendarDO originalCalendarDO = SetupCalendarForTests();
-            originalCalendarDO.Name = null;            
+            CalendarDO curOriginalCalendarDO = SetupCalendarForTests();
+            curOriginalCalendarDO.Name = null;
 
             //EXECUTE
-            try
-            {
-                calendarRepo.Create(originalCalendarDO);
-                calendarRepo.UnitOfWork.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                strErrorMessage = ex.Message;
-            }
+            var ex = Assert.Throws<Exception>(() =>
+             {
+                 calendarRepo.UnitOfWork.SaveChanges();
+             }
+             );
 
             //VERIFY
-            Assert.AreNotEqual(strErrorMessage.IndexOf("Validation failed for one or more entities"), -1);
+            Assert.AreNotEqual(ex.Message.IndexOf("Validation failed for one or more entities"), -1);
         }
 
         [Test]
-        [Category("Calendar")]
-        public void Calendar_Read_CanReadCalendar()
+        [Category("CALENDAR")]
+        public void Calendar_Update_CanUpdateCalendar()
         {
             //SETUP      
-            CalendarDO originalCalendarDO = SetupCalendarForTests();
+            CalendarDO curOriginalCalendarDO = SetupCalendarForTests();
 
             //EXECUTE
-            calendarRepo.Create(originalCalendarDO);
-            calendarRepo.UnitOfWork.SaveChanges();           
+            calendarRepo.Create(curOriginalCalendarDO);
+            calendarRepo.UnitOfWork.SaveChanges();
+
+            String strCalenderName = "Calendar Test Updated";
+
+            CalendarDO curUpdateCalendarDO = SetupCalendarForTests();
+            curUpdateCalendarDO.Name = strCalenderName;
+
+            CalendarDO curRetrievedCalendarDO = calendarRepo.GetByKey(curOriginalCalendarDO.CalendarId);
+
+            calendarRepo.Update(curUpdateCalendarDO, curRetrievedCalendarDO);
+            calendarRepo.UnitOfWork.SaveChanges();
+
+            CalendarDO curUpdatedCalendarDO = calendarRepo.GetByKey(curRetrievedCalendarDO.CalendarId);
 
             //VERIFY
-            CalendarDO retrievedCalendarDO = calendarRepo.GetByKey(originalCalendarDO.CalendarId);
-            Assert.AreEqual(originalCalendarDO.CalendarId, retrievedCalendarDO.CalendarId);
+            Assert.AreEqual(curUpdatedCalendarDO.Name, strCalenderName);
+            Assert.AreEqual(curUpdatedCalendarDO.PersonId, curUpdateCalendarDO.PersonId);
         }
 
         [Test]
-        [Category("Calendar")]
+        [Category("CALENDAR")]
         public void Calendar_Delete_CanDeleteCalendar()
         {
             //SETUP      
-            CalendarDO originalCalendarDO = SetupCalendarForTests();
+            CalendarDO curOriginalCalendarDO = SetupCalendarForTests();
 
             //EXECUTE
-            calendarRepo.Create(originalCalendarDO);
-            calendarRepo.UnitOfWork.SaveChanges();           
+            calendarRepo.Create(curOriginalCalendarDO);
+            calendarRepo.UnitOfWork.SaveChanges();
 
-            CalendarDO retrievedCalendarDO = calendarRepo.GetByKey(originalCalendarDO.CalendarId);
+            CalendarDO curRetrievedCalendarDO = calendarRepo.GetByKey(curOriginalCalendarDO.CalendarId);
 
-            calendarRepo.Delete(retrievedCalendarDO);
-            calendarRepo.UnitOfWork.SaveChanges();                         
+            calendarRepo.Delete(curRetrievedCalendarDO);
+            calendarRepo.UnitOfWork.SaveChanges();
 
             //VERIFY
-            CalendarDO deletedCalendarDO = calendarRepo.GetByKey(retrievedCalendarDO.CalendarId);
-            Assert.IsNull(deletedCalendarDO);            
+            CalendarDO curDeletedCalendarDO = calendarRepo.GetByKey(curRetrievedCalendarDO.CalendarId);
+            Assert.IsNull(curDeletedCalendarDO);
         }
     }
 }

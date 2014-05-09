@@ -91,7 +91,7 @@ namespace Data.Repositories
         }
 
         //http://stackoverflow.com/a/12587752/1915866
-        public virtual void Update(CalendarDO calendarDO, CalendarDO existingCalendarDO)
+        public void Update(CalendarDO calendarDO, CalendarDO existingCalendarDO)
         {
             _unitOfWork.Db.Entry(existingCalendarDO).CurrentValues.SetValues(calendarDO);
         }
