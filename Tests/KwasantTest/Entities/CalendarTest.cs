@@ -19,7 +19,7 @@ using NUnit.Framework;
 namespace KwasantTest.Models
 {
     [TestFixture]
-    public class CalendarTest
+    public class CalendarDOTests
     {
         private IUnitOfWork _uow;
         private FixtureData _fixture;
@@ -56,7 +56,7 @@ namespace KwasantTest.Models
         }
 
         [Test]
-        [Category("CALENDAR")]
+        [Category("CalendarDO")]
         public void Calendar_Create_CanCreateCalendar()
         {
             //SETUP      
@@ -72,7 +72,7 @@ namespace KwasantTest.Models
         }
 
         [Test]
-        [Category("CALENDAR")]
+        [Category("CalendarDO")]
         public void Calendar_Create_FailsWithoutName()
         {
             //SETUP      
@@ -91,7 +91,7 @@ namespace KwasantTest.Models
         }
 
         [Test]
-        [Category("CALENDAR")]
+        [Category("CalendarDO")]
         public void Calendar_Update_CanUpdateCalendar()
         {
             //SETUP      
@@ -119,7 +119,7 @@ namespace KwasantTest.Models
         }
 
         [Test]
-        [Category("CALENDAR")]
+        [Category("CalendarDO")]
         public void Calendar_Delete_CanDeleteCalendar()
         {
             //SETUP      
