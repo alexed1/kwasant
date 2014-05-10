@@ -77,9 +77,10 @@ namespace KwasantTest.Models
         {
             //SETUP      
             CalendarDO curOriginalCalendarDO = SetupCalendarForTests();
-            curOriginalCalendarDO.Name = null;
+            curOriginalCalendarDO.Name = null;            
 
             //EXECUTE
+            calendarRepo.Create(curOriginalCalendarDO);
             var ex = Assert.Throws<Exception>(() =>
              {
                  calendarRepo.UnitOfWork.SaveChanges();
