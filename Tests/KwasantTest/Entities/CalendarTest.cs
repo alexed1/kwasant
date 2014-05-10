@@ -16,10 +16,14 @@ using KwasantCore.StructureMap;
 using StructureMap;
 using NUnit.Framework;
 
+using FluentValidation;
+using FluentValidation.Results;
+using FluentValidation.Validators;
+
 namespace KwasantTest.Models
 {
     [TestFixture]
-    public class CalendarDOTests
+    public class CalendarDOTests : AbstractValidator<CalendarDO>
     {
         private IUnitOfWork _uow;
         private FixtureData _fixture;
@@ -27,6 +31,14 @@ namespace KwasantTest.Models
         IEmailAddressRepository emailAddressRepo;
         IPersonRepository personRepo;
         ICalendarRepository calendarRepo;
+
+        public CalendarDOTests()
+        {
+            RuleSet("Name", () =>
+            {
+                RuleFor(curCalendarDO => curCalendarDO.Name).NotNull();                
+            });            
+        }
 
         [SetUp]
         public void Setup()
@@ -55,6 +67,8 @@ namespace KwasantTest.Models
             return calendarDO;
         }
 
+
+
         [Test]
         [Category("CalendarDO")]
         public void Calendar_Create_CanCreateCalendar()
@@ -77,18 +91,15 @@ namespace KwasantTest.Models
         {
             //SETUP      
             CalendarDO curOriginalCalendarDO = SetupCalendarForTests();
-            curOriginalCalendarDO.Name = null;            
+            curOriginalCalendarDO.Name = null;
 
             //EXECUTE
-            calendarRepo.Create(curOriginalCalendarDO);
-            var ex = Assert.Throws<Exception>(() =>
+            Assert.Throws<ValidationException>(() =>
              {
+                 calendarRepo.Create(curOriginalCalendarDO);
                  calendarRepo.UnitOfWork.SaveChanges();
              }
-             );
-
-            //VERIFY
-            Assert.AreNotEqual(ex.Message.IndexOf("Validation failed for one or more entities"), -1);
+             );            
         }
 
         [Test]

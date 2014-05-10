@@ -6,6 +6,8 @@ using System.Linq.Expressions;
 using System.Collections.Generic;
 
 using Data.Entities;
+using Data.Validators;
+using FluentValidation;
 
 namespace Data.Repositories
 {
@@ -18,11 +20,14 @@ namespace Data.Repositories
         private readonly IUnitOfWork _unitOfWork;        
         public IDbSet<CalendarDO> dbSet;
 
+        private CalendarValidator _curValidator;
+
         public CalendarRepository(IUnitOfWork unitOfWork)
         {
             if (unitOfWork == null) throw new ArgumentNullException("unitOfWork");
             _unitOfWork = unitOfWork;
             this.dbSet = _unitOfWork.Db.Set<CalendarDO>();
+            _curValidator = new CalendarValidator();
         }
 
 
@@ -48,13 +53,13 @@ namespace Data.Repositories
 
         public void Create(CalendarDO calendarDO)
         {
+            _curValidator.ValidateAndThrow(calendarDO);
             dbSet.Add(calendarDO);
         }
 
         public void Delete(CalendarDO calendarDO)
         {
             dbSet.Remove(calendarDO);
-
         }
 
         public bool IsDetached(CalendarDO calendarDO)
@@ -84,10 +89,7 @@ namespace Data.Repositories
 
         public virtual void Save(CalendarDO calendarDO)
         {
-
             _unitOfWork.Db.Entry(calendarDO).State = EntityState.Modified;
-
-
         }
 
         //http://stackoverflow.com/a/12587752/1915866

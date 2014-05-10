@@ -43,6 +43,12 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="FluentValidation">
+      <HintPath>..\..\packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation.Mvc">
+      <HintPath>..\..\packages\FluentValidation.MVC5.5.1.0.0\lib\Net45\FluentValidation.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="Moq">
       <HintPath>..\..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
     </Reference>
@@ -99,7 +105,6 @@
     <Compile Include="Entities\CalendarTest.cs" />
     <Compile Include="Entities\CustomerTests.cs" />
     <Compile Include="Entities\CustomFieldTests.cs" />
-    <Compile Include="Entities\Engine.cs" />
     <Compile Include="Entities\EventTests.cs" />
     <Compile Include="Fixtures\FixtureData - Attendee.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />

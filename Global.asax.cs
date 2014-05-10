@@ -7,6 +7,7 @@ using Data.Infrastructure;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
 using KwasantWeb.Controllers;
+using FluentValidation;
 
 namespace KwasantWeb
 {
@@ -25,8 +26,7 @@ namespace KwasantWeb
 
             Database.SetInitializer(new ShnexyInitializer());
             KwasantDbContext db = new KwasantDbContext();
-            db.Database.Initialize(true);
-
+            db.Database.Initialize(true);            
 
             var emailDaemon = new InboundEmail();
 
