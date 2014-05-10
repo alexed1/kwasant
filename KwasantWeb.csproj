@@ -275,7 +275,6 @@
     <Content Include="Content\images\client-6.png" />
     <Content Include="Content\images\Croissant\croissant_nolic.jpg" />
     <Content Include="Content\images\example_using_kwasant_email.png" />
-    <Content Include="Content\images\final.png" />
     <Content Include="Content\images\from_this_to_this.png" />
     <Content Include="Content\images\homepage1.jpg" />
     <Content Include="Content\images\homepage2.jpg" />
@@ -307,13 +306,6 @@
     <Content Include="Content\images\older-calendar.jpg" />
     <Content Include="Content\images\perfect-krawsant.jpg" />
     <Content Include="Content\images\perfect-krawsant.png" />
-    <Content Include="Content\images\Process\1 Step_v1.jpg" />
-    <Content Include="Content\images\Process\1Step.png" />
-    <Content Include="Content\images\Process\1Step_v1.png" />
-    <Content Include="Content\images\Process\ComposeEmail.png" />
-    <Content Include="Content\images\Process\workflow.png" />
-    <Content Include="Content\images\Process\Workflowv2.png" />
-    <Content Include="Content\images\Process\Workflow_v3.png" />
     <Content Include="Content\images\scheduler1.jpg" />
     <Content Include="Content\images\screen.jpg" />
     <Content Include="Content\images\second-home.jpg" />
@@ -326,8 +318,6 @@
     <Content Include="Content\images\stock-photo-4316947-schedule.jpg" />
     <Content Include="Content\images\stone-calendar.jpg" />
     <Content Include="Content\images\team.jpg" />
-    <Content Include="Content\images\team2.jpg" />
-    <Content Include="Content\images\team3.jpg" />
     <Content Include="Content\images\test-background.jpg" />
     <Content Include="Content\images\test-background2.jpg" />
     <Content Include="Content\images\test-background3.jpg" />
@@ -568,6 +558,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
+    <Folder Include="Content\images\Process\" />
     <Folder Include="Controllers\Models\" />
     <Folder Include="DependencyResolution\" />
   </ItemGroup>
