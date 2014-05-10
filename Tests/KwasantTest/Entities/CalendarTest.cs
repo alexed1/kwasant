@@ -96,8 +96,7 @@ namespace KwasantTest.Models
             //EXECUTE
             Assert.Throws<ValidationException>(() =>
              {
-                 calendarRepo.Create(curOriginalCalendarDO);
-                 calendarRepo.UnitOfWork.SaveChanges();
+                 calendarRepo.Create(curOriginalCalendarDO);                 
              }
              );            
         }
