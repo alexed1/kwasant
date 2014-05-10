@@ -274,7 +274,9 @@
     <Content Include="Content\images\client-5.png" />
     <Content Include="Content\images\client-6.png" />
     <Content Include="Content\images\Croissant\croissant_nolic.jpg" />
+    <Content Include="Content\images\example_using_kwasant_email.png" />
     <Content Include="Content\images\final.png" />
+    <Content Include="Content\images\from_this_to_this.png" />
     <Content Include="Content\images\homepage1.jpg" />
     <Content Include="Content\images\homepage2.jpg" />
     <Content Include="Content\images\homepage3.jpg" />
@@ -283,6 +285,7 @@
     <Content Include="Content\images\homepagefirst.jpg" />
     <Content Include="Content\images\homepagelower3.jpg" />
     <Content Include="Content\images\homepagesecond.jpg" />
+    <Content Include="Content\images\How_it_works_diagram.png" />
     <Content Include="Content\images\image_1.jpg" />
     <Content Include="Content\images\image_2.jpg" />
     <Content Include="Content\images\image_3.jpg" />
