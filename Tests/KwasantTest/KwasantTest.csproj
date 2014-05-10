@@ -112,7 +112,9 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Daemons\Daemons.csproj">
       <Project>{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}</Project>
