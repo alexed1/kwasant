@@ -6,16 +6,23 @@ namespace KwasantCore.Managers.APIManager.Packagers.Twilio
 {
     public class TwilioPackager
     {
-        private const string AccountSIDWebConfigName = "TwilioAccountSID";
-        private const string AuthTokenWebConfigName = "TwilioAuthToken";
+        //private const string AccountSIDWebConfigName = "TWILIO_SID";
+        //private const string AuthTokenWebConfigName = "TWILIO_TOKEN";
         private const string FromNumberWebConfigName = "TwilioFromNumber";
 
         private readonly TwilioRestClient _twilio;
         private readonly String _twilioFromNumber;
         public TwilioPackager()
         {
-            string accountSID = ConfigurationManager.AppSettings[AccountSIDWebConfigName];
-            string accountAuthKey = ConfigurationManager.AppSettings[AuthTokenWebConfigName];
+           
+
+            // Try to access Azure seetings before falling back on the test account in the config
+           // if (!(Services.Settings.TryGetValue("TWILIO.SID", out accountSID))
+            //    accountSID = ConfigurationManager.AppSettings[AccountSIDWebConfigName];
+
+            //this will be overridden by Azure settings with the same name, on RC, Staging, and Production
+            string accountSID = ConfigurationManager.AppSettings["TWILIO_SID"];
+            string accountAuthKey = ConfigurationManager.AppSettings["TWILIO_TOKEN"];
             _twilioFromNumber = ConfigurationManager.AppSettings[FromNumberWebConfigName];
 
             if (String.IsNullOrEmpty(accountSID))
