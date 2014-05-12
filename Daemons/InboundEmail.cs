@@ -16,6 +16,7 @@ namespace Daemons
 {
     public class InboundEmail : Daemon
     {
+        private bool isValid = true;
         private readonly IImapClient _client;
 
         private static string GetIMAPServer()
@@ -49,9 +50,16 @@ namespace Daemons
         }
 
         public InboundEmail()
-            : this(new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL()))
         {
-         
+            try
+            {
+                _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
+            }
+            catch (Exception)
+            {
+                //We log in the future
+                isValid = false;
+            }
         }
 
         public InboundEmail(IImapClient client)
@@ -66,6 +74,9 @@ namespace Daemons
 
         protected override void Run()
         {
+            if (!isValid)
+                return;
+
             IEnumerable<uint> uids = _client.Search(SearchCondition.Unseen());
             List<MailMessage> messages = _client.GetMessages(uids).ToList();
 
