@@ -65,40 +65,7 @@ IF NOT DEFINED MSBUILD_PATH (
 :: Deployment
 :: ----------
 
-echo Handling .NET Web Application deployment.
-
-:: 1. Restore NuGet packages
-IF /I "Shnexy.sln" NEQ "" (
-  call :ExecuteCmd "%NUGET_EXE%" restore "%DEPLOYMENT_SOURCE%\Shnexy.sln" -Verbosity quiet
-  IF !ERRORLEVEL! NEQ 0 goto error
-)
-
-:: 2. Build to the temporary path
-IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
-  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\KwasantWeb.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="%DEPLOYMENT_TEMP%";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
-) ELSE (
-  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\KwasantWeb.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
-)
-
-IF !ERRORLEVEL! NEQ 0 goto error
-
-:: 3. Building test projects
-echo Building test projects
-"%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\KwasantTest\KwasantTest.csproj"
-IF !ERRORLEVEL! NEQ 0 goto error
-"%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.Collections.Test\DDay.Collections.Test.csproj"
-IF !ERRORLEVEL! NEQ 0 goto error
-"%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.iCal.Test\DDay.iCal.Test.csproj"
-IF !ERRORLEVEL! NEQ 0 goto error
-
-:: 4.
-echo Running tests
-vstest.console.exe "%DEPLOYMENT_SOURCE%\Tests\KwasantTest\bin\Debug\KwasantTest.dll"
-IF !ERRORLEVEL! NEQ 0 goto error
-:: vstest.console.exe "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.Collections.Test\bin\Debug\DDay.Collections.Test.dll"
-:: IF !ERRORLEVEL! NEQ 0 goto error
-:: vstest.console.exe "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.iCal.Test\bin\Debug\DDay.iCal.Test.dll"
-:: IF !ERRORLEVEL! NEQ 0 goto error
+call :ExecuteCMD "build.bat"
 
 :: 5. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
