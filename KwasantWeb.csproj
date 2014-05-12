@@ -245,6 +245,8 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\CalendarViewModel.cs" />
+    <Compile Include="ViewModels\ProcessCreateEventViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Booking Details.png" />
@@ -552,7 +554,7 @@
     <Content Include="Views\Calendar\TimeHeaderCellDuration.cshtml" />
     <Content Include="Views\Calendar\Today.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
-    <Content Include="Views\Calendar\BeforeSave.cshtml" />
+    <Content Include="Views\Calendar\ProcessCreateEvent.cshtml" />
     <Content Include="Views\Calendar\DeleteEvent.cshtml" />
   </ItemGroup>
   <ItemGroup>
