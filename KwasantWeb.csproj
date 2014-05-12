@@ -61,6 +61,13 @@
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
+    <Reference Include="FluentValidation">
+      <HintPath>packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation.Mvc">
+      <HintPath>packages\FluentValidation.MVC5.5.1.0.0\lib\Net45\FluentValidation.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
       <HintPath>packages\Microsoft.AspNet.Identity.Core.2.0.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
@@ -261,6 +268,8 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\CalendarViewModel.cs" />
+    <Compile Include="ViewModels\ProcessCreateEventViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Booking Details.png" />
@@ -290,7 +299,8 @@
     <Content Include="Content\images\client-5.png" />
     <Content Include="Content\images\client-6.png" />
     <Content Include="Content\images\Croissant\croissant_nolic.jpg" />
-    <Content Include="Content\images\final.png" />
+    <Content Include="Content\images\example_using_kwasant_email.png" />
+    <Content Include="Content\images\from_this_to_this.png" />
     <Content Include="Content\images\homepage1.jpg" />
     <Content Include="Content\images\homepage2.jpg" />
     <Content Include="Content\images\homepage3.jpg" />
@@ -299,6 +309,7 @@
     <Content Include="Content\images\homepagefirst.jpg" />
     <Content Include="Content\images\homepagelower3.jpg" />
     <Content Include="Content\images\homepagesecond.jpg" />
+    <Content Include="Content\images\How_it_works_diagram.png" />
     <Content Include="Content\images\image_1.jpg" />
     <Content Include="Content\images\image_2.jpg" />
     <Content Include="Content\images\image_3.jpg" />
@@ -320,13 +331,6 @@
     <Content Include="Content\images\older-calendar.jpg" />
     <Content Include="Content\images\perfect-krawsant.jpg" />
     <Content Include="Content\images\perfect-krawsant.png" />
-    <Content Include="Content\images\Process\1 Step_v1.jpg" />
-    <Content Include="Content\images\Process\1Step.png" />
-    <Content Include="Content\images\Process\1Step_v1.png" />
-    <Content Include="Content\images\Process\ComposeEmail.png" />
-    <Content Include="Content\images\Process\workflow.png" />
-    <Content Include="Content\images\Process\Workflowv2.png" />
-    <Content Include="Content\images\Process\Workflow_v3.png" />
     <Content Include="Content\images\scheduler1.jpg" />
     <Content Include="Content\images\screen.jpg" />
     <Content Include="Content\images\second-home.jpg" />
@@ -339,8 +343,6 @@
     <Content Include="Content\images\stock-photo-4316947-schedule.jpg" />
     <Content Include="Content\images\stone-calendar.jpg" />
     <Content Include="Content\images\team.jpg" />
-    <Content Include="Content\images\team2.jpg" />
-    <Content Include="Content\images\team3.jpg" />
     <Content Include="Content\images\test-background.jpg" />
     <Content Include="Content\images\test-background2.jpg" />
     <Content Include="Content\images\test-background3.jpg" />
@@ -575,13 +577,14 @@
     <Content Include="Views\Calendar\TimeHeaderCellDuration.cshtml" />
     <Content Include="Views\Calendar\Today.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
-    <Content Include="Views\Calendar\BeforeSave.cshtml" />
+    <Content Include="Views\Calendar\ProcessCreateEvent.cshtml" />
     <Content Include="Views\Calendar\DeleteEvent.cshtml" />
     <Content Include="Scripts\jquery-2.1.0.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
+    <Folder Include="Content\images\Process\" />
     <Folder Include="Controllers\Models\" />
     <Folder Include="DependencyResolution\" />
   </ItemGroup>

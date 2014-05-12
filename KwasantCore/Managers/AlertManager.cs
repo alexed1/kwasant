@@ -19,7 +19,7 @@ namespace KwasantCore.Managers
         // Delegates for Alert handlers.
         #region Delegate
 
-        public delegate void CustomerCreatedHandler(BooqitAlertData e);
+        public delegate void CustomerCreatedHandler(KwasantSchedulingAlertData e);
       
         #endregion
 
@@ -28,13 +28,13 @@ namespace KwasantCore.Managers
         /// <summary>
         //Parses the alert data and prepares alert argument by separating alert name and alert data pair
         /// </summary>
-        public static BooqitAlertData Parse(string alertData)
+        public static KwasantSchedulingAlertData Parse(string alertData)
         {
-            BooqitAlertData booqitAlertData = new BooqitAlertData();
+            KwasantSchedulingAlertData kwasantSchedulingAlertData = new KwasantSchedulingAlertData();
             List<string> alertDataPairs = alertData.Split(',').ToList();
-            booqitAlertData.alertName = alertDataPairs[0].Split('=')[1].Trim();
-            booqitAlertData.alertData = alertData.Substring(alertDataPairs[0].Length + 1);
-            return booqitAlertData;
+            kwasantSchedulingAlertData.alertName = alertDataPairs[0].Split('=')[1].Trim();
+            kwasantSchedulingAlertData.alertData = alertData.Substring(alertDataPairs[0].Length + 1);
+            return kwasantSchedulingAlertData;
         }
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace KwasantCore.Managers
     /// without this, we can't pass any data with the events!
     /// The alertData string is itself composed of key/value pairs
     /// </summary>
-    public class BooqitAlertData : EventArgs
+    public class KwasantSchedulingAlertData : EventArgs
     {
         public String alertData;
         public String alertName;

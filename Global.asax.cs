@@ -7,6 +7,7 @@ using Data.Infrastructure;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
 using KwasantWeb.Controllers;
+using FluentValidation;
 
 namespace KwasantWeb
 {
@@ -23,8 +24,13 @@ namespace KwasantWeb
             StructureMapBootStrapper.ConfigureDependencies("dev"); //set to either "test" or "dev"
             ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
 
+            Database.SetInitializer(new ShnexyInitializer());
             KwasantDbContext db = new KwasantDbContext();
-            db.Database.Initialize(true);
+            db.Database.Initialize(true);            
+
+            var emailDaemon = new InboundEmail();
+
+            //issues: doing it this way, you have to derive a class to create a seed file. seems like the EF6 seed file approach is best, but it's not getting called. wrong assembly name?
         }
     }
 }

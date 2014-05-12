@@ -1485,8 +1485,8 @@ address {color: #D85E17;}
 	animation-duration: 1.5s;	
 	-webkit-animation-duration: 1.5s;
 
-	animation-iteration-count: infinite;
-	-webkit-animation-iteration-count: infinite;
+	animation-iteration-count: 2;
+	-webkit-animation-iteration-count: 2;
 }
 
 @keyframes floating {
