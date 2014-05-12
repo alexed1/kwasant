@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
+using Microsoft.WindowsAzure;
 using S22.Imap;
 
 using StructureMap;
@@ -19,30 +20,30 @@ namespace Daemons
 
         private static string GetIMAPServer()
         {
-            return ConfigurationManager.AppSettings["InboundEmailHost"];
+            return CloudConfigurationManager.GetSetting("InboundEmailHost");
         }
 
         private static int GetIMAPPort()
         {
             int port;
-            if (int.TryParse(ConfigurationManager.AppSettings["InboundEmailPort"], out port))
+            if (int.TryParse(CloudConfigurationManager.GetSetting("InboundEmailPort"), out port))
                 return port;
             throw new Exception("Invalid value for 'InboundEmailPort'");
         }
 
         private static string GetUserName()
         {
-            return ConfigurationManager.AppSettings["InboundEmailUserName"];
+            return CloudConfigurationManager.GetSetting("InboundEmailUserName");
         }
         private static string GetPassword()
         {
-            return ConfigurationManager.AppSettings["InboundEmailPassword"];
+            return CloudConfigurationManager.GetSetting("InboundEmailPassword");
         }
 
         private static bool UseSSL()
         {
             bool useSSL;
-            if (bool.TryParse(ConfigurationManager.AppSettings["InboundEmailUseSSL"], out useSSL))
+            if (bool.TryParse(CloudConfigurationManager.GetSetting("InboundEmailUseSSL"), out useSSL))
                 return useSSL;
             throw new Exception("Invalid value for 'InboundEmailUseSSL'");
         }

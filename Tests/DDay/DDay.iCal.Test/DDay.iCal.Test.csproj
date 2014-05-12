@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.WindowsAzure.Configuration">
+      <HintPath>..\..\..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.core">
       <HintPath>..\..\..\packages\NUnitTestAdapter.WithFramework.1.0\lib\nunit.core.dll</HintPath>
       <Private>False</Private>
