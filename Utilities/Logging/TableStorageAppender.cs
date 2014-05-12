@@ -11,9 +11,25 @@ namespace UtilitiesLib.Logging
 {
     public class TableStorageAppender : AppenderSkeleton
     {
-        private readonly string _logFileName = Environment.GetEnvironmentVariable("HOMEDRIVE") + Path.Combine(Environment.GetEnvironmentVariable("HOMEPATH"), "KwasantLog", "log.txt");
         private bool _isLoggingToDisk;
         private TableServiceContext _dataContext;
+
+        private string _logFileName;
+        private string LogFileName
+        {
+            get
+            {
+                if (!String.IsNullOrEmpty(_logFileName))
+                    return _logFileName;
+                var homeDrive = Environment.GetEnvironmentVariable("HOMEDRIVE");
+                if (homeDrive == null)
+                    return null;
+                var homePath = Environment.GetEnvironmentVariable("HOMEPATH");
+                if (homePath == null)
+                    return null;
+                return _logFileName = homeDrive + Path.Combine(homePath, "KwasantLog", "log.txt");
+            }
+        }
 
         public string ConnectionStringKey
         {
@@ -68,8 +84,8 @@ namespace UtilitiesLib.Logging
                 };
                 if (_isLoggingToDisk)
                 {
-                    Directory.CreateDirectory(new FileInfo(_logFileName).Directory.FullName);
-                    using (var fs = File.AppendText(_logFileName))
+                    Directory.CreateDirectory(new FileInfo(LogFileName).Directory.FullName);
+                    using (var fs = File.AppendText(LogFileName))
                     {
                         fs.Write(entity.ToString());
                     }
