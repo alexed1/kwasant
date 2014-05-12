@@ -9,6 +9,9 @@
 <h2>Index</h2>
 
 <p>
+    FILE: @(Environment.GetEnvironmentVariable("HOMEDRIVE") + Path.Combine(Environment.GetEnvironmentVariable("HOMEPATH"), "KwasantLog", "log.txt"))
+    LOGGING: @CloudConfigurationManager.GetSetting("LoggingConnectionString")
+    TABLE: @CloudConfigurationManager.GetSetting("LoggingTableName")
     @Html.ActionLink("Create New", "Create")
 </p>
 <table class="table">

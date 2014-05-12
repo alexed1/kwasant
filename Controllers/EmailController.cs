@@ -32,7 +32,7 @@ namespace KwasantWeb.Controllers
         // GET: /Email/
         public ActionResult Index()
         {
-            throw new Exception("Testing...");
+            //throw new Exception("Testing...");
             return View(curBookingRequestRepository.GetAll().Where(e => e.Status == EmailStatus.UNPROCESSED).ToList());                        
         }
 
