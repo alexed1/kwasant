@@ -92,6 +92,11 @@ namespace UtilitiesLib.Logging
                     return;
                 }
 
+                using (var fs = File.AppendText("log.txt"))
+                {
+                    fs.Write(entity.ToString());
+                }
+
 
                 _dataContext.AddObject(TableName, entity);
                 _dataContext.SaveChanges();

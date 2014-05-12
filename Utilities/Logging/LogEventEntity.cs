@@ -15,6 +15,7 @@ namespace UtilitiesLib.Logging
             PartitionKey = string.Format("{0:yyyy-MM HH:mm:ss}", now);
             RowKey = string.Format("{0:dd HH:mm:ss.fff}-{1}",
                                     now, Guid.NewGuid());
+            HostName = System.Environment.MachineName;
         }
 
         public string Identity { get; set; }
@@ -25,6 +26,7 @@ namespace UtilitiesLib.Logging
         public string Domain { get; set; }
         public string RoleInstance { get; set; }
         public string DeploymentId { get; set; }
+        public string HostName { get; set; }
         public Exception Exception { get; set; }
 
         public override string ToString()
