@@ -3,9 +3,6 @@
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
-using Data.Infrastructure;
-
-using KwasantCore.Services;
 using KwasantCore.StructureMap;
 
 using StructureMap;
@@ -49,7 +46,7 @@ namespace KwasantWeb.Controllers
             CalendarDO curOriginalCalendarDO = SetupCalendarForTests();
 
             //EXECUTE
-            calendarRepo.Create(curOriginalCalendarDO);
+            calendarRepo.Add(curOriginalCalendarDO);
             calendarRepo.UnitOfWork.SaveChanges();
 
             return Redirect("/index.html");

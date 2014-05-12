@@ -98,7 +98,6 @@
     <Compile Include="Infrastructure\ShnexyInitializer.cs" />
     <Compile Include="Infrastructure\TrackingStatus.cs" />
     <Compile Include="Interfaces\ICalendar.cs" />
-    <Compile Include="Interfaces\ICalendarRepository.cs" />
     <Compile Include="Interfaces\ICustomField.cs" />
     <Compile Include="Entities\TrackingStatusDO.cs" />
     <Compile Include="Infrastructure\FileManager.cs" />
@@ -118,7 +117,6 @@
     <Compile Include="Repositories\EmailAddressRepository.cs" />
     <Compile Include="Repositories\EmailRepository.cs" />
     <Compile Include="Repositories\GenericRepository.cs" />
-    <Compile Include="Interfaces\ICustomerRepository.cs" />
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />
     <Compile Include="Repositories\EventRepository.cs" />
