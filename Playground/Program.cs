@@ -1,7 +1,9 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using Daemons;
 using Data.Infrastructure;
 using KwasantCore.StructureMap;
+using UtilitiesLib.Logging;
 
 namespace Playground
 {
@@ -18,7 +20,16 @@ namespace Playground
             KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);
 
-            new InboundEmail().Start();
+            //var a = new TableStorageAppender();
+
+            
+            //log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType).Info("Test message!");
+
+            Logger.GetLogger().Error("MY TEST ERROR!!!!!");
+            Logger.GetLogger().Info("SOME INFO!!!");
+
+
+            Console.ReadKey();
         }
     }
 }

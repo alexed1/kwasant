@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -31,8 +32,8 @@ namespace KwasantWeb.Controllers
         // GET: /Email/
         public ActionResult Index()
         {
-            return View(curBookingRequestRepository.GetAll().Where(e => e.Status == EmailStatus.UNPROCESSED).ToList());    
-                                
+            throw new Exception("Testing...");
+            return View(curBookingRequestRepository.GetAll().Where(e => e.Status == EmailStatus.UNPROCESSED).ToList());                        
         }
 
         // GET: /Email/Details/5
