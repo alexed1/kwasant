@@ -77,7 +77,7 @@
         });
     </script>
 </header>
-<form id="f" method="post" action="@Url.Action("BeforeSave")">
+<form id="f" method="post" action="@Url.Action("ProcessCreateEvent")">
     <h3>
         @Html.Raw(Model.EventID == 0 ? "New Event" : "Editing Event")
     </h3>
