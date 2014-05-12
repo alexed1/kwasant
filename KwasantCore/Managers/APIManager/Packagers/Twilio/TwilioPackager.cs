@@ -6,14 +6,18 @@ namespace KwasantCore.Managers.APIManager.Packagers.Twilio
 {
     public class TwilioPackager
     {
-        private const string AccountSIDWebConfigName = "TwilioAccountSID";
-        private const string AuthTokenWebConfigName = "TwilioAuthToken";
+        private const string AccountSIDWebConfigName = "TWILIO_SID";
+        private const string AuthTokenWebConfigName = "TWILIO_TOKEN";
         private const string FromNumberWebConfigName = "TwilioFromNumber";
 
         private readonly TwilioRestClient _twilio;
         private readonly String _twilioFromNumber;
         public TwilioPackager()
         {
+           
+
+
+            //this will be overridden by Azure settings with the same name, on RC, Staging, and Production
             string accountSID = ConfigurationManager.AppSettings[AccountSIDWebConfigName];
             string accountAuthKey = ConfigurationManager.AppSettings[AuthTokenWebConfigName];
             _twilioFromNumber = ConfigurationManager.AppSettings[FromNumberWebConfigName];
