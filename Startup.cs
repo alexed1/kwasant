@@ -36,7 +36,7 @@ namespace KwasantWeb
         {
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             CommunicationConfigurationRepository communicationConfigurationRepo = new CommunicationConfigurationRepository(uow);
-            List<CommunicationConfigurationDO> curConfigureCommunicationConfigs = communicationConfigurationRepo.GetAll().ToList()
+            List<CommunicationConfigurationDO> curConfigureCommunicationConfigs = communicationConfigurationRepo.GetAll().ToList();
 
 
 
