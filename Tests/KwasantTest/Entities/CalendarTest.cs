@@ -1,24 +1,14 @@
 ﻿using System;
-using System.Text;
-using System.Linq;
-using System.Data.Entity;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
-using Data.Infrastructure;
-
 using KwasantTest.Fixtures;
-using KwasantCore.Services;
 using KwasantCore.StructureMap;
 
 using StructureMap;
 using NUnit.Framework;
 
 using FluentValidation;
-using FluentValidation.Results;
-using FluentValidation.Validators;
 
 namespace KwasantTest.Models
 {
@@ -77,7 +67,7 @@ namespace KwasantTest.Models
             CalendarDO curOriginalCalendarDO = SetupCalendarForTests();
 
             //EXECUTE
-            calendarRepo.Create(curOriginalCalendarDO);
+            calendarRepo.Add(curOriginalCalendarDO);
             calendarRepo.UnitOfWork.SaveChanges();
 
             //VERIFY
@@ -96,7 +86,7 @@ namespace KwasantTest.Models
             //EXECUTE
             Assert.Throws<ValidationException>(() =>
              {
-                 calendarRepo.Create(curOriginalCalendarDO);                 
+                 calendarRepo.Add(curOriginalCalendarDO);                 
              }
              );            
         }
@@ -106,27 +96,23 @@ namespace KwasantTest.Models
         public void Calendar_Update_CanUpdateCalendar()
         {
             //SETUP      
-            CalendarDO curOriginalCalendarDO = SetupCalendarForTests();
+            CalendarDO originalEvent = SetupCalendarForTests();
 
             //EXECUTE
-            calendarRepo.Create(curOriginalCalendarDO);
+            calendarRepo.Add(originalEvent);
             calendarRepo.UnitOfWork.SaveChanges();
 
             String strCalenderName = "Calendar Test Updated";
-
-            CalendarDO curUpdateCalendarDO = SetupCalendarForTests();
-            curUpdateCalendarDO.Name = strCalenderName;
-
-            CalendarDO curRetrievedCalendarDO = calendarRepo.GetByKey(curOriginalCalendarDO.CalendarId);
-
-            calendarRepo.Update(curUpdateCalendarDO, curRetrievedCalendarDO);
+            CalendarDO updatedEvent = calendarRepo.GetByKey(originalEvent.CalendarId);
+            
+            updatedEvent.Name = strCalenderName;
             calendarRepo.UnitOfWork.SaveChanges();
 
-            CalendarDO curUpdatedCalendarDO = calendarRepo.GetByKey(curRetrievedCalendarDO.CalendarId);
+            CalendarDO curUpdatedCalendarDO = calendarRepo.GetByKey(updatedEvent.CalendarId);
 
             //VERIFY
             Assert.AreEqual(curUpdatedCalendarDO.Name, strCalenderName);
-            Assert.AreEqual(curUpdatedCalendarDO.PersonId, curUpdateCalendarDO.PersonId);
+            Assert.AreEqual(curUpdatedCalendarDO.PersonId, originalEvent.PersonId);
         }
 
         [Test]
@@ -137,12 +123,12 @@ namespace KwasantTest.Models
             CalendarDO curOriginalCalendarDO = SetupCalendarForTests();
 
             //EXECUTE
-            calendarRepo.Create(curOriginalCalendarDO);
+            calendarRepo.Add(curOriginalCalendarDO);
             calendarRepo.UnitOfWork.SaveChanges();
 
             CalendarDO curRetrievedCalendarDO = calendarRepo.GetByKey(curOriginalCalendarDO.CalendarId);
 
-            calendarRepo.Delete(curRetrievedCalendarDO);
+            calendarRepo.Remove(curRetrievedCalendarDO);
             calendarRepo.UnitOfWork.SaveChanges();
 
             //VERIFY
