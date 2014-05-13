@@ -22,7 +22,7 @@ namespace KwasantWeb.App_Start
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
-            bundles.Add(new StyleBundle("~/Content/css").Include(
+            bundles.Add(new StyleBundle("~/Content/mastercss").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/justified-nav.css",
                       "~/Content/site.css"));

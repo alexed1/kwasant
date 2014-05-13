@@ -9,7 +9,6 @@ namespace Data.Repositories
 {
     //This generic repository ensures minimum repetition in all of the other repositories.
     //The database context is injected via a UnitOfWork implementation
-    /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
@@ -40,7 +39,7 @@ namespace Data.Repositories
 
         public IQueryable<TEntity> GetQuery()
         {
-            return dbSet.AsEnumerable().AsQueryable<TEntity>();
+            return dbSet.AsEnumerable().AsQueryable();
         }
 
 
@@ -52,46 +51,12 @@ namespace Data.Repositories
         public void Remove(TEntity entity)
         {
             dbSet.Remove(entity);
-
-        }
-
-        public bool IsDetached(TEntity entity)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException("entity");
-            }
-            return _unitOfWork.Db.Entry(entity).State == EntityState.Detached;
-        }
-
-        public void Attach(TEntity entity)
-        {
-            if (entity == null)
-            {
-                throw new ArgumentNullException("entity");
-            }
-            dbSet.Attach(entity);
-            _unitOfWork.Db.Entry(entity).State = EntityState.Modified;
         }
 
         public IEnumerable<TEntity> GetAll()
         {
             
             return dbSet.AsEnumerable().ToList();
-        }
-
-        public virtual void Save(TEntity entity)
-        {
-
-            _unitOfWork.Db.Entry(entity).State = EntityState.Modified;
-
-
-        }
-
-        //http://stackoverflow.com/a/12587752/1915866
-        public virtual void Update(TEntity entity, TEntity existingEntity)
-        {
-            _unitOfWork.Db.Entry(existingEntity).CurrentValues.SetValues(entity);
         }
 
         public TEntity FindOne(Expression<Func<TEntity, bool>> criteria)

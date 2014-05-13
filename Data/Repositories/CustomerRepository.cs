@@ -10,10 +10,12 @@ namespace Data.Repositories
         {
             
         }
+    }
 
-        public void Update()
-        {
-        }
+
+    public interface ICustomerRepository : IGenericRepository<CustomerDO>
+    {
+
     }
 }
 

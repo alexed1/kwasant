@@ -9,12 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{99D5A9
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
 		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Utilities.csproj", "{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Daemons", "Daemons\Daemons.csproj", "{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Configuration", "Configuration\Configuration.csproj", "{D8F7F734-21CE-4277-A14F-EBDDE71DFF0C}"
 EndProject
@@ -36,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KwasantTest", "Tests\Kwasan
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KwasantICS", "KwasantICS\KwasantICS.csproj", "{D940EFCA-2D57-466C-8103-54DB173F1BD2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Daemons", "Daemons\Daemons.csproj", "{3F8EA787-04C0-400A-ADFA-58F4172ADF65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,12 +55,6 @@ Global
 		{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}.Release|x86.ActiveCfg = Release|Any CPU
-		{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}.Release|x86.ActiveCfg = Release|Any CPU
 		{D8F7F734-21CE-4277-A14F-EBDDE71DFF0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D8F7F734-21CE-4277-A14F-EBDDE71DFF0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8F7F734-21CE-4277-A14F-EBDDE71DFF0C}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -112,6 +105,12 @@ Global
 		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D940EFCA-2D57-466C-8103-54DB173F1BD2}.Release|x86.ActiveCfg = Release|Any CPU
+		{3F8EA787-04C0-400A-ADFA-58F4172ADF65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F8EA787-04C0-400A-ADFA-58F4172ADF65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F8EA787-04C0-400A-ADFA-58F4172ADF65}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3F8EA787-04C0-400A-ADFA-58F4172ADF65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F8EA787-04C0-400A-ADFA-58F4172ADF65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F8EA787-04C0-400A-ADFA-58F4172ADF65}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
