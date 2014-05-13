@@ -55,10 +55,11 @@ namespace Daemons
             {
                 _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 //We log in the future
                 isValid = false;
+                throw new ApplicationException(ex.Message); //we were generating exceptions here and missing them
             }
         }
 
