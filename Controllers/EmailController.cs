@@ -11,6 +11,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using UtilitiesLib;
+using UtilitiesLib.Logging;
 
 namespace KwasantWeb.Controllers
 {
@@ -32,7 +33,6 @@ namespace KwasantWeb.Controllers
         // GET: /Email/
         public ActionResult Index()
         {
-            //throw new Exception("Testing...");
             return View(curBookingRequestRepository.GetAll().Where(e => e.Status == EmailStatus.UNPROCESSED).ToList());                        
         }
 

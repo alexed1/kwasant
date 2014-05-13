@@ -46,6 +46,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="LogentriesCore">
+      <HintPath>..\packages\logentries.core.2.4.4\lib\net40\LogentriesCore.dll</HintPath>
+    </Reference>
+    <Reference Include="LogentriesLog4net">
+      <HintPath>..\packages\logentries.log4net.2.4.2\lib\net40\LogentriesLog4net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
