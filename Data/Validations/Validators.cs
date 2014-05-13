@@ -19,25 +19,11 @@ namespace Data.Validators
 
             RuleFor(eventDO => eventDO.EndDate)
                 .NotEmpty().WithMessage("End date is required")
-                .GreaterThan(eventDO => eventDO.StartDate)
+                .GreaterThanOrEqualTo(eventDO => eventDO.StartDate)
                 .WithMessage("End date must after Start date");
 
-
-            RuleFor(eventDO => eventDO.Priority)
-           .NotNull()
-           .GreaterThan(0)
-           .WithMessage("Priority must be greater than 0.");
-
-           RuleFor(eventDO => eventDO.Sequence)
-          .NotNull()
-          .GreaterThan(0)
-          .WithMessage("Sequence must be greater than 0.");
-
-           RuleFor(eventDO => eventDO.Description).Length(3, 200).WithMessage("Event Description must be between 3 and 200 characters"); ;
-           
+           RuleFor(eventDO => eventDO.Description).Length(3, 200).WithMessage("Event Description must be between 3 and 200 characters"); ;           
         }
-
-
     }
 
 

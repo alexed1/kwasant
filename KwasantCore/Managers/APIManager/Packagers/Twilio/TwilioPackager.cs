@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using Microsoft.WindowsAzure;
 using Twilio;
 
 namespace KwasantCore.Managers.APIManager.Packagers.Twilio
@@ -18,9 +19,9 @@ namespace KwasantCore.Managers.APIManager.Packagers.Twilio
 
 
             //this will be overridden by Azure settings with the same name, on RC, Staging, and Production
-            string accountSID = ConfigurationManager.AppSettings[AccountSIDWebConfigName];
-            string accountAuthKey = ConfigurationManager.AppSettings[AuthTokenWebConfigName];
-            _twilioFromNumber = ConfigurationManager.AppSettings[FromNumberWebConfigName];
+            string accountSID = CloudConfigurationManager.GetSetting(AccountSIDWebConfigName);
+            string accountAuthKey = CloudConfigurationManager.GetSetting(AuthTokenWebConfigName);
+            _twilioFromNumber = CloudConfigurationManager.GetSetting(FromNumberWebConfigName);
 
             if (String.IsNullOrEmpty(accountSID))
                 throw new ArgumentNullException(AccountSIDWebConfigName, "Value must be set in web.config");

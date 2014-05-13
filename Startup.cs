@@ -10,6 +10,7 @@ using Data.Repositories;
 using KwasantWeb;
 using Microsoft.Ajax.Utilities;
 using Microsoft.Owin;
+using Microsoft.WindowsAzure;
 using Owin;
 using StructureMap;
 
@@ -40,12 +41,11 @@ namespace KwasantWeb
 
 
 
-            if (!(curConfigureCommunicationConfigs.Find(
-                    config => config.ToAddress == ConfigurationManager.AppSettings["MainSMSAlertNumber"]) != null))
+            if (curConfigureCommunicationConfigs.Find(config => config.ToAddress == CloudConfigurationManager.GetSetting("MainSMSAlertNumber")) == null)
                 // it is not true that there is at least one commConfig that has the Main alert number
                 {
                     CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
-                        curCommConfig.ToAddress = ConfigurationManager.AppSettings["MainSMSAlertNumber"];
+                    curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
                         communicationConfigurationRepo.Add(curCommConfig);
                         communicationConfigurationRepo.UnitOfWork.SaveChanges();
                 }

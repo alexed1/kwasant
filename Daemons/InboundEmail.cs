@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
+using Microsoft.WindowsAzure;
 using S22.Imap;
 
 using StructureMap;
@@ -14,36 +16,50 @@ namespace Daemons
 {
     public class InboundEmail : Daemon
     {
+        private bool isValid = true;
         private readonly IImapClient _client;
 
         private static string GetIMAPServer()
         {
-            return "imap.gmail.com";
+            return CloudConfigurationManager.GetSetting("InboundEmailHost");
         }
 
         private static int GetIMAPPort()
         {
-            return 993;
+            int port;
+            if (int.TryParse(CloudConfigurationManager.GetSetting("InboundEmailPort"), out port))
+                return port;
+            throw new Exception("Invalid value for 'InboundEmailPort'");
         }
 
         private static string GetUserName()
         {
-            return "kwasantintake";
+            return CloudConfigurationManager.GetSetting("InboundEmailUserName");
         }
         private static string GetPassword()
         {
-            return "lucrereggio23";
+            return CloudConfigurationManager.GetSetting("InboundEmailPassword");
         }
 
         private static bool UseSSL()
         {
-            return true;
+            bool useSSL;
+            if (bool.TryParse(CloudConfigurationManager.GetSetting("InboundEmailUseSSL"), out useSSL))
+                return useSSL;
+            throw new Exception("Invalid value for 'InboundEmailUseSSL'");
         }
 
         public InboundEmail()
-            : this(new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL()))
         {
-         
+            try
+            {
+                _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
+            }
+            catch (Exception)
+            {
+                //We log in the future
+                isValid = false;
+            }
         }
 
         public InboundEmail(IImapClient client)
@@ -58,6 +74,9 @@ namespace Daemons
 
         protected override void Run()
         {
+            if (!isValid)
+                return;
+
             IEnumerable<uint> uids = _client.Search(SearchCondition.Unseen());
             List<MailMessage> messages = _client.GetMessages(uids).ToList();
 

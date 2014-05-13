@@ -36,22 +36,22 @@
     </PropertyGroup>
 
     <PropertyGroup>
-      <PackagesProjectConfig Condition=" '$(OS)' == 'Windows_NT'">$(MSBuildProjectDirectory)\packages.$(MSBuildProjectName.Replace(' ', '_')).config</PackagesProjectConfig>
-      <PackagesProjectConfig Condition=" '$(OS)' != 'Windows_NT'">$(MSBuildProjectDirectory)\packages.$(MSBuildProjectName).config</PackagesProjectConfig>
+        <PackagesProjectConfig Condition=" '$(OS)' == 'Windows_NT'">$(MSBuildProjectDirectory)\packages.$(MSBuildProjectName.Replace(' ', '_')).config</PackagesProjectConfig>
+        <PackagesProjectConfig Condition=" '$(OS)' != 'Windows_NT'">$(MSBuildProjectDirectory)\packages.$(MSBuildProjectName).config</PackagesProjectConfig>
     </PropertyGroup>
 
     <PropertyGroup>
-      <PackagesConfig Condition="Exists('$(PackagesProjectConfig)')">$(PackagesProjectConfig)</PackagesConfig>
       <PackagesConfig Condition="Exists('$(MSBuildProjectDirectory)\packages.config')">$(MSBuildProjectDirectory)\packages.config</PackagesConfig>
+      <PackagesConfig Condition="Exists('$(PackagesProjectConfig)')">$(PackagesProjectConfig)</PackagesConfig>
     </PropertyGroup>
-  
+    
     <PropertyGroup>
         <!-- NuGet command -->
         <NuGetExePath Condition=" '$(NuGetExePath)' == '' ">$(NuGetToolsPath)\NuGet.exe</NuGetExePath>
         <PackageSources Condition=" $(PackageSources) == '' ">@(PackageSource)</PackageSources>
 
         <NuGetCommand Condition=" '$(OS)' == 'Windows_NT'">"$(NuGetExePath)"</NuGetCommand>
-        <NuGetCommand Condition=" '$(OS)' != 'Windows_NT' ">mono --runtime=v4.0.30319 $(NuGetExePath)</NuGetCommand>
+        <NuGetCommand Condition=" '$(OS)' != 'Windows_NT' ">mono --runtime=v4.0.30319 "$(NuGetExePath)"</NuGetCommand>
 
         <PackageOutputDir Condition="$(PackageOutputDir) == ''">$(TargetDir.Trim('\\'))</PackageOutputDir>
 
