@@ -34,11 +34,11 @@ namespace Daemons
 
         private static string GetUserName()
         {
-            return CloudConfigurationManager.GetSetting("InboundEmailUserName");
+            return CloudConfigurationManager.GetSetting("INBOUND_EMAIL_USERNAME");
         }
         private static string GetPassword()
         {
-            return CloudConfigurationManager.GetSetting("InboundEmailPassword");
+            return CloudConfigurationManager.GetSetting("INBOUND_EMAIL_PASSWORD");
         }
 
         private static bool UseSSL()
