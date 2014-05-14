@@ -74,12 +74,14 @@ namespace Data.Infrastructure
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
+            modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<CustomerDO>().ToTable("Customers");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
+            modelBuilder.Entity<PersonDO>().ToTable("People");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<UserDO>().ToTable("Users");
@@ -147,6 +149,8 @@ namespace Data.Infrastructure
 
         public IDbSet<BookingRequestDO> BookingRequests { get; set; }
 
+        public IDbSet<CalendarDO> Calendars { get; set; }
+
         public IDbSet<CommunicationConfigurationDO> CommunicationConfigurations { get; set; }
 
         public IDbSet<CustomerDO> Customers { get; set; }
@@ -158,6 +162,8 @@ namespace Data.Infrastructure
         public IDbSet<EventDO> Events { get; set; }
 
         public IDbSet<InstructionDO> Instructions { get; set; }
+
+        public IDbSet<PersonDO> People { get; set; }
 
         public IDbSet<StoredFileDO> StoredFiles { get; set; }
 
