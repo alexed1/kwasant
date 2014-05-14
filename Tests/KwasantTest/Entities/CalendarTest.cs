@@ -2,15 +2,13 @@
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantTest.Fixtures;
-using KwasantCore.StructureMap;
-
-using StructureMap;
-using NUnit.Framework;
-
 using FluentValidation;
+using KwasantCore.StructureMap;
+using KwasantTest.Fixtures;
+using NUnit.Framework;
+using StructureMap;
 
-namespace KwasantTest.Models
+namespace KwasantTest.Entities
 {
     [TestFixture]
     public class CalendarDOTests : AbstractValidator<CalendarDO>

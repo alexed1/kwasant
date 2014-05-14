@@ -113,6 +113,7 @@
     <Compile Include="Entities\CalendarTest.cs" />
     <Compile Include="Entities\CustomerTests.cs" />
     <Compile Include="Entities\CustomFieldTests.cs" />
+    <Compile Include="Entities\TrackingStatusTests.cs" />
     <Compile Include="Fixtures\FixtureData - Attendee.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Customer.cs" />
