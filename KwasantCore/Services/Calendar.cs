@@ -78,7 +78,7 @@ namespace KwasantCore.Services
             if(eventDO.Attendees == null)
                 eventDO.Attendees = new List<AttendeeDO>();
 
-            string fromEmail = "kwa@sant.com";
+            string fromEmail = "scheduling@kwasant.com";
             string fromName = "Kwasant Scheduling Services";
 
             EmailDO outboundEmail = new EmailDO();
