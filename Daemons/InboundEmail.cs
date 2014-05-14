@@ -81,15 +81,13 @@ namespace Daemons
             List<MailMessage> messages = _client.GetMessages(uids).ToList();
 
             IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-            EmailRepository emailRepository = new EmailRepository(unitOfWork);
+            BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
             foreach (MailMessage message in messages)
             {
-                BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
                 BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-
                 BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
             }
-            emailRepository.UnitOfWork.SaveChanges();
+            bookingRequestRepo.UnitOfWork.SaveChanges();
         }
 
         protected override void CleanUp()

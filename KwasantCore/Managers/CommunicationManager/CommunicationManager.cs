@@ -52,13 +52,8 @@ namespace KwasantCore.Managers.CommunicationManager
         private void SendBRSMSes(String toAddress, IEnumerable<BookingRequestDO> bookingRequests)
         {
             TwilioPackager twil = new TwilioPackager();
-            const string message = "A new booking request has been created. From '{0}'.";
-            foreach (BookingRequestDO bookingRequest in bookingRequests)
-            {
-                SMSMessage result = twil.SendSMS(toAddress, String.Format(message, bookingRequest.From.Address));
-                if (result.RestException != null)
-                    throw new Exception(result.RestException.Message);
-            }
+            if (bookingRequests.Any())
+                twil.SendSMS("14158067915", "Inbound Email has been received");
         }
 
         private void SendBREmails(String toAddress, IEnumerable<BookingRequestDO> bookingRequests, IUnitOfWork uow)
