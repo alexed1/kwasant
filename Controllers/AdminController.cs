@@ -8,12 +8,12 @@ namespace KwasantWeb.Controllers
         // GET: /Admin/
         public ActionResult Index()
         {
-
-
             //var engine = new Engine();
-            //engine.ProcessQueues(); database needs the messagelist initialized from null for this to work 
-
-
+            //engine.ProcessQueues(); database needs the messagelist initialized from null for this to work
+            if (User.IsInRole("Admin") == false)
+            {
+                ViewBag.Alert = "Admin credentials are required to access this page.";
+            }
 
             return View();
         }

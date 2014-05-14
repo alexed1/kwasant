@@ -2,19 +2,17 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
-
-
-
-
 <html>
 <body>
     <h1>Kwasant Admin Console</h1>
-
-   
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/Scripts/bootstrap.min.js"></script>
 
+    @if (ViewBag.Alert != null)
+    {
+      <p><font color="red">@ViewBag.Alert</font></p>
+        return;
+    }
 
     @Html.ActionLink("Show Booking Requests", "Index", "Email", null, new { @class = "btn-link" }) <p></p>
 

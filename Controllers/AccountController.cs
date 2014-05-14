@@ -183,7 +183,8 @@ namespace KwasantWeb.Controllers
                             }
                             else if (curLoginStatus == LoginStatus.Successful)
                             {
-                                return RedirectToAction("MyAccount");
+                                //return RedirectToAction("MyAccount");
+                                return Redirect("/index.html");
                             }
                             break;
                     }

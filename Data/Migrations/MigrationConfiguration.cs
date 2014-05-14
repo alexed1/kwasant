@@ -90,7 +90,22 @@ namespace Data.Migrations
         /// </summary>
         /// <param name="context">of type ShnexyDbContext</param>
         /// <returns>True if created successfully otherwise false</returns>
-        private bool AddAdmins(KwasantDbContext context)
+        private void AddAdmins(KwasantDbContext context)
+        {
+            CreateAdmin("alex@kwasant.com", "alex@1234", context);
+            CreateAdmin("pabitra@hotmail.com", "pabi1234", context);
+            CreateAdmin("rjrudman@gmail.com", "robert1234", context);
+            CreateAdmin("quader.mamun@gmail.com", "abdul1234", context);
+        }
+
+        /// <summary>
+        /// Craete a user with role 'Admin'
+        /// </summary>
+        /// <param name="curUserName"></param>
+        /// <param name="curPassword"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        private bool CreateAdmin(string curUserName, string curPassword, KwasantDbContext context)
         {
             IdentityResult ir;
             var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
@@ -99,11 +114,12 @@ namespace Data.Migrations
 
             var user = new UserDO()
             {
-                UserName = "alex@kwasant.com",
+                UserName = curUserName,
+                Email = curUserName,
                 EmailConfirmed = true
             };
 
-            ir = um.Create(user, "alex@1234");
+            ir = um.Create(user, curPassword);
             if (ir.Succeeded == false)
                 return ir.Succeeded;
 

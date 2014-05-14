@@ -90,11 +90,16 @@ $(document).ready(function(){
 				scrollTop: $('.text-block[data-section="' + datasection + '"]').offset().top}, 1000);
 		}
 	}
+
 	links.click(function (e) {
-		e.preventDefault();
-		var datasection = $(this).attr('data-section');
-		goToByScroll(datasection);
+	    var datasection = $(this).attr('data-section');
+	    if (datasection.get(0) === null)
+	        return;
+
+	    e.preventDefault();
+	    goToByScroll(datasection);
 	});
+
 	button.click(function (e) {
 		e.preventDefault();
 		var datasection = $(this).attr('data-section');
