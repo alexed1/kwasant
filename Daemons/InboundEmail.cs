@@ -87,7 +87,7 @@ namespace Daemons
            
             //if at least 1 message received, send sms to the mainalert
             if (messages.Count >0)
-                _twilio.SendSMS("14158067915", "Inbound Email has been received");
+                _twilio.SendSMS("+14158067915", "Inbound Email has been received");
 
             IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
             EmailRepository emailRepository = new EmailRepository(unitOfWork);

@@ -37,7 +37,10 @@ namespace KwasantCore.Managers.APIManager.Packagers.Twilio
 
         public SMSMessage SendSMS(String number, String message)
         {
-            return _twilio.SendSmsMessage(_twilioFromNumber, number, message);
+            SMSMessage result = _twilio.SendSmsMessage(_twilioFromNumber, number, message);
+            if (result.RestException != null)
+                throw new Exception(result.RestException.Message);
+            return result;
         }
     }
 }

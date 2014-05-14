@@ -56,8 +56,7 @@ namespace KwasantCore.Managers.CommunicationManager
             foreach (BookingRequestDO bookingRequest in bookingRequests)
             {
                 SMSMessage result = twil.SendSMS(toAddress, String.Format(message, bookingRequest.From.Address));
-                if (result.RestException != null)
-                    throw new Exception(result.RestException.Message);
+               
             }
         }
 
