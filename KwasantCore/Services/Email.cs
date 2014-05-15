@@ -7,6 +7,9 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Validators;
+using FluentValidation;
+using FluentValidation.Results;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using StructureMap;
 
@@ -16,6 +19,7 @@ namespace KwasantCore.Services
     {
         private readonly IUnitOfWork _uow;
         private readonly EmailDO _emailDO;
+        private EventValidator _curValidator;
 
         #region Members
 
@@ -28,11 +32,20 @@ namespace KwasantCore.Services
         /// <summary>
         /// Initialize EmailManager
         /// </summary>
-        public Email(IUnitOfWork uow, EmailDO emailDO)
+        /// 
+           
+        public Email(IUnitOfWork uow)
         {
             _uow = uow;
-            _emailDO = emailDO;
             _mandrillApi = ObjectFactory.GetInstance<MandrillPackager>();
+            _curValidator = new EventValidator();
+        }
+
+        public Email(IUnitOfWork uow, EmailDO emailDO) : this(uow) //this can probably be simplified to a single constructor. Do we really want to pass emailDO in?
+        {
+            
+            _emailDO = emailDO;
+            
         }
 
         #endregion
@@ -107,6 +120,25 @@ namespace KwasantCore.Services
             };
             att.SetData(attachment.ContentStream);
             return att;
+        }
+
+       
+
+
+        public EmailDO CreateStandardInviteEmail(EventDO curEventDO)
+        {
+            _curValidator.ValidateEvent(curEventDO);
+            string fromEmail = "scheduling@kwasant.com";
+            string fromName = "Kwasant Scheduling Services";
+
+            EmailDO createdEmail = new EmailDO();
+            createdEmail.From = new EmailAddressDO { Address = fromEmail, Name = fromName };
+            createdEmail.To = curEventDO.Attendees.Select(a => new EmailAddressDO { Address = a.EmailAddress, Name = a.Name }).ToList();
+            createdEmail.Subject = "Invitation via Kwasant: " + curEventDO.Summary + "@ " + curEventDO.StartDate;
+            createdEmail.Text = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";
+            createdEmail.Status = EmailStatus.QUEUED;
+
+            return createdEmail;
         }
     }
 }

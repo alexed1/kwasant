@@ -22,12 +22,14 @@ namespace KwasantWeb.Controllers
     {
         #region "Action"
 
+        private IUnitOfWork _uow;
         public ActionResult Index(int id = 0)
         {
             if (id <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            _uow = uow; //clean this up finish de-static work
             IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
             BookingRequestDO = bookingRequestRepository.GetByKey(id);
             if (BookingRequestDO == null)
@@ -405,7 +407,8 @@ namespace KwasantWeb.Controllers
 
             eventDO.BookingRequest = BookingRequestDO;
 
-            Calendar.DispatchEvent(eventDO);
+            Calendar curCalendar = new Calendar(_uow, new BookingRequestDO());
+            curCalendar.DispatchEvent(eventDO);
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }

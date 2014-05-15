@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Data.Entities;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
@@ -56,7 +57,8 @@ namespace KwasantTest.Fixtures
                 Location = "Silicon Valley",
                 Status = "Open",
                 Summary = "This is a test event summary.",
-                Transparency = "Opaque"                
+                Transparency = "Opaque" ,
+                Attendees = TestAttendeeList1().ToList()
             };
         }
 

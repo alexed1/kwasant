@@ -9,6 +9,7 @@ using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using StructureMap;
 using Twilio;
+using Microsoft.WindowsAzure;
 
 namespace KwasantCore.Managers.CommunicationManager
 {
@@ -77,6 +78,34 @@ namespace KwasantCore.Managers.CommunicationManager
 
                 emailRepo.Add(outboundEmail);
             }
+        }
+
+        //This is the default originator of outbound Kwasant emails
+        public static string GetFromEmail()
+        {
+            string email = CloudConfigurationManager.GetSetting("fromEmail");
+            if (email != null)
+            {
+                return email;
+            }
+            else
+            {
+                throw new Exception("Missing value for 'fromEmail'");
+            }
+
+        }
+        public static string GetFromName()
+        {
+            string fromName = CloudConfigurationManager.GetSetting("fromName");
+            if (fromName != null)
+            {
+                return fromName;
+            }
+            else
+            {
+                throw new Exception("Missing value for 'fromName'");
+            }
+
         }
     }
 }

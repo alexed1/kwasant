@@ -21,6 +21,7 @@ namespace KwasantTest.Models
         private IEmailAddressRepository emailAddressRepo;
         public IUnitOfWork _uow;
         private FixtureData _fixture;
+        private Calendar _calendar;
 
         [SetUp]
         public void Setup()
@@ -28,7 +29,7 @@ namespace KwasantTest.Models
             StructureMapBootStrapper.ConfigureDependencies("test");
 
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-
+            _calendar = new Calendar(_uow, new BookingRequestDO());
             customerRepo = new CustomerRepository(_uow);
             eventRepo = new EventRepository(_uow);
             emailAddressRepo = new EmailAddressRepository(_uow);
@@ -61,7 +62,7 @@ namespace KwasantTest.Models
                 Emails = new List<EmailDO>()
             };
             eventRepo.Add(eventDO);
-            Calendar.DispatchEvent(_uow, eventDO);
+            _calendar.DispatchEvent(eventDO);
 
             //Verify success
             //use imap to load unread messages from the test customer account

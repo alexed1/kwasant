@@ -9,6 +9,8 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Validators;
+using KwasantCore.Managers.CommunicationManager;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
@@ -19,11 +21,12 @@ namespace KwasantCore.Services
     /// <summary>
     /// Summary description for EventManager
     /// </summary>
-    public class Calendar
+    public class Calendar 
     {
         private readonly BookingRequestDO _bookingRequestDO;
-        private readonly IUnitOfWork _uow;
+        private IUnitOfWork _uow;
         private readonly EventRepository _eventRepo;
+        private EventValidator _curValidator;
 
         public Calendar(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
@@ -31,7 +34,8 @@ namespace KwasantCore.Services
             _bookingRequestDO = bookingRequest;
             _eventRepo = new EventRepository(_uow);
             LoadData();
-            //foo
+           _curValidator = new EventValidator();
+            
         }
 
         public IUnitOfWork UnitOfWork
@@ -55,10 +59,10 @@ namespace KwasantCore.Services
         {
             IEnumerable<EventDO> test = _eventRepo.GetAll();
             _events = _eventRepo.GetQuery()
-                .Where(eventDO => eventDO.BookingRequest.Customer.CustomerID == _bookingRequestDO.Customer.CustomerID)
+                .Where(curEventDO => curEventDO.BookingRequest.Customer.CustomerID == _bookingRequestDO.Customer.CustomerID)
                 .ToDictionary(
-                    eventDO => eventDO.EventID,
-                    eventDO => eventDO);
+                    curEventDO => curEventDO.EventID,
+                    curEventDO => curEventDO);
 
         }
 
@@ -67,45 +71,42 @@ namespace KwasantCore.Services
             LoadData();
         }
 
-        public void DispatchEvent(EventDO eventDO)
+        //public void DispatchEvent(EventDO curEventDO)
+        //{
+        //    DispatchEvent(curEventDO);
+            
+        //}
+
+        public void DispatchEvent(EventDO curEventDO)
         {
-            DispatchEvent(_uow, eventDO);
-            Reload();
-        }
+            if(curEventDO.Attendees == null)
+                curEventDO.Attendees = new List<AttendeeDO>();
 
-        public static void DispatchEvent(IUnitOfWork uow, EventDO eventDO)
-        {
-            if(eventDO.Attendees == null)
-                eventDO.Attendees = new List<AttendeeDO>();
+            
 
-            string fromEmail = "scheduling@kwasant.com";
-            string fromName = "Kwasant Scheduling Services";
-
-            EmailDO outboundEmail = new EmailDO();
-            outboundEmail.From = new EmailAddressDO {Address = fromEmail, Name = fromName};
-            outboundEmail.To = eventDO.Attendees.Select(a => new EmailAddressDO { Address = a.EmailAddress, Name = a.Name}).ToList();
-            outboundEmail.Subject = "Invitation via Kwasant: " + eventDO.Summary + "@ " + eventDO.StartDate;
-            outboundEmail.Text = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";
-            outboundEmail.Status = EmailStatus.QUEUED;
+            Email email = new Email(_uow);
+            EmailDO outboundEmail = email.CreateStandardInviteEmail(curEventDO);
+            string fromEmail = CommunicationManager.GetFromEmail();
+            string fromName = CommunicationManager.GetFromName(); 
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();
-            if (eventDO.IsAllDay)
+            if (curEventDO.IsAllDay)
             {
                 dDayEvent.IsAllDay = true;
             }
             else
             {
-                dDayEvent.DTStart = new iCalDateTime(eventDO.StartDate);
-                dDayEvent.DTEnd = new iCalDateTime(eventDO.EndDate);
+                dDayEvent.DTStart = new iCalDateTime(curEventDO.StartDate);
+                dDayEvent.DTEnd = new iCalDateTime(curEventDO.EndDate);
             }
             dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
             dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
 
-            dDayEvent.Location = eventDO.Location;
-            dDayEvent.Description = eventDO.Description;
-            dDayEvent.Summary = eventDO.Summary;
-            foreach (AttendeeDO attendee in eventDO.Attendees)
+            dDayEvent.Location = curEventDO.Location;
+            dDayEvent.Description = curEventDO.Description;
+            dDayEvent.Summary = curEventDO.Summary;
+            foreach (AttendeeDO attendee in curEventDO.Attendees)
             {
                 dDayEvent.Attendees.Add(new Attendee
                 {
@@ -116,7 +117,7 @@ namespace KwasantCore.Services
                     RSVP = true,
                     Value = new Uri("mailto:" + attendee.EmailAddress),
                 });
-                attendee.Event = eventDO;
+                attendee.Event = curEventDO;
             }
             dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
 
@@ -124,11 +125,12 @@ namespace KwasantCore.Services
 
             AttachCalendarToEmail(ddayCalendar, outboundEmail);
 
-            if (eventDO.Emails == null)
-                eventDO.Emails = new List<EmailDO>();
-            eventDO.Emails.Add(outboundEmail);
+            if (curEventDO.Emails == null)
+                curEventDO.Emails = new List<EmailDO>();
+            curEventDO.Emails.Add(outboundEmail);
 
-            uow.SaveChanges();
+            _uow.SaveChanges();
+            Reload();
         }
 
         private static void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)
@@ -154,15 +156,15 @@ namespace KwasantCore.Services
             return _events[eventID];
         }
 
-        public void AddEvent(EventDO eventDO)
+        public void AddEvent(EventDO curEventDO)
         {
             if (_bookingRequestDO.Events == null)
                 _bookingRequestDO.Events = new List<EventDO>();
-            _bookingRequestDO.Events.Add(eventDO);
+            _bookingRequestDO.Events.Add(curEventDO);
 
-            eventDO.BookingRequest = _bookingRequestDO;
+            curEventDO.BookingRequest = _bookingRequestDO;
 
-            _eventRepo.Add(eventDO);
+            _eventRepo.Add(curEventDO);
             _uow.SaveChanges();
             Reload();
         }

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
 using FluentValidation;
+using FluentValidation.Results;
 using FluentValidation.Validators;
+
 
 namespace Data.Validators
 {
@@ -22,7 +25,30 @@ namespace Data.Validators
                 .GreaterThanOrEqualTo(eventDO => eventDO.StartDate)
                 .WithMessage("End date must after Start date");
 
-           RuleFor(eventDO => eventDO.Description).Length(3, 200).WithMessage("Event Description must be between 3 and 200 characters"); ;           
+           RuleFor(eventDO => eventDO.Description).Length(3, 200).WithMessage("Event Description must be between 3 and 200 characters");
+
+            RuleFor(eventDO => eventDO.Attendees).SetValidator(new ListMustContainAtLeastOneItem<AttendeeDO>())
+                .WithMessage("Event must have at least one attendee");
+
+        }
+        //=================================================================
+        //Utilities 
+        //TO DO: Genericize this
+        public void ValidateEvent(EventDO curEventDO)
+        {
+            ValidationResult results = Validate(curEventDO);
+            if (!results.IsValid)
+            {
+                string errorList = ""; //none of this is used, should be moved upstream or deleted. need to make the errors easy to read.
+                foreach (var failure in results.Errors)
+                {
+                    string errorLine = errorList + "Property " + failure.PropertyName +
+                                       " failed validation. Error was: " + failure.ErrorMessage + "\n";
+                    errorList += errorLine;
+                }
+                throw new ValidationException(results.Errors);
+            }
+
         }
     }
 
@@ -41,7 +67,7 @@ namespace Data.Validators
         {
             var list = context.PropertyValue as IList<T>;
 
-            if (list != null && list.Count < 1)
+            if (list == null || list.Count < 1)
             {
                 return false;
             }
@@ -49,4 +75,6 @@ namespace Data.Validators
             return true;
         }
     }
+
+ 
 }
