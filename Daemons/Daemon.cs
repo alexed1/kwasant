@@ -105,10 +105,14 @@ namespace Daemons
 
         public bool Start()
         {
+            Logger.GetLogger().Info(GetType().Name + " - starting...");
             lock (this)
             {
                 if (IsRunning)
+                {
+                    Logger.GetLogger().Info(GetType().Name + " - already running.");
                     return false;
+                }
 
                 IsRunning = true;
             }
@@ -129,6 +133,7 @@ namespace Daemons
                             {
                                 lastExecutionTime = currTime;
                                 firstExecution = false;
+                                Logger.GetLogger().Info(GetType().Name + " - executing...");
                                 Run();
                                 if (DaemonExecuted != null)
                                     DaemonExecuted();

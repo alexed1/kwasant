@@ -10,6 +10,7 @@ using Microsoft.WindowsAzure;
 using S22.Imap;
 
 using StructureMap;
+using UtilitiesLib.Logging;
 
 namespace Daemons
 {
@@ -76,8 +77,11 @@ namespace Daemons
             if (!_isValid)
                 return;
 
-            IEnumerable<uint> uids = _client.Search(SearchCondition.Unseen());
+            Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
+            IEnumerable<uint> uids = _client.Search(SearchCondition.Unseen()).ToList();
             List<MailMessage> messages = _client.GetMessages(uids).ToList();
+
+            Logger.GetLogger().Info(GetType().Name + " - " + uids.Count() + " emails found...");
 
             IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
