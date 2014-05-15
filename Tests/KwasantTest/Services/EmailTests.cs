@@ -11,6 +11,7 @@ using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
 
+
 namespace KwasantTest.Services
 {
     [TestFixture]
@@ -98,6 +99,7 @@ namespace KwasantTest.Services
             //SETUP  
             _curEventDO = _fixture.TestEvent2();
             string expectedSubject = "Invitation via Kwasant: " + _curEventDO.Summary + "@ " + _curEventDO.StartDate;
+           
             
             //EXECUTE
             EmailDO _curEmailDO = _curEmail.CreateStandardInviteEmail(_curEventDO);

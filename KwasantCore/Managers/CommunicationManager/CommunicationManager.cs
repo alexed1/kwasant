@@ -88,10 +88,9 @@ namespace KwasantCore.Managers.CommunicationManager
             {
                 return email;
             }
-            else
-            {
-                throw new Exception("Missing value for 'fromEmail'");
-            }
+ 
+            throw new ArgumentException("Missing value for 'fromEmail'");
+  
 
         }
         public static string GetFromName()
@@ -101,10 +100,7 @@ namespace KwasantCore.Managers.CommunicationManager
             {
                 return fromName;
             }
-            else
-            {
-                throw new Exception("Missing value for 'fromName'");
-            }
+            throw new ArgumentException("Missing value for 'fromName'");
 
         }
     }
