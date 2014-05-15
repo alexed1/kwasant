@@ -36,7 +36,7 @@ namespace KwasantCore.Managers.CommunicationManager
             {
                 if (communicationConfig.Type == CommunicationType.SMS)
                 {
-                    SendBRSMSes(communicationConfig.ToAddress, bookingRequests);
+                    SendBRSMSes(bookingRequests);
                 } else if (communicationConfig.Type == CommunicationType.EMAIL)
                 {
                     SendBREmails(communicationConfig.ToAddress, bookingRequests, uow);
@@ -49,7 +49,7 @@ namespace KwasantCore.Managers.CommunicationManager
             uow.SaveChanges();
         }
 
-        private void SendBRSMSes(String toAddress, IEnumerable<BookingRequestDO> bookingRequests)
+        private void SendBRSMSes(IEnumerable<BookingRequestDO> bookingRequests)
         {
             TwilioPackager twil = new TwilioPackager();
             if (bookingRequests.Any())

@@ -16,7 +16,6 @@ namespace Daemons
 {
     public class InboundEmail : Daemon
     {
-        private readonly bool _isValid = true;
         private readonly IImapClient _client;
         private static string GetIMAPServer()
         {
@@ -57,7 +56,7 @@ namespace Daemons
             catch (Exception ex)
             {
                 //We log in the future
-                _isValid = false;
+                Stop();
                 throw new ApplicationException(ex.Message); //we were generating exceptions here and missing them
             }
         }
@@ -74,9 +73,6 @@ namespace Daemons
 
         protected override void Run()
         {
-            if (!_isValid)
-                return;
-
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
             IEnumerable<uint> uids = _client.Search(SearchCondition.Unseen()).ToList();
             Logger.GetLogger().Info(GetType().Name + " - " + uids.Count() + " emails found...");
