@@ -55,8 +55,8 @@ namespace Daemons
             }
             catch (Exception ex)
             {
-                //We log in the future
-                Stop();
+                _client = null;
+                Logger.GetLogger().Error("Error occured on startup", ex);
             }
         }
 
@@ -72,6 +72,12 @@ namespace Daemons
 
         protected override void Run()
         {
+            if (_client == null)
+            {
+                Stop();
+                return;
+            }
+
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
             IEnumerable<uint> uids = _client.Search(SearchCondition.Unseen()).ToList();
             Logger.GetLogger().Info(GetType().Name + " - " + uids.Count() + " emails found...");
