@@ -57,7 +57,6 @@ namespace Daemons
             {
                 //We log in the future
                 Stop();
-                throw new ApplicationException(ex.Message); //we were generating exceptions here and missing them
             }
         }
 
