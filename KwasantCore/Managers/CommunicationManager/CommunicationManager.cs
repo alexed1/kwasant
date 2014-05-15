@@ -64,7 +64,7 @@ namespace KwasantCore.Managers.CommunicationManager
             {
                 EmailDO outboundEmail = new EmailDO
                 {
-                    From = new EmailAddressDO {Address = "service@kwasant.com"},
+                    From = new EmailAddressDO { Address = "scheduling@kwasant.com", Name = "Kwasant Scheduling Services" },
                     To = new List<EmailAddressDO> {new EmailAddressDO {Address = toAddress}},
                     Subject = "New booking request!",
                     Text = String.Format(message, bookingRequest.From.Address),
