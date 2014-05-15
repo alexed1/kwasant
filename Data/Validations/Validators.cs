@@ -37,18 +37,10 @@ namespace Data.Validators
         public void ValidateEvent(EventDO curEventDO)
         {
             ValidationResult results = Validate(curEventDO);
-            if (!results.IsValid)
-            {
-                string errorList = ""; //none of this is used, should be moved upstream or deleted. need to make the errors easy to read.
-                foreach (var failure in results.Errors)
-                {
-                    string errorLine = errorList + "Property " + failure.PropertyName +
-                                       " failed validation. Error was: " + failure.ErrorMessage + "\n";
-                    errorList += errorLine;
-                }
-                throw new ValidationException(results.Errors);
-            }
-
+            if (results.IsValid)
+                return;
+  
+            throw new ValidationException(results.Errors);
         }
     }
 

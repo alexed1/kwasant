@@ -11,6 +11,7 @@ using Data.Validators;
 using FluentValidation;
 using FluentValidation.Results;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
+using KwasantCore.Managers.CommunicationManager;
 using StructureMap;
 
 namespace KwasantCore.Services
@@ -128,8 +129,8 @@ namespace KwasantCore.Services
         public EmailDO CreateStandardInviteEmail(EventDO curEventDO)
         {
             _curValidator.ValidateEvent(curEventDO);
-            string fromEmail = "scheduling@kwasant.com";
-            string fromName = "Kwasant Scheduling Services";
+            string fromEmail = CommunicationManager.GetFromEmail();
+            string fromName = CommunicationManager.GetFromName(); 
 
             EmailDO createdEmail = new EmailDO();
             createdEmail.From = new EmailAddressDO { Address = fromEmail, Name = fromName };
