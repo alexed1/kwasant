@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using FluentValidation;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
-using FluentValidation;
-using FluentValidation.Validators;
 
-namespace KwasantTest.Models
+namespace KwasantTest.Entities
 {
     [TestFixture]
     public class EventTests 

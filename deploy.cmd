@@ -66,6 +66,7 @@ IF NOT DEFINED MSBUILD_PATH (
 :: ----------
 
 call :ExecuteCMD "build.bat"
+IF !ERRORLEVEL! NEQ 0 goto error
 
 :: 5. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using Daemons.EventExposers;
+using UtilitiesLib.Logging;
 
 namespace Daemons
 {
@@ -104,10 +105,14 @@ namespace Daemons
 
         public bool Start()
         {
+            Logger.GetLogger().Info(GetType().Name + " - starting...");
             lock (this)
             {
                 if (IsRunning)
+                {
+                    Logger.GetLogger().Info(GetType().Name + " - already running.");
                     return false;
+                }
 
                 IsRunning = true;
             }
@@ -128,6 +133,7 @@ namespace Daemons
                             {
                                 lastExecutionTime = currTime;
                                 firstExecution = false;
+                                Logger.GetLogger().Info(GetType().Name + " - executing...");
                                 Run();
                                 if (DaemonExecuted != null)
                                     DaemonExecuted();
@@ -136,6 +142,8 @@ namespace Daemons
                             {
                                 //Sleep until the approximate time that we're ready
                                 double waitTime = (WaitTimeBetweenExecution - (currTime - lastExecutionTime).TotalMilliseconds);
+
+                                Logger.GetLogger().Info(GetType().Name + " - sleeping for " + waitTime + " milliseconds");
                                 Thread.Sleep((int)waitTime);
                             }
                             
@@ -145,6 +153,7 @@ namespace Daemons
                             HandleException(e);
                         }
                     }
+                    Logger.GetLogger().Info(GetType().Name + " - shutting down");
 
                     CleanupInternal();
                     IsRunning = false;
@@ -177,7 +186,7 @@ namespace Daemons
             lock (_loggedExceptions)
                 _loggedExceptions.Add(e);
 
-            //To be filled out when we have a logging mechanism in place
+            Logger.GetLogger().Error("Error occured in " + GetType().Name, e);
         }
     }
 }

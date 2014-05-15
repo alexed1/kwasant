@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Data.Entities;
 using Data.Entities.Enumerations;
-using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.StructureMap;
@@ -10,100 +11,112 @@ using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
 
-namespace KwasantTest.Models
+namespace KwasantTest.Entities
 {
     [TestFixture]
-    class CustomFieldTests
+    internal class CustomFieldTests
     {
-        public TrackingStatus<EmailDO> _trackingStatus;
-        private EmailRepository _emailRepo;
-        private TrackingStatusRepository _trackingStatusRepository;
-        public IUnitOfWork _uow;
-        private FixtureData _fixture;
-
         [SetUp]
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies("test");
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-          
+
             _trackingStatusRepository = new TrackingStatusRepository(_uow);
             _emailRepo = new EmailRepository(_uow);
 
-            _trackingStatus = new TrackingStatus<EmailDO>(_trackingStatusRepository, _emailRepo);
+
+            _trackingStatus = new TestCustomField(_trackingStatusRepository, _emailRepo);
 
             _fixture = new FixtureData(_uow);
         }
 
+        private TestCustomField _trackingStatus;
+        private EmailRepository _emailRepo;
+        private TrackingStatusRepository _trackingStatusRepository;
+        private IUnitOfWork _uow;
+        private FixtureData _fixture;
 
-
-        [Test]
-        public void TestWithoutStatus()
+        private class TestCustomField : GenericCustomField<TrackingStatusDO, EmailDO>
         {
-            EmailDO emailOne = new EmailDO() {EmailID = 1, From = _fixture.TestEmailAddress1()};
-            EmailDO emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmailAddress1() };
+            public TestCustomField(IGenericRepository<TrackingStatusDO> trackingStatusRepo,
+                IGenericRepository<EmailDO> foreignRepo) : base(trackingStatusRepo, foreignRepo)
+            {
+            }
 
-            _emailRepo.Add(emailOne);
-            _emailRepo.Add(emailTwo);
+            public IQueryable<EmailDO> GetEntitiesWithoutStatus()
+            {
+                return GetEntitiesWithoutCustomFields();
+            }
 
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED});
-            _uow.SaveChanges();
+            public IQueryable<EmailDO> GetEntitiesWhereTrackingStatus(
+                Expression<Func<TrackingStatusDO, bool>> customFieldPredicate)
+            {
+                return GetEntitiesWithCustomField(customFieldPredicate);
+            }
 
-            List<EmailDO> t = _trackingStatus.GetEntitiesWithoutStatus().ToList();
-            Assert.AreEqual(2, _emailRepo.GetAll().Count());
-            Assert.AreEqual(1, t.Count);
-            Assert.AreEqual(emailTwo.EmailID, t.First().EmailID);
+            public IQueryable<EmailDO> GetEntitiesWithStatus()
+            {
+                return GetEntitiesWithCustomField();
+            }
+
+            public TrackingStatusDO GetStatus(EmailDO entityDO)
+            {
+                return GetCustomField(entityDO);
+            }
+
+            public void SetStatus(EmailDO entityDO, TrackingStatus status)
+            {
+                GetOrCreateCustomField(entityDO).Status = status;
+            }
+
+            public void DeleteStatus(EmailDO entityDO)
+            {
+                DeleteCustomField(entityDO);
+            }
         }
 
         [Test]
-        public void TestWhereTrackingStatus()
+        public void TestDeleteStatus()
         {
-            EmailDO emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmailAddress1() };
-            EmailDO emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmailAddress1() };
+            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmail1()};
 
             _emailRepo.Add(emailOne);
-            _emailRepo.Add(emailTwo);
 
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED });
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailTwo.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.PROCESSED });
+            _trackingStatusRepository.Add(new TrackingStatusDO
+            {
+                ForeignTableID = emailOne.EmailID,
+                ForeignTableName = "EmailDO",
+                Status = TrackingStatus.UNPROCESSED
+            });
             _uow.SaveChanges();
 
-            List<EmailDO> t = _trackingStatus.GetEntitiesWhereTrackingStatus(ts => ts.Status == TrackingStatus.PROCESSED).ToList();
-            Assert.AreEqual(2, _emailRepo.GetAll().Count());
-            Assert.AreEqual(1, t.Count);
-            Assert.AreEqual(emailTwo.EmailID, t.First().EmailID);
-        }
+            Assert.AreEqual(1, _trackingStatusRepository.GetAll().Count());
 
-        [Test]
-        public void TestWithStatus()
-        {
-            EmailDO emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmailAddress1() };
-            EmailDO emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmailAddress1() };
-
-            _emailRepo.Add(emailOne);
-            _emailRepo.Add(emailTwo);
-
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED });
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailTwo.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.PROCESSED });
+            _trackingStatus.DeleteStatus(emailOne);
             _uow.SaveChanges();
+            Assert.AreEqual(0, _trackingStatusRepository.GetAll().Count());
 
-            List<EmailDO> t = _trackingStatus.GetEntitiesWithStatus().ToList();
-            Assert.AreEqual(2, _emailRepo.GetAll().Count());
-            Assert.AreEqual(2, t.Count);
-            Assert.AreEqual(emailOne.EmailID, t.First().EmailID);
-            Assert.AreEqual(emailTwo.EmailID, t.Skip(1).First().EmailID);
+            _trackingStatus.DeleteStatus(emailOne);
+            _uow.SaveChanges();
+            Assert.AreEqual(0, _trackingStatusRepository.GetAll().Count());
         }
 
         [Test]
         public void TestGetStatus()
         {
-            EmailDO emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmailAddress1() };
-            EmailDO emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmailAddress1() };
+            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmail1()};
+            var emailTwo = new EmailDO {EmailID = 2, From = _fixture.TestEmail1()};
 
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
 
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED });
+            _trackingStatusRepository.Add(new TrackingStatusDO
+            {
+                ForeignTableID = emailOne.EmailID,
+                ForeignTableName = "EmailDO",
+                Status = TrackingStatus.UNPROCESSED
+            });
             _uow.SaveChanges();
 
             TrackingStatusDO firstStatus = _trackingStatus.GetStatus(emailOne);
@@ -117,7 +130,7 @@ namespace KwasantTest.Models
         [Test]
         public void TestSetStatus()
         {
-            EmailDO emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmailAddress1() };
+            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmail1()};
 
             _emailRepo.Add(emailOne);
             _uow.SaveChanges();
@@ -126,7 +139,7 @@ namespace KwasantTest.Models
 
             TrackingStatusDO status = _trackingStatus.GetStatus(emailOne);
             Assert.Null(status);
-            
+
             _trackingStatus.SetStatus(emailOne, TrackingStatus.UNPROCESSED);
             _uow.SaveChanges();
 
@@ -144,51 +157,87 @@ namespace KwasantTest.Models
             Assert.AreEqual(1, _trackingStatusRepository.GetAll().Count());
         }
 
-
         [Test]
-        public void TestDeleteStatus()
+        public void TestWhereTrackingStatus()
         {
-            EmailDO emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmailAddress1() };
-
-            _emailRepo.Add(emailOne);
-
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED });
-            _uow.SaveChanges();
-
-            Assert.AreEqual(1, _trackingStatusRepository.GetAll().Count());
-
-            _trackingStatus.DeleteStatus(emailOne);
-            _uow.SaveChanges();
-            Assert.AreEqual(0, _trackingStatusRepository.GetAll().Count());
-
-            _trackingStatus.DeleteStatus(emailOne);
-            _uow.SaveChanges();
-            Assert.AreEqual(0, _trackingStatusRepository.GetAll().Count());
-        }
-
-        [Test]
-        public void TestGetUnprocessedEntities()
-        {
-            EmailDO emailOne = new EmailDO() { EmailID = 1, From = _fixture.TestEmailAddress1() };
-            EmailDO emailTwo = new EmailDO() { EmailID = 2, From = _fixture.TestEmailAddress1() };
-            EmailDO emailThree = new EmailDO() { EmailID = 3, From = _fixture.TestEmailAddress1() };
+            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmail1()};
+            var emailTwo = new EmailDO {EmailID = 2, From = _fixture.TestEmail1()};
 
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
-            _emailRepo.Add(emailThree);
 
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailOne.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.PROCESSED });
-            _trackingStatusRepository.Add(new TrackingStatusDO { ForeignTableID = emailTwo.EmailID, ForeignTableName = "EmailDO", Status = TrackingStatus.UNPROCESSED });
-
+            _trackingStatusRepository.Add(new TrackingStatusDO
+            {
+                ForeignTableID = emailOne.EmailID,
+                ForeignTableName = "EmailDO",
+                Status = TrackingStatus.UNPROCESSED
+            });
+            _trackingStatusRepository.Add(new TrackingStatusDO
+            {
+                ForeignTableID = emailTwo.EmailID,
+                ForeignTableName = "EmailDO",
+                Status = TrackingStatus.PROCESSED
+            });
             _uow.SaveChanges();
 
-            List<EmailDO> unprocessed = _trackingStatus.GetUnprocessedEntities().ToList();
+            List<EmailDO> t =
+                _trackingStatus.GetEntitiesWhereTrackingStatus(ts => ts.Status == TrackingStatus.PROCESSED).ToList();
+            Assert.AreEqual(2, _emailRepo.GetAll().Count());
+            Assert.AreEqual(1, t.Count);
+            Assert.AreEqual(emailTwo.EmailID, t.First().EmailID);
+        }
 
-            Assert.AreEqual(2, unprocessed.Count);
-            Assert.IsNotNull(unprocessed.First());
-            Assert.AreEqual(TrackingStatus.UNPROCESSED, _trackingStatus.GetStatus(unprocessed.First()).Status);
+        [Test]
+        public void TestWithStatus()
+        {
+            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmail1()};
+            var emailTwo = new EmailDO {EmailID = 2, From = _fixture.TestEmail1()};
 
-            Assert.Null(_trackingStatus.GetStatus(unprocessed.Skip(1).First()));
+            _emailRepo.Add(emailOne);
+            _emailRepo.Add(emailTwo);
+
+            _trackingStatusRepository.Add(new TrackingStatusDO
+            {
+                ForeignTableID = emailOne.EmailID,
+                ForeignTableName = "EmailDO",
+                Status = TrackingStatus.UNPROCESSED
+            });
+            _trackingStatusRepository.Add(new TrackingStatusDO
+            {
+                ForeignTableID = emailTwo.EmailID,
+                ForeignTableName = "EmailDO",
+                Status = TrackingStatus.PROCESSED
+            });
+            _uow.SaveChanges();
+
+            List<EmailDO> t = _trackingStatus.GetEntitiesWithStatus().ToList();
+            Assert.AreEqual(2, _emailRepo.GetAll().Count());
+            Assert.AreEqual(2, t.Count);
+            Assert.AreEqual(emailOne.EmailID, t.First().EmailID);
+            Assert.AreEqual(emailTwo.EmailID, t.Skip(1).First().EmailID);
+        }
+
+        [Test]
+        public void TestWithoutStatus()
+        {
+            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmail1()};
+            var emailTwo = new EmailDO {EmailID = 2, From = _fixture.TestEmail1()};
+
+            _emailRepo.Add(emailOne);
+            _emailRepo.Add(emailTwo);
+
+            _trackingStatusRepository.Add(new TrackingStatusDO
+            {
+                ForeignTableID = emailOne.EmailID,
+                ForeignTableName = "EmailDO",
+                Status = TrackingStatus.UNPROCESSED
+            });
+            _uow.SaveChanges();
+
+            List<EmailDO> t = _trackingStatus.GetEntitiesWithoutStatus().ToList();
+            Assert.AreEqual(2, _emailRepo.GetAll().Count());
+            Assert.AreEqual(1, t.Count);
+            Assert.AreEqual(emailTwo.EmailID, t.First().EmailID);
         }
     }
 }

@@ -19,7 +19,6 @@ namespace KwasantCore.Services
             bookingRequest.Customer = curCustomer;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.Text);
             bookingRequest.Status = EmailStatus.UNPROCESSED;
-            uow.SaveChanges();
         }
 
         private static CustomerDO GetOrCreateCustomer(IUnitOfWork uow, BookingRequestDO currMessage)

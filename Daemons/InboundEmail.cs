@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantCore.Services;
 using Microsoft.WindowsAzure;
 using S22.Imap;
 
 using StructureMap;
+using UtilitiesLib.Logging;
 
 namespace Daemons
 {
     public class InboundEmail : Daemon
     {
-        private bool isValid = true;
         private readonly IImapClient _client;
-        private TwilioPackager _twilio;
         private static string GetIMAPServer()
         {
            
@@ -71,18 +68,14 @@ namespace Daemons
 
         public InboundEmail()
         {
-
-            _twilio = new TwilioPackager();
-
             try
             {
                 _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
             }
             catch (Exception ex)
             {
-                //We log in the future
-                isValid = false;
-                throw new ApplicationException(ex.Message); //we were generating exceptions here and missing them
+                _client = null;
+                Logger.GetLogger().Error("Error occured on startup", ex);
             }
         }
 
@@ -98,26 +91,36 @@ namespace Daemons
 
         protected override void Run()
         {
-            if (!isValid)
-                return;
-
-            IEnumerable<uint> uids = _client.Search(SearchCondition.Unseen());
-            List<MailMessage> messages = _client.GetMessages(uids).ToList();
-           
-            //if at least 1 message received, send sms to the mainalert
-            if (messages.Count >0)
-                _twilio.SendSMS("+14158067915", "Inbound Email has been received");
-
-            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-            EmailRepository emailRepository = new EmailRepository(unitOfWork);
-            foreach (MailMessage message in messages)
+            if (_client == null)
             {
-                BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
-                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-
-                BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
+                Stop();
+                return;
             }
-            emailRepository.UnitOfWork.SaveChanges();
+
+            Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
+            IEnumerable<uint> uids = _client.Search(SearchCondition.Unseen()).ToList();
+            Logger.GetLogger().Info(GetType().Name + " - " + uids.Count() + " emails found...");
+
+            foreach (var uid in uids)
+            {
+                IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+                BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
+
+                var message = _client.GetMessage(uid);
+                try
+                {
+                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                    BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
+                }
+                catch (Exception e)
+                {
+                    Logger.GetLogger().Error("Failed to process inbound message.", e);
+                    _client.RemoveMessageFlags(uid, null, MessageFlag.Seen);
+                    Logger.GetLogger().Info("Message marked as unread.");
+                }
+
+                bookingRequestRepo.UnitOfWork.SaveChanges();
+            }
         }
 
         protected override void CleanUp()
