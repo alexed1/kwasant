@@ -142,6 +142,8 @@ namespace Daemons
                             {
                                 //Sleep until the approximate time that we're ready
                                 double waitTime = (WaitTimeBetweenExecution - (currTime - lastExecutionTime).TotalMilliseconds);
+
+                                Logger.GetLogger().Info(GetType().Name + " - sleeping for " + waitTime + " milliseconds");
                                 Thread.Sleep((int)waitTime);
                             }
                             
@@ -151,6 +153,7 @@ namespace Daemons
                             HandleException(e);
                         }
                     }
+                    Logger.GetLogger().Info(GetType().Name + " - shutting down");
 
                     CleanupInternal();
                     IsRunning = false;
