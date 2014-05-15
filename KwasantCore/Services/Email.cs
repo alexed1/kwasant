@@ -10,17 +10,19 @@ using Data.Repositories;
 using Data.Validators;
 using FluentValidation;
 using FluentValidation.Results;
+using FluentValidation.Validators;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Managers.CommunicationManager;
+using Microsoft.WindowsAzure;
 using StructureMap;
 
 namespace KwasantCore.Services
 {
     public class Email
     {
-        private readonly IUnitOfWork _uow;
-        private readonly EmailDO _emailDO;
-        private EventValidator _curValidator;
+        private  IUnitOfWork _uow;
+        private  EmailDO _emailDO;
+        private EventValidator _curEventValidator;
 
         #region Members
 
@@ -39,7 +41,7 @@ namespace KwasantCore.Services
         {
             _uow = uow;
             _mandrillApi = ObjectFactory.GetInstance<MandrillPackager>();
-            _curValidator = new EventValidator();
+            _curEventValidator = new EventValidator();
         }
 
         public Email(IUnitOfWork uow, EmailDO emailDO) : this(uow) //this can probably be simplified to a single constructor. Do we really want to pass emailDO in?
@@ -67,7 +69,11 @@ namespace KwasantCore.Services
             _emailDO.Status = EmailStatus.SENT;
             _uow.SaveChanges();
         }
-
+        public void Send(EmailDO curEmailDO)
+        {
+            _emailDO = curEmailDO;
+            Send();
+        }
 
         public void Ping()
         {
@@ -128,7 +134,7 @@ namespace KwasantCore.Services
 
         public EmailDO CreateStandardInviteEmail(EventDO curEventDO)
         {
-            _curValidator.ValidateEvent(curEventDO);
+            _curEventValidator.ValidateEvent(curEventDO);
             string fromEmail = CommunicationManager.GetFromEmail();
             string fromName = CommunicationManager.GetFromName(); 
 
@@ -138,6 +144,17 @@ namespace KwasantCore.Services
             createdEmail.Subject = "Invitation via Kwasant: " + curEventDO.Summary + "@ " + curEventDO.StartDate;
             createdEmail.Text = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";
             createdEmail.Status = EmailStatus.QUEUED;
+
+            if (CloudConfigurationManager.GetSetting("ArchiveOutboundEmail") == "true")
+            {
+                EmailAddressDO archiveAddress = new EmailAddressDO();
+                archiveAddress.Address = CloudConfigurationManager.GetSetting("ArchiveEmailAddress");
+                archiveAddress.Name = archiveAddress.Address;
+                EmailAddressValidator curEmailAddressValidator = new EmailAddressValidator();
+                curEmailAddressValidator.ValidateAndThrow(archiveAddress);
+                
+                createdEmail.BCC.Add(archiveAddress);
+            }
 
             return createdEmail;
         }

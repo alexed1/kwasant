@@ -129,6 +129,24 @@ namespace KwasantTest.Services
 
         }
 
+        [Test]
+        [Category("Email")]
+        public void CanSendSIE_MANUALTEST()
+        {
+            //SETUP  
+            _curEventDO = _fixture.TestEvent2();
+            string expectedSubject = "Invitation via Kwasant: " + _curEventDO.Summary + "@ " + _curEventDO.StartDate;
+
+
+            //EXECUTE
+            EmailDO _curEmailDO = _curEmail.CreateStandardInviteEmail(_curEventDO);
+            _curEmail.Send(_curEmailDO);
+
+            //VERIFY
+            //implement a technique later to go and pull from the email inbox and verify. for now, verify by hand.
+
+        }
+
    
        
     }
