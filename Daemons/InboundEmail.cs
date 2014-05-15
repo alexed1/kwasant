@@ -79,18 +79,27 @@ namespace Daemons
 
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
             IEnumerable<uint> uids = _client.Search(SearchCondition.Unseen()).ToList();
-            List<MailMessage> messages = _client.GetMessages(uids).ToList();
-
             Logger.GetLogger().Info(GetType().Name + " - " + uids.Count() + " emails found...");
 
-            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-            BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
-            foreach (MailMessage message in messages)
+            foreach (var uid in uids)
             {
-                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-                BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
+                IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+                BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
+
+                var message = _client.GetMessage(uid);
+                try
+                {
+                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                    BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
+                }
+                catch (Exception e)
+                {
+                    Logger.GetLogger().Error("Failed to process inbound message", e);
+                    _client.RemoveMessageFlags(uid, null, MessageFlag.Seen);
+                }
+
+                bookingRequestRepo.UnitOfWork.SaveChanges();
             }
-            bookingRequestRepo.UnitOfWork.SaveChanges();
         }
 
         protected override void CleanUp()
