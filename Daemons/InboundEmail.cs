@@ -94,8 +94,9 @@ namespace Daemons
                 }
                 catch (Exception e)
                 {
-                    Logger.GetLogger().Error("Failed to process inbound message", e);
+                    Logger.GetLogger().Error("Failed to process inbound message.", e);
                     _client.RemoveMessageFlags(uid, null, MessageFlag.Seen);
+                    Logger.GetLogger().Info("Message marked as unread.");
                 }
 
                 bookingRequestRepo.UnitOfWork.SaveChanges();
