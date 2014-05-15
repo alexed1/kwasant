@@ -95,6 +95,7 @@
     <Compile Include="Entities\Enumerations\CommunicationType.cs" />
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingStatus.cs" />
+    <Compile Include="Entities\Enumerations\TrackingType.cs" />
     <Compile Include="Entities\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Entities\PersonDO.cs" />

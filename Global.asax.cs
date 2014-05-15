@@ -40,5 +40,15 @@ namespace KwasantWeb
             var exception = Server.GetLastError();
             Logger.GetLogger().Error("Critical internal error occured.", exception);
         }
+
+        public void Application_End()
+        {
+            Logger.GetLogger().Info("Kwasant web shutting down...");
+
+            // This will give LE background thread some time to finish sending messages to Logentries.
+            var numWaits = 3;
+            while (!LogentriesCore.Net.AsyncLogger.AreAllQueuesEmpty(TimeSpan.FromSeconds(5)) && numWaits > 0)
+                numWaits--;
+        }
     }
 }

@@ -36,7 +36,7 @@ namespace KwasantCore.Managers.CommunicationManager
             {
                 if (communicationConfig.Type == CommunicationType.SMS)
                 {
-                    SendBRSMSes(communicationConfig.ToAddress, bookingRequests);
+                    SendBRSMSes(bookingRequests);
                 } else if (communicationConfig.Type == CommunicationType.EMAIL)
                 {
                     SendBREmails(communicationConfig.ToAddress, bookingRequests, uow);
@@ -49,15 +49,11 @@ namespace KwasantCore.Managers.CommunicationManager
             uow.SaveChanges();
         }
 
-        private void SendBRSMSes(String toAddress, IEnumerable<BookingRequestDO> bookingRequests)
+        private void SendBRSMSes(IEnumerable<BookingRequestDO> bookingRequests)
         {
             TwilioPackager twil = new TwilioPackager();
-            const string message = "A new booking request has been created. From '{0}'.";
-            foreach (BookingRequestDO bookingRequest in bookingRequests)
-            {
-                SMSMessage result = twil.SendSMS(toAddress, String.Format(message, bookingRequest.From.Address));
-               
-            }
+            if (bookingRequests.Any())
+                twil.SendSMS("14158067915", "Inbound Email has been received");
         }
 
         private void SendBREmails(String toAddress, IEnumerable<BookingRequestDO> bookingRequests, IUnitOfWork uow)
@@ -68,7 +64,7 @@ namespace KwasantCore.Managers.CommunicationManager
             {
                 EmailDO outboundEmail = new EmailDO
                 {
-                    From = new EmailAddressDO {Address = "service@kwasant.com"},
+                    From = new EmailAddressDO { Address = "scheduling@kwasant.com", Name = "Kwasant Scheduling Services" },
                     To = new List<EmailAddressDO> {new EmailAddressDO {Address = toAddress}},
                     Subject = "New booking request!",
                     Text = String.Format(message, bookingRequest.From.Address),
