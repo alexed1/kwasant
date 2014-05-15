@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
-using Data.Repositories;
 
 namespace Data.Infrastructure
 {
@@ -37,7 +36,7 @@ namespace Data.Infrastructure
     public class TrackingStatus<TForeignEntity> : GenericCustomField<TrackingStatusDO, TForeignEntity> 
         where TForeignEntity : class
     {
-        public TrackingStatus(TrackingStatusRepository trackingStatusRepo, IGenericRepository<TForeignEntity> foreignRepo) 
+        public TrackingStatus(IGenericRepository<TrackingStatusDO> trackingStatusRepo, IGenericRepository<TForeignEntity> foreignRepo) 
             : base(trackingStatusRepo, foreignRepo)
         {
         }
@@ -46,15 +45,15 @@ namespace Data.Infrastructure
         /// Get all entities without a status
         /// </summary>
         /// <returns>IQueryable of entities without any status</returns>
-        public IQueryable<TForeignEntity> GetEntitiesWithoutStatus()
+        public IQueryable<TForeignEntity> GetEntitiesWithoutStatus(TrackingType type)
         {
-            return GetEntitiesWithoutCustomFields();
+            return GetEntitiesWithoutCustomFields(cf => cf.Type == type);
         }
 
-        public IQueryable<TForeignEntity> GetUnprocessedEntities()
+        public IQueryable<TForeignEntity> GetUnprocessedEntities(TrackingType type)
         {
             //Get entities without a status, or with a status marked 'Unprocessed'
-            return GetJoinResult(null, null, jr => jr.CustomFieldDO == null || jr.CustomFieldDO.Status == TrackingStatus.UNPROCESSED).Select(jr => jr.ForeignDO);
+            return GetJoinResult(cf => cf.Type == type, null, jr => jr.CustomFieldDO == null || jr.CustomFieldDO.Status == TrackingStatus.UNPROCESSED).Select(jr => jr.ForeignDO);
         }
 
         /// <summary>
@@ -63,44 +62,49 @@ namespace Data.Infrastructure
         /// <returns>IQueryable of entities with a status confined to the provided predicate</returns>
         public IQueryable<TForeignEntity> GetEntitiesWhereTrackingStatus(Expression<Func<TrackingStatusDO, bool>> customFieldPredicate)
         {
-            return GetEntitiesWhereCustomField(customFieldPredicate);
+            return GetEntitiesWithCustomField(customFieldPredicate);
         }
 
         /// <summary>
         /// Get all entities with a status
         /// </summary>
         /// <returns>IQueryable of entities with a status</returns>
-        public IQueryable<TForeignEntity> GetEntitiesWithStatus()
+        public IQueryable<TForeignEntity> GetEntitiesWithStatus(TrackingType type)
         {
-            return GetEntitiesWithCustomField();
+            return GetEntitiesWithCustomField(cf => cf.Type == type);
         }
 
         /// <summary>
         /// Sets the status of an entity. If an existing status exists for the entity, the status will be updated. If not, a status will be created.
         /// </summary>
+        /// <param name="type"></param>
         /// <param name="entityDO">Entity to set the status on</param>
         /// <param name="status">Value of the status</param>
-        public void SetStatus(TForeignEntity entityDO, TrackingStatus status)
+        public void SetStatus(TrackingType type, TForeignEntity entityDO, TrackingStatus status)
         {
-            GetOrCreateCustomField(entityDO).Status = status;
+            var row = GetOrCreateCustomField(entityDO, cf => cf.Type == type);
+            row.Status = status;
+            row.Type = type;
         }
 
         /// <summary>
         /// Gets the current status of an entity. If no status exists, null will be returned.
         /// </summary>
+        /// <param name="type"></param>
         /// <param name="entityDO">The status of the provided entity</param>
-        public TrackingStatusDO GetStatus(TForeignEntity entityDO)
+        public TrackingStatusDO GetStatus(TrackingType type, TForeignEntity entityDO)
         {
-            return GetCustomField(entityDO);
+            return GetCustomField(entityDO, cf => cf.Type == type);
         }
 
         /// <summary>
         /// Deletes the status of an entity. If no status exists, no action will be performed.
         /// </summary>
+        /// <param name="type"></param>
         /// <param name="entityDO">Entity to delete the status on</param>
-        public void DeleteStatus(TForeignEntity entityDO)
+        public void DeleteStatus(TrackingType type, TForeignEntity entityDO)
         {
-            DeleteCustomField(entityDO);
+            DeleteCustomField(entityDO, cf => cf.Type == type);
         }
     }
 }

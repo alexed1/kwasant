@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantCore.Services;
 using Microsoft.WindowsAzure;
 using S22.Imap;
@@ -17,9 +15,8 @@ namespace Daemons
 {
     public class InboundEmail : Daemon
     {
-        private bool isValid = true;
+        private readonly bool _isValid = true;
         private readonly IImapClient _client;
-        private TwilioPackager _twilio;
         private static string GetIMAPServer()
         {
             return CloudConfigurationManager.GetSetting("InboundEmailHost");
@@ -52,9 +49,6 @@ namespace Daemons
 
         public InboundEmail()
         {
-
-            _twilio = new TwilioPackager();
-
             try
             {
                 _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
@@ -62,7 +56,7 @@ namespace Daemons
             catch (Exception ex)
             {
                 //We log in the future
-                isValid = false;
+                _isValid = false;
                 throw new ApplicationException(ex.Message); //we were generating exceptions here and missing them
             }
         }
@@ -79,26 +73,20 @@ namespace Daemons
 
         protected override void Run()
         {
-            if (!isValid)
+            if (!_isValid)
                 return;
 
             IEnumerable<uint> uids = _client.Search(SearchCondition.Unseen());
             List<MailMessage> messages = _client.GetMessages(uids).ToList();
-           
-            //if at least 1 message received, send sms to the mainalert
-            if (messages.Count >0)
-                _twilio.SendSMS("+14158067915", "Inbound Email has been received");
 
             IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-            EmailRepository emailRepository = new EmailRepository(unitOfWork);
+            BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
             foreach (MailMessage message in messages)
             {
-                BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
                 BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-
                 BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
             }
-            emailRepository.UnitOfWork.SaveChanges();
+            bookingRequestRepo.UnitOfWork.SaveChanges();
         }
 
         protected override void CleanUp()

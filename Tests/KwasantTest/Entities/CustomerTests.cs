@@ -7,7 +7,7 @@ using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
 
-namespace KwasantTest.Models
+namespace KwasantTest.Entities
 {
     [TestFixture]
     public class CustomerTests
