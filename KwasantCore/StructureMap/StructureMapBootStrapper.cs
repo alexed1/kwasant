@@ -47,8 +47,9 @@ namespace KwasantCore.StructureMap
         {
             public DevMode()
             {
-                For<IUnitOfWork>().Use(new UnitOfWork(new KwasantDbContext()));
-
+                For<IUnitOfWork>()
+                    .Use<UnitOfWork>()
+                    .Ctor<IDBContext>().Is(f => new KwasantDbContext());
             }
         }
 
@@ -56,7 +57,9 @@ namespace KwasantCore.StructureMap
         {
             public TestMode()
             {
-                For<IUnitOfWork>().Use(new UnitOfWork(new MockedDBContext()));
+                For<IUnitOfWork>()
+                    .Use<UnitOfWork>()
+                    .Ctor<IDBContext>().Is(f => new KwasantDbContext());
             }
         }
 

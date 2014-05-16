@@ -111,6 +111,8 @@ namespace Daemons
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
                     BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
+
+                    bookingRequestRepo.UnitOfWork.SaveChanges();
                 }
                 catch (Exception e)
                 {
@@ -118,8 +120,6 @@ namespace Daemons
                     _client.RemoveMessageFlags(uid, null, MessageFlag.Seen);
                     Logger.GetLogger().Info("Message marked as unread.");
                 }
-
-                bookingRequestRepo.UnitOfWork.SaveChanges();
             }
         }
 

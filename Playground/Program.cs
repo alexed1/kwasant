@@ -1,7 +1,9 @@
 ﻿using System;
 using Data.Infrastructure;
+using Data.Interfaces;
 using KwasantCore.StructureMap;
 using log4net.Config;
+using StructureMap;
 using UtilitiesLib.Logging;
 
 namespace Playground
@@ -19,11 +21,11 @@ namespace Playground
             KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);
 
-            Logger.GetLogger().Error("MY TEST ERROR!!!!!");
-            Logger.GetLogger().Info("SOME INFO!!!");
+            var first = ObjectFactory.GetInstance<IUnitOfWork>();
+            var second = ObjectFactory.GetInstance<IUnitOfWork>();
 
-
-            Console.ReadKey();
+            var fcc = first.GetHashCode();
+            var scc = second.GetHashCode();
         }
     }
 }
