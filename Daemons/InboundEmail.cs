@@ -17,6 +17,12 @@ namespace Daemons
     public class InboundEmail : Daemon
     {
         private readonly IImapClient _client;
+
+        //warning: if you remove this empty constructor, Activator calls to this type will fail.
+        public InboundEmail()
+        {
+            
+        }
         private static string GetIMAPServer()
         {
             return CloudConfigurationManager.GetSetting("InboundEmailHost");
