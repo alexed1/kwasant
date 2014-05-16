@@ -9,27 +9,20 @@ namespace KwasantTest.Fixtures
 
 
    
-        public EmailAddressDO TestEmail1()
+        public EmailDO TestEmail1()
         {
 
-            return new EmailAddressDO()
-            {
-                Address = "alexlucre1@gmail.com",
-                EmailAddressID = 1,
-                Name = "Alex Lucre1"
-            };
+            EmailDO curEmailDO = new EmailDO();
+            curEmailDO.EmailID = 1;
+            curEmailDO.From = TestEmailAddress1();
+            curEmailDO.To.Add(TestEmailAddress2());
+            curEmailDO.Subject = "Main Subject";
+            curEmailDO.Text = "This is the Body Text";
+            return curEmailDO;
+
         }
 
-        public EmailAddressDO TestEmail2()
-        {
-
-            return new EmailAddressDO()
-            {
-                Address = "joetest2@edelstein.org",
-                EmailAddressID = 2,
-                Name = "Joe Test Account 2"
-            };
-        }
+       
 
     }
 }

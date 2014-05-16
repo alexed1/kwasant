@@ -90,6 +90,22 @@ namespace KwasantTest.Services
 
         }
 
+        [Test]
+        [Category("Email")]
+        public void CanConstructEmailWithEmailDO()
+        {
+            //SETUP  
+            EmailDO _curEmailDO = _fixture.TestEmail1();
+            
+
+
+            //EXECUTE
+            Email curEmail = new Email(_uow, _curEmailDO);
+            
+            //VERIFY
+            curEmail.Send();
+
+        }
    
        
     }
