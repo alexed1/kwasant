@@ -23,19 +23,31 @@ namespace KwasantWeb.Controllers
         #region "Action"
 
         private IUnitOfWork _uow;
+
+
+
+        public CalendarController()
+        {
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            _uow = uow; //clean this up finish de-static work
+
+        }
+
+
+
+
         public ActionResult Index(int id = 0)
         {
             if (id <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _uow = uow; //clean this up finish de-static work
-            IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
+           
+            IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(_uow);
             BookingRequestDO = bookingRequestRepository.GetByKey(id);
             if (BookingRequestDO == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Calendar = new Calendar(uow, BookingRequestDO);
+            Calendar = new Calendar(_uow, BookingRequestDO);
             return View(BookingRequestDO);
         }
 

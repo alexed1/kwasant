@@ -28,6 +28,18 @@ namespace Data.Infrastructure
      * ts.GetStatus(emailDO); -- Returns a status row with value 'Bye!'
      * ts.DeleteStatus(emailDO);
      */
+
+    //additional documentation
+    //We have our main custom field code in GenericCustomField<TCustomFieldType, TForeignEntity>.
+    //    We use TrackingStatus to wrap this code to give us nicer methods ('GetEntitiesWithoutStatus' vs the generic 'GetEntitiesWithoutCustomFields'). T
+    //    his means we can also inject predicates into the query. I've re-done the TrackingStatus class to take in a TrackingType as a parameter of each of its methods. 
+    //    (I think we should use an Enum rather than a string; but either way, the idea is the same).
+    //Now we do something like this:
+    //TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(trackingStatusRepo, bookingRequestRepo);
+    //List<BookingRequestDO> unprocessedBookingRequests = ts.GetUnprocessedEntities(TrackingType.BOOKING_STATE).ToList();
+    //for each(var br in unprocessedBookingRequests)
+    //ts.SetStatus(TrackingType.BOOKING_STATE, br, TrackingStatus.PROCESSED)
+
     /// <summary>
     /// This class is used to manage TrackingStatuses linked to Entities.
     /// It's a generic implementation, and as such, can be used with any entity in the database, so long as it has a single primary key. Composite keys are not supported.
