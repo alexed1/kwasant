@@ -9,6 +9,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
+using KwasantCore.Services;
 using KwasantWeb.Controllers.DayPilot;
 using StructureMap;
 using UtilitiesLib;
@@ -23,19 +24,33 @@ namespace KwasantWeb.Controllers
         #region "Action"
 
         private IUnitOfWork _uow;
+
+
+
+        public CalendarController()
+        {
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            _uow = uow; //clean this up finish de-static work
+
+        }
+
+
+
+
         public ActionResult Index(int id = 0)
         {
             if (id <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _uow = uow; //clean this up finish de-static work
-            IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
+           
+            IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(_uow);
             BookingRequestDO = bookingRequestRepository.GetByKey(id);
             if (BookingRequestDO == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Calendar = new Calendar(uow, BookingRequestDO);
+            Calendar curCalendar = new Calendar(_uow);
+            curCalendar.LoadBookingRequest(BookingRequestDO);
+            Session["CalendarServices"] = curCalendar;
             return View(BookingRequestDO);
         }
 
@@ -407,8 +422,9 @@ namespace KwasantWeb.Controllers
 
             eventDO.BookingRequest = BookingRequestDO;
 
-            Calendar curCalendar = new Calendar(_uow, new BookingRequestDO());
-            curCalendar.DispatchEvent(eventDO);
+            var curEvent = new Event();
+            curEvent.Dispatch(eventDO);
+           
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }

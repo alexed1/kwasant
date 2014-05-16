@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="Daemon.cs" />
     <Compile Include="EventExposers\ExposedEvent.cs" />
+    <Compile Include="EventExposers\MandrillPackagerEventHandler.cs" />
     <Compile Include="InboundEmail.cs" />
     <Compile Include="OperationsMonitor.cs" />
     <Compile Include="OutboundEmail.cs" />

@@ -29,7 +29,6 @@ namespace KwasantCore.StructureMap
         {
             public KwasantCoreRegistry()
             {
-                For<MandrillPackager>().Use<MandrillPackager>();
                 For<IAttachment>().Use<AttachmentDO>();
                 For<IAttendee>().Use<AttendeeDO>();
                 For<IBookingRequest>().Use<BookingRequestDO>();
