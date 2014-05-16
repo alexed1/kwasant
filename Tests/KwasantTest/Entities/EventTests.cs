@@ -28,7 +28,7 @@ namespace KwasantTest.Entities
             StructureMapBootStrapper.ConfigureDependencies("test");
 
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _calendar = new Calendar(_uow, new BookingRequestDO());
+            _calendar = new Calendar(_uow);
             customerRepo = new CustomerRepository(_uow);
             eventRepo = new EventRepository(_uow);
             emailAddressRepo = new EmailAddressRepository(_uow);
@@ -61,7 +61,8 @@ namespace KwasantTest.Entities
                 Emails = new List<EmailDO>()
             };
             eventRepo.Add(eventDO);
-            _calendar.DispatchEvent(eventDO);
+            var curEvent = new Event();
+            curEvent.Dispatch(eventDO);
 
             //Verify success
             //use imap to load unread messages from the test customer account

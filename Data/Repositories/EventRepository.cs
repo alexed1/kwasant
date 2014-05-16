@@ -1,4 +1,6 @@
-﻿using Data.Entities;
+﻿using System;
+using System.Diagnostics;
+using Data.Entities;
 using Data.Interfaces;
 using Data.Validators;
 using FluentValidation;
@@ -21,6 +23,7 @@ namespace Data.Repositories
 
         public void Add(EventDO entity)
         {
+ 
             _curValidator.ValidateAndThrow(entity);
             base.Add(entity);
         }
