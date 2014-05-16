@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Configuration;
 using System.Data.Entity;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Daemons;
 using Data.Infrastructure;
+using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
 using KwasantWeb.Controllers;
@@ -32,7 +34,14 @@ namespace KwasantWeb
 
             Logger.GetLogger().Info("Kwasant web starting...");
 
-            //issues: doing it this way, you have to derive a class to create a seed file. seems like the EF6 seed file approach is best, but it's not getting called. wrong assembly name?
+            var baseURL = ConfigurationManager.AppSettings["BasePageURL"];
+            if (!String.IsNullOrEmpty(baseURL))
+            {
+                if (Uri.IsWellFormedUriString(baseURL, UriKind.Absolute))
+                    Email.InitialiseWebhook(baseURL + "MandrillWebhook/");
+                else
+                    throw new Exception("Invalid BasePageURL (check web.config)");
+            }
         }
 
         protected void Application_Error(Object sender, EventArgs e)

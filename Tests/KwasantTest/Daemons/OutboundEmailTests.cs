@@ -19,22 +19,5 @@ namespace KwasantTest.Daemons
         {
             StructureMapBootStrapper.ConfigureDependencies("test");
         }
-
-        [Test]
-        public void TestOutboundEmail()
-        {
-            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            var emailRepo = new EmailRepository(uow);
-            var outboundEmail = new EmailDO {Status = EmailStatus.QUEUED};
-            emailRepo.Add(outboundEmail);
-
-            var oe = new OutboundEmail();
-
-            var mandril = new Mock<MandrillPackager>();
-            ObjectFactory.Container.Inject(mandril.Object);
-
-            DaemonTests.RunDaemonOnce(oe);
-            mandril.Verify(p => p.PostMessageSend(It.IsAny<EmailDO>()));
-        }
     }
 }
