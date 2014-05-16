@@ -35,62 +35,7 @@ namespace KwasantTest.Services
             _curEventDO = new EventDO();
         }
 
-        [Test]
-        public void TestCalendarLoadsRelatedEvents()
-        {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
-            EventRepository eventRepo = new EventRepository(_uow);
-
-            CustomerDO customerOne = _fixture.TestCustomer();
-            CustomerDO customerTwo = _fixture.TestCustomer2();
-            
-            customerRepo.Add(customerOne);
-            customerRepo.Add(customerTwo);
-
-            BookingRequestDO bookingRequestOne = new BookingRequestDO()
-            {
-                EmailID = 1,
-                Customer = customerOne,
-                From = new EmailAddressDO()
-            };
-            BookingRequestDO bookingRequestTwo = new BookingRequestDO()
-            {
-                EmailID = 2,
-                Customer = customerTwo,
-                From = new EmailAddressDO()
-            };
-
-            _bookingRequestRepo.Add(bookingRequestOne);
-            _bookingRequestRepo.Add(bookingRequestTwo);
-
-            EventDO eventOne = new EventDO()
-            {
-                EventID = 1,
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now,
-                BookingRequest = bookingRequestOne
-            };
-
-            EventDO eventTwo = new EventDO()
-            {
-                EventID = 2,
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now,
-                BookingRequest = bookingRequestTwo
-            };
-
-            eventRepo.Add(eventOne);
-            eventRepo.Add(eventTwo);
-
-            _uow.SaveChanges();
-
-            Calendar calendar = new Calendar(_uow, bookingRequestOne);
-            List<EventDO> events = calendar.EventsList;
-            Assert.AreEqual(1, events.Count);
-            Assert.AreEqual(1, events.First().EventID);
-            Assert.AreEqual(1, events.First().BookingRequest.EmailID);
-        }
-
+       
 
         [Test]
         [Category("Email")]
