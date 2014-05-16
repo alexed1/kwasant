@@ -41,10 +41,10 @@ namespace KwasantCore.Services
             _curEmailDO = CreateStandardInviteEmail(eventDO);
         }
 
-        public Email(IUnitOfWork uow, EmailDO _curEmailDO) : this(uow)
+        public Email(IUnitOfWork uow, EmailDO curEmailDO) : this(uow)
         {
-
-            _curEmailDO = _curEmailDO;
+            //should add validation here
+            _curEmailDO = curEmailDO;
         }
 
         #endregion

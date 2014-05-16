@@ -79,7 +79,7 @@ namespace KwasantTest.Entities
         [Test]
         public void TestDeleteStatus()
         {
-            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmail1()};
+            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmailAddress1()};
 
             _emailRepo.Add(emailOne);
 
@@ -105,8 +105,8 @@ namespace KwasantTest.Entities
         [Test]
         public void TestGetStatus()
         {
-            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmail1()};
-            var emailTwo = new EmailDO {EmailID = 2, From = _fixture.TestEmail1()};
+            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmailAddress1()};
+            var emailTwo = new EmailDO {EmailID = 2, From = _fixture.TestEmailAddress1()};
 
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
@@ -130,7 +130,7 @@ namespace KwasantTest.Entities
         [Test]
         public void TestSetStatus()
         {
-            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmail1()};
+            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmailAddress1()};
 
             _emailRepo.Add(emailOne);
             _uow.SaveChanges();
@@ -160,8 +160,8 @@ namespace KwasantTest.Entities
         [Test]
         public void TestWhereTrackingStatus()
         {
-            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmail1()};
-            var emailTwo = new EmailDO {EmailID = 2, From = _fixture.TestEmail1()};
+            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmailAddress1()};
+            var emailTwo = new EmailDO {EmailID = 2, From = _fixture.TestEmailAddress1()};
 
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
@@ -190,8 +190,8 @@ namespace KwasantTest.Entities
         [Test]
         public void TestWithStatus()
         {
-            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmail1()};
-            var emailTwo = new EmailDO {EmailID = 2, From = _fixture.TestEmail1()};
+            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmailAddress1()};
+            var emailTwo = new EmailDO {EmailID = 2, From = _fixture.TestEmailAddress1()};
 
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
@@ -220,8 +220,8 @@ namespace KwasantTest.Entities
         [Test]
         public void TestWithoutStatus()
         {
-            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmail1()};
-            var emailTwo = new EmailDO {EmailID = 2, From = _fixture.TestEmail1()};
+            var emailOne = new EmailDO {EmailID = 1, From = _fixture.TestEmailAddress1()};
+            var emailTwo = new EmailDO {EmailID = 2, From = _fixture.TestEmailAddress1()};
 
             _emailRepo.Add(emailOne);
             _emailRepo.Add(emailTwo);
