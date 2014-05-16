@@ -25,6 +25,11 @@ namespace Daemons
         private readonly HashSet<EventInfo> _activeEventHandlers = new HashSet<EventInfo>();
         private readonly HashSet<Exception> _loggedExceptions = new HashSet<Exception>();
 
+        
+        public Daemon()
+        {
+            
+        }
 
         /// <summary>
         /// Currently unused, but will be a useful debugging tool when investigating event callbacks.
