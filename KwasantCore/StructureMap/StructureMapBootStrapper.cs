@@ -47,8 +47,8 @@ namespace KwasantCore.StructureMap
         {
             public DevMode()
             {
-                For<IUnitOfWork>().Use(new UnitOfWork(new KwasantDbContext()));
-
+                //Do not remove _ => (This gives us lazy execution, and a new unit of work & context each call). Removing this will cause the application to be unstable with threads.
+                For<IUnitOfWork>().Use(_ => new UnitOfWork(new KwasantDbContext()));
             }
         }
 
