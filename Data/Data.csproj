@@ -147,6 +147,7 @@
     <Compile Include="Entities\UserDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\TrackingStatusRepository.cs" />
+    <Compile Include="Validations\EmailAddressValidator.cs" />
     <Compile Include="Validations\CalendarValidator.cs" />
     <Compile Include="Validations\Validators.cs" />
   </ItemGroup>

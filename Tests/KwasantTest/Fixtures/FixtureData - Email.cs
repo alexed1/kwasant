@@ -9,7 +9,7 @@ namespace KwasantTest.Fixtures
 
 
    
-        public EmailAddressDO TestEmailAddress1()
+        public EmailAddressDO TestEmail1()
         {
 
             return new EmailAddressDO()
@@ -20,7 +20,7 @@ namespace KwasantTest.Fixtures
             };
         }
 
-        public EmailAddressDO TestEmailAddress2()
+        public EmailAddressDO TestEmail2()
         {
 
             return new EmailAddressDO()

@@ -19,6 +19,7 @@ namespace Daemons
         private readonly IImapClient _client;
         private static string GetIMAPServer()
         {
+           
             return CloudConfigurationManager.GetSetting("InboundEmailHost");
         }
 
@@ -32,11 +33,29 @@ namespace Daemons
 
         private static string GetUserName()
         {
-            return CloudConfigurationManager.GetSetting("INBOUND_EMAIL_USERNAME");
+            string name = CloudConfigurationManager.GetSetting("INBOUND_EMAIL_USERNAME");
+            if (name != null)
+            {
+                return name;
+            }
+            else
+            {
+                throw new Exception("Missing value for 'INBOUND_EMAIL_USERNAME'");
+            }
+            
         }
         private static string GetPassword()
         {
-            return CloudConfigurationManager.GetSetting("INBOUND_EMAIL_PASSWORD");
+            string pwd = CloudConfigurationManager.GetSetting("INBOUND_EMAIL_PASSWORD");
+            if (pwd != null)
+            {
+                return pwd;
+            }
+            else
+            {
+                throw new Exception("Missing value for 'INBOUND_EMAIL_PASSWORD'");
+            }
+          
         }
 
         private static bool UseSSL()

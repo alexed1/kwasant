@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using System.Collections.Generic;
+using Data.Entities;
 
 namespace KwasantTest.Fixtures
 {
@@ -27,6 +28,14 @@ namespace KwasantTest.Fixtures
                 EmailAddress = "joetest2@edelstein.org",
                 Name = "Joe Test Account 2"
             };
+        }
+
+        public IEnumerable<AttendeeDO> TestAttendeeList1()
+        {
+            List<AttendeeDO> attendeeList = new List<AttendeeDO>();
+            AttendeeDO attendee = TestAttendee1();
+            attendeeList.Add(attendee);
+            return attendeeList;
         }
 
     }

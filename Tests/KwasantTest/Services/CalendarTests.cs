@@ -12,7 +12,7 @@ using StructureMap;
 
 namespace KwasantTest.Services
 {
-    [TestFixture]
+    [TestFixture, Ignore]
     public class CalendarTests
     {
         private IUnitOfWork _uow;

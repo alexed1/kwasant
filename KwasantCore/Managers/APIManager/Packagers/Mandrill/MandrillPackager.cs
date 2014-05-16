@@ -119,49 +119,49 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
 //These only really exist because it makes it really easy to auto serialize and deserialize from the specific JSON that Mandrill has defined.
 //They should not be used directly, but only by MandrillPackager
 
+    public class MandrillEmail
+    {
+        public class MandrillEmailAddress
+        {
+            public string Email;
+            public string Name;
+            public string Type;
+        }
 
+        public class MandrillHeader
+        {
+            public string ReplyTo;
+        }
+
+        public class MandrillAttachment
+        {
+            public String Type;
+            public String Name;
+            public String Content;
+        }
+
+        public string HTML;
+        public string Subject;
+        public string FromEmail;
+        public string FromName;
+        public List<MandrillEmailAddress> To;
+        public MandrillHeader Headers;
+        public bool Important;
+        public List<MandrillAttachment> Attachments;
+        public List<MandrillAttachment> Images;
+        public bool Async;
+    }
     public class MandrillBasePackage
     {
         #region Members
 
-        public class MandrilEmail
-        {
-            public class MandrilEmailAddress
-            {
-                public string Email;
-                public string Name;
-                public string Type;
-            }
-
-            public class MandrilHeader
-            {
-                public string ReplyTo;
-            }
-
-            public class MandrilAttachment
-            {
-                public String Type;
-                public String Name;
-                public String Content;
-            }
-
-            public string HTML;
-            public string Subject;
-            public string FromEmail;
-            public string FromName;
-            public List<MandrilEmailAddress> To;
-            public MandrilHeader Headers;
-            public bool Important;
-            public List<MandrilAttachment> Attachments;
-            public List<MandrilAttachment> Images;
-            public bool Async;
-        }
+    
 
         public string Key;
         [JsonIgnore]
         public EmailDO EmailDO;
 
-        public MandrilEmail Message;
+        public MandrillEmail Message;
 
         #endregion
 
@@ -171,29 +171,32 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             Key = curKey;
             EmailDO = message;
 
-            Message = new MandrilEmail
+            Message = new MandrillEmail();
+            Message.HTML = message.Text;
+            Message.Subject = message.Subject;
+            Message.FromEmail = message.From.Address;
+            Message.FromName = message.From.Name;
+            Message.To = message.To.Select(t => new MandrillEmail.MandrillEmailAddress { Email = t.Address, Name = t.Name, Type = "to" }).ToList();
+            List<MandrillEmail.MandrillEmailAddress> ccList = message.CC.Select(t => new MandrillEmail.MandrillEmailAddress { Email = t.Address, Name = t.Name, Type = "cc" }).ToList();
+            List<MandrillEmail.MandrillEmailAddress> bccList = message.BCC.Select(t => new MandrillEmail.MandrillEmailAddress { Email = t.Address, Name = t.Name, Type = "bcc" }).ToList();
+            Message.To.AddRange(ccList);
+            Message.To.AddRange(bccList);
+            Message.Headers = null;
+            Message.Important = false;
+            Message.Attachments = message.Attachments == null ? null : message.Attachments.Select(a =>
             {
-                HTML = message.Text,
-                Subject = message.Subject,
-                FromEmail = message.From.Address,
-                FromName = message.From.Name,
-                To = message.To.Select(t => new MandrilEmail.MandrilEmailAddress {Email = t.Address, Name = t.Name, Type = "to"}).ToList(),
-                Headers = null,
-                Important = false,
-                Attachments = message.Attachments == null ? null : message.Attachments.Select(a =>
-                {
-                    byte[] file = a.Bytes;
-                    string base64Version = Convert.ToBase64String(file, 0, file.Length);
+                byte[] file = a.Bytes;
+                string base64Version = Convert.ToBase64String(file, 0, file.Length);
 
-                    return new MandrilEmail.MandrilAttachment
-                    {
-                        Content = base64Version,
-                        Name = a.OriginalName,
-                        Type = a.Type   
-                    };
-                }).ToList(),
-                Async = false
-            };
+                return new MandrillEmail.MandrillAttachment
+                {
+                    Content = base64Version,
+                    Name = a.OriginalName,
+                    Type = a.Type   
+                };
+            }).ToList();
+            Message.Async = false;
+           
         }
 
         #endregion
