@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using System;
+using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using FluentValidation;
@@ -42,27 +43,29 @@ namespace KwasantTest.Services
            
             
             //EXECUTE
-            EmailDO _curEmailDO = new Email(_uow, _curEventDO).EmailDO;
-            
+            var curEmail = new Email(_uow, _curEventDO);
+            curEmail.CreateStandardInviteEmail(_curEventDO);
             //VERIFY
             //Assert.AreEqual(_curEmailDO.Subject,  expectedSubject);
-            
+
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("Email")]
         public void CreateSIE_FailsIfInvalidEventInput()
         {
             //SETUP
             string expectedSubject = "Invitation via Kwasant: " + _curEventDO.Summary + "@ " + _curEventDO.StartDate;
-            EmailDO _curEmailDO; 
+            EmailDO _curEmailDO;
+            var curEmail = new Email(_uow, _curEventDO);
             
             //EXECUTE
   
             //VERIFY
             Assert.Throws<ValidationException>(() =>
                 {
-                    _curEmailDO = new Email(_uow, _curEventDO).EmailDO;
+                    
+                    curEmail.CreateStandardInviteEmail(_curEventDO);
                 }
 
             );

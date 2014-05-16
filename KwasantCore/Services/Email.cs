@@ -18,7 +18,7 @@ namespace KwasantCore.Services
     public class Email
     {
         private  IUnitOfWork _uow;
-        public  EmailDO EmailDO;
+        private  EmailDO _curEmailDO;
         private EventValidator _curEventValidator;
 
         #region Constructor
@@ -27,19 +27,24 @@ namespace KwasantCore.Services
         /// Initialize EmailManager
         /// </summary>
         /// 
-           
-        public Email(IUnitOfWork uow, EventDO eventDO)
+
+        //this constructor enables the creation of an email that doesn't necessarily have anything to do with an Event. It gets called by the other constructors
+        public Email(IUnitOfWork uow)
         {
             _uow = uow;
             _curEventValidator = new EventValidator();
-            EmailDO = CreateStandardInviteEmail(eventDO);
+  
+        }
+        public Email(IUnitOfWork uow, EventDO eventDO): this(uow)
+        {
+
+            _curEmailDO = CreateStandardInviteEmail(eventDO);
         }
 
-        public Email(IUnitOfWork uow, EmailDO emailDO)
+        public Email(IUnitOfWork uow, EmailDO _curEmailDO) : this(uow)
         {
-            _uow = uow;
-            _curEventValidator = new EventValidator();
-            EmailDO = emailDO;
+
+            _curEmailDO = _curEmailDO;
         }
 
         #endregion
@@ -56,8 +61,8 @@ namespace KwasantCore.Services
 
         public void Send()
         {
-            MandrillPackager.PostMessageSend(EmailDO);
-            EmailDO.Status = EmailStatus.DISPATCHED;
+            MandrillPackager.PostMessageSend(_curEmailDO);
+            _curEmailDO.Status = EmailStatus.DISPATCHED;
             _uow.SaveChanges();
         }
 
