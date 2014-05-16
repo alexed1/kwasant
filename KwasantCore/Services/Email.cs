@@ -2,15 +2,12 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Mail;
-using Data.Constants;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;
 using FluentValidation;
-using FluentValidation.Results;
-using FluentValidation.Validators;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Managers.CommunicationManager;
 using Microsoft.WindowsAzure;
