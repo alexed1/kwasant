@@ -9,6 +9,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
+using KwasantCore.Services;
 using KwasantWeb.Controllers.DayPilot;
 using StructureMap;
 using UtilitiesLib;
@@ -47,7 +48,9 @@ namespace KwasantWeb.Controllers
             if (BookingRequestDO == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Calendar = new Calendar(_uow, BookingRequestDO);
+            Calendar curCalendar = new Calendar(_uow);
+            curCalendar.LoadBookingRequest(BookingRequestDO);
+            Session["CalendarServices"] = curCalendar;
             return View(BookingRequestDO);
         }
 
@@ -419,8 +422,9 @@ namespace KwasantWeb.Controllers
 
             eventDO.BookingRequest = BookingRequestDO;
 
-            Calendar curCalendar = new Calendar(_uow, new BookingRequestDO());
-            curCalendar.DispatchEvent(eventDO);
+            var curEvent = new Event();
+            curEvent.Dispatch(eventDO);
+           
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }

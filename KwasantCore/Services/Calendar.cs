@@ -23,17 +23,17 @@ namespace KwasantCore.Services
     /// </summary>
     public class Calendar 
     {
-        private readonly BookingRequestDO _bookingRequestDO;
+        private BookingRequestDO _bookingRequestDO;
         private IUnitOfWork _uow;
         private readonly EventRepository _eventRepo;
         private EventValidator _curValidator;
 
-        public Calendar(IUnitOfWork uow, BookingRequestDO bookingRequest)
+        public Calendar(IUnitOfWork uow)
         {
             _uow = uow;
-            _bookingRequestDO = bookingRequest;
+            
             _eventRepo = new EventRepository(_uow);
-            LoadData();
+           
            _curValidator = new EventValidator();
             
         }
@@ -55,6 +55,12 @@ namespace KwasantCore.Services
             }
         }
 
+        public void LoadBookingRequest(BookingRequestDO curBR)
+        {
+            _bookingRequestDO = curBR;
+            LoadData();
+        }
+
         private void LoadData()
         {
             IEnumerable<EventDO> test = _eventRepo.GetAll();
@@ -71,67 +77,9 @@ namespace KwasantCore.Services
             LoadData();
         }
 
-        //public void DispatchEvent(EventDO curEventDO)
-        //{
-        //    DispatchEvent(curEventDO);
             
-        //}
 
-        public void DispatchEvent(EventDO curEventDO)
-        {
-            if(curEventDO.Attendees == null)
-                curEventDO.Attendees = new List<AttendeeDO>();
-
-            Email email = new Email(_uow, curEventDO);
-            EmailDO outboundEmail = email.EmailDO;
-            string fromEmail = CommunicationManager.GetFromEmail();
-            string fromName = CommunicationManager.GetFromName(); 
-
-            iCalendar ddayCalendar = new iCalendar();
-            DDayEvent dDayEvent = new DDayEvent();
-            if (curEventDO.IsAllDay)
-            {
-                dDayEvent.IsAllDay = true;
-            }
-            else
-            {
-                dDayEvent.DTStart = new iCalDateTime(curEventDO.StartDate);
-                dDayEvent.DTEnd = new iCalDateTime(curEventDO.EndDate);
-            }
-            dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
-            dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
-
-            dDayEvent.Location = curEventDO.Location;
-            dDayEvent.Description = curEventDO.Description;
-            dDayEvent.Summary = curEventDO.Summary;
-            foreach (AttendeeDO attendee in curEventDO.Attendees)
-            {
-                dDayEvent.Attendees.Add(new Attendee
-                {
-                    CommonName = attendee.Name,
-                    Type = "INDIVIDUAL",
-                    Role = "REQ-PARTICIPANT",
-                    ParticipationStatus = ParticipationStatus.NeedsAction,
-                    RSVP = true,
-                    Value = new Uri("mailto:" + attendee.EmailAddress),
-                });
-                attendee.Event = curEventDO;
-            }
-            dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
-
-            ddayCalendar.Events.Add(dDayEvent);
-
-            AttachCalendarToEmail(ddayCalendar, outboundEmail);
-
-            if (curEventDO.Emails == null)
-                curEventDO.Emails = new List<EmailDO>();
-            curEventDO.Emails.Add(outboundEmail);
-
-            _uow.SaveChanges();
-            Reload();
-        }
-
-        private static void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)
+        public void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)
         {
             iCalendarSerializer serializer = new iCalendarSerializer(iCal);
             string fileToAttach = serializer.Serialize(iCal);
