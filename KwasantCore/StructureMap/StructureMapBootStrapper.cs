@@ -59,7 +59,7 @@ namespace KwasantCore.StructureMap
             {
                 For<IUnitOfWork>()
                     .Use<UnitOfWork>()
-                    .Ctor<IDBContext>().Is(f => new KwasantDbContext());
+                    .Ctor<IDBContext>().Is(f => new MockedDBContext());
             }
         }
 
