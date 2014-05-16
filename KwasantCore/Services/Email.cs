@@ -1,34 +1,25 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Mail;
-using Data.Constants;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;
 using FluentValidation;
-using FluentValidation.Results;
-using FluentValidation.Validators;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Managers.CommunicationManager;
 using Microsoft.WindowsAzure;
-using StructureMap;
 
 namespace KwasantCore.Services
 {
     public class Email
     {
         private  IUnitOfWork _uow;
-        private  EmailDO _emailDO;
+        public  EmailDO EmailDO;
         private EventValidator _curEventValidator;
-
-        #region Members
-
-        private readonly MandrillPackager _mandrillApi;
-
-        #endregion
 
         #region Constructor
 
@@ -37,18 +28,18 @@ namespace KwasantCore.Services
         /// </summary>
         /// 
            
-        public Email(IUnitOfWork uow)
+        public Email(IUnitOfWork uow, EventDO eventDO)
         {
             _uow = uow;
-            _mandrillApi = ObjectFactory.GetInstance<MandrillPackager>();
             _curEventValidator = new EventValidator();
+            EmailDO = CreateStandardInviteEmail(eventDO);
         }
 
-        public Email(IUnitOfWork uow, EmailDO emailDO) : this(uow) //this can probably be simplified to a single constructor. Do we really want to pass emailDO in?
+        public Email(IUnitOfWork uow, EmailDO emailDO)
         {
-            
-            _emailDO = emailDO;
-            
+            _uow = uow;
+            _curEventValidator = new EventValidator();
+            EmailDO = emailDO;
         }
 
         #endregion
@@ -60,24 +51,29 @@ namespace KwasantCore.Services
         /// </summary>
         public void SendTemplate(string templateName, EmailDO message, Dictionary<string, string> mergeFields)
         {
-            _mandrillApi.PostMessageSendTemplate(templateName, message, mergeFields);
+            MandrillPackager.PostMessageSendTemplate(templateName, message, mergeFields);
         }
 
         public void Send()
         {
-            _mandrillApi.PostMessageSend(_emailDO);
-            _emailDO.Status = EmailStatus.SENT;
+            MandrillPackager.PostMessageSend(EmailDO);
+            EmailDO.Status = EmailStatus.DISPATCHED;
             _uow.SaveChanges();
         }
-        public void Send(EmailDO curEmailDO)
+
+        public static void InitialiseWebhook(String url)
         {
-            _emailDO = curEmailDO;
-            Send();
+            MandrillPackager.InitialiseWebhook(url);
         }
 
-        public void Ping()
+        public static void HandleWebhookResponse(String responseStr)
         {
-            string results = _mandrillApi.PostPing();
+            MandrillPackager.HandleWebhookResponse(responseStr);
+        }
+
+        public static void Ping()
+        {
+            string results = MandrillPackager.PostPing();
             Debug.WriteLine(results);
         }
 

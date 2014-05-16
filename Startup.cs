@@ -14,6 +14,7 @@ using Microsoft.Owin;
 using Microsoft.WindowsAzure;
 using Owin;
 using StructureMap;
+using UtilitiesLib.Logging;
 
 [assembly: OwinStartup(typeof(KwasantWeb.Startup))]
 
@@ -69,16 +70,23 @@ namespace KwasantWeb
                 {
                     foreach (DaemonConfig daemon in daemonConfig.Daemons)
                     {
-                        if (daemon.Enabled)
+                        try
                         {
-                            Type type = Type.GetType(daemon.InitClass, true);
-                            Daemon obj = Activator.CreateInstance(type) as Daemon;
-                            if (obj == null)
-                                throw new ArgumentException(
-                                    string.Format(
-                                        "An daemon must implement IDaemon. Type '{0}' does not implement the interface.",
-                                        type.Name));
-                            obj.Start();
+                            if (daemon.Enabled)
+                            {
+                                Type type = Type.GetType(daemon.InitClass, true);
+                                Daemon obj = Activator.CreateInstance(type) as Daemon;
+                                if (obj == null)
+                                    throw new ArgumentException(
+                                        string.Format(
+                                            "A daemon must implement IDaemon. Type '{0}' does not implement the interface.",
+                                            type.Name));
+                                obj.Start();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.GetLogger().Error("Error initializing daemon '" + daemon.Name + "'.", e);
                         }
                     }
                 }

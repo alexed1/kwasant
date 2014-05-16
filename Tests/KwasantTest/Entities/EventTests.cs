@@ -12,7 +12,7 @@ using StructureMap;
 
 namespace KwasantTest.Entities
 {
-    [TestFixture]
+    [TestFixture, Ignore]
     public class EventTests 
     {
         public ICustomerRepository customerRepo;

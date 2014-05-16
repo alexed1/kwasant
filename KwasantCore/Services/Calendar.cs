@@ -82,10 +82,8 @@ namespace KwasantCore.Services
             if(curEventDO.Attendees == null)
                 curEventDO.Attendees = new List<AttendeeDO>();
 
-            
-
-            Email email = new Email(_uow);
-            EmailDO outboundEmail = email.CreateStandardInviteEmail(curEventDO);
+            Email email = new Email(_uow, curEventDO);
+            EmailDO outboundEmail = email.EmailDO;
             string fromEmail = CommunicationManager.GetFromEmail();
             string fromName = CommunicationManager.GetFromName(); 
 
