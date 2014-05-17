@@ -488,6 +488,7 @@
     <Content Include="Themes\scheduler_white\tree_collapse.png" />
     <Content Include="Themes\scheduler_white\tree_expand.png" />
     <Content Include="Themes\scheduler_white\tree_nochildren.png" />
+    <Content Include="UnauthorizedRequest.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

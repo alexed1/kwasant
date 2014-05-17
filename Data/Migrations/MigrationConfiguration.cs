@@ -40,7 +40,7 @@ namespace Data.Migrations
 
         private static void SeedInstructions(IDBContext context)
         {
-            Type[] nestedTypes = typeof (InstructionConstants).GetNestedTypes();
+            Type[] nestedTypes = typeof(InstructionConstants).GetNestedTypes();
             var instructionsToAdd = new List<InstructionDO>();
             foreach (Type nestedType in nestedTypes)
             {
@@ -51,7 +51,7 @@ namespace Data.Migrations
                     object value = constant.GetValue(null);
                     instructionsToAdd.Add(new InstructionDO
                     {
-                        InstructionID = (int) value,
+                        InstructionID = (int)value,
                         Name = name,
                         Category = nestedType.Name
                     });
