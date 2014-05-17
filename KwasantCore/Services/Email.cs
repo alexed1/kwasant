@@ -20,6 +20,7 @@ namespace KwasantCore.Services
         private  IUnitOfWork _uow;
         private  EmailDO _curEmailDO;
         private EventValidator _curEventValidator;
+        private IEmailRepository _curEmailRepository;
 
         #region Constructor
 
@@ -33,7 +34,7 @@ namespace KwasantCore.Services
         {
             _uow = uow;
             _curEventValidator = new EventValidator();
-  
+            _curEmailRepository = new EmailRepository(_uow);
         }
         public Email(IUnitOfWork uow, EventDO eventDO): this(uow)
         {
@@ -157,7 +158,19 @@ namespace KwasantCore.Services
                 createdEmail.BCC.Add(archiveAddress);
             }
 
+            _curEmailRepository.Add(createdEmail);
+            _uow.SaveChanges();
+      
             return createdEmail;
         }
+
+        //FIX THIS: currently generates an EF exception.
+        public void Dispatch(EmailDO curEmail)
+        {
+            curEmail.Status = EmailStatus.QUEUED;
+            _curEmailRepository.Add(curEmail);
+            _uow.SaveChanges();
+        }
+
     }
 }
