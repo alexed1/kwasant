@@ -64,7 +64,8 @@ namespace KwasantCore.Services
         {
             MandrillPackager.PostMessageSend(_curEmailDO);
             _curEmailDO.Status = EmailStatus.DISPATCHED;
-            _uow.SaveChanges();
+            _curEmailRepository.Add(_curEmailDO);
+            _curEmailRepository.UnitOfWork.SaveChanges();
         }
 
         public static void InitialiseWebhook(String url)
@@ -159,8 +160,7 @@ namespace KwasantCore.Services
             }
 
             _curEmailRepository.Add(createdEmail);
-            _uow.SaveChanges();
-      
+            _curEmailRepository.UnitOfWork.SaveChanges();
             return createdEmail;
         }
 
