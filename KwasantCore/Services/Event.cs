@@ -31,7 +31,7 @@ namespace KwasantCore.Services
 
 
             Email email = new Email(_uow);
-            EmailDO outboundEmail = email.CreateStandardInviteEmail(curEventDO);
+      
             string fromEmail = CommunicationManager.GetFromEmail();
             string fromName = CommunicationManager.GetFromName();
 
@@ -70,14 +70,18 @@ namespace KwasantCore.Services
             ddayCalendar.Events.Add(dDayEvent);
 
             Calendar curCalendar = new Calendar(_uow);
+            EmailDO outboundEmail = email.CreateStandardInviteEmail(curEventDO);
             curCalendar.AttachCalendarToEmail(ddayCalendar, outboundEmail);
+            _uow.SaveChanges();
+
 
             if (curEventDO.Emails == null)
                 curEventDO.Emails = new List<EmailDO>();
             curEventDO.Emails.Add(outboundEmail);
 
             _uow.SaveChanges();
-           
+            //email.Dispatch(outboundEmail); FIX THIS
+
         }
         
     }

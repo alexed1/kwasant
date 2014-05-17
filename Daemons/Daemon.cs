@@ -196,7 +196,7 @@ namespace Daemons
                                 //Sleep until the approximate time that we're ready
                                 double waitTime = (WaitTimeBetweenExecution - (currTime - lastExecutionTime).TotalMilliseconds);
 
-                                Logger.GetLogger().Info(GetType().Name + " - sleeping for " + waitTime + " milliseconds");
+                                //Logger.GetLogger().Info(GetType().Name + " - sleeping for " + waitTime + " milliseconds");
                                 Thread.Sleep((int)waitTime);
                             }
                             
