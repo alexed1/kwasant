@@ -1,27 +1,39 @@
-﻿@{
-
-}
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <div>
     <div style="color: #D85E17; padding: 15px;">
         <a style="color: #D85E17; font-family: 'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif; font-size: 20px; text-decoration: none;" href="@Model.LinkTo">
-            <img style="vertical-align: middle" src="cid:@Model.LogoContentID" />
-
+            <img src="http://kwasant-test.azurewebsites.net/Content/images/perfect-krawsant.png" onerror="cid:@Model.LogoContentID" />
             @Model.BasicText
-            </img>
         </a>
     </div>
 
     <div style="background-color: rgb(255, 255, 255); border-color: rgb(170, 170, 170); border-style: solid; border-width: 1px 2px 2px 1px; font-family: Arial, sans-serif; max-width: 729px; width: 100%;">
         <div style="padding: 15px;">
-            <h3 style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; margin: 0px; padding-bottom: 6px;">Invite</h3>
+            <h3 style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; margin: 0px; padding-bottom: 6px;">@Model.Summary</h3>
             <table>
                 <tbody>
+                    <tr>
+                        <td style="color: rgb(136, 136, 136); font-family: Arial, sans-serif; font-size: 13px; padding: 0px 1em 10px 0px; white-space: nowrap" valign="top">
+                            <div><i style="font-style: normal">Description</i></div>
+                        </td>
+                        <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-bottom: 10px;" valign="top">
+                            @Model.Description
+                        </td>
+                    </tr>
                     <tr>
                         <td style="color: rgb(136, 136, 136); font-family: Arial, sans-serif; font-size: 13px; padding: 0px 1em 10px 0px; white-space: nowrap" valign="top">
                             <div><i style="font-style: normal">When</i></div>
                         </td>
                         <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-bottom: 10px;" valign="top">
                             @Model.Time <span style="color: rgb(136, 136, 136)">UTC+@Model.Timezone</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="color: rgb(136, 136, 136); font-family: Arial, sans-serif; font-size: 13px; padding: 0px 1em 10px 0px; white-space: nowrap" valign="top">
+                            <div><i style="font-style: normal">Where</i></div>
+                        </td>
+                        <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-bottom: 10px;" valign="top">
+                            @Model.Where
                         </td>
                     </tr>
                     <tr>
@@ -33,16 +45,16 @@
                             <table cellspacing="0" cellpadding="0">
                                 <tbody>
                                     @{
-                                        foreach(var attendee in @Model.Attendees)
-                                        {
-                                            <tr>
-                                            <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-right: 10px;">
-                                                <div>
-                                                    <div style="margin: 0px 0px 0.3em"><a href="mailto:@attendee.EmailAddress">@attendee.Name</a></div>
-                                                </div>
-                                            </td>
-                                            </tr>
-                                        }
+                                    foreach(var attendee in @Model.Attendees)
+                                    {
+                                    <tr>
+                                        <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-right: 10px;">
+                                            <div>
+                                                <div style="margin: 0px 0px 0.3em"><a href="mailto:@attendee.EmailAddress">@attendee.Name</a></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    }
                                     }
                                 </tbody>
                             </table>

@@ -102,7 +102,7 @@ namespace KwasantCore.Services
                 BCC = mailAddress.Bcc.Select(GetEmailAddress).ToList(),
                 CC = mailAddress.CC.Select(GetEmailAddress).ToList(),
                 Subject = mailAddress.Subject,
-                Text = mailAddress.Body,
+                HTMLText = mailAddress.Body,
                 Attachments = mailAddress.Attachments.Select(CreateNewAttachment).ToList(),
                 To = mailAddress.To.Select(GetEmailAddress).ToList(),
                 Events = null
@@ -144,7 +144,7 @@ namespace KwasantCore.Services
             createdEmail.From = new EmailAddressDO { Address = fromEmail, Name = fromName };
             createdEmail.To = curEventDO.Attendees.Select(a => new EmailAddressDO { Address = a.EmailAddress, Name = a.Name }).ToList();
             createdEmail.Subject = "Invitation via Kwasant: " + curEventDO.Summary + "@ " + curEventDO.StartDate;
-            createdEmail.Text = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";
+            createdEmail.HTMLText = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";
             createdEmail.Status = EmailStatus.QUEUED;
 
             if (CloudConfigurationManager.GetSetting("ArchiveOutboundEmail") == "true")

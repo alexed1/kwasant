@@ -17,7 +17,7 @@ namespace KwasantTest.Fixtures
             curEmailDO.From = TestEmailAddress1();
             curEmailDO.To.Add(TestEmailAddress2());
             curEmailDO.Subject = "Main Subject";
-            curEmailDO.Text = "This is the Body Text";
+            curEmailDO.HTMLText = "This is the Body Text";
             return curEmailDO;
 
         }

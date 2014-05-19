@@ -68,7 +68,7 @@ namespace KwasantCore.Managers.CommunicationManager
                     From = new EmailAddressDO { Address = "scheduling@kwasant.com", Name = "Kwasant Scheduling Services" },
                     To = new List<EmailAddressDO> {new EmailAddressDO {Address = toAddress}},
                     Subject = "New booking request!",
-                    Text = String.Format(message, bookingRequest.From.Address),
+                    HTMLText = String.Format(message, bookingRequest.From.Address),
                     Status = EmailStatus.QUEUED
                 };
 

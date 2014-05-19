@@ -47,13 +47,13 @@ namespace Playground
                     Event = evDO,
                     Name = "Robert Rudman",
                },
-               new AttendeeDO
-                {
-                    EmailAddress = "alex@edelstein.org",
-                    EventID = evDO.EventID,
-                    Event = evDO,
-                    Name = "Alex Edelstein",
-               },
+               //new AttendeeDO
+               // {
+               //     EmailAddress = "alex@edelstein.org",
+               //     EventID = evDO.EventID,
+               //     Event = evDO,
+               //     Name = "Alex Edelstein",
+               //},
             };
             evDO.Location = "Skype";
             evDO.Description = "Discuss event visualizations";
@@ -80,18 +80,27 @@ namespace Playground
 
             string logoContentID = Guid.NewGuid().ToString();
 
-            var parsedOutEmail = Razor.Parse(KwasantCore.Properties.Resources.HTMLEventInvitation,
-                new
-                {
-                    LinkTo = "http://kwasant.com/",
-                    LogoContentID = logoContentID,
-                    BasicText = "This is a Kwasant Event Request. Click here for more information.",
-                    Time = eventDO.IsAllDay ? "All day - " + eventDO.StartDate.ToString("ddd d MMM") : eventDO.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " + eventDO.EndDate.ToString("hh:mm tt"),
-                    Timezone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now),
-                    Attendees = eventDO.Attendees,
-                });
+            var dataObject = new
+            {
+                LinkTo = "http://kwasant.com/",
+                LogoContentID = logoContentID,
+                BasicText = "This is a Kwasant Event Request. Click here for more information.",
+                Time =
+                    eventDO.IsAllDay
+                        ? "All day - " + eventDO.StartDate.ToString("ddd d MMM")
+                        : eventDO.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " +
+                          eventDO.EndDate.ToString("hh:mm tt"),
+                Timezone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now),
+                Attendees = eventDO.Attendees,
+                Where = eventDO.Location,
+                Summary = eventDO.Summary,
+                Description = eventDO.Description,
+            };
+            var parsedHTMLEmail = Razor.Parse(KwasantCore.Properties.Resources.HTMLEventInvitation, dataObject);
+            var parsedPlainEmail = Razor.Parse(KwasantCore.Properties.Resources.PlainEventInvitation, dataObject);
 
-            outboundEmail.Text = parsedOutEmail;
+            outboundEmail.HTMLText = parsedHTMLEmail;
+            outboundEmail.PlainText = parsedPlainEmail;
             
             outboundEmail.Status = EmailStatus.QUEUED;
 
@@ -131,17 +140,17 @@ namespace Playground
             ddayCalendar.Method = CalendarMethods.Request;
 
             AttachCalendarToEmail(ddayCalendar, outboundEmail);
-            var memstr = new MemoryStream();
-            KwasantCore.Properties.Resources.perfect_krawsant.Save(memstr, System.Drawing.Imaging.ImageFormat.Png);
-            var att = new AttachmentDO
-            {
-                Type = "image/png",
-                OriginalName = "KwasantLog.png"
-            };
-            memstr.Position = 0;
-            att.SetData(memstr);
-            att.ContentID = logoContentID;
-            outboundEmail.Attachments.Add(att);
+            //var memstr = new MemoryStream();
+            //KwasantCore.Properties.Resources.perfect_krawsant.Save(memstr, System.Drawing.Imaging.ImageFormat.Png);
+            //var att = new AttachmentDO
+            //{
+            //    Type = "image/png",
+            //    OriginalName = "KwasantLog.png"
+            //};
+            //memstr.Position = 0;
+            //att.SetData(memstr);
+            //att.ContentID = logoContentID;
+            //outboundEmail.Attachments.Add(att);
 
 
             if (eventDO.Emails == null)

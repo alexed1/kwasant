@@ -18,5 +18,7 @@ namespace Data.Entities
         public String Type { get; set; }
 
         public String ContentID { get; set; }
+
+        public bool BoundaryEmbedded { get; set; }
     }
 }

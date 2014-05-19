@@ -17,7 +17,7 @@ namespace KwasantCore.Services
             CustomerDO curCustomer = GetOrCreateCustomer(uow, bookingRequest);
             
             bookingRequest.Customer = curCustomer;
-            bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.Text);
+            bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
             bookingRequest.Status = EmailStatus.UNPROCESSED;
         }
 

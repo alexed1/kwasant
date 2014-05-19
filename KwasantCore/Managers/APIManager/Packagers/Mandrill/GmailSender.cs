@@ -38,10 +38,11 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
 
             mailMessage.Subject = email.Subject;
             mailMessage.IsBodyHtml = true;
-            var htmlView = AlternateView.CreateAlternateViewFromString(email.Text, Encoding.UTF8, "text/html");
+            var htmlView = AlternateView.CreateAlternateViewFromString(email.HTMLText, Encoding.UTF8, "text/html");
+            var plainView = AlternateView.CreateAlternateViewFromString(email.PlainText, Encoding.UTF8, "text/plain");
+            mailMessage.AlternateViews.Add(plainView);
             mailMessage.AlternateViews.Add(htmlView);
-
-
+            
             foreach (var attachment in email.Attachments)
             {
                 if (attachment.OriginalName.EndsWith(".ics"))

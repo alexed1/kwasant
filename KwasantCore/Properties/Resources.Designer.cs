@@ -67,14 +67,14 @@ namespace KwasantCore.Properties {
         ///&lt;div&gt;
         ///    &lt;div style=&quot;color: #D85E17; padding: 15px;&quot;&gt;
         ///        &lt;a style=&quot;color: #D85E17; font-family: &apos;Open Sans&apos;, Helvetica, Helvetica Nue, Arial, sans-serif; font-size: 20px; text-decoration: none;&quot; href=&quot;@Model.LinkTo&quot;&gt;
-        ///            &lt;img style=&quot;vertical-align: middle&quot; src=&quot;http://kwasant.com/Content/images/perfect-krawsant.png&quot; &gt;
+        ///            &lt;img style=&quot;vertical-align: middle&quot; src=&quot;cid:@Model.LogoContentID&quot; /&gt;
         ///
         ///            @Model.BasicText
         ///            &lt;/img&gt;
         ///        &lt;/a&gt;
         ///    &lt;/div&gt;
         ///
-        ///    &lt;div style=&quot;background-color: rgb(255, 255, 255); border-color: rgb(170, 170, 170 [rest of string was truncated]&quot;;.
+        ///    &lt;div style=&quot;background-color: rgb(255, 255, 255); border-color: rgb(170, 170, 170); border-style: solid; borde [rest of string was truncated]&quot;;.
         /// </summary>
         public static string HTMLEventInvitation {
             get {
@@ -89,6 +89,26 @@ namespace KwasantCore.Properties {
             get {
                 object obj = ResourceManager.GetObject("perfect_krawsant", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @{
+        ///
+        ///}
+        ///&lt;div&gt;
+        ///    &lt;div style=&quot;color: #D85E17; padding: 15px;&quot;&gt;
+        ///        &lt;a style=&quot;color: #D85E17; font-family: &apos;Open Sans&apos;, Helvetica, Helvetica Nue, Arial, sans-serif; font-size: 20px; text-decoration: none;&quot; href=&quot;@Model.LinkTo&quot;&gt;
+        ///            @Model.BasicText
+        ///        &lt;/a&gt;
+        ///    &lt;/div&gt;
+        ///
+        ///    &lt;div style=&quot;background-color: rgb(255, 255, 255); border-color: rgb(170, 170, 170); border-style: solid; border-width: 1px 2px 2px 1px; font-family: Arial, sans-serif; max-width: 729px; width: 100%;&quot;&gt;
+        ///        &lt;div  [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string PlainEventInvitation {
+            get {
+                return ResourceManager.GetString("PlainEventInvitation", resourceCulture);
             }
         }
     }

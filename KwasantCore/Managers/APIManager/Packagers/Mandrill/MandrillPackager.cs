@@ -450,7 +450,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
 
             Message = new MandrilEmail
             {
-                HTML = message.Text,
+                HTML = message.HTMLText,
                 Subject = message.Subject,
                 FromEmail = message.From.Address,
                 FromName = message.From.Name,

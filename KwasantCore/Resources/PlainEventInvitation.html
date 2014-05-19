@@ -1,0 +1,13 @@
+﻿@Model.Summary
+@Model.Description
+*When*
+@Model.Time UTC+@Model.Timezone
+*Where*
+@Model.Where
+*Who*
+@{
+foreach(var attendee in @Model.Attendees)
+{
+@(attendee.Name + " - " + attendee.EmailAddress)
+}
+}
