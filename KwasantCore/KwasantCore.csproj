@@ -118,6 +118,7 @@
     <Compile Include="Managers\IdentityManager\IdentityManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Account.cs" />
+    <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Calendar.cs" />

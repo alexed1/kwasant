@@ -10,7 +10,7 @@ namespace KwasantTest.Fixtures
             return new EmailAddressDO()
             {
                 Address = "alexlucre1@gmail.com",
-                EmailAddressID = 1,
+                Id = 1,
                 Name = "Alex Lucre1"
             };
         }
@@ -21,7 +21,7 @@ namespace KwasantTest.Fixtures
             return new EmailAddressDO()
             {
                 Address = "joetest2@edelstein.org",
-                EmailAddressID = 2,
+                Id = 2,
                 Name = "Joe Test Account 2"
             };
         }
@@ -32,7 +32,7 @@ namespace KwasantTest.Fixtures
             return new EmailAddressDO()
             {
                 Address = "pabitra@hotmail.com",
-                EmailAddressID = 3,
+                Id = 3,
                 Name = "Person Test account"
             };
         }
@@ -43,7 +43,7 @@ namespace KwasantTest.Fixtures
             return new EmailAddressDO()
             {
                 Address = "JackMaginot@gmail.com",
-                EmailAddressID = 4,
+                Id = 4,
                 Name = "Jack Test account"
             };
         }
@@ -54,7 +54,7 @@ namespace KwasantTest.Fixtures
             return new EmailAddressDO()
             {
                 Address = "RobMaginot@gmail.com",
-                EmailAddressID = 5,
+                Id = 5,
                 Name = "Jack Test account"
             };
         }

@@ -37,7 +37,28 @@ namespace KwasantCore.Services
         public async Task<RegistrationStatus> Register(UserDO userDO)
         {
             RegistrationStatus curRegStatus = RegistrationStatus.Pending; 
-            UserDO user = GetUser(userDO.UserName); //check this user already exists in DB or not
+
+
+
+            //check if we know this email address
+            EmailAddressDO existingEmailAddressDO  = EmailAddress.Get(userDO.EmailAddress);
+
+            //if not, then create an EmailAddress object, then create a User
+            //if so, then is it associated with a User or a Person?
+            //if a User, redirect to an error message
+            //if a Person, create a new User and delete the corresponding Person
+
+
+
+
+
+
+
+
+
+
+
+            //no longer used -> UserDO user = GetUser(userDO.UserName); //check this user already exists in DB or not
 
             if (user != null) // Existing user
             {

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices.ComTypes;
 using Data.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -23,10 +24,7 @@ namespace Data.Entities
         [MinLength(3, ErrorMessage = "Last name minimum 3 characters.")]        
         public String LastName { get; set; }
 
-    
-        public int? EmailAddressID { get; set; }
-
-        [ForeignKey("EmailAddressID")]
+        [ForeignKey("Id")]
         public virtual EmailAddressDO EmailAddress { get; set; }
     }
 }
