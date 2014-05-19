@@ -94,6 +94,10 @@
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>KwasantCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\KwasantICS\KwasantICS.csproj">
+      <Project>{D940EFCA-2D57-466C-8103-54DB173F1BD2}</Project>
+      <Name>KwasantICS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\KwasantWeb.csproj">
       <Project>{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}</Project>
       <Name>KwasantWeb</Name>

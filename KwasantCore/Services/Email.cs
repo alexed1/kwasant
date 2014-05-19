@@ -62,7 +62,8 @@ namespace KwasantCore.Services
 
         public void Send()
         {
-            MandrillPackager.PostMessageSend(_curEmailDO);
+            GmailSender.Send(_curEmailDO);
+            //MandrillPackager.PostMessageSend(_curEmailDO);
             _curEmailDO.Status = EmailStatus.DISPATCHED;
             _curEmailRepository.Add(_curEmailDO);
             _curEmailRepository.UnitOfWork.SaveChanges();
@@ -128,12 +129,10 @@ namespace KwasantCore.Services
                 OriginalName = attachment.Name,
                 Type = attachment.ContentType.MediaType,
             };
+            
             att.SetData(attachment.ContentStream);
             return att;
         }
-
-       
-
 
         public EmailDO CreateStandardInviteEmail(EventDO curEventDO)
         {
