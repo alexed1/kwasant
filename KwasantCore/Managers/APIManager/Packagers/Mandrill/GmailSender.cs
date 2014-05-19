@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
@@ -14,7 +15,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             {
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential() {UserName = "rjrudman@gmail.com", Password = "zvavlfkbefvzresj"}
+                Credentials = new NetworkCredential() { UserName = "kwasantintake@gmail.com", Password = "wymcivlctelmbazc" }
             };
 
             var mailMessage = new MailMessage();
@@ -36,36 +37,35 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             }
 
             mailMessage.Subject = email.Subject;
-            //mailMessage.Body = email.Text;
             mailMessage.IsBodyHtml = true;
-            mailMessage.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(email.Text, null, "text/html"));
+            var htmlView = AlternateView.CreateAlternateViewFromString(email.Text, Encoding.UTF8, "text/html");
+            mailMessage.AlternateViews.Add(htmlView);
 
 
             foreach (var attachment in email.Attachments)
             {
+                if (attachment.OriginalName.EndsWith(".ics"))
+                {
+                    var vCT = new ContentType("text/calendar");
+                    vCT.CharSet = "UTF-8";
+                    vCT.Parameters.Add("method", "REQUEST");
 
-                var vCT = new ContentType("text/calendar");
-                vCT.CharSet = "UTF-8";
-                vCT.Parameters.Add("method", "REQUEST");
+                    var av = new AlternateView(attachment.GetData(), vCT);
+                    av.TransferEncoding = TransferEncoding.SevenBit;
+                    mailMessage.AlternateViews.Add(av);
+                }
 
-                var av = new AlternateView(attachment.GetData(), vCT);
-                av.TransferEncoding = TransferEncoding.SevenBit;
-
-                mailMessage.AlternateViews.Add(av);
- 
                 var ct = new ContentType(attachment.Type);
                 ct.MediaType = attachment.Type;
                 ct.Name = attachment.OriginalName;
-                
-                //var lr = new LinkedResource(attachment.GetData(),ct);
-                //lr.TransferEncoding = TransferEncoding.Base64;
 
-                //av.LinkedResources.Add(lr);
+                var att = new LinkedResource(attachment.GetData(), ct);
+                if (!String.IsNullOrEmpty(attachment.ContentID))
+                    att.ContentId = attachment.ContentID;
 
-                //if (attachment.OriginalName.EndsWith(".ics"))
-                //{
-                   
-                //}
+                att.TransferEncoding = TransferEncoding.Base64;
+
+                htmlView.LinkedResources.Add(att);
             }
 
             smtpClient.Send(mailMessage);

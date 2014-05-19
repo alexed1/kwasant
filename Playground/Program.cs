@@ -4,7 +4,6 @@ using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
-using System.Text;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Infrastructure;
@@ -15,8 +14,10 @@ using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using log4net.Config;
+using RazorEngine;
 using StructureMap;
 using UtilitiesLib.Logging;
+using Encoding = System.Text.Encoding;
 
 namespace Playground
 {
@@ -41,17 +42,24 @@ namespace Playground
             {
                 new AttendeeDO
                 {
-                    EmailAddress = "RJRudman@outlook.com",
+                    EmailAddress = "rjrudman@gmail.com",
                     EventID = evDO.EventID,
                     Event = evDO,
                     Name = "Robert Rudman",
                },
+               new AttendeeDO
+                {
+                    EmailAddress = "alex@edelstein.org",
+                    EventID = evDO.EventID,
+                    Event = evDO,
+                    Name = "Alex Edelstein",
+               },
             };
-            evDO.Location = "Office";
-            evDO.Description = "Some desc";
-            evDO.Summary = "Some Summary";
-            evDO.StartDate = DateTime.Now;
-            evDO.EndDate = DateTime.Now.AddHours(1);
+            evDO.Location = "Skype";
+            evDO.Description = "Discuss event visualizations";
+            evDO.Summary = "Gmail and outlook works, but...";
+            evDO.StartDate = DateTime.Now.AddHours(3);
+            evDO.EndDate = DateTime.Now.AddHours(4);
 
             var email = DispatchEvent(unitOfWork, evDO);
             new Email(unitOfWork, email).Send();
@@ -62,62 +70,29 @@ namespace Playground
             if (eventDO.Attendees == null)
                 eventDO.Attendees = new List<AttendeeDO>();
 
-            string fromEmail = "rjrudman@gmail.com";
+            string fromEmail = "kwasantintake@gmail.com";
             string fromName = "Kwasant Scheduling Services";
 
             EmailDO outboundEmail = new EmailDO();
             outboundEmail.From = new EmailAddressDO { Address = fromEmail, Name = fromName };
             outboundEmail.To = eventDO.Attendees.Select(a => new EmailAddressDO { Address = a.EmailAddress, Name = a.Name }).ToList();
             outboundEmail.Subject = "Invitation via Kwasant: " + eventDO.Summary + "@ " + eventDO.StartDate;
-            outboundEmail.Text = @"
-<div style=""padding:15px;color:#D85E17"">
-	<a style=""font-family:'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif;font-size:20px;color:#D85E17;text-decoration:none;"" href=""http://kwasant-test.azurewebsites.net/""><img style=""vertical-align:middle"" src=""http://kwasant-test.azurewebsites.net/Content/images/perfect-krawsant.png"">     This is a Kwasant Event Request. For more information, click here.</a>
-</a>
-</div>
 
-<div style=""width:100%;max-width:729px;font-family:Arial,sans-serif;border-style:solid;border-color: rgb(170, 170, 170);border-width:1px 2px 2px 1px;background-color:rgb(255,255,255)"">
-	<div style=""padding:15px;"">		
-		<h3 style=""padding-bottom:6px;margin:0px;font-family:Arial,sans-serif;font-size:16px;font-weight:bold;color:rgb(34,34,34)"">Invite</h3>
-		<table>		
-			<tbody>
-				<tr>
-					<td style=""padding:0px 1em 10px 0px;font-family:Arial,sans-serif;font-size:13px;color:rgb(136,136,136);white-space:nowrap"" valign=""top"">
-	                  <div><i style=""font-style:normal"">Who</i></div>
-	               </td>
-					<td style=""padding-bottom:10px;font-family:Arial,sans-serif;font-size:13px;color:rgb(34,34,34)"" valign=""top"">
-	Tue, May 13, 3pm - 4pm <span style=""color:rgb(136,136,136)"">GMT+04:00</span></td>
-				<tr/>
-				<tr>
-	               <td style=""padding:0px 1em 10px 0px;font-family:Arial,sans-serif;font-size:13px;color:rgb(136,136,136);white-space:nowrap"" valign=""top"">
-	                  <div><i style=""font-style:normal"">Who</i></div>
-	               </td>
-	               <td style=""padding-bottom:10px;font-family:Arial,sans-serif;font-size:13px;color:rgb(34,34,34)"" valign=""top"">
-	                  <span class=""HOEnZb""><font color=""#888888""></font></span><span class=""HOEnZb""><font color=""#888888""></font></span>
-	                  <table cellspacing=""0"" cellpadding=""0"">
-	                     <tbody>
-	                        <tr>
-	                           <td style=""padding-right:10px;font-family:Arial,sans-serif;font-size:13px;color:rgb(34,34,34)"">
-	                              <div>
-	                                 <div style=""margin:0px 0px 0.3em"">Robert Rudman</div>
-	                              </div>
-	                           </td>
-	                        </tr>
-	                        <tr>
-	                           <td style=""padding-right:10px;font-family:Arial,sans-serif;font-size:13px;color:rgb(34,34,34)"">
-	                              <div>
-	                                 <div style=""margin:0px 0px 0.3em""><a href=""mailto:support@crowdscreener.com"">support@crowdscreener.com</a></div>
-	                              </div>
-	                           </td>
-	                        </tr>
-	                     </tbody>
-	                  </table>
-	               </td>
-	            </tr>
-			</tbody>
-		</table>
-	</div>
-</div>
-";
+            string logoContentID = Guid.NewGuid().ToString();
+
+            var parsedOutEmail = Razor.Parse(KwasantCore.Properties.Resources.HTMLEventInvitation,
+                new
+                {
+                    LinkTo = "http://kwasant.com/",
+                    LogoContentID = logoContentID,
+                    BasicText = "This is a Kwasant Event Request. Click here for more information.",
+                    Time = eventDO.IsAllDay ? "All day - " + eventDO.StartDate.ToString("ddd d MMM") : eventDO.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " + eventDO.EndDate.ToString("hh:mm tt"),
+                    Timezone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now),
+                    Attendees = eventDO.Attendees,
+                });
+
+            outboundEmail.Text = parsedOutEmail;
+            
             outboundEmail.Status = EmailStatus.QUEUED;
 
             iCalendar ddayCalendar = new iCalendar();
@@ -156,6 +131,18 @@ namespace Playground
             ddayCalendar.Method = CalendarMethods.Request;
 
             AttachCalendarToEmail(ddayCalendar, outboundEmail);
+            var memstr = new MemoryStream();
+            KwasantCore.Properties.Resources.perfect_krawsant.Save(memstr, System.Drawing.Imaging.ImageFormat.Png);
+            var att = new AttachmentDO
+            {
+                Type = "image/png",
+                OriginalName = "KwasantLog.png"
+            };
+            memstr.Position = 0;
+            att.SetData(memstr);
+            att.ContentID = logoContentID;
+            outboundEmail.Attachments.Add(att);
+
 
             if (eventDO.Emails == null)
                 eventDO.Emails = new List<EmailDO>();
@@ -168,64 +155,22 @@ namespace Playground
         {
             iCalendarSerializer serializer = new iCalendarSerializer(iCal);
             string fileToAttach = serializer.Serialize(iCal);
-
-//            fileToAttach =
-//@"BEGIN:VCALENDAR
-//PRODID:-//Google Inc//Google Calendar 70.9054//EN
-//VERSION:2.0
-//CALSCALE:GREGORIAN
-//METHOD:REQUEST
-//BEGIN:VEVENT
-//DTSTART:20140519T113000Z
-//DTEND:20140519T123000Z
-//DTSTAMP:20140519T112437Z
-//ORGANIZER;CN=Robert Rudman:mailto:rjrudman@gmail.com
-//UID:2p56n0mrobf0222796a8h6tqs4@google.com
-//ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=
-// TRUE;CN=rjrudman@outlook.com;X-NUM-GUESTS=0:mailto:rjrudman@outlook.com
-//ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;RSVP=TRUE
-// ;CN=Robert Rudman;X-NUM-GUESTS=0:mailto:rjrudman@gmail.com
-//CREATED:20140519T112437Z
-//DESCRIPTION:SOMEDESC\nView your event at http://www.google.com/calendar/eve
-// nt?action=VIEW&ueid=2p56n0mrobf0222796a8h6tqs4.
-//LAST-MODIFIED:20140519T112437Z
-//LOCATION:SOMEWHERE
-//SEQUENCE:0
-//STATUS:CONFIRMED
-//SUMMARY:SOMETHING
-//TRANSP:OPAQUE
-//END:VEVENT
-//END:VCALENDAR";
-
-            AttachmentDO attachmentDO = GetBase64Event(fileToAttach);
+            
+            AttachmentDO attachmentDO = GetAttachment(fileToAttach);
 
             if (emailDO.Attachments == null)
                 emailDO.Attachments = new List<AttachmentDO>();
 
             attachmentDO.Email = emailDO;
-            emailDO.Attachments.Add(GetBase64Event(fileToAttach));
-            //emailDO.Attachments.Add(GetTextEvent(fileToAttach));
+            emailDO.Attachments.Add(attachmentDO);
         }
 
-        private static AttachmentDO GetTextEvent(string fileToAttach)
-        {
-            var ct = new ContentType {MediaType = "text/calendar", Name = "invite.ics", CharSet = "UTF-8"};
-            ct.Parameters.Add("method", "REQUEST");
-
-            var attachmentDO = Email.CreateNewAttachment(
-                new System.Net.Mail.Attachment(
-                    new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
-                    ct
-                    ) {TransferEncoding = TransferEncoding.SevenBit});
-            return attachmentDO;
-        }
-
-        private static AttachmentDO GetBase64Event(string fileToAttach)
+        private static AttachmentDO GetAttachment(string fileToAttach)
         {
             return Email.CreateNewAttachment(
                 new System.Net.Mail.Attachment(
                     new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
-                    new ContentType {MediaType = "application/calendar", Name = "invite.ics"}
+                    new ContentType { MediaType = "application/ics", Name = "invite.ics" }
                     ) {TransferEncoding = TransferEncoding.Base64});
         }
     }
