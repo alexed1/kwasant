@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Data.Entities;
 using KwasantCore.Managers.APIManager.Transmitters.Restful;
 using Newtonsoft.Json;
@@ -8,14 +9,42 @@ using UtilitiesLib;
 using JsonSerializer = KwasantCore.Managers.APIManager.Serializers.Json.JsonSerializer;
 
 namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
-{ //uses the Mandrill API at https://mandrillapp.com/settings/index
-    public class MandrillPackager
+{ 
+    //uses the Mandrill API at https://mandrillapp.com/settings/index
+    public static class MandrillPackager
     {
+        public delegate void EmailSuccessArgs(string mandrillID, int emailID);
+        public static event EmailSuccessArgs EmailSent;
+
+        private static void OnEmailSent(string mandrillID, int emailid)
+        {
+            EmailSuccessArgs handler = EmailSent;
+            if (handler != null) handler(mandrillID, emailid);
+        }
+
+        public delegate void EmailRejectedArgs(string mandrillID, string rejectReason, int emailID);
+        public static event EmailRejectedArgs EmailRejected;
+
+        private static void OnEmailRejected(string mandrillID, string rejectReason, int emailid)
+        {
+            EmailRejectedArgs handler = EmailRejected;
+            if (handler != null) handler(mandrillID, rejectReason, emailid);
+        }
+
+        public delegate void EmailCriticalErrorArgs(int errorCode, string name, string message, int emailID);
+        public static event EmailCriticalErrorArgs EmailCriticalError;
+
+        private static void OnEmailCriticalError(int errorCode, string name, string message, int emailID)
+        {
+            EmailCriticalErrorArgs handler = EmailCriticalError;
+            if (handler != null) handler(errorCode, name, message, emailID); ;
+        }
+
         #region Members
 
-        string baseURL;
-        private JsonSerializer jsonSerializer;
-        string MandrillKey;
+        private static string baseURL;
+        private static JsonSerializer jsonSerializer;
+        private static string MandrillKey;
 
         #endregion
 
@@ -24,7 +53,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
         /// <summary>
         /// Initialize mandrill packager
         /// </summary>
-        public MandrillPackager()
+        static MandrillPackager()
         {
             baseURL = "https://mandrillapp.com/api/1.0/";
             jsonSerializer = new JsonSerializer();
@@ -44,7 +73,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
         ///Mandrill's API essentially inserts an array of email addresses inside a message which is put with a key inside what we'll call a "package"
         ///See https://mandrillapp.com/api/docs/messages.JSON.html#method=send
         /// </summary>
-        public string PostMessageSendTemplate(String templateName, EmailDO message, Dictionary<string, string> mergeFields)
+        public static void PostMessageSendTemplate(String templateName, EmailDO message, Dictionary<string, string> mergeFields)
         {
             RestfulCall curCall = new RestfulCall(baseURL, "/messages/send-template.json", Method.POST);
             MandrillTemplatePackage curTemplatePackage = new MandrillTemplatePackage(MandrillKey, message);
@@ -69,41 +98,212 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             }
             //message.MergeVars.Add(curRecipient); NEED A DIFFERENT WAY TO ADD MERGE VARS
 
-            return AssembleAndSend(curTemplatePackage, curCall);
+            AssembleAndSend(curTemplatePackage, curCall);
 
         }
 
 
+        public static void InitialiseWebhook(String url)
+        {
+            new Thread(() =>
+            {
+                //Delete old ones
+                List<int> activeHookIDs = GetActiveWebHooks();
+                DeleteOldWebHooks(activeHookIDs);
+
+                InstantiateNewWebhook(url);
+            }).Start();
+        }
+
+        private static void DeleteOldWebHooks(List<int> activeHookIDs)
+        {
+            foreach (int activeHookID in activeHookIDs)
+            {
+                RestfulCall curCall = new RestfulCall(baseURL, "/webhooks/delete.json", Method.POST);
+                MandrillDeleteWebhook listRequest = new MandrillDeleteWebhook()
+                {
+                    Key = MandrillKey,
+                    ID = activeHookID
+                };
+                string serialisedEmail = jsonSerializer.Serialize(listRequest);
+                curCall.AddBody(serialisedEmail, "application/json");
+
+                curCall.Execute();
+            }
+        }
+
+        private static List<int> GetActiveWebHooks()
+        {
+            RestfulCall curCall = new RestfulCall(baseURL, "/webhooks/list.json", Method.POST);
+            MandrillListWebhooks listRequest = new MandrillListWebhooks
+            {
+                Key = MandrillKey
+            };
+            string serialisedEmail = jsonSerializer.Serialize(listRequest);
+            curCall.AddBody(serialisedEmail, "application/json");
+
+            RestfulResponse response = curCall.Execute();
+            MissingMemberHandling oldSetting = jsonSerializer.Settings.MissingMemberHandling;
+            jsonSerializer.Settings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            List<ActiveMandrillWebhook> activeHooks = jsonSerializer.Deserialize<List<ActiveMandrillWebhook>>(response.Content);
+
+            jsonSerializer.Settings.MissingMemberHandling = oldSetting;
+            return activeHooks.Select(ah => ah.ID).ToList();
+        }
+
+        private static void InstantiateNewWebhook(string url)
+        {
+            RestfulCall curCall = new RestfulCall(baseURL, "/webhooks/add.json", Method.POST);
+            MandrillWebhookAddRequest addRequest = new MandrillWebhookAddRequest
+            {
+                Key = MandrillKey,
+                Description = "Kwasant webhook",
+                Events = new List<string>
+                {
+                    "send",
+                    "hard_bounce",
+                    "soft_bounce",
+                    "reject"
+                },
+                URL = url
+            };
+
+            string serialisedEmail = jsonSerializer.Serialize(addRequest);
+            curCall.AddBody(serialisedEmail, "application/json");
+
+            //Transmit the call
+            curCall.Execute();
+        }
+
         //======================================================
         //simple send with no merge variables or templates
-        public virtual string PostMessageSend(EmailDO message)
+        public static void PostMessageSend(EmailDO message)
         {
             RestfulCall curCall = new RestfulCall(baseURL, "/messages/send.json", Method.POST);
             MandrillBasePackage curBasePackage = new MandrillBasePackage(MandrillKey, message);
-            return AssembleAndSend(curBasePackage, curCall);
+            AssembleAndSend(curBasePackage, curCall);
         }
 
 
         //FINAL ASSEMBLY AND TRANSMISSION
         //finish configuring a complete 'package' that can be auto-serialized into the json that Mandrill understands.
-        public string AssembleAndSend(MandrillBasePackage curTemplatePackage, RestfulCall curCall)
+        private static void AssembleAndSend(MandrillBasePackage curTemplatePackage, RestfulCall curCall)
         {
             //serialize the email data and add it to the RestfulCall
-            curCall.AddBody(jsonSerializer.Serialize(curTemplatePackage), "application/json");
+            string serialisedEmail = jsonSerializer.Serialize(curTemplatePackage);
+            curCall.AddBody(serialisedEmail, "application/json");
 
             //Transmit the call
             RestfulResponse response = curCall.Execute();
 
-            return response.Content;
+            HandleResponse(response.Content, curTemplatePackage.Email);
 
         }
 
-  
+        private static void HandleResponse(String responseStr, EmailDO email)
+        {
+            List<MandrillResponse> responses;
+            try
+            {
+                responses = jsonSerializer.Deserialize<List<MandrillResponse>>(responseStr);
+            }
+            catch (JsonSerializationException)
+            {
+                OnEmailCriticalError(-1, "Return JSON could not be parsed.", responseStr, email.EmailID);
+                throw;
+            }
+            foreach (MandrillResponse response in responses)
+            {
+                if (response.Status == MandrillResponse.MandrilSent)
+                {
+                    if (String.IsNullOrEmpty(response.RejectReason))
+                    {
+                        OnEmailSent(response._ID, email.EmailID);
+                    }
+                    else
+                    {
+                        OnEmailRejected(response._ID, response.RejectReason, email.EmailID);
+                    }
+                }
+                else if (response.Status == MandrillResponse.MandrilQueued)
+                {
+                    //This will be processed in our webhook
+                }
+                else if (response.Status == MandrillResponse.MandrilScheduled)
+                {
+                    //This will be processed in our webhook
+                }
+                else if (response.Status == MandrillResponse.MandrilRejected)
+                {
+                    OnEmailRejected(response._ID, response.RejectReason, email.EmailID);
+                }
+                else if (response.Status == MandrillResponse.MandrilInvalid)
+                {
+                    OnEmailCriticalError(response.Code, response.Name, response.Message, email.EmailID);
+                    throw new Exception("Error sending email: " + response.Message);
+                }
+                else if (response.Status == MandrillResponse.MandrilError)
+                {
+                    OnEmailCriticalError(response.Code, response.Name, response.Message, email.EmailID);
+                    throw new Exception("Error sending email: " + response.Message);
+                }
+                else
+                {
+                    OnEmailCriticalError(-1, "Unknown state", "State: " + response.Status, email.EmailID);
+                    throw new Exception("Unknown email state: " + response.Status);
+                }
+            }
+        }
+
+        public static void HandleWebhookResponse(String responseStr)
+        {
+            List<MandrillWebhookResponse> responses;
+            try
+            {
+                responses = jsonSerializer.Deserialize<List<MandrillWebhookResponse>>(responseStr);
+            }
+            catch (JsonSerializationException)
+            {
+                OnEmailCriticalError(-1, "Return JSON could not be parsed.", responseStr, -1);
+                throw;
+            }
+            foreach (MandrillWebhookResponse response in responses)
+            {
+                string firstTag = response.Msg.Tags.FirstOrDefault();
+                if (firstTag == null)
+                {
+                    OnEmailCriticalError(-1, "No email ID was stored in tags.", "An email webhook was recieved, but we couldn't identify the email.", -1);
+                    return;
+                }
+                int emailID = int.Parse(firstTag);
+                if (response.Msg.State == MandrillResponse.MandrilSent)
+                {
+                    if (String.IsNullOrEmpty(response.Msg.Reject))
+                    {
+                        OnEmailSent(response._ID, emailID);
+                    }
+                    else
+                    {
+                        OnEmailRejected(response._ID, response.Msg.Reject, emailID);
+                    }
+                }
+                else if (response.Msg.State == MandrillResponse.MandrilRejected)
+                {
+                    OnEmailRejected(response._ID, response.Msg.Reject, emailID);
+                }
+                else
+                {
+                    OnEmailCriticalError(-1, "Unknown state", "State: " + response.Msg.State, emailID);
+                }
+            }
+        }
+
+
         #endregion
 
 
         //for testing Mandrill if things are broken
-        public string PostPing()
+        public static string PostPing()
         {
             RestfulCall curCall = new RestfulCall(baseURL, "/users/ping.json", Method.POST);
             string pingstring = @"{ ""key"": """ + MandrillKey + @"""}";
@@ -114,10 +314,86 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
         }
     }
 
-//=============================================================================================================================================
-//MANDRILL-SPECIFIC ENTITIES
-//These only really exist because it makes it really easy to auto serialize and deserialize from the specific JSON that Mandrill has defined.
-//They should not be used directly, but only by MandrillPackager
+    //=============================================================================================================================================
+    //MANDRILL-SPECIFIC ENTITIES
+    //These only really exist because it makes it really easy to auto serialize and deserialize from the specific JSON that Mandrill has defined.
+    //They should not be used directly, but only by MandrillPackager
+
+    public class MandrillListWebhooks
+    {
+        public String Key;
+    }
+
+    public class MandrillDeleteWebhook
+    {
+        public String Key;
+        public int ID;
+    }
+
+    public class ActiveMandrillWebhook
+    {
+        public int ID;
+        public String URL;
+        public DateTime Created_At;
+        public DateTime Last_Sent_At;
+        public int Batches_Sent;
+        public int Events_Sent;
+        public String Description;
+        public String AuthKey;
+        public List<String> Events;
+    }
+
+    public class MandrillWebhookResponse
+    {
+        public class MandrillWebhookMessage
+        {
+            public int TS;
+            public String Subject;
+            public String Email;
+            public List<String> Tags;
+            public List<String> Opens;
+            public List<String> Clicks;
+            public String State;
+            public List<String> SMTP_Events;
+            public String Subaccount;
+            public List<String> Resends;
+            public String Reject;
+            public String _ID;
+            public String Sender;
+            public String Template;
+
+        }
+        public string Event;
+        public string _ID;
+        public MandrillWebhookMessage Msg;
+        public int TS;
+    }
+
+    public class MandrillResponse
+    {
+        public const String MandrilSent = "sent";
+        public const String MandrilQueued = "queued";
+        public const String MandrilScheduled = "scheduled";
+        public const String MandrilRejected = "rejected";
+        public const String MandrilInvalid = "invalid";
+        public const String MandrilError = "error";
+
+        public String Email;
+        public String Status;
+        public String RejectReason;
+        public String _ID;
+        public int Code;
+        public String Name;
+        public String Message;
+    }
+
+    public class MandrillWebhookAddRequest
+    {
+        public string Key;
+        public string URL;
+        public string Description;
+        public List<String> Events;
+    }
 
 
     public class MandrillBasePackage
@@ -154,14 +430,15 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             public bool Important;
             public List<MandrilAttachment> Attachments;
             public List<MandrilAttachment> Images;
-            public bool Async;
+            public List<String> Tags;
         }
 
         public string Key;
         [JsonIgnore]
-        public EmailDO EmailDO;
+        public EmailDO Email;
 
         public MandrilEmail Message;
+        public bool Async = false;
 
         #endregion
 
@@ -169,7 +446,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
         public MandrillBasePackage(string curKey, EmailDO message)
         {
             Key = curKey;
-            EmailDO = message;
+            Email = message;
 
             Message = new MandrilEmail
             {
@@ -177,10 +454,11 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
                 Subject = message.Subject,
                 FromEmail = message.From.Address,
                 FromName = message.From.Name,
-                To = message.To.Select(t => new MandrilEmail.MandrilEmailAddress {Email = t.Address, Name = t.Name, Type = "to"}).ToList(),
+                To = message.To.Select(t => new MandrilEmail.MandrilEmailAddress { Email = t.Address, Name = t.Name, Type = "to" }).ToList(),
                 Headers = null,
                 Important = false,
-                Attachments = message.Attachments == null ? null : message.Attachments.Select(a =>
+                Tags = new List<string> { Email.EmailID.ToString() },
+                Attachments = message.Attachments.Select(a =>
                 {
                     byte[] file = a.Bytes;
                     string base64Version = Convert.ToBase64String(file, 0, file.Length);
@@ -189,10 +467,9 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
                     {
                         Content = base64Version,
                         Name = a.OriginalName,
-                        Type = a.Type   
+                        Type = a.Type
                     };
                 }).ToList(),
-                Async = false
             };
         }
 
@@ -206,7 +483,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
     {
         #region Members
 
-   
+
         public string TemplateName;
         public List<MandrillDynamicContentChunk> TemplateContent;
 
@@ -214,9 +491,10 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
         #endregion
 
         #region Constructor
-        public MandrillTemplatePackage(string curKey, EmailDO emailDO) : base(curKey, emailDO)
+        public MandrillTemplatePackage(string curKey, EmailDO email)
+            : base(curKey, email)
         {
- 
+
         }
 
         #endregion

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Web;
+using System;
 using Data.Entities;
 using System.ComponentModel;
 using System.Collections.Generic;
@@ -12,3 +11,4 @@ namespace Data.Interfaces
         IEnumerable<BookingRequestDO> BookingRequests { get; set; }
     }
 }
+

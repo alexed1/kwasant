@@ -4,7 +4,7 @@ namespace KwasantTest.Fixtures
 {
     partial class FixtureData
     {
-        public EmailAddressDO TestEmail1()
+        public EmailAddressDO TestEmailAddress1()
         {
 
             return new EmailAddressDO()
@@ -15,7 +15,7 @@ namespace KwasantTest.Fixtures
             };
         }
 
-        public EmailAddressDO TestEmail2()
+        public EmailAddressDO TestEmailAddress2()
         {
 
             return new EmailAddressDO()

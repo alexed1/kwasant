@@ -12,15 +12,15 @@ namespace KwasantCore.Managers.APIManager.Serializers.Json
     /// Doesn't currently use the SerializeAs attribute, defers to Newtonsoft's attributes
     /// </summary>
     public class JsonSerializer
-    {        
-        private JsonSerializerSettings _settings;
+    {
+        public JsonSerializerSettings Settings;
 
         /// <summary>
         /// Default serializer
         /// </summary>
         public JsonSerializer()
         {
-            _settings = new JsonSerializerSettings
+            Settings = new JsonSerializerSettings
             {
                 MissingMemberHandling = MissingMemberHandling.Error,
                 NullValueHandling = NullValueHandling.Include,
@@ -37,7 +37,7 @@ namespace KwasantCore.Managers.APIManager.Serializers.Json
         /// </summary>
         public string Serialize(object obj)
         {
-            return JsonConvert.SerializeObject(obj, _settings);
+            return JsonConvert.SerializeObject(obj, Settings);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace KwasantCore.Managers.APIManager.Serializers.Json
 
             return responseJson == "[]"
                 ? default(T)
-                : JsonConvert.DeserializeObject<T>(responseJson, _settings);
+                : JsonConvert.DeserializeObject<T>(responseJson, Settings);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace KwasantCore.Managers.APIManager.Serializers.Json
             if (responseJson.StartsWith("{\"messages\":{")) return default(IList<T>);
             if (responseJson == "[]") return default(IList<T>);
 
-            object result = JsonConvert.DeserializeObject<object>(responseJson, _settings);
+            object result = JsonConvert.DeserializeObject<object>(responseJson, Settings);
             IList<T> listT = new List<T>();
             foreach (KeyValuePair<string, JToken> item in ((Newtonsoft.Json.Linq.JObject)(result)))
             {
@@ -127,12 +127,12 @@ namespace KwasantCore.Managers.APIManager.Serializers.Json
                             lastCharUpper = true;
                         }
                     }
-                   
+
                 }
                 return sb.ToString();
             }
 
-            
+
         }
 
     }

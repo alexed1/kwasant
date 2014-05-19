@@ -9,6 +9,7 @@ using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using StructureMap;
 using Twilio;
+using Microsoft.WindowsAzure;
 
 namespace KwasantCore.Managers.CommunicationManager
 {
@@ -23,7 +24,7 @@ namespace KwasantCore.Managers.CommunicationManager
 
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
-        public void NewCustomerWorkflow(BooqitAlertData eventData)
+        public void NewCustomerWorkflow(KwasantSchedulingAlertData eventData)
         {
             Debug.WriteLine("NewCustomer has been created.");
         }
@@ -36,7 +37,7 @@ namespace KwasantCore.Managers.CommunicationManager
             {
                 if (communicationConfig.Type == CommunicationType.SMS)
                 {
-                    SendBRSMSes(communicationConfig.ToAddress, bookingRequests);
+                    SendBRSMSes(bookingRequests);
                 } else if (communicationConfig.Type == CommunicationType.EMAIL)
                 {
                     SendBREmails(communicationConfig.ToAddress, bookingRequests, uow);
@@ -49,16 +50,11 @@ namespace KwasantCore.Managers.CommunicationManager
             uow.SaveChanges();
         }
 
-        private void SendBRSMSes(String toAddress, IEnumerable<BookingRequestDO> bookingRequests)
+        private void SendBRSMSes(IEnumerable<BookingRequestDO> bookingRequests)
         {
             TwilioPackager twil = new TwilioPackager();
-            const string message = "A new booking request has been created. From '{0}'.";
-            foreach (BookingRequestDO bookingRequest in bookingRequests)
-            {
-                SMSMessage result = twil.SendSMS(toAddress, String.Format(message, bookingRequest.From.Address));
-                if (result.RestException != null)
-                    throw new Exception(result.RestException.Message);
-            }
+            if (bookingRequests.Any())
+                twil.SendSMS("14158067915", "Inbound Email has been received");
         }
 
         private void SendBREmails(String toAddress, IEnumerable<BookingRequestDO> bookingRequests, IUnitOfWork uow)
@@ -69,7 +65,7 @@ namespace KwasantCore.Managers.CommunicationManager
             {
                 EmailDO outboundEmail = new EmailDO
                 {
-                    From = new EmailAddressDO {Address = "service@kwasant.com"},
+                    From = new EmailAddressDO { Address = "scheduling@kwasant.com", Name = "Kwasant Scheduling Services" },
                     To = new List<EmailAddressDO> {new EmailAddressDO {Address = toAddress}},
                     Subject = "New booking request!",
                     Text = String.Format(message, bookingRequest.From.Address),
@@ -78,6 +74,30 @@ namespace KwasantCore.Managers.CommunicationManager
 
                 emailRepo.Add(outboundEmail);
             }
+        }
+
+        //This is the default originator of outbound Kwasant emails
+        public static string GetFromEmail()
+        {
+            string email = CloudConfigurationManager.GetSetting("fromEmail");
+            if (email != null)
+            {
+                return email;
+            }
+ 
+            throw new ArgumentException("Missing value for 'fromEmail'");
+  
+
+        }
+        public static string GetFromName()
+        {
+            string fromName = CloudConfigurationManager.GetSetting("fromName");
+            if (fromName != null)
+            {
+                return fromName;
+            }
+            throw new ArgumentException("Missing value for 'fromName'");
+
         }
     }
 }
