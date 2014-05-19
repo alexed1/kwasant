@@ -50,25 +50,23 @@ namespace KwasantTest.Services
 
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("Email")]
         public void CreateSIE_FailsIfInvalidEventInput()
         {
             //SETUP
             string expectedSubject = "Invitation via Kwasant: " + _curEventDO.Summary + "@ " + _curEventDO.StartDate;
             EmailDO _curEmailDO;
-            var curEmail = new Email(_uow, _curEventDO);
-            
-            //EXECUTE
-  
-            //VERIFY
             Assert.Throws<ValidationException>(() =>
-                {
-                    
-                    curEmail.CreateStandardInviteEmail(_curEventDO);
-                }
+            {
 
-            );
+                new Email(_uow, _curEventDO);
+
+            });
+            //EXECUTE
+
+            //VERIFY
+
 
         }
 
