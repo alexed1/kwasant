@@ -1,9 +1,19 @@
-﻿@Model.Summary
+﻿@{
+var basicText = UtilitiesLib.ConfigurationHelper.GetConfigurationValue("emailBasicText");
+var time = Model.IsAllDay
+                        ? "All day - " + Model.StartDate.ToString("ddd d MMM")
+                        : Model.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " + Model.EndDate.ToString("hh:mm tt");
+
+var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
+}
+
+@basicText
+@Model.Summary
 @Model.Description
 *When*
-@Model.Time UTC+@Model.Timezone
+@time UTC+@timeZone
 *Where*
-@Model.Where
+@Model.Location
 *Who*
 @{
 foreach(var attendee in @Model.Attendees)

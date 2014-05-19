@@ -1,9 +1,19 @@
-﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+﻿@{
+
+var linkTo = UtilitiesLib.ConfigurationHelper.GetConfigurationValue("emailLinkTo");
+var imageURL = UtilitiesLib.ConfigurationHelper.GetConfigurationValue("emailImageURL");
+var basicText = UtilitiesLib.ConfigurationHelper.GetConfigurationValue("emailBasicText");
+var time = Model.IsAllDay
+? "All day - " + Model.StartDate.ToString("ddd d MMM")
+: Model.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " + Model.EndDate.ToString("hh:mm tt");
+
+var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
+}
 <div>
     <div style="color: #D85E17; padding: 15px;">
-        <a style="color: #D85E17; font-family: 'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif; font-size: 20px; text-decoration: none;" href="@Model.LinkTo">
-            <img src="http://kwasant-test.azurewebsites.net/Content/images/perfect-krawsant.png" onerror="cid:@Model.LogoContentID" />
-            @Model.BasicText
+        <a style="color: #D85E17; font-family: 'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif; font-size: 20px; text-decoration: none;" href="@linkTo">
+            <img src="@imageURL" />
+            @basicText
         </a>
     </div>
 
@@ -25,7 +35,7 @@
                             <div><i style="font-style: normal">When</i></div>
                         </td>
                         <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-bottom: 10px;" valign="top">
-                            @Model.Time <span style="color: rgb(136, 136, 136)">UTC+@Model.Timezone</span>
+                            @time <span style="color: rgb(136, 136, 136)">UTC+@timeZone</span>
                         </td>
                     </tr>
                     <tr>
@@ -33,7 +43,7 @@
                             <div><i style="font-style: normal">Where</i></div>
                         </td>
                         <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-bottom: 10px;" valign="top">
-                            @Model.Where
+                            @Model.Location
                         </td>
                     </tr>
                     <tr>

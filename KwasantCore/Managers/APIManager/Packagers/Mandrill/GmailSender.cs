@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Configuration;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
 using Data.Entities;
+using Microsoft.WindowsAzure;
+using UtilitiesLib;
 
 namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
 {
@@ -11,11 +14,11 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
     {
         public static void Send(EmailDO email)
         {
-            var smtpClient = new SmtpClient("smtp.gmail.com", 587)
+            var smtpClient = new SmtpClient(ConfigurationHelper.GetConfigurationValue("OutboundEmailHost"), ConfigurationHelper.GetConfigurationValue<int>("OutboundEmailPort"))
             {
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential() { UserName = "kwasantintake@gmail.com", Password = "wymcivlctelmbazc" }
+                Credentials = new NetworkCredential() { UserName = ConfigurationHelper.GetConfigurationValue("OutboundUserName"), Password = ConfigurationHelper.GetConfigurationValue("OutboundUserPassword") }
             };
 
             var mailMessage = new MailMessage();
@@ -38,8 +41,16 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
 
             mailMessage.Subject = email.Subject;
             mailMessage.IsBodyHtml = true;
+
             var htmlView = AlternateView.CreateAlternateViewFromString(email.HTMLText, Encoding.UTF8, "text/html");
             var plainView = AlternateView.CreateAlternateViewFromString(email.PlainText, Encoding.UTF8, "text/plain");
+
+            if (!ConfigurationHelper.GetConfigurationValue<bool>("compressEmail"))
+            {
+                htmlView.TransferEncoding = TransferEncoding.SevenBit;
+                plainView.TransferEncoding = TransferEncoding.SevenBit;
+            }
+
             mailMessage.AlternateViews.Add(plainView);
             mailMessage.AlternateViews.Add(htmlView);
             
