@@ -1,12 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Data.Entities;
+using Data.Interfaces;
+using Data.Repositories;
+using StructureMap;
 
 namespace KwasantCore.Services
 {
-    class EmailAddress
+    internal class EmailAddress
     {
+        private EmailAddressRepository _emailAddressRepository;
+        private IUnitOfWork _uow;
+
+        public EmailAddress()
+        {
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            _emailAddressRepository = new EmailAddressRepository(_uow);
+        }
+
+        public EmailAddressDO FindByAddress(string addressString)
+        {
+            return _emailAddressRepository.FindOne(x => x.Address == addressString);
+        }
     }
+
+
 }
