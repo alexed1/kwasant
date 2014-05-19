@@ -1,5 +1,4 @@
-﻿using System;
-using Data.Entities.Enumerations;
+﻿using Data.Entities.Enumerations;
 using Data.Interfaces;
 
 namespace Data.Entities
@@ -8,6 +7,8 @@ namespace Data.Entities
     {
         public int ForeignTableID { get; set; }
         public string ForeignTableName { get; set; }
+
+        public TrackingType Type { get; set; }
         public TrackingStatus Status { get; set; }
     }
 }

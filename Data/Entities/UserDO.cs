@@ -57,3 +57,4 @@ namespace Data.Entities
         public PersonDO PersonDO { get; set; }
     }
 }
+

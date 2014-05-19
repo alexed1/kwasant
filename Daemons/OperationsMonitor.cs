@@ -30,13 +30,13 @@ namespace Daemons
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(uow);
 
             TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(trackingStatusRepo, bookingRequestRepo);
-            List<BookingRequestDO> unprocessedBookingRequests = ts.GetUnprocessedEntities().ToList();
+            List<BookingRequestDO> unprocessedBookingRequests = ts.GetUnprocessedEntities(TrackingType.BOOKING_STATE).ToList();
             if (!unprocessedBookingRequests.Any()) 
                 return;
 
             CommunicationManager cm = new CommunicationManager();
             cm.ProcessBRNotifications(unprocessedBookingRequests);
-            unprocessedBookingRequests.ForEach(br => ts.SetStatus(br, TrackingStatus.PROCESSED));
+            unprocessedBookingRequests.ForEach(br => ts.SetStatus(TrackingType.BOOKING_STATE, br, TrackingStatus.PROCESSED));
 
             uow.SaveChanges();
         }

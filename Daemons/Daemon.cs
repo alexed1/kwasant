@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using Daemons.EventExposers;
+using UtilitiesLib.Logging;
 
 namespace Daemons
 {
@@ -24,6 +25,11 @@ namespace Daemons
         private readonly HashSet<EventInfo> _activeEventHandlers = new HashSet<EventInfo>();
         private readonly HashSet<Exception> _loggedExceptions = new HashSet<Exception>();
 
+        
+        public Daemon()
+        {
+            
+        }
 
         /// <summary>
         /// Currently unused, but will be a useful debugging tool when investigating event callbacks.
@@ -49,17 +55,65 @@ namespace Daemons
         /// Registers an event. Event callbacks will be marshalled into a thread-safe queue. The event will _not_ be dispatched automatically.
         /// To process an event, call <see cref="ProcessNextEvent">ProcessNextEvent</see> or <see cref="ProcessNextEventNoWait">ProcessNextEventNoWait</see>
         /// </summary>
-        /// <typeparam name="TEventArgs">The type of EventArgs the event you're registering provides</typeparam>
         /// <param name="eventInfo">The EventInfo of your desired event. You can pass this manually, or use <see cref="ExposedEvent">ExposedEvent</see></param>
         /// <param name="callback">The delegate to be invoked when the queue is processed</param>
-        protected void RegisterEvent<TEventArgs>(EventInfo eventInfo, Action<Object, TEventArgs> callback)
-            where TEventArgs : EventArgs
+        protected void RegisterEvent<TArg1>(EventInfo eventInfo, Action<TArg1> callback)
         {
-            Action<object, TEventArgs> action = (sender, args) =>
+            Action<TArg1> action = arg1 =>
             {
                 lock (_eventQueue)
                 {
-                    _eventQueue.Enqueue(() => callback(sender, args));
+                    _eventQueue.Enqueue(() => callback(arg1));
+                    Monitor.Pulse(_eventQueue);
+                }
+            };
+
+            Delegate handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, action.Target, action.Method);
+            eventInfo.AddEventHandler(this, handler);
+
+            _activeEventHandlers.Add(eventInfo);
+        }
+        protected void RegisterEvent<TArg1, TArg2>(EventInfo eventInfo, Action<TArg1, TArg2> callback)
+        {
+            Action<TArg1, TArg2> action = (arg1, arg2) =>
+            {
+                lock (_eventQueue)
+                {
+                    _eventQueue.Enqueue(() => callback(arg1, arg2));
+                    Monitor.Pulse(_eventQueue);
+                }
+            };
+
+            Delegate handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, action.Target, action.Method);
+            eventInfo.AddEventHandler(this, handler);
+
+            _activeEventHandlers.Add(eventInfo);
+        }
+
+        protected void RegisterEvent<TArg1, TArg2, TArg3>(EventInfo eventInfo, Action<TArg1, TArg2, TArg3> callback)
+        {
+            Action<TArg1, TArg2, TArg3> action = (arg1, arg2, arg3) =>
+            {
+                lock (_eventQueue)
+                {
+                    _eventQueue.Enqueue(() => callback(arg1, arg2, arg3));
+                    Monitor.Pulse(_eventQueue);
+                }
+            };
+
+            Delegate handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, action.Target, action.Method);
+            eventInfo.AddEventHandler(this, handler);
+
+            _activeEventHandlers.Add(eventInfo);
+        }
+
+        protected void RegisterEvent<TArg1, TArg2, TArg3, TArg4>(EventInfo eventInfo, Action<TArg1, TArg2, TArg3, TArg4> callback)
+        {
+            Action<TArg1, TArg2, TArg3, TArg4> action = (arg1, arg2, arg3, arg4) =>
+            {
+                lock (_eventQueue)
+                {
+                    _eventQueue.Enqueue(() => callback(arg1, arg2, arg3, arg4));
                     Monitor.Pulse(_eventQueue);
                 }
             };
@@ -104,10 +158,14 @@ namespace Daemons
 
         public bool Start()
         {
+            Logger.GetLogger().Info(GetType().Name + " - starting...");
             lock (this)
             {
                 if (IsRunning)
+                {
+                    Logger.GetLogger().Info(GetType().Name + " - already running.");
                     return false;
+                }
 
                 IsRunning = true;
             }
@@ -128,6 +186,7 @@ namespace Daemons
                             {
                                 lastExecutionTime = currTime;
                                 firstExecution = false;
+                                // Logger.GetLogger().Info(GetType().Name + " - executing...");
                                 Run();
                                 if (DaemonExecuted != null)
                                     DaemonExecuted();
@@ -136,6 +195,8 @@ namespace Daemons
                             {
                                 //Sleep until the approximate time that we're ready
                                 double waitTime = (WaitTimeBetweenExecution - (currTime - lastExecutionTime).TotalMilliseconds);
+
+                                //Logger.GetLogger().Info(GetType().Name + " - sleeping for " + waitTime + " milliseconds");
                                 Thread.Sleep((int)waitTime);
                             }
                             
@@ -145,6 +206,7 @@ namespace Daemons
                             HandleException(e);
                         }
                     }
+                    Logger.GetLogger().Info(GetType().Name + " - shutting down");
 
                     CleanupInternal();
                     IsRunning = false;
@@ -177,7 +239,7 @@ namespace Daemons
             lock (_loggedExceptions)
                 _loggedExceptions.Add(e);
 
-            //To be filled out when we have a logging mechanism in place
+            Logger.GetLogger().Error("Error occured in " + GetType().Name, e);
         }
     }
 }

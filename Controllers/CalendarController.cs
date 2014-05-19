@@ -9,10 +9,12 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
+using KwasantCore.Services;
 using KwasantWeb.Controllers.DayPilot;
 using StructureMap;
 using UtilitiesLib;
 using Calendar = KwasantCore.Services.Calendar;
+using ViewModel.Models;
 
 namespace KwasantWeb.Controllers
 {
@@ -21,18 +23,34 @@ namespace KwasantWeb.Controllers
     {
         #region "Action"
 
+        private IUnitOfWork _uow;
+
+
+
+        public CalendarController()
+        {
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            _uow = uow; //clean this up finish de-static work
+
+        }
+
+
+
+
         public ActionResult Index(int id = 0)
         {
             if (id <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(uow);
+           
+            IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(_uow);
             BookingRequestDO = bookingRequestRepository.GetByKey(id);
             if (BookingRequestDO == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            Calendar = new Calendar(uow, BookingRequestDO);
+            Calendar curCalendar = new Calendar(_uow);
+            curCalendar.LoadBookingRequest(BookingRequestDO);
+            Session["CalendarServices"] = curCalendar;
             return View(BookingRequestDO);
         }
 
@@ -290,31 +308,20 @@ namespace KwasantWeb.Controllers
 
             string key = Guid.NewGuid().ToString();
             Session["FakedEvent_" + key] = eventDO;
-            return View("~/Views/Calendar/BeforeSave.cshtml", new ConfirmEvent
+            return View("~/Views/Calendar/ProcessCreateEvent.cshtml", new ConfirmEvent
             {
                 Key = key,
                 EventDO = eventDO
             });
         }
 
-        private static T GetValueFromForm<T>(NameValueCollection collection, String name, T defaultValue = default(T))
+        private bool GetCheckFlag(String value)
         {
-            string obj = collection[name];
-            if (obj == null)
-                return defaultValue;
+            bool blnCheck = false;
 
-            Type returnType = typeof(T);
-            if (returnType == typeof(bool))
-                return (T)(object)(obj == "on" || obj == "1" || obj == "true");
-            if (returnType == typeof(String))
-                return (T)(object)obj;
-            if (returnType == typeof(DateTime))
-            {
-                return (T)(object)DateTime.ParseExact(obj, "MM/dd/yyyy hh:mm tt", CultureInfo.CurrentCulture);
-            }
-            if (returnType == typeof (int))
-                return (T) (object) obj.ToInt();
-            throw new Exception("Invalid type provided");
+            blnCheck = value == "on" ? true : false;
+
+            return blnCheck;
         }
 
         /// <summary>
@@ -322,42 +329,27 @@ namespace KwasantWeb.Controllers
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public ActionResult BeforeSave(FormCollection form)
+        public ActionResult ProcessCreateEvent(CalendarViewModel calendarViewModel)
         {
-            DateTime dtFromDate = GetValueFromForm(Request.QueryString, "DateStart", DateTime.MinValue);
-            DateTime dtToDate = GetValueFromForm(Request.QueryString, "DateEnd", DateTime.MinValue);
-            bool isAllDay = GetValueFromForm(Request.QueryString, "IsAllDay", false);
-            string strLocation = GetValueFromForm(Request.QueryString, "Location", String.Empty);
-            string strStatus = GetValueFromForm(Request.QueryString, "Status", String.Empty);
-            string strTransparency = GetValueFromForm(Request.QueryString, "TransparencyType", String.Empty);
-            string strClass = GetValueFromForm(Request.QueryString, "Class", String.Empty);
-            string strDescription = GetValueFromForm(Request.QueryString, "Description", String.Empty);
-            int intPriority = GetValueFromForm(Request.QueryString, "Priority", 0);
-            int intSequence = GetValueFromForm(Request.QueryString, "Sequence", 0);
-            string strSummary = GetValueFromForm(Request.QueryString, "Summary", String.Empty);
-            string strCategory = GetValueFromForm(Request.QueryString, "Category", String.Empty);
-            int eventID = GetValueFromForm(Request.QueryString, "EventID", 0);
-            string attendeesStr = GetValueFromForm(Request.QueryString, "Attendees", String.Empty);
-
             //This is a fake event that will be thrown away if Confirm() is not called
             EventDO eventDO = new EventDO
             {
-                EventID = eventID,
-                IsAllDay = isAllDay,
-                StartDate = dtFromDate,
-                EndDate = dtToDate,
-                Location = strLocation,
-                Status = strStatus,
-                Transparency = strTransparency,
-                Class = strClass,
-                Description = strDescription,
-                Priority = intPriority,
-                Sequence = intSequence,
-                Summary = strSummary,
-                Category = strCategory
+                EventID = calendarViewModel.EventID,
+                IsAllDay = GetCheckFlag(calendarViewModel.IsAllDay),
+                StartDate = calendarViewModel.DateStart,
+                EndDate = calendarViewModel.DateEnd,
+                Location = calendarViewModel.Location,
+                Status = calendarViewModel.Status,
+                Transparency = calendarViewModel.TransparencyType,
+                Class = calendarViewModel.Class,
+                Description = calendarViewModel.Description,
+                Priority = calendarViewModel.Priority,
+                Sequence = calendarViewModel.Sequence,
+                Summary = calendarViewModel.Summary,
+                Category = calendarViewModel.Category
             };
 
-            ManageAttendees(eventDO, attendeesStr);
+            ManageAttendees(eventDO, calendarViewModel.Attendees);
 
             string key = Guid.NewGuid().ToString();
             Session["FakedEvent_" + key] = eventDO;
@@ -373,6 +365,7 @@ namespace KwasantWeb.Controllers
         //Manages adds/deletes and persists of attendees.
         private void ManageAttendees(EventDO eventDO, string attendeesStr)
         {
+            //Load the known attendee list for this event
             List<AttendeeDO> originalAttendees;
             if (eventDO.EventID != 0)
             {
@@ -383,25 +376,32 @@ namespace KwasantWeb.Controllers
             {
                 originalAttendees = new List<AttendeeDO>();
             }
+
+            //create the list that will merge in the changes
             List<AttendeeDO> newAttendees = new List<AttendeeDO>();
             foreach (string email in attendeesStr.Split(','))
             {
                 if (String.IsNullOrEmpty(email))
                     continue;
 
+                
                 List<AttendeeDO> sameAttendees = originalAttendees.Where(oa => oa.EmailAddress == email).ToList();
                 if (sameAttendees.Any())
                 {
+                    //take all of the attendees that were already associated with the event and add them to the merged list
                     newAttendees.AddRange(sameAttendees);
                 }
                 else
                 {
+                    //create a new attendee and add it
                     newAttendees.Add(new AttendeeDO
                     {
                         EmailAddress = email
                     });
                 }
             }
+
+            //Delete any attendees that are no longer part of the list
             List<AttendeeDO> attendeesToDelete = originalAttendees.Where(originalAttendee => !newAttendees.Select(a => a.EmailAddress).Contains(originalAttendee.EmailAddress)).ToList();
             if (attendeesToDelete.Any())
             {
@@ -413,11 +413,10 @@ namespace KwasantWeb.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Confirm(FormCollection form)
+        public ActionResult Confirm(ProcessCreateEventViewModel processCreateEventViewModel)
         {
-            string key = GetValueFromForm(form, "key", string.Empty);
 
-            EventDO eventDO = Session["FakedEvent_" + key] as EventDO;
+            EventDO eventDO = Session["FakedEvent_" + processCreateEventViewModel.Key] as EventDO;
             if (eventDO.EventID == 0)
             {
                 Calendar.AddEvent(eventDO);
@@ -431,7 +430,9 @@ namespace KwasantWeb.Controllers
 
             eventDO.BookingRequest = BookingRequestDO;
 
-            Calendar.DispatchEvent(eventDO);
+            var curEvent = new Event();
+            curEvent.Dispatch(eventDO);
+           
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }

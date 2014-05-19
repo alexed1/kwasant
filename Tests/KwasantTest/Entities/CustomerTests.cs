@@ -32,7 +32,7 @@ namespace KwasantTest.Models
 
         [Test]
         [Category("Customer")]
-        public void Customer_Add_CanCreateCustomer()
+        public void Customer_Add_CanCreateUser()
         {
             //SETUP
             //create a customer from fixture data
@@ -44,9 +44,9 @@ namespace KwasantTest.Models
 
             //VERIFY
             //check that it was saved to the db
-            UserDO savedCustomerDO = userRepo.GetByKey(curUserDO.Id);
-            Assert.AreEqual(curUserDO.FirstName,savedCustomerDO.FirstName);
-            Assert.AreEqual(curUserDO.EmailAddress, savedCustomerDO.EmailAddress);
+            UserDO savedUserDO = userRepo.GetByKey(curUserDO.Id);
+            Assert.AreEqual(curUserDO.FirstName,savedUserDO.FirstName);
+            Assert.AreEqual(curUserDO.EmailAddress, savedUserDO.EmailAddress);
              
 
         }

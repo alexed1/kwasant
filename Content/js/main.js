@@ -92,6 +92,7 @@ $(document).ready(function(){
 	}
 
 	links.click(function (e) {
+	    alert('Hello');
 	    var datasection = $(this).attr('data-section');
 	    if (datasection.get(0) === null)
 	        return;
@@ -101,6 +102,7 @@ $(document).ready(function(){
 	});
 
 	button.click(function (e) {
+	    alert('Hello');
 		e.preventDefault();
 		var datasection = $(this).attr('data-section');
 		goToByScroll(datasection);

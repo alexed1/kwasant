@@ -11,3 +11,4 @@ namespace Data.Interfaces
         EmailAddressDO EmailAddress { get; set; }
     }
 }
+

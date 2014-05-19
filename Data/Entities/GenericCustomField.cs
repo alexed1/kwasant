@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -33,25 +32,16 @@ namespace Data.Entities
         /// Get all entities without a custom field
         /// </summary>
         /// <returns>IQueryable of entities without any custom field</returns>
-        protected IQueryable<TForeignEntity> GetEntitiesWithoutCustomFields()
+        protected IQueryable<TForeignEntity> GetEntitiesWithoutCustomFields(Expression<Func<TCustomFieldType, bool>> customFieldPredicate = null)
         {
-            return GetEntities(null, null, jr => jr.CustomFieldDO == null);
+            return GetEntities(customFieldPredicate, null, jr => jr.CustomFieldDO == null);
         }
 
         /// <summary>
         /// Get all entities with a custom field
         /// </summary>
         /// <returns>IQueryable of entities with a custom field</returns>
-        protected IQueryable<TForeignEntity> GetEntitiesWithCustomField()
-        {
-            return GetEntities();
-        }
-
-        /// <summary>
-        /// Get all entities with a custom field confined to the provided predicate
-        /// </summary>
-        /// <returns>IQueryable of entities with a custom field confined to the provided predicate</returns>
-        protected IQueryable<TForeignEntity> GetEntitiesWhereCustomField(Expression<Func<TCustomFieldType, bool>> customFieldPredicate)
+        protected IQueryable<TForeignEntity> GetEntitiesWithCustomField(Expression<Func<TCustomFieldType, bool>> customFieldPredicate = null)
         {
             return GetEntities(customFieldPredicate);
         }
@@ -61,14 +51,15 @@ namespace Data.Entities
         /// Entities _MUST_ already exist in the database.
         /// </summary>
         /// <param name="entityDO">Entity to set the custom field on</param>
-        protected TCustomFieldType GetOrCreateCustomField(TForeignEntity entityDO)
+        /// <param name="customFieldPredicate"></param>
+        protected TCustomFieldType GetOrCreateCustomField(TForeignEntity entityDO, Expression<Func<TCustomFieldType, bool>> customFieldPredicate = null)
         {
-            return GetOrCreateCustomField(GetKey(entityDO));
+            return GetOrCreateCustomField(GetKey(entityDO), customFieldPredicate);
         }
 
-        private TCustomFieldType GetOrCreateCustomField(int entityID)
+        private TCustomFieldType GetOrCreateCustomField(int entityID, Expression<Func<TCustomFieldType, bool>> customFieldPredicate = null)
         {
-            TCustomFieldType currentStatus = GetCustomField(entityID);
+            TCustomFieldType currentStatus = GetCustomField(entityID, customFieldPredicate);
             if (currentStatus == null)
             {
                 currentStatus = new TCustomFieldType
@@ -85,14 +76,15 @@ namespace Data.Entities
         /// Deletes the custom field of an entity. If no custom field exists, no action will be performed.
         /// </summary>
         /// <param name="entityDO">Entity to delete the custom field on</param>
-        protected void DeleteCustomField(TForeignEntity entityDO)
+        /// <param name="customFieldPredicate"></param>
+        protected void DeleteCustomField(TForeignEntity entityDO, Expression<Func<TCustomFieldType, bool>> customFieldPredicate = null)
         {
-            DeleteCustomField(GetKey(entityDO));
+            DeleteCustomField(GetKey(entityDO), customFieldPredicate);
         }
 
-        protected void DeleteCustomField(int entityID)
+        protected void DeleteCustomField(int entityID, Expression<Func<TCustomFieldType, bool>> customFieldPredicate = null)
         {
-            TCustomFieldType currentStatus = GetCustomField(entityID);
+            TCustomFieldType currentStatus = GetCustomField(entityID, customFieldPredicate);
             if (currentStatus != null)
             {
                 _trackingStatusRepo.Remove(currentStatus);
@@ -103,13 +95,22 @@ namespace Data.Entities
         /// Gets the current custom field of an entity. If no status exists, null will be returned.
         /// </summary>
         /// <param name="entityDO">The custom field of the provided entity</param>
-        protected TCustomFieldType GetCustomField(TForeignEntity entityDO)
+        /// <param name="customFieldPredicate"></param>
+        protected TCustomFieldType GetCustomField(TForeignEntity entityDO, Expression<Func<TCustomFieldType, bool>> customFieldPredicate = null)
         {
             int inMemoryID = GetKey(entityDO);
-            return GetCustomField(inMemoryID);
+            return GetCustomField(inMemoryID, customFieldPredicate);
         }
 
-        protected TCustomFieldType GetCustomField(int entityID)
+        protected TCustomFieldType GetCustomField(int entityID, Expression<Func<TCustomFieldType, bool>> customFieldPredicate = null)
+        {
+            if (customFieldPredicate == null)
+                customFieldPredicate = cf => true;
+
+            return GetCustomFields(entityID).Where(customFieldPredicate).FirstOrDefault();
+        }
+
+        protected IQueryable<TCustomFieldType> GetCustomFields(int entityID)
         {
             //This effectively builds a lambda as follows:
             // e => e.[PrimaryKeyProperty] == entityID
@@ -123,7 +124,7 @@ namespace Data.Entities
             BinaryExpression equalExpression = Expression.Equal(propertyAccessor, Expression.Constant(entityID));
             Expression<Func<TForeignEntity, bool>> foreignKeyComparer = Expression.Lambda(equalExpression, new[] { foreignProp }) as Expression<Func<TForeignEntity, bool>>;
 
-            return GetJoinResult(null, foreignKeyComparer).Select(jr => jr.CustomFieldDO).FirstOrDefault();
+            return GetJoinResult(null, foreignKeyComparer).Select(jr => jr.CustomFieldDO);
         }
 
 
@@ -257,7 +258,7 @@ namespace Data.Entities
         }
 
         private String _entityName;
-        public String EntityName
+        protected String EntityName
         {
             get
             {
@@ -266,7 +267,7 @@ namespace Data.Entities
         }
 
         private PropertyInfo _entityPrimaryKeyPropertyInfo;
-        public PropertyInfo EntityPrimaryKeyPropertyInfo
+        protected PropertyInfo EntityPrimaryKeyPropertyInfo
         {
             get
             {

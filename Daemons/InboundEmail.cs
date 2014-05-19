@@ -6,9 +6,11 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
+using Microsoft.WindowsAzure;
 using S22.Imap;
 
 using StructureMap;
+using UtilitiesLib.Logging;
 
 namespace Daemons
 {
@@ -16,34 +18,49 @@ namespace Daemons
     {
         private readonly IImapClient _client;
 
+        //warning: if you remove this empty constructor, Activator calls to this type will fail.
+        public InboundEmail()
+        {
+            
+        }
         private static string GetIMAPServer()
         {
-            return "imap.gmail.com";
+            return CloudConfigurationManager.GetSetting("InboundEmailHost");
         }
 
         private static int GetIMAPPort()
         {
-            return 993;
+            int port;
+            if (int.TryParse(CloudConfigurationManager.GetSetting("InboundEmailPort"), out port))
+                return port;
+            throw new Exception("Invalid value for 'InboundEmailPort'");
         }
 
         private static string GetUserName()
         {
-            return "kwasantintake";
+            string name = CloudConfigurationManager.GetSetting("INBOUND_EMAIL_USERNAME");
+            if (!String.IsNullOrEmpty(name))
+            {
+                return name;
+            }
+            throw new Exception("Missing value for 'INBOUND_EMAIL_USERNAME'");
         }
         private static string GetPassword()
         {
-            return "lucrereggio23";
+            string pwd = CloudConfigurationManager.GetSetting("INBOUND_EMAIL_PASSWORD");
+            if (!String.IsNullOrEmpty(pwd))
+            {
+                return pwd;
+            }
+            throw new Exception("Missing value for 'INBOUND_EMAIL_PASSWORD'");
         }
 
         private static bool UseSSL()
         {
-            return true;
-        }
-
-        public InboundEmail()
-            : this(new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL()))
-        {
-         
+            bool useSSL;
+            if (bool.TryParse(CloudConfigurationManager.GetSetting("InboundEmailUseSSL"), out useSSL))
+                return useSSL;
+            throw new Exception("Invalid value for 'InboundEmailUseSSL'");
         }
 
         public InboundEmail(IImapClient client)
@@ -58,24 +75,50 @@ namespace Daemons
 
         protected override void Run()
         {
-            IEnumerable<uint> uids = _client.Search(SearchCondition.Unseen());
-            List<MailMessage> messages = _client.GetMessages(uids).ToList();
-
-            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-            EmailRepository emailRepository = new EmailRepository(unitOfWork);
-            foreach (MailMessage message in messages)
+            IImapClient client;
+            try
             {
-                BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
-                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-
-                BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
+                client = _client ?? new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login,UseSSL());
             }
-            emailRepository.UnitOfWork.SaveChanges();
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error("Error occured on startup", ex);
+                Stop();
+                return;
+            }
+
+            Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
+            IEnumerable<uint> uids = client.Search(SearchCondition.Unseen()).ToList();
+            Logger.GetLogger().Info(GetType().Name + " - " + uids.Count() + " emails found...");
+
+            foreach (var uid in uids)
+            {
+                IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+                BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
+
+                var message = client.GetMessage(uid);
+                try
+                {
+                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                    BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
+
+                    bookingRequestRepo.UnitOfWork.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    Logger.GetLogger().Error("Failed to process inbound message.", e);
+                    client.RemoveMessageFlags(uid, null, MessageFlag.Seen);
+                    Logger.GetLogger().Info("Message marked as unread.");
+                }
+            }
+
+            client.Dispose();
         }
 
         protected override void CleanUp()
         {
-            _client.Dispose();
+            if(_client != null)
+                _client.Dispose();
         }
     }
 }
