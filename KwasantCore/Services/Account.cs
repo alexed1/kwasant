@@ -36,7 +36,7 @@ namespace KwasantCore.Services
         /// <returns></returns>
         public async Task<RegistrationStatus> Register(UserDO userDO)
         {
-            RegistrationStatus curRegStatus = RegistrationStatus.Successful;
+            RegistrationStatus curRegStatus = RegistrationStatus.Pending; 
             UserDO user = GetUser(userDO.UserName); //check this user already exists in DB or not
 
             if (user != null) // Existing user
@@ -62,7 +62,7 @@ namespace KwasantCore.Services
 
         public async Task<LoginStatus> Login(UserDO userDO, bool isPersistent)
         {
-            LoginStatus curLoginStatus = LoginStatus.Successful;
+            LoginStatus curLoginStatus = LoginStatus.Pending;
 
             UserDO user = GetUser(userDO.UserName);
             if (user != null)

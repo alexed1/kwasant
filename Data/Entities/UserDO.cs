@@ -11,7 +11,7 @@ namespace Data.Entities
     {
         public UserDO()
         {
-            PersonDO = new PersonDO();
+            PersonDO = new PersonDO(); 
         }
         
         public UserDO(string curEmailAddress) : base()

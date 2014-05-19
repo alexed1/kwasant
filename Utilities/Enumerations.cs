@@ -113,6 +113,7 @@ namespace UtilitiesLib
     public enum RegistrationStatus
     {
         Successful,
+        Pending,
         UserAlreadyExists,
     }
 
@@ -122,6 +123,7 @@ namespace UtilitiesLib
         InvalidCredential,
         ImplicitUser,
         UnregisteredUser,
+        Pending
     }
 }
   
