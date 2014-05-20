@@ -11,7 +11,7 @@ namespace Data.Entities
     public class EventDO : IEvent
     {
         [Key]
-        public int EventID { get; set; }
+        public int Id { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Location { get; set; }

@@ -1,6 +1,5 @@
 ﻿using System;
 using Data.Interfaces;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,7 +8,7 @@ namespace Data.Entities
     public class PersonDO : IPerson
     {
         [Key]
-        public int PersonId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [StringLength(30)]

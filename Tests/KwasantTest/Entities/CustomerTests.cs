@@ -44,7 +44,7 @@ namespace KwasantTest.Entities
 
             //VERIFY
             //check that it was saved to the db
-            CustomerDO savedCustomerDO = customerRepo.GetByKey(curCustomerDO.CustomerID);
+            CustomerDO savedCustomerDO = customerRepo.GetByKey(curCustomerDO.Id);
             Assert.AreEqual(curCustomerDO.FirstName,savedCustomerDO.FirstName);
             Assert.AreEqual(curCustomerDO.EmailAddress, savedCustomerDO.EmailAddress);
 

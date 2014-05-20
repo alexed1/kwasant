@@ -65,9 +65,9 @@ namespace KwasantCore.Services
         {
             IEnumerable<EventDO> test = _eventRepo.GetAll();
             _events = _eventRepo.GetQuery()
-                .Where(curEventDO => curEventDO.BookingRequest.Customer.CustomerID == _bookingRequestDO.Customer.CustomerID)
+                .Where(curEventDO => curEventDO.BookingRequest.Customer.Id == _bookingRequestDO.Customer.Id)
                 .ToDictionary(
-                    curEventDO => curEventDO.EventID,
+                    curEventDO => curEventDO.Id,
                     curEventDO => curEventDO);
 
         }
@@ -117,7 +117,7 @@ namespace KwasantCore.Services
 
         public void DeleteEvent(int id)
         {
-            EventDO eventToDelete = EventsList.FirstOrDefault(inv => inv.EventID == id);
+            EventDO eventToDelete = EventsList.FirstOrDefault(inv => inv.Id == id);
             if (eventToDelete != null)
             {
                 _eventRepo.Remove(eventToDelete);
@@ -134,7 +134,7 @@ namespace KwasantCore.Services
 
         public void MoveEvent(int id, DateTime newStart, DateTime newEnd)
         {
-            EventDO itemToMove = EventsList.FirstOrDefault(inv => inv.EventID == id);
+            EventDO itemToMove = EventsList.FirstOrDefault(inv => inv.Id == id);
             if (itemToMove != null)
             {
                 itemToMove.StartDate = newStart;

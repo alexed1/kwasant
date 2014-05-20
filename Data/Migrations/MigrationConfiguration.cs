@@ -45,7 +45,7 @@ namespace Data.Migrations
                     object value = constant.GetValue(null);
                     instructionsToAdd.Add(new InstructionDO
                     {
-                        InstructionID = (int) value,
+                        Id = (int) value,
                         Name = name,
                         Category = nestedType.Name
                     });
@@ -53,7 +53,7 @@ namespace Data.Migrations
             }
 
             context.Instructions.AddOrUpdate(
-                    i => i.InstructionID,
+                    i => i.Id,
                     instructionsToAdd.ToArray()
                 );
         }

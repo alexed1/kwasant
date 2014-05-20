@@ -19,7 +19,7 @@ namespace Daemons
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
                 EmailRepository emailRepository = new EmailRepository(unitOfWork);
-                var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.EmailID == emailID);
+                var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
                 if (emailToUpdate == null)
                 {
                     Logger.GetLogger().Error("Email id " + emailID + " recieved a callback saying it was sent from Mandrill, but the email was not found in our database");
@@ -34,7 +34,7 @@ namespace Daemons
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
                 EmailRepository emailRepository = new EmailRepository(unitOfWork);
-                var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.EmailID == emailID);
+                var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
                 if (emailToUpdate == null)
                 {
                     Logger.GetLogger().Error("Email id " + emailID + " recieved a callback saying it was rejected from Mandrill, but the email was not found in our database");
@@ -51,7 +51,7 @@ namespace Daemons
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
                 EmailRepository emailRepository = new EmailRepository(unitOfWork);
-                var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.EmailID == emailID);
+                var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
                 if (emailToUpdate == null)
                 {
                     Logger.GetLogger().Error("Email id " + emailID + " recieved a callback saying it recieved a critical error from Mandrill, but the email was not found in our database");

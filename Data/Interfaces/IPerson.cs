@@ -8,7 +8,7 @@ namespace Data.Interfaces
     public interface IPerson
     {
         [Key]
-        int PersonId { get; set; }       
+        int Id { get; set; }       
 
         String FirstName { get; set; }
         String LastName { get; set; }

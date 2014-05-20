@@ -7,7 +7,7 @@ namespace Data.Interfaces
     public interface IEvent
     {
         [Key]
-        int EventID { get; set; }
+        int Id { get; set; }
 
         string Summary { get; set; }
         string Location { get; set; }

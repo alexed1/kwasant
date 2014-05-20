@@ -7,7 +7,7 @@ namespace Data.Entities
     public class CommunicationConfigurationDO
     {
         [Key]
-        public int CommunicationConfigurationID { get; set; }
+        public int Id { get; set; }
         public CommunicationType Type { get; set; }
         public String ToAddress { get; set; }
     }

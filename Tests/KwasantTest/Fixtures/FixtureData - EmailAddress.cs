@@ -15,7 +15,7 @@ namespace KwasantTest.Fixtures
             return new EmailAddressDO()
             {
                 Address = "alexlucre1@gmail.com",
-                EmailAddressID = 1,
+                Id = 1,
                 Name = "Alex Lucre1"
             };
         }
@@ -26,7 +26,7 @@ namespace KwasantTest.Fixtures
             return new EmailAddressDO()
             {
                 Address = "joetest2@edelstein.org",
-                EmailAddressID = 2,
+                Id = 2,
                 Name = "Joe Test Account 2"
             };
         }

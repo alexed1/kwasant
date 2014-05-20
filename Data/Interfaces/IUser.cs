@@ -5,6 +5,6 @@ namespace Data.Interfaces
     public interface IUser
     {
         [Key]
-        int UserID { get; set; }
+        int Id { get; set; }
     }
 }

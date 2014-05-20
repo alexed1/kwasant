@@ -42,7 +42,7 @@ namespace KwasantCore.Services
             instructionIDs.Add(ProcessAllDay(emailBody));
             instructionIDs = instructionIDs.Where(i => i.HasValue).Distinct().ToList();
             InstructionRepository instructionRepo = new InstructionRepository(uow);
-            return instructionRepo.GetQuery().Where(i => instructionIDs.Contains(i.InstructionID)).ToList();
+            return instructionRepo.GetQuery().Where(i => instructionIDs.Contains(i.Id)).ToList();
         }
 
         private static IEnumerable<int> ProcessTravelTime(string emailBody)

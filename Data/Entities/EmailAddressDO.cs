@@ -8,7 +8,7 @@ namespace Data.Entities
     public class EmailAddressDO : IEmailAddress
     {
         [Key]
-        public int EmailAddressID { get; set; }
+        public int Id { get; set; }
 
         public String Name { get; set; }
         public String Address { get; set; }

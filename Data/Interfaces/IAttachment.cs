@@ -5,6 +5,6 @@ namespace Data.Interfaces
     public interface IAttachment
     {
         [Key]
-        int AttachmentID { get; set; }
+        int Id { get; set; }
     }
 }

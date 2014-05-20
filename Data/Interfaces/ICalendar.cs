@@ -8,7 +8,7 @@ namespace Data.Interfaces
     public interface ICalendar
     {
         [Key]
-        int CalendarId { get; set; }
+        int Id { get; set; }
 
         String Name { get; set; }
 

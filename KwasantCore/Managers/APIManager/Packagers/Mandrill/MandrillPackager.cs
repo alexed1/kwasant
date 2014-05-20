@@ -209,7 +209,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             }
             catch (JsonSerializationException)
             {
-                OnEmailCriticalError(-1, "Return JSON could not be parsed.", responseStr, email.EmailID);
+                OnEmailCriticalError(-1, "Return JSON could not be parsed.", responseStr, email.Id);
                 throw;
             }
             foreach (MandrillResponse response in responses)
@@ -218,11 +218,11 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
                 {
                     if (String.IsNullOrEmpty(response.RejectReason))
                     {
-                        OnEmailSent(response._ID, email.EmailID);
+                        OnEmailSent(response._ID, email.Id);
                     }
                     else
                     {
-                        OnEmailRejected(response._ID, response.RejectReason, email.EmailID);
+                        OnEmailRejected(response._ID, response.RejectReason, email.Id);
                     }
                 }
                 else if (response.Status == MandrillResponse.MandrilQueued)
@@ -235,21 +235,21 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
                 }
                 else if (response.Status == MandrillResponse.MandrilRejected)
                 {
-                    OnEmailRejected(response._ID, response.RejectReason, email.EmailID);
+                    OnEmailRejected(response._ID, response.RejectReason, email.Id);
                 }
                 else if (response.Status == MandrillResponse.MandrilInvalid)
                 {
-                    OnEmailCriticalError(response.Code, response.Name, response.Message, email.EmailID);
+                    OnEmailCriticalError(response.Code, response.Name, response.Message, email.Id);
                     throw new Exception("Error sending email: " + response.Message);
                 }
                 else if (response.Status == MandrillResponse.MandrilError)
                 {
-                    OnEmailCriticalError(response.Code, response.Name, response.Message, email.EmailID);
+                    OnEmailCriticalError(response.Code, response.Name, response.Message, email.Id);
                     throw new Exception("Error sending email: " + response.Message);
                 }
                 else
                 {
-                    OnEmailCriticalError(-1, "Unknown state", "State: " + response.Status, email.EmailID);
+                    OnEmailCriticalError(-1, "Unknown state", "State: " + response.Status, email.Id);
                     throw new Exception("Unknown email state: " + response.Status);
                 }
             }
@@ -457,7 +457,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
                 To = message.To.Select(t => new MandrilEmail.MandrilEmailAddress { Email = t.Address, Name = t.Name, Type = "to" }).ToList(),
                 Headers = null,
                 Important = false,
-                Tags = new List<string> { Email.EmailID.ToString() },
+                Tags = new List<string> { Email.Id.ToString() },
                 Attachments = message.Attachments.Select(a =>
                 {
                     byte[] file = a.Bytes;

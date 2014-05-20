@@ -45,13 +45,13 @@ namespace KwasantTest.Services
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
-                EmailID = 1,
+                Id = 1,
                 Customer = customerOne,
             };
             bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
             BookingRequestDO bookingRequestTwo = new BookingRequestDO()
             {
-                EmailID = 2,
+                Id = 2,
                 Customer = customerTwo,
             };
             bookingRequestTwo.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
@@ -61,7 +61,7 @@ namespace KwasantTest.Services
 
             EventDO eventOne = new EventDO()
             {
-                EventID = 1,
+                Id = 1,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now,
                 BookingRequest = bookingRequestOne
@@ -69,7 +69,7 @@ namespace KwasantTest.Services
 
             EventDO eventTwo = new EventDO()
             {
-                EventID = 2,
+                Id = 2,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now,
                 BookingRequest = bookingRequestTwo
@@ -84,8 +84,8 @@ namespace KwasantTest.Services
             calendar.LoadBookingRequest(bookingRequestOne);
             List<EventDO> events = calendar.EventsList;
             Assert.AreEqual(1, events.Count);
-            Assert.AreEqual(1, events.First().EventID);
-            Assert.AreEqual(1, events.First().BookingRequest.EmailID);
+            Assert.AreEqual(1, events.First().Id);
+            Assert.AreEqual(1, events.First().BookingRequest.Id);
         }
 
         [Test]
@@ -101,7 +101,7 @@ namespace KwasantTest.Services
             
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
-                EmailID = 1,
+                Id = 1,
                 Customer = customerOne,
             };
             bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
@@ -111,7 +111,7 @@ namespace KwasantTest.Services
             
             EventDO eventOne = new EventDO()
             {
-                EventID = 1,
+                Id = 1,
                 StartDate = DateTime.Today,
                 EndDate = DateTime.Today,
                 BookingRequest = bookingRequestOne
@@ -152,7 +152,7 @@ namespace KwasantTest.Services
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
-                EmailID = 1,
+                Id = 1,
                 Customer = customerOne,
             };
             bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
@@ -161,7 +161,7 @@ namespace KwasantTest.Services
 
             EventDO eventOne = new EventDO()
             {
-                EventID = 1,
+                Id = 1,
                 StartDate = DateTime.Today,
                 EndDate = DateTime.Today,
                 BookingRequest = bookingRequestOne
@@ -197,7 +197,7 @@ namespace KwasantTest.Services
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
-                EmailID = 1,
+                Id = 1,
                 Customer = customerOne,
             };
             bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
@@ -213,7 +213,7 @@ namespace KwasantTest.Services
 
             calendar.AddEvent(new EventDO
             {
-                EventID = 1,
+                Id = 1,
                 StartDate = DateTime.Today,
                 EndDate = DateTime.Today,
                 BookingRequest = bookingRequestOne
@@ -239,7 +239,7 @@ namespace KwasantTest.Services
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
-                EmailID = 1,
+                Id = 1,
                 Customer = customerOne,
             };
             bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
@@ -248,7 +248,7 @@ namespace KwasantTest.Services
 
             EventDO eventOne = new EventDO()
             {
-                EventID = 1,
+                Id = 1,
                 StartDate = DateTime.Today,
                 EndDate = DateTime.Today,
                 BookingRequest = bookingRequestOne
@@ -278,7 +278,7 @@ namespace KwasantTest.Services
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
-                EmailID = 1,
+                Id = 1,
                 Customer = customerOne,
             };
             bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
@@ -297,7 +297,7 @@ namespace KwasantTest.Services
 
             calendar.AddEvent(new EventDO
             {
-                EventID = 1,
+                Id = 1,
                 StartDate = DateTime.Today,
                 EndDate = DateTime.Today,
                 BookingRequest = bookingRequestOne

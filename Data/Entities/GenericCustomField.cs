@@ -64,7 +64,7 @@ namespace Data.Entities
             {
                 currentStatus = new TCustomFieldType
                 {
-                    ForeignTableID = entityID,
+                    Id = entityID,
                     ForeignTableName = EntityName,
                 };
                 _trackingStatusRepo.Add(currentStatus);
@@ -195,7 +195,7 @@ namespace Data.Entities
                 (
                     customFieldQuery,
                     foreignKeySelector,
-                    ts => ts == null ? -1 : ts.ForeignTableID, // Null check is for our in-memory mocked queries
+                    ts => ts == null ? -1 : ts.Id, // Null check is for our in-memory mocked queries
                     (foreignDO, customFieldDO) =>
                         new JoinResult
                         {
@@ -218,7 +218,7 @@ namespace Data.Entities
                 (
                     customFieldQuery,
                     foreignKeySelector,
-                    ts => ts.ForeignTableID,
+                    ts => ts.Id,
                     (foreignDO, customFieldDO) =>
                         new JoinResult
                         {

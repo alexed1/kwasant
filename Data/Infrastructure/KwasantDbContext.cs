@@ -123,7 +123,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
                 {
-                    ts.ForeignTableID,
+                    ForeignTableID = ts.Id,
                     ts.ForeignTableName
                 });
 

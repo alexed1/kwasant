@@ -6,7 +6,7 @@
 <form id="f" method="post" style="margin:10px" action="@Url.Action("Confirm")">
     <h3>Confirm Changes</h3>
     <hr />
-    <div>You are <b>@Html.Raw(Model.EventDO.EventID == 0 ? "creating a new" : "editting an existing")</b> event.</div>
+    <div>You are <b>@Html.Raw(Model.EventDO.Id == 0 ? "creating a new" : "editting an existing")</b> event.</div>
     <div style="@Html.Raw(Model.EventDO.IsAllDay ? String.Empty : "display:none;")">
         <div>* All day event * - @Model.EventDO.StartDate.ToShortDateString()</div>
     </div>

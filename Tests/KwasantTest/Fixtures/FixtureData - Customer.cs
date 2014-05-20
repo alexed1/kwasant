@@ -9,7 +9,7 @@ namespace KwasantTest.Fixtures
 
             return new CustomerDO()
             {
-                CustomerID = 1,
+                Id = 1,
                 FirstName = "Jack",
                 LastName = "Maginot",
                 EmailAddress = "JackMaginot@gmail.com"
@@ -22,7 +22,7 @@ namespace KwasantTest.Fixtures
 
             return new CustomerDO()
             {
-                CustomerID = 2,
+                Id = 2,
                 FirstName = "Rob",
                 LastName = "Maginot",
                 EmailAddress = "RobMaginot@gmail.com"

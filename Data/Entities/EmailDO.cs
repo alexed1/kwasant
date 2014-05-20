@@ -11,7 +11,7 @@ namespace Data.Entities
     public class EmailDO : IEmail
     {
         [Key]
-        public int EmailID { get; set; }
+        public int Id { get; set; }
         
         public String Subject { get; set; }
         public String Text { get; set; }
@@ -72,8 +72,8 @@ namespace Data.Entities
             {
                 Email = this,
                 EmailAddress = emailAddress,
-                EmailAddressID = emailAddress.EmailAddressID,
-                EmailID = EmailID,
+                EmailAddressID = emailAddress.Id,
+                EmailID = Id,
                 Type = type
             };
             emailEmailAddressRepo.Add(newLink);
