@@ -8,7 +8,7 @@ namespace Data.Entities
     public class CustomerDO : ICustomer
     {
         [Key]
-        public int CustomerID { get; set; }
+        public int Id { get; set; }
 
         public String EmailAddress { get; set; }
         public String FirstName { get; set; }

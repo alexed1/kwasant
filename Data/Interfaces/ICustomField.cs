@@ -2,7 +2,7 @@
 {
     public interface ICustomField
     {
-        int ForeignTableID { get; set; }
+        int Id { get; set; }
         string ForeignTableName { get; set; }
     }
 }

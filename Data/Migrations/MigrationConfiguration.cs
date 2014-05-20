@@ -43,7 +43,7 @@ namespace Data.Migrations
 
         private static void SeedInstructions(IDBContext context)
         {
-            Type[] nestedTypes = typeof(InstructionConstants).GetNestedTypes();
+            Type[] nestedTypes = typeof (InstructionConstants).GetNestedTypes();
             var instructionsToAdd = new List<InstructionDO>();
             foreach (Type nestedType in nestedTypes)
             {
@@ -54,7 +54,7 @@ namespace Data.Migrations
                     object value = constant.GetValue(null);
                     instructionsToAdd.Add(new InstructionDO
                     {
-                        InstructionID = (int)value,
+                        Id = (int) value,
                         Name = name,
                         Category = nestedType.Name
                     });
@@ -62,7 +62,7 @@ namespace Data.Migrations
             }
 
             context.Instructions.AddOrUpdate(
-                    i => i.InstructionID,
+                    i => i.Id,
                     instructionsToAdd.ToArray()
                 );
         }
@@ -78,12 +78,12 @@ namespace Data.Migrations
             if (roleManager.RoleExists("Admin") == false)
             {
                 roleManager.Create(new IdentityRole("Admin"));
-            }
+    }
 
             if (roleManager.RoleExists("Customer") == false)
             {
                 roleManager.Create(new IdentityRole("Customer"));
-            }
+}
         }
 
         /// <summary>
@@ -109,27 +109,26 @@ namespace Data.Migrations
         /// <returns></returns>
         private void CreateAdmin(string curUserName, string curPassword, KwasantDbContext context)
         {
-            IdentityResult ir;
-
             try
             {
-                var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-
                 var um = new UserManager<UserDO>(new UserStore<UserDO>(context));
-
-                var user = new UserDO()
+                if (um.FindByName(curUserName) == null)
                 {
-                    UserName = curUserName,
-                    EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(curUserName),
-                    FirstName = curUserName,
-                    EmailConfirmed = true
-                };
+                    var user = new UserDO()
+                    {
+                        UserName = curUserName,
+                        PersonDO = new PersonDO(),
+                        EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(curUserName),
+                        FirstName = curUserName,
+                        EmailConfirmed = true
+                    };
 
-                ir = um.Create(user, curPassword);
-                if (!ir.Succeeded)
-                    return;
+                    IdentityResult ir = um.Create(user, curPassword);
+                    if (!ir.Succeeded)
+                        return;
 
-                ir = um.AddToRole(user.Id, "Admin");
+                    um.AddToRole(user.Id, "Admin");
+                }
             }
             catch (DbEntityValidationException ex)
             {

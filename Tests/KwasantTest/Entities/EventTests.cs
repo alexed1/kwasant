@@ -95,8 +95,8 @@ namespace KwasantTest.Entities
             eventRepo.UnitOfWork.SaveChanges();
 
             //VERIFY
-            EventDO curRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.EventID);
-            Assert.AreEqual(curOriginalEventDO.EventID, curRetrievedEventDO.EventID);
+            EventDO curRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.Id);
+            Assert.AreEqual(curOriginalEventDO.Id, curRetrievedEventDO.Id);
         }
 
         [Test]
@@ -133,8 +133,8 @@ namespace KwasantTest.Entities
             eventRepo.UnitOfWork.SaveChanges();
 
             //VERIFY
-            EventDO CurRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.EventID);
-            Assert.AreEqual(curOriginalEventDO.EventID, CurRetrievedEventDO.EventID);
+            EventDO CurRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.Id);
+            Assert.AreEqual(curOriginalEventDO.Id, CurRetrievedEventDO.Id);
         }
 
         [Test]
@@ -235,12 +235,12 @@ namespace KwasantTest.Entities
             eventRepo.Add(curOriginalEventDO);
             eventRepo.UnitOfWork.SaveChanges();
 
-            EventDO curRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.EventID);
+            EventDO curRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.Id);
 
             eventRepo.Remove(curRetrievedEventDO);
             eventRepo.UnitOfWork.SaveChanges();
 
-            EventDO curDeletedEventDO = eventRepo.GetByKey(curRetrievedEventDO.EventID);
+            EventDO curDeletedEventDO = eventRepo.GetByKey(curRetrievedEventDO.Id);
 
             //VERIFY            
             Assert.IsNull(curDeletedEventDO);

@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
 using System.Web.Mvc;
-using System.Text;
-using System.Diagnostics;
 using System.Threading.Tasks;
+using Data.Entities.Enumerations;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Net.Mail;
 using System.Configuration;
-using System.Data.Entity;
-
 using Data.Entities;
-using StructureMap;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Infrastructure;
@@ -41,10 +34,9 @@ namespace KwasantWeb.Controllers
             String senderMailAddress = ConfigurationManager.AppSettings["MailSenderAddress"];
 
             EmailDO emailDO = new EmailDO();
-            emailDO.To = new List<EmailAddressDO>();
-            emailDO.To.Add(Email.GenerateEmailAddress(new MailAddress(message.Destination)));
+            emailDO.AddEmailParticipant(EmailParticipantType.TO, Email.GenerateEmailAddress(new MailAddress(message.Destination)));
+            emailDO.AddEmailParticipant(EmailParticipantType.FROM, Email.GenerateEmailAddress(new MailAddress(senderMailAddress)));
 
-            emailDO.From = Email.GenerateEmailAddress(new MailAddress(senderMailAddress));
             emailDO.Subject = message.Subject;
             emailDO.HTMLText = message.Body;
 

@@ -79,7 +79,7 @@
 </header>
 <form id="f" method="post" action="@Url.Action("ProcessCreateEvent")">
     <h3>
-        @Html.Raw(Model.EventID == 0 ? "New Event" : "Editing Event")
+        @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event")
     </h3>
     <hr />
     <div class="formItem">
@@ -143,7 +143,7 @@
     </div>
     @{
         <div style="display: none">
-            @Html.TextBox("EventID", @Model.EventID, new { @class = "form-control col-md-1" })
+            @Html.TextBox("EventID", @Model.Id, new { @class = "form-control col-md-1" })
         </div>
     }
     <hr />

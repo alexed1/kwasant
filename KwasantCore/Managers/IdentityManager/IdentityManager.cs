@@ -33,7 +33,12 @@ namespace KwasantCore.Managers.IdentityManager
   
         public async Task<UserDO> ConvertExistingPerson(PersonDO personDO, UserDO userRegStrings)
         {
-             UserDO newUserDO = new UserDO { UserName = userRegStrings.UserName, Password = userRegStrings.Password};
+            UserDO newUserDO = new UserDO
+            {
+                UserName = userRegStrings.UserName,
+                PersonDO = userRegStrings.PersonDO,
+                Password = userRegStrings.Password
+            };
              RegistrationStatus curRegStatus = await _user.Create(newUserDO, "Customer");
              if (curRegStatus == RegistrationStatus.Successful)
              {

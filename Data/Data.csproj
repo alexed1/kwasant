@@ -119,7 +119,9 @@
     <Compile Include="Constants\InstructionConstants.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
+    <Compile Include="Entities\EmailEmailAddressDO.cs" />
     <Compile Include="Entities\Enumerations\CommunicationType.cs" />
+    <Compile Include="Entities\Enumerations\EmailParticipantType.cs" />
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingType.cs" />
@@ -143,6 +145,7 @@
     <Compile Include="Repositories\AttendeeRepository.cs" />
     <Compile Include="Repositories\BookingRequestRepository.cs" />
     <Compile Include="Repositories\CalendarRepository.cs" />
+    <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
     <Compile Include="Repositories\CommunicationRepository.cs" />
     <Compile Include="Repositories\EmailAddressRepository.cs" />
     <Compile Include="Repositories\EmailRepository.cs" />

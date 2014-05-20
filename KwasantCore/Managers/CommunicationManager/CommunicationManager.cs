@@ -65,12 +65,13 @@ namespace KwasantCore.Managers.CommunicationManager
             {
                 EmailDO outboundEmail = new EmailDO
                 {
-                    From = new EmailAddressDO { Address = "scheduling@kwasant.com", Name = "Kwasant Scheduling Services" },
-                    To = new List<EmailAddressDO> {new EmailAddressDO {Address = toAddress}},
                     Subject = "New booking request!",
                     HTMLText = String.Format(message, bookingRequest.From.Address),
                     Status = EmailStatus.QUEUED
                 };
+
+                outboundEmail.AddEmailParticipant(EmailParticipantType.FROM, new EmailAddressDO { Address = "scheduling@kwasant.com", Name = "Kwasant Scheduling Services" });
+                outboundEmail.AddEmailParticipant(EmailParticipantType.TO, new EmailAddressDO { Address = toAddress });
 
                 emailRepo.Add(outboundEmail);
             }

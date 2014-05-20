@@ -6,7 +6,7 @@ namespace Data.Entities
     public class InstructionDO
     {
         [Key]
-        public int InstructionID { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public String Category { get; set; }
     }

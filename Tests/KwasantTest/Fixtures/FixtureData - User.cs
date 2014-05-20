@@ -6,25 +6,23 @@ namespace KwasantTest.Fixtures
     {
         public UserDO TestUser()
         {
-
             return new UserDO()
             {
+                PersonDO = new PersonDO(),
                 FirstName = "Jack",
                 LastName = "Maginot",
                 EmailAddress = TestEmail4()
-
             };
         }
 
         public UserDO TestUser2()
         {
-
             return new UserDO()
             {
+                PersonDO = new PersonDO(),
                 FirstName = "Rob",
                 LastName = "Maginot",
                 EmailAddress = TestEmail5()
-
             };
         }
 

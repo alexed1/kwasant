@@ -1,9 +1,6 @@
-using System;
-using System.Runtime.InteropServices.ComTypes;
-using Data.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Data.Interfaces;
 
 namespace Data.Entities
 {
@@ -35,7 +32,7 @@ namespace Data.Entities
 
         [StringLength(30)]
         [MaxLength(30, ErrorMessage = "Last name maximum 30 characters.")]
-        [MinLength(3, ErrorMessage = "Last name minimum 3 characters.")]
+        [MinLength(3, ErrorMessage = "Last name minimum 3 characters.")]        
         public string LastName
         {
             get
@@ -51,7 +48,7 @@ namespace Data.Entities
         }
 
         private EmailAddressDO _emailAddressDO;
-
+    
         [Required]
         public EmailAddressDO EmailAddress
         {

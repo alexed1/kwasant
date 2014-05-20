@@ -14,7 +14,7 @@
         <h4>Email</h4>
         <hr />
         @Html.ValidationSummary(true)
-        @Html.HiddenFor(model => model.EmailID)
+        @Html.HiddenFor(model => model.Id)
 
         <div class="form-group">
             @Html.LabelFor(model => model.HTMLText, new { @class = "control-label col-md-2" })

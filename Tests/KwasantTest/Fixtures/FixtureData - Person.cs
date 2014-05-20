@@ -5,7 +5,6 @@ namespace KwasantTest.Fixtures
 {
     partial class FixtureData
     {
-        [Test]
         public PersonDO TestPerson()
         {
             return new PersonDO()

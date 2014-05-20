@@ -42,12 +42,12 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             customersNow = _userRepo.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
-            Assert.AreEqual("customer@gmail.com", customersNow.First().EmailAddress);
+            Assert.AreEqual("customer@gmail.com", customersNow.First().EmailAddress.Address);
             Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
         }
 
@@ -70,7 +70,7 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             customersNow = _userRepo.GetAll().ToList();
@@ -90,12 +90,12 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
-            Assert.AreEqual(InstructionConstants.EventDuration.MarkAsAllDayEvent, bookingRequest.Instructions.First().InstructionID);
+            Assert.AreEqual(InstructionConstants.EventDuration.MarkAsAllDayEvent, bookingRequest.Instructions.First().Id);
         }
 
         [Test]
@@ -109,12 +109,12 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
-            Assert.AreEqual(InstructionConstants.TravelTime.Add30MinutesTravelTime, bookingRequest.Instructions.First().InstructionID);
+            Assert.AreEqual(InstructionConstants.TravelTime.Add30MinutesTravelTime, bookingRequest.Instructions.First().Id);
         }
 
         [Test]
@@ -128,12 +128,12 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
-            Assert.AreEqual(InstructionConstants.TravelTime.Add60MinutesTravelTime, bookingRequest.Instructions.First().InstructionID);
+            Assert.AreEqual(InstructionConstants.TravelTime.Add60MinutesTravelTime, bookingRequest.Instructions.First().Id);
         }
 
         [Test]
@@ -147,12 +147,12 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
-            Assert.AreEqual(InstructionConstants.TravelTime.Add90MinutesTravelTime, bookingRequest.Instructions.First().InstructionID);
+            Assert.AreEqual(InstructionConstants.TravelTime.Add90MinutesTravelTime, bookingRequest.Instructions.First().Id);
         }
 
         [Test]
@@ -166,12 +166,12 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
-            Assert.AreEqual(InstructionConstants.TravelTime.Add120MinutesTravelTime, bookingRequest.Instructions.First().InstructionID);
+            Assert.AreEqual(InstructionConstants.TravelTime.Add120MinutesTravelTime, bookingRequest.Instructions.First().Id);
         }
     }
 }

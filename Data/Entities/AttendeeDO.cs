@@ -8,7 +8,7 @@ namespace Data.Entities
     public class AttendeeDO : IAttendee
     {
         [Key]
-        public int AttendeeID { get; set; }
+        public int Id { get; set; }
         public String Name { get; set; }
         public String EmailAddress { get; set; }
 

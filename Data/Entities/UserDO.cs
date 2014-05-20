@@ -12,10 +12,10 @@ namespace Data.Entities
     {
         public UserDO()
         {
-            PersonDO = new PersonDO(); 
+            
         }
         
-        public UserDO(string curEmailAddress) : this()
+        public UserDO(string curEmailAddress)
         {
             EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(curEmailAddress);
         }
@@ -56,8 +56,10 @@ namespace Data.Entities
 
         [ForeignKey("PersonDO")]
         public int PersonID { get; set; }
+
         [Required]
         public virtual PersonDO PersonDO { get; set; }
+
     }
 }
 
