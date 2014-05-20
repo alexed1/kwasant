@@ -7,14 +7,14 @@ namespace KwasantTest.Fixtures
     {
 
 
-        private ICustomerRepository customerRepo;
+        private IUserRepository customerRepo;
         private IEmailAddressRepository emailAddressRepo;
         private IUnitOfWork _uow;
 
         public FixtureData(IUnitOfWork uow)
         {
             _uow = uow;
-            customerRepo = new CustomerRepository(_uow);
+            customerRepo = new UserRepository(_uow);
             emailAddressRepo= new EmailAddressRepository(_uow);
         }
 

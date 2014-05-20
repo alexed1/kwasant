@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -98,13 +98,13 @@ namespace KwasantCore.Services
         {
             TEmailType emailDO = new TEmailType
             {
-                From = GetEmailAddress(mailAddress.From),
-                BCC = mailAddress.Bcc.Select(GetEmailAddress).ToList(),
-                CC = mailAddress.CC.Select(GetEmailAddress).ToList(),
+                From = GenerateEmailAddress(mailAddress.From),
+                BCC = mailAddress.Bcc.Select(GenerateEmailAddress).ToList(),
+                CC = mailAddress.CC.Select(GenerateEmailAddress).ToList(),
                 Subject = mailAddress.Subject,
                 HTMLText = mailAddress.Body,
                 Attachments = mailAddress.Attachments.Select(CreateNewAttachment).ToList(),
-                To = mailAddress.To.Select(GetEmailAddress).ToList(),
+                To = mailAddress.To.Select(GenerateEmailAddress).ToList(),
                 Events = null
             };
             emailDO.To.ForEach(a => a.ToEmail = emailDO);
@@ -117,7 +117,7 @@ namespace KwasantCore.Services
             return emailDO;
         }
 
-        private static EmailAddressDO GetEmailAddress(MailAddress address)
+        public static EmailAddressDO GenerateEmailAddress(MailAddress address)
         {
             return new EmailAddressDO { Address = address.Address, Name = address.DisplayName };
         }

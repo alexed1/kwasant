@@ -62,11 +62,12 @@
     <div class="container">
         <div class="masthead">
             <h3 class="text-muted">@Html.ActionLink("Kwasant", "Index", "Home")</h3>
-            <ul class="nav nav-justified">
+                 <section id="login">
+                    @Html.Partial("_LoginPartial")
+                </section>
              <!--    <li>@Html.ActionLink("Home", "Index", "Home", null, new { @class = "active" })</li>
                 <li>@Html.ActionLink("About", "About", "Home")</li>
                 <li>@Html.ActionLink("Contact", "Contact", "Home")</li> -->
-            </ul>
         </div>
     </div>
 

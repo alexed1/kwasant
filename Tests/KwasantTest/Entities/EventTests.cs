@@ -15,7 +15,7 @@ namespace KwasantTest.Entities
     [TestFixture, Ignore]
     public class EventTests 
     {
-        public ICustomerRepository customerRepo;
+        public IUserRepository userRepo;
         private IEventRepository eventRepo;
         private IEmailAddressRepository emailAddressRepo;
         public IUnitOfWork _uow;
@@ -29,7 +29,7 @@ namespace KwasantTest.Entities
 
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _calendar = new Calendar(_uow);
-            customerRepo = new CustomerRepository(_uow);
+            userRepo = new UserRepository(_uow);
             eventRepo = new EventRepository(_uow);
             emailAddressRepo = new EmailAddressRepository(_uow);
             _fixture = new FixtureData(_uow);

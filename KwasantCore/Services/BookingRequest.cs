@@ -14,26 +14,26 @@ namespace KwasantCore.Services
     {
         public static void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-            CustomerDO curCustomer = GetOrCreateCustomer(uow, bookingRequest);
+            UserDO curUser = GetOrCreateUser(uow, bookingRequest);
             
-            bookingRequest.Customer = curCustomer;
+            bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
             bookingRequest.Status = EmailStatus.UNPROCESSED;
         }
 
-        private static CustomerDO GetOrCreateCustomer(IUnitOfWork uow, BookingRequestDO currMessage)
+        private static UserDO GetOrCreateUser(IUnitOfWork uow, BookingRequestDO currMessage)
         {
             string fromEmailAddress = currMessage.From.Address;
-            CustomerRepository customerRepo = new CustomerRepository(uow);
-            CustomerDO curCustomer = customerRepo.GetQuery().FirstOrDefault(c => c.EmailAddress == fromEmailAddress);
-            if (curCustomer == null)
+            UserRepository userRepo = new UserRepository(uow);
+            UserDO curUser = userRepo.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
+            if (curUser == null)
             {
-                curCustomer = new CustomerDO();
-                curCustomer.EmailAddress = fromEmailAddress;
-                curCustomer.FirstName = currMessage.From.Name;
-                customerRepo.Add(curCustomer);
+                curUser = new UserDO();
+                curUser.EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(fromEmailAddress);
+                curUser.FirstName = currMessage.From.Name;
+                userRepo.Add(curUser);
             }
-            return curCustomer;
+            return curUser;
         }
 
         private static List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)

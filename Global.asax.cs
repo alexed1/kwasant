@@ -28,7 +28,7 @@ namespace KwasantWeb
             StructureMapBootStrapper.ConfigureDependencies("dev"); //set to either "test" or "dev"
             ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
 
-            Database.SetInitializer(new ShnexyInitializer());
+            //Database.SetInitializer(new ShnexyInitializer());
             KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);            
 

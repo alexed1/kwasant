@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -65,7 +65,7 @@ namespace KwasantCore.Services
         {
             IEnumerable<EventDO> test = _eventRepo.GetAll();
             _events = _eventRepo.GetQuery()
-                .Where(curEventDO => curEventDO.BookingRequest.Customer.CustomerID == _bookingRequestDO.Customer.CustomerID)
+                .Where(curEventDO => curEventDO.BookingRequest.User.Id == _bookingRequestDO.User.Id)
                 .ToDictionary(
                     curEventDO => curEventDO.EventID,
                     curEventDO => curEventDO);

@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Runtime.InteropServices.ComTypes;
 using Data.Interfaces;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,25 +10,62 @@ namespace Data.Entities
     public class PersonDO : IPerson
     {
         [Key]
-        public int PersonId { get; set; }
+        public int Id { get; set; }
 
-        [Required]
+        private string _firstName;
+
         [StringLength(30)]
         [MaxLength(30, ErrorMessage = "First name maximum 30 characters.")]
         [MinLength(3, ErrorMessage = "First name minimum 3 characters.")]
-        public String FirstName { get; set; }
+        public string FirstName
+        {
+            get
+            {
+                return _firstName;
+            }
+            set
+            {
+                _firstName = value;
+                if (EmailAddress != null)
+                    EmailAddress.Name = FirstName + " " + LastName;
+            }
+        }
 
-        [Required]
+        private string _lastName;
+
         [StringLength(30)]
         [MaxLength(30, ErrorMessage = "Last name maximum 30 characters.")]
-        [MinLength(3, ErrorMessage = "Last name minimum 3 characters.")]        
-        public String LastName { get; set; }
+        [MinLength(3, ErrorMessage = "Last name minimum 3 characters.")]
+        public string LastName
+        {
+            get
+            {
+                return _lastName;
+            }
+            set
+            {
+                _lastName = value;
+                if (EmailAddress != null)
+                    EmailAddress.Name = FirstName + " " + LastName;
+            }
+        }
 
-    
-        public int? EmailAddressID { get; set; }
+        private EmailAddressDO _emailAddressDO;
 
-        [ForeignKey("EmailAddressID")]
-        public virtual EmailAddressDO EmailAddress { get; set; }
-       
+        [Required]
+        public EmailAddressDO EmailAddress
+        {
+            get
+            {
+                return _emailAddressDO;
+            }
+            set
+            {
+                _emailAddressDO = value;
+                _emailAddressDO.Name = FirstName + " " + LastName;
+            }
+        }
+
+        public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
     }
 }

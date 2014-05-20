@@ -1,21 +1,14 @@
 ﻿using System;
+using System.Web;
+using System.ComponentModel;
 using Data.Entities;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace Data.Interfaces
 {
     public interface IPerson
     {
-        [Key]
-        int PersonId { get; set; }       
-
-        String FirstName { get; set; }
-        String LastName { get; set; }
-
-        int? EmailAddressID { get; set; }
-
+        int Id { get; set; }
         EmailAddressDO EmailAddress { get; set; }
-        
     }
 }
+
