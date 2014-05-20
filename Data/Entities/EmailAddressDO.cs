@@ -27,13 +27,15 @@ namespace Data.Entities
 
         public static EmailAddressDO GetOrCreateEmailAddress(String email)
         {
-            var emailAddressRepo = new EmailAddressRepository(ObjectFactory.GetInstance<IUnitOfWork>());
-            var matchingEmailAddress = emailAddressRepo.GetQuery().FirstOrDefault(e => e.Address == email);
-            if (matchingEmailAddress == null)
+            using (var emailAddressRepo = new EmailAddressRepository(ObjectFactory.GetInstance<IUnitOfWork>()))
             {
-                matchingEmailAddress = new EmailAddressDO {Address = email};
+                var matchingEmailAddress = emailAddressRepo.GetQuery().FirstOrDefault(e => e.Address == email);
+                if (matchingEmailAddress == null)
+                {
+                    matchingEmailAddress = new EmailAddressDO {Address = email};
+                }
+                return matchingEmailAddress;
             }
-            return matchingEmailAddress;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Data.Repositories
     //This generic repository ensures minimum repetition in all of the other repositories.
     //The database context is injected via a UnitOfWork implementation
     /// <typeparam name="TEntity"></typeparam>
-    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
+    public class GenericRepository<TEntity> : IDisposable, IGenericRepository<TEntity> where TEntity : class
     {
         private readonly IUnitOfWork _unitOfWork;
         public IDbSet<TEntity> dbSet;
@@ -19,10 +19,8 @@ namespace Data.Repositories
         {
             if (unitOfWork == null) throw new ArgumentNullException("unitOfWork");
             _unitOfWork = unitOfWork;
-            this.dbSet = _unitOfWork.Db.Set<TEntity>();
+            dbSet = _unitOfWork.Db.Set<TEntity>();
         }
-
-
 
         #region Property
         public IUnitOfWork UnitOfWork { get { return _unitOfWork; } }
@@ -42,6 +40,11 @@ namespace Data.Repositories
             return dbSet.AsEnumerable().AsQueryable();
         }
 
+
+        public void Attach(TEntity entity)
+        {
+            dbSet.Attach(entity);
+        }
 
         public void Add(TEntity entity)
         {
@@ -75,7 +78,8 @@ namespace Data.Repositories
 
         public void Dispose()
         {
-            //throw new NotImplementedException();
+            _unitOfWork.Db.Dispose();
+            _unitOfWork.Dispose();
         }
 
         #endregion

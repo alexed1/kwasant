@@ -8,6 +8,7 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Repositories;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantICS.DDay.iCal;
@@ -44,7 +45,7 @@ namespace Playground
                 new AttendeeDO
                 {
                     EmailAddress = "rjrudman@gmail.com",
-                    EventID = evDO.EventID,
+                    EventID = evDO.Id,
                     Event = evDO,
                     Name = "Robert Rudman",
                },
@@ -68,6 +69,8 @@ namespace Playground
 
         public static EmailDO DispatchEvent(IUnitOfWork uow, EventDO eventDO)
         {
+            var emailAddressRepository = new EmailAddressRepository(uow);
+
             if (eventDO.Attendees == null)
                 eventDO.Attendees = new List<AttendeeDO>();
 
@@ -75,8 +78,17 @@ namespace Playground
             string fromName = ConfigurationHelper.GetConfigurationValue("fromName");
 
             EmailDO outboundEmail = new EmailDO();
-            outboundEmail.From = new EmailAddressDO { Address = fromEmail, Name = fromName };
-            outboundEmail.To = eventDO.Attendees.Select(a => new EmailAddressDO { Address = a.EmailAddress, Name = a.Name }).ToList();
+            var fromEmailAddr = EmailAddressDO.GetOrCreateEmailAddress(fromEmail);
+            fromEmailAddr.Name = fromName;
+
+            outboundEmail.AddEmailParticipant(EmailParticipantType.FROM, fromEmailAddr);
+            foreach (var attendeeDO in eventDO.Attendees)
+            {
+                var toEmailAddress = EmailAddressDO.GetOrCreateEmailAddress(attendeeDO.EmailAddress);
+                emailAddressRepository.Attach(toEmailAddress);
+                toEmailAddress.Name = attendeeDO.Name;
+                outboundEmail.AddEmailParticipant(EmailParticipantType.TO, toEmailAddress);
+            }
             outboundEmail.Subject = String.Format(ConfigurationHelper.GetConfigurationValue("emailSubject"), eventDO.Summary, eventDO.StartDate);
 
             var parsedHTMLEmail = Razor.Parse(KwasantCore.Properties.Resources.HTMLEventInvitation, eventDO);

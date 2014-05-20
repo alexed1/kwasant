@@ -161,6 +161,10 @@ namespace KwasantCore.StructureMap
 
 
         /* DBSets */
-        public IDbSet<InstructionDO> Instructions { get { return Set<InstructionDO>(); } } 
+        public IDbSet<InstructionDO> Instructions { get { return Set<InstructionDO>(); } }
+        public void Dispose()
+        {
+            
+        }
     }
 }
