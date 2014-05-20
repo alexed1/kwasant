@@ -113,6 +113,7 @@ namespace Data.Migrations
             {
                 UserName = curUserName,
                 EmailAddressDO = EmailAddressDO.GetOrCreateEmailAddress(curUserName),
+                FirstName = curUserName,
                 EmailConfirmed = true
             };
 

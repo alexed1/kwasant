@@ -121,7 +121,6 @@ namespace KwasantWeb.Controllers
                 {
                     UserDO curUserDO = new UserDO();
                     curUserDO.UserName = model.Email.Trim();
-                    curUserDO.Email = curUserDO.UserName;
                     curUserDO.Password = model.Password.Trim();
 
                     RegistrationStatus curRegStatus = await _account.Register(curUserDO);

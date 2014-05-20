@@ -58,17 +58,5 @@ namespace Data.Entities
         public int PersonID { get; set; }
         [Required]
         public virtual PersonDO PersonDO { get; set; }
-
-        public override String Email
-        {
-            get
-            {
-                return EmailAddressDO.Address;
-            }
-            set
-            {
-                EmailAddressDO = EmailAddressDO.GetOrCreateEmailAddress(value);
-            }
-        }
     }
 }
