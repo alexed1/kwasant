@@ -5,6 +5,9 @@
         QUEUED = 1,
         SENT = 2,
         UNPROCESSED = 3,
-        PROCESSED = 4
+        PROCESSED = 4,
+        DISPATCHED = 5,
+        SEND_REJECTED = 6,
+        SEND_CRITICAL_ERROR = 7
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Constants;
 using Data.Entities;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 
@@ -17,7 +18,7 @@ namespace KwasantCore.Services
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.Text);
-            uow.SaveChanges();
+            bookingRequest.Status = EmailStatus.UNPROCESSED;
         }
 
         private static UserDO GetOrCreateUser(IUnitOfWork uow, BookingRequestDO currMessage)

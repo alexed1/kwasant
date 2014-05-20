@@ -1,4 +1,4 @@
-﻿using Data.Entities;
+using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
@@ -29,15 +29,15 @@ namespace KwasantCore.StructureMap
         {
             public KwasantCoreRegistry()
             {
-                For<MandrillPackager>().Use<MandrillPackager>();
                 For<IAttachment>().Use<AttachmentDO>();
                 For<IAttendee>().Use<AttendeeDO>();
                 For<IBookingRequest>().Use<BookingRequestDO>();
                 For<IEmail>().Use<EmailDO>();
                 For<IEmailAddress>().Use<EmailAddressDO>();
                 For<IEvent>().Use<EventDO>();
-                For<IPerson>().Use<PersonDO>();
                 For<IUser>().Use<UserDO>();
+                For<ICalendar>().Use<CalendarDO>();
+                For<IPerson>().Use<PersonDO>();
             }
         }
 
@@ -45,8 +45,8 @@ namespace KwasantCore.StructureMap
         {
             public DevMode()
             {
-                For<IUnitOfWork>().Use(new UnitOfWork(new KwasantDbContext()));
-
+                //Do not remove _ => (This gives us lazy execution, and a new unit of work & context each call). Removing this will cause the application to be unstable with threads.
+                For<IUnitOfWork>().Use(_ => new UnitOfWork(new KwasantDbContext()));
             }
         }
 
@@ -61,4 +61,3 @@ namespace KwasantCore.StructureMap
         #endregion
     }
 }
-

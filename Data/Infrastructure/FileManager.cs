@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Configuration;
 using System.IO;
 using Data.Entities;
+using Microsoft.WindowsAzure;
 
 namespace Data.Infrastructure
 {
@@ -9,7 +9,7 @@ namespace Data.Infrastructure
     {
         static string GetAbsolutePath(String relativePath)
         {
-            string directory = ConfigurationManager.AppSettings["LocalFileStorageDirectory"];
+            string directory = CloudConfigurationManager.GetSetting("LocalFileStorageDirectory");
             if (String.IsNullOrEmpty(directory))
                 directory = Path.GetTempPath();
 

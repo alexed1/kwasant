@@ -41,10 +41,9 @@ namespace KwasantTest.Daemons
             
             mailMessage.To.Add(new MailAddress(testToEmailAddress));
 
-            var mailMessages = new List<MailMessage> { mailMessage };
 
-            clientMock.Setup(c => c.Search(It.IsAny<SearchCondition>(), It.IsAny<String>())).Returns(new List<uint>());
-            clientMock.Setup(c => c.GetMessages(It.IsAny<IEnumerable<uint>>(), true, null)).Returns(mailMessages);
+            clientMock.Setup(c => c.Search(It.IsAny<SearchCondition>(), It.IsAny<String>())).Returns(new List<uint> { 1 });
+            clientMock.Setup(c => c.GetMessage(1, true, null)).Returns(mailMessage);
 
             var ie = new InboundEmail(clientMock.Object);
             DaemonTests.RunDaemonOnce(ie);

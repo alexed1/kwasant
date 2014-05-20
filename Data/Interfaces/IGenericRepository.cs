@@ -12,10 +12,7 @@ namespace Data.Interfaces
         IQueryable<TEntity> GetQuery();
         void Add(TEntity entity);
         void Remove(TEntity entity);
-        void Attach(TEntity entity);
-        IEnumerable<TEntity> GetAll();
-        void Save(TEntity entity);
-        void Update(TEntity entity, TEntity existingEntity);
+        IEnumerable<TEntity> GetAll();        
         TEntity FindOne(Expression<Func<TEntity, bool>> criteria);
         IEnumerable<TEntity> FindList(Expression<Func<TEntity, bool>> criteria);
         void Dispose();

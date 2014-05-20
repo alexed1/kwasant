@@ -11,6 +11,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Infrastructure;
+using StructureMap;
 using UtilitiesLib;
 using KwasantCore.Managers.IdentityManager;
 
@@ -21,12 +22,18 @@ namespace KwasantCore.Services
         private UserRepository _userRepo;
         private PersonRepository _personRepo;
         private IdentityManager _identityManager;
+        private IUnitOfWork _uow;
+        private User _curUser;
+        private Person _curPerson;
 
-        public Account(IUnitOfWork uow)
+        public Account(IUnitOfWork uow) //remove injected uow. unnecessary now.
         {
-            _userRepo = new UserRepository(uow);
-            _personRepo = new PersonRepository(uow);
-            _identityManager = new IdentityManager(uow);
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            _userRepo = new UserRepository(_uow);
+            _personRepo = new PersonRepository(_uow);
+            _identityManager = new IdentityManager(_uow);
+            _curUser = new User(_uow);
+            _curPerson = new Person(_uow);
         }
 
         /// <summary>
@@ -34,11 +41,11 @@ namespace KwasantCore.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<RegistrationStatus> Register(UserDO userDO)
+        public async Task<RegistrationStatus> Register(UserDO userRegStrings)
         {
-            RegistrationStatus curRegStatus = RegistrationStatus.Successful;
-            UserDO user = GetUser(userDO.UserName); //check this user already exists in DB or not
+            RegistrationStatus curRegStatus = RegistrationStatus.Pending; 
 
+<<<<<<< HEAD
             if (user != null) // Existing user
             {
                 curRegStatus = _identityManager.RegisterExistingUser(userDO);
@@ -55,6 +62,36 @@ namespace KwasantCore.Services
                 {
                     curRegStatus = await _identityManager.RegisterNewUser(userDO);
                 }
+=======
+
+
+            //check if we know this email address
+            EmailAddress curEmailAddress = new EmailAddress();
+            EmailAddressDO existingEmailAddressDO = curEmailAddress.FindByAddress(userRegStrings.Email);
+            if (existingEmailAddressDO != null)
+            {
+                //this should be improved. doesn't take advantage of inheritance.
+                
+                PersonDO curPersonDO = _curPerson.FindByEmailId(existingEmailAddressDO.Id);            
+                UserDO curUserDO = _curUser.FindByEmailId(existingEmailAddressDO.Id);
+
+                if (curUserDO != null)
+                {
+                    //if a User, redirect to an error message
+                }
+                else  //existingEmailAddressDO is Person
+                {
+                    //create a new User and delete the corresponding Person
+                    curUserDO = await _identityManager.ConvertExistingPerson(curPersonDO, userRegStrings);
+                    curRegStatus = RegistrationStatus.Successful;
+                }
+            }
+            else 
+            {
+                //this email address unknown.  new user. create an EmailAddress object, then create a User
+                curRegStatus = await _identityManager.RegisterNewUser(userRegStrings);
+                curRegStatus = RegistrationStatus.Successful;
+>>>>>>> origin/kw-101
             }
 
             return curRegStatus;
@@ -62,7 +99,7 @@ namespace KwasantCore.Services
 
         public async Task<LoginStatus> Login(UserDO userDO, bool isPersistent)
         {
-            LoginStatus curLoginStatus = LoginStatus.Successful;
+            LoginStatus curLoginStatus = LoginStatus.Pending;
 
             UserDO user = GetUser(userDO.UserName);
             if (user != null)
@@ -103,13 +140,6 @@ namespace KwasantCore.Services
             return _userRepo.FindOne(x => x.UserName == userName);
         }
 
-        /// <summary>
-        /// Check person exists or not
-        /// </summary>
-        /// <returns></returns>
-        private PersonDO GetPerson(string userName)
-        {
-            return _personRepo.FindOne(x => x.EmailAddress.Address == userName);
-        }
+
     }
 }

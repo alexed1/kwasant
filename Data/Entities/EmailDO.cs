@@ -28,5 +28,15 @@ namespace Data.Entities
 
         [InverseProperty("Emails")]
         public virtual List<EventDO> Events { get; set; }
+
+
+        public EmailDO()
+        {
+            To = new List<EmailAddressDO>();
+            CC = new List<EmailAddressDO>();
+            BCC = new List<EmailAddressDO>();
+            Attachments = new List<AttachmentDO>();
+            Events = new List<EventDO>();
+        }
     }
 }

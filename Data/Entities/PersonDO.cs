@@ -1,16 +1,22 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Collections.Generic;
+using System;
+using System.Runtime.InteropServices.ComTypes;
 using Data.Interfaces;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
     public class PersonDO : IPerson
     {
-        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int Id { get; set; }
 
         private string _firstName;
+
+        [StringLength(30)]
+        [MaxLength(30, ErrorMessage = "First name maximum 30 characters.")]
+        [MinLength(3, ErrorMessage = "First name minimum 3 characters.")]
         public string FirstName
         {
             get
@@ -26,6 +32,10 @@ namespace Data.Entities
         }
 
         private string _lastName;
+
+        [StringLength(30)]
+        [MaxLength(30, ErrorMessage = "Last name maximum 30 characters.")]
+        [MinLength(3, ErrorMessage = "Last name minimum 3 characters.")]
         public string LastName
         {
             get

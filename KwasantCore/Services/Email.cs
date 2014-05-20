@@ -1,38 +1,51 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Mail;
-using Data.Constants;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Validators;
+using FluentValidation;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
-using StructureMap;
+using KwasantCore.Managers.CommunicationManager;
+using Microsoft.WindowsAzure;
 
 namespace KwasantCore.Services
 {
     public class Email
     {
-        private readonly IUnitOfWork _uow;
-        private readonly EmailDO _emailDO;
-
-        #region Members
-
-        private readonly MandrillPackager _mandrillApi;
-
-        #endregion
+        private  IUnitOfWork _uow;
+        private  EmailDO _curEmailDO;
+        private EventValidator _curEventValidator;
+        private IEmailRepository _curEmailRepository;
 
         #region Constructor
 
         /// <summary>
         /// Initialize EmailManager
         /// </summary>
-        public Email(IUnitOfWork uow, EmailDO emailDO)
+        /// 
+
+        //this constructor enables the creation of an email that doesn't necessarily have anything to do with an Event. It gets called by the other constructors
+        public Email(IUnitOfWork uow)
         {
             _uow = uow;
-            _emailDO = emailDO;
-            _mandrillApi = ObjectFactory.GetInstance<MandrillPackager>();
+            _curEventValidator = new EventValidator();
+            _curEmailRepository = new EmailRepository(_uow);
+        }
+        public Email(IUnitOfWork uow, EventDO eventDO): this(uow)
+        {
+
+            _curEmailDO = CreateStandardInviteEmail(eventDO);
+        }
+
+        public Email(IUnitOfWork uow, EmailDO curEmailDO) : this(uow)
+        {
+            //should add validation here
+            _curEmailDO = curEmailDO;
         }
 
         #endregion
@@ -44,20 +57,30 @@ namespace KwasantCore.Services
         /// </summary>
         public void SendTemplate(string templateName, EmailDO message, Dictionary<string, string> mergeFields)
         {
-            _mandrillApi.PostMessageSendTemplate(templateName, message, mergeFields);
+            MandrillPackager.PostMessageSendTemplate(templateName, message, mergeFields);
         }
 
         public void Send()
         {
-            _mandrillApi.PostMessageSend(_emailDO);
-            _emailDO.Status = EmailStatus.SENT;
-            _uow.SaveChanges();
+            MandrillPackager.PostMessageSend(_curEmailDO);
+            _curEmailDO.Status = EmailStatus.DISPATCHED;
+            _curEmailRepository.Add(_curEmailDO);
+            _curEmailRepository.UnitOfWork.SaveChanges();
         }
 
-
-        public void Ping()
+        public static void InitialiseWebhook(String url)
         {
-            string results = _mandrillApi.PostPing();
+            MandrillPackager.InitialiseWebhook(url);
+        }
+
+        public static void HandleWebhookResponse(String responseStr)
+        {
+            MandrillPackager.HandleWebhookResponse(responseStr);
+        }
+
+        public static void Ping()
+        {
+            string results = MandrillPackager.PostPing();
             Debug.WriteLine(results);
         }
 
@@ -108,5 +131,46 @@ namespace KwasantCore.Services
             att.SetData(attachment.ContentStream);
             return att;
         }
+
+       
+
+
+        public EmailDO CreateStandardInviteEmail(EventDO curEventDO)
+        {
+            _curEventValidator.ValidateEvent(curEventDO);
+            string fromEmail = CommunicationManager.GetFromEmail();
+            string fromName = CommunicationManager.GetFromName(); 
+
+            EmailDO createdEmail = new EmailDO();
+            createdEmail.From = new EmailAddressDO { Address = fromEmail, Name = fromName };
+            createdEmail.To = curEventDO.Attendees.Select(a => new EmailAddressDO { Address = a.EmailAddress, Name = a.Name }).ToList();
+            createdEmail.Subject = "Invitation via Kwasant: " + curEventDO.Summary + "@ " + curEventDO.StartDate;
+            createdEmail.Text = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";
+            createdEmail.Status = EmailStatus.QUEUED;
+
+            if (CloudConfigurationManager.GetSetting("ArchiveOutboundEmail") == "true")
+            {
+                EmailAddressDO archiveAddress = new EmailAddressDO();
+                archiveAddress.Address = CloudConfigurationManager.GetSetting("ArchiveEmailAddress");
+                archiveAddress.Name = archiveAddress.Address;
+                EmailAddressValidator curEmailAddressValidator = new EmailAddressValidator();
+                curEmailAddressValidator.ValidateAndThrow(archiveAddress);
+                
+                createdEmail.BCC.Add(archiveAddress);
+            }
+
+            _curEmailRepository.Add(createdEmail);
+            _curEmailRepository.UnitOfWork.SaveChanges();
+            return createdEmail;
+        }
+
+        //FIX THIS: currently generates an EF exception.
+        public void Dispatch(EmailDO curEmail)
+        {
+            curEmail.Status = EmailStatus.QUEUED;
+            _curEmailRepository.Add(curEmail);
+            _uow.SaveChanges();
+        }
+
     }
 }

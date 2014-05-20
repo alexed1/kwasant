@@ -74,6 +74,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
+            modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
@@ -127,6 +128,10 @@ namespace Data.Infrastructure
                 .WithRequired(e => e.From)
                 .Map(x => x.MapKey("FromEmailAddressID"));
 
+            modelBuilder.Entity<EmailAddressDO>()
+                 .HasOptional(ea => ea.PersonId)
+                 .WithRequired(e => e.EmailAddress);
+
             modelBuilder.Entity<EventDO>()
                 .HasMany(e => e.Attendees)
                 .WithRequired(a => a.Event)
@@ -147,6 +152,8 @@ namespace Data.Infrastructure
         public IDbSet<AttendeeDO> Attendees { get; set; }
 
         public IDbSet<BookingRequestDO> BookingRequests { get; set; }
+
+        public IDbSet<CalendarDO> Calendars { get; set; }
 
         public IDbSet<CommunicationConfigurationDO> CommunicationConfigurations { get; set; }
 

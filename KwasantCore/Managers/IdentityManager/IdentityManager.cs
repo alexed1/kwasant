@@ -30,29 +30,14 @@ namespace KwasantCore.Managers.IdentityManager
             _uow = uow;
         }
 
-        public RegistrationStatus RegisterExistingUser(UserDO userDO)
+  
+        public async Task<UserDO> ConvertExistingPerson(PersonDO personDO, UserDO userRegStrings)
         {
-            RegistrationStatus curRegStatus = RegistrationStatus.Successful;
-
-            if (userDO.Password != null && userDO.Password.Length > 0) // user already registered
-            {
-                curRegStatus = RegistrationStatus.UserAlreadyExists;
-            }
-            else
-            {
-                _user.UpdatePassword(userDO);
-            }
-
-            return curRegStatus;
-        }
-
-        public async Task<UserDO> ConvertExistingPerson(PersonDO personDO, string userName, string password)
-        {
-             UserDO newUserDO = new UserDO { UserName = userName, Password = password};
+             UserDO newUserDO = new UserDO { UserName = userRegStrings.UserName, Password = userRegStrings.Password};
              RegistrationStatus curRegStatus = await _user.Create(newUserDO, "Customer");
              if (curRegStatus == RegistrationStatus.Successful)
              {
-                 _person.Delete(userName);
+                 _person.Delete(personDO);
              }
 
              return newUserDO;
@@ -68,7 +53,7 @@ namespace KwasantCore.Managers.IdentityManager
 
         public async Task<RegistrationStatus> RegisterNewUser(UserDO userDO)
         {
-            RegistrationStatus curRegStatus = RegistrationStatus.Successful;
+            RegistrationStatus curRegStatus = RegistrationStatus.Pending;
             
             curRegStatus = await _user.Create(userDO, "Customer");
 

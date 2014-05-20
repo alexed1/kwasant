@@ -5,6 +5,8 @@ using System.Data.Entity.Migrations;
 using System.Reflection;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Entity.Validation;
+using System.Text;
 
 using Data.Constants;
 using Data.Entities;
@@ -107,21 +109,44 @@ namespace Data.Migrations
         /// <returns></returns>
         private void CreateAdmin(string curUserName, string curPassword, KwasantDbContext context)
         {
-            var um = new UserManager<UserDO>(new UserStore<UserDO>(context));
+            IdentityResult ir;
 
-            var user = new UserDO()
+            try
             {
-                UserName = curUserName,
-                EmailAddressDO = EmailAddressDO.GetOrCreateEmailAddress(curUserName),
-                FirstName = curUserName,
-                EmailConfirmed = true
-            };
+                var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
 
-            IdentityResult ir = um.Create(user, curPassword);
-            if (!ir.Succeeded)
-                return;
+                var um = new UserManager<UserDO>(new UserStore<UserDO>(context));
 
-            um.AddToRole(user.Id, "Admin");
+                var user = new UserDO()
+                {
+                    UserName = curUserName,
+                    EmailAddressDO = EmailAddressDO.GetOrCreateEmailAddress(curUserName),
+                    FirstName = curUserName,
+                    EmailConfirmed = true
+                };
+
+                ir = um.Create(user, curPassword);
+                if (!ir.Succeeded)
+                    return;
+
+                ir = um.AddToRole(user.Id, "Admin");
+            }
+            catch (DbEntityValidationException ex)
+            {
+                var sb = new StringBuilder();
+
+                foreach (var failure in ex.EntityValidationErrors)
+                {
+                    sb.AppendFormat("{0} failed validation\n", failure.Entry.Entity.GetType());
+                    foreach (var error in failure.ValidationErrors)
+                    {
+                        sb.AppendFormat("- {0} : {1}", error.PropertyName, error.ErrorMessage);
+                        sb.AppendLine();
+                    }
+                }
+
+                throw new DbEntityValidationException("Entity Validation Failed - errors follow:\n" + sb, ex); // Add the original exception as the innerException
+            }
         }
     }
 }
