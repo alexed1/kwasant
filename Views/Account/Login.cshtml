@@ -1,24 +1,24 @@
-﻿@*@model Kwasant.Models.LoginViewModel
+﻿@model KwasantWeb.ViewModels.LoginViewModel
 
     @{
-        ViewBag.Title = "Log in";
+        ViewBag.title = "log in";
     }
 
-    <h2>@ViewBag.Title.</h2>
+    <h2>@ViewBag.title.</h2>
     <div class="row">
         <div class="col-md-8">
-            <section id="loginForm">
-                @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+            <section id="loginform">
+                @using (Html.BeginForm("login", "account", new { returnurl = ViewBag.returnurl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
                 {
                     @Html.AntiForgeryToken()
-                    <h4>Use a local account to log in.</h4>
+                    <h4>use a local account to log in.</h4>
                     <hr />
                     @Html.ValidationSummary(true)
                     <div class="form-group">
-                        @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
+                        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
                         <div class="col-md-10">
-                            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
-                            @Html.ValidationMessageFor(m => m.UserName)
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(m => m.Email)
                         </div>
                     </div>
                     <div class="form-group">
@@ -38,21 +38,21 @@
                     </div>
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="Log in" class="btn btn-default" />
+                            <input type="submit" value="log in" class="btn btn-default" />
                         </div>
                     </div>
                     <p>
-                        @Html.ActionLink("Register", "Register") if you don't have a local account.
+                        @Html.ActionLink("register", "register") if you don't have a local account.
                     </p>
                 }
             </section>
         </div>
         <div class="col-md-4">
-            <section id="socialLoginForm">
-                @Html.Partial("_ExternalLoginsListPartial", new { Action = "ExternalLogin", ReturnUrl = ViewBag.ReturnUrl })
+            <section id="socialloginform">
+                @Html.Partial("_externalloginslistpartial", new { action = "externallogin", returnurl = ViewBag.returnurl })
             </section>
         </div>
     </div>
-    @section Scripts {
-        @Scripts.Render("~/bundles/jqueryval")
-    }*@
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

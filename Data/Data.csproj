@@ -49,6 +49,33 @@
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.0.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.0.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.0.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.2.1.0\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -101,7 +128,6 @@
     <Compile Include="Entities\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Entities\PersonDO.cs" />
-    <Compile Include="Infrastructure\ShnexyInitializer.cs" />
     <Compile Include="Infrastructure\TrackingStatus.cs" />
     <Compile Include="Interfaces\ICalendar.cs" />
     <Compile Include="Interfaces\ICustomField.cs" />
@@ -113,6 +139,7 @@
     <Compile Include="Interfaces\IPerson.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\ISaveHook.cs" />
+    <Compile Include="Interfaces\IUserRepository.cs" />
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\AttendeeRepository.cs" />
@@ -120,7 +147,6 @@
     <Compile Include="Repositories\CalendarRepository.cs" />
     <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
     <Compile Include="Repositories\CommunicationRepository.cs" />
-    <Compile Include="Repositories\CustomerRepository.cs" />
     <Compile Include="Repositories\EmailAddressRepository.cs" />
     <Compile Include="Repositories\EmailRepository.cs" />
     <Compile Include="Repositories\GenericRepository.cs" />
@@ -134,13 +160,11 @@
     <Compile Include="Entities\AttachmentDO.cs" />
     <Compile Include="Entities\AttendeeDO.cs" />
     <Compile Include="Entities\BookingRequestDO.cs" />
-    <Compile Include="Entities\CustomerDO.cs" />
     <Compile Include="Entities\EmailDO.cs" />
     <Compile Include="Entities\EmailAddressDO.cs" />
     <Compile Include="Interfaces\IAttachment.cs" />
     <Compile Include="Interfaces\IAttendee.cs" />
     <Compile Include="Interfaces\IBookingRequest.cs" />
-    <Compile Include="Interfaces\ICustomer.cs" />
     <Compile Include="Interfaces\IEmail.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Entities\EventDO.cs" />
@@ -150,6 +174,7 @@
     <Compile Include="Entities\UserDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\TrackingStatusRepository.cs" />
+    <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Validations\EmailAddressValidator.cs" />
     <Compile Include="Validations\CalendarValidator.cs" />
     <Compile Include="Validations\Validators.cs" />

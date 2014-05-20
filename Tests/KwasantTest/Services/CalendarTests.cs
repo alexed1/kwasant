@@ -33,26 +33,26 @@ namespace KwasantTest.Services
         [Test]
         public void TestCalendarLoadsRelatedEvents()
         {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            UserRepository userRepo = new UserRepository(_uow);
             EventRepository eventRepo = new EventRepository(_uow);
             EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
 
-            CustomerDO customerOne = _fixture.TestCustomer();
-            CustomerDO customerTwo = _fixture.TestCustomer2();
+            UserDO userOne = _fixture.TestUser();
+            UserDO userTwo = _fixture.TestUser2();
             
-            customerRepo.Add(customerOne);
-            customerRepo.Add(customerTwo);
+            userRepo.Add(userOne);
+            userRepo.Add(userTwo);
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 Id = 1,
-                Customer = customerOne,
+                User = userOne,
             };
             bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
             BookingRequestDO bookingRequestTwo = new BookingRequestDO()
             {
                 Id = 2,
-                Customer = customerTwo,
+                User = userTwo,
             };
             bookingRequestTwo.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
 
@@ -91,18 +91,18 @@ namespace KwasantTest.Services
         [Test]
         public void TestMoveAndReload()
         {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            UserRepository userRepo = new UserRepository(_uow);
             EventRepository eventRepo = new EventRepository(_uow);
             EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
 
-            CustomerDO customerOne = _fixture.TestCustomer();
+            UserDO userOne = _fixture.TestUser();
             
-            customerRepo.Add(customerOne);
+            userRepo.Add(userOne);
             
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 Id = 1,
-                Customer = customerOne,
+                User = userOne,
             };
             bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
 
@@ -142,18 +142,18 @@ namespace KwasantTest.Services
         [Test]
         public void TestDelete()
         {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            UserRepository userRepo = new UserRepository(_uow);
             EventRepository eventRepo = new EventRepository(_uow);
             EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
 
-            CustomerDO customerOne = _fixture.TestCustomer();
+            UserDO userOne = _fixture.TestUser();
 
-            customerRepo.Add(customerOne);
+            userRepo.Add(userOne);
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 Id = 1,
-                Customer = customerOne,
+                User = userOne,
             };
             bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
 
@@ -188,17 +188,17 @@ namespace KwasantTest.Services
         [Test]
         public void TestAdd()
         {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            UserRepository userRepo = new UserRepository(_uow);
             EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
 
-            CustomerDO customerOne = _fixture.TestCustomer();
+            UserDO userOne = _fixture.TestUser();
 
-            customerRepo.Add(customerOne);
+            userRepo.Add(userOne);
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 Id = 1,
-                Customer = customerOne,
+                User = userOne,
             };
             bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
 
@@ -229,18 +229,18 @@ namespace KwasantTest.Services
         [Test]
         public void TestGet()
         {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            UserRepository userRepo = new UserRepository(_uow);
             EventRepository eventRepo = new EventRepository(_uow);
             EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
 
-            CustomerDO customerOne = _fixture.TestCustomer();
+            UserDO userOne = _fixture.TestUser();
 
-            customerRepo.Add(customerOne);
+            userRepo.Add(userOne);
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 Id = 1,
-                Customer = customerOne,
+                User = userOne,
             };
             bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
 
@@ -269,17 +269,17 @@ namespace KwasantTest.Services
         [Test]
         public void TestDispatch()
         {
-            CustomerRepository customerRepo = new CustomerRepository(_uow);
+            UserRepository customerRepo = new UserRepository(_uow);
             EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
 
-            CustomerDO customerOne = _fixture.TestCustomer();
+            UserDO userOne = _fixture.TestUser();
 
-            customerRepo.Add(customerOne);
+            customerRepo.Add(userOne);
 
             BookingRequestDO bookingRequestOne = new BookingRequestDO()
             {
                 Id = 1,
-                Customer = customerOne,
+                User = userOne,
             };
             bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
 

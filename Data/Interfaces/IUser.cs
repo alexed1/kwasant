@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Data.Entities;
 
 namespace Data.Interfaces
 {
@@ -6,5 +8,6 @@ namespace Data.Interfaces
     {
         [Key]
         int Id { get; set; }
+        IEnumerable<BookingRequestDO> BookingRequests { get; set; }
     }
 }

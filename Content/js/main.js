@@ -90,12 +90,19 @@ $(document).ready(function(){
 				scrollTop: $('.text-block[data-section="' + datasection + '"]').offset().top}, 1000);
 		}
 	}
+
 	links.click(function (e) {
-		e.preventDefault();
-		var datasection = $(this).attr('data-section');
-		goToByScroll(datasection);
+	    alert('Hello');
+	    var datasection = $(this).attr('data-section');
+	    if (datasection.get(0) === null)
+	        return;
+
+	    e.preventDefault();
+	    goToByScroll(datasection);
 	});
+
 	button.click(function (e) {
+	    alert('Hello');
 		e.preventDefault();
 		var datasection = $(this).attr('data-section');
 		goToByScroll(datasection);

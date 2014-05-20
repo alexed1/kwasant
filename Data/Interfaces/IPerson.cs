@@ -1,7 +1,6 @@
 ﻿using System;
-using Data.Entities;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using Data.Entities;
 
 namespace Data.Interfaces
 {
@@ -16,6 +15,6 @@ namespace Data.Interfaces
         int? EmailAddressID { get; set; }
 
         EmailAddressDO EmailAddress { get; set; }
-        
     }
 }
+        

@@ -5,15 +5,15 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Linq;
+using Microsoft.AspNet.Identity.EntityFramework;
+
 using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
 
 namespace Data.Infrastructure
 {
-
-
-    public class KwasantDbContext : DbContext, IDBContext
+    public class KwasantDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {       
         //Do not change this value! If you want to change the database you connect to, edit your web.config file
         public KwasantDbContext()
@@ -78,7 +78,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
-            modelBuilder.Entity<CustomerDO>().ToTable("Customers");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EventDO>().ToTable("Events");
@@ -86,6 +85,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<PersonDO>().ToTable("People");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
+            modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserDO>().ToTable("Users");
 
             modelBuilder.Entity<EmailAddressDO>()
@@ -140,8 +140,6 @@ namespace Data.Infrastructure
 
         public IDbSet<CommunicationConfigurationDO> CommunicationConfigurations { get; set; }
 
-        public IDbSet<CustomerDO> Customers { get; set; }
-
         public IDbSet<EmailDO> Emails { get; set; }
 
         public IDbSet<EmailAddressDO> EmailAddresses { get; set; }
@@ -154,8 +152,8 @@ namespace Data.Infrastructure
 
         public IDbSet<StoredFileDO> StoredFiles { get; set; }
 
-        public IDbSet<UserDO> Users { get; set; }
-
         public IDbSet<TrackingStatusDO> TrackingStatuses { get; set; }
+
+        public new IDbSet<UserDO> Users { get; set; }
     }
 }

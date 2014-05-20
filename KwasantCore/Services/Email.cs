@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -125,7 +125,7 @@ namespace KwasantCore.Services
             return emailDO;
         }
 
-        private static EmailAddressDO GetEmailAddress(MailAddress address)
+        public static EmailAddressDO GenerateEmailAddress(MailAddress address)
         {
             return new EmailAddressDO { Address = address.Address, Name = address.DisplayName };
         }

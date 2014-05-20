@@ -1,4 +1,4 @@
-﻿using Data.Entities;
+using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
@@ -32,7 +32,6 @@ namespace KwasantCore.StructureMap
                 For<IAttachment>().Use<AttachmentDO>();
                 For<IAttendee>().Use<AttendeeDO>();
                 For<IBookingRequest>().Use<BookingRequestDO>();
-                For<ICustomer>().Use<CustomerDO>();
                 For<IEmail>().Use<EmailDO>();
                 For<IEmailAddress>().Use<EmailAddressDO>();
                 For<IEvent>().Use<EventDO>();
@@ -62,4 +61,3 @@ namespace KwasantCore.StructureMap
         #endregion
     }
 }
-
