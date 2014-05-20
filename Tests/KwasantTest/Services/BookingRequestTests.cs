@@ -42,7 +42,7 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             customersNow = _customerRepo.GetAll().ToList();
@@ -70,7 +70,7 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             customersNow = _customerRepo.GetAll().ToList();
@@ -90,7 +90,7 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
@@ -109,7 +109,7 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
@@ -128,7 +128,7 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
@@ -147,7 +147,7 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
@@ -166,7 +166,7 @@ namespace KwasantTest.Managers
             };
 
             BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(_uow);
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, new EmailEmailAddressRepository(_uow), message);
             BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();

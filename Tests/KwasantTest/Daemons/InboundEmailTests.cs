@@ -58,7 +58,7 @@ namespace KwasantTest.Daemons
             Assert.AreEqual(testSubject, bookingRequest.Subject);
             Assert.AreEqual(testBody, bookingRequest.Text);
             Assert.AreEqual(testFromEmailAddress, bookingRequest.Customer.EmailAddress);
-            Assert.AreEqual(1, bookingRequest.To.Count);
+            Assert.AreEqual(1, bookingRequest.To.Count());
             Assert.AreEqual(testToEmailAddress, bookingRequest.To.First().Address);
         }
     }

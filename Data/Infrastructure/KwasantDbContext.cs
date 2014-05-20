@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Infrastructure.Annotations;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
@@ -86,6 +88,13 @@ namespace Data.Infrastructure
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<UserDO>().ToTable("Users");
 
+            modelBuilder.Entity<EmailAddressDO>()
+                .Property(ea => ea.Address)
+                .IsRequired()
+                .HasColumnAnnotation(
+                    "Index",
+                    new IndexAnnotation(new IndexAttribute("IX_EmailAddress_Address", 1) {IsUnique = true}));
+
             modelBuilder.Entity<EventDO>()
                 .HasMany(ev => ev.Emails)
                 .WithMany(e => e.Events)
@@ -101,32 +110,10 @@ namespace Data.Infrastructure
                     mapping => mapping.MapLeftKey("BookingRequestID").MapRightKey("InstructionID").ToTable("BookingRequestInstruction")
                 );
             
-            
-            modelBuilder.Entity<EmailDO>()
-                .HasRequired(e => e.From);
-
-            modelBuilder.Entity<EmailDO>()
-                .HasMany(e => e.To)
-                .WithOptional(ea => ea.ToEmail)
-                .Map(m => m.MapKey("ToEmailID"));
-            modelBuilder.Entity<EmailDO>()
-                .HasMany(e => e.BCC)
-                .WithOptional(ea => ea.BCCEmail)
-                .Map(m => m.MapKey("BCCmailID"));
-            modelBuilder.Entity<EmailDO>()
-                .HasMany(e => e.CC)
-                .WithOptional(ea => ea.CCEmail)
-                .Map(m => m.MapKey("CCEmailID"));
-
             modelBuilder.Entity<AttachmentDO>()
                 .HasRequired(a => a.Email)
                 .WithMany(e => e.Attachments)
                 .HasForeignKey(a => a.EmailID);
-
-            modelBuilder.Entity<EmailAddressDO>()
-                .HasOptional(ea => ea.FromEmail)
-                .WithRequired(e => e.From)
-                .Map(x => x.MapKey("FromEmailAddressID"));
 
             modelBuilder.Entity<EventDO>()
                 .HasMany(e => e.Attendees)
