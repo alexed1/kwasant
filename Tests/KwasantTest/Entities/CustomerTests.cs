@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using System.Linq;
+using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.CommunicationManager;
@@ -44,7 +45,7 @@ namespace KwasantTest.Models
 
             //VERIFY
             //check that it was saved to the db
-            UserDO savedUserDO = userRepo.GetByKey(curUserDO.Id);
+            UserDO savedUserDO = userRepo.GetQuery().FirstOrDefault(u => u.Id == curUserDO.Id);
             Assert.AreEqual(curUserDO.FirstName,savedUserDO.FirstName);
             Assert.AreEqual(curUserDO.EmailAddress, savedUserDO.EmailAddress);
 

@@ -47,7 +47,7 @@ namespace KwasantTest.Managers
 
             customersNow = _userRepo.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
-            Assert.AreEqual("customer@gmail.com", customersNow.First().EmailAddress);
+            Assert.AreEqual("customer@gmail.com", customersNow.First().EmailAddress.Address);
             Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
         }
 

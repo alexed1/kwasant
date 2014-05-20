@@ -64,13 +64,26 @@ namespace KwasantCore.StructureMap
                 throw new Exception("No primary key found on " + EntityName);
             if (keyValues.Length > 1)
                 throw new Exception("Multiple keys found on " + EntityName + ". Only singular keys are supported");
-            if (!(keyValues[0] is int))
-                throw new Exception("Only support int-based keys.");
 
-            int entityPrimaryKey = (int) keyValues[0];
+            var keyType = keyValues[0].GetType();
+            if (keyType != typeof(int) && keyType != typeof(String))
+                throw new Exception("Only supports int-based or string-based keys.");
 
-            Func<TEntityType, int> compiledSelector = GetEntityKeySelector().Compile();
-            return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+            if (keyType == typeof (String))
+            {
+                string entityPrimaryKey = keyValues[0] as string;
+                Func<TEntityType, string> compiledSelector = GetEntityKeySelectorString().Compile();
+                return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);    
+            }
+            else
+            {
+                
+                int entityPrimaryKey = (int)(keyValues[0]);
+                Func<TEntityType, int> compiledSelector = GetEntityKeySelectorInt().Compile();
+                return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+            }
+
+            
         }
 
         public TEntityType Add(TEntityType entity)
@@ -111,7 +124,7 @@ namespace KwasantCore.StructureMap
 
 
 
-        protected Expression<Func<TEntityType, int>> GetEntityKeySelector()
+        protected Expression<Func<TEntityType, int>> GetEntityKeySelectorInt()
         {
             Type entityType = typeof(TEntityType);
             PropertyInfo tableKey = EntityPrimaryKeyPropertyInfo;
@@ -123,6 +136,21 @@ namespace KwasantCore.StructureMap
             ParameterExpression proe = Expression.Parameter(entityType);
             MemberExpression propertyAccessor = Expression.Property(proe, tableKey);
             Expression<Func<TEntityType, int>> entityKeySelector = Expression.Lambda(propertyAccessor, new[] { proe }) as Expression<Func<TEntityType, int>>;
+            return entityKeySelector;
+        }
+
+        protected Expression<Func<TEntityType, String>> GetEntityKeySelectorString()
+        {
+            Type entityType = typeof(TEntityType);
+            PropertyInfo tableKey = EntityPrimaryKeyPropertyInfo;
+
+            //The following three lines generates the following in LINQ syntax:
+            // (e) => e.[PrimaryKeyProperty]; - where PrimaryKeyProperty is the primary key of the entity
+            // Example of EmailDO:
+            // (e) => e.EmailID;
+            ParameterExpression proe = Expression.Parameter(entityType);
+            MemberExpression propertyAccessor = Expression.Property(proe, tableKey);
+            Expression<Func<TEntityType, String>> entityKeySelector = Expression.Lambda(propertyAccessor, new[] { proe }) as Expression<Func<TEntityType, String>>;
             return entityKeySelector;
         }
 
