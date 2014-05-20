@@ -15,6 +15,7 @@ namespace Data.Entities
         public int Id { get; set; }
 
         public String Name { get; set; }
+        [MaxLength(30)]
         public String Address { get; set; }
 
         public virtual List<EmailEmailAddressDO> EmailEmailAddresses { get; set; }

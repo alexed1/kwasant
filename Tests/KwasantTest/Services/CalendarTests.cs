@@ -35,7 +35,6 @@ namespace KwasantTest.Services
         {
             UserRepository userRepo = new UserRepository(_uow);
             EventRepository eventRepo = new EventRepository(_uow);
-            EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
 
             UserDO userOne = _fixture.TestUser();
             UserDO userTwo = _fixture.TestUser2();
@@ -48,13 +47,13 @@ namespace KwasantTest.Services
                 Id = 1,
                 User = userOne,
             };
-            bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
+            bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, new EmailAddressDO());
             BookingRequestDO bookingRequestTwo = new BookingRequestDO()
             {
                 Id = 2,
                 User = userTwo,
             };
-            bookingRequestTwo.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
+            bookingRequestTwo.AddEmailParticipant(EmailParticipantType.FROM, new EmailAddressDO());
 
             _bookingRequestRepo.Add(bookingRequestOne);
             _bookingRequestRepo.Add(bookingRequestTwo);
@@ -93,7 +92,6 @@ namespace KwasantTest.Services
         {
             UserRepository userRepo = new UserRepository(_uow);
             EventRepository eventRepo = new EventRepository(_uow);
-            EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
 
             UserDO userOne = _fixture.TestUser();
             
@@ -104,7 +102,7 @@ namespace KwasantTest.Services
                 Id = 1,
                 User = userOne,
             };
-            bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
+            bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, new EmailAddressDO());
 
 
             _bookingRequestRepo.Add(bookingRequestOne);
@@ -144,8 +142,7 @@ namespace KwasantTest.Services
         {
             UserRepository userRepo = new UserRepository(_uow);
             EventRepository eventRepo = new EventRepository(_uow);
-            EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
-
+            
             UserDO userOne = _fixture.TestUser();
 
             userRepo.Add(userOne);
@@ -155,7 +152,7 @@ namespace KwasantTest.Services
                 Id = 1,
                 User = userOne,
             };
-            bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
+            bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, new EmailAddressDO());
 
             _bookingRequestRepo.Add(bookingRequestOne);
 
@@ -189,7 +186,6 @@ namespace KwasantTest.Services
         public void TestAdd()
         {
             UserRepository userRepo = new UserRepository(_uow);
-            EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
 
             UserDO userOne = _fixture.TestUser();
 
@@ -200,7 +196,7 @@ namespace KwasantTest.Services
                 Id = 1,
                 User = userOne,
             };
-            bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
+            bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, new EmailAddressDO());
 
             _bookingRequestRepo.Add(bookingRequestOne);
 
@@ -231,7 +227,6 @@ namespace KwasantTest.Services
         {
             UserRepository userRepo = new UserRepository(_uow);
             EventRepository eventRepo = new EventRepository(_uow);
-            EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
 
             UserDO userOne = _fixture.TestUser();
 
@@ -242,7 +237,7 @@ namespace KwasantTest.Services
                 Id = 1,
                 User = userOne,
             };
-            bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
+            bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, new EmailAddressDO());
 
             _bookingRequestRepo.Add(bookingRequestOne);
 
@@ -270,8 +265,7 @@ namespace KwasantTest.Services
         public void TestDispatch()
         {
             UserRepository customerRepo = new UserRepository(_uow);
-            EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
-
+            
             UserDO userOne = _fixture.TestUser();
 
             customerRepo.Add(userOne);
@@ -281,7 +275,7 @@ namespace KwasantTest.Services
                 Id = 1,
                 User = userOne,
             };
-            bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO());
+            bookingRequestOne.AddEmailParticipant(EmailParticipantType.FROM, new EmailAddressDO());
 
             _bookingRequestRepo.Add(bookingRequestOne);
 

@@ -29,6 +29,7 @@ namespace KwasantCore.Services
             if (curUser == null)
             {
                 curUser = new UserDO();
+                curUser.PersonDO = new PersonDO();
                 curUser.EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(fromEmailAddress);
                 curUser.FirstName = currMessage.From.Name;
                 userRepo.Add(curUser);

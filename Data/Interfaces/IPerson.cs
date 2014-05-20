@@ -12,8 +12,6 @@ namespace Data.Interfaces
         String FirstName { get; set; }
         String LastName { get; set; }
 
-        int? EmailAddressID { get; set; }
-
         EmailAddressDO EmailAddress { get; set; }
     }
 }

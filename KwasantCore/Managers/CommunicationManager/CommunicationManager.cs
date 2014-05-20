@@ -60,7 +60,6 @@ namespace KwasantCore.Managers.CommunicationManager
         private void SendBREmails(String toAddress, IEnumerable<BookingRequestDO> bookingRequests, IUnitOfWork uow)
         {
             EmailRepository emailRepo = new EmailRepository(uow);
-            EmailEmailAddressRepository emailAddressRepository = new EmailEmailAddressRepository(uow);
             const string message = "A new booking request has been created. From '{0}'.";
             foreach (BookingRequestDO bookingRequest in bookingRequests)
             {
@@ -71,8 +70,8 @@ namespace KwasantCore.Managers.CommunicationManager
                     Status = EmailStatus.QUEUED
                 };
 
-                outboundEmail.AddEmailParticipant(EmailParticipantType.FROM, emailAddressRepository, new EmailAddressDO { Address = "scheduling@kwasant.com", Name = "Kwasant Scheduling Services" });
-                outboundEmail.AddEmailParticipant(EmailParticipantType.TO, emailAddressRepository, new EmailAddressDO { Address = toAddress });
+                outboundEmail.AddEmailParticipant(EmailParticipantType.FROM, new EmailAddressDO { Address = "scheduling@kwasant.com", Name = "Kwasant Scheduling Services" });
+                outboundEmail.AddEmailParticipant(EmailParticipantType.TO, new EmailAddressDO { Address = toAddress });
 
                 emailRepo.Add(outboundEmail);
             }

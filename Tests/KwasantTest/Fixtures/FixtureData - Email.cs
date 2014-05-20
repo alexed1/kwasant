@@ -16,8 +16,8 @@ namespace KwasantTest.Fixtures
 
             EmailDO curEmailDO = new EmailDO();
             curEmailDO.Id = 1;
-            curEmailDO.AddEmailParticipant(EmailParticipantType.FROM,new EmailEmailAddressRepository(_uow), TestEmailAddress1());
-            curEmailDO.AddEmailParticipant(EmailParticipantType.TO, new EmailEmailAddressRepository(_uow), TestEmailAddress2());
+            curEmailDO.AddEmailParticipant(EmailParticipantType.FROM, TestEmailAddress1());
+            curEmailDO.AddEmailParticipant(EmailParticipantType.TO, TestEmailAddress2());
             curEmailDO.Subject = "Main Subject";
             curEmailDO.Text = "This is the Body Text";
             return curEmailDO;

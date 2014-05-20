@@ -21,7 +21,6 @@ namespace KwasantCore.Services
         private  EmailDO _curEmailDO;
         private EventValidator _curEventValidator;
         private IEmailRepository _curEmailRepository;
-        private IEmailEmailAddressRepository _emailEmailAddressRepository;
         #region Constructor
 
         /// <summary>
@@ -35,7 +34,6 @@ namespace KwasantCore.Services
             _uow = uow;
             _curEventValidator = new EventValidator();
             _curEmailRepository = new EmailRepository(_uow);
-            _emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
         }
         public Email(IUnitOfWork uow, EventDO eventDO): this(uow)
         {
@@ -103,18 +101,18 @@ namespace KwasantCore.Services
                 Events = null
             };
 
-            emailDO.AddEmailParticipant(EmailParticipantType.FROM, emailAddressRepository, GetEmailAddress(mailAddress.From));
-            foreach (var addr in mailAddress.To.Select(GetEmailAddress))
+            emailDO.AddEmailParticipant(EmailParticipantType.FROM, GenerateEmailAddress(mailAddress.From));
+            foreach (var addr in mailAddress.To.Select(GenerateEmailAddress))
             {
-                emailDO.AddEmailParticipant(EmailParticipantType.TO, emailAddressRepository, addr);    
+                emailDO.AddEmailParticipant(EmailParticipantType.TO, addr);    
             }
-            foreach (var addr in mailAddress.Bcc.Select(GetEmailAddress))
+            foreach (var addr in mailAddress.Bcc.Select(GenerateEmailAddress))
             {
-                emailDO.AddEmailParticipant(EmailParticipantType.BCC, emailAddressRepository, addr);
+                emailDO.AddEmailParticipant(EmailParticipantType.BCC, addr);
             }
-            foreach (var addr in mailAddress.CC.Select(GetEmailAddress))
+            foreach (var addr in mailAddress.CC.Select(GenerateEmailAddress))
             {
-                emailDO.AddEmailParticipant(EmailParticipantType.CC, emailAddressRepository, addr);
+                emailDO.AddEmailParticipant(EmailParticipantType.CC, addr);
             }
 
 
@@ -151,12 +149,11 @@ namespace KwasantCore.Services
             string fromName = CommunicationManager.GetFromName(); 
 
             EmailDO createdEmail = new EmailDO();
-            var emailEmailAddressRepository = new EmailEmailAddressRepository(_uow);
-            createdEmail.AddEmailParticipant(EmailParticipantType.FROM, emailEmailAddressRepository, new EmailAddressDO { Address = fromEmail, Name = fromName });
+            createdEmail.AddEmailParticipant(EmailParticipantType.FROM, new EmailAddressDO { Address = fromEmail, Name = fromName });
 
             foreach (var attendee in curEventDO.Attendees)
             {
-                createdEmail.AddEmailParticipant(EmailParticipantType.TO, emailEmailAddressRepository, new EmailAddressDO { Address = attendee.EmailAddress, Name = attendee.Name });
+                createdEmail.AddEmailParticipant(EmailParticipantType.TO, new EmailAddressDO { Address = attendee.EmailAddress, Name = attendee.Name });
             }
             createdEmail.Subject = "Invitation via Kwasant: " + curEventDO.Summary + "@ " + curEventDO.StartDate;
             createdEmail.Text = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";
@@ -170,7 +167,7 @@ namespace KwasantCore.Services
                 EmailAddressValidator curEmailAddressValidator = new EmailAddressValidator();
                 curEmailAddressValidator.ValidateAndThrow(archiveAddress);
                 
-                createdEmail.AddEmailParticipant(EmailParticipantType.BCC, emailEmailAddressRepository, archiveAddress);
+                createdEmail.AddEmailParticipant(EmailParticipantType.BCC, archiveAddress);
             }
 
             _curEmailRepository.Add(createdEmail);

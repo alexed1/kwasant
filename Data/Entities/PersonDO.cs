@@ -1,8 +1,6 @@
-using System;
-using System.Runtime.InteropServices.ComTypes;
-using Data.Interfaces;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Data.Interfaces;
 
 namespace Data.Entities
 {

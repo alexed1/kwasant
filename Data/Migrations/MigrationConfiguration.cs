@@ -109,27 +109,26 @@ namespace Data.Migrations
         /// <returns></returns>
         private void CreateAdmin(string curUserName, string curPassword, KwasantDbContext context)
         {
-            IdentityResult ir;
-
             try
             {
-                var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-
                 var um = new UserManager<UserDO>(new UserStore<UserDO>(context));
-
-                var user = new UserDO()
+                if (um.FindByName(curUserName) == null)
                 {
-                    UserName = curUserName,
-                    EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(curUserName),
-                    FirstName = curUserName,
-                    EmailConfirmed = true
-                };
+                    var user = new UserDO()
+                    {
+                        UserName = curUserName,
+                        PersonDO = new PersonDO(),
+                        EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(curUserName),
+                        FirstName = curUserName,
+                        EmailConfirmed = true
+                    };
 
-                ir = um.Create(user, curPassword);
-                if (!ir.Succeeded)
-                    return;
+                    IdentityResult ir = um.Create(user, curPassword);
+                    if (!ir.Succeeded)
+                        return;
 
-                ir = um.AddToRole(user.Id, "Admin");
+                    um.AddToRole(user.Id, "Admin");
+                }
             }
             catch (DbEntityValidationException ex)
             {

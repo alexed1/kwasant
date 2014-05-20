@@ -6,8 +6,6 @@ namespace Data.Interfaces
 {
     public interface IUser
     {
-        [Key]
-        int Id { get; set; }
         IEnumerable<BookingRequestDO> BookingRequests { get; set; }
     }
 }

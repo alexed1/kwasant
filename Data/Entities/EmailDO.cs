@@ -66,7 +66,7 @@ namespace Data.Entities
             Events = new List<EventDO>();
         }
 
-        public void AddEmailParticipant(EmailParticipantType type, IGenericRepository<EmailEmailAddressDO> emailEmailAddressRepo, EmailAddressDO emailAddress)
+        public void AddEmailParticipant(EmailParticipantType type, EmailAddressDO emailAddress)
         {
             var newLink = new EmailEmailAddressDO
             {
@@ -76,7 +76,7 @@ namespace Data.Entities
                 EmailID = Id,
                 Type = type
             };
-            emailEmailAddressRepo.Add(newLink);
+
             EmailEmailAddresses.Add(newLink);
             emailAddress.EmailEmailAddresses.Add(newLink);
         }

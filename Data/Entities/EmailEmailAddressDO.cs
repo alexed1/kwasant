@@ -1,10 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Data.Entities.Enumerations;
 
 namespace Data.Entities
 {
     public class EmailEmailAddressDO
     {
+        [Key]
+        public int Id { get; set; }
+
         [ForeignKey("Email")]
         public int EmailID { get; set; }
         public EmailDO Email { get; set; }
