@@ -11,6 +11,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Infrastructure;
+using StructureMap;
 using UtilitiesLib;
 using KwasantCore.Managers.IdentityManager;
 
@@ -21,12 +22,18 @@ namespace KwasantCore.Services
         private UserRepository _userRepo;
         private PersonRepository _personRepo;
         private IdentityManager _identityManager;
+        private IUnitOfWork _uow;
+        private User _curUser;
+        private Person _curPerson;
 
-        public Account(IUnitOfWork uow)
+        public Account(IUnitOfWork uow) //remove injected uow. unnecessary now.
         {
-            _userRepo = new UserRepository(uow);
-            _personRepo = new PersonRepository(uow);
-            _identityManager = new IdentityManager(uow);
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            _userRepo = new UserRepository(_uow);
+            _personRepo = new PersonRepository(_uow);
+            _identityManager = new IdentityManager(_uow);
+            _curUser = new User(_uow);
+            _curPerson = new Person(_uow);
         }
 
         /// <summary>
@@ -34,48 +41,38 @@ namespace KwasantCore.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<RegistrationStatus> Register(UserDO userDO)
+        public async Task<RegistrationStatus> Register(UserDO userRegStrings)
         {
             RegistrationStatus curRegStatus = RegistrationStatus.Pending; 
 
 
 
             //check if we know this email address
-            EmailAddressDO existingEmailAddressDO  = EmailAddress.Get(userDO.EmailAddress);
-
-            //if not, then create an EmailAddress object, then create a User
-            //if so, then is it associated with a User or a Person?
-            //if a User, redirect to an error message
-            //if a Person, create a new User and delete the corresponding Person
-
-
-
-
-
-
-
-
-
-
-
-            //no longer used -> UserDO user = GetUser(userDO.UserName); //check this user already exists in DB or not
-
-            if (user != null) // Existing user
+            EmailAddress curEmailAddress = new EmailAddress();
+            EmailAddressDO existingEmailAddressDO = curEmailAddress.FindByAddress(userRegStrings.Email);
+            if (existingEmailAddressDO != null)
             {
-                curRegStatus = _identityManager.RegisterExistingUser(userDO);
+                //this should be improved. doesn't take advantage of inheritance.
+                
+                PersonDO curPersonDO = _curPerson.FindByEmailId(existingEmailAddressDO.Id);            
+                UserDO curUserDO = _curUser.FindByEmailId(existingEmailAddressDO.Id);
+
+                if (curUserDO != null)
+                {
+                    //if a User, redirect to an error message
+                }
+                else  //existingEmailAddressDO is Person
+                {
+                    //create a new User and delete the corresponding Person
+                    curUserDO = await _identityManager.ConvertExistingPerson(curPersonDO, userRegStrings);
+                    curRegStatus = RegistrationStatus.Successful;
+                }
             }
-            else
+            else 
             {
-                //check this user already exists in DB or not
-                PersonDO curPerson = GetPerson(userDO.UserName);
-                if (curPerson != null) // Person exists. Convert Person to UserDO.
-                {
-                    userDO = await _identityManager.ConvertExistingPerson(curPerson, userDO.UserName, userDO.Password);
-                }
-                else // add new user
-                {
-                    curRegStatus = await _identityManager.RegisterNewUser(userDO);
-                }
+                //this email address unknown.  new user. create an EmailAddress object, then create a User
+                curRegStatus = await _identityManager.RegisterNewUser(userRegStrings);
+                curRegStatus = RegistrationStatus.Successful;
             }
 
             return curRegStatus;
@@ -124,13 +121,6 @@ namespace KwasantCore.Services
             return _userRepo.FindOne(x => x.UserName == userName);
         }
 
-        /// <summary>
-        /// Check person exists or not
-        /// </summary>
-        /// <returns></returns>
-        private PersonDO GetPerson(string userName)
-        {
-            return _personRepo.FindOne(x => x.EmailAddress.Address == userName);
-        }
+
     }
 }

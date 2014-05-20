@@ -110,5 +110,11 @@ namespace KwasantCore.Services
         {
             AuthenticationManager.SignOut();
         }
+
+        public UserDO FindByEmailId(int Id)
+        {
+            return _userRepo.FindOne(p => p.EmailAddress.Id == Id);
+
+        }
     }
 }

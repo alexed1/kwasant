@@ -20,17 +20,24 @@ namespace KwasantCore.Services
             _personRepo = new PersonRepository(uow);  
         }
 
-        public void Delete(string userName)
+        public void Delete(PersonDO curPersonDO)
         {
-            KwasantDbContext curContext = _personRepo.UnitOfWork.Db as KwasantDbContext;
-            if (curContext != null)
+            if (curPersonDO != null)
             {
-                PersonDO personDO = _personRepo.FindOne(e => e.EmailAddress.Address == userName);
-                if (personDO != null)
-                {
-                    _personRepo.Remove(personDO);
-                }
+                _personRepo.Remove(curPersonDO);
             }
+        }
+
+        public PersonDO GetByKey(int Id)
+        {
+            return _personRepo.GetByKey(Id);
+
+        }
+
+        public PersonDO FindByEmailId(int Id)
+        {
+            return _personRepo.FindOne(p => p.EmailAddress.Id == Id);
+
         }
     }
 }

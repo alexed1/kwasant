@@ -17,6 +17,10 @@ namespace Data.Entities
         [Column(Order = 2)] 
         public String Address { get; set; }
 
+
+        [ForeignKey("Id")]
+        public virtual PersonDO PersonId { get; set; }
+
         public virtual EmailDO FromEmail { get; set; }
         public virtual EmailDO ToEmail { get; set; }
         public virtual EmailDO BCCEmail { get; set; }
