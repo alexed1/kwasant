@@ -17,7 +17,7 @@ namespace Data.Entities
         
         public UserDO(string curEmailAddress) : this()
         {
-            EmailAddressDO = EmailAddressDO.GetOrCreateEmailAddress(curEmailAddress);
+            EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(curEmailAddress);
         }
 
         [NotMapped]
@@ -35,7 +35,7 @@ namespace Data.Entities
         }
 
         [NotMapped]
-        public EmailAddressDO EmailAddressDO
+        public EmailAddressDO EmailAddress
         {
             get { return PersonDO.EmailAddress; }
             set { PersonDO.EmailAddress = value; }

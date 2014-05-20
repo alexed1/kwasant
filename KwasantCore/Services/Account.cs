@@ -43,26 +43,8 @@ namespace KwasantCore.Services
         /// <returns></returns>
         public async Task<RegistrationStatus> Register(UserDO userRegStrings)
         {
-            RegistrationStatus curRegStatus = RegistrationStatus.Pending; 
+            RegistrationStatus curRegStatus = RegistrationStatus.Pending;
 
-<<<<<<< HEAD
-            if (user != null) // Existing user
-            {
-                curRegStatus = _identityManager.RegisterExistingUser(userDO);
-            }
-            else
-            {
-                //check this user already exists in DB or not
-                PersonDO curPerson = GetPerson(userDO.UserName);
-                if (curPerson != null) // Person exists. Convert Person to KwasantUserDO.
-                {
-                    userDO = await _identityManager.ConvertExistingPerson(curPerson, userDO.UserName, userDO.Password);
-                }
-                else // add new user
-                {
-                    curRegStatus = await _identityManager.RegisterNewUser(userDO);
-                }
-=======
 
 
             //check if we know this email address
@@ -71,8 +53,8 @@ namespace KwasantCore.Services
             if (existingEmailAddressDO != null)
             {
                 //this should be improved. doesn't take advantage of inheritance.
-                
-                PersonDO curPersonDO = _curPerson.FindByEmailId(existingEmailAddressDO.Id);            
+
+                PersonDO curPersonDO = _curPerson.FindByEmailId(existingEmailAddressDO.Id);
                 UserDO curUserDO = _curUser.FindByEmailId(existingEmailAddressDO.Id);
 
                 if (curUserDO != null)
@@ -86,12 +68,11 @@ namespace KwasantCore.Services
                     curRegStatus = RegistrationStatus.Successful;
                 }
             }
-            else 
+            else
             {
                 //this email address unknown.  new user. create an EmailAddress object, then create a User
                 curRegStatus = await _identityManager.RegisterNewUser(userRegStrings);
                 curRegStatus = RegistrationStatus.Successful;
->>>>>>> origin/kw-101
             }
 
             return curRegStatus;

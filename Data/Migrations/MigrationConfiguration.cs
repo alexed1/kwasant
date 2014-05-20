@@ -120,7 +120,7 @@ namespace Data.Migrations
                 var user = new UserDO()
                 {
                     UserName = curUserName,
-                    EmailAddressDO = EmailAddressDO.GetOrCreateEmailAddress(curUserName),
+                    EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(curUserName),
                     FirstName = curUserName,
                     EmailConfirmed = true
                 };

@@ -127,11 +127,7 @@ namespace Data.Infrastructure
                 .HasOptional(ea => ea.FromEmail)
                 .WithRequired(e => e.From)
                 .Map(x => x.MapKey("FromEmailAddressID"));
-
-            modelBuilder.Entity<EmailAddressDO>()
-                 .HasOptional(ea => ea.PersonId)
-                 .WithRequired(e => e.EmailAddress);
-
+            
             modelBuilder.Entity<EventDO>()
                 .HasMany(e => e.Attendees)
                 .WithRequired(a => a.Event)
