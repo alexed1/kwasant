@@ -43,10 +43,25 @@ namespace Playground
             {
                 new AttendeeDO
                 {
-                    EmailAddress = "rjrudman@gmail.com",
+                    EmailAddress = "alex@edelstein.org",
                     EventID = evDO.EventID,
                     Event = evDO,
-                    Name = "Robert Rudman",
+                    Name = "Alex Edelstein",
+               },
+                               new AttendeeDO
+                {
+                    EmailAddress = "alexed@yahoo.com",
+                    EventID = evDO.EventID,
+                    Event = evDO,
+                    Name = "Katie Vanderdrift",
+
+               },        
+               new AttendeeDO
+                {
+                    EmailAddress = "kwasanttest@icloud.com",
+                    EventID = evDO.EventID,
+                    Event = evDO,
+                    Name = "KwasantTest",
                },
                //new AttendeeDO
                // {
@@ -58,7 +73,7 @@ namespace Playground
             };
             evDO.Location = "Skype";
             evDO.Description = "Discuss event visualizations";
-            evDO.Summary = "Gmail and outlook works, but...";
+            evDO.Summary = "aaaaa Gmail and outlook works";
             evDO.StartDate = DateTime.Now.AddHours(3);
             evDO.EndDate = DateTime.Now.AddHours(4);
 
