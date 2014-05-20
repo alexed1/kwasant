@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
@@ -14,9 +15,9 @@ namespace Data.Entities
             PersonDO = new PersonDO();
         }
         
-        public UserDO(string curEmailAddress) : base()
+        public UserDO(string curEmailAddress) : this()
         {
-            EmailAddress.Address = curEmailAddress;
+            EmailAddressDO = EmailAddressDO.GetOrCreateEmailAddress(curEmailAddress);
         }
 
         [NotMapped]
@@ -34,7 +35,7 @@ namespace Data.Entities
         }
 
         [NotMapped]
-        public EmailAddressDO EmailAddress
+        public EmailAddressDO EmailAddressDO
         {
             get { return PersonDO.EmailAddress; }
             set { PersonDO.EmailAddress = value; }
@@ -53,7 +54,21 @@ namespace Data.Entities
 
         public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
 
+        [ForeignKey("PersonDO")]
+        public int PersonID { get; set; }
         [Required]
-        public PersonDO PersonDO { get; set; }
+        public virtual PersonDO PersonDO { get; set; }
+
+        public override String Email
+        {
+            get
+            {
+                return EmailAddressDO.Address;
+            }
+            set
+            {
+                EmailAddressDO = EmailAddressDO.GetOrCreateEmailAddress(value);
+            }
+        }
     }
 }

@@ -11,7 +11,7 @@ using Data.Migrations;
 
 namespace Data.Infrastructure
 {
-    public class KwasantDbContext : IdentityDbContext<UserDO>, IDBContext
+    public class KwasantDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {       
         //Do not change this value! If you want to change the database you connect to, edit your web.config file
         public KwasantDbContext()
@@ -79,9 +79,11 @@ namespace Data.Infrastructure
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
+            modelBuilder.Entity<PersonDO>().ToTable("People");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
-            modelBuilder.Entity<IdentityUser>().ToTable("Users");
+            modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
+            modelBuilder.Entity<UserDO>().ToTable("Users");
 
             modelBuilder.Entity<EventDO>()
                 .HasMany(ev => ev.Emails)
@@ -156,8 +158,12 @@ namespace Data.Infrastructure
 
         public IDbSet<InstructionDO> Instructions { get; set; }
 
+        public IDbSet<PersonDO> People { get; set; }
+
         public IDbSet<StoredFileDO> StoredFiles { get; set; }
 
         public IDbSet<TrackingStatusDO> TrackingStatuses { get; set; }
+
+        public new IDbSet<UserDO> Users { get; set; }
     }
 }

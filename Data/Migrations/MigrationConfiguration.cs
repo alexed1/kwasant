@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Reflection;
 using Microsoft.AspNet.Identity;
@@ -68,19 +69,18 @@ namespace Data.Migrations
         /// Add roles of type 'Admin' and 'Customer' in DB
         /// </summary>
         /// <param name="context"></param>
-        private void AddRoles(KwasantDbContext context)
+        private void AddRoles(DbContext context)
         {
-            var RoleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
 
-            IdentityResult roleresult;
-            if (RoleManager.RoleExists("Admin") == false)
+            if (roleManager.RoleExists("Admin") == false)
             {
-                roleresult = RoleManager.Create(new IdentityRole("Admin"));
+                roleManager.Create(new IdentityRole("Admin"));
             }
 
-            if (RoleManager.RoleExists("Customer") == false)
+            if (roleManager.RoleExists("Customer") == false)
             {
-                roleresult = RoleManager.Create(new IdentityRole("Customer"));
+                roleManager.Create(new IdentityRole("Customer"));
             }
         }
 
@@ -105,27 +105,22 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="context"></param>
         /// <returns></returns>
-        private bool CreateAdmin(string curUserName, string curPassword, KwasantDbContext context)
+        private void CreateAdmin(string curUserName, string curPassword, KwasantDbContext context)
         {
-            IdentityResult ir;
-            var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-
             var um = new UserManager<UserDO>(new UserStore<UserDO>(context));
 
             var user = new UserDO()
             {
                 UserName = curUserName,
-                Email = curUserName,
+                EmailAddressDO = EmailAddressDO.GetOrCreateEmailAddress(curUserName),
                 EmailConfirmed = true
             };
 
-            ir = um.Create(user, curPassword);
-            if (ir.Succeeded == false)
-                return ir.Succeeded;
+            IdentityResult ir = um.Create(user, curPassword);
+            if (!ir.Succeeded)
+                return;
 
-            ir = um.AddToRole(user.Id, "Admin");
-
-            return ir.Succeeded;
+            um.AddToRole(user.Id, "Admin");
         }
     }
 }

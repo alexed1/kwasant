@@ -47,7 +47,7 @@ namespace KwasantCore.Services
             {
                 //check this user already exists in DB or not
                 PersonDO curPerson = GetPerson(userDO.UserName);
-                if (curPerson != null) // Person exists. Convert Person to UserDO.
+                if (curPerson != null) // Person exists. Convert Person to KwasantUserDO.
                 {
                     userDO = await _identityManager.ConvertExistingPerson(curPerson, userDO.UserName, userDO.Password);
                 }
@@ -96,7 +96,7 @@ namespace KwasantCore.Services
         /// <summary>
         /// Check user exists or not
         /// </summary>
-        /// <param name="userDO"></param>
+        /// <param name="KwasantUserDO"></param>
         /// <returns></returns>
         private UserDO GetUser(string userName)
         {

@@ -24,11 +24,11 @@ namespace KwasantCore.Services
         {
             string fromEmailAddress = currMessage.From.Address;
             UserRepository userRepo = new UserRepository(uow);
-            UserDO curUser = userRepo.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
+            UserDO curUser = userRepo.GetQuery().FirstOrDefault(c => c.EmailAddressDO.Address == fromEmailAddress);
             if (curUser == null)
             {
                 curUser = new UserDO();
-                curUser.EmailAddress.Address = fromEmailAddress;
+                curUser.EmailAddressDO = EmailAddressDO.GetOrCreateEmailAddress(fromEmailAddress);
                 curUser.FirstName = currMessage.From.Name;
                 userRepo.Add(curUser);
             }
