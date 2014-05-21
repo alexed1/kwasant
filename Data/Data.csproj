@@ -143,6 +143,10 @@
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\ISaveHook.cs" />
     <Compile Include="Interfaces\IUserRepository.cs" />
+    <Compile Include="Migrations\201405211101452_InitialMigration.cs" />
+    <Compile Include="Migrations\201405211101452_InitialMigration.Designer.cs">
+      <DependentUpon>201405211101452_InitialMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\AttendeeRepository.cs" />
@@ -195,6 +199,11 @@
       <Project>{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}</Project>
       <Name>Utilities</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201405211101452_InitialMigration.resx">
+      <DependentUpon>201405211101452_InitialMigration.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

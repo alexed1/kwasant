@@ -20,7 +20,7 @@ namespace Data.Migrations
     {
         public MigrationConfiguration()
         {
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
             ContextKey = "Data.Infrastructure.KwasantDbContext";
         }
 
@@ -35,15 +35,13 @@ namespace Data.Migrations
             //In this situation, we need to be sure to use the provided context.
 
             //This class is _not_ mockable - it's a core part of EF. Some seeding, however, is mockable (see the static function Seed and how MockedDBContext uses it).
-            using (var unitOfWork = new UnitOfWork(context))
-            {
-                Seed(unitOfWork);
+            var unitOfWork = new UnitOfWork(context);
+            Seed(unitOfWork);
 
-                AddRoles(unitOfWork);
-                AddAdmins(unitOfWork);
+            AddRoles(unitOfWork);
+            AddAdmins(unitOfWork);
 
-                unitOfWork.SaveChanges();
-            }
+            unitOfWork.SaveChanges();
         }
 
         //Method to let us seed into memory as well
