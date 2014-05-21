@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
@@ -31,18 +32,16 @@ namespace KwasantCore.Services
         {
             RegistrationStatus curRegStatus = RegistrationStatus.Pending;
 
-
-
             //check if we know this email address
-            EmailAddress curEmailAddress = new EmailAddress();
-            EmailAddressDO existingEmailAddressDO = curEmailAddress.FindByAddress(userRegStrings.Email);
+
+            EmailAddressDO existingEmailAddressDO = _uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == userRegStrings.Email);
             if (existingEmailAddressDO != null)
             {
                 //this should be improved. doesn't take advantage of inheritance.
 
                 PersonDO curPersonDO = _curPerson.FindByEmailId(existingEmailAddressDO.Id);
                 UserDO curUserDO = _curUser.FindByEmailId(existingEmailAddressDO.Id);
-
+                curPersonDO = curUserDO.PersonDO;
                 if (curUserDO != null)
                 {
                     //if a User, redirect to an error message

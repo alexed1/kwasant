@@ -13,19 +13,21 @@ namespace Data.Repositories
             
         }
 
-        public EmailAddressDO GetOrCreateEmailAddress(String email)
+        public EmailAddressDO GetOrCreateEmailAddress(String email, String name = null)
         {
             var matchingEmailAddress = _dbContext.UnitOfWork.EmailAddressRepository.GetQuery().FirstOrDefault(e => e.Address == email);
             if (matchingEmailAddress == null)
             {
                 matchingEmailAddress = new EmailAddressDO { Address = email };
             }
+            if(!String.IsNullOrEmpty(name))
+                matchingEmailAddress.Name = name;
             return matchingEmailAddress;
         }
     }
 
     public interface IEmailAddressRepository : IGenericRepository<EmailAddressDO>
     {
-        EmailAddressDO GetOrCreateEmailAddress(String email);
+        EmailAddressDO GetOrCreateEmailAddress(String email, String name);
     }
 }
