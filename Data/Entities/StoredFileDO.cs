@@ -12,7 +12,7 @@ namespace Data.Entities
     public class StoredFileDO : ISaveHook
     {
         [Key]
-        public int StoredFileID { get; set; }
+        public int Id { get; set; }
 
         public String OriginalName { get; set; }
         public String StoredName { get; set; }

@@ -186,7 +186,7 @@ namespace Daemons
                             {
                                 lastExecutionTime = currTime;
                                 firstExecution = false;
-                                Logger.GetLogger().Info(GetType().Name + " - executing...");
+                                // Logger.GetLogger().Info(GetType().Name + " - executing...");
                                 Run();
                                 if (DaemonExecuted != null)
                                     DaemonExecuted();

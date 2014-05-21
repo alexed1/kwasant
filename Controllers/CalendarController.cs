@@ -296,7 +296,7 @@ namespace KwasantWeb.Controllers
         {
             //This is a fake event that will be thrown away if Confirm() is not called
             EventDO eventDO = new EventDO();
-            eventDO.EventID = eventID;
+            eventDO.Id = eventID;
             EventDO actualEventDO = Calendar.GetEvent(eventID);
             eventDO.CopyFrom(actualEventDO);
 
@@ -334,7 +334,7 @@ namespace KwasantWeb.Controllers
             //This is a fake event that will be thrown away if Confirm() is not called
             EventDO eventDO = new EventDO
             {
-                EventID = calendarViewModel.EventID,
+                Id = calendarViewModel.EventID,
                 IsAllDay = GetCheckFlag(calendarViewModel.IsAllDay),
                 StartDate = calendarViewModel.DateStart,
                 EndDate = calendarViewModel.DateEnd,
@@ -365,35 +365,43 @@ namespace KwasantWeb.Controllers
         //Manages adds/deletes and persists of attendees.
         private void ManageAttendees(EventDO eventDO, string attendeesStr)
         {
+            //Load the known attendee list for this event
             List<AttendeeDO> originalAttendees;
-            if (eventDO.EventID != 0)
+            if (eventDO.Id != 0)
             {
-                EventDO oldEvent = Calendar.GetEvent(eventDO.EventID);
+                EventDO oldEvent = Calendar.GetEvent(eventDO.Id);
                 originalAttendees = new List<AttendeeDO>(oldEvent.Attendees);
             }
             else
             {
                 originalAttendees = new List<AttendeeDO>();
             }
+
+            //create the list that will merge in the changes
             List<AttendeeDO> newAttendees = new List<AttendeeDO>();
             foreach (string email in attendeesStr.Split(','))
             {
                 if (String.IsNullOrEmpty(email))
                     continue;
 
+                
                 List<AttendeeDO> sameAttendees = originalAttendees.Where(oa => oa.EmailAddress == email).ToList();
                 if (sameAttendees.Any())
                 {
+                    //take all of the attendees that were already associated with the event and add them to the merged list
                     newAttendees.AddRange(sameAttendees);
                 }
                 else
                 {
+                    //create a new attendee and add it
                     newAttendees.Add(new AttendeeDO
                     {
                         EmailAddress = email
                     });
                 }
             }
+
+            //Delete any attendees that are no longer part of the list
             List<AttendeeDO> attendeesToDelete = originalAttendees.Where(originalAttendee => !newAttendees.Select(a => a.EmailAddress).Contains(originalAttendee.EmailAddress)).ToList();
             if (attendeesToDelete.Any())
             {
@@ -409,13 +417,13 @@ namespace KwasantWeb.Controllers
         {
 
             EventDO eventDO = Session["FakedEvent_" + processCreateEventViewModel.Key] as EventDO;
-            if (eventDO.EventID == 0)
+            if (eventDO.Id == 0)
             {
                 Calendar.AddEvent(eventDO);
             }
             else
             {
-                EventDO oldEvent = Calendar.GetEvent(eventDO.EventID);
+                EventDO oldEvent = Calendar.GetEvent(eventDO.Id);
                 oldEvent.CopyFrom(eventDO);
                 eventDO = oldEvent;
             }

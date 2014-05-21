@@ -15,7 +15,7 @@ namespace KwasantTest.Entities
     [TestFixture, Ignore]
     public class EventTests 
     {
-        public ICustomerRepository customerRepo;
+        public IUserRepository userRepo;
         private IEventRepository eventRepo;
         private IEmailAddressRepository emailAddressRepo;
         public IUnitOfWork _uow;
@@ -29,7 +29,7 @@ namespace KwasantTest.Entities
 
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _calendar = new Calendar(_uow);
-            customerRepo = new CustomerRepository(_uow);
+            userRepo = new UserRepository(_uow);
             eventRepo = new EventRepository(_uow);
             emailAddressRepo = new EmailAddressRepository(_uow);
             _fixture = new FixtureData(_uow);
@@ -95,8 +95,8 @@ namespace KwasantTest.Entities
             eventRepo.UnitOfWork.SaveChanges();
 
             //VERIFY
-            EventDO curRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.EventID);
-            Assert.AreEqual(curOriginalEventDO.EventID, curRetrievedEventDO.EventID);
+            EventDO curRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.Id);
+            Assert.AreEqual(curOriginalEventDO.Id, curRetrievedEventDO.Id);
         }
 
         [Test]
@@ -133,8 +133,8 @@ namespace KwasantTest.Entities
             eventRepo.UnitOfWork.SaveChanges();
 
             //VERIFY
-            EventDO CurRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.EventID);
-            Assert.AreEqual(curOriginalEventDO.EventID, CurRetrievedEventDO.EventID);
+            EventDO CurRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.Id);
+            Assert.AreEqual(curOriginalEventDO.Id, CurRetrievedEventDO.Id);
         }
 
         [Test]
@@ -235,12 +235,12 @@ namespace KwasantTest.Entities
             eventRepo.Add(curOriginalEventDO);
             eventRepo.UnitOfWork.SaveChanges();
 
-            EventDO curRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.EventID);
+            EventDO curRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.Id);
 
             eventRepo.Remove(curRetrievedEventDO);
             eventRepo.UnitOfWork.SaveChanges();
 
-            EventDO curDeletedEventDO = eventRepo.GetByKey(curRetrievedEventDO.EventID);
+            EventDO curDeletedEventDO = eventRepo.GetByKey(curRetrievedEventDO.Id);
 
             //VERIFY            
             Assert.IsNull(curDeletedEventDO);

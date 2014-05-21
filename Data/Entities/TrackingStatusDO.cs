@@ -5,7 +5,7 @@ namespace Data.Entities
 {
     public class TrackingStatusDO : ICustomField
     {
-        public int ForeignTableID { get; set; }
+        public int Id { get; set; }
         public string ForeignTableName { get; set; }
 
         public TrackingType Type { get; set; }

@@ -1,4 +1,4 @@
-﻿using Data.Entities;
+using Data.Entities;
 using Data.Interfaces;
 
 namespace Data.Repositories

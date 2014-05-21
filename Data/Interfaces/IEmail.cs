@@ -8,7 +8,7 @@ namespace Data.Interfaces
     public interface IEmail
     {
         [Key]
-        int EmailID { get; set; }
+        int Id { get; set; }
 
         //EmailAddress From { get; set; }
         String Subject { get; set; }

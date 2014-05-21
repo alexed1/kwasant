@@ -95,11 +95,12 @@ namespace Daemons
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
                 BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
+                EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(unitOfWork);
 
                 var message = client.GetMessage(uid);
                 try
                 {
-                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, emailEmailAddressRepository, message);
                     BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
 
                     bookingRequestRepo.UnitOfWork.SaveChanges();

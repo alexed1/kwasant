@@ -38,7 +38,7 @@ namespace Data.Constants
                     object value = constant.GetValue(null);
                     instructionRepo.Add(new InstructionDO
                     {
-                        InstructionID = (int)value,
+                        Id = (int)value,
                         Name = name,
                         Category = nestedType.Name
                     });

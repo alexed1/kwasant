@@ -1,18 +1,18 @@
 ﻿using Data.Entities;
+using NUnit.Framework;
 
 namespace KwasantTest.Fixtures
 {
     partial class FixtureData
     {
-        public PersonDO TestPerson1()
+        public PersonDO TestPerson()
         {
-
             return new PersonDO()
             {
-                FirstName="Test First Name",
-                LastName = "Test Last Name"                
+                FirstName = "Pabitra",
+                EmailAddress = TestEmail3()
             };
-        }       
+        }
     }
 }
 
