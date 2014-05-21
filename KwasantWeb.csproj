@@ -45,9 +45,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="DayPilot">
-      <HintPath>packages\DayPilot.4.1.264\lib\DayPilot.dll</HintPath>
-    </Reference>
     <Reference Include="DayPilot.Web.Mvc">
       <HintPath>lib\DayPilot.Web.Mvc.dll</HintPath>
     </Reference>
@@ -288,6 +285,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Index.aspx.cs">
+      <DependentUpon>Index.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Index.aspx.designer.cs">
+      <DependentUpon>Index.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\CalendarViewModel.cs" />
@@ -296,10 +300,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Booking Details.png" />
-    <Content Include="Content\BookingAgent.css" />
-    <Content Include="Content\bootstrap-datetimepicker.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\images\background-match.jpg" />
     <Content Include="Content\images\background-test5.jpg" />
     <Content Include="Content\images\background-test6.jpg" />
@@ -371,70 +371,23 @@
     <Content Include="Content\images\test-background3.jpg" />
     <Content Include="Content\images\test-background4.jpg" />
     <Content Include="Content\images\Workflowv2.png" />
-    <Content Include="Content\Index.css" />
-    <Content Include="Content\justified-nav.css" />
-    <Content Include="Content\slider.css" />
     <Content Include="Content\templates\inline_html_template_v1.html" />
     <Content Include="Content\templates\googletemplate1.html" />
-    <Content Include="index.html" />
+    <Content Include="Index.aspx" />
     <Content Include="Media\select2.png" />
     <Content Include="Media\select2.css" />
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
-    <Content Include="Scripts\bootstrap-datetimepicker.js" />
-    <Content Include="Scripts\Common.js" />
     <Content Include="newrelic\newrelic.config" />
     <Content Include="newrelic\extensions\extension.xsd">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="Scripts\jquery-2.1.0.intellisense.js" />
-    <Content Include="Scripts\jquery-2.1.0.js" />
-    <Content Include="Scripts\jquery-2.1.0.min.js" />
-    <None Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery.validate.js" />
-    <Content Include="Scripts\jquery.validate.min.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
-    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
-    <Content Include="Scripts\modernizr-2.7.2.js" />
-    <Content Include="Scripts\moment.js" />
-    <Content Include="Scripts\respond.js" />
-    <Content Include="Scripts\respond.matchmedia.addListener.js" />
-    <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
-    <Content Include="Scripts\respond.min.js" />
-    <Content Include="Scripts\select2.js" />
     <Content Include="Content\backgroundsize.min.htc" />
-    <Content Include="Content\css\bootstrap-responsive.css" />
-    <Content Include="Content\css\bootstrap-responsive.min.css" />
-    <Content Include="Content\css\bootstrap.css" />
-    <Content Include="Content\css\bootstrap.min.css" />
-    <Content Include="Content\css\colorbox.css" />
-    <Content Include="Content\css\font-awesome-ie7.min.css" />
-    <Content Include="Content\css\font-awesome.min.css" />
-    <Content Include="Content\css\img\bg-overlay.png" />
-    <Content Include="Content\css\img\browser-header.jpg" />
-    <Content Include="Content\css\img\controls.png" />
-    <Content Include="Content\css\img\glyphicons-halflings-white.png" />
-    <Content Include="Content\css\img\glyphicons-halflings.png" />
-    <Content Include="Content\css\img\ie-black-bg.png" />
-    <Content Include="Content\css\img\loading.gif" />
-    <Content Include="Content\css\main.css" />
     <Content Include="Content\font\fontawesome-webfont.svg" />
     <Content Include="Content\gadegets.xml" />
-    <Content Include="Content\js\bootstrap.js" />
-    <Content Include="Content\js\bootstrap.min.js" />
-    <Content Include="Content\js\jquery.colorbox-min.js" />
-    <Content Include="Content\js\jquery.viewport.min.js" />
-    <Content Include="Content\js\main.js" />
-    <Content Include="Content\js\placeholder.js" />
-    <Content Include="Content\js\plugins.js" />
-    <Content Include="Content\js\respond.min.js" />
-    <Content Include="Content\js\vendor\jquery-1.10.2.min.js" />
-    <Content Include="Content\js\vendor\modernizr-2.6.2.min.js" />
-    <Content Include="Content\js\waypoints.js" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Content\Site.css" />
     <Content Include="Media\elements.css" />
     <Content Include="Media\elements\calendar_silver_allday30.gif" />
     <Content Include="Media\layout.css" />
@@ -464,20 +417,8 @@
     <Content Include="Content\images\Email thread .docx" />
     <Content Include="Content\images\Workflow.vsdx" />
     <Content Include="Content\images\Workflow_v2.vsdx" />
-    <Content Include="Scripts\bootstrap-slider.js" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="packages.config" />
     <None Include="Properties\PublishProfiles\kwasant.pubxml" />
-    <None Include="Scripts\jquery-1.10.2.intellisense.js" />
-    <Content Include="Scripts\daypilot-all.min.js" />
-    <Content Include="Scripts\DayPilot\daypilot-all.min.js" />
-    <Content Include="Scripts\jquery-1.10.2.js" />
-    <Content Include="Scripts\jquery-1.10.2.min.js" />
-    <Content Include="Scripts\jquery-1.8.1.min.js" />
-    <Content Include="Scripts\jquery-2.0.3.min.js" />
-    <Content Include="Scripts\modernizr-2.6.2.js" />
-    <Content Include="Scripts\_references.js" />
     <Content Include="shortcodes.html" />
     <Content Include="Themes\areas.css" />
     <Content Include="Themes\areas\icons.png" />
@@ -552,7 +493,6 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Scripts\jquery-1.10.2.min.map" />
     <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\_RemoveAccountPartial.cshtml" />
@@ -612,14 +552,15 @@
     <Content Include="Views\Shared\_Blank.cshtml" />
     <Content Include="Views\Calendar\ProcessCreateEvent.cshtml" />
     <Content Include="Views\Calendar\DeleteEvent.cshtml" />
-    <Content Include="Scripts\jquery-2.1.0.min.map" />
     <Content Include="Views\MandrillWebhook\Index.cshtml" />
     <Content Include="Views\Account\Confirm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
+    <Folder Include="Content\css\" />
     <Folder Include="Content\images\Process\" />
+    <Folder Include="Content\js\" />
     <Folder Include="Controllers\Models\" />
     <Folder Include="DependencyResolution\" />
   </ItemGroup>

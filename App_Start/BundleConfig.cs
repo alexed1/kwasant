@@ -7,25 +7,52 @@ namespace KwasantWeb.App_Start
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
-            bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-{version}.js"));
+            //Scripts
+            bundles.Add(new ScriptBundle("~/bundles/js/modernizr").Include(
+                "~/Content/js/modernizr.js"
+                ));
 
-            bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
-                        "~/Scripts/jquery.validate*"));
+            bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
+                "~/Content/js/jquery.js"
+                ));
 
-            // Use the development version of Modernizr to develop with and learn from. Then, when you're
-            // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
-            bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
-                        "~/Scripts/modernizr-*"));
+            bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
+                "~/Content/js/bootstrap.js",
+                "~/Content/js/bootstrap-responsive.js"
+                ));
 
-            bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                      "~/Scripts/bootstrap.js",
-                      "~/Scripts/respond.js"));
+            bundles.Add(new ScriptBundle("~/bundles/js/colorbox").Include(
+                "~/Content/js/jquery.colorbox.js"
+                ));
 
-            bundles.Add(new StyleBundle("~/Content/mastercss").Include(
-                      "~/Content/bootstrap.css",
-                      "~/Content/justified-nav.css",
-                      "~/Content/site.css"));
+            bundles.Add(new ScriptBundle("~/bundles/js/waypoints").Include(
+                "~/Content/js/waypoints.js"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/placeholder").Include(
+                "~/Content/js/placeholder.js"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/main").Include(
+                "~/Content/js/main.js"
+                ));
+
+            //Styles
+            bundles.Add(new StyleBundle("~/bundles/css/bootstrap").Include(
+                "~/Content/css/bootstrap.css"
+                ));
+            bundles.Add(new StyleBundle("~/bundles/css/colorbox").Include(
+                "~/Content/css/colorbox.css"
+                ));
+
+            bundles.Add(new StyleBundle("~/bundles/css/main").Include(
+                "~/Content/css/main.css",
+                "~/Content/css/font-awesome.min.css"
+                ));
+            bundles.Add(new StyleBundle("~/bundles/css/fontawesome").Include(
+                "~/Content/css/font-awesome.css"
+                ));
+            
         }
     }
 }
