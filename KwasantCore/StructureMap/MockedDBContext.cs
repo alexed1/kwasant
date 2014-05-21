@@ -7,6 +7,7 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Migrations;
 using StructureMap.TypeRules;
@@ -17,7 +18,7 @@ namespace KwasantCore.StructureMap
     {
         public MockedDBContext()
         {
-            MigrationConfiguration.Seed(UnitOfWork);
+            MigrationConfiguration.Seed(new UnitOfWork(this));
         }
 
         private Dictionary<Type, object> _cachedSets = new Dictionary<Type, object>();
