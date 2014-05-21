@@ -19,7 +19,7 @@ namespace KwasantTest.Entities
         [SetUp]
         public void Setup()
         {
-            StructureMapBootStrapper.ConfigureDependencies("test");
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
             _trackingStatus = new TestCustomField(_uow.EmailRepository);

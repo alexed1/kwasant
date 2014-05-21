@@ -25,7 +25,7 @@ namespace KwasantWeb
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             // StructureMap Dependencies configuration
-            StructureMapBootStrapper.ConfigureDependencies("dev"); //set to either "test" or "dev"
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE); //set to either "test" or "live"
             ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
 
             //Database.SetInitializer(new ShnexyInitializer());

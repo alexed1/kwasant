@@ -30,6 +30,11 @@ namespace Data.Migrations
 
             /* Be sure to use AddOrUpdate when creating seed data - otherwise we will get duplicates! */
 
+            //This is not a mistake that we're using new UnitOfWork, rather than calling the ObjectFactory. 
+            //The object factory decides what context to use, based on the environment.
+            //In this situation, we need to be sure to use the provided context.
+
+            //This class is _not_ mockable - it's a core part of EF. Some seeding, however, is mockable (see the static function Seed and how MockedDBContext uses it).
             using (var unitOfWork = new UnitOfWork(context))
             {
                 Seed(unitOfWork);

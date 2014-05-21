@@ -15,7 +15,7 @@ namespace KwasantTest.Daemons
         [SetUp]
         public void Setup()
         {
-            StructureMapBootStrapper.ConfigureDependencies("test");
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
         }
 
         [Test]

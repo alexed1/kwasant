@@ -17,7 +17,7 @@ namespace Playground
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            StructureMapBootStrapper.ConfigureDependencies("dev"); //set to either "test" or "dev"
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE); //set to either "test" or "dev"
 
             KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);

@@ -22,7 +22,7 @@ namespace KwasantTest.Services
         [SetUp]
         public void Setup()
         {
-            StructureMapBootStrapper.ConfigureDependencies("test");
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
             _fixture = new FixtureData();

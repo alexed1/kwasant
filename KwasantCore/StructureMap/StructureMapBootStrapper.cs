@@ -1,7 +1,6 @@
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using IEvent = Data.Interfaces.IEvent;
@@ -10,17 +9,23 @@ namespace KwasantCore.StructureMap
 {
     public class StructureMapBootStrapper
     {
+        public enum DependencyType
+        {
+            TEST = 0,
+            LIVE = 1
+        }
+
         #region Method
 
-        public static void ConfigureDependencies(string type)
+        public static void ConfigureDependencies(DependencyType type)
         {
             switch (type)
             {
-                case "test":
+                case DependencyType.TEST:
                     ObjectFactory.Initialize(x => x.AddRegistry<TestMode>());
                     break;
-                default:
-                    ObjectFactory.Initialize(x => x.AddRegistry<DevMode>());
+                case DependencyType.LIVE:
+                    ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
                     break;
             }
         }
@@ -41,9 +46,9 @@ namespace KwasantCore.StructureMap
             }
         }
 
-        public class DevMode : KwasantCoreRegistry 
+        public class LiveMode : KwasantCoreRegistry 
         {
-            public DevMode()
+            public LiveMode()
             {
                 //Do not remove _ => (This gives us lazy execution, and a new unit of work & context each call). Removing this will cause the application to be unstable with threads.
                 For<IUnitOfWork>().Use(_ => new UnitOfWork(new KwasantDbContext()));
