@@ -121,3 +121,5 @@ sql/
 ClientBin/
 [Ss]tyle[Cc]op.*
 /packages
+/NUnit.Runners.2.6.3
+/TestResult.xml
