@@ -34,7 +34,7 @@ namespace KwasantTest.Entities
         private class TestCustomField : GenericCustomField<TrackingStatusDO, EmailDO>
         {
             public TestCustomField(IGenericRepository<EmailDO> foreignRepo)
-                : base(foreignRepo.Database.UnitOfWork.TrackingStatusRepository, foreignRepo)
+                : base(foreignRepo.UnitOfWork.TrackingStatusRepository, foreignRepo)
             {
             }
 

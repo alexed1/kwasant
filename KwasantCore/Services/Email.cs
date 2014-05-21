@@ -100,7 +100,7 @@ namespace KwasantCore.Services
                 Attachments = mailAddress.Attachments.Select(CreateNewAttachment).ToList(),
                 Events = null
             };
-            var uow = emailRepository.Database.UnitOfWork;
+            var uow = emailRepository.UnitOfWork;
 
             emailDO.AddEmailParticipant(EmailParticipantType.FROM, GenerateEmailAddress(uow, mailAddress.From));
             foreach (var addr in mailAddress.To.Select(a => GenerateEmailAddress(uow, a)))

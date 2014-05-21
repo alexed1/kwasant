@@ -162,12 +162,11 @@ namespace Data.Infrastructure
             _context.SaveChanges();
         }
 
-        private bool disposed = false;
-
         protected virtual void Dispose(bool disposing)
         {
             if (_transaction != null)
                 _transaction.Dispose();
+            _context.Dispose();
         }
 
         public void StartTransaction()

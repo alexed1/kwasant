@@ -15,7 +15,7 @@ namespace Data.Repositories
 
         public EmailAddressDO GetOrCreateEmailAddress(String email, String name = null)
         {
-            var matchingEmailAddress = _dbContext.UnitOfWork.EmailAddressRepository.GetQuery().FirstOrDefault(e => e.Address == email);
+            var matchingEmailAddress = DBContext.UnitOfWork.EmailAddressRepository.GetQuery().FirstOrDefault(e => e.Address == email);
             if (matchingEmailAddress == null)
             {
                 matchingEmailAddress = new EmailAddressDO { Address = email };

@@ -9,7 +9,7 @@ namespace Data.Interfaces
     {
         TEntity GetByKey(object keyValue);
         IQueryable<TEntity> GetQuery();
-        IDBContext Database { get; }
+        IUnitOfWork UnitOfWork { get; }
         void Add(TEntity entity);
         void Remove(TEntity entity);
         IEnumerable<TEntity> GetAll();        

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Repositories;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using StructureMap;

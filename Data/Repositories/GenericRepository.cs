@@ -12,18 +12,18 @@ namespace Data.Repositories
     /// <typeparam name="TEntity"></typeparam>
     public class GenericRepository<TEntity> : IDisposable, IGenericRepository<TEntity> where TEntity : class
     {
-        protected readonly IDBContext _dbContext;
+        protected readonly IDBContext DBContext;
         public IDbSet<TEntity> DBSet;
 
         internal GenericRepository(IDBContext dbContext)
         {
             if (dbContext == null) throw new ArgumentNullException("dbContext");
-            _dbContext = dbContext;
+            DBContext = dbContext;
             DBSet = dbContext.Set<TEntity>();
         }
 
         #region Property
-        public IDBContext Database { get { return _dbContext; } }
+        public IUnitOfWork UnitOfWork { get { return DBContext.UnitOfWork; } }
 
         #endregion
 
@@ -76,7 +76,7 @@ namespace Data.Repositories
 
         public void Dispose()
         {
-            _dbContext.Dispose();
+            DBContext.UnitOfWork.Dispose();
         }
 
         #endregion

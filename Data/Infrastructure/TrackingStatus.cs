@@ -49,7 +49,7 @@ namespace Data.Infrastructure
         where TForeignEntity : class
     {
         public TrackingStatus(IGenericRepository<TForeignEntity> foreignRepo) 
-            : base(foreignRepo.Database.UnitOfWork.TrackingStatusRepository, foreignRepo)
+            : base(foreignRepo.UnitOfWork.TrackingStatusRepository, foreignRepo)
         {
         }
 
