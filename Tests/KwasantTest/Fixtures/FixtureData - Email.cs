@@ -19,7 +19,7 @@ namespace KwasantTest.Fixtures
             curEmailDO.AddEmailParticipant(EmailParticipantType.FROM, TestEmailAddress1());
             curEmailDO.AddEmailParticipant(EmailParticipantType.TO, TestEmailAddress2());
             curEmailDO.Subject = "Main Subject";
-            curEmailDO.Text = "This is the Body Text";
+            curEmailDO.HTMLText = "This is the Body Text";
             return curEmailDO;
 
         }

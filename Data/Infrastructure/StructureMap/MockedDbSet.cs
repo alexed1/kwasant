@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Data.Interfaces;
 
-namespace KwasantCore.StructureMap
+namespace Data.Infrastructure.StructureMap
 {
     public class MockedDbSet<TEntityType> : IDbSet<TEntityType>
         where TEntityType : class

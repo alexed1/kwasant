@@ -5,8 +5,8 @@ namespace Data.Repositories
 {
     public class TrackingStatusRepository : GenericRepository<TrackingStatusDO>, ITrackingStatusRepository
     {
-        public TrackingStatusRepository(IUnitOfWork uow)
-            : base(uow)
+        internal TrackingStatusRepository(IDBContext dbContext)
+            : base(dbContext)
         {
 
         }

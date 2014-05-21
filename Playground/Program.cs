@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Repositories;
+using KwasantCore.Services;
 using KwasantCore.StructureMap;
-using log4net.Config;
 using StructureMap;
-using UtilitiesLib.Logging;
 
 namespace Playground
 {
@@ -16,16 +18,39 @@ namespace Playground
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            StructureMapBootStrapper.ConfigureDependencies("dev"); //set to either "test" or "dev"
-            
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE); //set to either "test" or "dev"
+
             KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);
 
-            var first = ObjectFactory.GetInstance<IUnitOfWork>();
-            var second = ObjectFactory.GetInstance<IUnitOfWork>();
+            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+            var evDO = new EventDO()
+            {
+            };
+            evDO.Attendees = new List<AttendeeDO>
+            {
+                new AttendeeDO
+                {
+                    EmailAddress = "rjrudman@gmail.com",
+                    EventID = evDO.Id,
+                    Event = evDO,
+                    Name = "Robert Rudman",
+               },
+               //new AttendeeDO
+               // {
+               //     EmailAddress = "alex@edelstein.org",
+               //     EventID = evDO.EventID,
+               //     Event = evDO,
+               //     Name = "Alex Edelstein",
+               //},
+            };
+            evDO.Location = "Skype";
+            evDO.Description = "Discuss event visualizations";
+            evDO.Summary = "Gmail and outlook works, but...";
+            evDO.StartDate = DateTime.Now.AddHours(3);
+            evDO.EndDate = DateTime.Now.AddHours(4);
 
-            var fcc = first.GetHashCode();
-            var scc = second.GetHashCode();
+            new Event().Dispatch(evDO);
         }
     }
 }

@@ -7,9 +7,9 @@ namespace Data.Interfaces
 {
     public interface IGenericRepository<TEntity> where TEntity : class
     {
-        IUnitOfWork UnitOfWork { get; }
         TEntity GetByKey(object keyValue);
         IQueryable<TEntity> GetQuery();
+        IUnitOfWork UnitOfWork { get; }
         void Add(TEntity entity);
         void Remove(TEntity entity);
         IEnumerable<TEntity> GetAll();        

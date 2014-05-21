@@ -14,7 +14,7 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Text)
+            @Html.DisplayNameFor(model => model.HTMLText)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Subject)
@@ -25,7 +25,7 @@
 @foreach (EmailDO item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.Text)
+            @Html.DisplayFor(modelItem => item.HTMLText)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Subject)

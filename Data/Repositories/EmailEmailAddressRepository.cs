@@ -8,8 +8,8 @@ namespace Data.Repositories
     public class EmailEmailAddressRepository : GenericRepository<EmailEmailAddressDO>, IEmailEmailAddressRepository
     {
 
-        public EmailEmailAddressRepository(IUnitOfWork uow)
-            : base(uow)
+        internal EmailEmailAddressRepository(IDBContext dbContext)
+            : base(dbContext)
         {
 
         }
@@ -18,9 +18,5 @@ namespace Data.Repositories
 
     public interface IEmailEmailAddressRepository : IGenericRepository<EmailEmailAddressDO>
     {
-        IUnitOfWork UnitOfWork { get; }
-
-
-
     }
 }

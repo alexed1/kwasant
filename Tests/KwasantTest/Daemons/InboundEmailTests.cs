@@ -19,7 +19,7 @@ namespace KwasantTest.Daemons
         [SetUp]
         public void Setup()
         {
-            StructureMapBootStrapper.ConfigureDependencies("test");
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
         }
 
         [Test]
@@ -49,14 +49,14 @@ namespace KwasantTest.Daemons
             DaemonTests.RunDaemonOnce(ie);
 
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            var bookingRequestRepo = new BookingRequestRepository(uow);
+            var bookingRequestRepo = uow.BookingRequestRepository;
             var bookingRequests = bookingRequestRepo.GetAll().ToList();
 
             Assert.AreEqual(1, bookingRequests.Count);
             var bookingRequest = bookingRequests.First();
             Assert.AreEqual(testFromEmailAddress, bookingRequest.From.Address);
             Assert.AreEqual(testSubject, bookingRequest.Subject);
-            Assert.AreEqual(testBody, bookingRequest.Text);
+            Assert.AreEqual(testBody, bookingRequest.HTMLText);
             Assert.AreEqual(testFromEmailAddress, bookingRequest.User.EmailAddress.Address);
             Assert.AreEqual(1, bookingRequest.To.Count());
             Assert.AreEqual(testToEmailAddress, bookingRequest.To.First().Address);

@@ -14,7 +14,8 @@ namespace Data.Entities
         public int Id { get; set; }
         
         public String Subject { get; set; }
-        public String Text { get; set; }
+        public String HTMLText { get; set; }
+        public String PlainText { get; set; }
 
         public virtual EmailStatus Status { get; set; }
 

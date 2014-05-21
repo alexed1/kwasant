@@ -5,9 +5,8 @@ namespace Data.Repositories
 {
     public class BookingRequestRepository : GenericRepository<BookingRequestDO>, IBookingRequestRepository
     {
-
-        public BookingRequestRepository(IUnitOfWork uow)
-            : base(uow)
+        internal BookingRequestRepository(IDBContext dbContext)
+            : base(dbContext)
         {
 
         }

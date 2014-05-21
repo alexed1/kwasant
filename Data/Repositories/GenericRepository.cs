@@ -10,23 +10,20 @@ namespace Data.Repositories
     //This generic repository ensures minimum repetition in all of the other repositories.
     //The database context is injected via a UnitOfWork implementation
     /// <typeparam name="TEntity"></typeparam>
-    public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
+    public class GenericRepository<TEntity> : IDisposable, IGenericRepository<TEntity> where TEntity : class
     {
-        private readonly IUnitOfWork _unitOfWork;
-        public IDbSet<TEntity> dbSet;
+        protected readonly IDBContext DBContext;
+        public IDbSet<TEntity> DBSet;
 
-        public GenericRepository(IUnitOfWork unitOfWork)
+        internal GenericRepository(IDBContext dbContext)
         {
-            if (unitOfWork == null) throw new ArgumentNullException("unitOfWork");
-            _unitOfWork = unitOfWork;
-            this.dbSet = _unitOfWork.Db.Set<TEntity>();
+            if (dbContext == null) throw new ArgumentNullException("dbContext");
+            DBContext = dbContext;
+            DBSet = dbContext.Set<TEntity>();
         }
 
-
-
         #region Property
-        public IUnitOfWork UnitOfWork { get { return _unitOfWork; } }
-        internal IDBContext Database { get { return _unitOfWork.Db; } }
+        public IUnitOfWork UnitOfWork { get { return DBContext.UnitOfWork; } }
 
         #endregion
 
@@ -34,34 +31,38 @@ namespace Data.Repositories
 
         public TEntity GetByKey(object keyValue)
         {
-            return dbSet.Find(keyValue);
+            return DBSet.Find(keyValue);
         }
 
         public IQueryable<TEntity> GetQuery()
         {
-            return dbSet.AsEnumerable().AsQueryable();
+            return DBSet.AsQueryable();
         }
 
+        public void Attach(TEntity entity)
+        {
+            DBSet.Attach(entity);
+        }
 
         public void Add(TEntity entity)
         {
-            dbSet.Add(entity);
+            DBSet.Add(entity);
         }
 
         public void Remove(TEntity entity)
         {
-            dbSet.Remove(entity);
+            DBSet.Remove(entity);
         }
 
         public IEnumerable<TEntity> GetAll()
         {
             
-            return dbSet.AsEnumerable().ToList();
+            return DBSet.AsEnumerable().ToList();
         }
 
         public TEntity FindOne(Expression<Func<TEntity, bool>> criteria)
         {
-            return dbSet.Where(criteria).FirstOrDefault();
+            return DBSet.Where(criteria).FirstOrDefault();
         }
 
         public IEnumerable<TEntity> FindList(Expression<Func<TEntity, bool>> criteria)
@@ -75,7 +76,7 @@ namespace Data.Repositories
 
         public void Dispose()
         {
-            //throw new NotImplementedException();
+            DBContext.UnitOfWork.Dispose();
         }
 
         #endregion

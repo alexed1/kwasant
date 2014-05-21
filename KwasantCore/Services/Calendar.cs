@@ -25,17 +25,10 @@ namespace KwasantCore.Services
     {
         private BookingRequestDO _bookingRequestDO;
         private IUnitOfWork _uow;
-        private readonly EventRepository _eventRepo;
-        private EventValidator _curValidator;
 
         public Calendar(IUnitOfWork uow)
         {
             _uow = uow;
-            
-            _eventRepo = new EventRepository(_uow);
-           
-           _curValidator = new EventValidator();
-            
         }
 
         public IUnitOfWork UnitOfWork
@@ -63,8 +56,7 @@ namespace KwasantCore.Services
 
         private void LoadData()
         {
-            IEnumerable<EventDO> test = _eventRepo.GetAll();
-            _events = _eventRepo.GetQuery()
+            _events = _uow.EventRepository.GetQuery()
                 .Where(curEventDO => curEventDO.BookingRequest.User.Id == _bookingRequestDO.User.Id)
                 .ToDictionary(
                     curEventDO => curEventDO.Id,
@@ -110,7 +102,7 @@ namespace KwasantCore.Services
 
             curEventDO.BookingRequest = _bookingRequestDO;
 
-            _eventRepo.Add(curEventDO);
+            _uow.EventRepository.Add(curEventDO);
             _uow.SaveChanges();
             Reload();
         }
@@ -120,7 +112,7 @@ namespace KwasantCore.Services
             EventDO eventToDelete = EventsList.FirstOrDefault(inv => inv.Id == id);
             if (eventToDelete != null)
             {
-                _eventRepo.Remove(eventToDelete);
+                _uow.EventRepository.Remove(eventToDelete);
                 _uow.SaveChanges();
             }
             Reload();

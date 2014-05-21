@@ -15,24 +15,17 @@ namespace KwasantTest.Entities
     [TestFixture, Ignore]
     public class EventTests 
     {
-        public IUserRepository userRepo;
-        private IEventRepository eventRepo;
-        private IEmailAddressRepository emailAddressRepo;
         public IUnitOfWork _uow;
         private FixtureData _fixture;
-        private Calendar _calendar;
 
         [SetUp]
         public void Setup()
         {
-            StructureMapBootStrapper.ConfigureDependencies("test");
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
 
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _calendar = new Calendar(_uow);
-            userRepo = new UserRepository(_uow);
-            eventRepo = new EventRepository(_uow);
-            emailAddressRepo = new EmailAddressRepository(_uow);
-            _fixture = new FixtureData(_uow);
+            
+            _fixture = new FixtureData();
         }
 
         //this is a core integration test: get the ics message through
@@ -40,8 +33,8 @@ namespace KwasantTest.Entities
         [Category("Invitation")]
         public void Event_Dispatch_CanSendICS()
         {
-            EventRepository eventRepo = new EventRepository(_uow);
-            AttendeeRepository attendeesRepo = new AttendeeRepository(_uow);
+            EventRepository eventRepo = _uow.EventRepository;
+            AttendeeRepository attendeesRepo = _uow.AttendeeRepository;
             List<AttendeeDO> attendees =
                 new List<AttendeeDO>
                 {
@@ -91,11 +84,11 @@ namespace KwasantTest.Entities
             EventDO curOriginalEventDO = _fixture.TestEvent1();
 
             //EXECUTE
-            eventRepo.Add(curOriginalEventDO);
-            eventRepo.UnitOfWork.SaveChanges();
+            _uow.EventRepository.Add(curOriginalEventDO);
+            _uow.SaveChanges();
 
             //VERIFY
-            EventDO curRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.Id);
+            EventDO curRetrievedEventDO = _uow.EventRepository.GetByKey(curOriginalEventDO.Id);
             Assert.AreEqual(curOriginalEventDO.Id, curRetrievedEventDO.Id);
         }
 
@@ -110,7 +103,7 @@ namespace KwasantTest.Entities
             //EXECUTE
             Assert.Throws<ValidationException>(() =>
                 {
-                    eventRepo.Add(curOriginalEventDO);
+                    _uow.EventRepository.Add(curOriginalEventDO);
                 }
             );
 
@@ -129,11 +122,11 @@ namespace KwasantTest.Entities
             EventDO curOriginalEventDO = _fixture.TestEvent2();
 
             //EXECUTE
-            eventRepo.Add(curOriginalEventDO);
-            eventRepo.UnitOfWork.SaveChanges();
+            _uow.EventRepository.Add(curOriginalEventDO);
+            _uow.SaveChanges();
 
             //VERIFY
-            EventDO CurRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.Id);
+            EventDO CurRetrievedEventDO = _uow.EventRepository.GetByKey(curOriginalEventDO.Id);
             Assert.AreEqual(curOriginalEventDO.Id, CurRetrievedEventDO.Id);
         }
 
@@ -161,7 +154,7 @@ namespace KwasantTest.Entities
             //EXECUTE
             Assert.Throws<ValidationException>(() =>
             {
-                eventRepo.Add(curOriginalEventDO);
+                _uow.EventRepository.Add(curOriginalEventDO);
             }
             );
         }
@@ -190,7 +183,7 @@ namespace KwasantTest.Entities
             //EXECUTE
             Assert.Throws<ValidationException>(() =>
             {
-                eventRepo.Add(curOriginalEventDO);
+                _uow.EventRepository.Add(curOriginalEventDO);
             }
             );
         }
@@ -219,7 +212,7 @@ namespace KwasantTest.Entities
             //EXECUTE
             Assert.Throws<ValidationException>(() =>
             {
-                eventRepo.Add(curOriginalEventDO);
+                _uow.EventRepository.Add(curOriginalEventDO);
             }
             );
         }
@@ -232,15 +225,15 @@ namespace KwasantTest.Entities
             EventDO curOriginalEventDO = _fixture.TestEvent1();
 
             //EXECUTE
-            eventRepo.Add(curOriginalEventDO);
-            eventRepo.UnitOfWork.SaveChanges();
+            _uow.EventRepository.Add(curOriginalEventDO);
+            _uow.SaveChanges();
 
-            EventDO curRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.Id);
+            EventDO curRetrievedEventDO = _uow.EventRepository.GetByKey(curOriginalEventDO.Id);
 
-            eventRepo.Remove(curRetrievedEventDO);
-            eventRepo.UnitOfWork.SaveChanges();
+            _uow.EventRepository.Remove(curRetrievedEventDO);
+            _uow.SaveChanges();
 
-            EventDO curDeletedEventDO = eventRepo.GetByKey(curRetrievedEventDO.Id);
+            EventDO curDeletedEventDO = _uow.EventRepository.GetByKey(curRetrievedEventDO.Id);
 
             //VERIFY            
             Assert.IsNull(curDeletedEventDO);

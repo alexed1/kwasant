@@ -8,7 +8,8 @@ namespace Data.Repositories
     public class EmailRepository : GenericRepository<EmailDO>,  IEmailRepository
     {
 
-        public EmailRepository(IUnitOfWork uow) : base(uow)
+        internal EmailRepository(IDBContext dbContext)
+            : base(dbContext)
         {
             
         }

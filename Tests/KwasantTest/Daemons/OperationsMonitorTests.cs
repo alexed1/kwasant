@@ -15,15 +15,15 @@ namespace KwasantTest.Daemons
         [SetUp]
         public void Setup()
         {
-            StructureMapBootStrapper.ConfigureDependencies("test");
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
         }
 
         [Test]
         public void TestOperationManager()
         {
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(uow);
-            TrackingStatusRepository trackingStatusRepository = new TrackingStatusRepository(uow);
+            BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+            TrackingStatusRepository trackingStatusRepository = uow.TrackingStatusRepository;
             var bookingRequestDO = new BookingRequestDO();
             bookingRequestRepo.Add(bookingRequestDO);
 

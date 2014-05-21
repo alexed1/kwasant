@@ -26,10 +26,9 @@ namespace Daemons
         protected override void Run()
         {
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            TrackingStatusRepository trackingStatusRepo = new TrackingStatusRepository(uow);
-            BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(uow);
+            BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
-            TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(trackingStatusRepo, bookingRequestRepo);
+            TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(bookingRequestRepo);
             List<BookingRequestDO> unprocessedBookingRequests = ts.GetUnprocessedEntities(TrackingType.BOOKING_STATE).ToList();
             if (!unprocessedBookingRequests.Any()) 
                 return;
