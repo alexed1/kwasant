@@ -8,8 +8,8 @@ namespace Data.Repositories
     public class CalendarRepository : GenericRepository<CalendarDO>, ICalendarRepository
     {
         private readonly CalendarValidator _curValidator;
-        public CalendarRepository(IUnitOfWork uow)
-            : base(uow)
+        internal CalendarRepository(IDBContext dbContext)
+            : base(dbContext)
         {
             _curValidator = new CalendarValidator();
         }

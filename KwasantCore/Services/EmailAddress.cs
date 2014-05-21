@@ -13,7 +13,7 @@ namespace KwasantCore.Services
         public EmailAddress()
         {
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _emailAddressRepository = new EmailAddressRepository(_uow);
+            _emailAddressRepository = _uow.EmailAddressRepository;
         }
 
         public EmailAddressDO FindByAddress(string addressString)

@@ -71,6 +71,8 @@ namespace Data.Infrastructure
             return base.Set<TEntity>();
         }
 
+        public IUnitOfWork UnitOfWork { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");

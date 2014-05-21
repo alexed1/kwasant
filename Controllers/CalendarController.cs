@@ -42,8 +42,8 @@ namespace KwasantWeb.Controllers
             if (id <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-           
-            IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(_uow);
+
+            IBookingRequestRepository bookingRequestRepository = _uow.BookingRequestRepository;
             BookingRequestDO = bookingRequestRepository.GetByKey(id);
             if (BookingRequestDO == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -405,7 +405,7 @@ namespace KwasantWeb.Controllers
             List<AttendeeDO> attendeesToDelete = originalAttendees.Where(originalAttendee => !newAttendees.Select(a => a.EmailAddress).Contains(originalAttendee.EmailAddress)).ToList();
             if (attendeesToDelete.Any())
             {
-                AttendeeRepository attendeeRepo = new AttendeeRepository(Calendar.UnitOfWork);
+                AttendeeRepository attendeeRepo = Calendar.UnitOfWork.AttendeeRepository;
                 foreach (AttendeeDO attendeeToDelete in attendeesToDelete)
                     attendeeRepo.Remove(attendeeToDelete);
             }

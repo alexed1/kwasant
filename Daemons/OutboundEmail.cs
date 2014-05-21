@@ -18,7 +18,7 @@ namespace Daemons
             RegisterEvent<string, int>(MandrillPackagerEventHandler.EmailSent, (id, emailID) =>
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                EmailRepository emailRepository = new EmailRepository(unitOfWork);
+                EmailRepository emailRepository = unitOfWork.EmailRepository;
                 var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
                 if (emailToUpdate == null)
                 {
@@ -33,7 +33,7 @@ namespace Daemons
             RegisterEvent<string, string, int>(MandrillPackagerEventHandler.EmailRejected, (id, reason, emailID) =>
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                EmailRepository emailRepository = new EmailRepository(unitOfWork);
+                EmailRepository emailRepository = unitOfWork.EmailRepository;
                 var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
                 if (emailToUpdate == null)
                 {
@@ -50,7 +50,7 @@ namespace Daemons
             RegisterEvent<int, string, string, int>(MandrillPackagerEventHandler.EmailCriticalError, (errorCode, name, message, emailID) =>
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                EmailRepository emailRepository = new EmailRepository(unitOfWork);
+                EmailRepository emailRepository = unitOfWork.EmailRepository;
                 var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
                 if (emailToUpdate == null)
                 {
@@ -74,7 +74,7 @@ namespace Daemons
         {
             while (ProcessNextEventNoWait()) { }
             IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-            EmailRepository emailRepository = new EmailRepository(unitOfWork);
+            EmailRepository emailRepository = unitOfWork.EmailRepository;
             var numSent = 0;
             foreach (EmailDO email in emailRepository.FindList(e => e.Status == EmailStatus.QUEUED))
             {

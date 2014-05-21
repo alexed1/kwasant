@@ -24,13 +24,13 @@ namespace KwasantCore.Services
         private static UserDO GetOrCreateUser(IUnitOfWork uow, BookingRequestDO currMessage)
         {
             string fromEmailAddress = currMessage.From.Address;
-            UserRepository userRepo = new UserRepository(uow);
+            UserRepository userRepo = uow.UserRepository;
             UserDO curUser = userRepo.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
             if (curUser == null)
             {
                 curUser = new UserDO();
                 curUser.PersonDO = new PersonDO();
-                curUser.EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(fromEmailAddress);
+                curUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 curUser.FirstName = currMessage.From.Name;
                 userRepo.Add(curUser);
             }
@@ -42,7 +42,7 @@ namespace KwasantCore.Services
             List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?) travelTime).ToList();
             instructionIDs.Add(ProcessAllDay(emailBody));
             instructionIDs = instructionIDs.Where(i => i.HasValue).Distinct().ToList();
-            InstructionRepository instructionRepo = new InstructionRepository(uow);
+            InstructionRepository instructionRepo = uow.InstructionRepository;
             return instructionRepo.GetQuery().Where(i => instructionIDs.Contains(i.Id)).ToList();
         }
 

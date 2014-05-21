@@ -7,9 +7,8 @@ namespace Data.Repositories
 
     public class CommunicationConfigurationRepository : GenericRepository<CommunicationConfigurationDO>, ICommunicationConfigurationRepository
     {
-
-        public CommunicationConfigurationRepository(IUnitOfWork uow)
-            : base(uow)
+        internal CommunicationConfigurationRepository(IDBContext dbContext)
+            : base(dbContext)
         {
 
         }

@@ -22,8 +22,7 @@ namespace KwasantTest.Repositories
 
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
-            userRepo = new UserRepository(_uow);
-            _fixture = new FixtureData(_uow);
+            _fixture = new FixtureData();
         }
 
         [Test]

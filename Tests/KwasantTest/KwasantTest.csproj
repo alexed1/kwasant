@@ -132,7 +132,6 @@
     <Compile Include="Fixtures\FixtureData - Event.cs" />
     <Compile Include="Fixtures\FixtureData - Person.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
-    <Compile Include="Fixtures\FixtureData.cs" />
     <Compile Include="Services\BookingRequestTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Entities\CustomerTests.cs" />

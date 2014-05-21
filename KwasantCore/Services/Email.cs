@@ -18,10 +18,9 @@ namespace KwasantCore.Services
 {
     public class Email
     {
-        private  IUnitOfWork _uow;
-        private  EmailDO _curEmailDO;
+        private IUnitOfWork _uow;
+        private EmailDO _curEmailDO;
         private EventValidator _curEventValidator;
-        private IEmailRepository _curEmailRepository;
         #region Constructor
 
         /// <summary>
@@ -34,7 +33,6 @@ namespace KwasantCore.Services
         {
             _uow = uow;
             _curEventValidator = new EventValidator();
-            _curEmailRepository = new EmailRepository(_uow);
         }
         public Email(IUnitOfWork uow, EventDO eventDO): this(uow)
         {
@@ -64,8 +62,8 @@ namespace KwasantCore.Services
             var gmailPackager = new GmailPackager(_curEmailDO);
             gmailPackager.Send();
             _curEmailDO.Status = EmailStatus.DISPATCHED;
-            _curEmailRepository.Add(_curEmailDO);
-            _curEmailRepository.UnitOfWork.SaveChanges();
+            _uow.EmailRepository.Add(_curEmailDO);
+            _uow.SaveChanges();
         }
 
         public static void InitialiseWebhook(String url)
@@ -87,12 +85,12 @@ namespace KwasantCore.Services
         #endregion
 
       
-        public static EmailDO ConvertMailMessageToEmail(IEmailRepository emailRepository, IEmailEmailAddressRepository emailAddressRepository, MailMessage mailAddress)
+        public static EmailDO ConvertMailMessageToEmail(IEmailRepository emailRepository, MailMessage mailAddress)
         {
-            return ConvertMailMessageToEmail<EmailDO>(emailRepository, emailAddressRepository, mailAddress);
+            return ConvertMailMessageToEmail<EmailDO>(emailRepository, mailAddress);
         }
 
-        public static TEmailType ConvertMailMessageToEmail<TEmailType>(IGenericRepository<TEmailType> emailRepository, IEmailEmailAddressRepository emailAddressRepository, MailMessage mailAddress)
+        public static TEmailType ConvertMailMessageToEmail<TEmailType>(IGenericRepository<TEmailType> emailRepository, MailMessage mailAddress)
             where TEmailType : EmailDO, new()
         {
             TEmailType emailDO = new TEmailType
@@ -116,7 +114,6 @@ namespace KwasantCore.Services
             {
                 emailDO.AddEmailParticipant(EmailParticipantType.CC, addr);
             }
-
 
             emailDO.Attachments.ForEach(a => a.Email = emailDO);
             emailDO.Status = EmailStatus.QUEUED;
@@ -170,8 +167,8 @@ namespace KwasantCore.Services
                 createdEmail.AddEmailParticipant(EmailParticipantType.BCC, archiveAddress);
             }
 
-            _curEmailRepository.Add(createdEmail);
-            _curEmailRepository.UnitOfWork.SaveChanges();
+            _uow.EmailRepository.Add(createdEmail);
+            _uow.SaveChanges();
             return createdEmail;
         }
 
@@ -179,7 +176,7 @@ namespace KwasantCore.Services
         public void Dispatch(EmailDO curEmail)
         {
             curEmail.Status = EmailStatus.QUEUED;
-            _curEmailRepository.Add(curEmail);
+            _uow.EmailRepository.Add(curEmail);
             _uow.SaveChanges();
         }
 

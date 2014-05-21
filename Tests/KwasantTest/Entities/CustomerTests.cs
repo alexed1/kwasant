@@ -13,7 +13,6 @@ namespace KwasantTest.Models
     [TestFixture]
     public class CustomerTests
     {
-        public IUserRepository userRepo;
         public IUnitOfWork _uow;
         private FixtureData _fixture;
 
@@ -23,8 +22,7 @@ namespace KwasantTest.Models
             StructureMapBootStrapper.ConfigureDependencies("test");
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
-            userRepo = new UserRepository(_uow);
-            _fixture = new FixtureData(_uow);
+            _fixture = new FixtureData();
 
             //initialize CommunicationManager and register for event
             CommunicationManager commManager = new CommunicationManager();
@@ -40,12 +38,12 @@ namespace KwasantTest.Models
             UserDO curUserDO = _fixture.TestUser();
 
             //EXECUTE
-            userRepo.Add(curUserDO);
-            userRepo.UnitOfWork.SaveChanges();
+            _uow.UserRepository.Add(curUserDO);
+            _uow.SaveChanges();
 
             //VERIFY
             //check that it was saved to the db
-            UserDO savedUserDO = userRepo.GetQuery().FirstOrDefault(u => u.Id == curUserDO.Id);
+            UserDO savedUserDO = _uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == curUserDO.Id);
             Assert.AreEqual(curUserDO.FirstName,savedUserDO.FirstName);
             Assert.AreEqual(curUserDO.EmailAddress, savedUserDO.EmailAddress);
 

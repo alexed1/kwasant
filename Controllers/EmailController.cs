@@ -26,7 +26,7 @@ namespace KwasantWeb.Controllers
         public EmailController(IUnitOfWork uow)
         {
             _uow = uow;
-            curBookingRequestRepository = new BookingRequestRepository(_uow);
+            curBookingRequestRepository = _uow.BookingRequestRepository;
             API = new KwasantPackager();
         }
 

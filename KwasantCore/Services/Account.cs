@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Threading.Tasks;
-using System.Collections.Specialized;
-using System.Net.Mail;
-using System.Configuration;
-
+﻿using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Repositories;
-using Data.Infrastructure;
 using StructureMap;
 using UtilitiesLib;
 using KwasantCore.Managers.IdentityManager;
@@ -19,8 +9,6 @@ namespace KwasantCore.Services
 {
     public class Account
     {
-        private UserRepository _userRepo;
-        private PersonRepository _personRepo;
         private IdentityManager _identityManager;
         private IUnitOfWork _uow;
         private User _curUser;
@@ -29,8 +17,6 @@ namespace KwasantCore.Services
         public Account(IUnitOfWork uow) //remove injected uow. unnecessary now.
         {
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _userRepo = new UserRepository(_uow);
-            _personRepo = new PersonRepository(_uow);
             _identityManager = new IdentityManager(_uow);
             _curUser = new User(_uow);
             _curPerson = new Person(_uow);
@@ -118,7 +104,7 @@ namespace KwasantCore.Services
         /// <returns></returns>
         private UserDO GetUser(string userName)
         {
-            return _userRepo.FindOne(x => x.UserName == userName);
+            return _uow.UserRepository.FindOne(x => x.UserName == userName);
         }
 
 

@@ -10,16 +10,6 @@ namespace Data.Entities
 {
     public class UserDO : IdentityUser, IUser
     {
-        public UserDO()
-        {
-            
-        }
-        
-        public UserDO(string curEmailAddress)
-        {
-            EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(curEmailAddress);
-        }
-
         [NotMapped]
         public string FirstName
         {

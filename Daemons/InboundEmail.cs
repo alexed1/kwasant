@@ -94,16 +94,15 @@ namespace Daemons
             foreach (var uid in uids)
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
-                EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(unitOfWork);
-
+                BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
+                
                 var message = client.GetMessage(uid);
                 try
                 {
-                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, emailEmailAddressRepository, message);
+                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
                     BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
 
-                    bookingRequestRepo.UnitOfWork.SaveChanges();
+                    unitOfWork.SaveChanges();
                 }
                 catch (Exception e)
                 {

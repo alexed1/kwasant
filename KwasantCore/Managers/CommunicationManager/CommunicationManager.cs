@@ -32,7 +32,7 @@ namespace KwasantCore.Managers.CommunicationManager
         public void ProcessBRNotifications(IList<BookingRequestDO> bookingRequests)
         {
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            CommunicationConfigurationRepository communicationConfigurationRepo = new CommunicationConfigurationRepository(uow);
+            CommunicationConfigurationRepository communicationConfigurationRepo = uow.CommunicationConfigurationRepository;
             foreach (CommunicationConfigurationDO communicationConfig in communicationConfigurationRepo.GetAll().ToList())
             {
                 if (communicationConfig.Type == CommunicationType.SMS)
@@ -59,7 +59,7 @@ namespace KwasantCore.Managers.CommunicationManager
 
         private void SendBREmails(String toAddress, IEnumerable<BookingRequestDO> bookingRequests, IUnitOfWork uow)
         {
-            EmailRepository emailRepo = new EmailRepository(uow);
+            EmailRepository emailRepo = uow.EmailRepository;
             const string message = "A new booking request has been created. From '{0}'.";
             foreach (BookingRequestDO bookingRequest in bookingRequests)
             {

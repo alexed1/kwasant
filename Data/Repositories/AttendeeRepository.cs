@@ -7,9 +7,8 @@ namespace Data.Repositories
 
     public class AttendeeRepository : GenericRepository<AttendeeDO>, IAttendeeRepository
     {
-
-        public AttendeeRepository(IUnitOfWork uow)
-            : base(uow)
+        internal AttendeeRepository(IDBContext dbContext)
+            : base(dbContext)
         {
 
         }

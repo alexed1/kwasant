@@ -141,6 +141,8 @@ namespace KwasantCore.StructureMap
             throw new System.NotImplementedException();
         }
 
+        public IUnitOfWork UnitOfWork { get; set; }
+
         private bool IsEntity(Type type)
         {
             return type.Namespace == "Data.Entities";

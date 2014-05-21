@@ -48,8 +48,8 @@ namespace Data.Infrastructure
     public class TrackingStatus<TForeignEntity> : GenericCustomField<TrackingStatusDO, TForeignEntity> 
         where TForeignEntity : class
     {
-        public TrackingStatus(IGenericRepository<TrackingStatusDO> trackingStatusRepo, IGenericRepository<TForeignEntity> foreignRepo) 
-            : base(trackingStatusRepo, foreignRepo)
+        public TrackingStatus(IGenericRepository<TForeignEntity> foreignRepo) 
+            : base(foreignRepo.Database.UnitOfWork.TrackingStatusRepository, foreignRepo)
         {
         }
 

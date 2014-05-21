@@ -5,8 +5,8 @@ namespace Data.Repositories
 {
     public class UserRepository : GenericRepository<UserDO>, IUserRepository
     {
-        public UserRepository(IUnitOfWork uow)
-            : base(uow)
+        internal UserRepository(IDBContext dbContext)
+            : base(dbContext)
         {
             
         }

@@ -1,25 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO;
-using System.Linq;
-using System.Net.Mime;
 using Data.Entities;
-using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Repositories;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
-using KwasantICS.DDay.iCal;
-using KwasantICS.DDay.iCal.DataTypes;
-using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
-using log4net.Config;
-using RazorEngine;
 using StructureMap;
-using UtilitiesLib;
-using UtilitiesLib.Logging;
-using Encoding = System.Text.Encoding;
 
 namespace Playground
 {

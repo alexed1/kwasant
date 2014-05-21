@@ -18,7 +18,7 @@ namespace KwasantCore.Services
 {
     public class Event
     {
-        private IUnitOfWork _uow;
+        private readonly IUnitOfWork _uow;
         public Event()
         {
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
@@ -27,7 +27,7 @@ namespace KwasantCore.Services
 
         public void Dispatch(EventDO eventDO)
         {
-            var emailAddressRepository = new EmailAddressRepository(_uow);
+            var emailAddressRepository = _uow.EmailAddressRepository;
 
             if (eventDO.Attendees == null)
                 eventDO.Attendees = new List<AttendeeDO>();
@@ -36,14 +36,13 @@ namespace KwasantCore.Services
             string fromName = ConfigurationHelper.GetConfigurationValue("fromName");
 
             EmailDO outboundEmail = new EmailDO();
-            var fromEmailAddr = EmailAddressDO.GetOrCreateEmailAddress(fromEmail);
+            var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
             fromEmailAddr.Name = fromName;
 
             outboundEmail.AddEmailParticipant(EmailParticipantType.FROM, fromEmailAddr);
             foreach (var attendeeDO in eventDO.Attendees)
             {
-                var toEmailAddress = EmailAddressDO.GetOrCreateEmailAddress(attendeeDO.EmailAddress);
-                emailAddressRepository.Attach(toEmailAddress);
+                var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress);
                 toEmailAddress.Name = attendeeDO.Name;
                 outboundEmail.AddEmailParticipant(EmailParticipantType.TO, toEmailAddress);
             }

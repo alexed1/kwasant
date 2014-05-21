@@ -50,13 +50,11 @@ namespace KwasantWeb.Controllers
     {
         private IUnitOfWork _uow;
         private Account _account;
-        private UserRepository _userRepo;
         private UserManager<UserDO> _userManager;
 
         public AccountController(IUnitOfWork uow)
         {
             _uow = uow;
-            _userRepo = new UserRepository(uow);
             _account = new Account(_uow);
             _userManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
 
@@ -213,11 +211,11 @@ namespace KwasantWeb.Controllers
             string returnViewName = "RegistrationSuccessful";
             try
             {
-                UserDO curUserDO = _userRepo.FindOne(u => u.Id == userId);
+                UserDO curUserDO = _uow.UserRepository.FindOne(u => u.Id == userId);
                 if (curUserDO != null)
                 {
                     curUserDO.EmailConfirmed = true;
-                    _userRepo.UnitOfWork.SaveChanges();
+                    _uow.SaveChanges();
                 }
             }
             catch (Exception ex)

@@ -27,7 +27,7 @@ namespace KwasantTest.Services
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
             //_bookingRequestRepo = new BookingRequestRepository(_uow);
-            _fixture = new FixtureData(_uow);
+            _fixture = new FixtureData();
             _curEventDO = new EventDO();
         }
 

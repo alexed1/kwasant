@@ -114,11 +114,12 @@ namespace Data.Migrations
                 var um = new UserManager<UserDO>(new UserStore<UserDO>(context));
                 if (um.FindByName(curUserName) == null)
                 {
+                    
                     var user = new UserDO()
                     {
                         UserName = curUserName,
                         PersonDO = new PersonDO(),
-                        EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(curUserName),
+                        EmailAddress = context.UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
                         FirstName = curUserName,
                         EmailConfirmed = true
                     };
