@@ -80,6 +80,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
+            modelBuilder.Entity<EmailEmailAddressDO>().ToTable("EmailEmailAddresses");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EventDO>().ToTable("Events");
@@ -131,31 +132,5 @@ namespace Data.Infrastructure
 
             base.OnModelCreating(modelBuilder);
         }
-
-        public IDbSet<AttachmentDO> Attachments { get; set; }
-
-        public IDbSet<AttendeeDO> Attendees { get; set; }
-
-        public IDbSet<BookingRequestDO> BookingRequests { get; set; }
-
-        public IDbSet<CalendarDO> Calendars { get; set; }
-
-        public IDbSet<CommunicationConfigurationDO> CommunicationConfigurations { get; set; }
-
-        public IDbSet<EmailDO> Emails { get; set; }
-
-        public IDbSet<EmailAddressDO> EmailAddresses { get; set; }
-
-        public IDbSet<EventDO> Events { get; set; }
-
-        public IDbSet<InstructionDO> Instructions { get; set; }
-
-        public IDbSet<PersonDO> People { get; set; }
-
-        public IDbSet<StoredFileDO> StoredFiles { get; set; }
-
-        public IDbSet<TrackingStatusDO> TrackingStatuses { get; set; }
-
-        public new IDbSet<UserDO> Users { get; set; }
     }
 }

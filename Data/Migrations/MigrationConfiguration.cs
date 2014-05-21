@@ -12,6 +12,7 @@ using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using StructureMap;
 
 namespace Data.Migrations
 {
@@ -29,19 +30,24 @@ namespace Data.Migrations
 
             /* Be sure to use AddOrUpdate when creating seed data - otherwise we will get duplicates! */
 
-            Seed(context);
+            using (var unitOfWork = new UnitOfWork(context))
+            {
+                Seed(unitOfWork);
 
-            AddRoles(context);
-            AddAdmins(context);
+                AddRoles(unitOfWork);
+                AddAdmins(unitOfWork);
+
+                unitOfWork.SaveChanges();
+            }
         }
 
         //Method to let us seed into memory as well
-        public static void Seed(IDBContext context)
+        public static void Seed(IUnitOfWork context)
         {
             SeedInstructions(context);
         }
 
-        private static void SeedInstructions(IDBContext context)
+        private static void SeedInstructions(IUnitOfWork unitOfWork)
         {
             Type[] nestedTypes = typeof (InstructionConstants).GetNestedTypes();
             var instructionsToAdd = new List<InstructionDO>();
@@ -61,7 +67,7 @@ namespace Data.Migrations
                 }
             }
 
-            context.Instructions.AddOrUpdate(
+            unitOfWork.InstructionRepository.DBSet.AddOrUpdate(
                     i => i.Id,
                     instructionsToAdd.ToArray()
                 );
@@ -70,34 +76,34 @@ namespace Data.Migrations
         /// <summary>
         /// Add roles of type 'Admin' and 'Customer' in DB
         /// </summary>
-        /// <param name="context"></param>
-        private void AddRoles(DbContext context)
+        /// <param name="unitOfWork"></param>
+        private void AddRoles(IUnitOfWork unitOfWork)
         {
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(unitOfWork.Db as KwasantDbContext));
 
             if (roleManager.RoleExists("Admin") == false)
             {
                 roleManager.Create(new IdentityRole("Admin"));
-    }
+            }
 
             if (roleManager.RoleExists("Customer") == false)
             {
                 roleManager.Create(new IdentityRole("Customer"));
-}
+            }
         }
 
         /// <summary>
         /// Add 'Admin' roles. Curretly only user with Email "alex@kwasant.com" and password 'alex@1234'
         /// has been added.
         /// </summary>
-        /// <param name="context">of type ShnexyDbContext</param>
+        /// <param name="unitOfWork">of type ShnexyDbContext</param>
         /// <returns>True if created successfully otherwise false</returns>
-        private void AddAdmins(KwasantDbContext context)
+        private void AddAdmins(IUnitOfWork unitOfWork)
         {
-            CreateAdmin("alex@kwasant.com", "alex@1234", context);
-            CreateAdmin("pabitra@hotmail.com", "pabi1234", context);
-            CreateAdmin("rjrudman@gmail.com", "robert1234", context);
-            CreateAdmin("quader.mamun@gmail.com", "abdul1234", context);
+            CreateAdmin("alex@kwasant.com", "alex@1234", unitOfWork);
+            CreateAdmin("pabitra@hotmail.com", "pabi1234", unitOfWork);
+            CreateAdmin("rjrudman@gmail.com", "robert1234", unitOfWork);
+            CreateAdmin("quader.mamun@gmail.com", "abdul1234", unitOfWork);
         }
 
         /// <summary>
@@ -105,13 +111,13 @@ namespace Data.Migrations
         /// </summary>
         /// <param name="curUserName"></param>
         /// <param name="curPassword"></param>
-        /// <param name="context"></param>
+        /// <param name="unitOfWork"></param>
         /// <returns></returns>
-        private void CreateAdmin(string curUserName, string curPassword, KwasantDbContext context)
+        private void CreateAdmin(string curUserName, string curPassword, IUnitOfWork unitOfWork)
         {
             try
             {
-                var um = new UserManager<UserDO>(new UserStore<UserDO>(context));
+                var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasantDbContext));
                 if (um.FindByName(curUserName) == null)
                 {
                     
@@ -119,7 +125,7 @@ namespace Data.Migrations
                     {
                         UserName = curUserName,
                         PersonDO = new PersonDO(),
-                        EmailAddress = context.UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
+                        EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
                         FirstName = curUserName,
                         EmailConfirmed = true
                     };

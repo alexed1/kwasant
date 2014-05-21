@@ -34,8 +34,8 @@ namespace KwasantWeb.Controllers
             String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
 
             EmailDO emailDO = new EmailDO();
-            emailDO.AddEmailParticipant(EmailParticipantType.TO, Email.GenerateEmailAddress(new MailAddress(message.Destination)));
-            emailDO.AddEmailParticipant(EmailParticipantType.FROM, Email.GenerateEmailAddress(new MailAddress(senderMailAddress)));
+            emailDO.AddEmailParticipant(EmailParticipantType.TO, Email.GenerateEmailAddress(_uow, new MailAddress(message.Destination)));
+            emailDO.AddEmailParticipant(EmailParticipantType.FROM, Email.GenerateEmailAddress(_uow, new MailAddress(senderMailAddress)));
 
             emailDO.Subject = message.Subject;
             emailDO.HTMLText = message.Body;

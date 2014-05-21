@@ -16,8 +16,5 @@ namespace Data.Interfaces
             where TEntity : class;
 
         IUnitOfWork UnitOfWork { get; set; }
-
-        /* DBSets */
-        IDbSet<InstructionDO> Instructions { get; }
     }
 }

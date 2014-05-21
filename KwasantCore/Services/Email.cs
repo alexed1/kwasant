@@ -172,14 +172,5 @@ namespace KwasantCore.Services
             _uow.SaveChanges();
             return createdEmail;
         }
-
-        //FIX THIS: currently generates an EF exception.
-        public void Dispatch(EmailDO curEmail)
-        {
-            curEmail.Status = EmailStatus.QUEUED;
-            _uow.EmailRepository.Add(curEmail);
-            _uow.SaveChanges();
-        }
-
     }
 }

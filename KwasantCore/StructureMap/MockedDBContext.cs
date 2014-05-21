@@ -17,7 +17,7 @@ namespace KwasantCore.StructureMap
     {
         public MockedDBContext()
         {
-            MigrationConfiguration.Seed(this);
+            MigrationConfiguration.Seed(UnitOfWork);
         }
 
         private Dictionary<Type, object> _cachedSets = new Dictionary<Type, object>();
@@ -161,9 +161,6 @@ namespace KwasantCore.StructureMap
             return keys.First();
         }
 
-
-        /* DBSets */
-        public IDbSet<InstructionDO> Instructions { get { return Set<InstructionDO>(); } }
         public void Dispose()
         {
             
