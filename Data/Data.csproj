@@ -128,6 +128,9 @@
     <Compile Include="Entities\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Entities\PersonDO.cs" />
+    <Compile Include="Infrastructure\StructureMap\MockedDBContext.cs" />
+    <Compile Include="Infrastructure\StructureMap\MockedDbSet.cs" />
+    <Compile Include="Infrastructure\StructureMap\DatabaseStructureMapBootStrapper.cs" />
     <Compile Include="Infrastructure\TrackingStatus.cs" />
     <Compile Include="Interfaces\ICalendar.cs" />
     <Compile Include="Interfaces\ICustomField.cs" />

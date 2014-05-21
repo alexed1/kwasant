@@ -138,8 +138,6 @@
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Person.cs" />
     <Compile Include="Services\User.cs" />
-    <Compile Include="StructureMap\MockedDBContext.cs" />
-    <Compile Include="StructureMap\MockedDbSet.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -171,6 +169,7 @@
     <Content Include="Resources\perfect-krawsant.png" />
     <Content Include="Resources\PlainEventInvitation.html" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
