@@ -31,7 +31,7 @@ namespace KwasantWeb.Controllers
 
         public async Task SendAsync(IdentityMessage message)
         {
-            String senderMailAddress = ConfigurationManager.AppSettings["MailSenderAddress"];
+            String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
 
             EmailDO emailDO = new EmailDO();
             emailDO.AddEmailParticipant(EmailParticipantType.TO, Email.GenerateEmailAddress(new MailAddress(message.Destination)));
