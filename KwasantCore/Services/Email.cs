@@ -9,6 +9,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;
 using FluentValidation;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Managers.CommunicationManager;
 using Microsoft.WindowsAzure;
@@ -60,8 +61,8 @@ namespace KwasantCore.Services
 
         public void Send()
         {
-            GmailSender.Send(_curEmailDO);
-            //MandrillPackager.PostMessageSend(_curEmailDO);
+            var gmailPackager = new GmailPackager(_curEmailDO);
+            gmailPackager.Send();
             _curEmailDO.Status = EmailStatus.DISPATCHED;
             _curEmailRepository.Add(_curEmailDO);
             _curEmailRepository.UnitOfWork.SaveChanges();

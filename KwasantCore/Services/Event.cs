@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Data.Constants;
+using System.IO;
+using System.Net.Mime;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.Managers.CommunicationManager;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
+using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
+using RazorEngine;
 using StructureMap;
+using UtilitiesLib;
+using Encoding = System.Text.Encoding;
 
 namespace KwasantCore.Services
 {
@@ -23,36 +25,56 @@ namespace KwasantCore.Services
             _uow = uow; //clean this up finish de-static work
         }
 
-        public void Dispatch(EventDO curEventDO)
+        public void Dispatch(EventDO eventDO)
         {
-            if (curEventDO.Attendees == null)
-                curEventDO.Attendees = new List<AttendeeDO>();
+            var emailAddressRepository = new EmailAddressRepository(_uow);
 
+            if (eventDO.Attendees == null)
+                eventDO.Attendees = new List<AttendeeDO>();
 
+            string fromEmail = ConfigurationHelper.GetConfigurationValue("fromEmail");
+            string fromName = ConfigurationHelper.GetConfigurationValue("fromName");
 
-            Email email = new Email(_uow);
-      
-            string fromEmail = CommunicationManager.GetFromEmail();
-            string fromName = CommunicationManager.GetFromName();
+            EmailDO outboundEmail = new EmailDO();
+            var fromEmailAddr = EmailAddressDO.GetOrCreateEmailAddress(fromEmail);
+            fromEmailAddr.Name = fromName;
+
+            outboundEmail.AddEmailParticipant(EmailParticipantType.FROM, fromEmailAddr);
+            foreach (var attendeeDO in eventDO.Attendees)
+            {
+                var toEmailAddress = EmailAddressDO.GetOrCreateEmailAddress(attendeeDO.EmailAddress);
+                emailAddressRepository.Attach(toEmailAddress);
+                toEmailAddress.Name = attendeeDO.Name;
+                outboundEmail.AddEmailParticipant(EmailParticipantType.TO, toEmailAddress);
+            }
+            outboundEmail.Subject = String.Format(ConfigurationHelper.GetConfigurationValue("emailSubject"), eventDO.Summary, eventDO.StartDate);
+
+            var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, eventDO);
+            var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation, eventDO);
+
+            outboundEmail.HTMLText = parsedHTMLEmail;
+            outboundEmail.PlainText = parsedPlainEmail;
+
+            outboundEmail.Status = EmailStatus.QUEUED;
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();
-            if (curEventDO.IsAllDay)
+            if (eventDO.IsAllDay)
             {
                 dDayEvent.IsAllDay = true;
             }
             else
             {
-                dDayEvent.DTStart = new iCalDateTime(curEventDO.StartDate);
-                dDayEvent.DTEnd = new iCalDateTime(curEventDO.EndDate);
+                dDayEvent.DTStart = new iCalDateTime(eventDO.StartDate);
+                dDayEvent.DTEnd = new iCalDateTime(eventDO.EndDate);
             }
             dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
             dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
 
-            dDayEvent.Location = curEventDO.Location;
-            dDayEvent.Description = curEventDO.Description;
-            dDayEvent.Summary = curEventDO.Summary;
-            foreach (AttendeeDO attendee in curEventDO.Attendees)
+            dDayEvent.Location = eventDO.Location;
+            dDayEvent.Description = eventDO.Description;
+            dDayEvent.Summary = eventDO.Summary;
+            foreach (AttendeeDO attendee in eventDO.Attendees)
             {
                 dDayEvent.Attendees.Add(new Attendee
                 {
@@ -63,25 +85,43 @@ namespace KwasantCore.Services
                     RSVP = true,
                     Value = new Uri("mailto:" + attendee.EmailAddress),
                 });
-                attendee.Event = curEventDO;
+                attendee.Event = eventDO;
             }
             dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
 
             ddayCalendar.Events.Add(dDayEvent);
+            ddayCalendar.Method = CalendarMethods.Request;
 
-            Calendar curCalendar = new Calendar(_uow);
-            EmailDO outboundEmail = email.CreateStandardInviteEmail(curEventDO);
-            curCalendar.AttachCalendarToEmail(ddayCalendar, outboundEmail);
-            _uow.SaveChanges();
+            AttachCalendarToEmail(ddayCalendar, outboundEmail);
 
+            if (eventDO.Emails == null)
+                eventDO.Emails = new List<EmailDO>();
+            eventDO.Emails.Add(outboundEmail);
 
-            if (curEventDO.Emails == null)
-                curEventDO.Emails = new List<EmailDO>();
-            curEventDO.Emails.Add(outboundEmail);
+            new Email(_uow, outboundEmail).Send();
+        }
 
-            _uow.SaveChanges();
-            //email.Dispatch(outboundEmail); FIX THIS
+        private static void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)
+        {
+            iCalendarSerializer serializer = new iCalendarSerializer(iCal);
+            string fileToAttach = serializer.Serialize(iCal);
 
+            AttachmentDO attachmentDO = GetAttachment(fileToAttach);
+
+            if (emailDO.Attachments == null)
+                emailDO.Attachments = new List<AttachmentDO>();
+
+            attachmentDO.Email = emailDO;
+            emailDO.Attachments.Add(attachmentDO);
+        }
+
+        private static AttachmentDO GetAttachment(string fileToAttach)
+        {
+            return Email.CreateNewAttachment(
+                new System.Net.Mail.Attachment(
+                    new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
+                    new ContentType { MediaType = "application/ics", Name = "invite.ics" }
+                    ) { TransferEncoding = TransferEncoding.Base64 });
         }
         
     }

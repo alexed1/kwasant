@@ -1,18 +1,23 @@
 ﻿using System;
-using System.Configuration;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
 using Data.Entities;
-using Microsoft.WindowsAzure;
 using UtilitiesLib;
 
-namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
+namespace KwasantCore.Managers.APIManager.Packagers
 {
-    public static class GmailSender
+    public class GmailPackager
     {
-        public static void Send(EmailDO email)
+        private readonly EmailDO _email;
+
+        public GmailPackager(EmailDO email)
+        {
+            _email = email;
+        }
+
+        public void Send()
         {
             var smtpClient = new SmtpClient(ConfigurationHelper.GetConfigurationValue("OutboundEmailHost"), ConfigurationHelper.GetConfigurationValue<int>("OutboundEmailPort"))
             {
@@ -22,28 +27,28 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             };
 
             var mailMessage = new MailMessage();
-            mailMessage.From = new MailAddress(email.From.Address, email.From.Name);
+            mailMessage.From = new MailAddress(_email.From.Address, _email.From.Name);
 
-            foreach (var toEmail in email.To)
+            foreach (var toEmail in _email.To)
             {
                 mailMessage.To.Add(new MailAddress(toEmail.Address, toEmail.Name));
             }
 
-            foreach (var bcc in email.BCC)
+            foreach (var bcc in _email.BCC)
             {
                 mailMessage.Bcc.Add(new MailAddress(bcc.Address, bcc.Name));
             }
 
-            foreach (var cc in email.CC)
+            foreach (var cc in _email.CC)
             {
                 mailMessage.CC.Add(new MailAddress(cc.Address, cc.Name));
             }
 
-            mailMessage.Subject = email.Subject;
+            mailMessage.Subject = _email.Subject;
             mailMessage.IsBodyHtml = true;
 
-            var htmlView = AlternateView.CreateAlternateViewFromString(email.HTMLText, Encoding.UTF8, "text/html");
-            var plainView = AlternateView.CreateAlternateViewFromString(email.PlainText, Encoding.UTF8, "text/plain");
+            var htmlView = AlternateView.CreateAlternateViewFromString(_email.HTMLText, Encoding.UTF8, "text/html");
+            var plainView = AlternateView.CreateAlternateViewFromString(_email.PlainText, Encoding.UTF8, "text/plain");
 
             if (!ConfigurationHelper.GetConfigurationValue<bool>("compressEmail"))
             {
@@ -54,7 +59,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             mailMessage.AlternateViews.Add(plainView);
             mailMessage.AlternateViews.Add(htmlView);
             
-            foreach (var attachment in email.Attachments)
+            foreach (var attachment in _email.Attachments)
             {
                 if (attachment.OriginalName.EndsWith(".ics"))
                 {
