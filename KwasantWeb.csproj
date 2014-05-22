@@ -334,6 +334,8 @@
     <Content Include="Content\css\default.css" />
     <Content Include="Content\css\font-awesome.css" />
     <Content Include="Content\css\main.css" />
+    <Content Include="Content\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\images\background-match.jpg" />
     <Content Include="Content\images\background-test5.jpg" />
     <Content Include="Content\images\background-test6.jpg" />
@@ -434,14 +436,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Content\backgroundsize.min.htc" />
-    <Content Include="Content\font\fontawesome-webfont.svg" />
     <Content Include="Content\gadegets.xml" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Content\font\fontawesome-webfont.eot" />
-    <Content Include="Content\font\fontawesome-webfont.ttf" />
-    <Content Include="Content\font\fontawesome-webfont.woff" />
-    <Content Include="Content\font\FontAwesome.otf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -450,6 +447,13 @@
     <Content Include="Content\images\Workflow.vsdx" />
     <Content Include="Content\images\Workflow_v2.vsdx" />
     <Content Include="packages.config" />
+    <Content Include="Content\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\fonts\FontAwesome.otf" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
     <None Include="Properties\PublishProfiles\kwasant.pubxml" />
     <Content Include="shortcodes.html" />
     <Content Include="Themes\areas.css" />
