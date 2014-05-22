@@ -95,7 +95,7 @@ namespace DDay.iCal.Test
         /// <summary>
         /// See Page 45 of RFC 2445 - RRULE:FREQ=YEARLY;INTERVAL=2;BYMONTH=1;BYDAY=SU;BYHOUR=8,9;BYMINUTE=30
         /// </summary>
-        [Test, Category("Recurrence")]
+        [Test, Category("Recurrence"), Ignore] //ignoring because it takes too bloody long
         public void YearlyComplex1()
         {
             IICalendar iCal = iCalendar.LoadFromFile(@"Calendars\Recurrence\YearlyComplex1.ics")[0];
@@ -2667,7 +2667,7 @@ namespace DDay.iCal.Test
             }
         }
 
-        [Test, Category("Recurrence")]
+        [Test, Category("Recurrence"),Ignore] //ignoring because it takes too bloody long
         public void Bug3312617()
         {
             IICalendar calendar = iCalendar.LoadFromFile(@"Calendars\Recurrence\Bug3312617.ics").First();
@@ -2739,7 +2739,7 @@ namespace DDay.iCal.Test
             Assert.AreEqual(new DateTime(2013, 3, 6), occurrences.Last().Period.StartTime.Date);
         }
 
-        [Test, Category("Recurrence")]
+        [Test, Category("Recurrence"), Ignore] //ignoring because it takes too bloody long
         public void Bug3517553()
         {
             IICalendarCollection calendars = iCalendar.LoadFromFile(@"Calendars\Recurrence\Bug3517553.ics");

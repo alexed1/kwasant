@@ -70,7 +70,7 @@ namespace KwasantTest.Services
 
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("Email")]
         public void CanSendSIE_MANUALTEST()
         {
@@ -88,7 +88,7 @@ namespace KwasantTest.Services
 
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("Email")]
         public void CanConstructEmailWithEmailDO()
         {
