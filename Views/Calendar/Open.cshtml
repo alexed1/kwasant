@@ -1,7 +1,8 @@
 ﻿@model Data.Entities.EventDO
-@{ Layout = "~/Views/Shared/DayPilot.cshtml"; }
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @section immediateScripts
 {
+    @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/select2")
     @Scripts.Render("~/bundles/js/moment")
     @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
@@ -12,7 +13,7 @@
                 var fromDate = $('#fromDate');
                 var toDate = $('#toDate');
 
-                if ($('#chkAllDay').attr('checked')) {
+                if ($('#chkAllDay').prop('checked')) {
                     fromDate.data("DateTimePicker").disable();
                     toDate.data("DateTimePicker").disable();
                 } else {
@@ -48,8 +49,16 @@
             });
     </script>
 }
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
 @section styles
 {
+    @Styles.Render("~/bundles/css/bootstrap3.0")
+    @Styles.Render("~/bundles/css/default")
     @Styles.Render("~/bundles/css/select2")
     @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
     <style>

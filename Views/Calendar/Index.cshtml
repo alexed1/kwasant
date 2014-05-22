@@ -3,9 +3,134 @@
 @using DayPilot.Web.Mvc.Enums
 @using DayPilot.Web.Mvc.Enums.Calendar
 @using DayPilot.Web.Mvc.Events.Calendar
-@{ Layout = "~/Views/Shared/DayPilot.cshtml"; }
+@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @{
     ViewBag.Title = "Event ";
+}
+@section styles{
+    <style type="text/css">
+    body {
+        padding-top: 50px;
+        padding-bottom: 20px;
+    }
+
+    /* Set padding to keep content from hitting the edges */
+    .body-content {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    /* Set width on the form input elements since they're 100% wide by default */
+    input,
+    select,
+    textarea {
+        max-width: 280px;
+    }
+
+    /* styles for validation helpers */
+    .field-validation-error {
+        color: #b94a48;
+    }
+
+    .field-validation-valid {
+        display: none;
+    }
+
+    input.input-validation-error {
+        border: 1px solid #b94a48;
+    }
+
+    input[type="checkbox"].input-validation-error {
+        border: 0 none;
+    }
+
+    .validation-summary-errors {
+        color: #b94a48;
+    }
+
+    .validation-summary-valid {
+        display: none;
+    }
+
+    .bookingAgentFormControlBorder {
+        border: 2px solid gray;
+        text-align: left;
+        padding-left: 2px;
+        color: #000000;
+        font-size: 0.85em;
+        font-weight: normal;
+        min-height: 35px;
+    }
+
+    .label_vertical_alignment {
+        position: relative;
+        top: 10px;
+    }
+
+    .container_box {
+        border: 2px solid gray;
+        padding-left: 20px;
+        min-height: 800px;
+    }
+
+    .mid_container_text {
+        font-size: 0.85em;
+    }
+
+    .divider_height {
+        height: 20px;
+    }
+
+
+    .bookingAgentFormControlBorder {
+        border: 2px solid gray;
+        text-align: left;
+        padding-left: 2px;
+        color: #000000;
+        font-size: 0.85em;
+        font-weight: normal;
+        min-height: 50px;
+        overflow-x: auto;
+    }
+
+    #toolbar {
+        margin: 10px 0px 20px 0px;
+        width: 174px;
+        border: none;
+        background: none;
+        position: relative;
+    }
+
+        #toolbar a {
+            display: inline-block;
+            height: 35px;
+            text-decoration: none;
+            padding: 5px;
+            color: #666;
+            border: 1px solid #aaa;
+            background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e2e2e2));
+            background: -webkit-linear-gradient(top, #fafafa 0%, #e2e2e2);
+            background: -moz-linear-gradient(top, #fafafa 0%, #e2e2e2);
+            background: -ms-linear-gradient(top, #fafafa 0%, #e2e2e2);
+            background: -o-linear-gradient(top, #fafafa 0%, #e2e2e2);
+            background: linear-gradient(top, #fafafa 0%, #e2e2e2);
+            filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#fafafa", endColorStr="#e2e2e2");
+        }
+</style>
+@Styles.Render("~/bundles/css/daypilot")
+@Styles.Render("~/bundles/css/default")
+@Styles.Render("~/bundles/css/bootstrap3.0")
+}
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+@Scripts.Render("~/bundles/js/daypilot")
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+@Scripts.Render("~/bundles/js/bootstrap")
+@Scripts.Render("~/bundles/js/common")
 }
 <div class="jumbotron" style="padding-left:20px; padding-right:20px; min-width: 1130px;">
     <div class="row">
@@ -112,7 +237,7 @@
 
         <div id="divCalender" class="col-md-6 container_box" style="padding-bottom: 79px;">
             <div class="row">
-                <div id="toolbar" style="position:relative; left:-10px">
+                <div id="toolbar" style="width:100%; font-size:12px;">
                     <a href="#" id="toolbar_day">Day</a>
                     <a href="#" id="toolbar_week">Week</a>
                     <a href="#" id="toolbar_month">Month</a>
@@ -152,9 +277,9 @@
                         Height = 550,
                         HeaderHeight = 50,
                         CellHeight = 25,
-                        CssOnly = true,
+                        CssOnly = false,
                         ContextMenu = "menu1",
-                        CssClassPrefix = "calendar_white",
+                        Theme = "calendar_white",
                         ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Day,
 
                         EventClickJavaScript = "eventClick(e)",
@@ -180,8 +305,9 @@
                         AllowMultiSelect = true,
                         Height = 550,
                         HeaderHeight = 30,
-                        CssOnly = true,
-                        CssClassPrefix = "calendar_white",
+                        HeaderFontSize = "12px",
+                        CssOnly = false,
+                        Theme = "calendar_white",
                         HeightSpec = HeightSpec.BusinessHours,
                         EventBubble = "bubble",
                         EventClickJavaScript = "eventClick(e)",
@@ -204,14 +330,14 @@
                         HeaderClickHandling = DayPilot.Web.Mvc.Events.Month.HeaderClickHandlingType.JavaScript,
                         
                         
-                        CellHeaderFontSize = "8pt",
+                        HeaderFontSize = "12px",
                         CellHeight = 90,
                         HeaderHeight = 50,
                         EventHeight = 50,
                         Height = "550",
-                        CssOnly = true,
+                        CssOnly = false,
                         ContextMenu = "menu1",
-                        CssClassPrefix = "calendar_white",
+                        Theme = "calendar_white",
 
                         EventClickJavaScript = "eventClick(e)",
                         EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
@@ -227,7 +353,7 @@
             @Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
             {
                 CssOnly = true,
-                CssClassPrefix = "navigator_white",
+                Theme = "navigator_white",
                 ShowMonths = 1
             })
         </div>

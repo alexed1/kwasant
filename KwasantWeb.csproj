@@ -607,7 +607,6 @@
     <Content Include="Views\Calendar\DeleteEvent.cshtml" />
     <Content Include="Views\MandrillWebhook\Index.cshtml" />
     <Content Include="Views\Account\Confirm.cshtml" />
-    <Content Include="Views\Shared\DayPilot.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
