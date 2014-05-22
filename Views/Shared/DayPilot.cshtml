@@ -1,22 +1,31 @@
 ﻿<!DOCTYPE html>
-@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
-@section immediateScripts {
-@Scripts.Render("~/bundles/js/daypilot")
-    @RenderSection("immediateScripts", required: false)
-}
-@section styles {
-@Styles.Render("~/bundles/css/daypilot")
+<html>
+<head>
+    <title>@ViewBag.Title</title>
     <style type="text/css">
-.containerBox {
-    border: 2px solid black;
-    padding-left: 20px;
-    height: 520px;
-
-}</style>
-
+        .containerBox {
+            border: 2px solid black;
+            padding-left: 20px;
+            height: 520px;
+        }
+    </style>
+    @Styles.Render("~/bundles/css/daypilot")
+    @Styles.Render("~/bundles/css/default")
+    @Styles.Render("~/bundles/css/bootstrap3.0")
     @RenderSection("styles", required: false)
-}
-@section scripts {
+
+
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/daypilot")
+    @RenderSection("immediateScripts", required: false)
+
+</head>
+<body style="padding: 10px; width:540px;">
+    @RenderBody()
+
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
     @RenderSection("scripts", required: false)
-}
-@RenderBody()
+</body>
+</html>

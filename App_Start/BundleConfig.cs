@@ -53,6 +53,22 @@ namespace KwasantWeb.App_Start
                 "~/Content/js/Daypilot/daypilot-scheduler.src.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/select2").Include(
+                "~/Content/js/select2.js"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/bootstrap-datetimepicker").Include(
+                "~/Content/js/bootstrap-datetimepicker.js"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/jqueryvalidate").Include(
+                "~/Content/js/jquery.validate.js"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/moment").Include(
+                "~/Content/js/moment.js"
+                ));
+
             //Styles
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap2.3").Include(
                 "~/Content/css/bootstrap2.3.css"
@@ -79,6 +95,14 @@ namespace KwasantWeb.App_Start
             bundles.Add(new StyleBundle("~/bundles/css/daypilot").Include(
                 "~/Content/css/Daypilot/*_white.css"
                 ));
+
+            bundles.Add(new StyleBundle("~/bundles/css/select2").Include(
+               "~/Content/css/select2.css"
+               ));
+
+            bundles.Add(new StyleBundle("~/bundles/css/bootstrap-datetimepicker").Include(
+               "~/Content/css/bootstrap-datetimepicker.css"
+               ));
             
         }
     }

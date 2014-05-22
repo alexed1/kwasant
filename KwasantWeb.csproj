@@ -407,6 +407,7 @@
     <Content Include="Content\images\test-background4.jpg" />
     <Content Include="Content\images\Workflowv2.png" />
     <Content Include="Content\js\bootstrap.js" />
+    <Content Include="Content\js\common.js" />
     <Content Include="Content\js\Daypilot\daypilot-bubble.src.js" />
     <Content Include="Content\js\Daypilot\daypilot-calendar.src.js" />
     <Content Include="Content\js\Daypilot\daypilot-common.src.js" />
@@ -421,6 +422,7 @@
     <Content Include="Content\js\main.js" />
     <Content Include="Content\js\modernizr.js" />
     <Content Include="Content\js\placeholder.js" />
+    <Content Include="Content\js\select2.js" />
     <Content Include="Content\js\waypoints.js" />
     <Content Include="Content\templates\inline_html_template_v1.html" />
     <Content Include="Content\templates\googletemplate1.html" />
