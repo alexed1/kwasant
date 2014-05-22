@@ -8,7 +8,7 @@ using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
-
+using UtilitiesLib;
 
 namespace KwasantTest.Services
 {
@@ -70,7 +70,7 @@ namespace KwasantTest.Services
 
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("Email")]
         public void CanSendSIE_MANUALTEST()
         {
@@ -88,7 +88,7 @@ namespace KwasantTest.Services
 
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("Email")]
         public void CanConstructEmailWithEmailDO()
         {
@@ -99,7 +99,9 @@ namespace KwasantTest.Services
 
             //EXECUTE
             Email curEmail = new Email(_uow, _curEmailDO);
-            
+
+
+            //string foo = ConfigurationHelper.GetConfigurationValue("OutboundEmailHost");
             //VERIFY
             curEmail.Send();
 
