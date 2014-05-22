@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Net.Mime;
+using System.Security.Cryptography;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
@@ -48,8 +51,8 @@ namespace KwasantCore.Services
             }
             outboundEmail.Subject = String.Format(ConfigurationHelper.GetConfigurationValue("emailSubject"), eventDO.Summary, eventDO.StartDate);
 
-            var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, eventDO);
-            var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation, eventDO);
+            var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
+            var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO));
 
             outboundEmail.HTMLText = parsedHTMLEmail;
             outboundEmail.PlainText = parsedPlainEmail;
@@ -123,5 +126,33 @@ namespace KwasantCore.Services
                     ) { TransferEncoding = TransferEncoding.Base64 });
         }
         
+    }
+
+    public class RazorViewModel
+    {
+        public bool IsAllDay { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public String Summary { get; set; }
+        public String Description { get; set; }
+        public String Location { get; set; }
+        public List<RazorAttendeeViewModel> Attendees { get; set; }
+
+        public RazorViewModel(EventDO ev)
+        {
+            IsAllDay = ev.IsAllDay;
+            StartDate = ev.StartDate;
+            EndDate = ev.EndDate;
+            Summary = ev.Summary;
+            Description = ev.Description;
+            Location = ev.Location;
+            Attendees = ev.Attendees.Select(a => new RazorAttendeeViewModel { Name = a.Name, EmailAddress = a.EmailAddress}).ToList();
+        }
+
+        public class RazorAttendeeViewModel
+        {
+            public String EmailAddress { get; set; }
+            public String Name { get; set; }
+        }
     }
 }

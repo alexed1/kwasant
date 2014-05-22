@@ -14,27 +14,11 @@ namespace KwasantCore.Services
     {
         public static void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-            UserDO curUser = GetOrCreateUser(uow, bookingRequest);
+            UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
             bookingRequest.Status = EmailStatus.UNPROCESSED;
-        }
-
-        private static UserDO GetOrCreateUser(IUnitOfWork uow, BookingRequestDO currMessage)
-        {
-            string fromEmailAddress = currMessage.From.Address;
-            UserRepository userRepo = uow.UserRepository;
-            UserDO curUser = userRepo.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
-            if (curUser == null)
-            {
-                curUser = new UserDO();
-                curUser.PersonDO = new PersonDO();
-                curUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
-                curUser.FirstName = currMessage.From.Name;
-                userRepo.Add(curUser);
-            }
-            return curUser;
         }
 
         private static List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)

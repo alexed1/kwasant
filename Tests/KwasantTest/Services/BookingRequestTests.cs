@@ -45,8 +45,8 @@ namespace KwasantTest.Services
 
             customersNow = _uow.UserRepository.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
-            Assert.AreEqual("customer@gmail.com", customersNow.First().EmailAddress.Address);
-            Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
+            Assert.AreEqual("customer@gmail.com", customersNow.First().PersonDO.EmailAddress.Address);
+            Assert.AreEqual("Mister Customer", customersNow.First().PersonDO.FirstName);
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace KwasantTest.Services
             customersNow = _uow.UserRepository.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
 
-            MailMessage message = new MailMessage(new MailAddress(user.EmailAddress.Address, user.FirstName), new MailAddress("kwa@sant.com", "Booqit Services"))
+            MailMessage message = new MailMessage(new MailAddress(user.PersonDO.EmailAddress.Address, user.PersonDO.FirstName), new MailAddress("kwa@sant.com", "Booqit Services"))
             {
             };
 
@@ -73,8 +73,8 @@ namespace KwasantTest.Services
 
             customersNow = _uow.UserRepository.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
-            Assert.AreEqual(user.EmailAddress, customersNow.First().EmailAddress);
-            Assert.AreEqual(user.FirstName, customersNow.First().FirstName);
+            Assert.AreEqual(user.PersonDO.EmailAddress, customersNow.First().PersonDO.EmailAddress);
+            Assert.AreEqual(user.PersonDO.FirstName, customersNow.First().PersonDO.FirstName);
         }
 
         [Test]
