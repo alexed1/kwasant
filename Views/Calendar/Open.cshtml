@@ -5,10 +5,10 @@
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="~/Media/select2.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="/Scripts/select2.js"> </script>
-    
+
     <!-- jQuery.Validate -->
     <script type="text/javascript" src="/Scripts/jquery.validate.js"> </script>
-    
+
     <!-- bootstrap -->
     <script type="text/javascript" src="/Scripts/bootstrap.js"> </script>
 
@@ -16,26 +16,28 @@
     <script type="text/javascript" src="/Scripts/moment.js"> </script>
     <script type="text/javascript" src="/Scripts/bootstrap-datetimepicker.js"> </script>
     <link href="/Content/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
-    
+
     <style>
-        .glyphicon-calendar:before {
+        .glyphicon-calendar:before
+        {
             content: "\e109"; /* This was broken in the bootstrap css...?? */
         }
 
-        .formItem {
+        .formItem
+        {
             display: inline-flex;
             width: 100%;
             padding-top: 15px;
         }
 
-        .formLabel {
+        .formLabel
+        {
             width: 100px;
             min-width: 100px;
             padding-top: 5px;
         }
-
     </style>
-    
+
     <script type="text/javascript">
         var hideShowDates = function () {
             var fromDate = $('#fromDate');
@@ -50,18 +52,18 @@
             }
         };
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#chkAllDay').click(hideShowDates);
-            
+
             var data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a =>
                             "{id: '" + a.EmailAddress + "', text: '" + a.EmailAddress + "'}"
                             )))];
 
             $('#attendeesSel').select2({
-                createSearchChoice: function(term) {
+                createSearchChoice: function (term) {
                     return { id: term, text: term };
                 },
-                validateFormat: function(term) {
+                validateFormat: function (term) {
                     var atPos = term.indexOf('@@');
                     var dotPos = term.lastIndexOf('.');
                     if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 2 <= dotPos)) {
@@ -78,9 +80,11 @@
     </script>
 </header>
 <form id="f" method="post" action="@Url.Action("ProcessCreateEvent")">
-    <h3>
-        @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event")
-    </h3>
+    <div class="dragger">
+        <h3>
+            @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event")
+        </h3>
+    </div>
     <hr />
     <div class="formItem">
         <div class="formLabel">
@@ -92,15 +96,16 @@
         <div class="formLabel">
             When
         </div>
-        <label style="padding-top:5px;">
-            <input id="chkAllDay" type="checkbox" name="IsAllDay" @Html.Raw(Model.IsAllDay ? "checked='checked'" : String.Empty) /> All day event
+        <label style="padding-top: 5px;">
+            <input id="chkAllDay" type="checkbox" name="IsAllDay" @Html.Raw(Model.IsAllDay ? "checked='checked'" : String.Empty) />
+            All day event
         </label>
     </div>
-    <div id="dateGroup" class="formItem" style="padding-top:10px;">
+    <div id="dateGroup" class="formItem" style="padding-top: 10px;">
         <div class="formLabel">
             <!-- Align the date pickers -->
         </div>
-        <div class='col-md-4' style="padding-left: 0; padding-right:5px;">
+        <div class='col-md-4' style="padding-left: 0; padding-right: 5px;">
             <div class='input-group date' id='fromDate' data-date-format="MM/DD/YYYY hh:mm a">
                 <input type='text' name="DateStart" class="form-control" />
                 <span class="input-group-addon">
@@ -108,10 +113,10 @@
                 </span>
             </div>
         </div>
-        <div class='col-md-4' style="padding-left: 4px; ">
+        <div class='col-md-4' style="padding-left: 4px;">
             <label style="padding-top: 6px; font-weight: normal">to</label>
         </div>
-        <div class='col-md-4' style="padding-right: 0; padding-left:5px;">
+        <div class='col-md-4' style="padding-right: 0; padding-left: 5px;">
             <div class='input-group date' id='toDate' data-date-format="MM/DD/YYYY hh:mm a">
                 <input type='text' name="DateEnd" class="form-control" />
                 <span class="input-group-addon">
@@ -120,21 +125,21 @@
             </div>
         </div>
     </div>
-    
+
     <div class="formItem">
         <div class="formLabel">
             Location
         </div>
         <input id="location" name="Location" class="form-control col-md-1" value="@Model.Location" required />
     </div>
-    
+
     <div class="formItem">
         <div class="formLabel">
             Description
         </div>
         <textarea id="description" name="Description" cols="31" rows="3" class="form-control col-md-1" required>@Html.Raw(Model.Description)</textarea>
     </div>
-    
+
     <div class="formItem">
         <div class="formLabel">
             Attendees
@@ -153,7 +158,9 @@
                 <input id="btnSave" type="submit" value="OK" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
             </div>
             <div style="float: left">
-                <a href="javascript:close()"><div style="width: 100px;">Cancel</div></a>
+                <a href="javascript:close()">
+                    <div style="width: 100px;">Cancel</div>
+                </a>
             </div>
         </div>
         <br />
@@ -162,6 +169,15 @@
 </form>
 
 <script type="text/javascript">
+
+    //$(document).ready(function () {
+    //    $(".dragger").mousedown(function (e) {
+    //        //alert("here");_1400768833218n4.960596824530512popup
+    //        $('div[id*=popup]', window.parent.document).trigger(e);
+    //        //alert($(parent.DayPilot.));
+    //    });
+    //});
+
     function close(result) {
         if (parent && parent.DayPilot && parent.DayPilot.ModalStatic) {
             parent.DayPilot.ModalStatic.close(result);
@@ -172,13 +188,13 @@
         var f = $("#f");
         if (!f.valid())
             return false;
-        
+
         var fromDate = $('#fromDate');
         var toDate = $('#toDate');
 
         fromDate.data("DateTimePicker").enable();
         toDate.data("DateTimePicker").enable();
-        
+
         var url = f.prop('action') + '/?' + f.serialize();
         var m = new parent.DayPilot.Modal();
         m.closed = function () {
@@ -200,18 +216,18 @@
         return false;
     });
 
-    $(function() {
+    $(function () {
         $("#summary").focus();
         $('#f').validate();
     });
-    
+
     $(function () {
         var fromDate = $('#fromDate');
         var toDate = $('#toDate');
 
         fromDate.datetimepicker();
         toDate.datetimepicker();
-        
+
         $("#fromDate").on("dp.change", function (e) {
             toDate.data("DateTimePicker").setMinDate(e.date);
         });
@@ -221,7 +237,7 @@
 
         fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString("MM/dd/yyyy hh:mm tt")');
         toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString("MM/dd/yyyy hh:mm tt")');
-        
+
         hideShowDates();
     });
 

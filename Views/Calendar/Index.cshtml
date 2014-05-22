@@ -248,7 +248,6 @@
     @Html.ActionLink("Show Users", "Index", "User")
 </div>
 
-
 <script type="text/javascript">
 
     $("#toolbar_day").click(function () {
@@ -280,7 +279,59 @@
 
     function displayForm(url) {
         var m = new DayPilot.Modal();
+        m.top = 130;
+        //m.height = 500;
         m.width = 560;
+        m.create = function () {
+            //alert("here");
+            var hide = document.createElement("div");
+            //hide.id = this.id + "hide";
+            //hide.style.position = 'fixed';
+            //hide.style.left = "0px";
+            //hide.style.top = "0px";
+            //hide.style.right = "0px";
+            //hide.style.bottom = "0px";
+            //hide.style.backgroundColor = "black";
+            //hide.style.opacity = 0.50;
+            //hide.oncontextmenu = function () { return false; };
+
+            //document.body.appendChild(hide);
+
+            var div = document.createElement("div");
+            div.id = this.id + 'popup';
+            div.style.position = 'fixed';
+            //div.style.left = '50%';
+            div.style.right = '0px';
+            //div.style.posTop = '100px';
+            //div.style.marginTop = '150px';
+            div.style.bottom = '100px';
+            div.style.backgroundColor = 'white';
+            div.style.width = "50px";
+            div.style.height = "50px";
+            if (this.dragDrop) {
+                div.onmousedown = this.dragStart;
+            }
+
+            var defaultHeight = 50;
+
+            var iframe = null;
+            if (this.useIframe) {
+                iframe = document.createElement("iframe");
+                iframe.id = this.id + "iframe";
+                iframe.name = this.id + "iframe";
+                iframe.frameBorder = '0';
+                iframe.style.width = '100%';
+                iframe.style.height = defaultHeight + 'px';
+                div.appendChild(iframe);
+            }
+
+            document.body.appendChild(div);
+
+            this.div = div;
+            this.iframe = iframe;
+            this.hideDiv = hide;
+        };
+
         m.closed = function () {
             var daypilotControls = [
                 dp_day,

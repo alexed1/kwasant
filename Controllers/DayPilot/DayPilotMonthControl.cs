@@ -96,7 +96,8 @@ namespace KwasantWeb.Controllers.DayPilot
             DataStartField = "StartDate";
             DataEndField = "EndDate";
             DataTextField = "Summary";
-            DataIdField = "EventID";
+            //DataIdField = "EventID";
+            DataIdField = "ID";
 
             Events = _calendar.EventsList;
             
