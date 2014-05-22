@@ -13,7 +13,6 @@ namespace Data.Entities
 
         [StringLength(30)]
         [MaxLength(30, ErrorMessage = "First name maximum 30 characters.")]
-        [MinLength(3, ErrorMessage = "First name minimum 3 characters.")]
         public string FirstName
         {
             get
@@ -31,8 +30,7 @@ namespace Data.Entities
         private string _lastName;
 
         [StringLength(30)]
-        [MaxLength(30, ErrorMessage = "Last name maximum 30 characters.")]
-        [MinLength(3, ErrorMessage = "Last name minimum 3 characters.")]        
+        [MaxLength(30, ErrorMessage = "Last name maximum 30 characters.")]  
         public string LastName
         {
             get

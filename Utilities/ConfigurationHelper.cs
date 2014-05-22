@@ -14,7 +14,7 @@ namespace UtilitiesLib
         {
             var stringValue = CloudConfigurationManager.GetSetting(key);
             if(String.IsNullOrEmpty(stringValue) && required)
-                throw new Exception("Key '" + key + "' not found.");
+                throw new ConfigurationException("Key '" + key + "' not found.");
 
             var returnType = typeof (T);
 
@@ -35,7 +35,9 @@ namespace UtilitiesLib
                     return (T)(object)value;
             }
 
-            throw new Exception("Invalid value for '" + key + "'");
+            throw new ConfigurationException("Invalid value for '" + key + "'");
         }
     }
+
+    public class ConfigurationException : Exception { public ConfigurationException(String message) : base(message) { } }
 }

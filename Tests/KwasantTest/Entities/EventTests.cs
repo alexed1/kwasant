@@ -12,7 +12,7 @@ using StructureMap;
 
 namespace KwasantTest.Entities
 {
-    [TestFixture, Ignore]
+    [TestFixture]
     public class EventTests 
     {
         public IUnitOfWork _uow;

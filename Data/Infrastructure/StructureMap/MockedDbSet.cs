@@ -117,7 +117,7 @@ namespace Data.Infrastructure.StructureMap
         {
             get
             {
-                return null;
+                return new ObservableCollection<TEntityType>(this);
             }
             private set { }
         }
