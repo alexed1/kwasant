@@ -11,11 +11,11 @@ namespace Data.Entities
 
         [ForeignKey("Email")]
         public int EmailID { get; set; }
-        public EmailDO Email { get; set; }
+        public virtual EmailDO Email { get; set; }
 
         [ForeignKey("EmailAddress")]
         public int EmailAddressID { get; set; }
-        public EmailAddressDO EmailAddress { get; set; }
+        public virtual EmailAddressDO EmailAddress { get; set; }
 
         public EmailParticipantType Type { get; set; }
     }

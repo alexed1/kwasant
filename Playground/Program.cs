@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -23,34 +24,8 @@ namespace Playground
             KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);
 
-            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-            var evDO = new EventDO()
-            {
-            };
-            evDO.Attendees = new List<AttendeeDO>
-            {
-                new AttendeeDO
-                {
-                    EmailAddress = "rjrudman@gmail.com",
-                    EventID = evDO.Id,
-                    Event = evDO,
-                    Name = "Robert Rudman",
-               },
-               //new AttendeeDO
-               // {
-               //     EmailAddress = "alex@edelstein.org",
-               //     EventID = evDO.EventID,
-               //     Event = evDO,
-               //     Name = "Alex Edelstein",
-               //},
-            };
-            evDO.Location = "Skype";
-            evDO.Description = "Discuss event visualizations";
-            evDO.Summary = "Gmail and outlook works, but...";
-            evDO.StartDate = DateTime.Now.AddHours(3);
-            evDO.EndDate = DateTime.Now.AddHours(4);
-
-            new Event().Dispatch(evDO);
+            Expression<Func<EventDO, int>> selector = a => a.Id;
+            var name = (selector.Body as dynamic).Member.Name;
         }
     }
 }

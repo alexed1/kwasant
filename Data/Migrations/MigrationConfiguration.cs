@@ -127,9 +127,11 @@ namespace Data.Migrations
                     var user = new UserDO()
                     {
                         UserName = curUserName,
-                        PersonDO = new PersonDO(),
-                        EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
-                        FirstName = curUserName,
+                        PersonDO = new PersonDO()
+                        {
+                            EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),    
+                            FirstName = curUserName
+                        },
                         EmailConfirmed = true
                     };
 

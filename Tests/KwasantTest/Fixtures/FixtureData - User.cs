@@ -8,10 +8,12 @@ namespace KwasantTest.Fixtures
         {
             return new UserDO()
             {
-                PersonDO = new PersonDO(),
-                FirstName = "Jack",
-                LastName = "Maginot",
-                EmailAddress = TestEmail4()
+                PersonDO = new PersonDO()
+                {
+                    FirstName = "Jack",
+                    LastName = "Maginot",
+                    EmailAddress = TestEmail4()
+                }
             };
         }
 
@@ -19,10 +21,12 @@ namespace KwasantTest.Fixtures
         {
             return new UserDO()
             {
-                PersonDO = new PersonDO(),
-                FirstName = "Rob",
-                LastName = "Maginot",
-                EmailAddress = TestEmail5()
+                PersonDO = new PersonDO()
+                {
+                    FirstName = "Rob",
+                    LastName = "Maginot",
+                    EmailAddress = TestEmail5()
+                }
             };
         }
 
@@ -30,7 +34,10 @@ namespace KwasantTest.Fixtures
         {
             return new UserDO()
             {
-                FirstName = "Pabitra",
+                PersonDO = new PersonDO()
+                {
+                    FirstName = "Pabitra"
+                },
                 UserName = "pabitra1970@gmail.com"
             };
         }
