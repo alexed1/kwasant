@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
+@section immediateScripts {
+@Scripts.Render("~/bundles/js/daypilot")
+    @RenderSection("immediateScripts", required: false)
+}
+@section styles {
+@Styles.Render("~/bundles/css/daypilot")
+    <style type="text/css">
+.containerBox {
+    border: 2px solid black;
+    padding-left: 20px;
+    height: 520px;
+
+}</style>
+
+    @RenderSection("styles", required: false)
+}
+@section scripts {
+    @RenderSection("scripts", required: false)
+}
+@RenderBody()

@@ -41,6 +41,18 @@ namespace KwasantWeb.App_Start
                 "~/Content/js/common.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/daypilot").Include(
+                "~/Content/js/Daypilot/daypilot-common.src.js",
+                "~/Content/js/Daypilot/daypilot-bubble.src.js",
+                "~/Content/js/Daypilot/daypilot-calendar.src.js",
+                "~/Content/js/Daypilot/daypilot-datepicker.src.js",
+                "~/Content/js/Daypilot/daypilot-menu.src.js",
+                "~/Content/js/Daypilot/daypilot-modal.src.js",
+                "~/Content/js/Daypilot/daypilot-month.src.js",
+                "~/Content/js/Daypilot/daypilot-navigator.src.js",
+                "~/Content/js/Daypilot/daypilot-scheduler.src.js"
+                ));
+
             //Styles
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap2.3").Include(
                 "~/Content/css/bootstrap2.3.css"
@@ -60,9 +72,12 @@ namespace KwasantWeb.App_Start
                 "~/Content/css/default.css"
                 ));
 
-
             bundles.Add(new StyleBundle("~/bundles/css/fontawesome").Include(
                 "~/Content/css/font-awesome.css"
+                ));
+
+            bundles.Add(new StyleBundle("~/bundles/css/daypilot").Include(
+                "~/Content/css/Daypilot/*_white.css"
                 ));
             
         }

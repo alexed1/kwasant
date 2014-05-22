@@ -3,7 +3,7 @@
 @using DayPilot.Web.Mvc.Enums
 @using DayPilot.Web.Mvc.Enums.Calendar
 @using DayPilot.Web.Mvc.Events.Calendar
-
+@{ Layout = "~/Views/Shared/DayPilot.cshtml"; }
 @{
     ViewBag.Title = "Event ";
 }
@@ -15,8 +15,8 @@
 </header>
 
 <div class="jumbotron" style="padding-left:20px; padding-right:20px; min-width: 1130px;">
-    <div class="row" style="font-size:0.84em">
-        <div id="emailInfoBox" class="col-md-4 container_box" style="padding-top:45px; padding-bottom:39px;">
+    <div class="row">
+        <div id="emailInfoBox" class="col-md-4 container_box" style="padding-top: 45px; padding-bottom: 39px; font-size:0.84em">
             <div class="row">
                 <div class="col-md-2 label_vertical_alignment">
                     <div>From:</div>
@@ -186,7 +186,7 @@
                         ShowAllDayEvents = true,
                         AllowMultiSelect = true,
                         Height = 550,
-                        HeaderHeight = 20,
+                        HeaderHeight = 30,
                         CssOnly = true,
                         CssClassPrefix = "calendar_white",
                         HeightSpec = HeightSpec.BusinessHours,
@@ -211,7 +211,7 @@
                         HeaderClickHandling = DayPilot.Web.Mvc.Events.Month.HeaderClickHandlingType.JavaScript,
                         
                         
-                        CellHeaderFontSize = "10",
+                        CellHeaderFontSize = "8pt",
                         CellHeight = 90,
                         HeaderHeight = 50,
                         EventHeight = 50,
