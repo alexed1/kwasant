@@ -1,22 +1,66 @@
 ﻿@model Data.Entities.EventDO
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/select2")
+    @Scripts.Render("~/bundles/js/moment")
+    @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+    
+    <script type="text/javascript">
+            var hideShowDates = function () {
+                var fromDate = $('#fromDate');
+                var toDate = $('#toDate');
 
-<header>
-    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="~/Media/select2.css" rel="stylesheet" type="text/css" />
-    <script type="text/javascript" src="/Scripts/select2.js"> </script>
-    
-    <!-- jQuery.Validate -->
-    <script type="text/javascript" src="/Scripts/jquery.validate.js"> </script>
-    
-    <!-- bootstrap -->
-    <script type="text/javascript" src="/Scripts/bootstrap.js"> </script>
+                if ($('#chkAllDay').prop('checked')) {
+                    fromDate.data("DateTimePicker").disable();
+                    toDate.data("DateTimePicker").disable();
+                } else {
+                    fromDate.data("DateTimePicker").enable();
+                    toDate.data("DateTimePicker").enable();
+                }
+            };
 
-    <!-- bootstrap.datetimepicker -->
-    <script type="text/javascript" src="/Scripts/moment.js"> </script>
-    <script type="text/javascript" src="/Scripts/bootstrap-datetimepicker.js"> </script>
-    <link href="/Content/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
-    
+            $(document).ready(function() {
+                $('#chkAllDay').click(hideShowDates);
+
+                var data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a =>
+                                "{id: '" + a.EmailAddress + "', text: '" + a.EmailAddress + "'}"
+                                )))];
+
+                $('#attendeesSel').select2({
+                    createSearchChoice: function(term) {
+                        return { id: term, text: term };
+                    },
+                    validateFormat: function(term) {
+                        var atPos = term.indexOf('@@');
+                        var dotPos = term.lastIndexOf('.');
+                        if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 2 <= dotPos)) {
+                            return "Invalid Email";
+                        }
+                        return null;
+                    },
+                    multiple: true,
+                    data: [],
+                    width: '100%',
+                });
+                $('#attendeesSel').select2('data', data);
+            });
+    </script>
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
+@section styles
+{
+    @Styles.Render("~/bundles/css/bootstrap3.0")
+    @Styles.Render("~/bundles/css/default")
+    @Styles.Render("~/bundles/css/select2")
+    @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
     <style>
         .glyphicon-calendar:before {
             content: "\e109"; /* This was broken in the bootstrap css...?? */
@@ -33,50 +77,9 @@
             min-width: 100px;
             padding-top: 5px;
         }
-
     </style>
-    
-    <script type="text/javascript">
-        var hideShowDates = function () {
-            var fromDate = $('#fromDate');
-            var toDate = $('#toDate');
+}
 
-            if ($('#chkAllDay').attr('checked')) {
-                fromDate.data("DateTimePicker").disable();
-                toDate.data("DateTimePicker").disable();
-            } else {
-                fromDate.data("DateTimePicker").enable();
-                toDate.data("DateTimePicker").enable();
-            }
-        };
-
-        $(document).ready(function() {
-            $('#chkAllDay').click(hideShowDates);
-            
-            var data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a =>
-                            "{id: '" + a.EmailAddress + "', text: '" + a.EmailAddress + "'}"
-                            )))];
-
-            $('#attendeesSel').select2({
-                createSearchChoice: function(term) {
-                    return { id: term, text: term };
-                },
-                validateFormat: function(term) {
-                    var atPos = term.indexOf('@@');
-                    var dotPos = term.lastIndexOf('.');
-                    if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 2 <= dotPos)) {
-                        return "Invalid Email";
-                    }
-                    return null;
-                },
-                multiple: true,
-                data: [],
-                width: '100%',
-            });
-            $('#attendeesSel').select2('data', data);
-        });
-    </script>
-</header>
 <form id="f" method="post" action="@Url.Action("ProcessCreateEvent")">
     <h3>
         @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event")
