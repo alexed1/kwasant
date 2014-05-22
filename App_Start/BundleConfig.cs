@@ -37,18 +37,30 @@ namespace KwasantWeb.App_Start
                 "~/Content/js/main.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/common").Include(
+                "~/Content/js/common.js"
+                ));
+
             //Styles
-            bundles.Add(new StyleBundle("~/bundles/css/bootstrap").Include(
-                "~/Content/css/bootstrap.css"
+            bundles.Add(new StyleBundle("~/bundles/css/bootstrap2.3").Include(
+                "~/Content/css/bootstrap2.3.css"
+                ));
+            bundles.Add(new StyleBundle("~/bundles/css/bootstrap3.0").Include(
+                "~/Content/css/bootstrap3.0.css"
                 ));
             bundles.Add(new StyleBundle("~/bundles/css/colorbox").Include(
                 "~/Content/css/colorbox.css"
                 ));
 
-            bundles.Add(new StyleBundle("~/bundles/css/main").Include(
-                "~/Content/css/main.css",
-                "~/Content/css/font-awesome.min.css"
+            bundles.Add(new StyleBundle("~/bundles/css/frontpage").Include(
+                "~/Content/css/main.css"
                 ));
+
+            bundles.Add(new StyleBundle("~/bundles/css/default").Include(
+                "~/Content/css/default.css"
+                ));
+
+
             bundles.Add(new StyleBundle("~/bundles/css/fontawesome").Include(
                 "~/Content/css/font-awesome.css"
                 ));

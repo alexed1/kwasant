@@ -13,9 +13,9 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <% Response.Write(Styles.Render("~/bundles/css/bootstrap").ToHtmlString()); %>
+    <% Response.Write(Styles.Render("~/bundles/css/bootstrap2.3").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/colorbox").ToHtmlString()); %>
-    <% Response.Write(Styles.Render("~/bundles/css/main").ToHtmlString()); %>
+    <% Response.Write(Styles.Render("~/bundles/css/frontpage").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/fontawesome").ToHtmlString()); %>
 
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>

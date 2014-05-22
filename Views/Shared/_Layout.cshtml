@@ -1,62 +1,14 @@
-﻿@using KwasantWeb.Controllers.Helpers
-
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Kwasant</title>
-    @Scripts.Render("~/bundles/jquery")
-    @Styles.Render("~/Content/mastercss")
-    @Scripts.Render("~/bundles/modernizr")
-    @**@
-    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/calendar_blue.css")?v=@Html.GetBuild()" />
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/calendar_green.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/calendar_white.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/calendar_transparent.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/calendar_traditional.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/calendar_g.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/month_blue.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/month_green.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/month_white.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/month_transparent.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/month_traditional.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/month_g.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/navigator_blue.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/navigator_green.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/navigator_white.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/navigator_transparent.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/navigator_g.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/scheduler_blue.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/scheduler_green.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/scheduler_8.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/scheduler_white.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/scheduler_transparent.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/scheduler_traditional.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Themes/areas.css")?v=@Html.GetBuild()" />
-
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Media/layout.css")?v=@Html.GetBuild()" />    
-    <link type="text/css" rel="stylesheet" href="@Url.Content("~/Media/elements.css")?v=@Html.GetBuild()" />
-
-    <script type="text/javascript" src="@Url.Content("~/Scripts/jquery-2.0.3.min.js")"></script>
-	@*<script type="text/javascript" src="@Url.Content("~/Scripts/DayPilot/daypilot-all.min.js")?v=@Html.GetBuild()"></script>*@
-    <script type="text/javascript" src="@Url.Content("~/Scripts/DayPilot/daypilot-all.min.js")"></script>
-
-
-    <script src="@Url.Content("~/Scripts/Common.js")" type="text/javascript"></script>
-    <link href="@Url.Content("~/Content/Index.css")" rel="stylesheet" type="text/css" />
-
-    <link href="@Url.Content("~/Content/BookingAgent.css")" rel="stylesheet" type="text/css" />
-    <script src="@Url.Content("~/Scripts/jquery.validate.min.js")" type="text/javascript"></script>
-
+    @Styles.Render("~/bundles/css/default")
+    @Styles.Render("~/bundles/css/bootstrap3.0")
 </head>
 <body>
-
-    @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
-
 
     <div class="container">
         <div class="masthead">
@@ -64,9 +16,6 @@
                  <section id="login">
                     @Html.Partial("_LoginPartial")
                 </section>
-             <!--    <li>@Html.ActionLink("Home", "Index", "Home", null, new { @class = "active" })</li>
-                <li>@Html.ActionLink("About", "About", "Home")</li>
-                <li>@Html.ActionLink("Contact", "Contact", "Home")</li> -->
         </div>
     </div>
 
@@ -79,6 +28,10 @@
         </footer>
     </div>
 
-   
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+
 </body>
 </html>
