@@ -304,7 +304,6 @@
     <Content Include="Content\css\bootstrap2.3.css" />
     <Content Include="Content\css\bootstrap3.0.css" />
     <Content Include="Content\css\colorbox.css" />
-    <Content Include="Content\css\common.js" />
     <Content Include="Content\css\daypilot\areas.css" />
     <Content Include="Content\css\daypilot\bubble_default.css" />
     <Content Include="Content\css\daypilot\calendar_blue.css" />
