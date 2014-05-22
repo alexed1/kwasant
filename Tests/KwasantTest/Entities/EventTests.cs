@@ -29,7 +29,7 @@ namespace KwasantTest.Entities
         }
 
         //this is a core integration test: get the ics message through
-        [Test]
+        [Test, Ignore]
         [Category("Invitation")]
         public void Event_Dispatch_CanSendICS()
         {
@@ -92,7 +92,7 @@ namespace KwasantTest.Entities
             Assert.AreEqual(curOriginalEventDO.Id, curRetrievedEventDO.Id);
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("Event")]
         public void Event_Add_FailsWhenAddEventWithTooShortDescription()
         {
@@ -130,7 +130,7 @@ namespace KwasantTest.Entities
             Assert.AreEqual(curOriginalEventDO.Id, CurRetrievedEventDO.Id);
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("Event")]
         public void Event_Add_FailAddEventIfPriorityValueZero()
         {
@@ -159,7 +159,7 @@ namespace KwasantTest.Entities
             );
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("Event")]
         public void Event_Add_FailAddEventIfSequenceValueZero()
         {
@@ -188,7 +188,7 @@ namespace KwasantTest.Entities
             );
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("Event")]
         public void Event_Add_FailAddEvenIfEndDateIsGreaterThanStartDate()
         {
