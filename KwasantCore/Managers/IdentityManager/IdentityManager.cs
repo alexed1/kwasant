@@ -43,7 +43,8 @@ namespace KwasantCore.Managers.IdentityManager
              return newUserDO;
         }
 
-        public void UpdatePassword(UserDO userDO)
+        //converts an "implicit" user, which is created when someone emails a request, to an "explict" user who has actually registered
+        public void AttachPassword(UserDO userDO)
         {
             if (userDO != null)
             {

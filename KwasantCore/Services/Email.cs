@@ -9,6 +9,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;
 using FluentValidation;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Managers.CommunicationManager;
 using Microsoft.WindowsAzure;
@@ -17,11 +18,9 @@ namespace KwasantCore.Services
 {
     public class Email
     {
-        private  IUnitOfWork _uow;
-        private  EmailDO _curEmailDO;
+        private IUnitOfWork _uow;
+        private EmailDO _curEmailDO;
         private EventValidator _curEventValidator;
-        private IEmailRepository _curEmailRepository;
-
         #region Constructor
 
         /// <summary>
@@ -34,11 +33,9 @@ namespace KwasantCore.Services
         {
             _uow = uow;
             _curEventValidator = new EventValidator();
-            _curEmailRepository = new EmailRepository(_uow);
         }
         public Email(IUnitOfWork uow, EventDO eventDO): this(uow)
         {
-
             _curEmailDO = CreateStandardInviteEmail(eventDO);
         }
 
@@ -62,10 +59,11 @@ namespace KwasantCore.Services
 
         public void Send()
         {
-            MandrillPackager.PostMessageSend(_curEmailDO);
+            var gmailPackager = new GmailPackager(_curEmailDO);
+            gmailPackager.Send();
             _curEmailDO.Status = EmailStatus.DISPATCHED;
-            _curEmailRepository.Add(_curEmailDO);
-            _curEmailRepository.UnitOfWork.SaveChanges();
+            _uow.EmailRepository.Add(_curEmailDO);
+            _uow.SaveChanges();
         }
 
         public static void InitialiseWebhook(String url)
@@ -97,18 +95,28 @@ namespace KwasantCore.Services
         {
             TEmailType emailDO = new TEmailType
             {
-                From = GenerateEmailAddress(mailAddress.From),
-                BCC = mailAddress.Bcc.Select(GenerateEmailAddress).ToList(),
-                CC = mailAddress.CC.Select(GenerateEmailAddress).ToList(),
                 Subject = mailAddress.Subject,
-                Text = mailAddress.Body,
+                HTMLText = mailAddress.Body,
                 Attachments = mailAddress.Attachments.Select(CreateNewAttachment).ToList(),
-                To = mailAddress.To.Select(GenerateEmailAddress).ToList(),
                 Events = null
             };
-            emailDO.To.ForEach(a => a.ToEmail = emailDO);
-            emailDO.CC.ForEach(a => a.BCCEmail = emailDO);
-            emailDO.BCC.ForEach(a => a.CCEmail = emailDO);
+            var uow = emailRepository.UnitOfWork;
+
+            emailDO.AddEmailParticipant(EmailParticipantType.FROM, GenerateEmailAddress(uow, mailAddress.From));
+
+            foreach (var addr in mailAddress.To.Select(a => GenerateEmailAddress(uow, a)))
+            {
+                emailDO.AddEmailParticipant(EmailParticipantType.TO, addr);    
+            }
+            foreach (var addr in mailAddress.Bcc.Select(a => GenerateEmailAddress(uow, a)))
+            {
+                emailDO.AddEmailParticipant(EmailParticipantType.BCC, addr);
+            }
+            foreach (var addr in mailAddress.CC.Select(a => GenerateEmailAddress(uow, a)))
+            {
+                emailDO.AddEmailParticipant(EmailParticipantType.CC, addr);
+            }
+
             emailDO.Attachments.ForEach(a => a.Email = emailDO);
             emailDO.Status = EmailStatus.QUEUED;
 
@@ -116,9 +124,9 @@ namespace KwasantCore.Services
             return emailDO;
         }
 
-        public static EmailAddressDO GenerateEmailAddress(MailAddress address)
+        public static EmailAddressDO GenerateEmailAddress(IUnitOfWork uow, MailAddress address)
         {
-            return new EmailAddressDO { Address = address.Address, Name = address.DisplayName };
+            return uow.EmailAddressRepository.GetOrCreateEmailAddress(address.Address, address.DisplayName);
         }
 
         public static AttachmentDO CreateNewAttachment(Attachment attachment)
@@ -128,12 +136,10 @@ namespace KwasantCore.Services
                 OriginalName = attachment.Name,
                 Type = attachment.ContentType.MediaType,
             };
+            
             att.SetData(attachment.ContentStream);
             return att;
         }
-
-       
-
 
         public EmailDO CreateStandardInviteEmail(EventDO curEventDO)
         {
@@ -142,35 +148,30 @@ namespace KwasantCore.Services
             string fromName = CommunicationManager.GetFromName(); 
 
             EmailDO createdEmail = new EmailDO();
-            createdEmail.From = new EmailAddressDO { Address = fromEmail, Name = fromName };
-            createdEmail.To = curEventDO.Attendees.Select(a => new EmailAddressDO { Address = a.EmailAddress, Name = a.Name }).ToList();
+            createdEmail.AddEmailParticipant(EmailParticipantType.FROM, _uow.EmailAddressRepository.GetOrCreateEmailAddress(fromEmail, fromName));
+
+            foreach (var attendee in curEventDO.Attendees)
+            {
+                createdEmail.AddEmailParticipant(EmailParticipantType.TO, _uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee.EmailAddress, attendee.Name));
+            }
             createdEmail.Subject = "Invitation via Kwasant: " + curEventDO.Summary + "@ " + curEventDO.StartDate;
-            createdEmail.Text = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";
+            createdEmail.HTMLText = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";
             createdEmail.Status = EmailStatus.QUEUED;
 
             if (CloudConfigurationManager.GetSetting("ArchiveOutboundEmail") == "true")
             {
-                EmailAddressDO archiveAddress = new EmailAddressDO();
-                archiveAddress.Address = CloudConfigurationManager.GetSetting("ArchiveEmailAddress");
-                archiveAddress.Name = archiveAddress.Address;
+                string archiveEmailAddress = CloudConfigurationManager.GetSetting("ArchiveEmailAddress");
+                EmailAddressDO archiveAddress = _uow.EmailAddressRepository.GetOrCreateEmailAddress(archiveEmailAddress, archiveEmailAddress);
+                
                 EmailAddressValidator curEmailAddressValidator = new EmailAddressValidator();
                 curEmailAddressValidator.ValidateAndThrow(archiveAddress);
                 
-                createdEmail.BCC.Add(archiveAddress);
+                createdEmail.AddEmailParticipant(EmailParticipantType.BCC, archiveAddress);
             }
 
-            _curEmailRepository.Add(createdEmail);
-            _curEmailRepository.UnitOfWork.SaveChanges();
+            _uow.EmailRepository.Add(createdEmail);
+            _uow.SaveChanges();
             return createdEmail;
         }
-
-        //FIX THIS: currently generates an EF exception.
-        public void Dispatch(EmailDO curEmail)
-        {
-            curEmail.Status = EmailStatus.QUEUED;
-            _curEmailRepository.Add(curEmail);
-            _uow.SaveChanges();
-        }
-
     }
 }
