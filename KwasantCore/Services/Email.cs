@@ -13,6 +13,7 @@ using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Managers.CommunicationManager;
 using Microsoft.WindowsAzure;
+using StructureMap;
 
 namespace KwasantCore.Services
 {
@@ -59,8 +60,8 @@ namespace KwasantCore.Services
 
         public void Send()
         {
-            var gmailPackager = new GmailPackager(_curEmailDO);
-            gmailPackager.Send();
+            var gmailPackager = ObjectFactory.GetInstance<IEmailPackager>();
+            gmailPackager.Send(_curEmailDO);
             _curEmailDO.Status = EmailStatus.DISPATCHED;
             _uow.EmailRepository.Add(_curEmailDO);
             _uow.SaveChanges();

@@ -47,7 +47,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigurationHelper.cs" />
+    <Compile Include="ConfigRepository.cs" />
     <Compile Include="Enumerations.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Logging\Logger.cs" />

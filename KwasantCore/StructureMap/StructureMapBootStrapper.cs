@@ -1,4 +1,5 @@
 using Data.Infrastructure.StructureMap;
+using KwasantCore.Managers.APIManager.Packagers;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
@@ -34,6 +35,7 @@ namespace KwasantCore.StructureMap
         {
             public KwasantCoreRegistry()
             {
+                
             }
         }
 
@@ -41,7 +43,7 @@ namespace KwasantCore.StructureMap
         {
             public LiveMode()
             {
-                
+                For<IEmailPackager>().Use(new GmailPackager());
             }
         }
 

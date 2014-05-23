@@ -24,26 +24,26 @@ namespace Daemons
         }
         private static string GetIMAPServer()
         {
-            return ConfigurationHelper.GetConfigurationValue("InboundEmailHost");
+            return ConfigRepository.Get("InboundEmailHost");
         }
 
         private static int GetIMAPPort()
         {
-            return ConfigurationHelper.GetConfigurationValue<int>("InboundEmailPort");
+            return ConfigRepository.Get<int>("InboundEmailPort");
         }
 
         private static string GetUserName()
         {
-            return ConfigurationHelper.GetConfigurationValue("INBOUND_EMAIL_USERNAME");
+            return ConfigRepository.Get("INBOUND_EMAIL_USERNAME");
         }
         private static string GetPassword()
         {
-            return ConfigurationHelper.GetConfigurationValue("INBOUND_EMAIL_PASSWORD");
+            return ConfigRepository.Get("INBOUND_EMAIL_PASSWORD");
         }
 
         private static bool UseSSL()
         {
-            return ConfigurationHelper.GetConfigurationValue<bool>("InboundEmailUseSSL");
+            return ConfigRepository.Get<bool>("InboundEmailUseSSL");
         }
 
         public InboundEmail(IImapClient client)

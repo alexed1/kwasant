@@ -3,14 +3,14 @@ using Microsoft.WindowsAzure;
 
 namespace UtilitiesLib
 {
-    public static class ConfigurationHelper
+    public static class ConfigRepository
     {
-        public static String GetConfigurationValue(String key, bool required = true)
+        public static String Get(String key, bool required = true)
         {
-            return GetConfigurationValue<String>(key, required);
+            return Get<String>(key, required);
         }
 
-        public static T GetConfigurationValue<T>(String key, bool required = true)
+        public static T Get<T>(String key, bool required = true)
         {
             var stringValue = CloudConfigurationManager.GetSetting(key);
             if(String.IsNullOrEmpty(stringValue) && required)
