@@ -13,7 +13,7 @@ using StructureMap;
 
 namespace KwasantTest.Services
 {
-    [TestFixture, Ignore]
+    [TestFixture]
     public class CalendarTests
     {
         private IUnitOfWork _uow;
@@ -56,21 +56,13 @@ namespace KwasantTest.Services
             _uow.BookingRequestRepository.Add(bookingRequestOne);
             _uow.BookingRequestRepository.Add(bookingRequestTwo);
 
-            EventDO eventOne = new EventDO()
-            {
-                Id = 1,
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now,
-                BookingRequest = bookingRequestOne
-            };
+            EventDO eventOne = _fixture.TestEvent2();
+            eventOne.Id = 1;
+            eventOne.BookingRequest = bookingRequestOne;
 
-            EventDO eventTwo = new EventDO()
-            {
-                Id = 2,
-                StartDate = DateTime.Now,
-                EndDate = DateTime.Now,
-                BookingRequest = bookingRequestTwo
-            };
+            EventDO eventTwo = _fixture.TestEvent2();
+            eventTwo.Id = 2;
+            eventTwo.BookingRequest = bookingRequestTwo;
 
             eventRepo.Add(eventOne);
             eventRepo.Add(eventTwo);
@@ -104,14 +96,10 @@ namespace KwasantTest.Services
 
 
             _uow.BookingRequestRepository.Add(bookingRequestOne);
-            
-            EventDO eventOne = new EventDO()
-            {
-                Id = 1,
-                StartDate = DateTime.Today,
-                EndDate = DateTime.Today,
-                BookingRequest = bookingRequestOne
-            };
+
+            EventDO eventOne = _fixture.TestEvent3_TodayDates();
+            eventOne.Id = 1;
+            eventOne.BookingRequest = bookingRequestOne;
             eventRepo.Add(eventOne);
 
             _uow.SaveChanges();
@@ -154,13 +142,9 @@ namespace KwasantTest.Services
 
             _uow.BookingRequestRepository.Add(bookingRequestOne);
 
-            EventDO eventOne = new EventDO()
-            {
-                Id = 1,
-                StartDate = DateTime.Today,
-                EndDate = DateTime.Today,
-                BookingRequest = bookingRequestOne
-            };
+            EventDO eventOne = _fixture.TestEvent3_TodayDates();
+            eventOne.Id = 1;
+            eventOne.BookingRequest = bookingRequestOne;
             eventRepo.Add(eventOne);
 
             _uow.SaveChanges();
@@ -205,13 +189,9 @@ namespace KwasantTest.Services
             List<EventDO> events = calendar.EventsList;
             Assert.AreEqual(0, events.Count);
 
-            calendar.AddEvent(new EventDO
-            {
-                Id = 1,
-                StartDate = DateTime.Today,
-                EndDate = DateTime.Today,
-                BookingRequest = bookingRequestOne
-            });
+            var testEvent = _fixture.TestEvent3_TodayDates();
+            testEvent.BookingRequest = bookingRequestOne;
+            calendar.AddEvent(testEvent);
 
             _uow.SaveChanges();
             calendar.Reload();
@@ -239,13 +219,9 @@ namespace KwasantTest.Services
 
             _uow.BookingRequestRepository.Add(bookingRequestOne);
 
-            EventDO eventOne = new EventDO()
-            {
-                Id = 1,
-                StartDate = DateTime.Today,
-                EndDate = DateTime.Today,
-                BookingRequest = bookingRequestOne
-            };
+            EventDO eventOne = _fixture.TestEvent3_TodayDates();
+            eventOne.Id = 1;
+            eventOne.BookingRequest = bookingRequestOne;
             eventRepo.Add(eventOne);
 
             _uow.SaveChanges();
@@ -259,7 +235,7 @@ namespace KwasantTest.Services
             Assert.NotNull(calendar.GetEvent(1));
         }
 
-        [Test]
+        [Test, Ignore("ConfigurationException: Key 'emailSubject' not found")]
         public void TestDispatch()
         {
             UserRepository customerRepo = _uow.UserRepository;
@@ -287,13 +263,10 @@ namespace KwasantTest.Services
             List<EventDO> events = calendar.EventsList;
             Assert.AreEqual(0, events.Count);
 
-            calendar.AddEvent(new EventDO
-            {
-                Id = 1,
-                StartDate = DateTime.Today,
-                EndDate = DateTime.Today,
-                BookingRequest = bookingRequestOne
-            });
+            EventDO eventOne = _fixture.TestEvent2();
+            eventOne.Id = 1;
+            eventOne.BookingRequest = bookingRequestOne;
+            calendar.AddEvent(eventOne);
 
             var curEvent = new Event();
             curEvent.Dispatch(calendar.GetEvent(1));

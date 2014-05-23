@@ -93,7 +93,7 @@ namespace KwasantTest.Entities
             Assert.AreEqual(curOriginalEventDO.Id, curRetrievedEventDO.Id);
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("Event")]
         public void Event_Add_FailsWhenAddEventWithTooShortDescription()
         {
@@ -189,7 +189,7 @@ namespace KwasantTest.Entities
             );
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("Event")]
         public void Event_Add_FailAddEvenIfEndDateIsGreaterThanStartDate()
         {
