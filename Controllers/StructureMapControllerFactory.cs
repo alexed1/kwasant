@@ -15,6 +15,9 @@ namespace KwasantWeb.Controllers
                 return new CalendarController();
 
 
+            if (controllerType == null)
+                return null;
+
             return ObjectFactory.GetInstance(controllerType) as IController;
         }
 

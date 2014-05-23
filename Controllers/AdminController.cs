@@ -7,7 +7,7 @@ namespace KwasantWeb.Controllers
         protected override void HandleUnauthorizedRequest(AuthorizationContext context)
         {
             // redirect to Error page
-            context.Result = new RedirectResult("/UnauthorizedRequest.html");
+            context.Result = new RedirectResult("/Account/Login?returnURL=" + context.RequestContext.HttpContext.Request.Path);
         }
     }
 

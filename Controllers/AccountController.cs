@@ -173,8 +173,7 @@ namespace KwasantWeb.Controllers
                             }
                             else if (curLoginStatus == LoginStatus.Successful)
                             {
-                                //return RedirectToAction("MyAccount");
-                                return Redirect("/index.aspx");
+                                return Redirect(!String.IsNullOrEmpty(returnUrl) ? returnUrl : "/index.aspx");
                             }
                             break;
                     }
