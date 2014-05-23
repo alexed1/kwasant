@@ -88,18 +88,18 @@ namespace KwasantCore.Services
         #endregion
 
       
-        public static EmailDO ConvertMailMessageToEmail(IEmailRepository emailRepository, MailMessage mailAddress)
+        public static EmailDO ConvertMailMessageToEmail(IEmailRepository emailRepository, MailMessage mailMessage)
         {
-            return ConvertMailMessageToEmail<EmailDO>(emailRepository, mailAddress);
+            return ConvertMailMessageToEmail<EmailDO>(emailRepository, mailMessage);
         }
 
-        public static TEmailType ConvertMailMessageToEmail<TEmailType>(IGenericRepository<TEmailType> emailRepository, MailMessage mailAddress)
+        public static TEmailType ConvertMailMessageToEmail<TEmailType>(IGenericRepository<TEmailType> emailRepository, MailMessage mailMessage)
             where TEmailType : EmailDO, new()
         {
             String body = String.Empty;
-            if (!mailAddress.IsBodyHtml)
+            if (!mailMessage.IsBodyHtml)
             {
-                foreach (var av in mailAddress.AlternateViews)
+                foreach (var av in mailMessage.AlternateViews)
                 {
                     if (av.ContentType.MediaType == "text/html")
                     {
@@ -109,29 +109,29 @@ namespace KwasantCore.Services
                 }
             }
             if (String.IsNullOrEmpty(body))
-                body = mailAddress.Body;
+                body = mailMessage.Body;
 
 
 
             TEmailType emailDO = new TEmailType
             {
-                Subject = mailAddress.Subject,
+                Subject = mailMessage.Subject,
                 HTMLText = body,
-                Attachments = mailAddress.Attachments.Select(CreateNewAttachment).Union(mailAddress.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),
+                Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),
                 Events = null
             };
             var uow = emailRepository.UnitOfWork;
 
-            emailDO.AddEmailParticipant(EmailParticipantType.FROM, GenerateEmailAddress(uow, mailAddress.From));
-            foreach (var addr in mailAddress.To.Select(a => GenerateEmailAddress(uow, a)))
+            emailDO.AddEmailParticipant(EmailParticipantType.FROM, GenerateEmailAddress(uow, mailMessage.From));
+            foreach (var addr in mailMessage.To.Select(a => GenerateEmailAddress(uow, a)))
             {
                 emailDO.AddEmailParticipant(EmailParticipantType.TO, addr);    
             }
-            foreach (var addr in mailAddress.Bcc.Select(a => GenerateEmailAddress(uow, a)))
+            foreach (var addr in mailMessage.Bcc.Select(a => GenerateEmailAddress(uow, a)))
             {
                 emailDO.AddEmailParticipant(EmailParticipantType.BCC, addr);
             }
-            foreach (var addr in mailAddress.CC.Select(a => GenerateEmailAddress(uow, a)))
+            foreach (var addr in mailMessage.CC.Select(a => GenerateEmailAddress(uow, a)))
             {
                 emailDO.AddEmailParticipant(EmailParticipantType.CC, addr);
             }
