@@ -158,7 +158,8 @@
                 <input id="btnSave" type="submit" value="OK" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
             </div>
             <div style="float: left">
-                <a href="javascript:close()">
+                @*<a href="javascript:close()">*@
+                <a href="javascript:checkunsaveddata();">
                     <div style="width: 100px;">Cancel</div>
                 </a>
             </div>
@@ -169,14 +170,30 @@
 </form>
 
 <script type="text/javascript">
+    var isunsaved = false;
+    function checkunsaveddata() {
+        if (!isunsaved) {
+            close();
+        }
+        else {
+            if (confirm("you are about to lose data, continue?")) {
+                isunsaved = false;
+                close();
+            } else { return false; }
+        }
+    }
 
-    //$(document).ready(function () {
-    //    $(".dragger").mousedown(function (e) {
-    //        //alert("here");_1400768833218n4.960596824530512popup
-    //        $('div[id*=popup]', window.parent.document).trigger(e);
-    //        //alert($(parent.DayPilot.));
-    //    });
-    //});
+    $(document).ready(function () {
+        $(".dragger").mouseenter(function (e) {
+            $('div[id*=popup]', window.parent.document).trigger("mousedown");
+        });
+        $(".dragger").mouseout(function (e) {
+            $('div[id*=mask]', window.parent.document).remove();
+        });
+        $(".form-control").change(function () {
+            isunsaved = true;
+        });
+    });
 
     function close(result) {
         if (parent && parent.DayPilot && parent.DayPilot.ModalStatic) {
