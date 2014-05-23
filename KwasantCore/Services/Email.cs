@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using System.Net.Mime;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
@@ -94,11 +96,28 @@ namespace KwasantCore.Services
         public static TEmailType ConvertMailMessageToEmail<TEmailType>(IGenericRepository<TEmailType> emailRepository, MailMessage mailAddress)
             where TEmailType : EmailDO, new()
         {
+            String body = String.Empty;
+            if (!mailAddress.IsBodyHtml)
+            {
+                foreach (var av in mailAddress.AlternateViews)
+                {
+                    if (av.ContentType.MediaType == "text/html")
+                    {
+                        body = new StreamReader(av.ContentStream).ReadToEnd();
+                        break;
+                    }
+                }
+            }
+            if (String.IsNullOrEmpty(body))
+                body = mailAddress.Body;
+
+
+
             TEmailType emailDO = new TEmailType
             {
                 Subject = mailAddress.Subject,
-                HTMLText = mailAddress.Body,
-                Attachments = mailAddress.Attachments.Select(CreateNewAttachment).ToList(),
+                HTMLText = body,
+                Attachments = mailAddress.Attachments.Select(CreateNewAttachment).Union(mailAddress.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),
                 Events = null
             };
             var uow = emailRepository.UnitOfWork;
@@ -138,6 +157,21 @@ namespace KwasantCore.Services
             };
             
             att.SetData(attachment.ContentStream);
+            return att;
+        }
+
+        public static AttachmentDO CreateNewAttachment(AlternateView av)
+        {
+            if (av.ContentType.MediaType == "text/html")
+                return null;
+
+            AttachmentDO att = new AttachmentDO
+            {
+                OriginalName = String.IsNullOrEmpty(av.ContentType.Name)? av.ContentType.MediaType : "File",
+                Type = av.ContentType.MediaType,
+            };
+
+            att.SetData(av.ContentStream);
             return att;
         }
 
