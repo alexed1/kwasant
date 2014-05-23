@@ -217,6 +217,18 @@ if (typeof(DayPilot) === 'undefined') {
                 this.div.style.height = h + 'px';
             }
 
+            if (this.div.style.borderWidth) {
+                var borderHeight = this.div.style.borderWidth;
+                if (borderHeight.length > 0) {
+                    if (borderHeight.length > 2 && borderHeight.substr(borderHeight.length - 2) == 'px') {
+                        borderHeight = parseInt(borderHeight.substring(0, borderHeight.length - 2));
+                    } else {
+                        borderHeight = parseInt(borderHeight);
+                    }
+                    this.div.style.height = h + (borderHeight * 2) + 'px';
+                }
+            }
+            
             if (this.autoStretchFirstLoadOnly) {
                 this.ue(this.iframe, "load", this.onIframeLoad);
             }
