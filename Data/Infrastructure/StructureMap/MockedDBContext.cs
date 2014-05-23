@@ -6,18 +6,17 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
-using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
 using StructureMap.TypeRules;
 
-namespace KwasantCore.StructureMap
+namespace Data.Infrastructure.StructureMap
 {
     public class MockedDBContext : IDBContext
     {
         public MockedDBContext()
         {
-            MigrationConfiguration.Seed(this);
+            MigrationConfiguration.Seed(new UnitOfWork(this));
         }
 
         private Dictionary<Type, object> _cachedSets = new Dictionary<Type, object>();
@@ -141,6 +140,8 @@ namespace KwasantCore.StructureMap
             throw new System.NotImplementedException();
         }
 
+        public IUnitOfWork UnitOfWork { get; set; }
+
         private bool IsEntity(Type type)
         {
             return type.Namespace == "Data.Entities";
@@ -159,8 +160,9 @@ namespace KwasantCore.StructureMap
             return keys.First();
         }
 
-
-        /* DBSets */
-        public IDbSet<InstructionDO> Instructions { get { return Set<InstructionDO>(); } } 
+        public void Dispose()
+        {
+            
+        }
     }
 }

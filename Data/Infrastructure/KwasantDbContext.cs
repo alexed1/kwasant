@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
+using System.Data.Entity.Infrastructure.Annotations;
 using System.Linq;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -69,6 +71,8 @@ namespace Data.Infrastructure
             return base.Set<TEntity>();
         }
 
+        public IUnitOfWork UnitOfWork { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
@@ -76,6 +80,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
+            modelBuilder.Entity<EmailEmailAddressDO>().ToTable("EmailEmailAddresses");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EventDO>().ToTable("Events");
@@ -85,6 +90,13 @@ namespace Data.Infrastructure
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserDO>().ToTable("Users");
+
+            modelBuilder.Entity<EmailAddressDO>()
+                .Property(ea => ea.Address)
+                .IsRequired()
+                .HasColumnAnnotation(
+                    "Index",
+                    new IndexAnnotation(new IndexAttribute("IX_EmailAddress_Address", 1) {IsUnique = true}));
 
             modelBuilder.Entity<EventDO>()
                 .HasMany(ev => ev.Emails)
@@ -101,33 +113,11 @@ namespace Data.Infrastructure
                     mapping => mapping.MapLeftKey("BookingRequestID").MapRightKey("InstructionID").ToTable("BookingRequestInstruction")
                 );
             
-            
-            modelBuilder.Entity<EmailDO>()
-                .HasRequired(e => e.From);
-
-            modelBuilder.Entity<EmailDO>()
-                .HasMany(e => e.To)
-                .WithOptional(ea => ea.ToEmail)
-                .Map(m => m.MapKey("ToEmailID"));
-            modelBuilder.Entity<EmailDO>()
-                .HasMany(e => e.BCC)
-                .WithOptional(ea => ea.BCCEmail)
-                .Map(m => m.MapKey("BCCmailID"));
-            modelBuilder.Entity<EmailDO>()
-                .HasMany(e => e.CC)
-                .WithOptional(ea => ea.CCEmail)
-                .Map(m => m.MapKey("CCEmailID"));
-
             modelBuilder.Entity<AttachmentDO>()
                 .HasRequired(a => a.Email)
                 .WithMany(e => e.Attachments)
                 .HasForeignKey(a => a.EmailID);
 
-            modelBuilder.Entity<EmailAddressDO>()
-                .HasOptional(ea => ea.FromEmail)
-                .WithRequired(e => e.From)
-                .Map(x => x.MapKey("FromEmailAddressID"));
-            
             modelBuilder.Entity<EventDO>()
                 .HasMany(e => e.Attendees)
                 .WithRequired(a => a.Event)
@@ -136,37 +126,11 @@ namespace Data.Infrastructure
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
                 {
-                    ts.ForeignTableID,
+                    ts.Id,
                     ts.ForeignTableName
                 });
 
             base.OnModelCreating(modelBuilder);
         }
-
-        public IDbSet<AttachmentDO> Attachments { get; set; }
-
-        public IDbSet<AttendeeDO> Attendees { get; set; }
-
-        public IDbSet<BookingRequestDO> BookingRequests { get; set; }
-
-        public IDbSet<CalendarDO> Calendars { get; set; }
-
-        public IDbSet<CommunicationConfigurationDO> CommunicationConfigurations { get; set; }
-
-        public IDbSet<EmailDO> Emails { get; set; }
-
-        public IDbSet<EmailAddressDO> EmailAddresses { get; set; }
-
-        public IDbSet<EventDO> Events { get; set; }
-
-        public IDbSet<InstructionDO> Instructions { get; set; }
-
-        public IDbSet<PersonDO> People { get; set; }
-
-        public IDbSet<StoredFileDO> StoredFiles { get; set; }
-
-        public IDbSet<TrackingStatusDO> TrackingStatuses { get; set; }
-
-        public new IDbSet<UserDO> Users { get; set; }
     }
 }

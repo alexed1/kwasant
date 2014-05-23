@@ -42,8 +42,8 @@ namespace KwasantWeb.Controllers
             if (id <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-           
-            IBookingRequestRepository bookingRequestRepository = new BookingRequestRepository(_uow);
+
+            IBookingRequestRepository bookingRequestRepository = _uow.BookingRequestRepository;
             BookingRequestDO = bookingRequestRepository.GetByKey(id);
             if (BookingRequestDO == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -296,7 +296,7 @@ namespace KwasantWeb.Controllers
         {
             //This is a fake event that will be thrown away if Confirm() is not called
             EventDO eventDO = new EventDO();
-            eventDO.EventID = eventID;
+            eventDO.Id = eventID;
             EventDO actualEventDO = Calendar.GetEvent(eventID);
             eventDO.CopyFrom(actualEventDO);
 
@@ -334,7 +334,7 @@ namespace KwasantWeb.Controllers
             //This is a fake event that will be thrown away if Confirm() is not called
             EventDO eventDO = new EventDO
             {
-                EventID = calendarViewModel.EventID,
+                Id = calendarViewModel.EventID,
                 IsAllDay = GetCheckFlag(calendarViewModel.IsAllDay),
                 StartDate = calendarViewModel.DateStart,
                 EndDate = calendarViewModel.DateEnd,
@@ -367,9 +367,9 @@ namespace KwasantWeb.Controllers
         {
             //Load the known attendee list for this event
             List<AttendeeDO> originalAttendees;
-            if (eventDO.EventID != 0)
+            if (eventDO.Id != 0)
             {
-                EventDO oldEvent = Calendar.GetEvent(eventDO.EventID);
+                EventDO oldEvent = Calendar.GetEvent(eventDO.Id);
                 originalAttendees = new List<AttendeeDO>(oldEvent.Attendees);
             }
             else
@@ -405,7 +405,7 @@ namespace KwasantWeb.Controllers
             List<AttendeeDO> attendeesToDelete = originalAttendees.Where(originalAttendee => !newAttendees.Select(a => a.EmailAddress).Contains(originalAttendee.EmailAddress)).ToList();
             if (attendeesToDelete.Any())
             {
-                AttendeeRepository attendeeRepo = new AttendeeRepository(Calendar.UnitOfWork);
+                AttendeeRepository attendeeRepo = Calendar.UnitOfWork.AttendeeRepository;
                 foreach (AttendeeDO attendeeToDelete in attendeesToDelete)
                     attendeeRepo.Remove(attendeeToDelete);
             }
@@ -417,13 +417,13 @@ namespace KwasantWeb.Controllers
         {
 
             EventDO eventDO = Session["FakedEvent_" + processCreateEventViewModel.Key] as EventDO;
-            if (eventDO.EventID == 0)
+            if (eventDO.Id == 0)
             {
                 Calendar.AddEvent(eventDO);
             }
             else
             {
-                EventDO oldEvent = Calendar.GetEvent(eventDO.EventID);
+                EventDO oldEvent = Calendar.GetEvent(eventDO.Id);
                 oldEvent.CopyFrom(eventDO);
                 eventDO = oldEvent;
             }

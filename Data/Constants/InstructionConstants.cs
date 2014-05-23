@@ -28,7 +28,7 @@ namespace Data.Constants
         {
             Type[] nestedTypes = typeof(InstructionConstants).GetNestedTypes();
 
-            InstructionRepository instructionRepo = new InstructionRepository(uow);
+            InstructionRepository instructionRepo = uow.InstructionRepository;
             foreach (Type nestedType in nestedTypes)
             {
                 FieldInfo[] constants = nestedType.GetFields();
@@ -38,7 +38,7 @@ namespace Data.Constants
                     object value = constant.GetValue(null);
                     instructionRepo.Add(new InstructionDO
                     {
-                        InstructionID = (int)value,
+                        Id = (int)value,
                         Name = name,
                         Category = nestedType.Name
                     });

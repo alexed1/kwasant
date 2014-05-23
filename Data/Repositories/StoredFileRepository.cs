@@ -6,8 +6,8 @@ namespace Data.Repositories
     public class StoredFileRepository : GenericRepository<StoredFileDO>, IStoredFileRepository
     {
 
-        public StoredFileRepository(IUnitOfWork uow)
-            : base(uow)
+        internal StoredFileRepository(IDBContext dbContext)
+            : base(dbContext)
         {
 
         }

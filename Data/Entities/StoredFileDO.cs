@@ -12,7 +12,7 @@ namespace Data.Entities
     public class StoredFileDO : ISaveHook
     {
         [Key]
-        public int StoredFileID { get; set; }
+        public int Id { get; set; }
 
         public String OriginalName { get; set; }
         public String StoredName { get; set; }
@@ -24,7 +24,12 @@ namespace Data.Entities
             if (_data == null)
                 FileManager.LoadFile(this);
             _data.Position = 0;
-            return _data;
+            
+            var memStr = new MemoryStream();
+            _data.CopyTo(memStr);
+            memStr.Position = 0;
+
+            return memStr;
         }
         public void SetData(Stream value)
         {

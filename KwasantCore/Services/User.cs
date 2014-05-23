@@ -23,6 +23,7 @@ namespace KwasantCore.Services
 {
     public class User
     {
+        private readonly IUnitOfWork _uow;
         private UserRepository _userRepo;
 
         private IAuthenticationManager AuthenticationManager
@@ -35,7 +36,7 @@ namespace KwasantCore.Services
 
         public User(IUnitOfWork uow)
         {
-            _userRepo = new UserRepository(uow);      
+            _uow = uow;
         }
 
         public void Add(UserDO userDO)
@@ -47,7 +48,7 @@ namespace KwasantCore.Services
         {
             RegistrationStatus curRegStatus = RegistrationStatus.Successful;
 
-            var userManager = new UserManager<UserDO>(new UserStore<UserDO>(_userRepo.UnitOfWork.Db as KwasantDbContext));
+            var userManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
             var result = await userManager.CreateAsync(userDO, userDO.Password);
             if (result.Succeeded)
             {
@@ -65,7 +66,7 @@ namespace KwasantCore.Services
         {
             if (userDO != null)
             {
-                var curUserManager = new UserManager<UserDO>(new UserStore<UserDO>(_userRepo.UnitOfWork.Db as KwasantDbContext));
+                var curUserManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
 
                 IdentityResult curResult = curUserManager.RemovePassword(userDO.Id); //remove old password
                 curResult = curUserManager.AddPassword(userDO.Id, userDO.Password); // add new password
@@ -79,7 +80,7 @@ namespace KwasantCore.Services
         public async Task<LoginStatus> Login(UserDO userDO, bool isPersistent)
         {
             LoginStatus curLogingStatus = LoginStatus.Successful;
-            var curUserManager = new UserManager<UserDO>(new UserStore<UserDO>(_userRepo.UnitOfWork.Db as KwasantDbContext));
+            var curUserManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
             var curUser = await curUserManager.FindAsync(userDO.UserName, userDO.Password);
             if (curUser != null)
             {
@@ -113,7 +114,7 @@ namespace KwasantCore.Services
 
         public UserDO FindByEmailId(int Id)
         {
-            return _userRepo.FindOne(p => p.EmailAddress.Id == Id);
+            return _userRepo.FindOne(p => p.PersonDO.EmailAddress.Id == Id);
 
         }
     }

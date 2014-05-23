@@ -8,11 +8,11 @@ namespace Data.Interfaces
     public interface IEmail
     {
         [Key]
-        int EmailID { get; set; }
+        int Id { get; set; }
 
         //EmailAddress From { get; set; }
         String Subject { get; set; }
-        String Text { get; set; }
+        String HTMLText { get; set; }
         //IEnumerable<EmailAddress> To { get; set; }
         //IEnumerable<EmailAddress> BCC { get; set; }
         //IEnumerable<EmailAddress> CC { get; set; }

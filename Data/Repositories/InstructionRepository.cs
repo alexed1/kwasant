@@ -5,8 +5,8 @@ namespace Data.Repositories
 {
     public class InstructionRepository : GenericRepository<InstructionDO>, IInstructionRepository
     {
-        public InstructionRepository(IUnitOfWork uow)
-            : base(uow)
+        internal InstructionRepository(IDBContext dbContext)
+            : base(dbContext)
         {
 
         }
@@ -15,9 +15,6 @@ namespace Data.Repositories
 
     public interface IInstructionRepository : IGenericRepository<InstructionDO>
     {
-        IUnitOfWork UnitOfWork { get; }
-
-
-
+        
     }
 }

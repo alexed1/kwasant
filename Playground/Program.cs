@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Repositories;
+using KwasantCore.Services;
 using KwasantCore.StructureMap;
-using log4net.Config;
 using StructureMap;
-using UtilitiesLib.Logging;
 
 namespace Playground
 {
@@ -16,16 +19,13 @@ namespace Playground
         /// <param name="args"></param>
         private static void Main(string[] args)
         {
-            StructureMapBootStrapper.ConfigureDependencies("dev"); //set to either "test" or "dev"
-            
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE); //set to either "test" or "dev"
+
             KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);
 
-            var first = ObjectFactory.GetInstance<IUnitOfWork>();
-            var second = ObjectFactory.GetInstance<IUnitOfWork>();
-
-            var fcc = first.GetHashCode();
-            var scc = second.GetHashCode();
+            Expression<Func<EventDO, int>> selector = a => a.Id;
+            var name = (selector.Body as dynamic).Member.Name;
         }
     }
 }

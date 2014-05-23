@@ -103,7 +103,6 @@ namespace KwasantCore.Services
             var uow = emailRepository.UnitOfWork;
 
             emailDO.AddEmailParticipant(EmailParticipantType.FROM, GenerateEmailAddress(uow, mailAddress.From));
-
             foreach (var addr in mailAddress.To.Select(a => GenerateEmailAddress(uow, a)))
             {
                 emailDO.AddEmailParticipant(EmailParticipantType.TO, addr);    
@@ -167,7 +166,7 @@ namespace KwasantCore.Services
                 curEmailAddressValidator.ValidateAndThrow(archiveAddress);
                 
                 createdEmail.AddEmailParticipant(EmailParticipantType.BCC, archiveAddress);
-            }
+        }
 
             _uow.EmailRepository.Add(createdEmail);
             _uow.SaveChanges();

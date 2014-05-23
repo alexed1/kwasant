@@ -12,6 +12,7 @@ using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using StructureMap;
 
 namespace Data.Migrations
 {
@@ -19,7 +20,7 @@ namespace Data.Migrations
     {
         public MigrationConfiguration()
         {
-            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationsEnabled = false;
             ContextKey = "Data.Infrastructure.KwasantDbContext";
         }
 
@@ -29,21 +30,29 @@ namespace Data.Migrations
 
             /* Be sure to use AddOrUpdate when creating seed data - otherwise we will get duplicates! */
 
-            Seed(context);
+            //This is not a mistake that we're using new UnitOfWork, rather than calling the ObjectFactory. 
+            //The object factory decides what context to use, based on the environment.
+            //In this situation, we need to be sure to use the provided context.
 
-            AddRoles(context);
-            AddAdmins(context);
+            //This class is _not_ mockable - it's a core part of EF. Some seeding, however, is mockable (see the static function Seed and how MockedDBContext uses it).
+            var unitOfWork = new UnitOfWork(context);
+            Seed(unitOfWork);
+
+            AddRoles(unitOfWork);
+            AddAdmins(unitOfWork);
+
+            unitOfWork.SaveChanges();
         }
 
         //Method to let us seed into memory as well
-        public static void Seed(IDBContext context)
+        public static void Seed(IUnitOfWork context)
         {
             SeedInstructions(context);
         }
 
-        private static void SeedInstructions(IDBContext context)
+        private static void SeedInstructions(IUnitOfWork unitOfWork)
         {
-            Type[] nestedTypes = typeof(InstructionConstants).GetNestedTypes();
+            Type[] nestedTypes = typeof (InstructionConstants).GetNestedTypes();
             var instructionsToAdd = new List<InstructionDO>();
             foreach (Type nestedType in nestedTypes)
             {
@@ -54,15 +63,15 @@ namespace Data.Migrations
                     object value = constant.GetValue(null);
                     instructionsToAdd.Add(new InstructionDO
                     {
-                        InstructionID = (int)value,
+                        Id = (int) value,
                         Name = name,
                         Category = nestedType.Name
                     });
                 }
             }
 
-            context.Instructions.AddOrUpdate(
-                    i => i.InstructionID,
+            unitOfWork.InstructionRepository.DBSet.AddOrUpdate(
+                    i => i.Id,
                     instructionsToAdd.ToArray()
                 );
         }
@@ -70,10 +79,10 @@ namespace Data.Migrations
         /// <summary>
         /// Add roles of type 'Admin' and 'Customer' in DB
         /// </summary>
-        /// <param name="context"></param>
-        private void AddRoles(DbContext context)
+        /// <param name="unitOfWork"></param>
+        private void AddRoles(IUnitOfWork unitOfWork)
         {
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(unitOfWork.Db as KwasantDbContext));
 
             if (roleManager.RoleExists("Admin") == false)
             {
@@ -90,14 +99,14 @@ namespace Data.Migrations
         /// Add 'Admin' roles. Curretly only user with Email "alex@kwasant.com" and password 'alex@1234'
         /// has been added.
         /// </summary>
-        /// <param name="context">of type ShnexyDbContext</param>
+        /// <param name="unitOfWork">of type ShnexyDbContext</param>
         /// <returns>True if created successfully otherwise false</returns>
-        private void AddAdmins(KwasantDbContext context)
+        private void AddAdmins(IUnitOfWork unitOfWork)
         {
-            CreateAdmin("alex@kwasant.com", "alex@1234", context);
-            CreateAdmin("pabitra@hotmail.com", "pabi1234", context);
-            CreateAdmin("rjrudman@gmail.com", "robert1234", context);
-            CreateAdmin("quader.mamun@gmail.com", "abdul1234", context);
+            CreateAdmin("alex@kwasant.com", "alex@1234", unitOfWork);
+            CreateAdmin("pabitra@hotmail.com", "pabi1234", unitOfWork);
+            CreateAdmin("rjrudman@gmail.com", "robert1234", unitOfWork);
+            CreateAdmin("quader.mamun@gmail.com", "abdul1234", unitOfWork);
         }
 
         /// <summary>
@@ -105,31 +114,33 @@ namespace Data.Migrations
         /// </summary>
         /// <param name="curUserName"></param>
         /// <param name="curPassword"></param>
-        /// <param name="context"></param>
+        /// <param name="unitOfWork"></param>
         /// <returns></returns>
-        private void CreateAdmin(string curUserName, string curPassword, KwasantDbContext context)
+        private void CreateAdmin(string curUserName, string curPassword, IUnitOfWork unitOfWork)
         {
-            IdentityResult ir;
-
             try
             {
-                var rm = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(context));
-
-                var um = new UserManager<UserDO>(new UserStore<UserDO>(context));
-
-                var user = new UserDO()
+                var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasantDbContext));
+                if (um.FindByName(curUserName) == null)
                 {
-                    UserName = curUserName,
-                    EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(curUserName),
-                    FirstName = curUserName,
-                    EmailConfirmed = true
-                };
+                    
+                    var user = new UserDO()
+                    {
+                        UserName = curUserName,
+                        PersonDO = new PersonDO()
+                        {
+                            EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),    
+                            FirstName = curUserName
+                        },
+                        EmailConfirmed = true
+                    };
 
-                ir = um.Create(user, curPassword);
-                if (!ir.Succeeded)
-                    return;
+                    IdentityResult ir = um.Create(user, curPassword);
+                    if (!ir.Succeeded)
+                        return;
 
-                ir = um.AddToRole(user.Id, "Admin");
+                    um.AddToRole(user.Id, "Admin");
+                }
             }
             catch (DbEntityValidationException ex)
             {

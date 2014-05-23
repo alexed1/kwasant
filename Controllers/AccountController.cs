@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Security;
 using System.Web.Mvc;
-using System.Text;
-using System.Diagnostics;
 using System.Threading.Tasks;
+using Data.Entities.Enumerations;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Net.Mail;
 using System.Configuration;
-using System.Data.Entity;
-
 using Data.Entities;
-using StructureMap;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Infrastructure;
@@ -38,15 +31,14 @@ namespace KwasantWeb.Controllers
 
         public async Task SendAsync(IdentityMessage message)
         {
-            String senderMailAddress = ConfigurationManager.AppSettings["MailSenderAddress"];
+            String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
 
             EmailDO emailDO = new EmailDO();
-            emailDO.To = new List<EmailAddressDO>();
-            emailDO.To.Add(Email.GenerateEmailAddress(new MailAddress(message.Destination)));
+            emailDO.AddEmailParticipant(EmailParticipantType.TO, Email.GenerateEmailAddress(_uow, new MailAddress(message.Destination)));
+            emailDO.AddEmailParticipant(EmailParticipantType.FROM, Email.GenerateEmailAddress(_uow, new MailAddress(senderMailAddress)));
 
-            emailDO.From = Email.GenerateEmailAddress(new MailAddress(senderMailAddress));
             emailDO.Subject = message.Subject;
-            emailDO.Text = message.Body;
+            emailDO.HTMLText = message.Body;
 
             Email userEmail = new Email(_uow, emailDO);
             userEmail.Send();
@@ -58,13 +50,11 @@ namespace KwasantWeb.Controllers
     {
         private IUnitOfWork _uow;
         private Account _account;
-        private UserRepository _userRepo;
         private UserManager<UserDO> _userManager;
 
         public AccountController(IUnitOfWork uow)
         {
             _uow = uow;
-            _userRepo = new UserRepository(uow);
             _account = new Account(_uow);
             _userManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
 
@@ -122,6 +112,7 @@ namespace KwasantWeb.Controllers
                     UserDO curUserDO = new UserDO();
                     curUserDO.UserName = model.Email.Trim();
                     curUserDO.Password = model.Password.Trim();
+                    curUserDO.EmailConfirmed = true; //this line essentially disables email confirmation
 
                     RegistrationStatus curRegStatus = await _account.Register(curUserDO);
                     if (curRegStatus == RegistrationStatus.UserAlreadyExists)
@@ -130,8 +121,8 @@ namespace KwasantWeb.Controllers
                     }
                     else
                     {
-                        await SendEmailConfirmation(curUserDO);
-                        return RedirectToAction("Confirm", model);
+                        //await SendEmailConfirmation(curUserDO); email confirmation is currently turned off
+                        return RedirectToAction("Index", "Home");
                     }
                 }
             }
@@ -221,11 +212,11 @@ namespace KwasantWeb.Controllers
             string returnViewName = "RegistrationSuccessful";
             try
             {
-                UserDO curUserDO = _userRepo.FindOne(u => u.Id == userId);
+                UserDO curUserDO = _uow.UserRepository.FindOne(u => u.Id == userId);
                 if (curUserDO != null)
                 {
                     curUserDO.EmailConfirmed = true;
-                    _userRepo.UnitOfWork.SaveChanges();
+                    _uow.SaveChanges();
                 }
             }
             catch (Exception ex)

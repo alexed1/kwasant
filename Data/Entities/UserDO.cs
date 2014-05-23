@@ -10,37 +10,6 @@ namespace Data.Entities
 {
     public class UserDO : IdentityUser, IUser
     {
-        public UserDO()
-        {
-            PersonDO = new PersonDO(); 
-        }
-        
-        public UserDO(string curEmailAddress) : this()
-        {
-            EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(curEmailAddress);
-        }
-
-        [NotMapped]
-        public string FirstName
-        {
-            get { return PersonDO.FirstName; }
-            set { PersonDO.FirstName = value; }
-        }
-
-        [NotMapped]        
-        public string LastName
-        {
-            get { return PersonDO.LastName; }
-            set { PersonDO.LastName = value; }
-        }
-
-        [NotMapped]
-        public EmailAddressDO EmailAddress
-        {
-            get { return PersonDO.EmailAddress; }
-            set { PersonDO.EmailAddress = value; }
-        }
-
         /// <summary>
         /// This property may not be required a base class has property called PasswordHash 
         /// where password is stored in encrypted form and decrypted when it is fetched.
@@ -56,8 +25,10 @@ namespace Data.Entities
 
         [ForeignKey("PersonDO")]
         public int PersonID { get; set; }
+
         [Required]
         public virtual PersonDO PersonDO { get; set; }
+
     }
 }
 

@@ -8,7 +8,7 @@ namespace Data.Interfaces
     public interface ICustomer
     {
         [Key]
-        int CustomerID { get; set; }
+        int Id { get; set; }
 
         String EmailAddress { get; set; }
         String FirstName { get; set; }

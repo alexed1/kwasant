@@ -1,4 +1,6 @@
 ﻿using Data.Entities;
+using Data.Entities.Enumerations;
+using Data.Repositories;
 
 namespace KwasantTest.Fixtures
 {
@@ -13,11 +15,11 @@ namespace KwasantTest.Fixtures
         {
 
             EmailDO curEmailDO = new EmailDO();
-            curEmailDO.EmailID = 1;
-            curEmailDO.From = TestEmailAddress1();
-            curEmailDO.To.Add(TestEmailAddress2());
+            curEmailDO.Id = 1;
+            curEmailDO.AddEmailParticipant(EmailParticipantType.FROM, TestEmailAddress1());
+            curEmailDO.AddEmailParticipant(EmailParticipantType.TO, TestEmailAddress2());
             curEmailDO.Subject = "Main Subject";
-            curEmailDO.Text = "This is the Body Text";
+            curEmailDO.HTMLText = "This is the Body Text";
             return curEmailDO;
 
         }

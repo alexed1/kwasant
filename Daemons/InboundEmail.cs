@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
-using Microsoft.WindowsAzure;
 using S22.Imap;
 
 using StructureMap;
+using UtilitiesLib;
 using UtilitiesLib.Logging;
 
 namespace Daemons
@@ -25,42 +24,26 @@ namespace Daemons
         }
         private static string GetIMAPServer()
         {
-            return CloudConfigurationManager.GetSetting("InboundEmailHost");
+            return ConfigurationHelper.GetConfigurationValue("InboundEmailHost");
         }
 
         private static int GetIMAPPort()
         {
-            int port;
-            if (int.TryParse(CloudConfigurationManager.GetSetting("InboundEmailPort"), out port))
-                return port;
-            throw new Exception("Invalid value for 'InboundEmailPort'");
+            return ConfigurationHelper.GetConfigurationValue<int>("InboundEmailPort");
         }
 
         private static string GetUserName()
         {
-            string name = CloudConfigurationManager.GetSetting("INBOUND_EMAIL_USERNAME");
-            if (!String.IsNullOrEmpty(name))
-            {
-                return name;
-            }
-            throw new Exception("Missing value for 'INBOUND_EMAIL_USERNAME'");
+            return ConfigurationHelper.GetConfigurationValue("INBOUND_EMAIL_USERNAME");
         }
         private static string GetPassword()
         {
-            string pwd = CloudConfigurationManager.GetSetting("INBOUND_EMAIL_PASSWORD");
-            if (!String.IsNullOrEmpty(pwd))
-            {
-                return pwd;
-            }
-            throw new Exception("Missing value for 'INBOUND_EMAIL_PASSWORD'");
+            return ConfigurationHelper.GetConfigurationValue("INBOUND_EMAIL_PASSWORD");
         }
 
         private static bool UseSSL()
         {
-            bool useSSL;
-            if (bool.TryParse(CloudConfigurationManager.GetSetting("InboundEmailUseSSL"), out useSSL))
-                return useSSL;
-            throw new Exception("Invalid value for 'InboundEmailUseSSL'");
+            return ConfigurationHelper.GetConfigurationValue<bool>("InboundEmailUseSSL");
         }
 
         public InboundEmail(IImapClient client)
@@ -78,12 +61,18 @@ namespace Daemons
             IImapClient client;
             try
             {
-                client = _client ?? new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login,UseSSL());
+                client = _client ??
+                         new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
+            }
+            catch (ConfigurationException ex)
+            {
+                Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
+                Stop();
+                return;
             }
             catch (Exception ex)
             {
-                Logger.GetLogger().Error("Error occured on startup", ex);
-                Stop();
+                Logger.GetLogger().Error("Error occured on startup... restarting.", ex);
                 return;
             }
 
@@ -94,15 +83,15 @@ namespace Daemons
             foreach (var uid in uids)
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
-
+                BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
+                
                 var message = client.GetMessage(uid);
                 try
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
                     BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
 
-                    bookingRequestRepo.UnitOfWork.SaveChanges();
+                    unitOfWork.SaveChanges();
                 }
                 catch (Exception e)
                 {

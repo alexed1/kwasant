@@ -23,11 +23,11 @@ namespace KwasantTest.Services
         [SetUp]
         public void Setup()
         {
-            StructureMapBootStrapper.ConfigureDependencies("test");
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
             //_bookingRequestRepo = new BookingRequestRepository(_uow);
-            _fixture = new FixtureData(_uow);
+            _fixture = new FixtureData();
             _curEventDO = new EventDO();
         }
 
@@ -70,7 +70,7 @@ namespace KwasantTest.Services
 
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("Email")]
         public void CanSendSIE_MANUALTEST()
         {
@@ -88,7 +88,7 @@ namespace KwasantTest.Services
 
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("Email")]
         public void CanConstructEmailWithEmailDO()
         {

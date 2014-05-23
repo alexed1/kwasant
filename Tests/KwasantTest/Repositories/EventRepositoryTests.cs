@@ -18,12 +18,11 @@ namespace KwasantTest.Repositories
         [SetUp]
         public void Setup()
         {
-            StructureMapBootStrapper.ConfigureDependencies("test");
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
 
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
-            userRepo = new UserRepository(_uow);
-            _fixture = new FixtureData(_uow);
+            _fixture = new FixtureData();
         }
 
         [Test]

@@ -39,7 +39,7 @@ namespace KwasantWeb
         public void ConfigureCommunicationConfigs()
         {
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            CommunicationConfigurationRepository communicationConfigurationRepo = new CommunicationConfigurationRepository(uow);
+            CommunicationConfigurationRepository communicationConfigurationRepo = uow.CommunicationConfigurationRepository;
             List<CommunicationConfigurationDO> curConfigureCommunicationConfigs = communicationConfigurationRepo.GetAll().ToList();
 
 
@@ -51,7 +51,7 @@ namespace KwasantWeb
                     curCommConfig.Type = CommunicationType.SMS;
                     curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
                         communicationConfigurationRepo.Add(curCommConfig);
-                        communicationConfigurationRepo.UnitOfWork.SaveChanges();
+                        uow.SaveChanges();
                 }
            
             }

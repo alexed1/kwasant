@@ -1,10 +1,11 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using Data.Entities;
 
 namespace Data.Interfaces
 {
-    public interface IDBContext
+    public interface IDBContext : IDisposable
     {
         int SaveChanges();
 
@@ -14,8 +15,6 @@ namespace Data.Interfaces
         DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity)
             where TEntity : class;
 
-
-        /* DBSets */
-        IDbSet<InstructionDO> Instructions { get; }
+        IUnitOfWork UnitOfWork { get; set; }
     }
 }
