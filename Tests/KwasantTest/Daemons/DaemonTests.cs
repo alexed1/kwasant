@@ -29,15 +29,17 @@ namespace KwasantTest.Daemons
         private class TestDaemon : Daemon
         {
             private readonly Action _execute;
+            private readonly int _timeoutInSeconds;
 
-            public TestDaemon(Action execute)
+            public TestDaemon(Action execute, int timeoutInSeconds)
             {
                 _execute = execute;
+                _timeoutInSeconds = timeoutInSeconds;
             }
 
             public override int WaitTimeBetweenExecution
             {
-                get { return (int)TimeSpan.FromSeconds(10).TotalMilliseconds; }
+                get { return (int)TimeSpan.FromSeconds(_timeoutInSeconds).TotalMilliseconds; }
             }
 
             protected override void Run()
@@ -46,7 +48,7 @@ namespace KwasantTest.Daemons
             }
         }
 
-        private Daemon StartDaemonAndAwaitStartup(Action daemonAction, out Thread workingThread)
+        private Daemon StartDaemonAndAwaitStartup(Action daemonAction, out Thread workingThread, int timeoutInSeconds = 0)
         {
             object threadLocker = new object();
             Thread workerThread = null;
@@ -59,7 +61,7 @@ namespace KwasantTest.Daemons
                             Monitor.Pulse(threadLocker);
                         }
                         daemonAction();
-                    });
+                    }, timeoutInSeconds);
             Assert.True(mockDaemon.Start());
             lock (threadLocker)
             {
@@ -76,12 +78,10 @@ namespace KwasantTest.Daemons
         [Test, Category("Threaded")]
         public void DaemonGracefullyShutsDown()
         {
-            const int threadExecuteTime = 3000;
             bool hasFinished = false;
             Thread workerThread;
             Daemon mockDaemon = StartDaemonAndAwaitStartup(() =>
                 {
-                    Thread.Sleep(threadExecuteTime);
                     hasFinished = true;
                 }, out workerThread);
 
@@ -93,7 +93,7 @@ namespace KwasantTest.Daemons
             workerThread.Join();
         }
 
-        [Test, Category("Threaded"), Ignore]
+        [Test, Category("Threaded")]
         public void DaemonHandlesExceptionsAndDoesNotCrash()
         {
             object workLock = new object();
