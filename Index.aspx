@@ -63,7 +63,7 @@
         <div id="logotext" class="text">
             <h1>Kwasant</h1>
             <!-- <div class="love text-center" style="background-image: url(Content/images/logo.png);"></div> -->
-            <p>Hello We schedule your meetings for you</p>
+            <p>We schedule your meetings for you</p>
         </div>
     </div>
 
@@ -72,9 +72,9 @@
             <div class="container">
                 <div class="row-fluid">
                     <h2 class="text-center"><b>Schedule a Meeting in One Step</h2></b>
-                    <!-- <article class="span4">
-                        <i class= -->
-                    "icon-resize-full"></i>
+                    <%--<article class="span4">
+                        <i class=
+                    "icon-resize-full"></i>--%>
    
 
                     <img class="pull-center" src="Content/images/from_this_to_this.png" />
@@ -1054,7 +1054,7 @@
             </footer>
 
             <a class="goTop goTop-link"><i class="icon-angle-up"></i></a>
-            
+
 
             <% Response.Write(Scripts.Render("~/bundles/js/jquery").ToHtmlString()); %>
             <% Response.Write(Scripts.Render("~/bundles/js/bootstrap").ToHtmlString()); %>
