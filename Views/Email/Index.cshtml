@@ -23,8 +23,8 @@
 
 @foreach (EmailDO item in Model) {
     <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.HTMLText)
+        <td style="max-width:500px; max-height: 300px;">
+            @Html.Raw(item.HTMLText)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Subject)
