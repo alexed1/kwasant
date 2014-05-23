@@ -114,7 +114,7 @@ namespace UtilitiesLib
     {
         Successful,
         Pending,
-        UserAlreadyExists,
+        UserMustLogIn,
     }
 
     public enum LoginStatus

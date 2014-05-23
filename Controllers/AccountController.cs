@@ -115,7 +115,7 @@ namespace KwasantWeb.Controllers
                     curUserDO.EmailConfirmed = true; //this line essentially disables email confirmation
 
                     RegistrationStatus curRegStatus = await _account.Register(curUserDO);
-                    if (curRegStatus == RegistrationStatus.UserAlreadyExists)
+                    if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", "You are already registered with us. Please login.");
                     }
