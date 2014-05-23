@@ -39,11 +39,11 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </a>
-                <a class="brand goTop" href="index.aspx"><img class="floating" src="Content/images/perfect-krawsant.png"> Kwasant</a>
-                <!-- <img src="images/logo.png"></a> -->
+                <a class="brand goTop" href="index.aspx"><img class="floating" src="Content/img/perfect-krawsant.png"> Kwasant</a>
+                <!-- <img src="img/logo.png"></a> -->
                 <br />
                 
-                <!-- <a class="brand goTop"  style="background-image: url(Content/images/logo.png);"></a> -->
+                <!-- <a class="brand goTop"  style="background-image: url(Content/img/logo.png);"></a> -->
                 <div class="nav-collapse">
                     <ul class="nav pull-right">
                         <li data-section="1"><a href="#services">How it Works</a></li>
@@ -59,10 +59,10 @@
     </div>
 
 
-    <div id="welcome" class="parallax" style="background-image: url(Content/images/background-test9.jpg);">
+    <div id="welcome" class="parallax" style="background-image: url(Content/img/background-test9.jpg);">
         <div id="logotext" class="text">
             <h1>Kwasant</h1>
-            <!-- <div class="love text-center" style="background-image: url(Content/images/logo.png);"></div> -->
+            <!-- <div class="love text-center" style="background-image: url(Content/img/logo.png);"></div> -->
             <p>We schedule your meetings for you</p>
         </div>
     </div>
@@ -77,7 +77,7 @@
                     "icon-resize-full"></i>--%>
    
 
-                    <img class="pull-center" src="Content/images/from_this_to_this.png" />
+                    <img class="pull-center" src="Content/img/from_this_to_this.png" />
                 </div>
                 
             </div>
@@ -100,12 +100,12 @@
                     <p></p>
                     <p></p>
                     <p></p>
-                    <img class="pull-center"  src="Content/images/example_using_kwasant_email.png" />
+                    <img class="pull-center"  src="Content/img/example_using_kwasant_email.png" />
                     <br />
                     <br />
                     <br />
                     <!-- this is a section that breaks up the website -->
-                    <div id="services-bg" class="parallax" style="background-image: url(Content/images/homepage89.png);">
+                    <div id="services-bg" class="parallax" style="background-image: url(Content/img/homepage89.png);">
                         <br />
                         <br />
                         <div class="#fff-bg">
@@ -134,7 +134,7 @@
                     <div class="span12 text-center">
                         <!-- <h3 class="with-border">Watch who we are</h3> -->
                         
-                        <img src="Content/images/How_it_works_diagram.png" />
+                        <img src="Content/img/How_it_works_diagram.png" />
                         <!-- <div class="videoWrapper">
                             <iframe src="http://player.vimeo.com/video/20596477?color=39ae77" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
                         </div> -->
@@ -144,7 +144,7 @@
 
 
                 <!-- this is a section that breaks up the website -->
-                <div id="services-bg" class="parallax" style="background-image: url(Content/images/homepagesecond.jpg);">
+                <div id="services-bg" class="parallax" style="background-image: url(Content/img/homepagesecond.jpg);">
                     <br />
                     <br />
                     <div class="#fff-bg">
@@ -327,7 +327,7 @@
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <img src="Content/images/Management/alexhead.png" />
+                                                        <img src="Content/img/Management/alexhead.png" />
 
                                                     </div>
                                                     <h3 class="with-border">Alex Edelstein<small class="color">- chief technology officer</small></h3>
@@ -348,7 +348,7 @@
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <img src="Content/images/team2.jpg" alt=""/>
+                                                        <img src="Content/img/team2.jpg" alt=""/>
                                                     </div>
                                                     <h3 class="with-border">Katharine VanderDrift<small class="color">- talented designer</small></h3>
                                                     <p>Pellentesque ornare, risus et vulputate mollis, massa nulla aliquam neque, sed hendrerit orci quam eget ante.</p>
@@ -360,7 +360,7 @@
                         </div>
                     </section>
                     -->
-            <!-- <div id="services-bg" class="parallax" style="background-image: url(Content/images/bg4.jpg);">
+            <!-- <div id="services-bg" class="parallax" style="background-image: url(Content/img/bg4.jpg);">
                 <div class="#fff-bg">
                     <div class="text">
                         <blockquote>
@@ -465,7 +465,7 @@
                 </div>
             </section>
 
-            <div id="works-bg" class="parallax" style="background-image: url(Content/images/image_1.jpg);">
+            <div id="works-bg" class="parallax" style="background-image: url(Content/img/image_1.jpg);">
                 <div class="#fff-bg">
                     <div class="text">
                         <h2>
@@ -478,15 +478,15 @@
                     <div class="container img-container">
                         <div class="site-screen img1">
                             <div class="img-head"></div>
-                            <img alt="" src="Content/images/screen.jpg">
+                            <img alt="" src="Content/img/screen.jpg">
                         </div>
                         <div class="site-screen img2">
                             <div class="img-head"></div>
-                            <img alt="" src="Content/images/screen.jpg">
+                            <img alt="" src="Content/img/screen.jpg">
                         </div>
                         <div class="site-screen img3">
                             <div class="img-head"></div>
-                            <img alt="" src="Content/images/screen.jpg">
+                            <img alt="" src="Content/img/screen.jpg">
                         </div>
                     </div>
                 </div>
@@ -500,11 +500,11 @@
                                 <li class="span6 big-preview">
                                     <div class="thumbnail">
                                         <div class="img-wrap">
-                                            <a href="Content/images/bg4.jpg" class="colorbox">
+                                            <a href="Content/img/bg4.jpg" class="colorbox">
                                                 <div class="#fff-bg">
                                                     <i class="icon-zoom-in"></i>
                                                 </div>
-                                                <img src="Content/images/bg4.jpg" alt="" rel="gal"/>
+                                                <img src="Content/img/bg4.jpg" alt="" rel="gal"/>
                                             </a>
                                         </div>
                                         <h3 class="with-border">The latest project</h3>
@@ -516,11 +516,11 @@
                                         <li class="span3">
                                             <div class="thumbnail">
                                                 <div class="img-wrap">
-                                                    <a href="Content/images/image_3.jpg" class="colorbox">
+                                                    <a href="Content/img/image_3.jpg" class="colorbox">
                                                         <div class="#fff-bg">
                                                             <i class="icon-zoom-in"></i>
                                                         </div>
-                                                        <img src="Content/images/image_3.jpg" alt="" rel="gal"/>
+                                                        <img src="Content/img/image_3.jpg" alt="" rel="gal"/>
                                                     </a>
                                                 </div>
                                                 <h3 class="with-border"><a href="#">Summer day <i class="icon-external-link"></i></a></h3>
@@ -530,11 +530,11 @@
                                         <li class="span3">
                                             <div class="thumbnail">
                                                 <div class="img-wrap">
-                                                    <a href="Content/images/bg3.jpg" class="colorbox">
+                                                    <a href="Content/img/bg3.jpg" class="colorbox">
                                                         <div class="#fff-bg">
                                                             <i class="icon-zoom-in"></i>
                                                         </div>
-                                                        <img src="Content/images/bg3.jpg" alt="" rel="gal"/>
+                                                        <img src="Content/img/bg3.jpg" alt="" rel="gal"/>
                                                     </a>
                                                 </div>
                                                 <h3 class="with-border"><a href="#">External example <i class="icon-external-link"></i></a></h3>
@@ -546,11 +546,11 @@
                                         <li class="span3">
                                             <div class="thumbnail">
                                                 <div class="img-wrap">
-                                                    <a href="Content/images/bg2.jpg" class="colorbox">
+                                                    <a href="Content/img/bg2.jpg" class="colorbox">
                                                         <div class="#fff-bg">
                                                             <i class="icon-zoom-in"></i>
                                                         </div>
-                                                        <img src="Content/images/bg2.jpg" alt="" rel="gal"/>
+                                                        <img src="Content/img/bg2.jpg" alt="" rel="gal"/>
                                                     </a>
                                                 </div>
                                                 <h3 class="with-border"><a href="#">Good morning <i class="icon-external-link"></i></a></h3>
@@ -560,11 +560,11 @@
                                         <li class="span3" >
                                             <div class="thumbnail">
                                                 <div class="img-wrap">
-                                                    <a href="Content/images/image_1.jpg" class="colorbox">
+                                                    <a href="Content/img/image_1.jpg" class="colorbox">
                                                         <div class="#fff-bg">
                                                             <i class="icon-zoom-in"></i>
                                                         </div>
-                                                        <img src="Content/images/image_1.jpg" alt="" rel="gal"/>
+                                                        <img src="Content/img/image_1.jpg" alt="" rel="gal"/>
                                                     </a>
                                                 </div>
                                                 <h3 class="with-border">Work place</h3>
@@ -577,11 +577,11 @@
                                     <li class="span3">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="Content/images/image_2.jpg" class="colorbox">
+                                                <a href="Content/img/image_2.jpg" class="colorbox">
                                                     <div class="#fff-bg">
                                                         <i class="icon-zoom-in"></i>
                                                     </div>
-                                                    <img src="Content/images/image_2.jpg" alt="" rel="gal"/>
+                                                    <img src="Content/img/image_2.jpg" alt="" rel="gal"/>
                                                 </a>
                                             </div>
                                             <h3 class="with-border"><a href="#">Summer day <i class="icon-external-link"></i></a></h3>
@@ -591,11 +591,11 @@
                                     <li class="span3">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="Content/images/image_4.jpg" class="colorbox">
+                                                <a href="Content/img/image_4.jpg" class="colorbox">
                                                     <div class="#fff-bg">
                                                         <i class="icon-zoom-in"></i>
                                                     </div>
-                                                    <img src="Content/images/image_4.jpg" alt="" rel="gal"/>
+                                                    <img src="Content/img/image_4.jpg" alt="" rel="gal"/>
                                                 </a>
                                             </div>
                                             <h3 class="with-border"><a href="#">Work place <i class="icon-external-link"></i></a></h3>
@@ -605,11 +605,11 @@
                                     <li class="span3">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="Content/images/bg3.jpg" class="colorbox">
+                                                <a href="Content/img/bg3.jpg" class="colorbox">
                                                     <div class="#fff-bg">
                                                         <i class="icon-zoom-in"></i>
                                                     </div>
-                                                    <img src="Content/images/bg3.jpg" alt="" rel="gal"/>
+                                                    <img src="Content/img/bg3.jpg" alt="" rel="gal"/>
                                                 </a>
                                             </div>
                                             <h3 class="with-border"><a href="#">Good morning <i class="icon-external-link"></i></a></h3>
@@ -619,11 +619,11 @@
                                     <li class="span3">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="Content/images/image_5.jpg" class="colorbox">
+                                                <a href="Content/img/image_5.jpg" class="colorbox">
                                                     <div class="#fff-bg">
                                                         <i class="icon-zoom-in"></i>
                                                     </div>
-                                                    <img src="Content/images/image_5.jpg" alt="" rel="gal"/>
+                                                    <img src="Content/img/image_5.jpg" alt="" rel="gal"/>
                                                 </a>
                                             </div>
                                             <h3 class="with-border"><a href="#">Work place <i class="icon-external-link"></i></a></h3>
@@ -635,11 +635,11 @@
                                     <li class="span3">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="Content/images/image_3.jpg" class="colorbox">
+                                                <a href="Content/img/image_3.jpg" class="colorbox">
                                                     <div class="#fff-bg">
                                                         <i class="icon-zoom-in"></i>
                                                     </div>
-                                                    <img src="Content/images/image_3.jpg" alt="" rel="gal"/>
+                                                    <img src="Content/img/image_3.jpg" alt="" rel="gal"/>
                                                 </a>
                                             </div>
                                             <h3 class="with-border">Summer day</h3>
@@ -649,11 +649,11 @@
                                     <li class="span3">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="Content/images/bg4.jpg" class="colorbox">
+                                                <a href="Content/img/bg4.jpg" class="colorbox">
                                                     <div class="#fff-bg">
                                                         <i class="icon-zoom-in"></i>
                                                     </div>
-                                                    <img src="Content/images/bg4.jpg" alt="" rel="gal"/>
+                                                    <img src="Content/img/bg4.jpg" alt="" rel="gal"/>
                                                 </a>
                                             </div>
                                             <h3 class="with-border">Work place</h3>
@@ -663,11 +663,11 @@
                                     <li class="span3">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="Content/images/bg1.jpg" class="colorbox">
+                                                <a href="Content/img/bg1.jpg" class="colorbox">
                                                     <div class="#fff-bg">
                                                         <i class="icon-zoom-in"></i>
                                                     </div>
-                                                    <img src="Content/images/bg1.jpg" alt="" rel="gal"/>
+                                                    <img src="Content/img/bg1.jpg" alt="" rel="gal"/>
                                                 </a>
                                             </div>
                                             <h3 class="with-border">Good morning</h3>
@@ -677,11 +677,11 @@
                                     <li class="span3">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="Content/images/image_6.jpg" class="colorbox">
+                                                <a href="Content/img/image_6.jpg" class="colorbox">
                                                     <div class="#fff-bg">
                                                         <i class="icon-zoom-in"></i>
                                                     </div>
-                                                    <img src="Content/images/image_6.jpg" alt="" rel="gal"/>
+                                                    <img src="Content/img/image_6.jpg" alt="" rel="gal"/>
                                                 </a>
                                             </div>
                                             <h3 class="with-border"><a href="#">Work place <i class="icon-external-link"></i></a></h3>
@@ -694,7 +694,7 @@
                     </div>
                 </section>
 
-                <div id="clients-bg" class="parallax" style="background-image: url(Content/images/bg8.jpg);">
+                <div id="clients-bg" class="parallax" style="background-image: url(Content/img/bg8.jpg);">
                     <div class="#fff-bg">
                         <div class="text">
                             <blockquote>
@@ -735,22 +735,22 @@
                                 <div class="clients-block">
                                     <div class="row-fluid">
                                         <article class="span2">
-                                            <img src="Content/images/client-1.png" alt="">
+                                            <img src="Content/img/client-1.png" alt="">
                                         </article>
                                         <article class="span2">
-                                            <img src="Content/images/client-2.png" alt="">
+                                            <img src="Content/img/client-2.png" alt="">
                                         </article>
                                         <article class="span2">
-                                            <img src="Content/images/client-3.png" alt="">
+                                            <img src="Content/img/client-3.png" alt="">
                                         </article>
                                         <article class="span2">
-                                            <img src="Content/images/client-4.png" alt="">
+                                            <img src="Content/img/client-4.png" alt="">
                                         </article>
                                         <article class="span2">
-                                            <img src="Content/images/client-5.png" alt="">
+                                            <img src="Content/img/client-5.png" alt="">
                                         </article>
                                         <article class="span2">
-                                            <img src="Content/images/client-6.png" alt="">
+                                            <img src="Content/img/client-6.png" alt="">
                                         </article>
                                     </div>
                                 </div>
@@ -759,7 +759,7 @@
                     </div>
                 </section>
 
-                <div id="blog-bg" class="parallax" style="background-image: url(Content/images/bg7.jpg)">
+                <div id="blog-bg" class="parallax" style="background-image: url(Content/img/bg7.jpg)">
                     <div class="#fff-bg">
                         <div class="text">
                             <blockquote>
@@ -781,7 +781,7 @@
                                     <li class="span4">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="#"><img src="Content/images/image_1.jpg" alt=""/></a>
+                                                <a href="#"><img src="Content/img/image_1.jpg" alt=""/></a>
                                             </div>
                                             <h3 class="with-border">Lorem ipsum dolor sit amet</h3>
                                             <div class="info-panel clearfix">
@@ -795,7 +795,7 @@
                                     <li class="span4">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="#"><img src="Content/images/image_2.jpg" alt=""/></a>
+                                                <a href="#"><img src="Content/img/image_2.jpg" alt=""/></a>
                                             </div>
                                             <h3 class="with-border">Cum maiestatis necessitatibus ad</h3>
                                             <div class="info-panel clearfix">
@@ -809,7 +809,7 @@
                                     <li class="span4">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="#"><img src="Content/images/team3.jpg" alt=""/></a>
+                                                <a href="#"><img src="Content/img/team3.jpg" alt=""/></a>
                                             </div>
                                             <h3 class="with-border">Dicat tantas copiosae eam id</h3>
                                             <div class="info-panel clearfix">
@@ -825,7 +825,7 @@
                                     <li class="span4">
                                         <div class="thumbnail">
                                             <div class="img-wrap2">
-                                                <a href="#"><img src="Content/images/image_4.jpg" alt=""/></a>
+                                                <a href="#"><img src="Content/img/image_4.jpg" alt=""/></a>
                                             </div>
                                             <h3 class="with-border">Theophrastus, dicat tantas</h3>
                                             <div class="info-panel clearfix">
@@ -839,7 +839,7 @@
                                     <li class="span4">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="#"><img src="Content/images/image_5.jpg" alt=""/></a>
+                                                <a href="#"><img src="Content/img/image_5.jpg" alt=""/></a>
                                             </div>
                                             <h3 class="with-border">Cras metus elit, consectetur sed</h3>
                                             <div class="info-panel clearfix">
@@ -853,7 +853,7 @@
                                     <li class="span4">
                                         <div class="thumbnail">
                                             <div class="img-wrap">
-                                                <a href="#"><img src="Content/images/image_6.jpg" alt=""/></a>
+                                                <a href="#"><img src="Content/img/image_6.jpg" alt=""/></a>
                                             </div>
                                             <h3 class="with-border">Lorem ipsum dolor sit amet</h3>
                                             <div class="info-panel clearfix">
@@ -870,7 +870,7 @@
                     </div>
                 </section>
 
-                <div id="price-bg" class="parallax" style="background-image: url(Content/images/bg9.jpg);">
+                <div id="price-bg" class="parallax" style="background-image: url(Content/img/bg9.jpg);">
                     <div class="#fff-bg">
                         <div class="text">
                             <blockquote>
@@ -1053,7 +1053,7 @@
                 </div>
             </footer>
 
-            <a class="goTop goTop-link"><i class="icon-angle-up"></i></a>
+            <a class="goTop goTop-link"><i class="icon-arrow-up"></i></a>
 
 
             <% Response.Write(Scripts.Render("~/bundles/js/jquery").ToHtmlString()); %>
