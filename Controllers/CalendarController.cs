@@ -269,6 +269,33 @@ namespace KwasantWeb.Controllers
                     Event = eventDO
                 }
             };
+            if (BookingRequestDO.To != null)
+            {
+                eventDO.Attendees.AddRange(BookingRequestDO.To.Select(a => new AttendeeDO
+                {
+                    EmailAddress = a.Address,
+                    Name = a.Name,
+                    Event = eventDO
+                }));
+            }
+            if (BookingRequestDO.CC != null)
+            {
+                eventDO.Attendees.AddRange(BookingRequestDO.CC.Select(a => new AttendeeDO
+                {
+                    EmailAddress = a.Address,
+                    Name = a.Name,
+                    Event = eventDO
+                }));
+            }
+            if (BookingRequestDO.BCC != null)
+            {
+                eventDO.Attendees.AddRange(BookingRequestDO.BCC.Select(a => new AttendeeDO
+                {
+                    EmailAddress = a.Address,
+                    Name = a.Name,
+                    Event = eventDO
+                }));
+            }
 
             return View("~/Views/Calendar/Open.cshtml", eventDO);
         }
