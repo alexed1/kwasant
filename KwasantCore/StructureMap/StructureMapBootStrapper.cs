@@ -22,11 +22,9 @@ namespace KwasantCore.StructureMap
             {
                 case DependencyType.TEST:
                     ObjectFactory.Initialize(x => x.AddRegistry<TestMode>());
-                    DatabaseStructureMapBootStrapper.ConfigureDependencies(DatabaseStructureMapBootStrapper.DependencyType.TEST);
                     break;
                 case DependencyType.LIVE:
                     ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
-                    DatabaseStructureMapBootStrapper.ConfigureDependencies(DatabaseStructureMapBootStrapper.DependencyType.LIVE);
                     break;
             }
         }
@@ -39,7 +37,7 @@ namespace KwasantCore.StructureMap
             }
         }
 
-        public class LiveMode : KwasantCoreRegistry
+        public class LiveMode : DatabaseStructureMapBootStrapper.LiveMode
         {
             public LiveMode()
             {
@@ -47,7 +45,7 @@ namespace KwasantCore.StructureMap
             }
         }
 
-        public class TestMode : KwasantCoreRegistry
+        public class TestMode : DatabaseStructureMapBootStrapper.TestMode
         {
             public TestMode()
             {

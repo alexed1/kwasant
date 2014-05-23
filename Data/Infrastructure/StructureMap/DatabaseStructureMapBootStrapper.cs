@@ -7,27 +7,6 @@ namespace Data.Infrastructure.StructureMap
 {
     public class DatabaseStructureMapBootStrapper
     {
-        public enum DependencyType
-        {
-            TEST = 0,
-            LIVE = 1
-        }
-
-        #region Method
-
-        public static void ConfigureDependencies(DependencyType type)
-        {
-            switch (type)
-            {
-                case DependencyType.TEST:
-                    ObjectFactory.Initialize(x => x.AddRegistry<TestMode>());
-                    break;
-                case DependencyType.LIVE:
-                    ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
-                    break;
-            }
-        }
-
         public class KwasantCoreRegistry : Registry
         {
             public KwasantCoreRegistry()
@@ -60,7 +39,5 @@ namespace Data.Infrastructure.StructureMap
                 For<IUnitOfWork>().Use(new UnitOfWork(new MockedDBContext()));
             }
         }
-
-        #endregion
     }
 }

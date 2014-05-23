@@ -1,5 +1,5 @@
 ﻿@{
-var basicText = UtilitiesLib.ConfigurationHelper.GetConfigurationValue("emailBasicText");
+var basicText = UtilitiesLib.ConfigRepository.Get("emailBasicText");
 var time = Model.IsAllDay
                         ? "All day - " + Model.StartDate.ToString("ddd d MMM")
                         : Model.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " + Model.EndDate.ToString("hh:mm tt");
