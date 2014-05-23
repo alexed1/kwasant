@@ -1006,7 +1006,7 @@ if (typeof DayPilotMonth === 'undefined') {
                             inside.push("</div>");
                         }
                         else {
-                            inside.push("<div style='margin-top:0px;height:");
+                            inside.push("<div style='margin-top:12px;height:");
                             inside.push(resolved.eventHeight() - 2);
                             inside.push("px;");
                             inside.push(";overflow:hidden;text-align:center;font-size:");
