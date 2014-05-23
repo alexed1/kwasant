@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using Data.Entities;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
@@ -93,15 +94,21 @@ namespace KwasantWeb.Controllers.DayPilot
                 return;
             }
 
-            DataStartField = "StartDate";
-            DataEndField = "EndDate";
-            DataTextField = "Summary";
-            //DataIdField = "EventID";
-            DataIdField = "ID";
-
+            DataStartField = GetPropertyName(ev => ev.StartDate);
+            DataEndField = GetPropertyName(ev => ev.EndDate);
+            DataTextField = GetPropertyName(ev => ev.Summary);
+            DataIdField = GetPropertyName(ev => ev.Id);
             Events = _calendar.EventsList;
-            
+        }
 
+        //This creates a statically typed reference to our supplied property. If we change it in the future, it won't compile (so it won't break at runtime).
+        //Changing the property with tools like resharper will automatically update here.
+        private string GetPropertyName<T>(Expression<Func<EventDO, T>> expression)
+        {
+            if(expression.Body.NodeType == ExpressionType.MemberAccess)
+                return (expression.Body as dynamic).Member.Name;
+
+            throw new Exception("Cannot contain complex expressions. An example of a supported expression is 'ev => ev.Id'");
         }
     }
 }

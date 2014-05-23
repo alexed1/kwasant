@@ -166,7 +166,7 @@ namespace KwasantCore.Services
                 curEmailAddressValidator.ValidateAndThrow(archiveAddress);
                 
                 createdEmail.AddEmailParticipant(EmailParticipantType.BCC, archiveAddress);
-            }
+        }
 
             _uow.EmailRepository.Add(createdEmail);
             _uow.SaveChanges();

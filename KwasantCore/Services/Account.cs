@@ -44,7 +44,21 @@ namespace KwasantCore.Services
                 curPersonDO = curUserDO.PersonDO;
                 if (curUserDO != null)
                 {
-                    //if a User, redirect to an error message
+                    
+                    if (curUserDO.Password == null)
+                    {
+                        //this is an existing implicit user, who sent in a request in the past, had a UserDO created, and now is registering. Add the password
+                        curUserDO.Password = userRegStrings.Password;
+                        _identityManager.AttachPassword(curUserDO);
+                    }
+                    else
+                    {
+                        //tell 'em to login
+                        curRegStatus = RegistrationStatus.UserMustLogIn;
+                    }
+
+
+
                 }
                 else  //existingEmailAddressDO is Person
                 {

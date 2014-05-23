@@ -44,8 +44,8 @@ namespace KwasantTest.Models
             //VERIFY
             //check that it was saved to the db
             UserDO savedUserDO = _uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == curUserDO.Id);
-            Assert.AreEqual(curUserDO.FirstName,savedUserDO.FirstName);
-            Assert.AreEqual(curUserDO.EmailAddress, savedUserDO.EmailAddress);
+            Assert.AreEqual(curUserDO.PersonDO.FirstName, savedUserDO.PersonDO.FirstName);
+            Assert.AreEqual(curUserDO.PersonDO.EmailAddress, savedUserDO.PersonDO.EmailAddress);
 
 
         }

@@ -114,7 +114,7 @@ namespace KwasantCore.Services
 
         public UserDO FindByEmailId(int Id)
         {
-            return _userRepo.FindOne(p => p.EmailAddress.Id == Id);
+            return _userRepo.FindOne(p => p.PersonDO.EmailAddress.Id == Id);
 
         }
     }

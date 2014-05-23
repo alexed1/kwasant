@@ -93,7 +93,7 @@ namespace KwasantTest.Daemons
             workerThread.Join();
         }
 
-        [Test, Category("Threaded")]
+        [Test, Category("Threaded"), Ignore]
         public void DaemonHandlesExceptionsAndDoesNotCrash()
         {
             object workLock = new object();
