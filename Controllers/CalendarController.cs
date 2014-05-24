@@ -12,7 +12,7 @@ using DayPilot.Web.Mvc.Json;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.DayPilot;
 using StructureMap;
-using UtilitiesLib;
+using Utilities;
 using Calendar = KwasantCore.Services.Calendar;
 using ViewModel.Models;
 

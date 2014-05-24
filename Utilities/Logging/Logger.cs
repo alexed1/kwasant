@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using log4net;
 
-namespace UtilitiesLib.Logging
+namespace Utilities.Logging
 {
     public static class Logger
     {
@@ -16,4 +16,8 @@ namespace UtilitiesLib.Logging
             return LogManager.GetLogger(new StackTrace().GetFrame(1).GetMethod().DeclaringType);
         }
     }
+
+    
+
+
 }

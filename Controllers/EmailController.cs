@@ -10,8 +10,8 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
-using UtilitiesLib;
-using UtilitiesLib.Logging;
+using Utilities;
+using Utilities.Logging;
 
 namespace KwasantWeb.Controllers
 {

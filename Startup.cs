@@ -14,7 +14,7 @@ using Microsoft.Owin;
 using Microsoft.WindowsAzure;
 using Owin;
 using StructureMap;
-using UtilitiesLib.Logging;
+using Utilities.Logging;
 
 [assembly: OwinStartup(typeof(KwasantWeb.Startup))]
 

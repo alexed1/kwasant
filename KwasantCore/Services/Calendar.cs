@@ -14,7 +14,7 @@ using KwasantCore.Managers.CommunicationManager;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
-using UtilitiesLib;
+using Utilities;
 
 namespace KwasantCore.Services
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
-using UtilitiesLib;
+using Utilities;
 
 namespace KwasantCore.Managers.APIManager.Transmitters.Restful
 {
