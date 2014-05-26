@@ -14,6 +14,7 @@ using Data.Infrastructure;
 using Utilities;
 using KwasantWeb.ViewModels;
 using KwasantCore.Services;
+using KwasantCore.Managers.IdentityManager;
 
 namespace KwasantWeb.Controllers
 {
@@ -109,8 +110,15 @@ namespace KwasantWeb.Controllers
             { 
                 if (ModelState.IsValid)
                 {
-                    UserDO curUserDO = new UserDO();
-                    curUserDO.UserName = model.Email.Trim();
+                    var curUserDO = new UserDO()
+                    {
+                        UserName = model.Email.Trim(),
+                        PersonDO = new PersonDO()
+                        {
+                            EmailAddress = _uow.EmailAddressRepository.GetOrCreateEmailAddress(model.Email.Trim()),
+                            FirstName = model.Email.Trim()
+                        }
+                    };
                     curUserDO.Password = model.Password.Trim();
                     curUserDO.EmailConfirmed = true; //this line essentially disables email confirmation
 
@@ -173,7 +181,9 @@ namespace KwasantWeb.Controllers
                             }
                             else if (curLoginStatus == LoginStatus.Successful)
                             {
-                                return Redirect(!String.IsNullOrEmpty(returnUrl) ? returnUrl : "/index.aspx");
+                                //return Redirect(!String.IsNullOrEmpty(returnUrl) ? returnUrl : "/index.aspx");
+                                //RedirectedToHomePage();
+                                return RedirectToAction("Index", "Admin");
                             }
                             break;
                     }
