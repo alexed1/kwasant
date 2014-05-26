@@ -598,7 +598,7 @@
     <Content Include="Views\Calendar\Message.cshtml" />
     <Content Include="Views\Calendar\Navigation.json" />
     <Content Include="Views\Calendar\Notify.cshtml" />
-    <Content Include="Views\Event\Open.cshtml" />
+    <Content Include="Views\Event\Edit.cshtml" />
     <Content Include="Views\Calendar\RecurringEvents.cshtml" />
     <Content Include="Views\Calendar\Resources.cshtml" />
     <Content Include="Views\Calendar\Rtl.cshtml" />
@@ -610,7 +610,7 @@
     <Content Include="Views\Calendar\TimeHeaderCellDuration.cshtml" />
     <Content Include="Views\Calendar\Today.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
-    <Content Include="Views\Event\ProcessCreateEvent.cshtml" />
+    <Content Include="Views\Event\ConfirmEventEdits.cshtml" />
     <Content Include="Views\Event\DeleteEvent.cshtml" />
     <Content Include="Views\MandrillWebhook\Index.cshtml" />
     <Content Include="Views\Account\Confirm.cshtml" />

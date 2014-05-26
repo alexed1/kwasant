@@ -95,10 +95,10 @@ namespace KwasantWeb.Controllers
                 }));
             }
 
-            return View("~/Views/Event/Open.cshtml", eventDO);
+            return View("~/Views/Event/Edit.cshtml", eventDO);
         }
 
-        public ActionResult Open(int eventID)
+        public ActionResult Edit(int eventID)
         {
             return View(
                 Calendar.GetEvent(eventID)
@@ -133,7 +133,7 @@ namespace KwasantWeb.Controllers
 
             string key = Guid.NewGuid().ToString();
             Session["FakedEvent_" + key] = eventDO;
-            return View("~/Views/Event/ProcessCreateEvent.cshtml", new KwasantWeb.Controllers.CalendarController.ConfirmEvent
+            return View("~/Views/Event/ConfirmEventEdits.cshtml", new KwasantWeb.Controllers.CalendarController.ConfirmEvent
             {
                 Key = key,
                 EventDO = eventDO
@@ -154,7 +154,7 @@ namespace KwasantWeb.Controllers
         /// </summary>
         /// <param name="form"></param>
         /// <returns></returns>
-        public ActionResult ProcessCreateEvent(CalendarViewModel calendarViewModel)
+        public ActionResult ConfirmEventEdits(CalendarViewModel calendarViewModel)
         {
             //This is a fake event that will be thrown away if Confirm() is not called
             EventDO eventDO = new EventDO
