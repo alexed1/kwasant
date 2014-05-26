@@ -286,6 +286,7 @@
     <Compile Include="Controllers\DayPilot\DayPilotCalendarControl.cs" />
     <Compile Include="Controllers\DayPilot\DayPilotNavigatorControl.cs" />
     <Compile Include="Controllers\EmailController.cs" />
+    <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MonthController.cs" />
@@ -597,7 +598,7 @@
     <Content Include="Views\Calendar\Message.cshtml" />
     <Content Include="Views\Calendar\Navigation.json" />
     <Content Include="Views\Calendar\Notify.cshtml" />
-    <Content Include="Views\Calendar\Open.cshtml" />
+    <Content Include="Views\Event\Open.cshtml" />
     <Content Include="Views\Calendar\RecurringEvents.cshtml" />
     <Content Include="Views\Calendar\Resources.cshtml" />
     <Content Include="Views\Calendar\Rtl.cshtml" />
@@ -609,8 +610,8 @@
     <Content Include="Views\Calendar\TimeHeaderCellDuration.cshtml" />
     <Content Include="Views\Calendar\Today.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
-    <Content Include="Views\Calendar\ProcessCreateEvent.cshtml" />
-    <Content Include="Views\Calendar\DeleteEvent.cshtml" />
+    <Content Include="Views\Event\ProcessCreateEvent.cshtml" />
+    <Content Include="Views\Event\DeleteEvent.cshtml" />
     <Content Include="Views\MandrillWebhook\Index.cshtml" />
     <Content Include="Views\Account\Confirm.cshtml" />
   </ItemGroup>

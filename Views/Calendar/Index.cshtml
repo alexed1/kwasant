@@ -368,19 +368,19 @@
     }
 
     function eventClick(e) {
-        displayForm(getBaseCalendarURL() + '/Open/?eventID=' + e.id());
+        displayForm(getBaseURL() + '/Event/Open/?eventID=' + e.id());
     }
 
     function eventNew(start, end) {
-        displayForm(getBaseCalendarURL() + '/New/?start=' + start + '&end=' + end);
+        displayForm(getBaseURL() + '/Event/New/?start=' + start + '&end=' + end);
     }
 
     function eventMove(e, newStart, newEnd) {
-        displayForm(getBaseCalendarURL() + '/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
+        displayForm(getBaseURL() + '/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
     }
 
     function eventDelete(e) {
-        displayForm(getBaseCalendarURL() + '/DeleteEvent/?eventID=' + e.id());
+        displayForm(getBaseURL() + '/Event/DeleteEvent/?eventID=' + e.id());
     }
 
 </script>
