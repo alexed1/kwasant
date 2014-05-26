@@ -10,7 +10,7 @@ using KwasantTest.Fixtures;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesLib;
+using Utilities;
 
 namespace KwasantTest.Services
 {

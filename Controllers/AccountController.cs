@@ -11,7 +11,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Infrastructure;
-using UtilitiesLib;
+using Utilities;
 using KwasantWeb.ViewModels;
 using KwasantCore.Services;
 

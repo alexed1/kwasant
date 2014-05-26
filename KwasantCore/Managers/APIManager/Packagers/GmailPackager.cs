@@ -4,7 +4,7 @@ using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
 using Data.Entities;
-using UtilitiesLib;
+using Utilities;
 
 namespace KwasantCore.Managers.APIManager.Packagers
 {

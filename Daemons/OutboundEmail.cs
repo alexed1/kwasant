@@ -7,7 +7,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
 using StructureMap;
-using UtilitiesLib.Logging;
+using Utilities.Logging;
 
 namespace Daemons
 {

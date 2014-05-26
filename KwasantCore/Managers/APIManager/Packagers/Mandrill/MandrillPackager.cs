@@ -5,7 +5,7 @@ using System.Threading;
 using Data.Entities;
 using KwasantCore.Managers.APIManager.Transmitters.Restful;
 using Newtonsoft.Json;
-using UtilitiesLib;
+using Utilities;
 using JsonSerializer = KwasantCore.Managers.APIManager.Serializers.Json.JsonSerializer;
 
 namespace KwasantCore.Managers.APIManager.Packagers.Mandrill

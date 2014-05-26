@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
@@ -9,8 +10,8 @@ using KwasantCore.Services;
 using S22.Imap;
 
 using StructureMap;
-using UtilitiesLib;
-using UtilitiesLib.Logging;
+using Utilities;
+using Utilities.Logging;
 
 namespace Daemons
 {
@@ -79,7 +80,15 @@ namespace Daemons
 
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
             IEnumerable<uint> uids = client.Search(SearchCondition.Unseen()).ToList();
-            Logger.GetLogger().Info(GetType().Name + " - " + uids.Count() + " emails found...");
+
+            string logString;
+
+            //the difference in syntax makes it easy to have nonzero hits stand out visually in the log dashboard
+            if (uids.Count()>0)           
+                logString = GetType().Name + " - 0 emails found...";
+            else
+                logString = GetType().Name + " - " + uids.Count() + "emails found!";
+            Logger.GetLogger().Info(logString);
 
             foreach (var uid in uids)
             {
