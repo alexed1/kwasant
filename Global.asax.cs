@@ -11,7 +11,7 @@ using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
 using KwasantWeb.Controllers;
 using FluentValidation;
-using UtilitiesLib.Logging;
+using Utilities.Logging;
 
 namespace KwasantWeb
 {

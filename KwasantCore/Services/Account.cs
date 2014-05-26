@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
-using UtilitiesLib;
+using Utilities;
 using KwasantCore.Managers.IdentityManager;
 
 namespace KwasantCore.Services

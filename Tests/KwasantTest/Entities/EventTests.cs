@@ -12,7 +12,7 @@ using StructureMap;
 
 namespace KwasantTest.Entities
 {
-    [TestFixture, Ignore]
+    [TestFixture]
     public class EventTests 
     {
         public IUnitOfWork _uow;
@@ -81,7 +81,7 @@ namespace KwasantTest.Entities
         public void Event_Add_CanAddEventWithRequiredFields()
         {
             //SETUP      
-            EventDO curOriginalEventDO = _fixture.TestEvent1();
+            EventDO curOriginalEventDO = _fixture.TestEvent2();
 
             //EXECUTE
             _uow.EventRepository.Add(curOriginalEventDO);
@@ -92,12 +92,12 @@ namespace KwasantTest.Entities
             Assert.AreEqual(curOriginalEventDO.Id, curRetrievedEventDO.Id);
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("Event")]
         public void Event_Add_FailsWhenAddEventWithTooShortDescription()
         {
             //SETUP      
-            EventDO curOriginalEventDO = _fixture.TestEvent1();
+            EventDO curOriginalEventDO = _fixture.TestEvent2();
             curOriginalEventDO.Description = "X";
 
             //EXECUTE
@@ -130,26 +130,14 @@ namespace KwasantTest.Entities
             Assert.AreEqual(curOriginalEventDO.Id, CurRetrievedEventDO.Id);
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("Event")]
         public void Event_Add_FailAddEventIfPriorityValueZero()
         {
-            //SETUP      
-            EventDO curOriginalEventDO = new EventDO
-            {
-                StartDate = DateTime.Now.AddHours(3),
-                EndDate = DateTime.Now.AddHours(2),
-                Priority = 0,
-                Sequence = 2,
-                IsAllDay = true,
-                Category = "Vacation",
-                Class = "Public",
-                Description = "This is a test event description.",
-                Location = "Silicon Valley.",
-                Status = "Closed",
-                Summary = "This is a test event summary.",
-                Transparency = "Transparent"
-            };
+            //SETUP
+
+            EventDO curOriginalEventDO = _fixture.TestEvent2();
+            curOriginalEventDO.Priority = 0;
 
             //EXECUTE
             Assert.Throws<ValidationException>(() =>
@@ -159,26 +147,13 @@ namespace KwasantTest.Entities
             );
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("Event")]
         public void Event_Add_FailAddEventIfSequenceValueZero()
         {
             //SETUP      
-            EventDO curOriginalEventDO = new EventDO
-            {
-                StartDate = DateTime.Now.AddHours(3),
-                EndDate = DateTime.Now.AddHours(2),
-                Priority = 1,
-                Sequence = 0,
-                IsAllDay = true,
-                Category = "Vacation",
-                Class = "Public",
-                Description = "This is a test event description.",
-                Location = "Silicon Valley.",
-                Status = "Closed",
-                Summary = "This is a test event summary.",
-                Transparency = "Transparent"
-            };
+            EventDO curOriginalEventDO = _fixture.TestEvent2();
+            curOriginalEventDO.Sequence = 0;
 
             //EXECUTE
             Assert.Throws<ValidationException>(() =>
@@ -188,26 +163,13 @@ namespace KwasantTest.Entities
             );
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("Event")]
-        public void Event_Add_FailAddEvenIfEndDateIsGreaterThanStartDate()
+        public void Event_Add_FailAddEvenIfStartDateIsGreaterThanEndDate()
         {
             //SETUP      
-            EventDO curOriginalEventDO = new EventDO
-            {
-                StartDate = DateTime.Now.AddHours(3),
-                EndDate = DateTime.Now.AddHours(2),
-                Priority = 2,
-                Sequence = 2,
-                IsAllDay = true,
-                Category = "Vacation",
-                Class = "Public",
-                Description = "This is a test event description.",
-                Location = "Silicon Valley.",
-                Status = "Closed",
-                Summary = "This is a test event summary.",
-                Transparency = "Transparent"
-            };
+            EventDO curOriginalEventDO = _fixture.TestEvent2();
+            curOriginalEventDO.EndDate = curOriginalEventDO.StartDate.AddHours(-1);
 
             //EXECUTE
             Assert.Throws<ValidationException>(() =>
@@ -223,6 +185,7 @@ namespace KwasantTest.Entities
         {
             //SETUP      
             EventDO curOriginalEventDO = _fixture.TestEvent1();
+            curOriginalEventDO.Attendees = new List<AttendeeDO> { _fixture.TestAttendee1() };
 
             //EXECUTE
             _uow.EventRepository.Add(curOriginalEventDO);

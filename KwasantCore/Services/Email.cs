@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using System.Net.Mime;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
@@ -13,6 +15,7 @@ using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Managers.CommunicationManager;
 using Microsoft.WindowsAzure;
+using StructureMap;
 
 namespace KwasantCore.Services
 {
@@ -59,8 +62,8 @@ namespace KwasantCore.Services
 
         public void Send()
         {
-            var gmailPackager = new GmailPackager(_curEmailDO);
-            gmailPackager.Send();
+            var gmailPackager = ObjectFactory.GetInstance<IEmailPackager>();
+            gmailPackager.Send(_curEmailDO);
             _curEmailDO.Status = EmailStatus.DISPATCHED;
             _uow.EmailRepository.Add(_curEmailDO);
             _uow.SaveChanges();
@@ -85,33 +88,50 @@ namespace KwasantCore.Services
         #endregion
 
       
-        public static EmailDO ConvertMailMessageToEmail(IEmailRepository emailRepository, MailMessage mailAddress)
+        public static EmailDO ConvertMailMessageToEmail(IEmailRepository emailRepository, MailMessage mailMessage)
         {
-            return ConvertMailMessageToEmail<EmailDO>(emailRepository, mailAddress);
+            return ConvertMailMessageToEmail<EmailDO>(emailRepository, mailMessage);
         }
 
-        public static TEmailType ConvertMailMessageToEmail<TEmailType>(IGenericRepository<TEmailType> emailRepository, MailMessage mailAddress)
+        public static TEmailType ConvertMailMessageToEmail<TEmailType>(IGenericRepository<TEmailType> emailRepository, MailMessage mailMessage)
             where TEmailType : EmailDO, new()
         {
+            String body = String.Empty;
+            if (!mailMessage.IsBodyHtml)
+            {
+                foreach (var av in mailMessage.AlternateViews)
+                {
+                    if (av.ContentType.MediaType == "text/html")
+                    {
+                        body = new StreamReader(av.ContentStream).ReadToEnd();
+                        break;
+                    }
+                }
+            }
+            if (String.IsNullOrEmpty(body))
+                body = mailMessage.Body;
+
+
+
             TEmailType emailDO = new TEmailType
             {
-                Subject = mailAddress.Subject,
-                HTMLText = mailAddress.Body,
-                Attachments = mailAddress.Attachments.Select(CreateNewAttachment).ToList(),
+                Subject = mailMessage.Subject,
+                HTMLText = body,
+                Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),
                 Events = null
             };
             var uow = emailRepository.UnitOfWork;
 
-            emailDO.AddEmailParticipant(EmailParticipantType.FROM, GenerateEmailAddress(uow, mailAddress.From));
-            foreach (var addr in mailAddress.To.Select(a => GenerateEmailAddress(uow, a)))
+            emailDO.AddEmailParticipant(EmailParticipantType.FROM, GenerateEmailAddress(uow, mailMessage.From));
+            foreach (var addr in mailMessage.To.Select(a => GenerateEmailAddress(uow, a)))
             {
                 emailDO.AddEmailParticipant(EmailParticipantType.TO, addr);    
             }
-            foreach (var addr in mailAddress.Bcc.Select(a => GenerateEmailAddress(uow, a)))
+            foreach (var addr in mailMessage.Bcc.Select(a => GenerateEmailAddress(uow, a)))
             {
                 emailDO.AddEmailParticipant(EmailParticipantType.BCC, addr);
             }
-            foreach (var addr in mailAddress.CC.Select(a => GenerateEmailAddress(uow, a)))
+            foreach (var addr in mailMessage.CC.Select(a => GenerateEmailAddress(uow, a)))
             {
                 emailDO.AddEmailParticipant(EmailParticipantType.CC, addr);
             }
@@ -137,6 +157,21 @@ namespace KwasantCore.Services
             };
             
             att.SetData(attachment.ContentStream);
+            return att;
+        }
+
+        public static AttachmentDO CreateNewAttachment(AlternateView av)
+        {
+            if (av.ContentType.MediaType == "text/html")
+                return null;
+
+            AttachmentDO att = new AttachmentDO
+            {
+                OriginalName = String.IsNullOrEmpty(av.ContentType.Name)? av.ContentType.MediaType : "File",
+                Type = av.ContentType.MediaType,
+            };
+
+            att.SetData(av.ContentStream);
             return att;
         }
 

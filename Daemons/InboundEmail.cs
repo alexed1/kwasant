@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
+using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
@@ -8,8 +10,8 @@ using KwasantCore.Services;
 using S22.Imap;
 
 using StructureMap;
-using UtilitiesLib;
-using UtilitiesLib.Logging;
+using Utilities;
+using Utilities.Logging;
 
 namespace Daemons
 {
@@ -24,26 +26,26 @@ namespace Daemons
         }
         private static string GetIMAPServer()
         {
-            return ConfigurationHelper.GetConfigurationValue("InboundEmailHost");
+            return ConfigRepository.Get("InboundEmailHost");
         }
 
         private static int GetIMAPPort()
         {
-            return ConfigurationHelper.GetConfigurationValue<int>("InboundEmailPort");
+            return ConfigRepository.Get<int>("InboundEmailPort");
         }
 
         private static string GetUserName()
         {
-            return ConfigurationHelper.GetConfigurationValue("INBOUND_EMAIL_USERNAME");
+            return ConfigRepository.Get("INBOUND_EMAIL_USERNAME");
         }
         private static string GetPassword()
         {
-            return ConfigurationHelper.GetConfigurationValue("INBOUND_EMAIL_PASSWORD");
+            return ConfigRepository.Get("INBOUND_EMAIL_PASSWORD");
         }
 
         private static bool UseSSL()
         {
-            return ConfigurationHelper.GetConfigurationValue<bool>("InboundEmailUseSSL");
+            return ConfigRepository.Get<bool>("InboundEmailUseSSL");
         }
 
         public InboundEmail(IImapClient client)
@@ -78,7 +80,15 @@ namespace Daemons
 
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
             IEnumerable<uint> uids = client.Search(SearchCondition.Unseen()).ToList();
-            Logger.GetLogger().Info(GetType().Name + " - " + uids.Count() + " emails found...");
+
+            string logString;
+
+            //the difference in syntax makes it easy to have nonzero hits stand out visually in the log dashboard
+            if (uids.Count()>0)           
+                logString = GetType().Name + " - 0 emails found...";
+            else
+                logString = GetType().Name + " - " + uids.Count() + "emails found!";
+            Logger.GetLogger().Info(logString);
 
             foreach (var uid in uids)
             {

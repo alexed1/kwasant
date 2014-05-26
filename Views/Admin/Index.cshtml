@@ -5,9 +5,6 @@
 <html>
 <body>
     <h1>Kwasant Admin Console</h1>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="/Scripts/bootstrap.min.js"></script>
-
     @if (ViewBag.Alert != null)
     {
       <p><font color="red">@ViewBag.Alert</font></p>
@@ -16,6 +13,6 @@
 
     @Html.ActionLink("Show Booking Requests", "Index", "Email", null, new { @class = "btn-link" }) <p></p>
 
-    <a  href="/Website/index.html">Go to kwasant.com</a>.
+    <a href="/Website/index.aspx">Go to kwasant.com</a>.
 </body>      
 </html>

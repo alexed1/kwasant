@@ -116,6 +116,7 @@
   <ItemGroup>
     <Compile Include="Managers\AlertManager.cs" />
     <Compile Include="Managers\APIManager\Packagers\GmailPackager.cs" />
+    <Compile Include="Managers\APIManager\Packagers\IEmailPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\Mandrill\MandrillPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\Kwasant\KwasantPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\Twilio\TwilioPackager.cs" />

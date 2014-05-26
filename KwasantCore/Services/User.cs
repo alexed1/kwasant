@@ -16,7 +16,7 @@ using Data.Interfaces;
 using Data.Entities;
 using StructureMap;
 using Data.Repositories;
-using UtilitiesLib;
+using Utilities;
 using Data.Infrastructure;
 
 namespace KwasantCore.Services

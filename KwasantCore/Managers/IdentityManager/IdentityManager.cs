@@ -8,7 +8,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 using Data.Interfaces;
 using Data.Entities;
-using UtilitiesLib;
+using Utilities;
 using StructureMap;
 using KwasantCore.Services;
 

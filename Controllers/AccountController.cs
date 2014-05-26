@@ -11,7 +11,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Infrastructure;
-using UtilitiesLib;
+using Utilities;
 using KwasantWeb.ViewModels;
 using KwasantCore.Services;
 
@@ -173,8 +173,7 @@ namespace KwasantWeb.Controllers
                             }
                             else if (curLoginStatus == LoginStatus.Successful)
                             {
-                                //return RedirectToAction("MyAccount");
-                                return Redirect("/index.html");
+                                return Redirect(!String.IsNullOrEmpty(returnUrl) ? returnUrl : "/index.aspx");
                             }
                             break;
                     }
