@@ -13,7 +13,7 @@
             var fromDate = $('#fromDate');
             var toDate = $('#toDate');
 
-            if ($('#chkAllDay').prop('checked')) {
+                if ($('#chkAllDay').prop('checked')) {
                 fromDate.data("DateTimePicker").disable();
                 toDate.data("DateTimePicker").disable();
             } else {
@@ -24,29 +24,29 @@
 
         $(document).ready(function () {
             $('#chkAllDay').click(hideShowDates);
-
+            
             var data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a =>
-                                "{id: '" + a.EmailAddress + "', text: '" + a.EmailAddress + "'}"
-                                )))];
+                            "{id: '" + a.EmailAddress + "', text: '" + a.EmailAddress + "'}"
+                            )))];
 
-                $('#attendeesSel').select2({
+            $('#attendeesSel').select2({
                     createSearchChoice: function (term) {
-                        return { id: term, text: term };
-                    },
+                    return { id: term, text: term };
+                },
                     validateFormat: function (term) {
-                        var atPos = term.indexOf('@@');
-                        var dotPos = term.lastIndexOf('.');
-                        if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 2 <= dotPos)) {
-                            return "Invalid Email";
-                        }
-                        return null;
-                    },
-                    multiple: true,
-                    data: [],
-                    width: '100%',
-                });
-                $('#attendeesSel').select2('data', data);
+                    var atPos = term.indexOf('@@');
+                    var dotPos = term.lastIndexOf('.');
+                    if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 2 <= dotPos)) {
+                        return "Invalid Email";
+                    }
+                    return null;
+                },
+                multiple: true,
+                data: [],
+                width: '100%',
             });
+            $('#attendeesSel').select2('data', data);
+        });
     </script>
 }
 @section scripts
@@ -85,9 +85,9 @@
 
 <form id="f" method="post" action="@Url.Action("ConfirmEventEdits")">
     <div class="dragger">
-        <h3>
-            @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event")
-        </h3>
+    <h3>
+        @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event")
+    </h3>
     </div>
     <hr />
     <div class="formItem">
@@ -132,7 +132,7 @@
             </div>
         </div>
     </div>
-
+    
     <div class="formItem">
         <div class="formLabel">
             Location
@@ -140,7 +140,7 @@
         </div>
         <input id="location" name="Location" class="form-control col-md-1" value="@Model.Location" required />
     </div>
-
+    
     <div class="formItem">
         <div class="formLabel">
             Description
@@ -148,7 +148,7 @@
         </div>
         <textarea id="description" name="Description" cols="31" rows="3" class="form-control col-md-1" required>@Html.Raw(Model.Description)</textarea>
     </div>
-
+    
     <div class="formItem">
         <div class="formLabel">
             Attendees
@@ -161,7 +161,7 @@
         <div style="display: none">
             @Html.TextBox("EventID", @Model.Id, new { @class = "form-control col-md-1" })
         </div>
- }
+    }
     <hr />
     <div class="space">
         <div style="clear: both">
@@ -216,13 +216,13 @@
         var f = $("#f");
         if (!f.valid())
             return false;
-
+        
         var fromDate = $('#fromDate');
         var toDate = $('#toDate');
 
         fromDate.data("DateTimePicker").enable();
         toDate.data("DateTimePicker").enable();
-
+        
         var url = f.prop('action') + '/?' + f.serialize();
         var m = new parent.DayPilot.Modal();
         m.closed = function () {
@@ -248,14 +248,14 @@
         $("#summary").focus();
         $('#f').validate();
     });
-
+    
     $(function () {
         var fromDate = $('#fromDate');
         var toDate = $('#toDate');
 
         fromDate.datetimepicker();
         toDate.datetimepicker();
-
+        
         $("#fromDate").on("dp.change", function (e) {
             toDate.data("DateTimePicker").setMinDate(e.date);
         });
@@ -265,7 +265,7 @@
 
         fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString("MM/dd/yyyy hh:mm tt")');
         toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString("MM/dd/yyyy hh:mm tt")');
-
+        
         hideShowDates();
     });
 
