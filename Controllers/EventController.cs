@@ -62,10 +62,8 @@ namespace KwasantWeb.Controllers
             {
                 new AttendeeDO
                 {
-                    //EmailAddress = BookingRequestDO.From.Address,
-                    //Name = BookingRequestDO.From.Name,
-                    EmailAddress = "kwasantintakeclone@gmail.com",
-                    Name = "alex",
+                    EmailAddress = BookingRequestDO.From.Address,
+                    Name = BookingRequestDO.From.Name,
                     Event = eventDO
                 }
             };
