@@ -24,8 +24,11 @@ namespace Data.Entities
         public int Sequence { get; set; }
         public string Summary { get; set; }
         public string Category { get; set; }
-        
+
+        [ForeignKey("CreatedBy")]
+        public string CreatedByID { get; set; }
         public virtual UserDO CreatedBy { get; set; }
+
         public bool IsAllDay { get; set; }
 
         [InverseProperty("Event")]

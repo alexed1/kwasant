@@ -8,6 +8,7 @@ using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
 using KwasantWeb.Controllers.DayPilot;
 using KwasantWeb.ViewModels;
+using Microsoft.AspNet.Identity;
 using StructureMap;
 
 namespace KwasantWeb.Controllers
@@ -268,12 +269,14 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 EventDO eventDO = eventViewModel.Id == 0
-                    ? new EventDO()
+                    ? new EventDO { CreatedByID = User.Identity.GetUserId() }
                     : uow.EventRepository.GetByKey(eventViewModel.Id);
 
                 eventViewModel.FillEventDO(uow, eventDO);
-                if(eventViewModel.Id == 0)
+                if (eventViewModel.Id == 0)
+                {
                     uow.EventRepository.Add(eventDO);
+                }
 
                 uow.SaveChanges();
             }

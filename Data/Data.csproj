@@ -155,6 +155,10 @@
     <Compile Include="Migrations\201405271244102_Rename_EmailEmailAddresses_to_Recipients.Designer.cs">
       <DependentUpon>201405271244102_Rename_EmailEmailAddresses_to_Recipients.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201405271313557_AddForeignKeyForCreatedBy.cs" />
+    <Compile Include="Migrations\201405271313557_AddForeignKeyForCreatedBy.Designer.cs">
+      <DependentUpon>201405271313557_AddForeignKeyForCreatedBy.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\AttendeeRepository.cs" />
@@ -217,6 +221,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201405271244102_Rename_EmailEmailAddresses_to_Recipients.resx">
       <DependentUpon>201405271244102_Rename_EmailEmailAddresses_to_Recipients.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405271313557_AddForeignKeyForCreatedBy.resx">
+      <DependentUpon>201405271313557_AddForeignKeyForCreatedBy.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

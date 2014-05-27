@@ -4,7 +4,7 @@ using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Services;
-using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers.DataTypes;
+
 using StructureMap;
 
 namespace KwasantWeb.ViewModels
@@ -26,6 +26,9 @@ namespace KwasantWeb.ViewModels
         public int BookingRequestID { get; set; }
         public String Attendees { get; set; }
 
+        public String CreatedByName { get; set; }
+        public String CreatedByID { get; set; }
+
         public EventViewModel()
         {
 
@@ -46,6 +49,7 @@ namespace KwasantWeb.ViewModels
             Category = eventDO.Category;
             BookingRequestID = eventDO.BookingRequestID;
             Attendees = eventDO.Attendees == null ? String.Empty : string.Join(",", eventDO.Attendees.Select(e => e.EmailAddress));
+            CreatedByName = eventDO.CreatedBy.UserName;
         }
 
         public static EventViewModel NewEventOnBookingRequest(int bookingRequestID, string start, string end)
@@ -57,6 +61,7 @@ namespace KwasantWeb.ViewModels
 
                 var isAllDay = startDate.Equals(startDate.Date) && startDate.AddDays(1).Equals(endDate);
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+
                 return new EventViewModel
                 {
                     Attendees = String.Join(",", bookingRequestDO.Recipients.Select(eea => eea.EmailAddress.Address).Distinct()),
@@ -83,7 +88,7 @@ namespace KwasantWeb.ViewModels
             eventDO.Summary = Summary;
             eventDO.Category = Category;
             eventDO.BookingRequestID = BookingRequestID;
-
+            
             var attendees = Attendees.Split(',').ToList();
 
             var eventAttendees = eventDO.Attendees ?? new List<AttendeeDO>();
