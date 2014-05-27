@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
-using System.Security.Cryptography;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
-using Data.Repositories;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using RazorEngine;
 using StructureMap;
-using Utilities;
+using UtilitiesLib;
 using Encoding = System.Text.Encoding;
 
 namespace KwasantCore.Services

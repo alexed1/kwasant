@@ -168,7 +168,7 @@
 
                     @Html.DayPilotCalendar("dp_day", new DayPilotCalendarConfig
                     {
-                        BackendUrl = Url.Content("~/Calendar/Day"),
+                        BackendUrl = Url.Content("~/Calendar/Day?bookingRequestID=" + Model.Id),
                         
                         EventMoveHandling = EventMoveHandlingType.JavaScript,
                         EventResizeHandling = EventResizeHandlingType.JavaScript,
@@ -199,7 +199,7 @@
                     @Html.DayPilotCalendar("dp_week", new DayPilotCalendarConfig
                     {
                         ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
-                        BackendUrl = Url.Content("~/Calendar/Backend/"),
+                        BackendUrl = Url.Content("~/Calendar/Backend?bookingRequestID=" + Model.Id),
                         
                         EventMoveHandling = EventMoveHandlingType.JavaScript,
                         EventResizeHandling = EventResizeHandlingType.JavaScript,
@@ -232,7 +232,7 @@
 
                     @Html.DayPilotMonth("dp_month", new DayPilotMonthConfig
                     {
-                        BackendUrl = Url.Content("~/Calendar/Month"),
+                        BackendUrl = Url.Content("~/Calendar/Month?bookingRequestID=" + Model.Id),
 
                         EventMoveHandling = DayPilot.Web.Mvc.Events.Month.EventMoveHandlingType.JavaScript,
                         EventResizeHandling = DayPilot.Web.Mvc.Events.Month.EventResizeHandlingType.JavaScript,
@@ -338,7 +338,7 @@
     }
 
     function eventNew(start, end) {
-        displayForm(getBaseCalendarURL() + '/New/?start=' + start + '&end=' + end);
+        displayForm(getBaseCalendarURL() + '/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end);
     }
 
     function eventMove(e, newStart, newEnd) {
