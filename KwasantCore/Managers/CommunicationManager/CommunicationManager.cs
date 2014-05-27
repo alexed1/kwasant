@@ -54,7 +54,10 @@ namespace KwasantCore.Managers.CommunicationManager
         {
             TwilioPackager twil = new TwilioPackager();
             if (bookingRequests.Any())
-                twil.SendSMS("14158067915", "Inbound Email has been received");
+            {
+                string fromNumber = CloudConfigurationManager.GetSetting("TwilioFromNumber");
+                twil.SendSMS(fromNumber, "Inbound Email has been received");
+            }
         }
 
         private void SendBREmails(String toAddress, IEnumerable<BookingRequestDO> bookingRequests, IUnitOfWork uow)
