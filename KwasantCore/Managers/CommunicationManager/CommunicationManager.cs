@@ -55,8 +55,8 @@ namespace KwasantCore.Managers.CommunicationManager
             TwilioPackager twil = new TwilioPackager();
             if (bookingRequests.Any())
             {
-                string fromNumber = CloudConfigurationManager.GetSetting("TwilioFromNumber");
-                twil.SendSMS(fromNumber, "Inbound Email has been received");
+                string toNumber = CloudConfigurationManager.GetSetting("TwilioToNumber");
+                twil.SendSMS(toNumber, "Inbound Email has been received");
             }
         }
 
