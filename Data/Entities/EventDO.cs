@@ -27,6 +27,7 @@ namespace Data.Entities
 
         [ForeignKey("CreatedBy")]
         public string CreatedByID { get; set; }
+        [Required]
         public virtual UserDO CreatedBy { get; set; }
 
         public bool IsAllDay { get; set; }
