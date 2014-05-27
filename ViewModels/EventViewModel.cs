@@ -29,6 +29,8 @@ namespace KwasantWeb.ViewModels
         public String CreatedByName { get; set; }
         public String CreatedByID { get; set; }
 
+        public bool Confirmed { get; set; }
+
         public EventViewModel()
         {
 
@@ -50,63 +52,11 @@ namespace KwasantWeb.ViewModels
             BookingRequestID = eventDO.BookingRequestID;
             Attendees = eventDO.Attendees == null ? String.Empty : string.Join(",", eventDO.Attendees.Select(e => e.EmailAddress));
             CreatedByName = eventDO.CreatedBy.UserName;
+            Confirmed = false;
         }
 
-        public static EventViewModel NewEventOnBookingRequest(int bookingRequestID, string start, string end)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var startDate = DateTime.Parse(start);
-                var endDate = DateTime.Parse(end);
+       
 
-                var isAllDay = startDate.Equals(startDate.Date) && startDate.AddDays(1).Equals(endDate);
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
-
-                return new EventViewModel
-                {
-                    Attendees = String.Join(",", bookingRequestDO.Recipients.Select(eea => eea.EmailAddress.Address).Distinct()),
-                    IsAllDay = isAllDay,
-                    StartDate = startDate,
-                    EndDate = endDate,
-                    BookingRequestID = bookingRequestDO.Id
-                };
-
-            }
-        }
-
-        public void FillEventDO(IUnitOfWork uow, EventDO eventDO)
-        {
-            eventDO.StartDate = StartDate;
-            eventDO.EndDate = EndDate;
-            eventDO.IsAllDay = IsAllDay;
-            eventDO.Location = Location;
-            eventDO.Status = Status;
-            eventDO.Class = Class;
-            eventDO.Description = Description;
-            eventDO.Priority = Priority;
-            eventDO.Sequence = Sequence;
-            eventDO.Summary = Summary;
-            eventDO.Category = Category;
-            eventDO.BookingRequestID = BookingRequestID;
-            
-            var attendees = Attendees.Split(',').ToList();
-
-            var eventAttendees = eventDO.Attendees ?? new List<AttendeeDO>();
-            var attendeesToDelete = eventAttendees.Where(attendee => !attendees.Contains(attendee.EmailAddress)).ToList();
-            foreach(var attendeeToDelete in attendeesToDelete)
-                uow.AttendeeRepository.Remove(attendeeToDelete);
-
-            foreach (var attendee in attendees.Where(att => !eventAttendees.Select(a => a.EmailAddress).Contains(att)))
-            {
-                var newAttendee = new AttendeeDO
-                {
-                    EmailAddress = attendee,
-                    Event = eventDO,
-                    EventID = eventDO.Id,
-                    Name = attendee
-                };
-                uow.AttendeeRepository.Add(newAttendee);
-            }
-        }
+       
     }
 }

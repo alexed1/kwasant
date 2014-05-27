@@ -9,8 +9,9 @@ namespace Data.Interfaces
         [Key]
         int Id { get; set; }
 
-        String Name { get; set; }
-        String EmailAddress { get; set; }
+      
+        EmailAddressDO EmailAddress { get; set; }
         EventDO Event { get; set; }
+        //TO DO add status and type
     }
 }

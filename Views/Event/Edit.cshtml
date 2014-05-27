@@ -83,8 +83,7 @@
     </style>
 }
 
-<form id="f" method="post" action="@Url.Action("ConfirmEventEdits")">
-    <div class="dragger">
+<form id="f" method="post" action="@Url.Action("ProcessSubmittedEvent", "Event" )">
     <h3>
         @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event (Created by " + Model.CreatedByName + ").")
     </h3>

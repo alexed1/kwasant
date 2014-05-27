@@ -25,6 +25,68 @@ namespace KwasantCore.Services
             _uow = uow; //clean this up finish de-static work
         }
 
+
+        public  EventDO Create (int bookingRequestID, string start, string end)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var startDate = DateTime.Parse(start);
+                var endDate = DateTime.Parse(end);
+
+                var isAllDay = startDate.Equals(startDate.Date) && startDate.AddDays(1).Equals(endDate);
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+
+                //BookingRequests don't actually have "recipients". We are actually the sole recipient of a BookingRequest.
+                //A BookingRequest should not really be thought of as an Email. It should be thought of as a service request from a customer that shares a lot of data properties with our Email object
+                //Later in the process, an Event may be created that corresponds to this BookingRequest, and that Event may have Attendees, and may generate
+                //outbound Emails that have Recipients.
+                ///WRONG: Attendees = String.Join(",", bookingRequestDO.Recipients.Select(eea => eea.EmailAddress.Address).Distinct()),
+                //initially, the only attendee is the user who created the booking request
+
+                var curEventDO = new EventDO();
+
+
+                curEventDO.IsAllDay = isAllDay;
+                curEventDO.StartDate = startDate;
+                curEventDO.EndDate = endDate;
+                curEventDO.BookingRequestID = bookingRequestDO.Id;
+                curEventDO.CreatedBy = bookingRequestDO.User;
+                curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
+                return curEventDO;
+
+            }
+        }
+
+
+
+        public EventDO AddAttendee(UserDO curUserDO, EventDO curEvent)
+        {
+            var curAttendee = new Attendee();
+            var curAttendeeDO = curAttendee.Create(curUserDO);
+            curEvent.Attendees.Add(curAttendeeDO);
+            return curEvent;
+        }
+
+        //Processes the incoming attendee information, which is currently just a comma delimited string
+        public void ManageAttendeeList(IUnitOfWork uow, EventDO eventDO, string curAttendees)
+        {
+
+
+            var attendeesSet = curAttendees.Split(',').ToList();
+
+            List<AttendeeDO> eventAttendees = eventDO.Attendees ?? new List<AttendeeDO>();
+            var attendeesToDelete = eventAttendees.Where(attendeeDO => !attendeesSet.Contains(attendeeDO.EmailAddress.Address)).ToList();
+            foreach (var attendeeToDelete in attendeesToDelete)
+                uow.AttendeeRepository.Remove(attendeeToDelete);
+
+            foreach ( string attendeeString in attendeesSet.Where(attString => !eventAttendees.Select(a => a.EmailAddress.Address).Contains(attString)))
+            {
+                var attendee = new Attendee();
+                attendee.Create(attendeeString, eventDO);          
+            }
+        }
+
+
         public void Dispatch(EventDO eventDO)
         {
             var emailAddressRepository = _uow.EmailAddressRepository;
@@ -42,7 +104,7 @@ namespace KwasantCore.Services
             outboundEmail.From = fromEmailAddr;
             foreach (var attendeeDO in eventDO.Attendees)
             {
-                var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress);
+                var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress.Address);
                 toEmailAddress.Name = attendeeDO.Name;
                 outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
             }
@@ -75,7 +137,7 @@ namespace KwasantCore.Services
             dDayEvent.Summary = eventDO.Summary;
             foreach (AttendeeDO attendee in eventDO.Attendees)
             {
-                dDayEvent.Attendees.Add(new Attendee
+                dDayEvent.Attendees.Add(new KwasantICS.DDay.iCal.DataTypes.Attendee()
                 {
                     CommonName = attendee.Name,
                     Type = "INDIVIDUAL",
@@ -143,7 +205,7 @@ namespace KwasantCore.Services
             Summary = ev.Summary;
             Description = ev.Description;
             Location = ev.Location;
-            Attendees = ev.Attendees.Select(a => new RazorAttendeeViewModel { Name = a.Name, EmailAddress = a.EmailAddress}).ToList();
+            Attendees = ev.Attendees.Select(a => new RazorAttendeeViewModel { Name = a.Name, EmailAddress = a.EmailAddress.Address}).ToList();
         }
 
         public class RazorAttendeeViewModel

@@ -162,6 +162,10 @@
     <Compile Include="Migrations\201405271324070_MakeCreatedByRequired.Designer.cs">
       <DependentUpon>201405271324070_MakeCreatedByRequired.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201405272258488_changes.cs" />
+    <Compile Include="Migrations\201405272258488_changes.Designer.cs">
+      <DependentUpon>201405272258488_changes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201405280918080_RemovePersonDO.cs" />
     <Compile Include="Migrations\201405280918080_RemovePersonDO.Designer.cs">
       <DependentUpon>201405280918080_RemovePersonDO.cs</DependentUpon>
@@ -237,6 +241,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201405271324070_MakeCreatedByRequired.resx">
       <DependentUpon>201405271324070_MakeCreatedByRequired.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405272258488_changes.resx">
+      <DependentUpon>201405272258488_changes.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201405280918080_RemovePersonDO.resx">
       <DependentUpon>201405280918080_RemovePersonDO.cs</DependentUpon>

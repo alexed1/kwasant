@@ -41,6 +41,13 @@ namespace Data.Entities
         public int BookingRequestID { get; set; }
         public virtual BookingRequestDO BookingRequest { get; set; }
 
+
+        public EventDO()
+        {
+            Attendees = new List<AttendeeDO>();
+            Emails = new List<EmailDO>();
+        }
+
         public void CopyFrom(EventDO eventDO)
         {
             //We can't called GetType() because EF mocks our object

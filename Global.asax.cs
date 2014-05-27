@@ -30,7 +30,10 @@ namespace KwasantWeb
 
             //Database.SetInitializer(new ShnexyInitializer());
             KwasantDbContext db = new KwasantDbContext();
-            db.Database.Initialize(true);            
+            db.Database.Initialize(true);
+
+            //AutoMapper create map configuration
+            AutoMapperBootStrapper.ConfigureAutoMapper();
 
             Logger.GetLogger().Info("Kwasant web starting...");
 

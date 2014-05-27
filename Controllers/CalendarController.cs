@@ -36,11 +36,6 @@ namespace KwasantWeb.Controllers
 
    
 
-        public ActionResult New(int bookingRequestID, string start, string end)
-        {
-            return View("~/Views/Calendar/Open.cshtml", EventViewModel.NewEventOnBookingRequest(bookingRequestID, start, end));
-        }
-
         public ActionResult Open(int eventID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -87,36 +82,8 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        /// <summary>
-        /// This method creates a template eventDO which we store. This event is presented to the user to review & confirm changes. If they confirm, Confirm(FormCollection form) is invoked
-        /// </summary>
-        /// <param name="eventViewModel"></param>
-        /// <returns></returns>
-        public ActionResult ProcessCreateEvent(EventViewModel eventViewModel)
-        {
-            return View(eventViewModel);
-        }
+ 
 
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Confirm(EventViewModel eventViewModel)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                EventDO eventDO = eventViewModel.Id == 0
-                    ? new EventDO { CreatedByID = User.Identity.GetUserId() }
-                    : uow.EventRepository.GetByKey(eventViewModel.Id);
-
-                eventViewModel.FillEventDO(uow, eventDO);
-                if (eventViewModel.Id == 0)
-                {
-                    uow.EventRepository.Add(eventDO);
-                }
-
-                uow.SaveChanges();
-            }
-
-            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
-        }
 
         #endregion "Action"
 
