@@ -63,7 +63,13 @@ namespace Data.Infrastructure
                 entity.Entity.SaveHook(entity);
             }
 
-            return base.SaveChanges();
+            var saveResult = base.SaveChanges();
+            foreach (var entity in ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged))
+            {
+                entity.State = EntityState.Unchanged;
+            }
+
+            return saveResult;
         }
 
         public IDbSet<TEntity> Set<TEntity>() where TEntity : class

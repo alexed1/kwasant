@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -11,9 +8,8 @@ using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.DayPilot;
+using KwasantWeb.ViewModels;
 using StructureMap;
-using Utilities;
-using Calendar = KwasantCore.Services.Calendar;
 using ViewModel.Models;
 
 namespace KwasantWeb.Controllers
@@ -23,70 +19,30 @@ namespace KwasantWeb.Controllers
     {
         #region "Action"
 
-        private IUnitOfWork _uow;
-
-
-
-        public CalendarController()
-        {
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _uow = uow; //clean this up finish de-static work
-
-        }
-
-
-
-
         public ActionResult Index(int id = 0)
         {
             if (id <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-
-            IBookingRequestRepository bookingRequestRepository = _uow.BookingRequestRepository;
-            BookingRequestDO = bookingRequestRepository.GetByKey(id);
-            if (BookingRequestDO == null)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            Calendar curCalendar = new Calendar(_uow);
-            curCalendar.LoadBookingRequest(BookingRequestDO);
-            Session["CalendarServices"] = curCalendar;
-            return View(BookingRequestDO);
-        }
-
-        private Calendar Calendar
-        {
-            get
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return Session["CalendarServices"] as Calendar;
-            }
-            set
-            {
-                Session["CalendarServices"] = value;
+                IBookingRequestRepository bookingRequestRepository = uow.BookingRequestRepository;
+                var bookingRequestDO = bookingRequestRepository.GetByKey(id);
+                if (bookingRequestDO == null)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                return View(bookingRequestDO);
             }
         }
 
-        private BookingRequestDO BookingRequestDO
+        public ActionResult Day(int bookingRequestID)
         {
-            get
-            {
-                return Session["BookingRequestDO"] as BookingRequestDO;
-            }
-            set
-            {
-                Session["BookingRequestDO"] = value;
-            }
+            return new DayPilotCalendarControl(bookingRequestID).CallBack(this);
         }
 
-        public ActionResult Day()
+        public ActionResult Month(int bookingRequestID)
         {
-            return new DayPilotCalendarControl(Calendar).CallBack(this);
-        }
-
-
-        public ActionResult Month()
-        {
-            return new DayPilotMonthControl(Calendar).CallBack(this);
+            return new DayPilotMonthControl(bookingRequestID).CallBack(this);
         }  
 
         public ActionResult Rtl()
@@ -237,9 +193,9 @@ namespace KwasantWeb.Controllers
             return RedirectToAction("ThemeTraditional");
         }
 
-        public ActionResult Backend()
+        public ActionResult Backend(int bookingRequestID)
         {
-            return new DayPilotCalendarControl(Calendar).CallBack(this);
+            return new DayPilotCalendarControl(bookingRequestID).CallBack(this);
         }
 
         public ActionResult NavigatorBackend()
@@ -247,99 +203,53 @@ namespace KwasantWeb.Controllers
             return new DayPilotNavigatorControl().CallBack(this);
         }
 
-        public ActionResult New(string start, string end)
+        public ActionResult New(int bookingRequestID, string start, string end)
         {
-            EventDO eventDO = new EventDO
-            {
-                StartDate = DateTime.Parse(start),
-                EndDate = DateTime.Parse(end),
-                BookingRequest = BookingRequestDO,
-            };
-            //If there's no time component for the start date (ie starting at midnight), and the end is exactly 1 day ahead, it's an all-day-event
-            if (eventDO.StartDate.Equals(eventDO.StartDate.Date) &&
-                eventDO.StartDate.AddDays(1).Equals(eventDO.EndDate))
-                eventDO.IsAllDay = true;
-
-            eventDO.Attendees = new List<AttendeeDO>
-            {
-                new AttendeeDO
-                {
-                    EmailAddress = BookingRequestDO.From.Address,
-                    Name = BookingRequestDO.From.Name,
-                    Event = eventDO
-                }
-            };
-            if (BookingRequestDO.To != null)
-            {
-                eventDO.Attendees.AddRange(BookingRequestDO.To.Select(a => new AttendeeDO
-                {
-                    EmailAddress = a.Address,
-                    Name = a.Name,
-                    Event = eventDO
-                }));
-            }
-            if (BookingRequestDO.CC != null)
-            {
-                eventDO.Attendees.AddRange(BookingRequestDO.CC.Select(a => new AttendeeDO
-                {
-                    EmailAddress = a.Address,
-                    Name = a.Name,
-                    Event = eventDO
-                }));
-            }
-            if (BookingRequestDO.BCC != null)
-            {
-                eventDO.Attendees.AddRange(BookingRequestDO.BCC.Select(a => new AttendeeDO
-                {
-                    EmailAddress = a.Address,
-                    Name = a.Name,
-                    Event = eventDO
-                }));
-            }
-
-            return View("~/Views/Calendar/Open.cshtml", eventDO);
+            return View("~/Views/Calendar/Open.cshtml", EventViewModel.NewEventOnBookingRequest(bookingRequestID, start, end));
         }
 
         public ActionResult Open(int eventID)
         {
-            return View(
-                Calendar.GetEvent(eventID)
-                );
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
+                return View(new EventViewModel(eventDO));
+            }
         }
 
         public ActionResult DeleteEvent(int eventID)
         {
-            EventDO actualEventDO = Calendar.GetEvent(eventID);
-            return View(actualEventDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
+                return View(new EventViewModel(eventDO));
+            }
         }
 
         public ActionResult ConfirmDelete(int eventID)
         {
-            Calendar.DeleteEvent(eventID);
-            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
+                if (eventDO != null)
+                    uow.EventRepository.Remove(eventDO);
+
+                return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+            }
         }
 
         public ActionResult MoveEvent(int eventID, String newStart, String newEnd)
         {
-            //This is a fake event that will be thrown away if Confirm() is not called
-            EventDO eventDO = new EventDO();
-            eventDO.Id = eventID;
-            EventDO actualEventDO = Calendar.GetEvent(eventID);
-            eventDO.CopyFrom(actualEventDO);
-
-            DateTime newStartDT = DateTime.Parse(newStart);
-            DateTime newEndDT = DateTime.Parse(newEnd);
-
-            eventDO.StartDate = newStartDT;
-            eventDO.EndDate = newEndDT;
-
-            string key = Guid.NewGuid().ToString();
-            Session["FakedEvent_" + key] = eventDO;
-            return View("~/Views/Calendar/ProcessCreateEvent.cshtml", new ConfirmEvent
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Key = key,
-                EventDO = eventDO
-            });
+                var eventDO = uow.EventRepository.GetByKey(eventID);
+                var evm = new EventViewModel(eventDO)
+                {
+                    StartDate = DateTime.Parse(newStart),
+                    EndDate = DateTime.Parse(newEnd)
+                };
+                return View("~/Views/Calendar/ProcessCreateEvent.cshtml", evm);
+            }
         }
 
         private bool GetCheckFlag(String value)
@@ -354,111 +264,47 @@ namespace KwasantWeb.Controllers
         /// <summary>
         /// This method creates a template eventDO which we store. This event is presented to the user to review & confirm changes. If they confirm, Confirm(FormCollection form) is invoked
         /// </summary>
-        /// <param name="form"></param>
+        /// <param name="eventViewModel"></param>
         /// <returns></returns>
-        public ActionResult ProcessCreateEvent(CalendarViewModel calendarViewModel)
+        public ActionResult ProcessCreateEvent(EventViewModel eventViewModel)
         {
-            //This is a fake event that will be thrown away if Confirm() is not called
-            EventDO eventDO = new EventDO
-            {
-                Id = calendarViewModel.EventID,
-                IsAllDay = GetCheckFlag(calendarViewModel.IsAllDay),
-                StartDate = calendarViewModel.DateStart,
-                EndDate = calendarViewModel.DateEnd,
-                Location = calendarViewModel.Location,
-                Status = calendarViewModel.Status,
-                Transparency = calendarViewModel.TransparencyType,
-                Class = calendarViewModel.Class,
-                Description = calendarViewModel.Description,
-                Priority = calendarViewModel.Priority,
-                Sequence = calendarViewModel.Sequence,
-                Summary = calendarViewModel.Summary,
-                Category = calendarViewModel.Category
-            };
+            ////This is a fake event that will be thrown away if Confirm() is not called
+            //EventDO eventDO = new EventDO
+            //{
+            //    Id = calendarViewModel.EventID,
+            //    IsAllDay = GetCheckFlag(calendarViewModel.IsAllDay),
+            //    StartDate = calendarViewModel.DateStart,
+            //    EndDate = calendarViewModel.DateEnd,
+            //    Location = calendarViewModel.Location,
+            //    Status = calendarViewModel.Status,
+            //    Transparency = calendarViewModel.TransparencyType,
+            //    Class = calendarViewModel.Class,
+            //    Description = calendarViewModel.Description,
+            //    Priority = calendarViewModel.Priority,
+            //    Sequence = calendarViewModel.Sequence,
+            //    Summary = calendarViewModel.Summary,
+            //    Category = calendarViewModel.Category
+            //};
 
-            ManageAttendees(eventDO, calendarViewModel.Attendees);
+            //ManageAttendees(eventDO, calendarViewModel.Attendees);
 
-            string key = Guid.NewGuid().ToString();
-            Session["FakedEvent_" + key] = eventDO;
-            return View(
-                new ConfirmEvent
-                {
-                    Key = key,
-                    EventDO = eventDO
-                }
-            );
-        }
-
-        //Manages adds/deletes and persists of attendees.
-        private void ManageAttendees(EventDO eventDO, string attendeesStr)
-        {
-            //Load the known attendee list for this event
-            List<AttendeeDO> originalAttendees;
-            if (eventDO.Id != 0)
-            {
-                EventDO oldEvent = Calendar.GetEvent(eventDO.Id);
-                originalAttendees = new List<AttendeeDO>(oldEvent.Attendees);
-            }
-            else
-            {
-                originalAttendees = new List<AttendeeDO>();
-            }
-
-            //create the list that will merge in the changes
-            List<AttendeeDO> newAttendees = new List<AttendeeDO>();
-            foreach (string email in attendeesStr.Split(','))
-            {
-                if (String.IsNullOrEmpty(email))
-                    continue;
-
-                
-                List<AttendeeDO> sameAttendees = originalAttendees.Where(oa => oa.EmailAddress == email).ToList();
-                if (sameAttendees.Any())
-                {
-                    //take all of the attendees that were already associated with the event and add them to the merged list
-                    newAttendees.AddRange(sameAttendees);
-                }
-                else
-                {
-                    //create a new attendee and add it
-                    newAttendees.Add(new AttendeeDO
-                    {
-                        EmailAddress = email
-                    });
-                }
-            }
-
-            //Delete any attendees that are no longer part of the list
-            List<AttendeeDO> attendeesToDelete = originalAttendees.Where(originalAttendee => !newAttendees.Select(a => a.EmailAddress).Contains(originalAttendee.EmailAddress)).ToList();
-            if (attendeesToDelete.Any())
-            {
-                AttendeeRepository attendeeRepo = Calendar.UnitOfWork.AttendeeRepository;
-                foreach (AttendeeDO attendeeToDelete in attendeesToDelete)
-                    attendeeRepo.Remove(attendeeToDelete);
-            }
-            eventDO.Attendees = newAttendees;
+            //string key = Guid.NewGuid().ToString();
+            //Session["FakedEvent_" + key] = eventDO;
+            //return View(
+            //    new ConfirmEvent
+            //    {
+            //        Key = key,
+            //        EventDO = eventDO
+            //    }
+            //);
+            return View(eventViewModel);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Confirm(ProcessCreateEventViewModel processCreateEventViewModel)
+        public ActionResult Confirm(EventViewModel eventViewModel)
         {
-
-            EventDO eventDO = Session["FakedEvent_" + processCreateEventViewModel.Key] as EventDO;
-            if (eventDO.Id == 0)
-            {
-                Calendar.AddEvent(eventDO);
-            }
-            else
-            {
-                EventDO oldEvent = Calendar.GetEvent(eventDO.Id);
-                oldEvent.CopyFrom(eventDO);
-                eventDO = oldEvent;
-            }
-
-            eventDO.BookingRequest = BookingRequestDO;
-
             var curEvent = new Event();
-            curEvent.Dispatch(eventDO);
+            //curEvent.Dispatch(eventDO);
            
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
@@ -466,10 +312,5 @@ namespace KwasantWeb.Controllers
 
         #endregion "Action"
 
-        public class ConfirmEvent
-        {
-            public string Key;
-            public EventDO EventDO;
-        }
     }
 }

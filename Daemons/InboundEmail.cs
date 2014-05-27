@@ -12,6 +12,7 @@ using S22.Imap;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
+using UtilitiesLib;
 
 namespace Daemons
 {
