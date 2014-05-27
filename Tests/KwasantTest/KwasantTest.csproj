@@ -122,6 +122,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Controllers\CalendarControllerTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="Daemons\InboundEmailTests.cs" />
     <Compile Include="Daemons\OperationsMonitorTests.cs" />

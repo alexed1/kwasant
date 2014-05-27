@@ -58,7 +58,7 @@ namespace KwasantTest.Services
         {
             //SETUP
             string expectedSubject = "Invitation via Kwasant: " + _curEventDO.Summary + "@ " + _curEventDO.StartDate;
-            EmailDO _curEmailDO;
+            
             Assert.Throws<ValidationException>(() =>
             {
 
