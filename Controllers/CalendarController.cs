@@ -6,11 +6,9 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
-using KwasantCore.Services;
 using KwasantWeb.Controllers.DayPilot;
 using KwasantWeb.ViewModels;
 using StructureMap;
-using ViewModel.Models;
 
 namespace KwasantWeb.Controllers
 {
@@ -234,6 +232,8 @@ namespace KwasantWeb.Controllers
                 if (eventDO != null)
                     uow.EventRepository.Remove(eventDO);
 
+                uow.SaveChanges();
+                
                 return JavaScript(SimpleJsonSerializer.Serialize("OK"));
             }
         }
@@ -252,15 +252,6 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        private bool GetCheckFlag(String value)
-        {
-            bool blnCheck = false;
-
-            blnCheck = value == "on" ? true : false;
-
-            return blnCheck;
-        }
-
         /// <summary>
         /// This method creates a template eventDO which we store. This event is presented to the user to review & confirm changes. If they confirm, Confirm(FormCollection form) is invoked
         /// </summary>
@@ -268,44 +259,24 @@ namespace KwasantWeb.Controllers
         /// <returns></returns>
         public ActionResult ProcessCreateEvent(EventViewModel eventViewModel)
         {
-            ////This is a fake event that will be thrown away if Confirm() is not called
-            //EventDO eventDO = new EventDO
-            //{
-            //    Id = calendarViewModel.EventID,
-            //    IsAllDay = GetCheckFlag(calendarViewModel.IsAllDay),
-            //    StartDate = calendarViewModel.DateStart,
-            //    EndDate = calendarViewModel.DateEnd,
-            //    Location = calendarViewModel.Location,
-            //    Status = calendarViewModel.Status,
-            //    Transparency = calendarViewModel.TransparencyType,
-            //    Class = calendarViewModel.Class,
-            //    Description = calendarViewModel.Description,
-            //    Priority = calendarViewModel.Priority,
-            //    Sequence = calendarViewModel.Sequence,
-            //    Summary = calendarViewModel.Summary,
-            //    Category = calendarViewModel.Category
-            //};
-
-            //ManageAttendees(eventDO, calendarViewModel.Attendees);
-
-            //string key = Guid.NewGuid().ToString();
-            //Session["FakedEvent_" + key] = eventDO;
-            //return View(
-            //    new ConfirmEvent
-            //    {
-            //        Key = key,
-            //        EventDO = eventDO
-            //    }
-            //);
             return View(eventViewModel);
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Confirm(EventViewModel eventViewModel)
         {
-            var curEvent = new Event();
-            //curEvent.Dispatch(eventDO);
-           
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                EventDO eventDO = eventViewModel.Id == 0
+                    ? new EventDO()
+                    : uow.EventRepository.GetByKey(eventViewModel.Id);
+
+                eventViewModel.FillEventDO(uow, eventDO);
+                if(eventViewModel.Id == 0)
+                    uow.EventRepository.Add(eventDO);
+
+                uow.SaveChanges();
+            }
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }

@@ -147,6 +147,10 @@
     <Compile Include="Migrations\201405211101452_InitialMigration.Designer.cs">
       <DependentUpon>201405211101452_InitialMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201405271146464_FixingEventModel.cs" />
+    <Compile Include="Migrations\201405271146464_FixingEventModel.Designer.cs">
+      <DependentUpon>201405271146464_FixingEventModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\AttendeeRepository.cs" />
@@ -203,6 +207,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201405211101452_InitialMigration.resx">
       <DependentUpon>201405211101452_InitialMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405271146464_FixingEventModel.resx">
+      <DependentUpon>201405271146464_FixingEventModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

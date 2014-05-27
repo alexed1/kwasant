@@ -1,4 +1,5 @@
-﻿@model KwasantWeb.ViewModels.EventViewModel
+﻿@using Newtonsoft.Json
+@model KwasantWeb.ViewModels.EventViewModel
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @section immediateScripts
 {
@@ -61,7 +62,9 @@
     $(function () {
         $("#f").submit(function () {
             var f = $("#f");
-            $.post(f.prop('action'), f.serialize(), function (result) {
+            var data = @Html.Raw(JsonConvert.SerializeObject(Model));
+            
+            $.post(f.prop('action'), data, function (result) {
                 var evaledRes = eval(result);
                 close(evaledRes);
             });
