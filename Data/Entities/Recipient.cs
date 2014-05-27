@@ -4,7 +4,7 @@ using Data.Entities.Enumerations;
 
 namespace Data.Entities
 {
-    public class EmailEmailAddressDO
+    public class Recipient
     {
         [Key]
         public int Id { get; set; }

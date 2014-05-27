@@ -63,7 +63,13 @@ namespace Data.Infrastructure
                 entity.Entity.SaveHook(entity);
             }
 
-            return base.SaveChanges();
+            var saveResult = base.SaveChanges();
+            foreach (var entity in ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged))
+            {
+                entity.State = EntityState.Unchanged;
+            }
+
+            return saveResult;
         }
 
         public IDbSet<TEntity> Set<TEntity>() where TEntity : class
@@ -80,7 +86,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
-            modelBuilder.Entity<EmailEmailAddressDO>().ToTable("EmailEmailAddresses");
+            modelBuilder.Entity<Recipient>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EventDO>().ToTable("Events");

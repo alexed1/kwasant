@@ -132,39 +132,6 @@ namespace KwasantTest.Entities
 
         [Test]
         [Category("Event")]
-        public void Event_Add_FailAddEventIfPriorityValueZero()
-        {
-            //SETUP
-
-            EventDO curOriginalEventDO = _fixture.TestEvent2();
-            curOriginalEventDO.Priority = 0;
-
-            //EXECUTE
-            Assert.Throws<ValidationException>(() =>
-            {
-                _uow.EventRepository.Add(curOriginalEventDO);
-            }
-            );
-        }
-
-        [Test]
-        [Category("Event")]
-        public void Event_Add_FailAddEventIfSequenceValueZero()
-        {
-            //SETUP      
-            EventDO curOriginalEventDO = _fixture.TestEvent2();
-            curOriginalEventDO.Sequence = 0;
-
-            //EXECUTE
-            Assert.Throws<ValidationException>(() =>
-            {
-                _uow.EventRepository.Add(curOriginalEventDO);
-            }
-            );
-        }
-
-        [Test]
-        [Category("Event")]
         public void Event_Add_FailAddEvenIfStartDateIsGreaterThanEndDate()
         {
             //SETUP      

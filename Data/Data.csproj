@@ -119,7 +119,7 @@
     <Compile Include="Constants\InstructionConstants.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
-    <Compile Include="Entities\EmailEmailAddressDO.cs" />
+    <Compile Include="Entities\Recipient.cs" />
     <Compile Include="Entities\Enumerations\CommunicationType.cs" />
     <Compile Include="Entities\Enumerations\EmailParticipantType.cs" />
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
@@ -146,6 +146,22 @@
     <Compile Include="Migrations\201405211101452_InitialMigration.cs" />
     <Compile Include="Migrations\201405211101452_InitialMigration.Designer.cs">
       <DependentUpon>201405211101452_InitialMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201405271146464_FixingEventModel.cs" />
+    <Compile Include="Migrations\201405271146464_FixingEventModel.Designer.cs">
+      <DependentUpon>201405271146464_FixingEventModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201405271244102_Rename_EmailEmailAddresses_to_Recipients.cs" />
+    <Compile Include="Migrations\201405271244102_Rename_EmailEmailAddresses_to_Recipients.Designer.cs">
+      <DependentUpon>201405271244102_Rename_EmailEmailAddresses_to_Recipients.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201405271313557_AddForeignKeyForCreatedBy.cs" />
+    <Compile Include="Migrations\201405271313557_AddForeignKeyForCreatedBy.Designer.cs">
+      <DependentUpon>201405271313557_AddForeignKeyForCreatedBy.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201405271324070_MakeCreatedByRequired.cs" />
+    <Compile Include="Migrations\201405271324070_MakeCreatedByRequired.Designer.cs">
+      <DependentUpon>201405271324070_MakeCreatedByRequired.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
@@ -203,6 +219,18 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201405211101452_InitialMigration.resx">
       <DependentUpon>201405211101452_InitialMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405271146464_FixingEventModel.resx">
+      <DependentUpon>201405271146464_FixingEventModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405271244102_Rename_EmailEmailAddresses_to_Recipients.resx">
+      <DependentUpon>201405271244102_Rename_EmailEmailAddresses_to_Recipients.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405271313557_AddForeignKeyForCreatedBy.resx">
+      <DependentUpon>201405271313557_AddForeignKeyForCreatedBy.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405271324070_MakeCreatedByRequired.resx">
+      <DependentUpon>201405271324070_MakeCreatedByRequired.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

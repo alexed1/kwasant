@@ -5,6 +5,7 @@ using System.Net.Mime;
 using System.Text;
 using Data.Entities;
 using Utilities;
+using UtilitiesLib;
 
 namespace KwasantCore.Managers.APIManager.Packagers
 {

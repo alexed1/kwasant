@@ -1,8 +1,27 @@
-﻿@using Data.Constants
-@model Data.Entities.EventDO
+﻿@using Newtonsoft.Json
+@model KwasantWeb.ViewModels.EventViewModel
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
-
-<link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/select2")
+    @Scripts.Render("~/bundles/js/moment")
+    @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
+@section styles
+{
+    @Styles.Render("~/bundles/css/bootstrap3.0")
+    @Styles.Render("~/bundles/css/default")
+    @Styles.Render("~/bundles/css/select2")
+    @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
+}
 <form id="f" method="post" style="margin:10px" action="@Url.Action("ConfirmDelete")">
     <h3>Confirm Delete</h3>
     <hr />
@@ -17,7 +36,7 @@
     <div>Location: @Model.Location</div>
     <div>Summary: @Model.Summary</div>
     <div>Description: @Model.Description</div>
-    <div>Attendees: @String.Join(", ", Model.Attendees.Select(a => a.Name + " (" + a.EmailAddress + ")"))</div>
+    <div>Attendees: @Model.Attendees</div>
     
     <hr />
     <div class="space">
