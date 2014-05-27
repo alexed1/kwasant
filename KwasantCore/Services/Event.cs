@@ -39,12 +39,12 @@ namespace KwasantCore.Services
             var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
             fromEmailAddr.Name = fromName;
 
-            outboundEmail.AddEmailParticipant(EmailParticipantType.FROM, fromEmailAddr);
+            outboundEmail.AddEmailRecipient(EmailParticipantType.FROM, fromEmailAddr);
             foreach (var attendeeDO in eventDO.Attendees)
             {
                 var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress);
                 toEmailAddress.Name = attendeeDO.Name;
-                outboundEmail.AddEmailParticipant(EmailParticipantType.TO, toEmailAddress);
+                outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
             }
             outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), eventDO.Summary, eventDO.StartDate);
 

@@ -49,13 +49,12 @@ namespace Data.Infrastructure
             }
         }
 
-        private EmailEmailAddressRepository _emailEmailAddressRepository;
-
-        public EmailEmailAddressRepository EmailEmailAddressRepository
+        private RecipientRepository _recipientRepository;
+        public RecipientRepository RecipientRepository
         {
             get
             {
-                return _emailEmailAddressRepository ?? (_emailEmailAddressRepository = new EmailEmailAddressRepository(_context));
+                return _recipientRepository ?? (_recipientRepository = new RecipientRepository(_context));
             }
         }
 

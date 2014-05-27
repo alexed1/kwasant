@@ -5,10 +5,10 @@ namespace Data.Repositories
 {
 
 
-    public class EmailEmailAddressRepository : GenericRepository<EmailEmailAddressDO>, IEmailEmailAddressRepository
+    public class RecipientRepository : GenericRepository<Recipient>, IRecipientRepository
     {
 
-        internal EmailEmailAddressRepository(IDBContext dbContext)
+        internal RecipientRepository(IDBContext dbContext)
             : base(dbContext)
         {
 
@@ -16,7 +16,7 @@ namespace Data.Repositories
     }
 
 
-    public interface IEmailEmailAddressRepository : IGenericRepository<EmailEmailAddressDO>
+    public interface IRecipientRepository : IGenericRepository<Recipient>
     {
     }
 }

@@ -70,11 +70,11 @@ namespace KwasantCore.Managers.CommunicationManager
                     Status = EmailStatus.QUEUED
                 };
 
-                outboundEmail.AddEmailParticipant(EmailParticipantType.FROM,
+                outboundEmail.AddEmailRecipient(EmailParticipantType.FROM,
                     uow.EmailAddressRepository.GetOrCreateEmailAddress("scheduling@kwasant.com",
                         "Kwasant Scheduling Services"));
 
-                outboundEmail.AddEmailParticipant(EmailParticipantType.TO, uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress));
+                outboundEmail.AddEmailRecipient(EmailParticipantType.TO, uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress));
 
                 emailRepo.Add(outboundEmail);
             }

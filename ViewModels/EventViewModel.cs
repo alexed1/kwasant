@@ -59,7 +59,7 @@ namespace KwasantWeb.ViewModels
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
                 return new EventViewModel
                 {
-                    Attendees = String.Join(",", bookingRequestDO.EmailEmailAddresses.Select(eea => eea.EmailAddress.Address).Distinct()),
+                    Attendees = String.Join(",", bookingRequestDO.Recipients.Select(eea => eea.EmailAddress.Address).Distinct()),
                     IsAllDay = isAllDay,
                     StartDate = startDate,
                     EndDate = endDate,
