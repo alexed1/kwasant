@@ -24,9 +24,8 @@ namespace Data.Repositories
             {
                 curUser = new UserDO();
                 curUser.UserName = fromEmailAddress;
-                curUser.PersonDO = new PersonDO();
-                curUser.PersonDO.FirstName = curMessage.From.Name;
-                curUser.PersonDO.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
+                curUser.FirstName = curMessage.From.Name;
+                curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 userRepo.Add(curUser);
             }
             return curUser;

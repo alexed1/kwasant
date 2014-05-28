@@ -35,7 +35,7 @@ namespace KwasantCore.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 curAttendeeDO = new AttendeeDO();
-                curAttendeeDO.EmailAddress = curUserDO.PersonDO.EmailAddress;
+                curAttendeeDO.EmailAddress = curUserDO.EmailAddress;
                // if (curUserDO.PersonDO.EmailAddress == null)
                    // throw new ArgumentException("Tried to create an Attendee from a User that doesn't have an email address");
             }
