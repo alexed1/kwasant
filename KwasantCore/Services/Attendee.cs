@@ -8,6 +8,7 @@ using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
+using FluentValidation;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
@@ -30,17 +31,15 @@ namespace KwasantCore.Services
 
         public  AttendeeDO Create (UserDO curUserDO)
         {
+            AttendeeDO curAttendeeDO;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                
-                return new AttendeeDO()
-                {
-                    
-                   EmailAddress = curUserDO.PersonDO.EmailAddress,
-                  
-                };
-
+                curAttendeeDO = new AttendeeDO();
+                curAttendeeDO.EmailAddress = curUserDO.PersonDO.EmailAddress;
+               // if (curUserDO.PersonDO.EmailAddress == null)
+                   // throw new ArgumentException("Tried to create an Attendee from a User that doesn't have an email address");
             }
+            return curAttendeeDO;
         }
 
         public AttendeeDO Create(string emailAddressString, EventDO curEventDO)
@@ -54,7 +53,7 @@ namespace KwasantCore.Services
                 EmailAddressDO emailAddress = emailAddressRepository.GetOrCreateEmailAddress(emailAddressString);
                 curAttendee.EmailAddress = emailAddress;
                 curAttendee.Event = curEventDO;  //do we have to also manually set the EventId? Seems unDRY
-                uow.AttendeeRepository.Add(curAttendee); //is this line necessary?
+                //uow.AttendeeRepository.Add(curAttendee); //is this line necessary?
             
             }
             return curAttendee;

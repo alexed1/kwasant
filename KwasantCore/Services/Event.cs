@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Mime;
 using Data.Entities;
 using Data.Entities.Enumerations;
+using Data.Infrastructure;
 using Data.Interfaces;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
@@ -71,19 +72,24 @@ namespace KwasantCore.Services
         public void ManageAttendeeList(IUnitOfWork uow, EventDO eventDO, string curAttendees)
         {
 
+            IUnitOfWork uow2 = ObjectFactory.GetInstance<IUnitOfWork>();
 
             var attendeesSet = curAttendees.Split(',').ToList();
 
             List<AttendeeDO> eventAttendees = eventDO.Attendees ?? new List<AttendeeDO>();
             var attendeesToDelete = eventAttendees.Where(attendeeDO => !attendeesSet.Contains(attendeeDO.EmailAddress.Address)).ToList();
             foreach (var attendeeToDelete in attendeesToDelete)
-                uow.AttendeeRepository.Remove(attendeeToDelete);
+                uow2.AttendeeRepository.Remove(attendeeToDelete);
 
             foreach ( string attendeeString in attendeesSet.Where(attString => !eventAttendees.Select(a => a.EmailAddress.Address).Contains(attString)))
             {
                 var attendee = new Attendee();
-                attendee.Create(attendeeString, eventDO);          
+                AttendeeDO curAttendee = attendee.Create(attendeeString, eventDO);     
+                eventDO.Attendees.Add(curAttendee);
             }
+
+            uow2.SaveChanges();
+            
         }
 
 

@@ -26,7 +26,7 @@ namespace KwasantWeb.ViewModels
         public int BookingRequestID { get; set; }
         public String Attendees { get; set; }
 
-        public String CreatedByName { get; set; }
+        public UserDO CreatedBy { get; set; }
         public String CreatedByID { get; set; }
 
         public bool Confirmed { get; set; }
@@ -50,8 +50,9 @@ namespace KwasantWeb.ViewModels
             Summary = eventDO.Summary;
             Category = eventDO.Category;
             BookingRequestID = eventDO.BookingRequestID;
-            Attendees = eventDO.Attendees == null ? String.Empty : string.Join(",", eventDO.Attendees.Select(e => e.EmailAddress));
-            CreatedByName = eventDO.CreatedBy.UserName;
+            Attendees = " disabled kw-163";
+            //FIX THIS KW-163: Attendees = eventDO.Attendees == null ? String.Empty : string.Join(",", eventDO.Attendees.Select(e => e.EmailAddress.Address));
+            CreatedBy = eventDO.CreatedBy;
             Confirmed = false;
         }
 

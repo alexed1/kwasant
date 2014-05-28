@@ -14,8 +14,8 @@ namespace KwasantWeb.App_Start
         {
 
 
-            AutoMapper.Mapper.CreateMap<EventViewModel, EventDO>();
-
+            AutoMapper.Mapper.CreateMap<EventViewModel, EventDO>()
+                .ForMember(evt => evt.Attendees, opt => opt.Ignore());
 
         }
     }

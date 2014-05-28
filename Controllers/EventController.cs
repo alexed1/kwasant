@@ -36,17 +36,16 @@ namespace KwasantWeb.Controllers
         public ActionResult ProcessSubmittedEvent(EventViewModel eventViewModel)
         {
        
-            if (eventViewModel.Confirmed == false)
+            if  (false)  //(eventViewModel.Confirmed == false) TO DO: fix this so confirmation works properly again.
                 return View("ConfirmChanges", eventViewModel);
             else
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    EventDO eventDO = eventViewModel.Id == 0
-                        ? new EventDO { CreatedByID = User.Identity.GetUserId() }
-                        : uow.EventRepository.GetByKey(eventViewModel.Id);
                                   
-                    eventDO = Mapper.Map<EventDO>(eventViewModel);
+                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(eventViewModel.BookingRequestID);
+                    EventDO eventDO = Mapper.Map<EventDO>(eventViewModel);
+                    eventDO.CreatedBy = bookingRequestDO.User;
 
                     Event curEvent = new Event();
                     curEvent.ManageAttendeeList(uow, eventDO, eventViewModel.Attendees);
@@ -59,7 +58,7 @@ namespace KwasantWeb.Controllers
                     uow.SaveChanges();
                 }
 
-                return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+                return RedirectToAction( "Index", "Calendar");
             }
         }
 

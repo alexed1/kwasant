@@ -85,7 +85,7 @@
 
 <form id="f" method="post" action="@Url.Action("ProcessSubmittedEvent", "Event" )">
     <h3>
-        @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event (Created by " + Model.CreatedByName + ").")
+        @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event (Created by " + Model.CreatedBy.PersonDO.EmailAddress.Address + ").")
     </h3>
     </div>
     <hr />

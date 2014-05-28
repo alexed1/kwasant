@@ -64,8 +64,9 @@
     $(function () {
         $("#f").submit(function () {
             var f = $("#f");
+          
+            $("#Confirmed").val(true);
             var data = @Html.Raw(JsonConvert.SerializeObject(Model));
-           //$("#Confirmed").val(true); 
             $.post(f.prop('action'), data, function (result) {
                 var evaledRes = eval(result);
                 close(evaledRes);

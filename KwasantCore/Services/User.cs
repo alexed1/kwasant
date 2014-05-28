@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Configuration;
+using Data.Validators;
+using FluentValidation;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
@@ -46,6 +48,10 @@ namespace KwasantCore.Services
 
         public async Task<RegistrationStatus> Create(UserDO userDO, string role)
         {
+
+            UserValidator _curUserValidator = new UserValidator();
+            _curUserValidator.ValidateAndThrow(userDO);
+
             RegistrationStatus curRegStatus = RegistrationStatus.Successful;
 
             var userManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
