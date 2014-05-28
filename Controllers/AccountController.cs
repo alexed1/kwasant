@@ -36,7 +36,7 @@ namespace KwasantWeb.Controllers
 
             EmailDO emailDO = new EmailDO();
             emailDO.AddEmailRecipient(EmailParticipantType.TO, Email.GenerateEmailAddress(_uow, new MailAddress(message.Destination)));
-            emailDO.AddEmailRecipient(EmailParticipantType.FROM, Email.GenerateEmailAddress(_uow, new MailAddress(senderMailAddress)));
+            emailDO.From = Email.GenerateEmailAddress(_uow, new MailAddress(senderMailAddress));
 
             emailDO.Subject = message.Subject;
             emailDO.HTMLText = message.Body;

@@ -122,7 +122,7 @@ namespace KwasantCore.Services
             };
             var uow = emailRepository.UnitOfWork;
 
-            emailDO.AddEmailRecipient(EmailParticipantType.FROM, GenerateEmailAddress(uow, mailMessage.From));
+            emailDO.From = GenerateEmailAddress(uow, mailMessage.From);
             foreach (var addr in mailMessage.To.Select(a => GenerateEmailAddress(uow, a)))
             {
                 emailDO.AddEmailRecipient(EmailParticipantType.TO, addr);    
@@ -182,7 +182,7 @@ namespace KwasantCore.Services
             string fromName = CommunicationManager.GetFromName(); 
 
             EmailDO createdEmail = new EmailDO();
-            createdEmail.AddEmailRecipient(EmailParticipantType.FROM, _uow.EmailAddressRepository.GetOrCreateEmailAddress(fromEmail, fromName));
+            createdEmail.From = _uow.EmailAddressRepository.GetOrCreateEmailAddress(fromEmail, fromName);
 
             foreach (var attendee in curEventDO.Attendees)
             {

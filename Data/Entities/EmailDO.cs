@@ -28,13 +28,9 @@ namespace Data.Entities
         [InverseProperty("Emails")]
         public virtual List<EventDO> Events { get; set; }
 
-        public EmailAddressDO From
-        {
-            get
-            {
-                return Recipients.Where(eea => eea.Type == EmailParticipantType.FROM).Select(eea => eea.EmailAddress).FirstOrDefault();
-            }
-        }
+        [ForeignKey("From"), Required]
+        public int FromID { get; set; }
+        public EmailAddressDO From { get; set; }
 
         public IEnumerable<EmailAddressDO> To
         {
