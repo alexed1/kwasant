@@ -618,7 +618,6 @@
     <Content Include="Views\Calendar\Today.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
     <Content Include="Views\Event\ConfirmChanges.cshtml" />
-    <Content Include="Views\Calendar\DeleteEvent.cshtml" />
     <Content Include="Views\Event\ConfirmEventEdits.cshtml" />
     <Content Include="Views\Event\DeleteEvent.cshtml" />
     <Content Include="Views\MandrillWebhook\Index.cshtml" />
