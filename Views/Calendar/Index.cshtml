@@ -50,7 +50,7 @@
 
     .validation-summary-valid {
         display: none;
-    }
+                        }
 
     .bookingAgentFormControlBorder {
         border: 2px solid gray;
@@ -71,7 +71,10 @@
         border: 2px solid gray;
         padding-left: 20px;
         min-height: 800px;
-    }
+                        }
+                    </div>
+                </div>
+            </div>
 
     .mid_container_text {
         font-size: 0.85em;
@@ -91,7 +94,7 @@
         font-weight: normal;
         min-height: 50px;
         overflow-x: auto;
-    }
+                        }
 
     #toolbar {
         margin: 10px 0px 20px 0px;
@@ -133,7 +136,7 @@
 @Scripts.Render("~/bundles/js/common")
 }
 <div class="jumbotron" style="padding-left:20px; padding-right:20px; width: 1270px;">
-    <div class="row">
+            <div class="row">
         <div id="emailInfoBox" class="col-md-4 container_box" style="height:100%; padding:0px;width:420px;border:none;">
             <iframe src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style="width:100%;height:100%;border:none;margin-top:-7px;"></iframe>
         </div>
@@ -176,7 +179,7 @@
                         EventClickHandling = EventClickHandlingType.JavaScript,
                         HeaderClickHandling = HeaderClickHandlingType.JavaScript,
                         EventDeleteHandling = EventDeleteHandlingType.JavaScript,
-
+                        
                         EventBackColor = "#638EDE",
                         DurationBarVisible = false,
                         EventHeaderVisible = false,
@@ -239,7 +242,7 @@
                         TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedHandlingType.JavaScript,
                         EventClickHandling = DayPilot.Web.Mvc.Events.Month.EventClickHandlingType.JavaScript,
                         HeaderClickHandling = DayPilot.Web.Mvc.Events.Month.HeaderClickHandlingType.JavaScript,
-
+                        
                         
                         EventFontSize = "10px",
                         
@@ -312,7 +315,41 @@
 
     function displayForm(url) {
         var m = new DayPilot.Modal();
+        m.top = 130;
         m.width = 580;
+        m.create = function () {
+            var hide = document.createElement("div");
+            var div = document.createElement("div");
+            div.id = this.id + 'popup';
+            div.style.position = 'fixed';
+            div.style.right = '0px';
+            div.style.bottom = '100px';
+            div.style.backgroundColor = 'white';
+            div.style.width = "50px";
+            div.style.height = "50px";
+            if (this.dragDrop) {
+                div.onmousedown = this.dragStart;
+            }
+
+            var defaultHeight = 50;
+
+            var iframe = null;
+            if (this.useIframe) {
+                iframe = document.createElement("iframe");
+                iframe.id = this.id + "iframe";
+                iframe.name = this.id + "iframe";
+                iframe.frameBorder = '0';
+                iframe.style.width = '100%';
+                iframe.style.height = defaultHeight + 'px';
+                div.appendChild(iframe);
+            }
+
+            document.body.appendChild(div);
+
+            this.div = div;
+            this.iframe = iframe;
+            this.hideDiv = hide;
+        };
         m.closed = function () {
             var daypilotControls = [
                 dp_day,
@@ -334,19 +371,19 @@
     }
 
     function eventClick(e) {
-        displayForm(getBaseCalendarURL() + '/Open/?eventID=' + e.id());
+        displayForm(getBaseURL() + '/Event/Edit/?eventID=' + e.id());
     }
 
     function eventNew(start, end) {
-        displayForm(getBaseCalendarURL() + '/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end);
+        displayForm(getBaseURL() + '/Event/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end);
     }
 
     function eventMove(e, newStart, newEnd) {
-        displayForm(getBaseCalendarURL() + '/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
+        displayForm(getBaseURL() + '/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
     }
 
     function eventDelete(e) {
-        displayForm(getBaseCalendarURL() + '/DeleteEvent/?eventID=' + e.id());
+        displayForm(getBaseURL() + '/Event/DeleteEvent/?eventID=' + e.id());
     }
 
 </script>

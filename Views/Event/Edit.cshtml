@@ -7,7 +7,7 @@
     @Scripts.Render("~/bundles/js/moment")
     @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
     @Scripts.Render("~/bundles/js/jqueryvalidate")
-    
+
     <script type="text/javascript">
             var hideShowDates = function () {
                 var fromDate = $('#StartDate');
@@ -22,7 +22,7 @@
                 }
             };
 
-            $(document).ready(function() {
+            $(document).ready(function () {
                 $('#chkAllDay').click(hideShowDates);
 
                 var data = [@Html.Raw(String.Join(",", Model.Attendees.Split(',').Select(a =>
@@ -30,10 +30,10 @@
                                 )))];
 
                 $('#attendeesSel').select2({
-                    createSearchChoice: function(term) {
+                    createSearchChoice: function (term) {
                         return { id: term, text: term };
                     },
-                    validateFormat: function(term) {
+                    validateFormat: function (term) {
                         var atPos = term.indexOf('@@');
                         var dotPos = term.lastIndexOf('.');
                         if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 2 <= dotPos)) {
@@ -62,17 +62,20 @@
     @Styles.Render("~/bundles/css/select2")
     @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
     <style>
-        .glyphicon-calendar:before {
+        .glyphicon-calendar:before
+        {
             content: "\e109"; /* This was broken in the bootstrap css...?? */
         }
 
-        .formItem {
+        .formItem
+        {
             display: inline-flex;
             width: 100%;
             padding-top: 15px;
         }
 
-        .formLabel {
+        .formLabel
+        {
             width: 100px;
             min-width: 100px;
             padding-top: 5px;
@@ -80,26 +83,30 @@
     </style>
 }
 
-<form id="f" method="post" action="@Url.Action("ProcessCreateEvent")">
+<form id="f" method="post" action="@Url.Action("ConfirmEventEdits")">
+    <div class="dragger">
     <h3>
         @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event (Created by " + Model.CreatedByName + ").")
     </h3>
+    </div>
     <hr />
     <div class="formItem">
         <div class="formLabel">
             Summary
+       
         </div>
         <input id="summary" name="Summary" class="form-control col-md-1" value="@Model.Summary" required />
     </div>
     <div class="formItem">
         <div class="formLabel">
             When
+       
         </div>
         <label style="padding-top:5px;">
             @Html.CheckBoxFor(m => m.IsAllDay, new { id = "chkAllDay", name = "IsAllDay" }) All day event
         </label>
     </div>
-    <div id="dateGroup" class="formItem" style="padding-top:10px;">
+    <div id="dateGroup" class="formItem" style="padding-top: 10px;">
         <div class="formLabel">
             <!-- Align the date pickers -->
         </div>
@@ -111,7 +118,7 @@
                 </span>
             </div>
         </div>
-        <div class='col-md-4' style="padding-left: 4px; ">
+        <div class='col-md-4' style="padding-left: 4px;">
             <label style="padding-top: 6px; font-weight: normal">to</label>
         </div>
         <div class='col-md-4' style="padding-right: 0; padding-left:5px;">
@@ -127,6 +134,7 @@
     <div class="formItem">
         <div class="formLabel">
             Location
+       
         </div>
         <input id="location" name="Location" class="form-control col-md-1" value="@Model.Location" required />
     </div>
@@ -134,6 +142,7 @@
     <div class="formItem">
         <div class="formLabel">
             Description
+       
         </div>
         <textarea id="description" name="Description" cols="31" rows="3" class="form-control col-md-1" required>@Html.Raw(Model.Description)</textarea>
     </div>
@@ -141,10 +150,12 @@
     <div class="formItem">
         <div class="formLabel">
             Attendees
+       
         </div>
         <input type="hidden" name="Attendees" id="attendeesSel" />
     </div>
     @{
+
         <div style="display: none">
             @Html.TextBox("Id", @Model.Id, new { @class = "form-control col-md-1" })
             @Html.TextBox("BookingRequestID", @Model.BookingRequestID, new { @class = "form-control col-md-1" })
@@ -157,7 +168,10 @@
                 <input id="btnSave" type="submit" value="OK" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
             </div>
             <div style="float: left">
-                <a href="javascript:close()"><div style="width: 100px;">Cancel</div></a>
+                @*<a href="javascript:close()">*@
+                <a href="javascript:checkunsaveddata();">
+                    <div style="width: 100px;">Cancel</div>
+                </a>
             </div>
         </div>
         <br />
@@ -166,6 +180,31 @@
 </form>
 
 <script type="text/javascript">
+    var isunsaved = false;
+    function checkunsaveddata() {
+        if (!isunsaved) {
+            close();
+        }
+        else {
+            if (confirm("you are about to lose data, continue?")) {
+                isunsaved = false;
+                close();
+            } else { return false; }
+        }
+    }
+
+    $(document).ready(function () {
+        $(".dragger").mouseenter(function (e) {
+            $('div[id*=popup]', window.parent.document).trigger("mousedown");
+        });
+        $(".dragger").mouseout(function (e) {
+            $('div[id*=mask]', window.parent.document).remove();
+        });
+        $(".form-control").change(function () {
+            isunsaved = true;
+        });
+    });
+
     function close(result) {
         if (parent && parent.DayPilot && parent.DayPilot.ModalStatic) {
             parent.DayPilot.ModalStatic.close(result);
@@ -204,7 +243,7 @@
         return false;
     });
 
-    $(function() {
+    $(function () {
         $("#summary").focus();
         $('#f').validate();
     });

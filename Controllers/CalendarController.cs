@@ -42,7 +42,7 @@ namespace KwasantWeb.Controllers
         public ActionResult Month(int bookingRequestID)
         {
             return new DayPilotMonthControl(bookingRequestID).CallBack(this);
-        }  
+        }
 
         public ActionResult Rtl()
         {
@@ -201,90 +201,6 @@ namespace KwasantWeb.Controllers
         {
             return new DayPilotNavigatorControl().CallBack(this);
         }
-
-        public ActionResult New(int bookingRequestID, string start, string end)
-        {
-            return View("~/Views/Calendar/Open.cshtml", EventViewModel.NewEventOnBookingRequest(bookingRequestID, start, end));
-        }
-
-        public ActionResult Open(int eventID)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                return View(new EventViewModel(eventDO));
-            }
-        }
-
-        public ActionResult DeleteEvent(int eventID)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                return View(new EventViewModel(eventDO));
-            }
-        }
-
-        public ActionResult ConfirmDelete(int eventID)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                if (eventDO != null)
-                    uow.EventRepository.Remove(eventDO);
-
-                uow.SaveChanges();
-                
-                return JavaScript(SimpleJsonSerializer.Serialize("OK"));
-            }
-        }
-
-        public ActionResult MoveEvent(int eventID, String newStart, String newEnd)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetByKey(eventID);
-                var evm = new EventViewModel(eventDO)
-                {
-                    StartDate = DateTime.Parse(newStart),
-                    EndDate = DateTime.Parse(newEnd)
-                };
-                return View("~/Views/Calendar/ProcessCreateEvent.cshtml", evm);
-            }
-        }
-
-        /// <summary>
-        /// This method creates a template eventDO which we store. This event is presented to the user to review & confirm changes. If they confirm, Confirm(FormCollection form) is invoked
-        /// </summary>
-        /// <param name="eventViewModel"></param>
-        /// <returns></returns>
-        public ActionResult ProcessCreateEvent(EventViewModel eventViewModel)
-        {
-            return View(eventViewModel);
-        }
-
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Confirm(EventViewModel eventViewModel)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                EventDO eventDO = eventViewModel.Id == 0
-                    ? new EventDO { CreatedByID = User.Identity.GetUserId() }
-                    : uow.EventRepository.GetByKey(eventViewModel.Id);
-
-                eventViewModel.FillEventDO(uow, eventDO);
-                if (eventViewModel.Id == 0)
-                {
-                    uow.EventRepository.Add(eventDO);
-                }
-
-                uow.SaveChanges();
-            }
-
-            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
-        }
-
-        #endregion "Action"
-
     }
+    #endregion "Action"
 }
