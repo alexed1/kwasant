@@ -86,7 +86,7 @@ namespace Daemons
 
             //the difference in syntax makes it easy to have nonzero hits stand out visually in the log dashboard
             if (uids.Any())           
-                logString = GetType().Name + " - " + uids.Count() + "emails found!";      
+                logString = GetType().Name + " - " + uids.Count() + " emails found!";      
             else
                 logString = GetType().Name + " - 0 emails found...";
             Logger.GetLogger().Info(logString);

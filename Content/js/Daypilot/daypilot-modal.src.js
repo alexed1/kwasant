@@ -314,8 +314,10 @@ if (typeof(DayPilot) === 'undefined') {
             mask.style.filter = "alpha(opacity=" + opacity + ")";
             mask.style.opacity = "0." + opacity;
             mask.style.width = "100%";
-            mask.style.height = this.height + "px";
+            //mask.style.height = this.height + "px";
+            mask.style.height = "60px";
             mask.style.position = "absolute";
+            mask.id = "mask";
             mask.style.left = '0px';
             mask.style.top = '0px';
 
