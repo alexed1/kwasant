@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201405280959076_AddFromEmailAddressAsOneToOne"; }
+            get { return "201405281017062_AddFromEmailAddressAsOneToOne"; }
         }
         
         string IMigrationMetadata.Source

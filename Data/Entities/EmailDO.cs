@@ -20,7 +20,7 @@ namespace Data.Entities
         public virtual EmailStatus Status { get; set; }
 
         [InverseProperty("Email")]
-        public virtual List<Recipient> Recipients { get; set; }
+        public virtual List<RecipientDO> Recipients { get; set; }
 
         [InverseProperty("Email")]
         public virtual List<AttachmentDO> Attachments { get; set; }
@@ -58,14 +58,14 @@ namespace Data.Entities
 
         public EmailDO()
         {
-            Recipients = new List<Recipient>();
+            Recipients = new List<RecipientDO>();
             Attachments = new List<AttachmentDO>();
             Events = new List<EventDO>();
         }
 
         public void AddEmailRecipient(EmailParticipantType type, EmailAddressDO emailAddress)
         {
-            var newLink = new Recipient
+            var newLink = new RecipientDO
             {
                 Email = this,
                 EmailAddress = emailAddress,

@@ -8,15 +8,14 @@ namespace Data.Migrations
         public override void Up()
         {
             AddColumn("dbo.Emails", "FromID", c => c.Int(nullable: false));
-            CreateIndex("dbo.Emails", "FromID");
 
             Sql(@"update emails
 set fromid = emailaddressid
 from emails
 inner join recipients on emails.id = recipients.emailid and type = 1
 ");
-
-            AddForeignKey("dbo.Emails", "FromID", "dbo.EmailAddresses", "Id", cascadeDelete: true);
+            CreateIndex("dbo.Emails", "FromID");
+            AddForeignKey("dbo.Emails", "FromID", "dbo.EmailAddresses", "Id");
         }
         
         public override void Down()
