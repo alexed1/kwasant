@@ -23,12 +23,14 @@ namespace Data.Entities
 
         public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
 
-        [ForeignKey("PersonDO")]
-        public int PersonID { get; set; }
+        public String FirstName { get; set; }
+        public String LastName { get; set; }
+
+        [ForeignKey("EmailAddress")]
+        public int EmailAddressID { get; set; }
 
         [Required]
-        public virtual PersonDO PersonDO { get; set; }
-
+        public virtual EmailAddressDO EmailAddress { get; set; }
     }
 }
 

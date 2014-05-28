@@ -18,7 +18,6 @@ namespace Data.Interfaces
         EmailRepository EmailRepository { get; }
         EventRepository EventRepository { get; }
         InstructionRepository InstructionRepository { get; }
-        PersonRepository PersonRepository { get; }
         StoredFileRepository StoredFileRepository { get; }
         TrackingStatusRepository TrackingStatusRepository { get; }
         UserRepository UserRepository { get; }

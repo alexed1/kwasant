@@ -138,7 +138,6 @@
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Email.cs" />
-    <Compile Include="Services\Person.cs" />
     <Compile Include="Services\User.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>

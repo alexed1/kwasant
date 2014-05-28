@@ -113,11 +113,8 @@ namespace KwasantWeb.Controllers
                     var curUserDO = new UserDO()
                     {
                         UserName = model.Email.Trim(),
-                        PersonDO = new PersonDO()
-                        {
-                            EmailAddress = _uow.EmailAddressRepository.GetOrCreateEmailAddress(model.Email.Trim()),
-                            FirstName = model.Email.Trim()
-                        }
+                        EmailAddress = _uow.EmailAddressRepository.GetOrCreateEmailAddress(model.Email.Trim()),
+                        FirstName = model.Email.Trim()
                     };
                     curUserDO.Password = model.Password.Trim();
                     curUserDO.EmailConfirmed = true; //this line essentially disables email confirmation

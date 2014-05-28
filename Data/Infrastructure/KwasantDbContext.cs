@@ -91,11 +91,17 @@ namespace Data.Infrastructure
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
-            modelBuilder.Entity<PersonDO>().ToTable("People");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserDO>().ToTable("Users");
+            
+            modelBuilder.Entity<UserDO>()
+                .Property(u => u.EmailAddressID)
+                .IsRequired()
+                .HasColumnAnnotation(
+                    "Index",
+                    new IndexAnnotation(new IndexAttribute("IX_User_EmailAddress", 1) {IsUnique = true}));
 
             modelBuilder.Entity<EmailAddressDO>()
                 .Property(ea => ea.Address)

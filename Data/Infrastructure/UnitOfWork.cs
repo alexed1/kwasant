@@ -118,17 +118,7 @@ namespace Data.Infrastructure
                 return _instructionRepository ?? (_instructionRepository = new InstructionRepository(_context));
             }
         }
-
-        private PersonRepository _personRepository;
-
-        public PersonRepository PersonRepository
-        {
-            get
-            {
-                return _personRepository ?? (_personRepository = new PersonRepository(_context));
-            }
-        }
-
+        
         private StoredFileRepository _storedFileRepository;
 
         public StoredFileRepository StoredFileRepository
