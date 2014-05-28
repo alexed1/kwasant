@@ -39,7 +39,7 @@ namespace KwasantCore.Services
             var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
             fromEmailAddr.Name = fromName;
 
-            outboundEmail.AddEmailRecipient(EmailParticipantType.FROM, fromEmailAddr);
+            outboundEmail.From = fromEmailAddr;
             foreach (var attendeeDO in eventDO.Attendees)
             {
                 var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress);

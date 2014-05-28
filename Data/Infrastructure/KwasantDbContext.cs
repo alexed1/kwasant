@@ -86,16 +86,28 @@ namespace Data.Infrastructure
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
-            modelBuilder.Entity<Recipient>().ToTable("Recipients");
+            modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
-            modelBuilder.Entity<PersonDO>().ToTable("People");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserDO>().ToTable("Users");
+
+            modelBuilder.Entity<EmailDO>()
+                .HasRequired(a => a.From)
+                .WithMany()
+                .HasForeignKey(a => a.FromID)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserDO>()
+                .Property(u => u.EmailAddressID)
+                .IsRequired()
+                .HasColumnAnnotation(
+                    "Index",
+                    new IndexAnnotation(new IndexAttribute("IX_User_EmailAddress", 1) {IsUnique = true}));
 
             modelBuilder.Entity<EmailAddressDO>()
                 .Property(ea => ea.Address)

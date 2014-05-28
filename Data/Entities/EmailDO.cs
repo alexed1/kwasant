@@ -20,7 +20,7 @@ namespace Data.Entities
         public virtual EmailStatus Status { get; set; }
 
         [InverseProperty("Email")]
-        public virtual List<Recipient> Recipients { get; set; }
+        public virtual List<RecipientDO> Recipients { get; set; }
 
         [InverseProperty("Email")]
         public virtual List<AttachmentDO> Attachments { get; set; }
@@ -28,13 +28,9 @@ namespace Data.Entities
         [InverseProperty("Emails")]
         public virtual List<EventDO> Events { get; set; }
 
-        public EmailAddressDO From
-        {
-            get
-            {
-                return Recipients.Where(eea => eea.Type == EmailParticipantType.FROM).Select(eea => eea.EmailAddress).FirstOrDefault();
-            }
-        }
+        [ForeignKey("From"), Required]
+        public int FromID { get; set; }
+        public EmailAddressDO From { get; set; }
 
         public IEnumerable<EmailAddressDO> To
         {
@@ -62,14 +58,14 @@ namespace Data.Entities
 
         public EmailDO()
         {
-            Recipients = new List<Recipient>();
+            Recipients = new List<RecipientDO>();
             Attachments = new List<AttachmentDO>();
             Events = new List<EventDO>();
         }
 
         public void AddEmailRecipient(EmailParticipantType type, EmailAddressDO emailAddress)
         {
-            var newLink = new Recipient
+            var newLink = new RecipientDO
             {
                 Email = this,
                 EmailAddress = emailAddress,

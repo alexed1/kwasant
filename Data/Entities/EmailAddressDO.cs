@@ -16,11 +16,11 @@ namespace Data.Entities
         [MaxLength(30)]
         public String Address { get; set; }
 
-        public List<Recipient> Recipients { get; set; }
+        public List<RecipientDO> Recipients { get; set; }
 
         public EmailAddressDO()
         {
-            Recipients = new List<Recipient>();
+            Recipients = new List<RecipientDO>();
         }
     }
 }

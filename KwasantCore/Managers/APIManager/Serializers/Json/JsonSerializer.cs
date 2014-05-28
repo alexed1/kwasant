@@ -104,7 +104,7 @@ namespace KwasantCore.Managers.APIManager.Serializers.Json
             {
                 StringBuilder sb = new StringBuilder();
 
-                bool addNoUnderscore = true;//applies for the first char, and for chars that follow a capital char (i.e. we don't want "CC" to become "C_C")
+               //NOT USED RIGHT NOW bool addNoUnderscore = true;//applies for the first char, and for chars that follow a capital char (i.e. we don't want "CC" to become "C_C")
                 bool lastCharUpper = true;
                 foreach (char c in s)
                 {

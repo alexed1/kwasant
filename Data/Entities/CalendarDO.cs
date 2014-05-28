@@ -14,8 +14,10 @@ namespace Data.Entities
 
         public int PersonId { get; set; }
 
-        [ForeignKey("PersonId")]
-        public virtual PersonDO Owner { get; set; }
+        [ForeignKey("Owner")]
+        public string OwnerID { get; set; }
+
+        public virtual UserDO Owner { get; set; }
         
     }
 }

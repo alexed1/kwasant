@@ -14,7 +14,7 @@ namespace KwasantCore.Managers.APIManager.Packagers
         public void Send(EmailDO email)
         {
             var smtpClient = new SmtpClient(ConfigRepository.Get("OutboundEmailHost"), ConfigRepository.Get<int>("OutboundEmailPort"))
-            {
+        {
                 EnableSsl = true,
                 UseDefaultCredentials = false,
                 Credentials = new NetworkCredential() { UserName = ConfigRepository.Get("OutboundUserName"), Password = ConfigRepository.Get("OutboundUserPassword") }

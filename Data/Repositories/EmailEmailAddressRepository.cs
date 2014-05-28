@@ -5,7 +5,7 @@ namespace Data.Repositories
 {
 
 
-    public class RecipientRepository : GenericRepository<Recipient>, IRecipientRepository
+    public class RecipientRepository : GenericRepository<RecipientDO>, IRecipientRepository
     {
 
         internal RecipientRepository(IDBContext dbContext)
@@ -16,7 +16,7 @@ namespace Data.Repositories
     }
 
 
-    public interface IRecipientRepository : IGenericRepository<Recipient>
+    public interface IRecipientRepository : IGenericRepository<RecipientDO>
     {
     }
 }
