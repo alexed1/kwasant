@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Mail;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
@@ -10,6 +11,7 @@ using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using StructureMap;
 using Twilio;
 using Microsoft.WindowsAzure;
+using KwasantCore.Services;
 
 namespace KwasantCore.Managers.CommunicationManager
 {
@@ -26,7 +28,19 @@ namespace KwasantCore.Managers.CommunicationManager
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
         public void NewCustomerWorkflow(KwasantSchedulingAlertData eventData)
         {
-            Debug.WriteLine("NewCustomer has been created.");
+            //Debug.WriteLine("NewCustomer has been created.");
+            //Retrive mail To address
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailDO curMailDO = new EmailDO();
+            curMailDO.AddEmailRecipient(EmailParticipantType.TO, Email.GenerateEmailAddress(uow, new MailAddress(eventData.alertData)));
+            curMailDO.AddEmailRecipient(EmailParticipantType.FROM, Email.GenerateEmailAddress(uow, new MailAddress(GetFromEmail())));
+
+            //curMailDO.From.Name = GetFromName();
+            curMailDO.Subject = "Welcome To Kwasant";
+            curMailDO.HTMLText = ""; //TODO : Get from web.config
+
+            Email curEmail = new Email(uow);
+            curEmail.SendTemplate("welcome_to_kwasant_v2", curMailDO, new Dictionary<string,string>());
         }
 
         public void ProcessBRNotifications(IList<BookingRequestDO> bookingRequests)

@@ -5,6 +5,8 @@ using Data.Interfaces;
 using StructureMap;
 using Utilities;
 using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Managers.CommunicationManager;
+using KwasantCore.Managers;
 
 namespace KwasantCore.Services
 {
@@ -14,6 +16,7 @@ namespace KwasantCore.Services
         private IUnitOfWork _uow;
         private User _curUser;
         private Person _curPerson;
+        private CommunicationManager _commManager;
 
         public Account(IUnitOfWork uow) //remove injected uow. unnecessary now.
         {
@@ -21,6 +24,8 @@ namespace KwasantCore.Services
             _identityManager = new IdentityManager(_uow);
             _curUser = new User(_uow);
             _curPerson = new Person(_uow);
+
+            _commManager = new CommunicationManager();
         }
 
         /// <summary>
@@ -56,15 +61,13 @@ namespace KwasantCore.Services
                         //tell 'em to login
                         curRegStatus = RegistrationStatus.UserMustLogIn;
                     }
-
-
-
                 }
                 else  //existingEmailAddressDO is Person
                 {
                     //create a new User and delete the corresponding Person
                     curUserDO = await _identityManager.ConvertExistingPerson(curPersonDO, userRegStrings);
                     curRegStatus = RegistrationStatus.Successful;
+                    _commManager.SubscribeToAlerts();
                 }
             }
             else
@@ -72,6 +75,7 @@ namespace KwasantCore.Services
                 //this email address unknown.  new user. create an EmailAddress object, then create a User
                 curRegStatus = await _identityManager.RegisterNewUser(userRegStrings);
                 curRegStatus = RegistrationStatus.Successful;
+                _commManager.SubscribeToAlerts();
             }
 
             return curRegStatus;
@@ -120,6 +124,13 @@ namespace KwasantCore.Services
             return _uow.UserRepository.FindOne(x => x.UserName == userName);
         }
 
+        public void SendWelcomeMessage(UserDO userDO)
+        {
+            string alertData = string.Empty;
+            alertData += "Alert Name = Customer Created,";
+            alertData += userDO.PersonDO.EmailAddress.Address; // Store recepient address
 
+            AlertManager.CustomerCreated(alertData);
+        }
     }
 }

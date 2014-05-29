@@ -130,6 +130,7 @@ namespace KwasantWeb.Controllers
                     else
                     {
                         //await SendEmailConfirmation(curUserDO); email confirmation is currently turned off
+                        _account.SendWelcomeMessage(curUserDO);
                         return RedirectToAction("Index", "Home");
                     }
                 }
