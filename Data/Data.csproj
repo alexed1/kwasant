@@ -119,7 +119,7 @@
     <Compile Include="Constants\InstructionConstants.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
-    <Compile Include="Entities\Recipient.cs" />
+    <Compile Include="Entities\RecipientDO.cs" />
     <Compile Include="Entities\Enumerations\CommunicationType.cs" />
     <Compile Include="Entities\Enumerations\EmailParticipantType.cs" />
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
@@ -127,7 +127,6 @@
     <Compile Include="Entities\Enumerations\TrackingType.cs" />
     <Compile Include="Entities\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
-    <Compile Include="Entities\PersonDO.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedDBContext.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedDbSet.cs" />
     <Compile Include="Infrastructure\StructureMap\DatabaseStructureMapBootStrapper.cs" />
@@ -163,6 +162,14 @@
     <Compile Include="Migrations\201405271324070_MakeCreatedByRequired.Designer.cs">
       <DependentUpon>201405271324070_MakeCreatedByRequired.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201405280918080_RemovePersonDO.cs" />
+    <Compile Include="Migrations\201405280918080_RemovePersonDO.Designer.cs">
+      <DependentUpon>201405280918080_RemovePersonDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201405281017062_AddFromEmailAddressAsOneToOne.cs" />
+    <Compile Include="Migrations\201405281017062_AddFromEmailAddressAsOneToOne.Designer.cs">
+      <DependentUpon>201405281017062_AddFromEmailAddressAsOneToOne.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\AttendeeRepository.cs" />
@@ -176,7 +183,6 @@
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />
     <Compile Include="Repositories\EventRepository.cs" />
-    <Compile Include="Repositories\PersonRepository.cs" />
     <Compile Include="Repositories\StoredFileRepository.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />
@@ -231,6 +237,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201405271324070_MakeCreatedByRequired.resx">
       <DependentUpon>201405271324070_MakeCreatedByRequired.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405280918080_RemovePersonDO.resx">
+      <DependentUpon>201405280918080_RemovePersonDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405281017062_AddFromEmailAddressAsOneToOne.resx">
+      <DependentUpon>201405281017062_AddFromEmailAddressAsOneToOne.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

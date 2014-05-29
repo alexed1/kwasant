@@ -24,23 +24,19 @@ namespace KwasantCore.Managers.CommunicationManager
             AlertManager.alertCustomerCreated += NewCustomerWorkflow;
         }
 
-
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
         public void NewCustomerWorkflow(KwasantSchedulingAlertData eventData)
         {
-            //Debug.WriteLine("NewCustomer has been created.");
-            //Retrive mail To address
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             EmailDO curMailDO = new EmailDO();
+            curMailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
             curMailDO.AddEmailRecipient(EmailParticipantType.TO, Email.GenerateEmailAddress(uow, new MailAddress(eventData.alertData)));
-            curMailDO.AddEmailRecipient(EmailParticipantType.FROM, Email.GenerateEmailAddress(uow, new MailAddress(GetFromEmail())));
 
-            //curMailDO.From.Name = GetFromName();
             curMailDO.Subject = "Welcome To Kwasant";
-            curMailDO.HTMLText = ""; //TODO : Get from web.config
+            curMailDO.HTMLText = string.Empty;
 
             Email curEmail = new Email(uow);
-            curEmail.SendTemplate("welcome_to_kwasant_v2", curMailDO, new Dictionary<string,string>());
+            curEmail.SendTemplate("welcome_to_kwasant_v2", curMailDO, null); //new Dictionary<string,string>()
         }
 
         public void ProcessBRNotifications(IList<BookingRequestDO> bookingRequests)
@@ -87,9 +83,7 @@ namespace KwasantCore.Managers.CommunicationManager
                     Status = EmailStatus.QUEUED
                 };
 
-                outboundEmail.AddEmailRecipient(EmailParticipantType.FROM,
-                    uow.EmailAddressRepository.GetOrCreateEmailAddress("scheduling@kwasant.com",
-                        "Kwasant Scheduling Services"));
+                outboundEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress("scheduling@kwasant.com", "Kwasant Scheduling Services");
 
                 outboundEmail.AddEmailRecipient(EmailParticipantType.TO, uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress));
 

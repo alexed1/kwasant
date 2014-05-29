@@ -1,12 +1,12 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
 using Utilities;
+using KwasantCore.Managers;
 using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Managers.CommunicationManager;
-using KwasantCore.Managers;
 
 namespace KwasantCore.Services
 {
@@ -15,7 +15,6 @@ namespace KwasantCore.Services
         private IdentityManager _identityManager;
         private IUnitOfWork _uow;
         private User _curUser;
-        private Person _curPerson;
         private CommunicationManager _commManager;
 
         public Account(IUnitOfWork uow) //remove injected uow. unnecessary now.
@@ -23,8 +22,6 @@ namespace KwasantCore.Services
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _identityManager = new IdentityManager(_uow);
             _curUser = new User(_uow);
-            _curPerson = new Person(_uow);
-
             _commManager = new CommunicationManager();
         }
 
@@ -43,13 +40,9 @@ namespace KwasantCore.Services
             if (existingEmailAddressDO != null)
             {
                 //this should be improved. doesn't take advantage of inheritance.
-
-                PersonDO curPersonDO = _curPerson.FindByEmailId(existingEmailAddressDO.Id);
                 UserDO curUserDO = _curUser.FindByEmailId(existingEmailAddressDO.Id);
-                curPersonDO = curUserDO.PersonDO;
                 if (curUserDO != null)
                 {
-                    
                     if (curUserDO.Password == null)
                     {
                         //this is an existing implicit user, who sent in a request in the past, had a UserDO created, and now is registering. Add the password
@@ -61,13 +54,6 @@ namespace KwasantCore.Services
                         //tell 'em to login
                         curRegStatus = RegistrationStatus.UserMustLogIn;
                     }
-                }
-                else  //existingEmailAddressDO is Person
-                {
-                    //create a new User and delete the corresponding Person
-                    curUserDO = await _identityManager.ConvertExistingPerson(curPersonDO, userRegStrings);
-                    curRegStatus = RegistrationStatus.Successful;
-                    _commManager.SubscribeToAlerts();
                 }
             }
             else
@@ -127,8 +113,8 @@ namespace KwasantCore.Services
         public void SendWelcomeMessage(UserDO userDO)
         {
             string alertData = string.Empty;
-            alertData += "Alert Name = Customer Created,";
-            alertData += userDO.PersonDO.EmailAddress.Address; // Store recepient address
+            alertData += "Alert Name = Customer Created,"; //AlertManager.Parse() expects comma sepaated alert name and alert data. But it will not be used for sending welcome message.
+            alertData += userDO.EmailAddress.Address; // Store recepient address to whom welcome message would be sent
 
             AlertManager.CustomerCreated(alertData);
         }
