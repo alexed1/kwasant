@@ -11,9 +11,10 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Infrastructure;
-using UtilitiesLib;
+using Utilities;
 using KwasantWeb.ViewModels;
 using KwasantCore.Services;
+using KwasantCore.Managers.IdentityManager;
 
 namespace KwasantWeb.Controllers
 {
@@ -34,8 +35,8 @@ namespace KwasantWeb.Controllers
             String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
 
             EmailDO emailDO = new EmailDO();
-            emailDO.AddEmailParticipant(EmailParticipantType.TO, Email.GenerateEmailAddress(_uow, new MailAddress(message.Destination)));
-            emailDO.AddEmailParticipant(EmailParticipantType.FROM, Email.GenerateEmailAddress(_uow, new MailAddress(senderMailAddress)));
+            emailDO.AddEmailRecipient(EmailParticipantType.TO, Email.GenerateEmailAddress(_uow, new MailAddress(message.Destination)));
+            emailDO.From = Email.GenerateEmailAddress(_uow, new MailAddress(senderMailAddress));
 
             emailDO.Subject = message.Subject;
             emailDO.HTMLText = message.Body;
@@ -109,13 +110,17 @@ namespace KwasantWeb.Controllers
             { 
                 if (ModelState.IsValid)
                 {
-                    UserDO curUserDO = new UserDO();
-                    curUserDO.UserName = model.Email.Trim();
+                    var curUserDO = new UserDO()
+                    {
+                        UserName = model.Email.Trim(),
+                        EmailAddress = _uow.EmailAddressRepository.GetOrCreateEmailAddress(model.Email.Trim()),
+                        FirstName = model.Email.Trim()
+                    };
                     curUserDO.Password = model.Password.Trim();
                     curUserDO.EmailConfirmed = true; //this line essentially disables email confirmation
 
                     RegistrationStatus curRegStatus = await _account.Register(curUserDO);
-                    if (curRegStatus == RegistrationStatus.UserAlreadyExists)
+                    if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", "You are already registered with us. Please login.");
                     }
@@ -173,8 +178,9 @@ namespace KwasantWeb.Controllers
                             }
                             else if (curLoginStatus == LoginStatus.Successful)
                             {
-                                //return RedirectToAction("MyAccount");
-                                return Redirect("/index.html");
+                                //return Redirect(!String.IsNullOrEmpty(returnUrl) ? returnUrl : "/index.aspx");
+                                //RedirectedToHomePage();
+                                return RedirectToAction("Index", "Admin");
                             }
                             break;
                     }

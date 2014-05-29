@@ -20,7 +20,7 @@ namespace Data.Entities
         public virtual EmailStatus Status { get; set; }
 
         [InverseProperty("Email")]
-        public virtual List<EmailEmailAddressDO> EmailEmailAddresses { get; set; }
+        public virtual List<RecipientDO> Recipients { get; set; }
 
         [InverseProperty("Email")]
         public virtual List<AttachmentDO> Attachments { get; set; }
@@ -28,19 +28,15 @@ namespace Data.Entities
         [InverseProperty("Emails")]
         public virtual List<EventDO> Events { get; set; }
 
-        public EmailAddressDO From
-        {
-            get
-            {
-                return EmailEmailAddresses.Where(eea => eea.Type == EmailParticipantType.FROM).Select(eea => eea.EmailAddress).FirstOrDefault();
-            }
-        }
+        [ForeignKey("From"), Required]
+        public int FromID { get; set; }
+        public EmailAddressDO From { get; set; }
 
         public IEnumerable<EmailAddressDO> To
         {
             get
             {
-                return EmailEmailAddresses.Where(eea => eea.Type == EmailParticipantType.TO).Select(eea => eea.EmailAddress).ToList();
+                return Recipients.Where(eea => eea.Type == EmailParticipantType.TO).Select(eea => eea.EmailAddress).ToList();
             }
         }
 
@@ -48,7 +44,7 @@ namespace Data.Entities
         {
             get
             {
-                return EmailEmailAddresses.Where(eea => eea.Type == EmailParticipantType.BCC).Select(eea => eea.EmailAddress).ToList();
+                return Recipients.Where(eea => eea.Type == EmailParticipantType.BCC).Select(eea => eea.EmailAddress).ToList();
             }
         }
 
@@ -56,20 +52,20 @@ namespace Data.Entities
         {
             get
             {
-                return EmailEmailAddresses.Where(eea => eea.Type == EmailParticipantType.CC).Select(eea => eea.EmailAddress).ToList();
+                return Recipients.Where(eea => eea.Type == EmailParticipantType.CC).Select(eea => eea.EmailAddress).ToList();
             }
         }
 
         public EmailDO()
         {
-            EmailEmailAddresses = new List<EmailEmailAddressDO>();
+            Recipients = new List<RecipientDO>();
             Attachments = new List<AttachmentDO>();
             Events = new List<EventDO>();
         }
 
-        public void AddEmailParticipant(EmailParticipantType type, EmailAddressDO emailAddress)
+        public void AddEmailRecipient(EmailParticipantType type, EmailAddressDO emailAddress)
         {
-            var newLink = new EmailEmailAddressDO
+            var newLink = new RecipientDO
             {
                 Email = this,
                 EmailAddress = emailAddress,
@@ -78,8 +74,8 @@ namespace Data.Entities
                 Type = type
             };
 
-            EmailEmailAddresses.Add(newLink);
-            emailAddress.EmailEmailAddresses.Add(newLink);
+            Recipients.Add(newLink);
+            emailAddress.Recipients.Add(newLink);
         }
     }
 }

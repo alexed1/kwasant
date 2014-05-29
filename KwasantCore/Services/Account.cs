@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
-using UtilitiesLib;
+using Utilities;
 using KwasantCore.Managers.IdentityManager;
 
 namespace KwasantCore.Services
@@ -13,14 +13,12 @@ namespace KwasantCore.Services
         private IdentityManager _identityManager;
         private IUnitOfWork _uow;
         private User _curUser;
-        private Person _curPerson;
 
         public Account(IUnitOfWork uow) //remove injected uow. unnecessary now.
         {
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _identityManager = new IdentityManager(_uow);
             _curUser = new User(_uow);
-            _curPerson = new Person(_uow);
         }
 
         /// <summary>
@@ -38,18 +36,24 @@ namespace KwasantCore.Services
             if (existingEmailAddressDO != null)
             {
                 //this should be improved. doesn't take advantage of inheritance.
-
-                PersonDO curPersonDO = _curPerson.FindByEmailId(existingEmailAddressDO.Id);
                 UserDO curUserDO = _curUser.FindByEmailId(existingEmailAddressDO.Id);
-                curPersonDO = curUserDO.PersonDO;
                 if (curUserDO != null)
                 {
-                    //if a User, redirect to an error message
+                    
+                    if (curUserDO.Password == null)
+                    {
+                        //this is an existing implicit user, who sent in a request in the past, had a UserDO created, and now is registering. Add the password
+                        curUserDO.Password = userRegStrings.Password;
+                        _identityManager.AttachPassword(curUserDO);
+                    }
+                    else
+                    {
+                        //tell 'em to login
+                        curRegStatus = RegistrationStatus.UserMustLogIn;
+                    }
                 }
                 else  //existingEmailAddressDO is Person
                 {
-                    //create a new User and delete the corresponding Person
-                    curUserDO = await _identityManager.ConvertExistingPerson(curPersonDO, userRegStrings);
                     curRegStatus = RegistrationStatus.Successful;
                 }
             }

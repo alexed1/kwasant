@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
-using System.Security.Cryptography;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
-using Data.Repositories;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
@@ -35,21 +32,21 @@ namespace KwasantCore.Services
             if (eventDO.Attendees == null)
                 eventDO.Attendees = new List<AttendeeDO>();
 
-            string fromEmail = ConfigurationHelper.GetConfigurationValue("fromEmail");
-            string fromName = ConfigurationHelper.GetConfigurationValue("fromName");
+            string fromEmail = ConfigRepository.Get("fromEmail");
+            string fromName = ConfigRepository.Get("fromName");
 
             EmailDO outboundEmail = new EmailDO();
             var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
             fromEmailAddr.Name = fromName;
 
-            outboundEmail.AddEmailParticipant(EmailParticipantType.FROM, fromEmailAddr);
+            outboundEmail.From = fromEmailAddr;
             foreach (var attendeeDO in eventDO.Attendees)
             {
                 var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress);
                 toEmailAddress.Name = attendeeDO.Name;
-                outboundEmail.AddEmailParticipant(EmailParticipantType.TO, toEmailAddress);
+                outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
             }
-            outboundEmail.Subject = String.Format(ConfigurationHelper.GetConfigurationValue("emailSubject"), eventDO.Summary, eventDO.StartDate);
+            outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), eventDO.Summary, eventDO.StartDate);
 
             var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
             var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO));

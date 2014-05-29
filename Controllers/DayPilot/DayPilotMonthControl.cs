@@ -1,19 +1,21 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using Data.Entities;
+using Data.Interfaces;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
-using KwasantCore.Services;
+using StructureMap;
 
 namespace KwasantWeb.Controllers.DayPilot
 { 
     public class DayPilotMonthControl : DayPilotMonth
     {
-        private readonly Calendar _calendar;
-        public DayPilotMonthControl(Calendar calendar)
+        private readonly int _bookingRequestID;
+        public DayPilotMonthControl(int bookingRequestID)
         {
-            _calendar = calendar;
+            _bookingRequestID = bookingRequestID;
         }
 
         protected override void OnInit(global::DayPilot.Web.Mvc.Events.Month.InitArgs e)
@@ -23,43 +25,61 @@ namespace KwasantWeb.Controllers.DayPilot
 
         protected override void OnEventResize(global::DayPilot.Web.Mvc.Events.Month.EventResizeArgs e)
         {
-            _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
+            MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
         }        
 
         protected override void OnEventMove(global::DayPilot.Web.Mvc.Events.Month.EventMoveArgs e)
         {
-            _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
+            MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
+        }
+
+        private static void MoveEvent(string id, DateTime newStart, DateTime newEnd)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var eventDO = uow.EventRepository.GetByKey(id);
+                eventDO.StartDate = newStart;
+                eventDO.EndDate = newEnd;
+                uow.SaveChanges();
+            }
         }
 
         protected override void OnEventMenuClick(global::DayPilot.Web.Mvc.Events.Month.EventMenuClickArgs e)
         {
-
             switch (e.Command)
             {
                 case "Delete":
-
-                    int intResultId;
-                    Boolean blnResult;
-
-                    blnResult = Int32.TryParse(e.Id, out intResultId);
-
-                    _calendar.DeleteEvent(e.Id);
+                    DeleteEvent(e.Id);
                     Update();
                     break;
             }
         }
 
+        private static void DeleteEvent(string id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var eventDO = uow.EventRepository.GetByKey(id);
+                uow.EventRepository.Remove(eventDO);
+                uow.SaveChanges();
+            }
+        }
+
         protected override void OnTimeRangeSelected(global::DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedArgs e)
         {
-            _calendar.AddEvent(new EventDO
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                StartDate = e.Start,
-                EndDate = e.End,
-                Summary = "Click to Open Form"
-            });
-
+                uow.EventRepository.Add(new EventDO
+                {
+                    StartDate = e.Start,
+                    EndDate = e.End,
+                    Summary = "Click to Open Form"
+                });
+                uow.SaveChanges();
+            }
+            
             Update();
         }
 
@@ -81,7 +101,7 @@ namespace KwasantWeb.Controllers.DayPilot
                     break;
                 case "delete":
                    string id = (string)e.Data["id"];
-                   _calendar.DeleteEvent(id);
+                    DeleteEvent(id);
                     Update(CallBackUpdateType.EventsOnly);
                     break;
             }
@@ -98,7 +118,10 @@ namespace KwasantWeb.Controllers.DayPilot
             DataEndField = GetPropertyName(ev => ev.EndDate);
             DataTextField = GetPropertyName(ev => ev.Summary);
             DataIdField = GetPropertyName(ev => ev.Id);
-            Events = _calendar.EventsList;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Events = uow.EventRepository.GetQuery().Where(e => e.BookingRequest.Id == _bookingRequestID).ToList();
+            }
         }
 
         //This creates a statically typed reference to our supplied property. If we change it in the future, it won't compile (so it won't break at runtime).

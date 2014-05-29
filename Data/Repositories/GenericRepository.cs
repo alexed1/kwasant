@@ -44,7 +44,7 @@ namespace Data.Repositories
             DBSet.Attach(entity);
         }
 
-        public void Add(TEntity entity)
+        public virtual void Add(TEntity entity)
         {
             DBSet.Add(entity);
         }

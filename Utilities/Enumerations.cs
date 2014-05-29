@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UtilitiesLib
+namespace Utilities
 {
 
     //creates a base class for a string-based enumerated list. The subclasses instantiate the list with the allowable values, and this class makes sure that only those values can be used. 
@@ -114,7 +114,7 @@ namespace UtilitiesLib
     {
         Successful,
         Pending,
-        UserAlreadyExists,
+        UserMustLogIn,
     }
 
     public enum LoginStatus

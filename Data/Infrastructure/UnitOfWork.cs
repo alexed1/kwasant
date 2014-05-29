@@ -49,13 +49,12 @@ namespace Data.Infrastructure
             }
         }
 
-        private EmailEmailAddressRepository _emailEmailAddressRepository;
-
-        public EmailEmailAddressRepository EmailEmailAddressRepository
+        private RecipientRepository _recipientRepository;
+        public RecipientRepository RecipientRepository
         {
             get
             {
-                return _emailEmailAddressRepository ?? (_emailEmailAddressRepository = new EmailEmailAddressRepository(_context));
+                return _recipientRepository ?? (_recipientRepository = new RecipientRepository(_context));
             }
         }
 
@@ -119,17 +118,7 @@ namespace Data.Infrastructure
                 return _instructionRepository ?? (_instructionRepository = new InstructionRepository(_context));
             }
         }
-
-        private PersonRepository _personRepository;
-
-        public PersonRepository PersonRepository
-        {
-            get
-            {
-                return _personRepository ?? (_personRepository = new PersonRepository(_context));
-            }
-        }
-
+        
         private StoredFileRepository _storedFileRepository;
 
         public StoredFileRepository StoredFileRepository

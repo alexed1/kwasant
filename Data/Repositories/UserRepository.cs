@@ -16,17 +16,18 @@ namespace Data.Repositories
         {
             string fromEmailAddress = currMessage.From.Address;
             UserRepository userRepo = UnitOfWork.UserRepository;
-            UserDO curUser = userRepo.DBSet.Local.FirstOrDefault(c => c.PersonDO.EmailAddress.Address == fromEmailAddress);
+            UserDO curUser = userRepo.DBSet.Local.FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
             if(curUser == null)
-                curUser = userRepo.GetQuery().FirstOrDefault(c => c.PersonDO.EmailAddress.Address == fromEmailAddress);
+                curUser = userRepo.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
 
             if (curUser == null)
             {
-                curUser = new UserDO();
-                curUser.UserName = fromEmailAddress;
-                curUser.PersonDO = new PersonDO();
-                curUser.PersonDO.FirstName = currMessage.From.Name;
-                curUser.PersonDO.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
+                curUser = new UserDO
+                {
+                    UserName = fromEmailAddress,
+                    EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress, currMessage.From.Name),
+                    FirstName = currMessage.From.Name
+                };
                 userRepo.Add(curUser);
             }
             return curUser;

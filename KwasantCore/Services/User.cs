@@ -16,7 +16,7 @@ using Data.Interfaces;
 using Data.Entities;
 using StructureMap;
 using Data.Repositories;
-using UtilitiesLib;
+using Utilities;
 using Data.Infrastructure;
 
 namespace KwasantCore.Services
@@ -114,7 +114,7 @@ namespace KwasantCore.Services
 
         public UserDO FindByEmailId(int Id)
         {
-            return _userRepo.FindOne(p => p.PersonDO.EmailAddress.Id == Id);
+            return _userRepo.FindOne(p => p.EmailAddress.Id == Id);
 
         }
     }

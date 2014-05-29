@@ -54,7 +54,10 @@ namespace KwasantCore.Managers.CommunicationManager
         {
             TwilioPackager twil = new TwilioPackager();
             if (bookingRequests.Any())
-                twil.SendSMS("14158067915", "Inbound Email has been received");
+            {
+                string toNumber = CloudConfigurationManager.GetSetting("TwilioToNumber");
+                twil.SendSMS(toNumber, "Inbound Email has been received");
+            }
         }
 
         private void SendBREmails(String toAddress, IEnumerable<BookingRequestDO> bookingRequests, IUnitOfWork uow)
@@ -70,11 +73,9 @@ namespace KwasantCore.Managers.CommunicationManager
                     Status = EmailStatus.QUEUED
                 };
 
-                outboundEmail.AddEmailParticipant(EmailParticipantType.FROM,
-                    uow.EmailAddressRepository.GetOrCreateEmailAddress("scheduling@kwasant.com",
-                        "Kwasant Scheduling Services"));
+                outboundEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress("scheduling@kwasant.com", "Kwasant Scheduling Services");
 
-                outboundEmail.AddEmailParticipant(EmailParticipantType.TO, uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress));
+                outboundEmail.AddEmailRecipient(EmailParticipantType.TO, uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress));
 
                 emailRepo.Add(outboundEmail);
             }

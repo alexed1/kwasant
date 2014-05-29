@@ -63,7 +63,13 @@ namespace Data.Infrastructure
                 entity.Entity.SaveHook(entity);
             }
 
-            return base.SaveChanges();
+            var saveResult = base.SaveChanges();
+            foreach (var entity in ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged))
+            {
+                entity.State = EntityState.Unchanged;
+            }
+
+            return saveResult;
         }
 
         public IDbSet<TEntity> Set<TEntity>() where TEntity : class
@@ -80,16 +86,28 @@ namespace Data.Infrastructure
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
-            modelBuilder.Entity<EmailEmailAddressDO>().ToTable("EmailEmailAddresses");
+            modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
-            modelBuilder.Entity<PersonDO>().ToTable("People");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserDO>().ToTable("Users");
+
+            modelBuilder.Entity<EmailDO>()
+                .HasRequired(a => a.From)
+                .WithMany()
+                .HasForeignKey(a => a.FromID)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserDO>()
+                .Property(u => u.EmailAddressID)
+                .IsRequired()
+                .HasColumnAnnotation(
+                    "Index",
+                    new IndexAnnotation(new IndexAttribute("IX_User_EmailAddress", 1) {IsUnique = true}));
 
             modelBuilder.Entity<EmailAddressDO>()
                 .Property(ea => ea.Address)
