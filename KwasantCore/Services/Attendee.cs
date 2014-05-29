@@ -21,24 +21,12 @@ namespace KwasantCore.Services
 {
     public class Attendee
     {
-        private readonly IUnitOfWork _uow;
-        public Attendee()
-        {
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _uow = uow; //clean this up finish de-static work
-        }
-
-
-        public  AttendeeDO Create (UserDO curUserDO)
+        public AttendeeDO Create (UserDO curUserDO)
         {
             AttendeeDO curAttendeeDO;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                curAttendeeDO = new AttendeeDO();
-                curAttendeeDO.EmailAddress = curUserDO.EmailAddress;
-               // if (curUserDO.PersonDO.EmailAddress == null)
-                   // throw new ArgumentException("Tried to create an Attendee from a User that doesn't have an email address");
-            }
+            curAttendeeDO = new AttendeeDO();
+            curAttendeeDO.EmailAddress = curUserDO.EmailAddress;
+
             return curAttendeeDO;
         }
 

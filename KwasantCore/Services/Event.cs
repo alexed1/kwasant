@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net.Mime;
 using Data.Entities;
 using Data.Entities.Enumerations;
-using Data.Infrastructure;
 using Data.Interfaces;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
@@ -19,15 +18,7 @@ namespace KwasantCore.Services
 {
     public class Event
     {
-        private readonly IUnitOfWork _uow;
-        public Event()
-        {
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _uow = uow; //clean this up finish de-static work
-        }
-
-
-        public  EventDO Create (int bookingRequestID, string start, string end)
+        public EventDO Create (int bookingRequestID, string start, string end)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -46,7 +37,6 @@ namespace KwasantCore.Services
 
                 var curEventDO = new EventDO();
 
-
                 curEventDO.IsAllDay = isAllDay;
                 curEventDO.StartDate = startDate;
                 curEventDO.EndDate = endDate;
@@ -57,8 +47,6 @@ namespace KwasantCore.Services
 
             }
         }
-
-
 
         public EventDO AddAttendee(UserDO curUserDO, EventDO curEvent)
         {
@@ -71,101 +59,105 @@ namespace KwasantCore.Services
         //Processes the incoming attendee information, which is currently just a comma delimited string
         public void ManageAttendeeList(IUnitOfWork uow, EventDO eventDO, string curAttendees)
         {
+            var attendees = curAttendees.Split(',').ToList();
 
-            IUnitOfWork uow2 = ObjectFactory.GetInstance<IUnitOfWork>();
-
-            var attendeesSet = curAttendees.Split(',').ToList();
-
-            List<AttendeeDO> eventAttendees = eventDO.Attendees ?? new List<AttendeeDO>();
-            var attendeesToDelete = eventAttendees.Where(attendeeDO => !attendeesSet.Contains(attendeeDO.EmailAddress.Address)).ToList();
+            var eventAttendees = eventDO.Attendees ?? new List<AttendeeDO>();
+            var attendeesToDelete = eventAttendees.Where(attendee => !attendees.Contains(attendee.EmailAddress.Address)).ToList();
             foreach (var attendeeToDelete in attendeesToDelete)
-                uow2.AttendeeRepository.Remove(attendeeToDelete);
+                uow.AttendeeRepository.Remove(attendeeToDelete);
 
-            foreach ( string attendeeString in attendeesSet.Where(attString => !eventAttendees.Select(a => a.EmailAddress.Address).Contains(attString)))
+            foreach (var attendee in attendees.Where(att => !eventAttendees.Select(a => a.EmailAddress.Address).Contains(att)))
             {
-                var attendee = new Attendee();
-                AttendeeDO curAttendee = attendee.Create(attendeeString, eventDO);     
-                eventDO.Attendees.Add(curAttendee);
+                var newAttendee = new AttendeeDO
+                {
+                    EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee),
+                    Event = eventDO,
+                    EventID = eventDO.Id,
+                    Name = attendee
+                };
+                uow.AttendeeRepository.Add(newAttendee);
             }
-
-            uow2.SaveChanges();
-            
         }
 
 
         public void Dispatch(EventDO eventDO)
         {
-            var emailAddressRepository = _uow.EmailAddressRepository;
-
-            if (eventDO.Attendees == null)
-                eventDO.Attendees = new List<AttendeeDO>();
-
-            string fromEmail = ConfigRepository.Get("fromEmail");
-            string fromName = ConfigRepository.Get("fromName");
-
-            EmailDO outboundEmail = new EmailDO();
-            var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
-            fromEmailAddr.Name = fromName;
-
-            outboundEmail.From = fromEmailAddr;
-            foreach (var attendeeDO in eventDO.Attendees)
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress.Address);
-                toEmailAddress.Name = attendeeDO.Name;
-                outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
-            }
-            outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), eventDO.Summary, eventDO.StartDate);
+                var emailAddressRepository = uow.EmailAddressRepository;
 
-            var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
-            var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO));
+                if (eventDO.Attendees == null)
+                    eventDO.Attendees = new List<AttendeeDO>();
 
-            outboundEmail.HTMLText = parsedHTMLEmail;
-            outboundEmail.PlainText = parsedPlainEmail;
+                string fromEmail = ConfigRepository.Get("fromEmail");
+                string fromName = ConfigRepository.Get("fromName");
 
-            outboundEmail.Status = EmailStatus.QUEUED;
+                EmailDO outboundEmail = new EmailDO();
+                var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
+                fromEmailAddr.Name = fromName;
 
-            iCalendar ddayCalendar = new iCalendar();
-            DDayEvent dDayEvent = new DDayEvent();
-            if (eventDO.IsAllDay)
-            {
-                dDayEvent.IsAllDay = true;
-            }
-            else
-            {
-                dDayEvent.DTStart = new iCalDateTime(eventDO.StartDate);
-                dDayEvent.DTEnd = new iCalDateTime(eventDO.EndDate);
-            }
-            dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
-            dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
-
-            dDayEvent.Location = eventDO.Location;
-            dDayEvent.Description = eventDO.Description;
-            dDayEvent.Summary = eventDO.Summary;
-            foreach (AttendeeDO attendee in eventDO.Attendees)
-            {
-                dDayEvent.Attendees.Add(new KwasantICS.DDay.iCal.DataTypes.Attendee()
+                outboundEmail.From = fromEmailAddr;
+                foreach (var attendeeDO in eventDO.Attendees)
                 {
-                    CommonName = attendee.Name,
-                    Type = "INDIVIDUAL",
-                    Role = "REQ-PARTICIPANT",
-                    ParticipationStatus = ParticipationStatus.NeedsAction,
-                    RSVP = true,
-                    Value = new Uri("mailto:" + attendee.EmailAddress),
-                });
-                attendee.Event = eventDO;
+                    var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress.Address);
+                    toEmailAddress.Name = attendeeDO.Name;
+                    outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
+                }
+                outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), eventDO.Summary,
+                    eventDO.StartDate);
+
+                var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
+                var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation,
+                    new RazorViewModel(eventDO));
+
+                outboundEmail.HTMLText = parsedHTMLEmail;
+                outboundEmail.PlainText = parsedPlainEmail;
+
+                outboundEmail.Status = EmailStatus.QUEUED;
+
+                iCalendar ddayCalendar = new iCalendar();
+                DDayEvent dDayEvent = new DDayEvent();
+                if (eventDO.IsAllDay)
+                {
+                    dDayEvent.IsAllDay = true;
+                }
+                else
+                {
+                    dDayEvent.DTStart = new iCalDateTime(eventDO.StartDate);
+                    dDayEvent.DTEnd = new iCalDateTime(eventDO.EndDate);
+                }
+                dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
+                dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
+
+                dDayEvent.Location = eventDO.Location;
+                dDayEvent.Description = eventDO.Description;
+                dDayEvent.Summary = eventDO.Summary;
+                foreach (AttendeeDO attendee in eventDO.Attendees)
+                {
+                    dDayEvent.Attendees.Add(new KwasantICS.DDay.iCal.DataTypes.Attendee()
+                    {
+                        CommonName = attendee.Name,
+                        Type = "INDIVIDUAL",
+                        Role = "REQ-PARTICIPANT",
+                        ParticipationStatus = ParticipationStatus.NeedsAction,
+                        RSVP = true,
+                        Value = new Uri("mailto:" + attendee.EmailAddress),
+                    });
+                    attendee.Event = eventDO;
+                }
+                dDayEvent.Organizer = new Organizer(fromEmail) {CommonName = fromName};
+
+                ddayCalendar.Events.Add(dDayEvent);
+                ddayCalendar.Method = CalendarMethods.Request;
+
+                AttachCalendarToEmail(ddayCalendar, outboundEmail);
+
+                if (eventDO.Emails == null)
+                    eventDO.Emails = new List<EmailDO>();
+                eventDO.Emails.Add(outboundEmail);
+
+                new Email(uow, outboundEmail).Send();
             }
-            dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
-
-            ddayCalendar.Events.Add(dDayEvent);
-            ddayCalendar.Method = CalendarMethods.Request;
-
-            AttachCalendarToEmail(ddayCalendar, outboundEmail);
-
-            if (eventDO.Emails == null)
-                eventDO.Emails = new List<EmailDO>();
-            eventDO.Emails.Add(outboundEmail);
-
-            new Email(_uow, outboundEmail).Send();
         }
 
         private static void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)

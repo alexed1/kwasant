@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
@@ -35,53 +36,6 @@ namespace KwasantWeb.Controllers
         }
 
    
-
-        public ActionResult Open(int eventID)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                return View(new EventViewModel(eventDO));
-            }
-        }
-
-        public ActionResult DeleteEvent(int eventID)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                return View(new EventViewModel(eventDO));
-            }
-        }
-
-        public ActionResult ConfirmDelete(int eventID)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                if (eventDO != null)
-                    uow.EventRepository.Remove(eventDO);
-
-                uow.SaveChanges();
-                
-                return JavaScript(SimpleJsonSerializer.Serialize("OK"));
-            }
-        }
-
-        public ActionResult MoveEvent(int eventID, String newStart, String newEnd)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetByKey(eventID);
-                var evm = new EventViewModel(eventDO)
-                {
-                    StartDate = DateTime.Parse(newStart),
-                    EndDate = DateTime.Parse(newEnd)
-                };
-                return View("~/Views/Calendar/ProcessCreateEvent.cshtml", evm);
-            }
-        }
-
  
 
 

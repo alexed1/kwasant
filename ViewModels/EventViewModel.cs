@@ -25,39 +25,9 @@ namespace KwasantWeb.ViewModels
         public String Category { get; set; }
         public int BookingRequestID { get; set; }
         public String Attendees { get; set; }
-
-        public UserDO CreatedBy { get; set; }
+        public String CreatedByAddress { get; set; }
         public String CreatedByID { get; set; }
 
         public bool Confirmed { get; set; }
-
-        public EventViewModel()
-        {
-
-        }
-        public EventViewModel(EventDO eventDO)
-        {
-            Id = eventDO.Id;
-            StartDate = eventDO.StartDate;
-            EndDate = eventDO.EndDate;
-            IsAllDay = eventDO.IsAllDay;
-            Location = eventDO.Location;
-            Status = eventDO.Status;
-            Class = eventDO.Class;
-            Description = eventDO.Description;
-            Priority = eventDO.Priority;
-            Sequence = eventDO.Sequence;
-            Summary = eventDO.Summary;
-            Category = eventDO.Category;
-            BookingRequestID = eventDO.BookingRequestID;
-            Attendees = " disabled kw-163";
-            //FIX THIS KW-163: Attendees = eventDO.Attendees == null ? String.Empty : string.Join(",", eventDO.Attendees.Select(e => e.EmailAddress.Address));
-            CreatedBy = eventDO.CreatedBy;
-            Confirmed = false;
-        }
-
-       
-
-       
     }
 }
