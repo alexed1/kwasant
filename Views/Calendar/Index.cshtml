@@ -314,6 +314,39 @@
         var m = new DayPilot.Modal();
         m.top = 130;
         m.width = 580;
+        m.create = function () {
+            var hide = document.createElement("div");
+            var div = document.createElement("div");
+            div.id = this.id + 'popup';
+            div.style.position = 'fixed';
+            div.style.right = '0px';
+            div.style.bottom = '100px';
+            div.style.backgroundColor = 'white';
+            div.style.width = "50px";
+            div.style.height = "50px";
+            if (this.dragDrop) {
+                div.onmousedown = this.dragStart;
+            }
+
+            var defaultHeight = 50;
+
+            var iframe = null;
+            if (this.useIframe) {
+                iframe = document.createElement("iframe");
+                iframe.id = this.id + "iframe";
+                iframe.name = this.id + "iframe";
+                iframe.frameBorder = '0';
+                iframe.style.width = '100%';
+                iframe.style.height = defaultHeight + 'px';
+                div.appendChild(iframe);
+            }
+
+            document.body.appendChild(div);
+
+            this.div = div;
+            this.iframe = iframe;
+            this.hideDiv = hide;
+        };
         m.closed = function () {
             var daypilotControls = [
                 dp_day,
