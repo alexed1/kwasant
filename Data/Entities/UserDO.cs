@@ -31,6 +31,9 @@ namespace Data.Entities
 
         [Required]
         public virtual EmailAddressDO EmailAddress { get; set; }
+
+       // public virtual ICollection<AspNetRolesDO> Roles { get; set; }
+        
     }
 }
 

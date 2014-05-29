@@ -117,6 +117,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\InstructionConstants.cs" />
+    <Compile Include="Entities\AspNetRolesDO.cs" />
+    <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
@@ -131,6 +133,8 @@
     <Compile Include="Infrastructure\StructureMap\MockedDbSet.cs" />
     <Compile Include="Infrastructure\StructureMap\DatabaseStructureMapBootStrapper.cs" />
     <Compile Include="Infrastructure\TrackingStatus.cs" />
+    <Compile Include="Interfaces\IAspNetRoles.cs" />
+    <Compile Include="Interfaces\IAspNetUserRoles.cs" />
     <Compile Include="Interfaces\ICalendar.cs" />
     <Compile Include="Interfaces\ICustomField.cs" />
     <Compile Include="Entities\TrackingStatusDO.cs" />
@@ -171,6 +175,8 @@
       <DependentUpon>201405281017062_AddFromEmailAddressAsOneToOne.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
+    <Compile Include="Repositories\AspNetRolesRepository.cs" />
+    <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\AttendeeRepository.cs" />
     <Compile Include="Repositories\BookingRequestRepository.cs" />

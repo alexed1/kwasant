@@ -19,6 +19,8 @@ namespace Data.Infrastructure.StructureMap
                 For<IEvent>().Use<EventDO>();
                 For<IUser>().Use<UserDO>();
                 For<ICalendar>().Use<CalendarDO>();
+                For<IAspNetRoles>().Use<AspNetRolesDO>();
+                For<IAspNetUserRoles>().Use<AspNetUserRolesDO>();
             }
         }
 

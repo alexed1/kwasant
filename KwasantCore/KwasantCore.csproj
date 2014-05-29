@@ -119,6 +119,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper\UsersAdminData.cs" />
     <Compile Include="Managers\AlertManager.cs" />
     <Compile Include="Managers\APIManager\Packagers\GmailPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\IEmailPackager.cs" />
@@ -142,6 +143,7 @@
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Email.cs" />
+    <Compile Include="Services\UsersAdmin.cs" />
     <Compile Include="Services\User.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>

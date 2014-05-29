@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ViewModel.Models
+{
+    public class UsersAdminViewModel
+    {
+        public String UserId { get; set; }
+        public String FirstName { get; set; }
+        public String LasttName { get; set; }
+        public int EmailAddressID { get; set; }
+        public String EmailAddress { get; set; }
+        public String RoleId { get; set; }
+        public String Role { get; set; }       
+    }
+}

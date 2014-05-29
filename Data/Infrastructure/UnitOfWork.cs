@@ -149,6 +149,26 @@ namespace Data.Infrastructure
             }
         }
 
+        private AspNetUserRolesRepository _aspNetUserRolesRepository;
+
+        public AspNetUserRolesRepository AspNetUserRolesRepository
+        {
+            get
+            {
+                return _aspNetUserRolesRepository ?? (_aspNetUserRolesRepository = new AspNetUserRolesRepository(_context));
+            }
+        }
+
+        private AspNetRolesRepository _aspNetRolesRepository;
+
+        public AspNetRolesRepository AspNetRolesRepository
+        {
+            get
+            {
+                return _aspNetRolesRepository ?? (_aspNetRolesRepository = new AspNetRolesRepository(_context));
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();

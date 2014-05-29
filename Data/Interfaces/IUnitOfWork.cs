@@ -21,6 +21,8 @@ namespace Data.Interfaces
         StoredFileRepository StoredFileRepository { get; }
         TrackingStatusRepository TrackingStatusRepository { get; }
         UserRepository UserRepository { get; }
+        AspNetUserRolesRepository AspNetUserRolesRepository { get; }
+        AspNetRolesRepository AspNetRolesRepository { get; }
 
         /// <summary>
         /// Call this to commit the unit of work

@@ -20,7 +20,8 @@ namespace Data.Migrations
     {
         public MigrationConfiguration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = false;
             ContextKey = "Data.Infrastructure.KwasantDbContext";
         }
 
