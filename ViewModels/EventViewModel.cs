@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Data.Entities;
-using Data.Interfaces;
-using KwasantCore.Services;
-
-using StructureMap;
 
 namespace KwasantWeb.ViewModels
 {
@@ -27,7 +20,5 @@ namespace KwasantWeb.ViewModels
         public String Attendees { get; set; }
         public String CreatedByAddress { get; set; }
         public String CreatedByID { get; set; }
-
-        public bool Confirmed { get; set; }
     }
 }

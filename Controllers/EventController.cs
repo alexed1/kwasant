@@ -75,7 +75,6 @@ namespace KwasantWeb.Controllers
             return View(eventViewModel);
         }
 
-        //the viewmodel has a confirmation boolean that is set on the client when the user approves the data.
         public ActionResult SubmitChange(EventViewModel eventViewModel)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
