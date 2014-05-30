@@ -2,22 +2,20 @@
 
 var linkTo = Utilities.ConfigRepository.Get("emailLinkTo");
 var imageURL = Utilities.ConfigRepository.Get("emailImageURL");
-var basicText = Utilities.ConfigRepository.Get("emailBasicText");
 var time = Model.IsAllDay
 ? "All day - " + Model.StartDate.ToString("ddd d MMM")
 : Model.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " + Model.EndDate.ToString("hh:mm tt");
 
 var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
 }
-<div>
-    <div style="color: #D85E17; padding: 15px;">
+<div style="border-style:solid; border-color:rgb(170,170,170); border-width:1px;">
+    <div style="color: #D85E17;">
         <a style="color: #D85E17; font-family: 'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif; font-size: 20px; text-decoration: none;" href="@linkTo">
             <img src="@imageURL" />
-            @basicText
         </a>
     </div>
 
-    <div style="background-color: rgb(255, 255, 255); border-color: rgb(170, 170, 170); border-style: solid; border-width: 1px 2px 2px 1px; font-family: Arial, sans-serif; max-width: 729px; width: 100%;">
+    <div style="padding:15px;margin-top:-5px; font-family: Arial, sans-serif; max-width: 726px; width: 100%;">
         <div style="padding: 15px;">
             <h3 style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 16px; font-weight: bold; margin: 0px; padding-bottom: 6px;">@Model.Summary</h3>
             <table>

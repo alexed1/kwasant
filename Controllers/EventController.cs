@@ -84,7 +84,8 @@ namespace KwasantWeb.Controllers
                     : uow.EventRepository.GetByKey(eventViewModel.Id);
 
                 Mapper.Map(eventViewModel, eventDO);
-                new Event().ManageAttendeeList(uow, eventDO, eventViewModel.Attendees);
+                var ev = new Event();
+                ev.ManageAttendeeList(uow, eventDO, eventViewModel.Attendees);
                     
                 if (eventViewModel.Id == 0)
                 {
@@ -92,6 +93,8 @@ namespace KwasantWeb.Controllers
                 }
 
                 uow.SaveChanges();
+
+                ev.Dispatch(eventDO);
             }
 
             return JavaScript(SimpleJsonSerializer.Serialize("OK"));
