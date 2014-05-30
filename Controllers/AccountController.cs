@@ -6,6 +6,7 @@ using Data.Entities.Enumerations;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Net.Mail;
+using System.Net;
 using System.Configuration;
 using Data.Entities;
 using Data.Interfaces;
@@ -15,6 +16,9 @@ using Utilities;
 using KwasantWeb.ViewModels;
 using KwasantCore.Services;
 using KwasantCore.Managers.IdentityManager;
+using KwasantWeb.Controllers.Helpers;
+using ViewModel.Models;
+using AutoMapper;
 
 namespace KwasantWeb.Controllers
 {
@@ -46,7 +50,7 @@ namespace KwasantWeb.Controllers
         }
     }
 
-     [Authorize]
+    [Authorize]
     public class AccountController : Controller
     {
         private IUnitOfWork _uow;
@@ -107,7 +111,7 @@ namespace KwasantWeb.Controllers
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
             try
-            { 
+            {
                 if (ModelState.IsValid)
                 {
                     var curUserDO = new UserDO()
@@ -131,7 +135,7 @@ namespace KwasantWeb.Controllers
                     }
                 }
             }
-            catch(ApplicationException appEx)
+            catch (ApplicationException appEx)
             {
                 ModelState.AddModelError("", appEx.Message);
             }
@@ -232,6 +236,54 @@ namespace KwasantWeb.Controllers
             }
 
             return RedirectToAction(returnViewName);
+        }
+
+
+        public ActionResult Edit(String userId, String roleId)
+        {
+            if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            UsersAdmin currUsersAdmin = new UsersAdmin(_uow);
+            List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData(userId, roleId);
+
+            List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;
+
+            UsersAdminViewModel currUsersAdminViewModel = currUsersAdminViewModels == null || currUsersAdminViewModels.Count == 0 ? new UsersAdminViewModel() : currUsersAdminViewModels[0];
+
+            return View(currUsersAdminViewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Edit(UsersAdminViewModel usersAdminViewModel)
+        {
+            UserDO userDO = new UserDO();
+
+            userDO.Id = usersAdminViewModel.UserId;
+            userDO.FirstName = usersAdminViewModel.FirstName;
+            userDO.LastName = usersAdminViewModel.LastName;
+            userDO.EmailAddress = new EmailAddressDO() { Id= usersAdminViewModel.EmailAddressID, Address = usersAdminViewModel.EmailAddress };
+            userDO.EmailAddressID = usersAdminViewModel.EmailAddressID;
+            userDO.UserName = usersAdminViewModel.EmailAddress;
+
+            var store = new UserStore<UserDO>(_uow.Db as KwasantDbContext);
+            var manager = new UserManager<UserDO>(store);           
+
+            var ctx = store.Context;
+            ctx.Entry(userDO).State = System.Data.Entity.EntityState.Modified;
+
+            try
+            {
+                ctx.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                System.Collections.Generic.IEnumerable<System.Data.Entity.Validation.DbEntityValidationResult> aa = ctx.GetValidationErrors();
+
+            }
+            //ctx.SaveChanges();            
+
+            return View();
         }
     }
 }

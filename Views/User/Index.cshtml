@@ -1,38 +1,39 @@
 ﻿@model IEnumerable<ViewModel.Models.UsersAdminViewModel>
 
-    @{
-        ViewBag.Title = "Index";
-    }
+@{
+    ViewBag.Title = "Users";
+}
 
-    <h2>Index</h2>
+<h3>Users</h3>
+<hr />
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            First Name
+        </th>
+        <th>
+            Last Name
+        </th>
+        <th>
+            Email Address
+        </th>
+        <th>
+            Role
+        </th>
+        <th></th>
+    </tr>
 
-    <p>
-        @Html.ActionLink("Create New", "Create")
-    </p>
-    <table class="table">
-        <tr>
-            <th>
-                First Name
-            </th>
-            <th>
-                Last Name
-            </th>
-            <th>
-                Email Address
-            </th>
-            <th>
-                Role
-            </th>
-            <th></th>
-        </tr>
-
-    @foreach (var item in Model) {
+    @foreach (var item in Model)
+    {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.LasttName)
+                @Html.DisplayFor(modelItem => item.LastName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.EmailAddress)
@@ -41,9 +42,9 @@
                 @Html.DisplayFor(modelItem => item.Role)
             </td>
             <td>
-                @Html.ActionLink("Details", "Details", new { id=item.UserId })                
+                @Html.ActionLink("Details", "Details", new { userId = item.UserId, roleId = item.RoleId })
             </td>
         </tr>
     }
 
-    </table>
+</table>

@@ -148,7 +148,7 @@ namespace Data.Infrastructure
                     ts.Id,
                     ts.ForeignTableName
                 });
-
+            
 
             base.OnModelCreating(modelBuilder);
         }
