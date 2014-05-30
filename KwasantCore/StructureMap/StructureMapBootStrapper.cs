@@ -1,4 +1,5 @@
 using Data.Infrastructure.StructureMap;
+using KwasantCore.Managers.APIManager.Packagers;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
@@ -21,11 +22,9 @@ namespace KwasantCore.StructureMap
             {
                 case DependencyType.TEST:
                     ObjectFactory.Initialize(x => x.AddRegistry<TestMode>());
-                    DatabaseStructureMapBootStrapper.ConfigureDependencies(DatabaseStructureMapBootStrapper.DependencyType.TEST);
                     break;
                 case DependencyType.LIVE:
                     ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
-                    DatabaseStructureMapBootStrapper.ConfigureDependencies(DatabaseStructureMapBootStrapper.DependencyType.LIVE);
                     break;
             }
         }
@@ -34,18 +33,19 @@ namespace KwasantCore.StructureMap
         {
             public KwasantCoreRegistry()
             {
-            }
-        }
-
-        public class LiveMode : KwasantCoreRegistry
-        {
-            public LiveMode()
-            {
                 
             }
         }
 
-        public class TestMode : KwasantCoreRegistry
+        public class LiveMode : DatabaseStructureMapBootStrapper.LiveMode
+        {
+            public LiveMode()
+            {
+                For<IEmailPackager>().Use(new GmailPackager());
+            }
+        }
+
+        public class TestMode : DatabaseStructureMapBootStrapper.TestMode
         {
             public TestMode()
             {

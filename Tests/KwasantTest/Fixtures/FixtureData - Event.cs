@@ -62,6 +62,25 @@ namespace KwasantTest.Fixtures
             };
         }
 
+        public EventDO TestEvent3_TodayDates()
+        {
+            return new EventDO()
+            {
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today,
+                Priority = 1,
+                Sequence = 1,
+                IsAllDay = false,
+                Category = "Birthday",
+                Class = "Private",
+                Description = "This is a test event description.",
+                Location = "Silicon Valley",
+                Status = "Open",
+                Summary = "This is a test event summary.",
+                Transparency = "Opaque",
+                Attendees = TestAttendeeList1().ToList()
+            };
+        }
 
 
     }

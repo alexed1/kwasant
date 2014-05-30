@@ -74,7 +74,7 @@ namespace KwasantTest.Entities
         public void TestDeleteStatus()
         {
             var emailOne = new EmailDO {Id = 1};
-            emailOne.AddEmailParticipant(EmailParticipantType.FROM, _fixture.TestEmailAddress1());
+            emailOne.From = _fixture.TestEmailAddress1();
 
             _uow.EmailRepository.Add(emailOne);
 
@@ -102,8 +102,8 @@ namespace KwasantTest.Entities
         {
             var emailOne = new EmailDO {Id = 1};
             var emailTwo = new EmailDO {Id = 2};
-            emailOne.AddEmailParticipant(EmailParticipantType.FROM, _fixture.TestEmailAddress1());
-            emailTwo.AddEmailParticipant(EmailParticipantType.FROM, _fixture.TestEmailAddress1());
+            emailOne.From = _fixture.TestEmailAddress1();
+            emailTwo.From =_fixture.TestEmailAddress1();
 
             _uow.EmailRepository.Add(emailOne);
             _uow.EmailRepository.Add(emailTwo);
@@ -128,7 +128,7 @@ namespace KwasantTest.Entities
         public void TestSetStatus()
         {
             var emailOne = new EmailDO {Id = 1};
-            emailOne.AddEmailParticipant(EmailParticipantType.FROM, _fixture.TestEmailAddress1());
+            emailOne.From = _fixture.TestEmailAddress1();
 
             _uow.EmailRepository.Add(emailOne);
             _uow.SaveChanges();
@@ -160,8 +160,8 @@ namespace KwasantTest.Entities
         {
             var emailOne = new EmailDO {Id = 1};
             var emailTwo = new EmailDO {Id = 2};
-            emailOne.AddEmailParticipant(EmailParticipantType.FROM, _fixture.TestEmailAddress1());
-            emailTwo.AddEmailParticipant(EmailParticipantType.FROM, _fixture.TestEmailAddress1());
+            emailOne.From = _fixture.TestEmailAddress1();
+            emailTwo.From = _fixture.TestEmailAddress1();
 
             _uow.EmailRepository.Add(emailOne);
             _uow.EmailRepository.Add(emailTwo);
@@ -193,8 +193,8 @@ namespace KwasantTest.Entities
             var emailOne = new EmailDO {Id = 1};
             var emailTwo = new EmailDO {Id = 2};
 
-            emailOne.AddEmailParticipant(EmailParticipantType.FROM, _fixture.TestEmailAddress1());
-            emailTwo.AddEmailParticipant(EmailParticipantType.FROM, _fixture.TestEmailAddress1());
+            emailOne.From = _fixture.TestEmailAddress1();
+            emailTwo.From = _fixture.TestEmailAddress1();
 
             _uow.EmailRepository.Add(emailOne);
             _uow.EmailRepository.Add(emailTwo);
@@ -225,8 +225,8 @@ namespace KwasantTest.Entities
         {
             var emailOne = new EmailDO {Id = 1};
             var emailTwo = new EmailDO {Id = 2};
-            emailOne.AddEmailParticipant(EmailParticipantType.FROM, _fixture.TestEmailAddress1());
-            emailTwo.AddEmailParticipant(EmailParticipantType.FROM, _fixture.TestEmailAddress1());
+            emailOne.From = _fixture.TestEmailAddress1();
+            emailTwo.From = _fixture.TestEmailAddress1();
 
             _uow.EmailRepository.Add(emailOne);
             _uow.EmailRepository.Add(emailTwo);

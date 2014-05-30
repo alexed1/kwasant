@@ -4,53 +4,47 @@ using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
 using Data.Entities;
+using Utilities;
 using UtilitiesLib;
 
 namespace KwasantCore.Managers.APIManager.Packagers
 {
-    public class GmailPackager
+    public class GmailPackager : IEmailPackager
     {
-        private readonly EmailDO _email;
-
-        public GmailPackager(EmailDO email)
+        public void Send(EmailDO email)
         {
-            _email = email;
-        }
-
-        public void Send()
+            var smtpClient = new SmtpClient(ConfigRepository.Get("OutboundEmailHost"), ConfigRepository.Get<int>("OutboundEmailPort"))
         {
-            var smtpClient = new SmtpClient(ConfigurationHelper.GetConfigurationValue("OutboundEmailHost"), ConfigurationHelper.GetConfigurationValue<int>("OutboundEmailPort"))
-            {
                 EnableSsl = true,
                 UseDefaultCredentials = false,
-                Credentials = new NetworkCredential() { UserName = ConfigurationHelper.GetConfigurationValue("OutboundUserName"), Password = ConfigurationHelper.GetConfigurationValue("OutboundUserPassword") }
+                Credentials = new NetworkCredential() { UserName = ConfigRepository.Get("OutboundUserName"), Password = ConfigRepository.Get("OutboundUserPassword") }
             };
 
             var mailMessage = new MailMessage();
-            mailMessage.From = new MailAddress(_email.From.Address, _email.From.Name);
+            mailMessage.From = new MailAddress(email.From.Address, email.From.Name);
 
-            foreach (var toEmail in _email.To)
+            foreach (var toEmail in email.To)
             {
                 mailMessage.To.Add(new MailAddress(toEmail.Address, toEmail.Name));
             }
 
-            foreach (var bcc in _email.BCC)
+            foreach (var bcc in email.BCC)
             {
                 mailMessage.Bcc.Add(new MailAddress(bcc.Address, bcc.Name));
             }
 
-            foreach (var cc in _email.CC)
+            foreach (var cc in email.CC)
             {
                 mailMessage.CC.Add(new MailAddress(cc.Address, cc.Name));
             }
 
-            mailMessage.Subject = _email.Subject;
+            mailMessage.Subject = email.Subject;
             mailMessage.IsBodyHtml = true;
 
-            var htmlView = AlternateView.CreateAlternateViewFromString(_email.HTMLText, Encoding.UTF8, "text/html");
-            var plainView = AlternateView.CreateAlternateViewFromString(_email.PlainText, Encoding.UTF8, "text/plain");
+            var htmlView = AlternateView.CreateAlternateViewFromString(email.HTMLText, Encoding.UTF8, "text/html");
+            var plainView = AlternateView.CreateAlternateViewFromString(email.PlainText, Encoding.UTF8, "text/plain");
 
-            if (!ConfigurationHelper.GetConfigurationValue<bool>("compressEmail"))
+            if (!ConfigRepository.Get<bool>("compressEmail"))
             {
                 htmlView.TransferEncoding = TransferEncoding.SevenBit;
                 plainView.TransferEncoding = TransferEncoding.SevenBit;
@@ -59,7 +53,7 @@ namespace KwasantCore.Managers.APIManager.Packagers
             mailMessage.AlternateViews.Add(plainView);
             mailMessage.AlternateViews.Add(htmlView);
             
-            foreach (var attachment in _email.Attachments)
+            foreach (var attachment in email.Attachments)
             {
                 if (attachment.OriginalName.EndsWith(".ics"))
                 {

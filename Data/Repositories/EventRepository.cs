@@ -20,10 +20,10 @@ namespace Data.Repositories
             
         }
 
-        void IGenericRepository<EventDO>.Add(EventDO entity)
+        public override void Add(EventDO entity)
         {
             _curValidator.ValidateAndThrow(entity);
-            Add(entity);
+            base.Add(entity);
         }
     }
 

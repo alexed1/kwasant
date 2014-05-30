@@ -24,8 +24,11 @@ namespace Data.Entities
         public int Sequence { get; set; }
         public string Summary { get; set; }
         public string Category { get; set; }
-        
+
+        [ForeignKey("CreatedBy"), Required]
+        public string CreatedByID { get; set; }
         public virtual UserDO CreatedBy { get; set; }
+
         public bool IsAllDay { get; set; }
 
         [InverseProperty("Event")]
@@ -34,6 +37,8 @@ namespace Data.Entities
         [InverseProperty("Events")]
         public virtual List<EmailDO> Emails { get; set; }
 
+        [ForeignKey("BookingRequest")]
+        public int BookingRequestID { get; set; }
         public virtual BookingRequestDO BookingRequest { get; set; }
 
         public void CopyFrom(EventDO eventDO)

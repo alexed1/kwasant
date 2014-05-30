@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Data.Entities;
 using KwasantCore.Managers.APIManager.Serializers.Json;
-using UtilitiesLib;
+using Utilities;
 
 namespace KwasantCore.Managers.APIManager.Packagers.Kwasant
 {
@@ -11,7 +11,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Kwasant
     /// </summary>
     public class KwasantPackager
     {
-        private string baseUrl;
+        
         private JsonSerializer jsonSerializer;
 
         public KwasantPackager()

@@ -1,0 +1,72 @@
+﻿@using Newtonsoft.Json
+@model KwasantWeb.ViewModels.EventViewModel
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/select2")
+    @Scripts.Render("~/bundles/js/moment")
+    @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
+@section styles
+{
+    @Styles.Render("~/bundles/css/bootstrap3.0")
+    @Styles.Render("~/bundles/css/default")
+    @Styles.Render("~/bundles/css/select2")
+    @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
+}
+<form id="f" method="post" style="margin:10px" action="@Url.Action("ConfirmDelete")">
+    <h3>Confirm Delete</h3>
+    <hr />
+    <div style="color:red">You are about to delete the following event</div>
+    <div style="@Html.Raw(Model.IsAllDay ? String.Empty : "display:none;")">
+        <div>* All day event *</div>
+    </div>
+    <div style="@Html.Raw(Model.IsAllDay ? "display:none;" : String.Empty)">
+        <div>Start Date: @Model.StartDate</div>
+        <div>End Date: @Model.EndDate</div>
+    </div>
+    <div>Location: @Model.Location</div>
+    <div>Summary: @Model.Summary</div>
+    <div>Description: @Model.Description</div>
+    <div>Attendees: @Model.Attendees</div>
+    
+    <hr />
+    <div class="space">
+        <div style="clear:both">
+            <div style="float:left">
+                <input id="btnSave" type="submit" value="CONFIRM" style="width: 100px; height: 30px; border: 2px solid black; margin-right:20px" />
+            </div>
+            <div style="float:left">
+                <a href="javascript:close()"><div style="width: 100px;">REJECT</div></a>
+            </div>
+        </div>
+        <br />
+        <br />
+    </div>
+</form>
+
+<script type="text/javascript">
+    function close(result) {
+        if (parent && parent.DayPilot && parent.DayPilot.ModalStatic) {
+            parent.DayPilot.ModalStatic.close(result);
+        }
+    }
+
+    $(function () {
+        $("#f").submit(function () {
+            var f = $("#f");
+            $.get(f.prop('action'), { eventID: @Model.Id }, function(result) {
+                close(result);
+            }, 'json');
+            return false;
+        });
+    });
+</script>

@@ -1,0 +1,271 @@
+﻿@model KwasantWeb.ViewModels.EventViewModel
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/select2")
+    @Scripts.Render("~/bundles/js/moment")
+    @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+
+    <script type="text/javascript">
+            var hideShowDates = function () {
+                var fromDate = $('#StartDate');
+                var toDate = $('#EndDate');
+
+                if ($('#chkAllDay').prop('checked')) {
+                    fromDate.data("DateTimePicker").disable();
+                    toDate.data("DateTimePicker").disable();
+                } else {
+                    fromDate.data("DateTimePicker").enable();
+                    toDate.data("DateTimePicker").enable();
+                }
+            };
+
+            $(document).ready(function () {
+                $('#chkAllDay').click(hideShowDates);
+
+                var data = [@Html.Raw(String.Join(",", Model.Attendees.Split(',').Select(a =>
+                                "{id: '" + a + "', text: '" + a + "'}"
+                                )))];
+
+                $('#attendeesSel').select2({
+                    createSearchChoice: function (term) {
+                        return { id: term, text: term };
+                    },
+                    validateFormat: function (term) {
+                        var atPos = term.indexOf('@@');
+                        var dotPos = term.lastIndexOf('.');
+                        if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 2 <= dotPos)) {
+                            return "Invalid Email";
+                        }
+                        return null;
+                    },
+                    multiple: true,
+                    data: [],
+                    width: '100%',
+                });
+                $('#attendeesSel').select2('data', data);
+            });
+    </script>
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
+@section styles
+{
+    @Styles.Render("~/bundles/css/bootstrap3.0")
+    @Styles.Render("~/bundles/css/default")
+    @Styles.Render("~/bundles/css/select2")
+    @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
+    <style>
+        .glyphicon-calendar:before
+        {
+            content: "\e109"; /* This was broken in the bootstrap css...?? */
+        }
+
+        .formItem
+        {
+            display: inline-flex;
+            width: 100%;
+            padding-top: 15px;
+        }
+
+        .formLabel
+        {
+            width: 100px;
+            min-width: 100px;
+            padding-top: 5px;
+        }
+    </style>
+}
+
+<form id="f" method="post" action="@Url.Action("ConfirmEventEdits")">
+    <div class="dragger">
+    <h3>
+        @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event (Created by " + Model.CreatedByName + ").")
+    </h3>
+    </div>
+    <hr />
+    <div class="formItem">
+        <div class="formLabel">
+            Summary
+       
+        </div>
+        <input id="summary" name="Summary" class="form-control col-md-1" value="@Model.Summary" required />
+    </div>
+    <div class="formItem">
+        <div class="formLabel">
+            When
+       
+        </div>
+        <label style="padding-top:5px;">
+            @Html.CheckBoxFor(m => m.IsAllDay, new { id = "chkAllDay", name = "IsAllDay" }) All day event
+        </label>
+    </div>
+    <div id="dateGroup" class="formItem" style="padding-top: 10px;">
+        <div class="formLabel">
+            <!-- Align the date pickers -->
+        </div>
+        <div class='col-md-4' style="padding-left: 0; padding-right:5px;">
+            <div class='input-group date' id='StartDate' data-date-format="MM/DD/YYYY hh:mm a">
+                <input type='text' name="StartDate" class="form-control" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+        <div class='col-md-4' style="padding-left: 4px;">
+            <label style="padding-top: 6px; font-weight: normal">to</label>
+        </div>
+        <div class='col-md-4' style="padding-right: 0; padding-left:5px;">
+            <div class='input-group date' id='EndDate' data-date-format="MM/DD/YYYY hh:mm a">
+                <input type='text' name="EndDate" class="form-control" />
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="formItem">
+        <div class="formLabel">
+            Location
+       
+        </div>
+        <input id="location" name="Location" class="form-control col-md-1" value="@Model.Location" required />
+    </div>
+    
+    <div class="formItem">
+        <div class="formLabel">
+            Description
+       
+        </div>
+        <textarea id="description" name="Description" cols="31" rows="3" class="form-control col-md-1" required>@Html.Raw(Model.Description)</textarea>
+    </div>
+    
+    <div class="formItem">
+        <div class="formLabel">
+            Attendees
+       
+        </div>
+        <input type="hidden" name="Attendees" id="attendeesSel" />
+    </div>
+    @{
+
+        <div style="display: none">
+            @Html.TextBox("Id", @Model.Id, new { @class = "form-control col-md-1" })
+            @Html.TextBox("BookingRequestID", @Model.BookingRequestID, new { @class = "form-control col-md-1" })
+        </div>
+    }
+    <hr />
+    <div class="space">
+        <div style="clear: both">
+            <div style="float: left">
+                <input id="btnSave" type="submit" value="OK" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
+            </div>
+            <div style="float: left">
+                @*<a href="javascript:close()">*@
+                <a href="javascript:checkunsaveddata();">
+                    <div style="width: 100px;">Cancel</div>
+                </a>
+            </div>
+        </div>
+        <br />
+        <br />
+    </div>
+</form>
+
+<script type="text/javascript">
+    var isunsaved = false;
+    function checkunsaveddata() {
+        if (!isunsaved) {
+            close();
+        }
+        else {
+            if (confirm("you are about to lose data, continue?")) {
+                isunsaved = false;
+                close();
+            } else { return false; }
+        }
+    }
+
+    $(document).ready(function () {
+        $(".dragger").mouseenter(function (e) {
+            $('div[id*=popup]', window.parent.document).trigger("mousedown");
+        });
+        $(".dragger").mouseout(function (e) {
+            $('div[id*=mask]', window.parent.document).remove();
+        });
+        $(".form-control").change(function () {
+            isunsaved = true;
+        });
+    });
+
+    function close(result) {
+        if (parent && parent.DayPilot && parent.DayPilot.ModalStatic) {
+            parent.DayPilot.ModalStatic.close(result);
+        }
+    }
+
+    $("#f").submit(function () {
+        var f = $("#f");
+        if (!f.valid())
+            return false;
+        
+        var fromDate = $('#StartDate');
+        var toDate = $('#EndDate');
+
+        fromDate.data("DateTimePicker").enable();
+        toDate.data("DateTimePicker").enable();
+        
+        var url = f.prop('action') + '/?' + f.serialize();
+        var m = new parent.DayPilot.Modal();
+        m.closed = function () {
+            if ($('#chkAllDay').attr('checked')) {
+                fromDate.data("DateTimePicker").disable();
+                toDate.data("DateTimePicker").disable();
+            } else {
+                fromDate.data("DateTimePicker").enable();
+                toDate.data("DateTimePicker").enable();
+            }
+
+            if (this.result == "OK") {
+                close(this.result);
+            }
+        };
+
+        m.showUrl(url);
+
+        return false;
+    });
+
+    $(function () {
+        $("#summary").focus();
+        $('#f').validate();
+    });
+    
+    $(function () {
+        var fromDate = $('#StartDate');
+        var toDate = $('#EndDate');
+
+        fromDate.datetimepicker();
+        toDate.datetimepicker();
+        
+        $("#StartDate").on("dp.change", function (e) {
+            toDate.data("DateTimePicker").setMinDate(e.date);
+        });
+        $("#EndDate").on("dp.change", function (e) {
+            fromDate.data("DateTimePicker").setMaxDate(e.date);
+        });
+
+        fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString("MM/dd/yyyy hh:mm tt")');
+        toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString("MM/dd/yyyy hh:mm tt")');
+        
+        hideShowDates();
+    });
+
+</script>

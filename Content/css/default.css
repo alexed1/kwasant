@@ -1,0 +1,199 @@
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    
+}
+
+/* styles for validation helpers */
+.field-validation-error {
+    color: #b94a48;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+input.input-validation-error {
+    border: 1px solid #b94a48;
+}
+
+input[type="checkbox"].input-validation-error {
+    border: 0 none;
+}
+
+.validation-summary-errors {
+    color: #b94a48;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+.bookingAgentFormControlBorder {
+    border: 2px solid gray;
+    text-align:left;
+    padding-left:2px;
+    color:#000000;
+    font-size:0.85em;
+    font-weight:normal;
+    min-height:35px;
+}
+
+body {
+  padding-top: 20px;
+}
+
+.footer {
+  border-top: 1px solid #eee;
+  margin-top: 40px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+}
+
+/* Main marketing message and sign up button */
+.jumbotron {
+  text-align: center;
+  background-color: transparent;
+}
+.jumbotron .btn {
+  font-size: 21px;
+  padding: 14px 24px;
+}
+
+/* Customize the nav-justified links to be fill the entire space of the .navbar */
+
+.nav-justified {
+  background-color: #eee;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+.nav-justified > li > a {
+  margin-bottom: 0;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  color: #777;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 1px solid #d5d5d5;
+  background-color: #e5e5e5; /* Old browsers */
+  background-repeat: repeat-x; /* Repeat the gradient */
+  background-image: -moz-linear-gradient(top, #f5f5f5 0%, #e5e5e5 100%); /* FF3.6+ */
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f5f5f5), color-stop(100%,#e5e5e5)); /* Chrome,Safari4+ */
+  background-image: -webkit-linear-gradient(top, #f5f5f5 0%,#e5e5e5 100%); /* Chrome 10+,Safari 5.1+ */
+  background-image: -o-linear-gradient(top, #f5f5f5 0%,#e5e5e5 100%); /* Opera 11.10+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f5f5f5', endColorstr='#e5e5e5',GradientType=0 ); /* IE6-9 */
+  background-image: linear-gradient(top, #f5f5f5 0%,#e5e5e5 100%); /* W3C */
+}
+.nav-justified > .active > a,
+.nav-justified > .active > a:hover,
+.nav-justified > .active > a:focus {
+  background-color: #ddd;
+  background-image: none;
+  box-shadow: inset 0 3px 7px rgba(0,0,0,.15);
+}
+.nav-justified > li:first-child > a {
+  border-radius: 5px 5px 0 0;
+}
+.nav-justified > li:last-child > a {
+  border-bottom: 0;
+  border-radius: 0 0 5px 5px;
+}
+
+@media (min-width: 768px) {
+  .nav-justified {
+    max-height: 52px;
+  }
+  .nav-justified > li > a {
+    border-left: 1px solid #fff;
+    border-right: 1px solid #d5d5d5;
+  }
+  .nav-justified > li:first-child > a {
+    border-left: 0;
+    border-radius: 5px 0 0 5px;
+  }
+  .nav-justified > li:last-child > a {
+    border-radius: 0 5px 5px 0;
+    border-right: 0;
+  }
+}
+
+/* Responsive: Portrait tablets and up */
+@media screen and (min-width: 768px) {
+  /* Remove the padding we set earlier */
+  .masthead,
+  .marketing,
+  .footer {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+p, body, td { font-family: Tahoma, Arial, Sans-Serif; font-size: 10pt; }
+body { padding: 0px; margin: 0px; background-color: #ffffff; }
+a { color: #1155a3; }
+
+/* COMMON */
+.hidden { display: none; }
+.padded { padding: 10px; }
+.space { margin: 10px 0px 10px 0px; }
+
+/* form */
+
+/* COLUMNS */
+#container { width:100% }
+#left { float:left; width: 180px; margin-left: 2px; }
+#content { margin-left: 200px;}
+#content > div { width:99% }
+
+/* LAYOUT */
+#header { background: #001328 url('layout/header.png') 0 0 repeat-x; padding-left: 10px;}
+#header .bg-help { background: url('layout/header-in.png') 50% 0 no-repeat; padding:1px 0; width:100%; min-height:80px;}
+#main { padding: 0px 5px 0px 5px;  }
+#download { padding: 10px 0px 0px 20px; color: #666666; background: url('layout/main.png') 0 0 repeat-x; }
+  
+/* LOGO & CLAIM */
+#logo { font-size:200%; color:#fff; margin:10px 0 0; font-weight:bold; line-height:1.3;}
+#logo a { color:#fff; text-decoration:none; }
+#claim { color:#fff; margin:0;}
+
+/* MENU */
+.menu a { font-weight: normal; display: block; text-align: left; text-decoration: none; font-size: 10pt; color: #333333; padding: 1px 0px 1px 2px; border: 1px solid #fff; }
+.menu .selected { padding: 0px 0px 0px 10px; background: url('layout/li.png') 2px 50% no-repeat; }
+.menu a:hover  { border: 1px solid #aaaaaa; background-color: #eeeeee; }
+.menu .header { font-weight: bold; padding: 1px 0px 1px 2px; }
+
+/* BUTTON */
+.inline-btn { display: -moz-inline-block; display:inline-block; height:34px; background:url('layout/btn/all.png') 0 -600px no-repeat; vertical-align:middle; text-decoration:none; padding:0;}
+.inline-btn span, .inline-btn input { height:34px; display: -moz-inline-block; display:inline-block; background:url('layout/btn/all.png') 100% -700px no-repeat; line-height:34px; border:none; padding:0 10px; font-weight:bold; color:#fff;  cursor:pointer; font-size:117%; vertical-align: top; overflow: visible;  margin: 0;}
+
+/* TABS */
+#tabs { margin-top: 10px; padding: 10px 0px 0px 0px; width: 100%; }
+#tabs > div { padding-left: 15px; xborder-bottom: 1px solid #bfbfbf; }
+
+#tabs a:hover { color: #666; }
+#tabs a.selected :hover { color: #fff;}
+
+#tabs .tab { text-decoration: none; font-size: 110%; color: #000; vertical-align: middle; display: -moz-inline-block; display:inline-block; height: 40px; }
+#tabs .tab span { padding: 0px 10px; height: 40px; line-height: 40px; display: -moz-inline-block; display:inline-block; vertical-align: top; overflow: visible; }
+
+#tabs .selected { background: url(layout/tab-left.png) 0 0 no-repeat; height: 40px; overflow-y: visible; color: #fff; font-weight: bold; }
+#tabs .selected span { background: url(layout/tab-right.png) 100% 0; background-repeat: no-repeat; xborder-bottom: 1px solid #003367; }
+
+#tabs .header { background-image: url(layout/toolbar2.png); background-color: #013f7c; height: 40px; line-height: 40px; vertical-align: middle; xborder: solid #bfbfbf; xborder-width: 0px 1px 1px 1px; padding-left: 10px; color: #fff; }
+
+#container {background: url('layout/main.png') 0 0 repeat-x; padding-top: 20px; }
+
+.left-column { float: left; width: 170px; }
+.right-column { margin-left: 170px; }

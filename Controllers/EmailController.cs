@@ -10,8 +10,8 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
-using UtilitiesLib;
-using UtilitiesLib.Logging;
+using Utilities;
+using Utilities.Logging;
 
 namespace KwasantWeb.Controllers
 {
@@ -33,7 +33,7 @@ namespace KwasantWeb.Controllers
         // GET: /Email/
         public ActionResult Index()
         {
-            return View(curBookingRequestRepository.GetAll().Where(e => e.Status == EmailStatus.UNPROCESSED).ToList());                        
+            return View(curBookingRequestRepository.GetAll().Where(e => e.Status == EmailStatus.UNPROCESSED).OrderByDescending(e => e.Id).ToList());                        
         }
 
         // GET: /Email/Details/5
