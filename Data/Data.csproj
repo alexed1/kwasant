@@ -142,10 +142,6 @@
     <Compile Include="Interfaces\IPerson.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\ISaveHook.cs" />
-    <Compile Include="Migrations\201405200123206_alex.cs" />
-    <Compile Include="Migrations\201405200123206_alex.Designer.cs">
-      <DependentUpon>201405200123206_alex.cs</DependentUpon>
-    </Compile>
     <Compile Include="Interfaces\IUserRepository.cs" />
     <Compile Include="Migrations\201405211101452_InitialMigration.cs" />
     <Compile Include="Migrations\201405211101452_InitialMigration.Designer.cs">
