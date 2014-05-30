@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using StructureMap;
 using Utilities;
@@ -30,7 +31,7 @@ namespace KwasantCore.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<RegistrationStatus> Register(UserDO userRegStrings)
+        public  RegistrationStatus Register(UserDO userRegStrings)
         {
             RegistrationStatus curRegStatus = RegistrationStatus.Pending;
             UserDO curUserDO = null;
@@ -61,13 +62,13 @@ namespace KwasantCore.Services
             {
                 //this email address unknown.  new user. create an EmailAddress object, then create a User
                 
-                curUserDO = await _curUser.Register(userRegStrings, "Customer");
+                curUserDO =  _curUser.Register(userRegStrings, "Customer");
                 curRegStatus = RegistrationStatus.Successful;
                 
             }
 
             if (curRegStatus == RegistrationStatus.Successful)
-                AlertManager.CustomerCreated(curUserDO.Id);
+                AlertManager.CustomerCreated(curUserDO);
             return curRegStatus;
         }
 
@@ -114,13 +115,6 @@ namespace KwasantCore.Services
             return _uow.UserRepository.FindOne(x => x.UserName == userName);
         }
 
-        public void SendWelcomeMessage(UserDO userDO)
-        {
-            string alertData = string.Empty;
-            alertData += "Alert Name = Customer Created,"; //AlertManager.Parse() expects comma sepaated alert name and alert data. But it will not be used for sending welcome message.
-            alertData += userDO.EmailAddress.Address; // Store recepient address to whom welcome message would be sent
-
-            AlertManager.CustomerCreated(alertData);
-        }
+        
     }
 }

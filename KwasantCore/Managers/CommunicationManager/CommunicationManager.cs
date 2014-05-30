@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Entities.Enumerations;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
@@ -12,6 +13,7 @@ using StructureMap;
 using Twilio;
 using Microsoft.WindowsAzure;
 using KwasantCore.Services;
+using Utilities;
 
 namespace KwasantCore.Managers.CommunicationManager
 {
@@ -25,18 +27,25 @@ namespace KwasantCore.Managers.CommunicationManager
         }
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
-        public void NewCustomerWorkflow(KwasantSchedulingAlertData eventData)
+        public void NewCustomerWorkflow(KwasantSchedulingAlertData curAlertData)
         {
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            EmailDO curMailDO = new EmailDO();
-            curMailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
-            curMailDO.AddEmailRecipient(EmailParticipantType.TO, Email.GenerateEmailAddress(uow, new MailAddress(eventData.alertData)));
+            IUserRepository _userRepository = uow.UserRepository;
 
-            curMailDO.Subject = "Welcome To Kwasant";
-            curMailDO.HTMLText = string.Empty;
+            int userid = curAlertData.hash["UserId"].ToInt();
+            UserDO curUserDO = _userRepository.GetByKey(userid);
+            GenerateWelcomeEmail(curUserDO);
+           
+        }
 
-            Email curEmail = new Email(uow);
-            curEmail.SendTemplate("welcome_to_kwasant_v2", curMailDO, null); //new Dictionary<string,string>()
+        public void GenerateWelcomeEmail(UserDO curUser)
+        {
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailDO curEmail = new EmailDO();
+            curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
+            curEmail.AddEmailRecipient(EmailParticipantType.TO, curUser.EmailAddress);
+            Email _email = new Email(uow);
+            _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null); 
         }
 
         public void ProcessBRNotifications(IList<BookingRequestDO> bookingRequests)

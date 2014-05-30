@@ -127,6 +127,7 @@
     <Compile Include="Entities\Enumerations\TrackingType.cs" />
     <Compile Include="Entities\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
+    <Compile Include="Infrastructure\AlertManager.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedDBContext.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedDbSet.cs" />
     <Compile Include="Infrastructure\StructureMap\DatabaseStructureMapBootStrapper.cs" />

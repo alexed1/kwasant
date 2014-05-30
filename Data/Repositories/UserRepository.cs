@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
@@ -29,6 +30,8 @@ namespace Data.Repositories
                     FirstName = currMessage.From.Name
                 };
                 userRepo.Add(curUser);
+                UnitOfWork.SaveChanges();
+                AlertManager.CustomerCreated(curUser);
             }
             return curUser;
         }

@@ -44,12 +44,12 @@ namespace KwasantCore.Services
             _userRepo.Add(userDO);
         }
 
-        public async Task<UserDO> Register (UserDO userDO, string role)
+        public  UserDO Register (UserDO userDO, string role)
         {
             RegistrationStatus curRegStatus = RegistrationStatus.Successful;
 
             var userManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
-            var result = await userManager.CreateAsync(userDO, userDO.Password);
+            var result =  userManager.Create(userDO, userDO.Password);
             if (result.Succeeded)
             {
                 userManager.AddToRole(userDO.Id, role);

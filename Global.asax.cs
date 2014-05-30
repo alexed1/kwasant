@@ -6,6 +6,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using Daemons;
 using Data.Infrastructure;
+using KwasantCore.Managers.CommunicationManager;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
@@ -42,6 +43,10 @@ namespace KwasantWeb
                 else
                     throw new Exception("Invalid BasePageURL (check web.config)");
             }
+
+
+            CommunicationManager curCommManager = new CommunicationManager();
+            curCommManager.SubscribeToAlerts();
         }
 
         protected void Application_Error(Object sender, EventArgs e)
