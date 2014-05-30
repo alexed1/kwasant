@@ -1,32 +1,6 @@
 
 var CONTROLLER_NAME = 'Calendar';
 
-function getBaseCalendarURL(){
-    var tempPath = ''
-    tempPath = $(location).attr('href');    
-
-    arrPath = tempPath.split('//');
-    //tempPath = arrPath[0] + '//' + arrPath[1].substring(0, arrPath[1].indexOf('/'));
-
-    tempPath = arrPath[0] + '//' + arrPath[1].substring(0, arrPath[1].indexOf('/')) + '/' + CONTROLLER_NAME;
-
-    return tempPath
-}
-
-
-function getBaseURL() {
-    var tempPath = ''
-    tempPath = $(location).attr('href');
-
-    arrPath = tempPath.split('//');
-    //tempPath = arrPath[0] + '//' + arrPath[1].substring(0, arrPath[1].indexOf('/'));
-
-    tempPath = arrPath[0] + '//' + arrPath[1].substring(0, arrPath[1].indexOf('/'));
-
-    return tempPath
-}
-
-
 
 function getConfiguration() {
 

@@ -1,166 +1,152 @@
-﻿@model Data.Entities.EmailDO
-@using DayPilot.Web.Mvc
+﻿@using DayPilot.Web.Mvc
 @using DayPilot.Web.Mvc.Enums
 @using DayPilot.Web.Mvc.Enums.Calendar
 @using DayPilot.Web.Mvc.Events.Calendar
+@using ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType
+@model Data.Entities.EmailDO
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @{
     ViewBag.Title = "Event ";
 }
 @section styles{
     <style type="text/css">
-    body {
-        padding-top: 50px;
-        padding-bottom: 20px;
-    }
+        body {
+            padding-bottom: 20px;
+            padding-top: 50px;
+        }
 
-    /* Set padding to keep content from hitting the edges */
-    .body-content {
-        padding-left: 15px;
-        padding-right: 15px;
-    }
+        /* Set padding to keep content from hitting the edges */
 
-    /* Set width on the form input elements since they're 100% wide by default */
-    input,
-    select,
-    textarea {
-        max-width: 280px;
-    }
+        .body-content {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
 
-    /* styles for validation helpers */
-    .field-validation-error {
-        color: #b94a48;
-    }
+        /* Set width on the form input elements since they're 100% wide by default */
 
-    .field-validation-valid {
-        display: none;
-    }
+        input,
+        select,
+        textarea { max-width: 280px; }
 
-    input.input-validation-error {
-        border: 1px solid #b94a48;
-    }
+        /* styles for validation helpers */
 
-    input[type="checkbox"].input-validation-error {
-        border: 0 none;
-    }
+        .field-validation-error { color: #b94a48; }
 
-    .validation-summary-errors {
-        color: #b94a48;
-    }
+        .field-validation-valid { display: none; }
 
-    .validation-summary-valid {
-        display: none;
-                        }
+        input.input-validation-error { border: 1px solid #b94a48; }
 
-    .bookingAgentFormControlBorder {
-        border: 2px solid gray;
-        text-align: left;
-        padding-left: 2px;
-        color: #000000;
-        font-size: 0.85em;
-        font-weight: normal;
-        min-height: 35px;
-    }
+        input[type="checkbox"].input-validation-error { border: 0 none; }
 
-    .label_vertical_alignment {
-        position: relative;
-        top: 10px;
-    }
+        .validation-summary-errors { color: #b94a48; }
 
-    .container_box {
-        border: 2px solid gray;
-        padding-left: 20px;
-        min-height: 800px;
-    }
+        .validation-summary-valid { display: none; }
 
-    .mid_container_text {
-        font-size: 0.85em;
-    }
+        .bookingAgentFormControlBorder {
+            border: 2px solid gray;
+            color: #000000;
+            font-size: 0.85em;
+            font-weight: normal;
+            min-height: 35px;
+            padding-left: 2px;
+            text-align: left;
+        }
 
-    .divider_height {
-        height: 20px;
-    }
+        .label_vertical_alignment {
+            position: relative;
+            top: 10px;
+        }
 
+        .container_box {
+            border: 2px solid gray;
+            min-height: 800px;
+            padding-left: 20px;
+        }
 
-    .bookingAgentFormControlBorder {
-        border: 2px solid gray;
-        text-align: left;
-        padding-left: 2px;
-        color: #000000;
-        font-size: 0.85em;
-        font-weight: normal;
-        min-height: 50px;
-        overflow-x: auto;
-                        }
+        .mid_container_text { font-size: 0.85em; }
 
-    #toolbar {
-        margin: 10px 0px 20px 0px;
-        width: 174px;
-        border: none;
-        background: none;
-        position: relative;
-    }
+        .divider_height { height: 20px; }
+
+        .bookingAgentFormControlBorder {
+            border: 2px solid gray;
+            color: #000000;
+            font-size: 0.85em;
+            font-weight: normal;
+            min-height: 50px;
+            overflow-x: auto;
+            padding-left: 2px;
+            text-align: left;
+        }
+
+        #toolbar {
+            background: none;
+            border: none;
+            margin: 10px 0px 20px 0px;
+            position: relative;
+            width: 174px;
+        }
 
         #toolbar a {
-            display: inline-block;
-            height: 35px;
-            text-decoration: none;
-            padding: 5px;
-            color: #666;
-            border: 1px solid #aaa;
             background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e2e2e2));
             background: -webkit-linear-gradient(top, #fafafa 0%, #e2e2e2);
             background: -moz-linear-gradient(top, #fafafa 0%, #e2e2e2);
             background: -ms-linear-gradient(top, #fafafa 0%, #e2e2e2);
             background: -o-linear-gradient(top, #fafafa 0%, #e2e2e2);
             background: linear-gradient(top, #fafafa 0%, #e2e2e2);
+            border: 1px solid #aaa;
+            color: #666;
+            display: inline-block;
             filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#fafafa", endColorStr="#e2e2e2");
+            height: 35px;
+            padding: 5px;
+            text-decoration: none;
         }
-</style>
-@Styles.Render("~/bundles/css/daypilot")
-@Styles.Render("~/bundles/css/default")
-@Styles.Render("~/bundles/css/bootstrap3.0")
+    </style>
+    @Styles.Render("~/bundles/css/daypilot")
+    @Styles.Render("~/bundles/css/default")
+    @Styles.Render("~/bundles/css/bootstrap3.0")
 }
 @section immediateScripts
 {
     @Scripts.Render("~/bundles/js/jquery")
-@Scripts.Render("~/bundles/js/daypilot")
+    @Scripts.Render("~/bundles/js/daypilot")
 }
 @section scripts
 {
     @Scripts.Render("~/bundles/js/modernizr")
-@Scripts.Render("~/bundles/js/bootstrap")
-@Scripts.Render("~/bundles/js/common")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
 }
-<div class="jumbotron" style="padding-left:20px; padding-right:20px; width: 1270px;">
-            <div class="row">
-        <div id="emailInfoBox" class="col-md-4 container_box" style="height:100%; padding:0px;width:420px;border:none;">
-            <iframe src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style="width:100%;height:100%;border:none;margin-top:-7px;"></iframe>
+
+<div class="jumbotron" style="padding-left: 20px; padding-right: 20px; width: 1270px;">
+    <div class="row">
+        <div id="emailInfoBox" class="col-md-4 container_box" style="border: none; height: 100%; padding: 0px; width: 420px;">
+            <iframe src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style="border: none; height: 100%; margin-top: -7px; width: 100%;"></iframe>
         </div>
 
         <div id="divCalender" class="col-md-6 container_box" style="padding-bottom: 79px;">
             <div class="row">
-                <div id="toolbar" style="width:100%; font-size:12px;">
+                <div id="toolbar" style="font-size: 12px; width: 100%;">
                     <a href="#" id="toolbar_day">Day</a>
                     <a href="#" id="toolbar_week">Week</a>
                     <a href="#" id="toolbar_month">Month</a>
                 </div>
             </div>
             <div class="row">
-                <div style="padding-right:5px">
+                <div style="padding-right: 5px">
                     @Html.DayPilotMenu("menu1", new DayPilotMenuConfig
                     {
-                        Items = new MenuItemCollection()
+                        Items = new MenuItemCollection
                         {
-                            new MenuItem { Text = "Delete", Action = MenuItemAction.JavaScript, JavaScript = "eventDelete(e)"}
+                            new MenuItem {Text = "Delete", Action = MenuItemAction.JavaScript, JavaScript = "eventDelete(e)"}
                         }
                     })
 
                     @Html.DayPilotMenu("menu2", new DayPilotMenuConfig
                     {
-                        Items = new MenuItemCollection()
+                        Items = new MenuItemCollection
                         {
-                            new MenuItem { Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "alert(e.value());"}
+                            new MenuItem {Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "alert(e.value());"}
                         }
                     })
 
@@ -169,26 +155,22 @@
                     @Html.DayPilotCalendar("dp_day", new DayPilotCalendarConfig
                     {
                         BackendUrl = Url.Content("~/Calendar/Day?bookingRequestID=" + Model.Id),
-                        
                         EventMoveHandling = EventMoveHandlingType.JavaScript,
                         EventResizeHandling = EventResizeHandlingType.JavaScript,
                         TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
                         EventClickHandling = EventClickHandlingType.JavaScript,
                         HeaderClickHandling = HeaderClickHandlingType.JavaScript,
                         EventDeleteHandling = EventDeleteHandlingType.JavaScript,
-                        
                         EventBackColor = "#638EDE",
                         DurationBarVisible = false,
                         EventHeaderVisible = false,
-                        
                         Height = 550,
                         HeaderHeight = 50,
                         CellHeight = 25,
                         CssOnly = false,
                         ContextMenu = "menu1",
                         Theme = "calendar_white",
-                        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Day,
-
+                        ViewType = ViewType.Day,
                         EventClickJavaScript = "eventClick(e)",
                         EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
                         EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
@@ -198,20 +180,17 @@
 
                     @Html.DayPilotCalendar("dp_week", new DayPilotCalendarConfig
                     {
-                        ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType.Week,
+                        ViewType = ViewType.Week,
                         BackendUrl = Url.Content("~/Calendar/Backend?bookingRequestID=" + Model.Id),
-                        
                         EventMoveHandling = EventMoveHandlingType.JavaScript,
                         EventResizeHandling = EventResizeHandlingType.JavaScript,
                         TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
                         EventClickHandling = EventClickHandlingType.JavaScript,
                         HeaderClickHandling = HeaderClickHandlingType.JavaScript,
                         EventDeleteHandling = EventDeleteHandlingType.JavaScript,
-
                         EventBackColor = "#638EDE",
                         DurationBarVisible = false,
                         EventHeaderVisible = false,
-                        
                         ShowAllDayEvents = true,
                         AllowMultiSelect = true,
                         Height = 550,
@@ -233,16 +212,12 @@
                     @Html.DayPilotMonth("dp_month", new DayPilotMonthConfig
                     {
                         BackendUrl = Url.Content("~/Calendar/Month?bookingRequestID=" + Model.Id),
-
                         EventMoveHandling = DayPilot.Web.Mvc.Events.Month.EventMoveHandlingType.JavaScript,
                         EventResizeHandling = DayPilot.Web.Mvc.Events.Month.EventResizeHandlingType.JavaScript,
                         TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedHandlingType.JavaScript,
                         EventClickHandling = DayPilot.Web.Mvc.Events.Month.EventClickHandlingType.JavaScript,
                         HeaderClickHandling = DayPilot.Web.Mvc.Events.Month.HeaderClickHandlingType.JavaScript,
-                        
-                        
                         EventFontSize = "10px",
-                        
                         HeaderFontSize = "12px",
                         CellHeight = 90,
                         HeaderHeight = 50,
@@ -251,7 +226,6 @@
                         CssOnly = false,
                         ContextMenu = "menu1",
                         Theme = "calendar_white",
-
                         EventClickJavaScript = "eventClick(e)",
                         EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
                         EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
@@ -262,7 +236,7 @@
             </div>
         </div>
         
-        <div class="col-lg-2 container_box" style="padding-top:53px; padding-bottom:101px; position:relative; float:left;">
+        <div class="col-lg-2 container_box" style="float: left; padding-bottom: 101px; padding-top: 53px; position: relative;">
             @Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
             {
                 CssOnly = true,
@@ -283,15 +257,15 @@
 
 <script type="text/javascript">
 
-    $("#toolbar_day").click(function () {
+    $("#toolbar_day").click(function() {
         $("#divCalender").css("padding-bottom", "79px");
     });
 
-    $("#toolbar_week").click(function () {
+    $("#toolbar_week").click(function() {
         $("#divCalender").css("padding-bottom", "170px");
     });
 
-    $("#toolbar_month").click(function () {
+    $("#toolbar_month").click(function() {
         $("#divCalender").css("padding-bottom", "79px");
     });
 
@@ -308,46 +282,85 @@
     switcher.addNavigator(dp_navigator);
 
     switcher.show(dp_day);
-    
+
 
     function displayForm(url) {
-        var m = new DayPilot.Modal();
-        m.top = 130;
-        m.width = 580;
-        m.closed = function () {
-            var daypilotControls = [
-                dp_day,
-                dp_week,
-                dp_month
-            ];
+        var pushFromRight = 50;
+        var paddingAmount = 7;
+        var iframe = $('<iframe/>', {
+            id: 'PopupIframe',
+            src: url,
+            style: 'position: absolute;width: 500px;background-color: #FFFFFF;display: none;z-index: 9999;border: 1px solid #333;-moz-box-shadow:0 0 10px #000;-webkit-box-shadow:0 0 10px #000;box-shadow: #000 0px 0px 10px;padding:' + paddingAmount + 'px;',
+            load: function () {
+                var that = $(this);
+                var reposition = function() {
+                    var winH = $(window).height();
+                    var winW = $(window).width();
 
-            if (this.result == "OK") {
-                $.each(daypilotControls, function (i, ele) {
-                    ele.commandCallBack('refresh');
+                    var scrollTop = $(window).scrollTop();
+                    var scrollLeft = $(window).scrollLeft();
+
+                    var iframeWidth = that.contents().get(0).body.offsetHeight + (paddingAmount * 2);
+                    var iframeHeight = that.contents().get(0).body.offsetWidth + (paddingAmount * 2);
+
+                    var topPos = scrollTop + (winH - iframeHeight) / 2;
+                    var leftPos = scrollLeft + (winW - iframeWidth) - pushFromRight;
+
+                    that.css('top', topPos);
+                    that.css('left', leftPos);
+
+                    that.css('height', iframeWidth + 'px');
+                    that.css('width', iframeHeight + 'px');
+                };
+                reposition();
+                $(window).resize(reposition);
+                $(window).scroll(reposition);
+
+                $(this).fadeTo("fast", 1, function () {
+                    $(this).focus();
                 });
             }
-            $.each(daypilotControls, function (i, ele) {
-                ele.clearSelection('refresh');
-            });
-        };
+        });
+        $('body').append(iframe);
+        iframe.hide();
 
-        m.showUrl(url);
+        //var m = new DayPilot.Modal();
+        //m.top = 130;
+        //m.width = 580;
+        //m.closed = function() {
+        //    var daypilotControls = [
+        //        dp_day,
+        //        dp_week,
+        //        dp_month
+        //    ];
+
+        //    if (this.result == "OK") {
+        //        $.each(daypilotControls, function(i, ele) {
+        //            ele.commandCallBack('refresh');
+        //        });
+        //    }
+        //    $.each(daypilotControls, function(i, ele) {
+        //        ele.clearSelection('refresh');
+        //    });
+        //};
+
+        //m.showUrl(url);
     }
 
     function eventClick(e) {
-        displayForm(getBaseURL() + '/Event/Edit/?eventID=' + e.id());
+        displayForm('/Event/Edit/?eventID=' + e.id());
     }
 
     function eventNew(start, end) {
-        displayForm(getBaseURL() + '/Event/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end);
+        displayForm('/Event/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end);
     }
 
     function eventMove(e, newStart, newEnd) {
-        displayForm(getBaseURL() + '/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
+        displayForm('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
     }
 
     function eventDelete(e) {
-        displayForm(getBaseURL() + '/Event/DeleteEvent/?eventID=' + e.id());
+        displayForm('/Event/DeleteEvent/?eventID=' + e.id());
     }
 
 </script>
