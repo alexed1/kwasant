@@ -23,17 +23,16 @@ namespace KwasantCore.Managers.CommunicationManager
 
         public void SubscribeToAlerts()
         {
-            AlertManager.alertCustomerCreated += NewCustomerWorkflow;
+            AlertManager.AlertCustomerCreated += NewCustomerWorkflow;
         }
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
-        public void NewCustomerWorkflow(KwasantSchedulingAlertData curAlertData)
+        public void NewCustomerWorkflow(DateTime createdDate, string userID)
         {
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             IUserRepository _userRepository = uow.UserRepository;
 
-            string userid = curAlertData.hash["UserId"];
-            UserDO curUserDO = _userRepository.GetByKey(userid);
+            UserDO curUserDO = _userRepository.GetByKey(userID);
             GenerateWelcomeEmail(curUserDO);
            
         }
