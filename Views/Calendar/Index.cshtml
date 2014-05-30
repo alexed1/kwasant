@@ -292,6 +292,7 @@
             src: url,
             style: 'position: absolute;width: 500px;background-color: #FFFFFF;display: none;z-index: 9999;border: 1px solid #333;-moz-box-shadow:0 0 10px #000;-webkit-box-shadow:0 0 10px #000;box-shadow: #000 0px 0px 10px;padding:' + paddingAmount + 'px;',
             load: function () {
+                var iframeDoc = $(this).contents();
                 var that = $(this);
                 var reposition = function() {
                     var winH = $(window).height();
@@ -300,8 +301,8 @@
                     var scrollTop = $(window).scrollTop();
                     var scrollLeft = $(window).scrollLeft();
 
-                    var iframeWidth = that.contents().get(0).body.offsetHeight + (paddingAmount * 2);
-                    var iframeHeight = that.contents().get(0).body.offsetWidth + (paddingAmount * 2);
+                    var iframeWidth = iframeDoc.get(0).body.offsetHeight + (paddingAmount * 2);
+                    var iframeHeight = iframeDoc.get(0).body.offsetWidth + (paddingAmount * 2);
 
                     var topPos = scrollTop + (winH - iframeHeight) / 2;
                     var leftPos = scrollLeft + (winW - iframeWidth) - pushFromRight;
@@ -318,6 +319,11 @@
 
                 $(this).fadeTo("fast", 1, function () {
                     $(this).focus();
+                });
+
+                $('body').bind('popupFormClosing', function (event, document) {
+                    if (iframeDoc.get(0) === document)
+                        that.hide();
                 });
             }
         });

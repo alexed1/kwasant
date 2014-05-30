@@ -53,10 +53,8 @@
 </form>
 
 <script type="text/javascript">
-    function close(result) {
-        if (parent && parent.DayPilot && parent.DayPilot.ModalStatic) {
-            parent.DayPilot.ModalStatic.close(result);
-        }
+    function close() {
+        $(document).trigger('close');
     }
 
     $(function () {

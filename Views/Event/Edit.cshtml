@@ -196,10 +196,8 @@
         });
     });
 
-    function close(result) {
-        if (parent && parent.DayPilot && parent.DayPilot.ModalStatic) {
-            parent.DayPilot.ModalStatic.close(result);
-        }
+    function close() {
+        parent.$('body').trigger('popupFormClosing', document);
     }
 
     $("#f").submit(function () {
