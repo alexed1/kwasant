@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Mail;
 using Data.Entities;
 using Data.Entities.Enumerations;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using StructureMap;
 using Twilio;
 using Microsoft.WindowsAzure;
+using KwasantCore.Services;
+using Utilities;
 
 namespace KwasantCore.Managers.CommunicationManager
 {
@@ -22,11 +26,27 @@ namespace KwasantCore.Managers.CommunicationManager
             AlertManager.alertCustomerCreated += NewCustomerWorkflow;
         }
 
-
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
-        public void NewCustomerWorkflow(KwasantSchedulingAlertData eventData)
+        public void NewCustomerWorkflow(KwasantSchedulingAlertData curAlertData)
         {
-            Debug.WriteLine("NewCustomer has been created.");
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            IUserRepository _userRepository = uow.UserRepository;
+
+            string userid = curAlertData.hash["UserId"];
+            UserDO curUserDO = _userRepository.GetByKey(userid);
+            GenerateWelcomeEmail(curUserDO);
+           
+        }
+
+        public void GenerateWelcomeEmail(UserDO curUser)
+        {
+            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            EmailDO curEmail = new EmailDO();
+            curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
+            curEmail.AddEmailRecipient(EmailParticipantType.TO, curUser.EmailAddress);
+            curEmail.Subject = "Welcome to Kwasant";
+            Email _email = new Email(uow);
+            _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null); 
         }
 
         public void ProcessBRNotifications(IList<BookingRequestDO> bookingRequests)

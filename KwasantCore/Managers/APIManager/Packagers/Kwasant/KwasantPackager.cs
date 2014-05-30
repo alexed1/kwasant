@@ -11,7 +11,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Kwasant
     /// </summary>
     public class KwasantPackager
     {
-        private string baseUrl;
+        
         private JsonSerializer jsonSerializer;
 
         public KwasantPackager()

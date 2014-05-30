@@ -50,7 +50,7 @@ namespace KwasantWeb.Controllers
         public ActionResult Month(int bookingRequestID)
         {
             return new DayPilotMonthControl(bookingRequestID).CallBack(this);
-        }
+        }  
 
         public ActionResult Rtl()
         {

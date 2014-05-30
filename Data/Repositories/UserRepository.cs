@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
@@ -27,6 +28,8 @@ namespace Data.Repositories
                 curUser.FirstName = curMessage.From.Name;
                 curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 userRepo.Add(curUser);
+                UnitOfWork.SaveChanges();
+                AlertManager.CustomerCreated(curUser);
             }
             return curUser;
         }

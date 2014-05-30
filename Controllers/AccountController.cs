@@ -104,7 +104,7 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model)
+        public  ActionResult Register(RegisterViewModel model)
         {
             try
             { 
@@ -119,7 +119,7 @@ namespace KwasantWeb.Controllers
                     curUserDO.Password = model.Password.Trim();
                     curUserDO.EmailConfirmed = true; //this line essentially disables email confirmation
 
-                    RegistrationStatus curRegStatus = await _account.Register(curUserDO);
+                    RegistrationStatus curRegStatus =  _account.Register(curUserDO);
                     if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", "You are already registered with us. Please login.");
@@ -127,6 +127,8 @@ namespace KwasantWeb.Controllers
                     else
                     {
                         //await SendEmailConfirmation(curUserDO); email confirmation is currently turned off
+                        
+
                         return RedirectToAction("Index", "Home");
                     }
                 }
