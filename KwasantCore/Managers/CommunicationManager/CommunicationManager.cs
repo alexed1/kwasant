@@ -44,6 +44,7 @@ namespace KwasantCore.Managers.CommunicationManager
             EmailDO curEmail = new EmailDO();
             curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
             curEmail.AddEmailRecipient(EmailParticipantType.TO, curUser.EmailAddress);
+            curEmail.Subject = "Welcome to Kwasant";
             Email _email = new Email(uow);
             _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null); 
         }
