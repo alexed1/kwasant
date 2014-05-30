@@ -118,6 +118,7 @@
         }
 </style>
 @Styles.Render("~/bundles/css/daypilot")
+    @*<script type="text/javascript" src="http://www.kwasant.com/Scripts/DayPilot/daypilot-all.min.js"></script>*@
 @Styles.Render("~/bundles/css/default")
 @Styles.Render("~/bundles/css/bootstrap3.0")
 }
@@ -314,6 +315,7 @@
         var m = new DayPilot.Modal();
         m.top = 130;
         m.width = 580;
+        m.maxHeight = 515;
         m.create = function () {
             var hide = document.createElement("div");
             var div = document.createElement("div");
