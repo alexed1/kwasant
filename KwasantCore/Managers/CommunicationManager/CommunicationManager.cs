@@ -32,7 +32,7 @@ namespace KwasantCore.Managers.CommunicationManager
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             IUserRepository _userRepository = uow.UserRepository;
 
-            int userid = curAlertData.hash["UserId"].ToInt();
+            string userid = curAlertData.hash["UserId"];
             UserDO curUserDO = _userRepository.GetByKey(userid);
             GenerateWelcomeEmail(curUserDO);
            

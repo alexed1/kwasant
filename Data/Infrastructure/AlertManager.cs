@@ -43,7 +43,7 @@ namespace Data.Infrastructure
         /// </summary>
         public static void CustomerCreated(UserDO curUser)
         {
-            string alertData = String.Format("name=CustomerCreated, createdate=" + DateTime.Now + ", UserId=" + curUser.Id);
+            string alertData = String.Format("name=CustomerCreated, createdate=" + DateTime.Now + ",UserId=" + curUser.Id);
             alertCustomerCreated(Construct(alertData));
         }
 
