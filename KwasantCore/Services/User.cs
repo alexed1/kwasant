@@ -44,7 +44,7 @@ namespace KwasantCore.Services
             _userRepo.Add(userDO);
         }
 
-        public async Task<RegistrationStatus> Create(UserDO userDO, string role)
+        public async Task<UserDO> Register (UserDO userDO, string role)
         {
             RegistrationStatus curRegStatus = RegistrationStatus.Successful;
 
@@ -59,7 +59,7 @@ namespace KwasantCore.Services
                 throw new ApplicationException("There was a problem trying to register you. Please try again.");
             }
 
-            return curRegStatus;
+            return userDO;
         }
 
         public void UpdatePassword(UserDO userDO)
