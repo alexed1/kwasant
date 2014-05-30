@@ -1,26 +1,30 @@
-using Data.Entities;
-using Data.Infrastructure;
-using Data.Interfaces;
-using KwasantCore.Managers.APIManager.Packagers.Mandrill;
+using Data.Infrastructure.StructureMap;
+using KwasantCore.Managers.APIManager.Packagers;
 using StructureMap;
 using StructureMap.Configuration.DSL;
-using IEvent = Data.Interfaces.IEvent;
 
 namespace KwasantCore.StructureMap
 {
     public class StructureMapBootStrapper
     {
+        public enum DependencyType
+        {
+            TEST = 0,
+            LIVE = 1
+        }
+
         #region Method
 
-        public static void ConfigureDependencies(string type)
+        public static void ConfigureDependencies(DependencyType type)
         {
+            
             switch (type)
             {
-                case "test":
+                case DependencyType.TEST:
                     ObjectFactory.Initialize(x => x.AddRegistry<TestMode>());
                     break;
-                default:
-                    ObjectFactory.Initialize(x => x.AddRegistry<DevMode>());
+                case DependencyType.LIVE:
+                    ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
                     break;
             }
         }
@@ -29,32 +33,23 @@ namespace KwasantCore.StructureMap
         {
             public KwasantCoreRegistry()
             {
-                For<IAttachment>().Use<AttachmentDO>();
-                For<IAttendee>().Use<AttendeeDO>();
-                For<IBookingRequest>().Use<BookingRequestDO>();
-                For<IEmail>().Use<EmailDO>();
-                For<IEmailAddress>().Use<EmailAddressDO>();
-                For<IEvent>().Use<EventDO>();
-                For<IUser>().Use<UserDO>();
-                For<ICalendar>().Use<CalendarDO>();
-                For<IPerson>().Use<PersonDO>();
+                
             }
         }
 
-        public class DevMode : KwasantCoreRegistry 
+        public class LiveMode : DatabaseStructureMapBootStrapper.LiveMode
         {
-            public DevMode()
+            public LiveMode()
             {
-                //Do not remove _ => (This gives us lazy execution, and a new unit of work & context each call). Removing this will cause the application to be unstable with threads.
-                For<IUnitOfWork>().Use(_ => new UnitOfWork(new KwasantDbContext()));
+                For<IEmailPackager>().Use(new GmailPackager());
             }
         }
 
-        public class TestMode : KwasantCoreRegistry
+        public class TestMode : DatabaseStructureMapBootStrapper.TestMode
         {
             public TestMode()
             {
-                For<IUnitOfWork>().Use(new UnitOfWork(new MockedDBContext()));
+                
             }
         }
 

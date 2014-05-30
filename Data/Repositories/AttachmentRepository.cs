@@ -5,9 +5,8 @@ namespace Data.Repositories
 {
     public class AttachmentRepository : GenericRepository<AttachmentDO>, IAttachmentRepository
     {
-
-        public AttachmentRepository(IUnitOfWork uow)
-            : base(uow)
+        internal AttachmentRepository(IDBContext dbContext)
+            : base(dbContext)
         {
 
         }

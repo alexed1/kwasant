@@ -19,7 +19,7 @@ namespace KwasantTest.Daemons
         [SetUp]
         public void Setup()
         {
-            StructureMapBootStrapper.ConfigureDependencies("test");
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace KwasantTest.Daemons
             DaemonTests.RunDaemonOnce(ie);
 
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            var bookingRequestRepo = new BookingRequestRepository(uow);
+            var bookingRequestRepo = uow.BookingRequestRepository;
             var bookingRequests = bookingRequestRepo.GetAll().ToList();
 
             Assert.AreEqual(1, bookingRequests.Count);

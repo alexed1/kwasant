@@ -1,36 +1,61 @@
 ﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using Data.Entities;
+using Data.Interfaces;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Data;
 using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Calendar;
 using DayPilot.Web.Mvc.Events.Common;
-using KwasantCore.Services;
+using StructureMap;
 
 namespace KwasantWeb.Controllers.DayPilot
 {
     public class DayPilotCalendarControl : DayPilotCalendar
     {
-        private readonly Calendar _calendar;
-        public DayPilotCalendarControl(Calendar calendar)
+        private readonly int _bookingRequestID;
+        public DayPilotCalendarControl(int bookingRequestID)
         {
-            _calendar = calendar;
+            _bookingRequestID = bookingRequestID;
+        }
+
+        private static void MoveEvent(string id, DateTime newStart, DateTime newEnd)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var eventDO = uow.EventRepository.GetByKey(id);
+                eventDO.StartDate = newStart;
+                eventDO.EndDate = newEnd;
+                uow.SaveChanges();
+            }
+        }
+
+        private static void DeleteEvent(string id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var eventDO = uow.EventRepository.GetByKey(id);
+                uow.EventRepository.Remove(eventDO);
+                uow.SaveChanges();
+            }
         }
 
         protected override void OnEventMove(EventMoveArgs e)
         {
-            _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
+            MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
         }
         
         protected override void OnEventDelete(EventDeleteArgs e)
         {
-            _calendar.DeleteEvent(e.Id);
+            DeleteEvent(e.Id);
             Update();
         }
 
         protected override void OnEventResize(EventResizeArgs e)
         {
-            _calendar.MoveEvent(e.Id, e.NewStart, e.NewEnd);
+            MoveEvent(e.Id, e.NewStart, e.NewEnd);
             Update();
         }
 
@@ -44,13 +69,7 @@ namespace KwasantWeb.Controllers.DayPilot
             switch (e.Command)
             {
                 case "Delete":
-
-                    int intResultId;
-                    Boolean blnResult;
-
-                    blnResult = Int32.TryParse(e.Id, out intResultId);
-
-                    _calendar.DeleteEvent(e.Id);
+                    DeleteEvent(e.Id);
                     Update();
                     break;
             }
@@ -84,7 +103,7 @@ namespace KwasantWeb.Controllers.DayPilot
 
                 case "delete":
                     string id = (string)e.Data["id"];
-                    _calendar.DeleteEvent(id);
+                    DeleteEvent(id);
                     Update(CallBackUpdateType.EventsOnly);
                     break;
 
@@ -168,13 +187,26 @@ namespace KwasantWeb.Controllers.DayPilot
                 return;
             }
             
-            DataStartField = "StartDate";
-            DataEndField = "EndDate";
-            DataTextField = "Summary";
-            DataIdField = "EventID";
-            DataAllDayField = "IsAllDay";
+            DataStartField = GetPropertyName(ev => ev.StartDate);
+            DataEndField = GetPropertyName(ev => ev.EndDate);
+            DataTextField = GetPropertyName(ev => ev.Summary);
+            DataIdField = GetPropertyName(ev => ev.Id);
+            DataAllDayField = GetPropertyName(ev => ev.IsAllDay);
 
-            Events = _calendar.EventsList;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Events = uow.EventRepository.GetQuery().Where(e => e.BookingRequest.Id == _bookingRequestID).ToList();
+            }
+        }
+
+        //This creates a statically typed reference to our supplied property. If we change it in the future, it won't compile (so it won't break at runtime).
+        //Changing the property with tools like resharper will automatically update here.
+        private string GetPropertyName<T>(Expression<Func<EventDO, T>> expression)
+        {
+            if(expression.Body.NodeType == ExpressionType.MemberAccess)
+                return (expression.Body as dynamic).Member.Name;
+
+            throw new Exception("Cannot contain complex expressions. An example of a supported expression is 'ev => ev.Id'");
         }
     }
 }

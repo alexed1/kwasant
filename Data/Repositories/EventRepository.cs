@@ -13,17 +13,15 @@ namespace Data.Repositories
     {
         private EventValidator _curValidator;
 
-        public EventRepository(IUnitOfWork uow)
-            : base(uow)
+        internal EventRepository(IDBContext dbContext)
+            : base(dbContext)
         {
             _curValidator = new EventValidator();
             
         }
 
-
-        public void Add(EventDO entity)
+        public override void Add(EventDO entity)
         {
- 
             _curValidator.ValidateAndThrow(entity);
             base.Add(entity);
         }

@@ -8,9 +8,6 @@ namespace Data.Entities
 {
     public class AttachmentDO : StoredFileDO, IAttachment
     {
-        [Key]
-        public int Id { get; set; }
-
         [ForeignKey("Email")]
         public int EmailID { get; set; }
         [Required]

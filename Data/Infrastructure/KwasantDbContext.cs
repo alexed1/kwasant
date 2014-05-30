@@ -63,13 +63,21 @@ namespace Data.Infrastructure
                 entity.Entity.SaveHook(entity);
             }
 
-            return base.SaveChanges();
+            var saveResult = base.SaveChanges();
+            foreach (var entity in ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged))
+            {
+                entity.State = EntityState.Unchanged;
+            }
+
+            return saveResult;
         }
 
         public IDbSet<TEntity> Set<TEntity>() where TEntity : class
         {
             return base.Set<TEntity>();
         }
+
+        public IUnitOfWork UnitOfWork { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -78,15 +86,28 @@ namespace Data.Infrastructure
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
+            modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
-            modelBuilder.Entity<PersonDO>().ToTable("People");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserDO>().ToTable("Users");
+
+            modelBuilder.Entity<EmailDO>()
+                .HasRequired(a => a.From)
+                .WithMany()
+                .HasForeignKey(a => a.FromID)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UserDO>()
+                .Property(u => u.EmailAddressID)
+                .IsRequired()
+                .HasColumnAnnotation(
+                    "Index",
+                    new IndexAnnotation(new IndexAttribute("IX_User_EmailAddress", 1) {IsUnique = true}));
 
             modelBuilder.Entity<EmailAddressDO>()
                 .Property(ea => ea.Address)
@@ -129,31 +150,5 @@ namespace Data.Infrastructure
 
             base.OnModelCreating(modelBuilder);
         }
-
-        public IDbSet<AttachmentDO> Attachments { get; set; }
-
-        public IDbSet<AttendeeDO> Attendees { get; set; }
-
-        public IDbSet<BookingRequestDO> BookingRequests { get; set; }
-
-        public IDbSet<CalendarDO> Calendars { get; set; }
-
-        public IDbSet<CommunicationConfigurationDO> CommunicationConfigurations { get; set; }
-
-        public IDbSet<EmailDO> Emails { get; set; }
-
-        public IDbSet<EmailAddressDO> EmailAddresses { get; set; }
-
-        public IDbSet<EventDO> Events { get; set; }
-
-        public IDbSet<InstructionDO> Instructions { get; set; }
-
-        public IDbSet<PersonDO> People { get; set; }
-
-        public IDbSet<StoredFileDO> StoredFiles { get; set; }
-
-        public IDbSet<TrackingStatusDO> TrackingStatuses { get; set; }
-
-        public new IDbSet<UserDO> Users { get; set; }
     }
 }

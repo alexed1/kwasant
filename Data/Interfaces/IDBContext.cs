@@ -15,8 +15,6 @@ namespace Data.Interfaces
         DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity)
             where TEntity : class;
 
-
-        /* DBSets */
-        IDbSet<InstructionDO> Instructions { get; }
+        IUnitOfWork UnitOfWork { get; set; }
     }
 }

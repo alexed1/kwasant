@@ -12,36 +12,29 @@ using StructureMap;
 
 namespace KwasantTest.Entities
 {
-    [TestFixture, Ignore]
+    [TestFixture]
     public class EventTests 
     {
-        public IUserRepository userRepo;
-        private IEventRepository eventRepo;
-        private IEmailAddressRepository emailAddressRepo;
         public IUnitOfWork _uow;
         private FixtureData _fixture;
-        private Calendar _calendar;
 
         [SetUp]
         public void Setup()
         {
-            StructureMapBootStrapper.ConfigureDependencies("test");
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
 
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _calendar = new Calendar(_uow);
-            userRepo = new UserRepository(_uow);
-            eventRepo = new EventRepository(_uow);
-            emailAddressRepo = new EmailAddressRepository(_uow);
-            _fixture = new FixtureData(_uow);
+            
+            _fixture = new FixtureData();
         }
 
         //this is a core integration test: get the ics message through
-        [Test]
+        [Test, Ignore]
         [Category("Invitation")]
         public void Event_Dispatch_CanSendICS()
         {
-            EventRepository eventRepo = new EventRepository(_uow);
-            AttendeeRepository attendeesRepo = new AttendeeRepository(_uow);
+            EventRepository eventRepo = _uow.EventRepository;
+            AttendeeRepository attendeesRepo = _uow.AttendeeRepository;
             List<AttendeeDO> attendees =
                 new List<AttendeeDO>
                 {
@@ -88,14 +81,14 @@ namespace KwasantTest.Entities
         public void Event_Add_CanAddEventWithRequiredFields()
         {
             //SETUP      
-            EventDO curOriginalEventDO = _fixture.TestEvent1();
+            EventDO curOriginalEventDO = _fixture.TestEvent2();
 
             //EXECUTE
-            eventRepo.Add(curOriginalEventDO);
-            eventRepo.UnitOfWork.SaveChanges();
+            _uow.EventRepository.Add(curOriginalEventDO);
+            _uow.SaveChanges();
 
             //VERIFY
-            EventDO curRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.Id);
+            EventDO curRetrievedEventDO = _uow.EventRepository.GetByKey(curOriginalEventDO.Id);
             Assert.AreEqual(curOriginalEventDO.Id, curRetrievedEventDO.Id);
         }
 
@@ -104,13 +97,13 @@ namespace KwasantTest.Entities
         public void Event_Add_FailsWhenAddEventWithTooShortDescription()
         {
             //SETUP      
-            EventDO curOriginalEventDO = _fixture.TestEvent1();
+            EventDO curOriginalEventDO = _fixture.TestEvent2();
             curOriginalEventDO.Description = "X";
 
             //EXECUTE
             Assert.Throws<ValidationException>(() =>
                 {
-                    eventRepo.Add(curOriginalEventDO);
+                    _uow.EventRepository.Add(curOriginalEventDO);
                 }
             );
 
@@ -129,97 +122,26 @@ namespace KwasantTest.Entities
             EventDO curOriginalEventDO = _fixture.TestEvent2();
 
             //EXECUTE
-            eventRepo.Add(curOriginalEventDO);
-            eventRepo.UnitOfWork.SaveChanges();
+            _uow.EventRepository.Add(curOriginalEventDO);
+            _uow.SaveChanges();
 
             //VERIFY
-            EventDO CurRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.Id);
+            EventDO CurRetrievedEventDO = _uow.EventRepository.GetByKey(curOriginalEventDO.Id);
             Assert.AreEqual(curOriginalEventDO.Id, CurRetrievedEventDO.Id);
         }
 
         [Test]
         [Category("Event")]
-        public void Event_Add_FailAddEventIfPriorityValueZero()
+        public void Event_Add_FailAddEvenIfStartDateIsGreaterThanEndDate()
         {
             //SETUP      
-            EventDO curOriginalEventDO = new EventDO
-            {
-                StartDate = DateTime.Now.AddHours(3),
-                EndDate = DateTime.Now.AddHours(2),
-                Priority = 0,
-                Sequence = 2,
-                IsAllDay = true,
-                Category = "Vacation",
-                Class = "Public",
-                Description = "This is a test event description.",
-                Location = "Silicon Valley.",
-                Status = "Closed",
-                Summary = "This is a test event summary.",
-                Transparency = "Transparent"
-            };
+            EventDO curOriginalEventDO = _fixture.TestEvent2();
+            curOriginalEventDO.EndDate = curOriginalEventDO.StartDate.AddHours(-1);
 
             //EXECUTE
             Assert.Throws<ValidationException>(() =>
             {
-                eventRepo.Add(curOriginalEventDO);
-            }
-            );
-        }
-
-        [Test]
-        [Category("Event")]
-        public void Event_Add_FailAddEventIfSequenceValueZero()
-        {
-            //SETUP      
-            EventDO curOriginalEventDO = new EventDO
-            {
-                StartDate = DateTime.Now.AddHours(3),
-                EndDate = DateTime.Now.AddHours(2),
-                Priority = 1,
-                Sequence = 0,
-                IsAllDay = true,
-                Category = "Vacation",
-                Class = "Public",
-                Description = "This is a test event description.",
-                Location = "Silicon Valley.",
-                Status = "Closed",
-                Summary = "This is a test event summary.",
-                Transparency = "Transparent"
-            };
-
-            //EXECUTE
-            Assert.Throws<ValidationException>(() =>
-            {
-                eventRepo.Add(curOriginalEventDO);
-            }
-            );
-        }
-
-        [Test]
-        [Category("Event")]
-        public void Event_Add_FailAddEvenIfEndDateIsGreaterThanStartDate()
-        {
-            //SETUP      
-            EventDO curOriginalEventDO = new EventDO
-            {
-                StartDate = DateTime.Now.AddHours(3),
-                EndDate = DateTime.Now.AddHours(2),
-                Priority = 2,
-                Sequence = 2,
-                IsAllDay = true,
-                Category = "Vacation",
-                Class = "Public",
-                Description = "This is a test event description.",
-                Location = "Silicon Valley.",
-                Status = "Closed",
-                Summary = "This is a test event summary.",
-                Transparency = "Transparent"
-            };
-
-            //EXECUTE
-            Assert.Throws<ValidationException>(() =>
-            {
-                eventRepo.Add(curOriginalEventDO);
+                _uow.EventRepository.Add(curOriginalEventDO);
             }
             );
         }
@@ -230,17 +152,18 @@ namespace KwasantTest.Entities
         {
             //SETUP      
             EventDO curOriginalEventDO = _fixture.TestEvent1();
+            curOriginalEventDO.Attendees = new List<AttendeeDO> { _fixture.TestAttendee1() };
 
             //EXECUTE
-            eventRepo.Add(curOriginalEventDO);
-            eventRepo.UnitOfWork.SaveChanges();
+            _uow.EventRepository.Add(curOriginalEventDO);
+            _uow.SaveChanges();
 
-            EventDO curRetrievedEventDO = eventRepo.GetByKey(curOriginalEventDO.Id);
+            EventDO curRetrievedEventDO = _uow.EventRepository.GetByKey(curOriginalEventDO.Id);
 
-            eventRepo.Remove(curRetrievedEventDO);
-            eventRepo.UnitOfWork.SaveChanges();
+            _uow.EventRepository.Remove(curRetrievedEventDO);
+            _uow.SaveChanges();
 
-            EventDO curDeletedEventDO = eventRepo.GetByKey(curRetrievedEventDO.Id);
+            EventDO curDeletedEventDO = _uow.EventRepository.GetByKey(curRetrievedEventDO.Id);
 
             //VERIFY            
             Assert.IsNull(curDeletedEventDO);

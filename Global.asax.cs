@@ -6,12 +6,13 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using Daemons;
 using Data.Infrastructure;
+using KwasantCore.Managers.CommunicationManager;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
 using KwasantWeb.Controllers;
 using FluentValidation;
-using UtilitiesLib.Logging;
+using Utilities.Logging;
 
 namespace KwasantWeb
 {
@@ -25,12 +26,15 @@ namespace KwasantWeb
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             // StructureMap Dependencies configuration
-            StructureMapBootStrapper.ConfigureDependencies("dev"); //set to either "test" or "dev"
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE); //set to either "test" or "live"
             ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
 
             //Database.SetInitializer(new ShnexyInitializer());
             KwasantDbContext db = new KwasantDbContext();
-            db.Database.Initialize(true);            
+            db.Database.Initialize(true);
+
+            //AutoMapper create map configuration
+            AutoMapperBootStrapper.ConfigureAutoMapper();
 
             Logger.GetLogger().Info("Kwasant web starting...");
 
@@ -42,6 +46,10 @@ namespace KwasantWeb
                 else
                     throw new Exception("Invalid BasePageURL (check web.config)");
             }
+
+
+            CommunicationManager curCommManager = new CommunicationManager();
+            curCommManager.SubscribeToAlerts();
         }
 
         protected void Application_Error(Object sender, EventArgs e)

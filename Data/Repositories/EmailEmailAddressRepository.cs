@@ -5,22 +5,18 @@ namespace Data.Repositories
 {
 
 
-    public class EmailEmailAddressRepository : GenericRepository<EmailEmailAddressDO>, IEmailEmailAddressRepository
+    public class RecipientRepository : GenericRepository<RecipientDO>, IRecipientRepository
     {
 
-        public EmailEmailAddressRepository(IUnitOfWork uow)
-            : base(uow)
+        internal RecipientRepository(IDBContext dbContext)
+            : base(dbContext)
         {
 
         }
     }
 
 
-    public interface IEmailEmailAddressRepository : IGenericRepository<EmailEmailAddressDO>
+    public interface IRecipientRepository : IGenericRepository<RecipientDO>
     {
-        IUnitOfWork UnitOfWork { get; }
-
-
-
     }
 }

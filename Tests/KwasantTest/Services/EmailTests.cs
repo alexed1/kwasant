@@ -3,12 +3,14 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using FluentValidation;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
+using Moq;
 using NUnit.Framework;
 using StructureMap;
-
+using Utilities;
 
 namespace KwasantTest.Services
 {
@@ -23,11 +25,11 @@ namespace KwasantTest.Services
         [SetUp]
         public void Setup()
         {
-            StructureMapBootStrapper.ConfigureDependencies("test");
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
             //_bookingRequestRepo = new BookingRequestRepository(_uow);
-            _fixture = new FixtureData(_uow);
+            _fixture = new FixtureData();
             _curEventDO = new EventDO();
         }
 
@@ -56,7 +58,7 @@ namespace KwasantTest.Services
         {
             //SETUP
             string expectedSubject = "Invitation via Kwasant: " + _curEventDO.Summary + "@ " + _curEventDO.StartDate;
-            EmailDO _curEmailDO;
+            
             Assert.Throws<ValidationException>(() =>
             {
 
@@ -70,7 +72,7 @@ namespace KwasantTest.Services
 
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("Email")]
         public void CanSendSIE_MANUALTEST()
         {
@@ -95,13 +97,16 @@ namespace KwasantTest.Services
             //SETUP  
             EmailDO _curEmailDO = _fixture.TestEmail1();
             
-
-
             //EXECUTE
             Email curEmail = new Email(_uow, _curEmailDO);
-            
+
+            var mockEmailer = new Mock<IEmailPackager>();
+            mockEmailer.Setup(a => a.Send(_curEmailDO)).Verifiable();
+            ObjectFactory.Initialize(a => a.For<IEmailPackager>().Use(mockEmailer.Object));
             //VERIFY
             curEmail.Send();
+
+            mockEmailer.Verify();
 
         }
    

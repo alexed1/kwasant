@@ -11,9 +11,10 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Infrastructure;
-using UtilitiesLib;
+using Utilities;
 using KwasantWeb.ViewModels;
 using KwasantCore.Services;
+using KwasantCore.Managers.IdentityManager;
 
 namespace KwasantWeb.Controllers
 {
@@ -34,8 +35,8 @@ namespace KwasantWeb.Controllers
             String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
 
             EmailDO emailDO = new EmailDO();
-            emailDO.AddEmailParticipant(EmailParticipantType.TO, Email.GenerateEmailAddress(new MailAddress(message.Destination)));
-            emailDO.AddEmailParticipant(EmailParticipantType.FROM, Email.GenerateEmailAddress(new MailAddress(senderMailAddress)));
+            emailDO.AddEmailRecipient(EmailParticipantType.TO, Email.GenerateEmailAddress(_uow, new MailAddress(message.Destination)));
+            emailDO.From = Email.GenerateEmailAddress(_uow, new MailAddress(senderMailAddress));
 
             emailDO.Subject = message.Subject;
             emailDO.HTMLText = message.Body;
@@ -50,13 +51,11 @@ namespace KwasantWeb.Controllers
     {
         private IUnitOfWork _uow;
         private Account _account;
-        private UserRepository _userRepo;
         private UserManager<UserDO> _userManager;
 
         public AccountController(IUnitOfWork uow)
         {
             _uow = uow;
-            _userRepo = new UserRepository(uow);
             _account = new Account(_uow);
             _userManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
 
@@ -105,25 +104,32 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model)
+        public  ActionResult Register(RegisterViewModel model)
         {
             try
             { 
                 if (ModelState.IsValid)
                 {
-                    UserDO curUserDO = new UserDO();
-                    curUserDO.UserName = model.Email.Trim();
+                    var curUserDO = new UserDO()
+                    {
+                        UserName = model.Email.Trim(),
+                        EmailAddress = _uow.EmailAddressRepository.GetOrCreateEmailAddress(model.Email.Trim()),
+                        FirstName = model.Email.Trim()
+                    };
                     curUserDO.Password = model.Password.Trim();
+                    curUserDO.EmailConfirmed = true; //this line essentially disables email confirmation
 
-                    RegistrationStatus curRegStatus = await _account.Register(curUserDO);
-                    if (curRegStatus == RegistrationStatus.UserAlreadyExists)
+                    RegistrationStatus curRegStatus =  _account.Register(curUserDO);
+                    if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", "You are already registered with us. Please login.");
                     }
                     else
                     {
-                        await SendEmailConfirmation(curUserDO);
-                        return RedirectToAction("Confirm", model);
+                        //await SendEmailConfirmation(curUserDO); email confirmation is currently turned off
+                        
+
+                        return RedirectToAction("Index", "Home");
                     }
                 }
             }
@@ -174,8 +180,9 @@ namespace KwasantWeb.Controllers
                             }
                             else if (curLoginStatus == LoginStatus.Successful)
                             {
-                                //return RedirectToAction("MyAccount");
-                                return Redirect("/index.html");
+                                //return Redirect(!String.IsNullOrEmpty(returnUrl) ? returnUrl : "/index.aspx");
+                                //RedirectedToHomePage();
+                                return RedirectToAction("Index", "Admin");
                             }
                             break;
                     }
@@ -213,11 +220,11 @@ namespace KwasantWeb.Controllers
             string returnViewName = "RegistrationSuccessful";
             try
             {
-                UserDO curUserDO = _userRepo.FindOne(u => u.Id == userId);
+                UserDO curUserDO = _uow.UserRepository.FindOne(u => u.Id == userId);
                 if (curUserDO != null)
                 {
                     curUserDO.EmailConfirmed = true;
-                    _userRepo.UnitOfWork.SaveChanges();
+                    _uow.SaveChanges();
                 }
             }
             catch (Exception ex)

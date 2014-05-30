@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
-using Microsoft.WindowsAzure;
 using S22.Imap;
 
 using StructureMap;
-using UtilitiesLib.Logging;
+using Utilities;
+using Utilities.Logging;
+using UtilitiesLib;
 
 namespace Daemons
 {
@@ -25,42 +27,26 @@ namespace Daemons
         }
         private static string GetIMAPServer()
         {
-            return CloudConfigurationManager.GetSetting("InboundEmailHost");
+            return ConfigRepository.Get("InboundEmailHost");
         }
 
         private static int GetIMAPPort()
         {
-            int port;
-            if (int.TryParse(CloudConfigurationManager.GetSetting("InboundEmailPort"), out port))
-                return port;
-            throw new Exception("Invalid value for 'InboundEmailPort'");
+            return ConfigRepository.Get<int>("InboundEmailPort");
         }
 
         private static string GetUserName()
         {
-            string name = CloudConfigurationManager.GetSetting("INBOUND_EMAIL_USERNAME");
-            if (!String.IsNullOrEmpty(name))
-            {
-                return name;
-            }
-            throw new Exception("Missing value for 'INBOUND_EMAIL_USERNAME'");
+            return ConfigRepository.Get("INBOUND_EMAIL_USERNAME");
         }
         private static string GetPassword()
         {
-            string pwd = CloudConfigurationManager.GetSetting("INBOUND_EMAIL_PASSWORD");
-            if (!String.IsNullOrEmpty(pwd))
-            {
-                return pwd;
-            }
-            throw new Exception("Missing value for 'INBOUND_EMAIL_PASSWORD'");
+            return ConfigRepository.Get("INBOUND_EMAIL_PASSWORD");
         }
 
         private static bool UseSSL()
         {
-            bool useSSL;
-            if (bool.TryParse(CloudConfigurationManager.GetSetting("InboundEmailUseSSL"), out useSSL))
-                return useSSL;
-            throw new Exception("Invalid value for 'InboundEmailUseSSL'");
+            return ConfigRepository.Get<bool>("InboundEmailUseSSL");
         }
 
         public InboundEmail(IImapClient client)
@@ -78,32 +64,45 @@ namespace Daemons
             IImapClient client;
             try
             {
-                client = _client ?? new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login,UseSSL());
+                client = _client ??
+                         new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
+            }
+            catch (ConfigurationException ex)
+            {
+                Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
+                Stop();
+                return;
             }
             catch (Exception ex)
             {
-                Logger.GetLogger().Error("Error occured on startup", ex);
-                Stop();
+                Logger.GetLogger().Error("Error occured on startup... restarting.", ex);
                 return;
             }
 
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
             IEnumerable<uint> uids = client.Search(SearchCondition.Unseen()).ToList();
-            Logger.GetLogger().Info(GetType().Name + " - " + uids.Count() + " emails found...");
+
+            string logString;
+
+            //the difference in syntax makes it easy to have nonzero hits stand out visually in the log dashboard
+            if (uids.Any())           
+                logString = GetType().Name + " - " + uids.Count() + " emails found!";      
+            else
+                logString = GetType().Name + " - 0 emails found...";
+            Logger.GetLogger().Info(logString);
 
             foreach (var uid in uids)
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                BookingRequestRepository bookingRequestRepo = new BookingRequestRepository(unitOfWork);
-                EmailEmailAddressRepository emailEmailAddressRepository = new EmailEmailAddressRepository(unitOfWork);
-
+                BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
+                
                 var message = client.GetMessage(uid);
                 try
                 {
-                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, emailEmailAddressRepository, message);
+                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
                     BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
 
-                    bookingRequestRepo.UnitOfWork.SaveChanges();
+                    unitOfWork.SaveChanges();
                 }
                 catch (Exception e)
                 {

@@ -6,8 +6,8 @@ namespace KwasantWeb.Controllers
     {
         public ActionResult Index()
         {
-            //return Redirect("/index.html");
-            return RedirectToAction("Login", "Account");
+            return Redirect("/index.aspx");
+            
         }
 
         public ActionResult About()

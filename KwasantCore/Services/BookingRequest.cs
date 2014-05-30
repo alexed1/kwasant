@@ -14,27 +14,11 @@ namespace KwasantCore.Services
     {
         public static void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-            UserDO curUser = GetOrCreateUser(uow, bookingRequest);
+            UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
             bookingRequest.Status = EmailStatus.UNPROCESSED;
-        }
-
-        private static UserDO GetOrCreateUser(IUnitOfWork uow, BookingRequestDO currMessage)
-        {
-            string fromEmailAddress = currMessage.From.Address;
-            UserRepository userRepo = new UserRepository(uow);
-            UserDO curUser = userRepo.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
-            if (curUser == null)
-            {
-                curUser = new UserDO();
-                curUser.PersonDO = new PersonDO();
-                curUser.EmailAddress = EmailAddressDO.GetOrCreateEmailAddress(fromEmailAddress);
-                curUser.FirstName = currMessage.From.Name;
-                userRepo.Add(curUser);
-            }
-            return curUser;
         }
 
         private static List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)
@@ -42,7 +26,7 @@ namespace KwasantCore.Services
             List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?) travelTime).ToList();
             instructionIDs.Add(ProcessAllDay(emailBody));
             instructionIDs = instructionIDs.Where(i => i.HasValue).Distinct().ToList();
-            InstructionRepository instructionRepo = new InstructionRepository(uow);
+            InstructionRepository instructionRepo = uow.InstructionRepository;
             return instructionRepo.GetQuery().Where(i => instructionIDs.Contains(i.Id)).ToList();
         }
 
