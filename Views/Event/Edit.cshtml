@@ -83,7 +83,7 @@
     </style>
 }
 
-<form id="f" method="post" action="@Url.Action("ProcessSubmittedEvent", "Event" )">
+<form id="f" method="post" action="@Url.Action("ConfirmChanges", "Event")">
     <h3>
         @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event (Created by " + Model.CreatedByAddress + ").")
     </h3>
@@ -204,6 +204,11 @@
     }
 
     $("#f").submit(function () {
+        if (!isunsaved) {
+            close();
+            return false;
+        }
+
         var f = $("#f");
         if (!f.valid())
             return false;

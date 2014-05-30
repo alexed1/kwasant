@@ -22,7 +22,7 @@
     @Styles.Render("~/bundles/css/select2")
     @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
 }
-<form id="f" method="post" style="margin:10px" action="@Url.Action("ProcessSubmittedEvent", "Event")">
+<form id="f" method="post" style="margin:10px" action="@Url.Action("SubmitChange", "Event")">
     <h3>Confirm Changes</h3>
     <hr />
     @Html.HiddenFor(x => x.Confirmed, new {id = "Confirmed"})

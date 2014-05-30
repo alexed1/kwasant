@@ -66,36 +66,36 @@ namespace KwasantWeb.Controllers
                 evm.StartDate = DateTime.Parse(newStart);
                 evm.EndDate = DateTime.Parse(newEnd);
 
-                return View("~/Views/Calendar/ProcessCreateEvent.cshtml", evm);
+                return View("~/Views/Event/ConfirmChanges.cshtml", evm);
             }
         }
 
-        //the viewmodel has a confirmation boolean that is set on the client when the user approves the data.
-        public ActionResult ProcessSubmittedEvent(EventViewModel eventViewModel)
+        public ActionResult ConfirmChanges(EventViewModel eventViewModel)
         {
-            if  (false)  //(eventViewModel.Confirmed == false) TO DO: fix this so confirmation works properly again.
-                return View("ConfirmChanges", eventViewModel);
-            else
+            return View(eventViewModel);
+        }
+
+        //the viewmodel has a confirmation boolean that is set on the client when the user approves the data.
+        public ActionResult SubmitChange(EventViewModel eventViewModel)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    EventDO eventDO = eventViewModel.Id == 0
-                        ? new EventDO { CreatedByID = User.Identity.GetUserId() }
-                        : uow.EventRepository.GetByKey(eventViewModel.Id);
+                EventDO eventDO = eventViewModel.Id == 0
+                    ? new EventDO { CreatedByID = User.Identity.GetUserId() }
+                    : uow.EventRepository.GetByKey(eventViewModel.Id);
 
-                    Mapper.Map(eventViewModel, eventDO);
-                    new Event().ManageAttendeeList(uow, eventDO, eventViewModel.Attendees);
+                Mapper.Map(eventViewModel, eventDO);
+                new Event().ManageAttendeeList(uow, eventDO, eventViewModel.Attendees);
                     
-                    if (eventViewModel.Id == 0)
-                    {
-                        uow.EventRepository.Add(eventDO);
-                    }
-
-                    uow.SaveChanges();
+                if (eventViewModel.Id == 0)
+                {
+                    uow.EventRepository.Add(eventDO);
                 }
 
-                return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+                uow.SaveChanges();
             }
+
+            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
         }
 
         public ActionResult DeleteEvent(int eventID)
