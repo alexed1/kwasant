@@ -37,14 +37,7 @@ namespace KwasantCore.Managers.IdentityManager
             }
         }
 
-        public async Task<RegistrationStatus> RegisterNewUser(UserDO userDO)
-        {
-            RegistrationStatus curRegStatus = RegistrationStatus.Pending;
-            
-            curRegStatus = await _user.Create(userDO, "Customer");
 
-            return curRegStatus;
-        }
 
         public async Task<LoginStatus> Login(UserDO userDO, bool isPersistent)
         {

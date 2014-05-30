@@ -88,13 +88,15 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             //curRecipient.Rcpt = message.To. FIX THIS
 
             //map the template-specific chunks of custom data that will be dyanmically integrated into the template at send time. Put them into a list that can be easily serialized.
-            foreach (KeyValuePair<string, string> pair in mergeFields)
+            if (mergeFields != null)
             {
-                MandrillDynamicContentChunk curChunk = new MandrillDynamicContentChunk();
-                curChunk.Name = pair.Key;
-                curChunk.Content = pair.Value;
-                curRecipient.Vars.Add(curChunk);
-
+                foreach (KeyValuePair<string, string> pair in mergeFields)
+                {
+                    MandrillDynamicContentChunk curChunk = new MandrillDynamicContentChunk();
+                    curChunk.Name = pair.Key;
+                    curChunk.Content = pair.Value;
+                    curRecipient.Vars.Add(curChunk);
+                }
             }
             //message.MergeVars.Add(curRecipient); NEED A DIFFERENT WAY TO ADD MERGE VARS
 

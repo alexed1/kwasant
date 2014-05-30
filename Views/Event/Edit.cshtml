@@ -83,12 +83,10 @@
     </style>
 }
 
-<form id="f" method="post" action="@Url.Action("ConfirmEventEdits")">
-    <div class="dragger">
+<form id="f" method="post" action="@Url.Action("ConfirmChanges", "Event")">
     <h3>
-        @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event (Created by " + Model.CreatedByName + ").")
+        @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event (Created by " + Model.CreatedByAddress + ").")
     </h3>
-    </div>
     <hr />
     <div class="formItem">
         <div class="formLabel">
@@ -194,12 +192,6 @@
     }
 
     $(document).ready(function () {
-        $(".dragger").mouseenter(function (e) {
-            $('div[id*=popup]', window.parent.document).trigger("mousedown");
-        });
-        $(".dragger").mouseout(function (e) {
-            $('div[id*=mask]', window.parent.document).remove();
-        });
         $(".form-control").change(function () {
             isunsaved = true;
         });
@@ -212,6 +204,11 @@
     }
 
     $("#f").submit(function () {
+        if (!isunsaved) {
+            close();
+            return false;
+        }
+
         var f = $("#f");
         if (!f.valid())
             return false;

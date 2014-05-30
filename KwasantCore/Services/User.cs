@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Configuration;
+using Data.Validators;
+using FluentValidation;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
@@ -44,12 +46,16 @@ namespace KwasantCore.Services
             _userRepo.Add(userDO);
         }
 
-        public async Task<RegistrationStatus> Create(UserDO userDO, string role)
+        public  UserDO Register (UserDO userDO, string role)
         {
+
+            UserValidator _curUserValidator = new UserValidator();
+            _curUserValidator.ValidateAndThrow(userDO);
+
             RegistrationStatus curRegStatus = RegistrationStatus.Successful;
 
             var userManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
-            var result = await userManager.CreateAsync(userDO, userDO.Password);
+            var result =  userManager.Create(userDO, userDO.Password);
             if (result.Succeeded)
             {
                 userManager.AddToRole(userDO.Id, role);
@@ -59,7 +65,7 @@ namespace KwasantCore.Services
                 throw new ApplicationException("There was a problem trying to register you. Please try again.");
             }
 
-            return curRegStatus;
+            return userDO;
         }
 
         public void UpdatePassword(UserDO userDO)
