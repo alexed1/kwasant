@@ -23,11 +23,20 @@ namespace ViewModel.Models
 
         public String UserId { get; set; }
         public String FirstName { get; set; }
+        public String PreviousFirstName { get; set; }
         public String LastName { get; set; }
+        public String PreviousLasttName { get; set; }
         public int EmailAddressID { get; set; }
         public String EmailAddress { get; set; }
+        public String PreviousEmailAddress { get; set; }
         public String RoleId { get; set; }
+        public String PreviousRoleId { get; set; }
         public String Role { get; set; }
-        public List<RoleData> Roles { get; set; }   
+        public List<RoleData> Roles { get; set; }
+
+        
+        
+        
+        
     }
 }

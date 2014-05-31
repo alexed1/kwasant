@@ -5,6 +5,8 @@ using System.Web;
 using AutoMapper;
 using KwasantCore.Services;
 using ViewModel.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Data.Entities;
 
 namespace KwasantWeb.Controllers.Helpers
 {
@@ -19,6 +21,8 @@ namespace KwasantWeb.Controllers.Helpers
             foreach (UsersAdminData usersAdminData in usersAdminDataList)
             {
                 UsersAdminViewModel usersAdminViewModel = Mapper.Map<UsersAdminData, UsersAdminViewModel>(usersAdminData);
+                //Manually map first name field coz it does not map by Auto Mapper.
+                usersAdminViewModel.LastName = usersAdminData.LasttName;
                 currUsersAdminViewModels.Add(usersAdminViewModel);
             }
 
@@ -27,5 +31,6 @@ namespace KwasantWeb.Controllers.Helpers
 
             return currUsersAdminViewModels;
         }
+
     }
 }

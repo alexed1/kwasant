@@ -28,10 +28,12 @@ namespace KwasantWeb.Controllers
     public class KwasantEmailService : IIdentityMessageService
     {
         IUnitOfWork _uow;
+        Account _account;
 
         public KwasantEmailService(IUnitOfWork uow)
         {
             _uow = uow;
+            _account = new Account(_uow);
         }
 
         public async Task SendAsync(IdentityMessage message)
@@ -257,33 +259,44 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult Edit(UsersAdminViewModel usersAdminViewModel)
         {
-            UserDO userDO = new UserDO();
 
+            //Check if any field edited by user on the font-end.
+            if (!IsDirty(usersAdminViewModel))
+                return RedirectToAction("Index", "User");
+
+            UserDO userDO = new UserDO();
             userDO.Id = usersAdminViewModel.UserId;
             userDO.FirstName = usersAdminViewModel.FirstName;
             userDO.LastName = usersAdminViewModel.LastName;
-            userDO.EmailAddress = new EmailAddressDO() { Id= usersAdminViewModel.EmailAddressID, Address = usersAdminViewModel.EmailAddress };
+            userDO.EmailAddress = new EmailAddressDO() { Id = usersAdminViewModel.EmailAddressID, Address = usersAdminViewModel.EmailAddress };
+
             userDO.EmailAddressID = usersAdminViewModel.EmailAddressID;
             userDO.UserName = usersAdminViewModel.EmailAddress;
 
-            var store = new UserStore<UserDO>(_uow.Db as KwasantDbContext);
-            var manager = new UserManager<UserDO>(store);           
+            IdentityUserRole identityUserRole = null;
 
-            var ctx = store.Context;
-            ctx.Entry(userDO).State = System.Data.Entity.EntityState.Modified;
-
-            try
+            // Set RoleId & UserId if role is changed on the font-end other wise IdentityUserRole is set to null and user's role will not be updated.
+            if (usersAdminViewModel.RoleId != usersAdminViewModel.PreviousRoleId)
             {
-                ctx.SaveChanges();
+                identityUserRole = new IdentityUserRole();
+                identityUserRole.RoleId = usersAdminViewModel.RoleId;
+                identityUserRole.UserId = usersAdminViewModel.UserId;
             }
-            catch (Exception ex)
-            {
-                System.Collections.Generic.IEnumerable<System.Data.Entity.Validation.DbEntityValidationResult> aa = ctx.GetValidationErrors();
 
-            }
-            //ctx.SaveChanges();            
+            //bool blnResult = false;
+            //blnResult = 
+           _account.UpdateUser(userDO, identityUserRole);
 
-            return View();
+            return RedirectToAction("Index", "User");
+        }
+
+        private bool IsDirty(UsersAdminViewModel usersAdminViewModel)
+        {
+            bool blnIsDirty = false;
+
+            blnIsDirty = usersAdminViewModel.FirstName != usersAdminViewModel.PreviousFirstName ? true : usersAdminViewModel.LastName != usersAdminViewModel.PreviousLasttName ? true : usersAdminViewModel.FirstName != usersAdminViewModel.PreviousFirstName ? true : usersAdminViewModel.LastName != usersAdminViewModel.PreviousLasttName ? true : usersAdminViewModel.EmailAddress != usersAdminViewModel.PreviousEmailAddress ? true : usersAdminViewModel.RoleId != usersAdminViewModel.PreviousRoleId ? true : false;
+
+            return blnIsDirty;
         }
     }
 }

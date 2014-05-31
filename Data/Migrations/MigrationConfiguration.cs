@@ -21,7 +21,7 @@ namespace Data.Migrations
         public MigrationConfiguration()
         {
             AutomaticMigrationsEnabled = true;
-            AutomaticMigrationDataLossAllowed = false;
+            //AutomaticMigrationDataLossAllowed = false;
             ContextKey = "Data.Infrastructure.KwasantDbContext";
         }
 
@@ -53,7 +53,7 @@ namespace Data.Migrations
 
         private static void SeedInstructions(IUnitOfWork unitOfWork)
         {
-            Type[] nestedTypes = typeof (InstructionConstants).GetNestedTypes();
+            Type[] nestedTypes = typeof(InstructionConstants).GetNestedTypes();
             var instructionsToAdd = new List<InstructionDO>();
             foreach (Type nestedType in nestedTypes)
             {
@@ -64,7 +64,7 @@ namespace Data.Migrations
                     object value = constant.GetValue(null);
                     instructionsToAdd.Add(new InstructionDO
                     {
-                        Id = (int) value,
+                        Id = (int)value,
                         Name = name,
                         Category = nestedType.Name
                     });
@@ -127,12 +127,13 @@ namespace Data.Migrations
                     var user = new UserDO
                     {
                         UserName = curUserName,
-                        EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),    
+                        EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
                         FirstName = curUserName,
                         EmailConfirmed = true
                     };
 
-                    IdentityResult ir = um.Create(user, curPassword);
+                    IdentityResult ir = um.Create(user, curPassword);          
+
                     if (!ir.Succeeded)
                         return;
 

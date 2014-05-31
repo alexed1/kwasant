@@ -10,8 +10,7 @@
 <hr />
 <div>    
     <div style="padding-left:400px">        
-        @Html.ActionLink("Edit", "Edit", "Account", new { userId = @Model.UserId, roleId = @Model.RoleId }, null) |
-        @Html.ActionLink("Back to List", "Index")
+        @Html.ActionLink("Edit", "Edit", "Account", new { userId = @Model.UserId, roleId = @Model.RoleId }, null)         
     </div>
     <dl class="dl-horizontal">
         @{  
@@ -21,5 +20,8 @@
                 <dt>Role  :</dt> <dd>@Model.Role</dd>            
          }        
     </dl>
+    <p>
+        @Html.ActionLink("Back to List", "Index")
+    </p>
 </div>
 

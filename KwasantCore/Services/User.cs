@@ -24,7 +24,7 @@ namespace KwasantCore.Services
     public class User
     {
         private readonly IUnitOfWork _uow;
-        private UserRepository _userRepo;
+        private UserRepository userRepo;        
 
         private IAuthenticationManager AuthenticationManager
         {
@@ -36,12 +36,12 @@ namespace KwasantCore.Services
 
         public User(IUnitOfWork uow)
         {
-            _uow = uow;
+            _uow = uow;            
         }
 
         public void Add(UserDO userDO)
         {
-            _userRepo.Add(userDO);
+            userRepo.Add(userDO);
         }
 
         public async Task<RegistrationStatus> Create(UserDO userDO, string role)
@@ -114,8 +114,27 @@ namespace KwasantCore.Services
 
         public UserDO FindByEmailId(int Id)
         {
-            return _userRepo.FindOne(p => p.EmailAddress.Id == Id);
+            return userRepo.FindOne(p => p.EmailAddress.Id == Id);
 
+        }
+
+        public bool ChangeUserRole(IdentityUserRole identityUserRole)
+        {
+            IdentityResult identityResult = null;            
+
+            var userManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(_uow.Db as KwasantDbContext));
+
+            var currCurrentIdentityRole = userManager.GetRoles(identityUserRole.UserId);
+            identityResult = userManager.RemoveFromRole(identityUserRole.UserId, currCurrentIdentityRole.ToList()[0]);
+
+            if (identityResult.Succeeded)
+            {
+                IdentityRole currNewIdentityRole = roleManager.FindById(identityUserRole.RoleId.Trim());
+                identityResult = userManager.AddToRole(identityUserRole.UserId.Trim(), currNewIdentityRole.Name);
+            }
+
+            return identityResult.Succeeded;
         }
     }
 }
