@@ -110,6 +110,7 @@
 {
     @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/daypilot")
+    <script src="/Content/js/Kwasant/Popup.js"></script>
 }
 @section scripts
 {
@@ -283,90 +284,27 @@
 
     switcher.show(dp_day);
 
-
-    function displayForm(url) {
-        var pushFromRight = 50;
-        var paddingAmount = 7;
-        var iframe = $('<iframe/>', {
-            id: 'PopupIframe',
-            src: url,
-            style: 'position: absolute;width: 500px;background-color: #FFFFFF;display: none;z-index: 9999;border: 1px solid #333;-moz-box-shadow:0 0 10px #000;-webkit-box-shadow:0 0 10px #000;box-shadow: #000 0px 0px 10px;padding:' + paddingAmount + 'px;',
-            load: function () {
-                var iframeDoc = $(this).contents();
-                var that = $(this);
-                var reposition = function() {
-                    var winH = $(window).height();
-                    var winW = $(window).width();
-
-                    var scrollTop = $(window).scrollTop();
-                    var scrollLeft = $(window).scrollLeft();
-
-                    var iframeWidth = iframeDoc.get(0).body.offsetHeight + (paddingAmount * 2);
-                    var iframeHeight = iframeDoc.get(0).body.offsetWidth + (paddingAmount * 2);
-
-                    var topPos = scrollTop + (winH - iframeHeight) / 2;
-                    var leftPos = scrollLeft + (winW - iframeWidth) - pushFromRight;
-
-                    that.css('top', topPos);
-                    that.css('left', leftPos);
-
-                    that.css('height', iframeWidth + 'px');
-                    that.css('width', iframeHeight + 'px');
-                };
-                reposition();
-                $(window).resize(reposition);
-                $(window).scroll(reposition);
-
-                $(this).fadeTo("fast", 1, function () {
-                    $(this).focus();
-                });
-
-                $('body').bind('popupFormClosing', function (event, document) {
-                    if (iframeDoc.get(0) === document)
-                        that.hide();
-                });
-            }
-        });
-        $('body').append(iframe);
-        iframe.hide();
-
-        //var m = new DayPilot.Modal();
-        //m.top = 130;
-        //m.width = 580;
-        //m.closed = function() {
-        //    var daypilotControls = [
-        //        dp_day,
-        //        dp_week,
-        //        dp_month
-        //    ];
-
-        //    if (this.result == "OK") {
-        //        $.each(daypilotControls, function(i, ele) {
-        //            ele.commandCallBack('refresh');
-        //        });
-        //    }
-        //    $.each(daypilotControls, function(i, ele) {
-        //        ele.clearSelection('refresh');
-        //    });
-        //};
-
-        //m.showUrl(url);
-    }
-
     function eventClick(e) {
-        displayForm('/Event/Edit/?eventID=' + e.id());
+        Kwasant.DisplayIFrame('/Event/Edit/?eventID=' + e.id(),
+            {
+                horizontalAlign: 'right',
+            });
     }
 
     function eventNew(start, end) {
-        displayForm('/Event/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end);
+        Kwasant.DisplayIFrame('/Event/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end,
+            {
+                horizontalAlign: 'right',
+                modal: true
+            });
     }
 
     function eventMove(e, newStart, newEnd) {
-        displayForm('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
+        Kwasant.DisplayIFrame('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
     }
 
     function eventDelete(e) {
-        displayForm('/Event/DeleteEvent/?eventID=' + e.id());
+        Kwasant.DisplayIFrame('/Event/DeleteEvent/?eventID=' + e.id());
     }
 
 </script>
