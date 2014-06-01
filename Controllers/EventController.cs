@@ -53,7 +53,7 @@ namespace KwasantWeb.Controllers
 
                 uow.SaveChanges();
 
-                return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+                return JavaScript(SimpleJsonSerializer.Serialize(true));
             }
         }
 
@@ -94,7 +94,7 @@ namespace KwasantWeb.Controllers
                 uow.SaveChanges();
             }
 
-            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+            return JavaScript(SimpleJsonSerializer.Serialize(true));
         }
 
         public ActionResult DeleteEvent(int eventID)

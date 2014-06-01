@@ -198,8 +198,10 @@
         });
     });
 
-    function close() {
-        parent.$('body').trigger('popupFormClosing', document);
+    function close(saved) {
+        if (saved === undefined || saved == null)
+            saved = false;
+        Kwasant.IFrame.CloseMe(saved);
     }
 
     $("#f").submit(function () {
@@ -220,27 +222,21 @@
 
         var url = f.prop('action') + '/?' + f.serialize();
 
-
-        var iframe = new Kwasant.IFrame();
-        iframe.Display(url,
+        Kwasant.IFrame.Display(url,
             {
-                modal: true
+                modal: true,
+                callback: function (result) {
+                    if ($('#chkAllDay').attr('checked')) {
+                        fromDate.data("DateTimePicker").disable();
+                        toDate.data("DateTimePicker").disable();
+                    } else {
+                        fromDate.data("DateTimePicker").enable();
+                        toDate.data("DateTimePicker").enable();
+                    }
+                    if (result)
+                        close(true);
+                }
             });
-
-        //var m = new parent.DayPilot.Modal();
-        //m.closed = function () {
-        //    if ($('#chkAllDay').attr('checked')) {
-        //        fromDate.data("DateTimePicker").disable();
-        //        toDate.data("DateTimePicker").disable();
-        //    } else {
-        //        fromDate.data("DateTimePicker").enable();
-        //        toDate.data("DateTimePicker").enable();
-        //    }
-
-        //    if (this.result == "OK") {
-        //        close(this.result);
-        //    }
-        //};
 
         return false;
     });

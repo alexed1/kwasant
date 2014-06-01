@@ -285,29 +285,42 @@
     switcher.show(dp_day);
 
     function eventClick(e) {
-        var iframe = new Kwasant.IFrame();
-        iframe.Display('/Event/Edit/?eventID=' + e.id(),
+        Kwasant.IFrame.Display('/Event/Edit/?eventID=' + e.id(),
             {
                 horizontalAlign: 'right',
             });
     }
 
     function eventNew(start, end) {
-        var iframe = new Kwasant.IFrame();
-        iframe.Display('/Event/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end,
+        Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end,
             {
                 horizontalAlign: 'right',
+                callback: refresh
             });
     }
 
     function eventMove(e, newStart, newEnd) {
-        var iframe = new Kwasant.IFrame();
-        iframe.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
+        Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
     }
 
     function eventDelete(e) {
-        var iframe = new Kwasant.IFrame();
-        iframe.Display('/Event/DeleteEvent/?eventID=' + e.id());
+        Kwasant.IFrame.Display('/Event/DeleteEvent/?eventID=' + e.id());
+    }
+    
+    function refresh(result) {
+        var daypilotControls = [
+                        dp_day,
+                        dp_week,
+                        dp_month
+        ];
+        if (result) {
+            $.each(daypilotControls, function (i, ele) {
+                ele.commandCallBack('refresh');
+            });
+        }
+        $.each(daypilotControls, function (i, ele) {
+            ele.clearSelection('refresh');
+        });
     }
 
 </script>
