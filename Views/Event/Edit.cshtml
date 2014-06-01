@@ -8,6 +8,8 @@
     @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
     @Scripts.Render("~/bundles/js/jqueryvalidate")
 
+    <script src="/Content/js/Kwasant/Popup.js"></script>
+
     <script type="text/javascript">
             var hideShowDates = function () {
                 var fromDate = $('#StartDate');
@@ -209,30 +211,36 @@
         var f = $("#f");
         if (!f.valid())
             return false;
-        
+
         var fromDate = $('#StartDate');
         var toDate = $('#EndDate');
 
         fromDate.data("DateTimePicker").enable();
         toDate.data("DateTimePicker").enable();
-        
+
         var url = f.prop('action') + '/?' + f.serialize();
-        var m = new parent.DayPilot.Modal();
-        m.closed = function () {
-            if ($('#chkAllDay').attr('checked')) {
-                fromDate.data("DateTimePicker").disable();
-                toDate.data("DateTimePicker").disable();
-            } else {
-                fromDate.data("DateTimePicker").enable();
-                toDate.data("DateTimePicker").enable();
-            }
 
-            if (this.result == "OK") {
-                close(this.result);
-            }
-        };
 
-        m.showUrl(url);
+        var iframe = new Kwasant.IFrame();
+        iframe.Display(url,
+            {
+                modal: true
+            });
+
+        //var m = new parent.DayPilot.Modal();
+        //m.closed = function () {
+        //    if ($('#chkAllDay').attr('checked')) {
+        //        fromDate.data("DateTimePicker").disable();
+        //        toDate.data("DateTimePicker").disable();
+        //    } else {
+        //        fromDate.data("DateTimePicker").enable();
+        //        toDate.data("DateTimePicker").enable();
+        //    }
+
+        //    if (this.result == "OK") {
+        //        close(this.result);
+        //    }
+        //};
 
         return false;
     });
@@ -241,14 +249,14 @@
         $("#summary").focus();
         $('#f').validate();
     });
-    
+
     $(function () {
         var fromDate = $('#StartDate');
         var toDate = $('#EndDate');
 
         fromDate.datetimepicker();
         toDate.datetimepicker();
-        
+
         $("#StartDate").on("dp.change", function (e) {
             toDate.data("DateTimePicker").setMinDate(e.date);
         });
@@ -258,7 +266,7 @@
 
         fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString("MM/dd/yyyy hh:mm tt")');
         toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString("MM/dd/yyyy hh:mm tt")');
-        
+
         hideShowDates();
     });
 

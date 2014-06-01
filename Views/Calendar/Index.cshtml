@@ -285,26 +285,29 @@
     switcher.show(dp_day);
 
     function eventClick(e) {
-        Kwasant.DisplayIFrame('/Event/Edit/?eventID=' + e.id(),
+        var iframe = new Kwasant.IFrame();
+        iframe.Display('/Event/Edit/?eventID=' + e.id(),
             {
                 horizontalAlign: 'right',
             });
     }
 
     function eventNew(start, end) {
-        Kwasant.DisplayIFrame('/Event/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end,
+        var iframe = new Kwasant.IFrame();
+        iframe.Display('/Event/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end,
             {
                 horizontalAlign: 'right',
-                modal: true
             });
     }
 
     function eventMove(e, newStart, newEnd) {
-        Kwasant.DisplayIFrame('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
+        var iframe = new Kwasant.IFrame();
+        iframe.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
     }
 
     function eventDelete(e) {
-        Kwasant.DisplayIFrame('/Event/DeleteEvent/?eventID=' + e.id());
+        var iframe = new Kwasant.IFrame();
+        iframe.Display('/Event/DeleteEvent/?eventID=' + e.id());
     }
 
 </script>
