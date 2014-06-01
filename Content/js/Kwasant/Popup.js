@@ -29,6 +29,9 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
 
         if (typeof(options.callback) !== 'function')
             options.callback = null;
+
+        if (options.displayLoadingSpinner === undefined)
+            options.displayLoadingSpinner = true;
        
         return options;
     }
@@ -100,15 +103,51 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
             }
         }
     };
+    
+    function displayLoadingSpinner() {
+        var mask = $('<div></div>');
+        mask.css({ 'position': 'absolute', 'z-index': 9999, 'background-color': '#FFF', 'display': 'none' });
+        $(top.document.body).append(mask);
+
+        var maskHeight = $(top.document).height();
+        var maskWidth = $(top.document).width();
+        mask.css({ 'left': 0, 'top': 0, 'width': maskWidth, 'height': maskHeight, 'margin': '0px', 'padding': '0px' });
+        mask.fadeTo("fast", 0.8);
+
+        var spinner = $('<img src="/Content/img/ajax-loader.gif"></a>');
+        mask.append(spinner);
+        spinner.show();
+
+        var winH = $(top).height();
+        var winW = $(top).width();
+
+        var scrollTop = $(top).scrollTop();
+        var scrollLeft = $(top).scrollLeft();
+
+        var topPos = scrollTop + (winH - spinner.height()) / 2;
+        var leftPos = scrollLeft + (winW - spinner.width()) / 2;
+
+        spinner.css('position', 'absolute');
+        spinner.css('top', topPos);
+        spinner.css('left', leftPos);
+
+        spinner.fadeTo("fast", 1);
+
+        return mask;
+    }
 
     Kwasant.IFrame.Display = function displayForm(url, options) {
         options = setDefault(options);
 
         var paddingAmount = options.paddingAmount;
+
+        var spinner;
+        if (options.displayLoadingSpinner)
+            spinner = displayLoadingSpinner();
         var iframe = $('<iframe/>', {
             src: url,
             style: 'position: absolute;width: 500px;background-color: #FFFFFF;display: none;z-index: 9999;border: 1px solid #333;-moz-box-shadow:0 0 10px #000;-webkit-box-shadow:0 0 10px #000;box-shadow: #000 0px 0px 10px;padding:' + paddingAmount + 'px;',
-            load: function() {
+            load: function () {                
                 var iframeDoc = $(this).contents();
                 var that = $(this);
                 var reposition = function() {
@@ -157,7 +196,6 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
                     that.mask.css({ 'position': 'absolute', 'z-index': 9999, 'background-color': '#FFF', 'display': 'none' });
                     iframe.before(that.mask);
 
-
                     var maskHeight = $(top.document).height();
                     var maskWidth = $(top.document).width();
                     that.mask.css({ 'left': 0, 'top': 0, 'width': maskWidth, 'height': maskHeight });
@@ -174,6 +212,8 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
                     if (options.verticalAlign === 'bottom') {
                         setTimeout(reposition, 100);
                     }
+                    if (spinner)
+                        spinner.hide();
                 });
 
                 Kwasant.IFrame.RegisterCloseEvent(that, options.callback);
