@@ -27,7 +27,8 @@ namespace Data.Repositories
                 curUser.UserName = fromEmailAddress;
                 curUser.FirstName = curMessage.From.Name;
                 curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
-                userRepo.Add(curUser);
+                curMessage.User = curUser;
+                userRepo.Add(curUser);          
                 UnitOfWork.SaveChanges();
                 AlertManager.CustomerCreated(curUser);
             }
