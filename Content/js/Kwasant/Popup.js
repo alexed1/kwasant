@@ -6,7 +6,10 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
     Kwasant.IFrame = {};
 }
 
-(function() {
+(function () {
+
+    var spinnerImage = new Image();
+    spinnerImage.src = '/Content/img/ajax-loader.gif'; //Pre-load the spinner
 
     function setDefault(options) {
         if (options === undefined || options === null)
@@ -63,7 +66,8 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
 
     var activePopups = [];
 
-    Kwasant.IFrame.RegisterCloseEvent = function(iframe, callback) {
+    Kwasant.IFrame.RegisterCloseEvent = function (iframe, callback) {
+        //Since we're working in iframes, we have different copies of our popup object. We want to make sure we always use the top documents object when firing events
         if (document !== top.document) {
             top.Kwasant.IFrame.RegisterCloseEvent(iframe, callback);
             return;
@@ -139,14 +143,13 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
     Kwasant.IFrame.Display = function displayForm(url, options) {
         options = setDefault(options);
 
-        var paddingAmount = options.paddingAmount;
-
         var spinner;
         if (options.displayLoadingSpinner)
             spinner = displayLoadingSpinner();
+        
         var iframe = $('<iframe/>', {
             src: url,
-            style: 'position: absolute;width: 500px;background-color: #FFFFFF;display: none;z-index: 9999;border: 1px solid #333;-moz-box-shadow:0 0 10px #000;-webkit-box-shadow:0 0 10px #000;box-shadow: #000 0px 0px 10px;padding:' + paddingAmount + 'px;',
+            style: 'position: absolute;width: 500px;background-color: #FFFFFF;display: none;z-index: 9999;border: 1px solid #333;-moz-box-shadow:0 0 10px #000;-webkit-box-shadow:0 0 10px #000;box-shadow: #000 0px 0px 10px;padding:' + options.paddingAmount + 'px;',
             load: function () {                
                 var iframeDoc = $(this).contents();
                 var that = $(this);
@@ -157,8 +160,8 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
                     var scrollTop = $(top).scrollTop();
                     var scrollLeft = $(top).scrollLeft();
 
-                    var iframeWidth = iframeDoc.get(0).body.offsetHeight + (paddingAmount * 2);
-                    var iframeHeight = iframeDoc.get(0).body.offsetWidth + (paddingAmount * 2);
+                    var iframeWidth = iframeDoc.get(0).body.offsetHeight + (options.paddingAmount * 2);
+                    var iframeHeight = iframeDoc.get(0).body.offsetWidth + (options.paddingAmount * 2);
 
                     var sidePadding = 2;
                     var topPos;
