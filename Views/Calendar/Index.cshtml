@@ -288,6 +288,7 @@
         Kwasant.IFrame.Display('/Event/Edit/?eventID=' + e.id(),
             {
                 horizontalAlign: 'right',
+                callback: refresh
             });
     }
 
@@ -300,11 +301,19 @@
     }
 
     function eventMove(e, newStart, newEnd) {
-        Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd);
+        Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd,        
+            {
+                modal: true,
+                callback: refresh
+            });
     }
 
     function eventDelete(e) {
-        Kwasant.IFrame.Display('/Event/DeleteEvent/?eventID=' + e.id());
+        Kwasant.IFrame.Display('/Event/DeleteEvent/?eventID=' + e.id(),
+            {
+                modal: true,
+                callback: refresh
+            });
     }
     
     function refresh(result) {
