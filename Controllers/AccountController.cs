@@ -259,7 +259,7 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult Edit(UsersAdminViewModel usersAdminViewModel)
         {
-
+            
             //Check if any field edited by user on the font-end.
             if (!IsDirty(usersAdminViewModel))
                 return RedirectToAction("Index", "User");
