@@ -13,7 +13,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <% Response.Write(Styles.Render("~/bundles/css/bootstrap2.3").ToHtmlString()); %>
+    <% Response.Write(Styles.Render("~/bundles/css/bootstrap23").ToHtmlString()); %>
 	<% Response.Write(Styles.Render("~/bundles/css/bootstrap-responsive").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/colorbox").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/frontpage").ToHtmlString()); %>
@@ -50,7 +50,7 @@
                         <li data-section="2"><a href="#how_to_works">How it Works</a></li>
                         <li data-section="3"><a href="#faq">FAQ</a></li>
                         <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
-                        <li><a href="Admin/Index">Admin</a></li>
+                        <li><a href="/Account/Login">SignUp/Login</a></li>
                         <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
                         <li data-section="4"><a href="#contacts">Contact</a></li>
                     </ul>
