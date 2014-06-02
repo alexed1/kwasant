@@ -319,6 +319,7 @@
   <ItemGroup>
     <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\Booking Details.png" />
+    <Content Include="Content\css\bootstrap-datetimepicker.css" />
     <Content Include="Content\css\bootstrap-responsive.css" />
     <Content Include="Content\css\bootstrap2.3.css" />
     <Content Include="Content\css\bootstrap3.0.css" />
@@ -353,6 +354,8 @@
     <Content Include="Content\css\default.css" />
     <Content Include="Content\css\font-awesome.css" />
     <Content Include="Content\css\main.css" />
+    <Content Include="Content\css\select2.css" />
+    <Content Include="Content\css\select2.png" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\img\ajax-loader.gif" />
