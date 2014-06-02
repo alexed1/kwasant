@@ -123,11 +123,15 @@ namespace Data.Migrations
                 var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasantDbContext));
                 if (um.FindByName(curUserName) == null)
                 {
-                    var user = new UserDO
+                    
+                    var user = new UserDO()
                     {
                         UserName = curUserName,
-                        EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),    
-                        FirstName = curUserName,
+                        PersonDO = new PersonDO()
+                        {
+                            EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),    
+                            FirstName = curUserName
+                        },
                         EmailConfirmed = true
                     };
 
