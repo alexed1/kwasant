@@ -13,7 +13,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <% Response.Write(Styles.Render("~/bundles/css/bootstrap2.3").ToHtmlString()); %>
+    <% Response.Write(Styles.Render("~/bundles/css/bootstrap23").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/colorbox").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/frontpage").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/fontawesome").ToHtmlString()); %>
