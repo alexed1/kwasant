@@ -20,23 +20,37 @@ namespace Data.Validators
         }
     }
 
-    public class EmailAddressStringValidator : AbstractValidator<string>
+    public class EmailAddressStringValidator : AbstractValidator<EmailAddressStringValidator.EmailAddressWrapper>
     {
         public EmailAddressStringValidator()
         {
-            RuleFor(obj => obj)
+            RuleFor(obj => obj.Address)
                 .EmailAddress()
                 .WithMessage("Email Address objects require a legitimate email address in their address field. ");
         }
+
+        public class EmailAddressWrapper
+        {
+            public String Address { get; set; }
+
+            public EmailAddressWrapper(String address)
+            {
+                Address = address;
+            }
+        }
+
     }
 
     public static class StringExtension
     {
         //validate that this string is a properly formed email address
-        public static Boolean isEmailAddress(this string value)
+        public static Boolean IsEmailAddress(this string value)
         {
+            if (String.IsNullOrEmpty(value))
+                value = String.Empty;
+
             var curEmailAddressStringValidator = new EmailAddressStringValidator();
-            curEmailAddressStringValidator.ValidateAndThrow(value);
+            curEmailAddressStringValidator.ValidateAndThrow(new EmailAddressStringValidator.EmailAddressWrapper(value));
             return true;
         }
     }

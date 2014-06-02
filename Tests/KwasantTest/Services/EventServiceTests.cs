@@ -76,12 +76,9 @@ namespace KwasantTest.Services
             Assert.Throws<ValidationException>(() =>
             {
                 string originator = _event.GetOriginatorName(curEvent);
-            }
-                );
+            });
 
 
         }
-
-
     }
 }

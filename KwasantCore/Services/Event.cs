@@ -175,21 +175,18 @@ namespace KwasantCore.Services
             {
                 if (lastName == null)
                     return firstName;
-                else
-                    return firstName + " " + lastName;
-            }
-            else
-            {
-                EmailAddressDO curEmailAddress = originator.EmailAddress;
-                if (curEmailAddress.Name != null)
-                    return curEmailAddress.Name;
-                else
-                    if (curEmailAddress.Address.isEmailAddress())
-                        return curEmailAddress.Address.Split(new char[] {'@'})[0];
-                    else throw new ArgumentException("Failed to extract originator info from this Event. Something needs to be there.");
-            }
-            
 
+                return firstName + " " + lastName;
+            }
+
+            EmailAddressDO curEmailAddress = originator.EmailAddress;
+            if (curEmailAddress.Name != null)
+                return curEmailAddress.Name;
+
+            if (curEmailAddress.Address.IsEmailAddress())
+                return curEmailAddress.Address.Split(new[] {'@'})[0];
+
+            throw new ArgumentException("Failed to extract originator info from this Event. Something needs to be there.");
         }
 
         private static void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)
