@@ -9,6 +9,7 @@ using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesLib;
 
 namespace KwasantTest.Entities
 {
@@ -58,6 +59,14 @@ namespace KwasantTest.Entities
             curEvent.Dispatch(eventDO);
 
             //Verify success
+            EmailDO resultEmail = eventDO.Emails[0];
+            string expectedSubject = String.Format(ConfigRepository.Get("emailSubject"), eventDO.Summary,
+                eventDO.StartDate);
+            Assert.AreEqual(resultEmail.Subject, expectedSubject );
+
+            //email = find email where 
+
+
             //use imap to load unread messages from the test customer account
             //verify that one of the messages is a proper ICS message
             //retry every 15 seconds for 1 minute
@@ -168,5 +177,15 @@ namespace KwasantTest.Entities
             //VERIFY            
             Assert.IsNull(curDeletedEventDO);
         }
+
+
+        //CreatesOutboundEmails when an event is confirmed
+        //setup:
+        //create a sample event
+        //dispatch it using event#dispatch
+        //verify that an email has been created
+
+
+
     }
 }

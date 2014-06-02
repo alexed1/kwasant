@@ -85,38 +85,46 @@ namespace KwasantCore.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var emailAddressRepository = uow.EmailAddressRepository;
-
                 if (eventDO.Attendees == null)
                     eventDO.Attendees = new List<AttendeeDO>();
-
-                string fromEmail = ConfigRepository.Get("fromEmail");
-                string fromName = ConfigRepository.Get("fromName");
-
                 EmailDO outboundEmail = new EmailDO();
+                iCalendar ddayCalendar = new iCalendar();
+                DDayEvent dDayEvent = new DDayEvent();
+
+                //configure the sender information
+                string fromEmail = ConfigRepository.Get("fromEmail");
+                string fromName = ConfigRepository.Get("fromName");    
                 var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
                 fromEmailAddr.Name = fromName;
-
                 outboundEmail.From = fromEmailAddr;
+
+                //setup attendees
                 foreach (var attendeeDO in eventDO.Attendees)
                 {
                     var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress.Address);
                     toEmailAddress.Name = attendeeDO.Name;
                     outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
                 }
+
+                //setup subject
                 outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), eventDO.Summary,
                     eventDO.StartDate);
 
-                var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
+                //configure body
+                var model = new RazorViewModel(eventDO);
+                var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, model);
                 var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation,
                     new RazorViewModel(eventDO));
-
                 outboundEmail.HTMLText = parsedHTMLEmail;
                 outboundEmail.PlainText = parsedPlainEmail;
 
+                //prepare the outbound email
                 outboundEmail.Status = EmailStatus.QUEUED;
+                if (eventDO.Emails == null)
+                    eventDO.Emails = new List<EmailDO>();
+                eventDO.Emails.Add(outboundEmail);
 
-                iCalendar ddayCalendar = new iCalendar();
-                DDayEvent dDayEvent = new DDayEvent();
+               //configure start and end time
                 if (eventDO.IsAllDay)
                 {
                     dDayEvent.IsAllDay = true;
@@ -129,9 +137,12 @@ namespace KwasantCore.Services
                 dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
                 dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
 
+                //configure text fields
                 dDayEvent.Location = eventDO.Location;
                 dDayEvent.Description = eventDO.Description;
                 dDayEvent.Summary = eventDO.Summary;
+
+                //more attendee configuration
                 foreach (AttendeeDO attendee in eventDO.Attendees)
                 {
                     dDayEvent.Attendees.Add(new KwasantICS.DDay.iCal.DataTypes.Attendee()
@@ -145,17 +156,14 @@ namespace KwasantCore.Services
                     });
                     attendee.Event = eventDO;
                 }
-                dDayEvent.Organizer = new Organizer(fromEmail) {CommonName = fromName};
 
+                //final assembly of event
+                dDayEvent.Organizer = new Organizer(fromEmail) {CommonName = fromName};
                 ddayCalendar.Events.Add(dDayEvent);
                 ddayCalendar.Method = CalendarMethods.Request;
-
                 AttachCalendarToEmail(ddayCalendar, outboundEmail);
 
-                if (eventDO.Emails == null)
-                    eventDO.Emails = new List<EmailDO>();
-                eventDO.Emails.Add(outboundEmail);
-
+                //send the invite email
                 new Email(uow, outboundEmail).Send();
             }
         }
