@@ -6,17 +6,19 @@ using System.Net.Mime;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
+using Data.Validators;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using RazorEngine;
 using StructureMap;
-using UtilitiesLib;
+using Utilities;
 using Encoding = System.Text.Encoding;
+using IEvent = Data.Interfaces.IEvent;
 
 namespace KwasantCore.Services
 {
-    public class Event
+    public class Event : IEvent
     {
         public EventDO Create (int bookingRequestID, string start, string end)
         {
@@ -80,7 +82,7 @@ namespace KwasantCore.Services
         }
 
 
-        public void Dispatch(EventDO eventDO)
+        public int Dispatch(EventDO eventDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -93,7 +95,7 @@ namespace KwasantCore.Services
 
                 //configure the sender information
                 string fromEmail = ConfigRepository.Get("fromEmail");
-                string fromName = ConfigRepository.Get("fromName");    
+                string fromName = ConfigRepository.Get("fromName");
                 var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
                 fromEmailAddr.Name = fromName;
                 outboundEmail.From = fromEmailAddr;
@@ -106,13 +108,9 @@ namespace KwasantCore.Services
                     outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
                 }
 
-                //setup subject
-                outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), eventDO.Summary,
-                    eventDO.StartDate);
+                outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
 
-                //configure body
-                var model = new RazorViewModel(eventDO);
-                var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, model);
+                var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
                 var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation,
                     new RazorViewModel(eventDO));
                 outboundEmail.HTMLText = parsedHTMLEmail;
@@ -164,8 +162,35 @@ namespace KwasantCore.Services
                 AttachCalendarToEmail(ddayCalendar, outboundEmail);
 
                 //send the invite email
-                new Email(uow, outboundEmail).Send();
+                return new Email(uow, outboundEmail).Send();
             }
+        }
+
+        //if we have a first name and last name, use them together
+        //else if we have a first name only, use that
+        //else if we have just an email address, use the portion preceding the @ unless there's a name
+        //else throw
+        public string GetOriginatorName(EventDO curEventDO)
+        {
+            UserDO originator = curEventDO.CreatedBy;
+            string firstName = originator.FirstName;
+            string lastName = originator.LastName;
+            if (firstName != null)
+            {
+                if (lastName == null)
+                    return firstName;
+
+                return firstName + " " + lastName;
+            }
+
+            EmailAddressDO curEmailAddress = originator.EmailAddress;
+            if (curEmailAddress.Name != null)
+                return curEmailAddress.Name;
+
+            if (curEmailAddress.Address.IsEmailAddress())
+                return curEmailAddress.Address.Split(new[] {'@'})[0];
+
+            throw new ArgumentException("Failed to extract originator info from this Event. Something needs to be there.");
         }
 
         private static void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)

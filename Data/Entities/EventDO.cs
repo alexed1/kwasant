@@ -8,7 +8,7 @@ using IEvent = Data.Interfaces.IEvent;
 
 namespace Data.Entities
 {
-    public class EventDO : IEvent
+    public class EventDO
     {
         [Key]
         public int Id { get; set; }

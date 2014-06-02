@@ -60,13 +60,14 @@ namespace KwasantCore.Services
             MandrillPackager.PostMessageSendTemplate(templateName, message, mergeFields);
         }
 
-        public void Send()
+        public int Send()
         {
             var gmailPackager = ObjectFactory.GetInstance<IEmailPackager>();
             gmailPackager.Send(_curEmailDO);
             _curEmailDO.Status = EmailStatus.DISPATCHED;
             _uow.EmailRepository.Add(_curEmailDO);
             _uow.SaveChanges();
+            return _curEmailDO.Id;
         }
 
         public static void InitialiseWebhook(String url)
@@ -90,7 +91,7 @@ namespace KwasantCore.Services
       
         public static EmailDO ConvertMailMessageToEmail(IEmailRepository emailRepository, MailMessage mailMessage)
         {
-            return ConvertMailMessageToEmail<EmailDO>(emailRepository, mailMessage);
+            return ConvertMailMessageToEmail<EmailDO>(emailRepository, mailMessage);            
         }
 
         public static TEmailType ConvertMailMessageToEmail<TEmailType>(IGenericRepository<TEmailType> emailRepository, MailMessage mailMessage)
@@ -111,12 +112,14 @@ namespace KwasantCore.Services
             if (String.IsNullOrEmpty(body))
                 body = mailMessage.Body;
 
-
+            String strDate = String.Empty;
+            strDate = mailMessage.Headers["Date"];
 
             TEmailType emailDO = new TEmailType
-            {
+            {                
                 Subject = mailMessage.Subject,
                 HTMLText = body,
+                DateReceived = Convert.ToDateTime(strDate),
                 Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),
                 Events = null
             };

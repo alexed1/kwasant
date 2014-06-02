@@ -14,7 +14,7 @@ using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using RazorEngine;
 using StructureMap;
-using UtilitiesLib;
+using Utilities;
 using Encoding = System.Text.Encoding;
 
 namespace KwasantCore.Services
