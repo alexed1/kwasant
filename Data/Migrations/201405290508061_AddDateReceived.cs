@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddDateRecieved : DbMigration
+    public partial class AddDateReceived : DbMigration
     {
         public override void Up()
         {
