@@ -92,17 +92,17 @@ $(document).ready(function(){
 	}
 
 	links.click(function (e) {
-	    alert('Hello');
+	   // alert('Hellolinks');
 	    var datasection = $(this).attr('data-section');
-	    if (datasection.get(0) === null)
-	        return;
+	    //if (datasection.get(0) === null)
+	    //    return;
 
 	    e.preventDefault();
 	    goToByScroll(datasection);
 	});
 
 	button.click(function (e) {
-	    alert('Hello');
+	    //alert('Hellobutton');
 		e.preventDefault();
 		var datasection = $(this).attr('data-section');
 		goToByScroll(datasection);

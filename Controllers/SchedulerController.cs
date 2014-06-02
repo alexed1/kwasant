@@ -250,7 +250,7 @@ namespace KwasantWeb.Controllers
         //public ActionResult Edit(FormCollection form)
         //{
         //    new EventManager(this).EventEdit(form["Id"], form["Text"]);
-        //    return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+        //    return JavaScript(SimpleJsonSerializer.Serialize(true));
         //}
 
         class Dps : DayPilotScheduler

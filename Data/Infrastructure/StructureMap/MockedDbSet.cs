@@ -61,9 +61,9 @@ namespace Data.Infrastructure.StructureMap
         public TEntityType Find(params object[] keyValues)
         {
             if (keyValues.Length == 0)
-                throw new Exception("No primary key found on " + EntityName);
+                throw new Exception("No primary key provided for " + EntityName);
             if (keyValues.Length > 1)
-                throw new Exception("Multiple keys found on " + EntityName + ". Only singular keys are supported");
+                throw new Exception("Multiple keys provided for " + EntityName + ". Only singular keys are supported");
 
             var keyType = keyValues[0].GetType();
             if (keyType != typeof(int) && keyType != typeof(String))
@@ -171,12 +171,14 @@ namespace Data.Infrastructure.StructureMap
                 if (_entityPrimaryKeyPropertyInfo == null)
                 {
                     List<PropertyInfo> keys = typeof(TEntityType).GetProperties().Where(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).ToList();
+                    if (!keys.Any())
+                        keys = typeof (TEntityType).GetProperties().Where(p => p.Name == "Id").ToList();
+
                     if (keys.Count > 1)
-                        throw new Exception("Linked entity MUST have a single primary key. Composite keys are not supported.");
+                        throw new Exception("Entity MUST have a single primary key. Composite keys are not supported.");
                     //If no primary key exists, we cannot use it
                     if (keys.Count == 0)
-                        throw new Exception(
-                            "Linked entity MUST have a single primary key. Entities without primary keys are not supported.");
+                        throw new Exception("Entity MUST have a single primary key. Entities without primary keys are not supported.");
 
                     _entityPrimaryKeyPropertyInfo = keys.First();
                 }

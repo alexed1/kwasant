@@ -90,7 +90,7 @@ namespace KwasantCore.Services
       
         public static EmailDO ConvertMailMessageToEmail(IEmailRepository emailRepository, MailMessage mailMessage)
         {
-            return ConvertMailMessageToEmail<EmailDO>(emailRepository, mailMessage);
+            return ConvertMailMessageToEmail<EmailDO>(emailRepository, mailMessage);            
         }
 
         public static TEmailType ConvertMailMessageToEmail<TEmailType>(IGenericRepository<TEmailType> emailRepository, MailMessage mailMessage)
@@ -111,12 +111,14 @@ namespace KwasantCore.Services
             if (String.IsNullOrEmpty(body))
                 body = mailMessage.Body;
 
-
+            String strDate = String.Empty;
+            strDate = mailMessage.Headers["Date"];
 
             TEmailType emailDO = new TEmailType
-            {
+            {                
                 Subject = mailMessage.Subject,
                 HTMLText = body,
+                DateReceived = Convert.ToDateTime(strDate),
                 Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),
                 Events = null
             };
@@ -186,7 +188,7 @@ namespace KwasantCore.Services
 
             foreach (var attendee in curEventDO.Attendees)
             {
-                createdEmail.AddEmailRecipient(EmailParticipantType.TO, _uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee.EmailAddress, attendee.Name));
+                createdEmail.AddEmailRecipient(EmailParticipantType.TO, _uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee.EmailAddress.Address, attendee.Name));
             }
             createdEmail.Subject = "Invitation via Kwasant: " + curEventDO.Summary + "@ " + curEventDO.StartDate;
             createdEmail.HTMLText = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";

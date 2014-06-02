@@ -10,7 +10,10 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
         public String Name { get; set; }
-        public String EmailAddress { get; set; }
+
+        [ForeignKey("EmailAddress")]
+        public int EmailAddressID { get; set; }
+        public virtual EmailAddressDO EmailAddress { get; set; }
 
         [ForeignKey("Event")]
         public int EventID { get; set; }

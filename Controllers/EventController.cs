@@ -1,52 +1,47 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-//using Calendar = KwasantCore.Services.Calendar;
-using ViewModel.Models;
+using AutoMapper;
 using Data.Entities;
+using Data.Interfaces;
 using DayPilot.Web.Mvc.Json;
-using Data.Repositories;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
-using Data.Interfaces;
+
 
 namespace KwasantWeb.Controllers
 {
     public class EventController : Controller
     {
-        //
-        // GET: /Event/
-        //public ActionResult Index()
-        //{
-        //    return View();
-        //}
-
+      
+        //Renders a form to accept a new event
         public ActionResult New(int bookingRequestID, string start, string end)
         {
-            return View("~/Views/Event/Edit.cshtml", EventViewModel.NewEventOnBookingRequest(bookingRequestID, start, end));
+
+            //load event from Event service
+            var curEvent = new Event();
+            var curEventDO = curEvent.Create(bookingRequestID, start, end);
+
+            //put it in a view model to hand to the view
+            var curEventVM = Mapper.Map<EventDO, EventViewModel>(curEventDO);
+
+            //construct a Calendar view model for this Calendar View 
+            return View("~/Views/Event/Edit.cshtml", curEventVM);
         }
+
 
         public ActionResult Edit(int eventID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                return View(new EventViewModel(eventDO));
+                return View(Mapper.Map<EventDO, EventViewModel>(eventDO));
             }
         }
 
-        public ActionResult DeleteEvent(int eventID)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                return View(new EventViewModel(eventDO));
-            }
-        }
 
         public ActionResult ConfirmDelete(int eventID)
         {
@@ -57,8 +52,8 @@ namespace KwasantWeb.Controllers
                     uow.EventRepository.Remove(eventDO);
 
                 uow.SaveChanges();
-                
-                return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+
+                return JavaScript(SimpleJsonSerializer.Serialize(true));
             }
         }
 
@@ -67,27 +62,20 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var eventDO = uow.EventRepository.GetByKey(eventID);
-                var evm = new EventViewModel(eventDO)
-                {
-                    StartDate = DateTime.Parse(newStart),
-                    EndDate = DateTime.Parse(newEnd)
-                };
-                return View("~/Views/Event/ConfirmEventEdits.cshtml", evm);
+                var evm = Mapper.Map<EventDO, EventViewModel>(eventDO);
+                evm.StartDate = DateTime.Parse(newStart);
+                evm.EndDate = DateTime.Parse(newEnd);
+
+                return View("~/Views/Event/ConfirmChanges.cshtml", evm);
             }
         }
 
-        /// <summary>
-        /// This method creates a template eventDO which we store. This event is presented to the user to review & confirm changes. If they confirm, Confirm(FormCollection form) is invoked
-        /// </summary>
-        /// <param name="eventViewModel"></param>
-        /// <returns></returns>
-        public ActionResult ConfirmEventEdits(EventViewModel eventViewModel)
+        public ActionResult ConfirmChanges(EventViewModel eventViewModel)
         {
             return View(eventViewModel);
         }
 
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Confirm(EventViewModel eventViewModel)
+        public ActionResult SubmitChange(EventViewModel eventViewModel)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -95,7 +83,9 @@ namespace KwasantWeb.Controllers
                     ? new EventDO { CreatedByID = User.Identity.GetUserId() }
                     : uow.EventRepository.GetByKey(eventViewModel.Id);
 
-                eventViewModel.FillEventDO(uow, eventDO);
+                Mapper.Map(eventViewModel, eventDO);
+                new Event().ManageAttendeeList(uow, eventDO, eventViewModel.Attendees);
+                    
                 if (eventViewModel.Id == 0)
                 {
                     uow.EventRepository.Add(eventDO);
@@ -103,7 +93,17 @@ namespace KwasantWeb.Controllers
 
                 uow.SaveChanges();
             }
-            return JavaScript(SimpleJsonSerializer.Serialize("OK"));
+
+            return JavaScript(SimpleJsonSerializer.Serialize(true));
         }
-	}
+
+        public ActionResult DeleteEvent(int eventID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
+                return View(Mapper.Map<EventDO, EventViewModel>(eventDO));
+            }
+        }
+    }
 }

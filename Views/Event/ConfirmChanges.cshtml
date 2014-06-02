@@ -10,6 +10,7 @@
     @Scripts.Render("~/bundles/js/jqueryvalidate")
 
 <script src="/Content/js/Kwasant/Popup.js"></script>
+
 }
 @section scripts
 {
@@ -24,12 +25,12 @@
     @Styles.Render("~/bundles/css/select2")
     @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
 }
-<form id="f" method="post" style="margin:10px" action="@Url.Action("ConfirmDelete")">
-    <h3>Confirm Delete</h3>
+<form id="f" method="post" style="margin:10px" action="@Url.Action("SubmitChange", "Event")">
+    <h3>Confirm Changes</h3>
     <hr />
-    <div style="color:red">You are about to delete the following event</div>
+    <div>You are <b>@Html.Raw(Model.Id == 0 ? "creating a new" : "editing an existing")</b> event.</div>
     <div style="@Html.Raw(Model.IsAllDay ? String.Empty : "display:none;")">
-        <div>* All day event *</div>
+        <div>* All day event * - @Model.StartDate.ToShortDateString()</div>
     </div>
     <div style="@Html.Raw(Model.IsAllDay ? "display:none;" : String.Empty)">
         <div>Start Date: @Model.StartDate</div>
@@ -38,8 +39,7 @@
     <div>Location: @Model.Location</div>
     <div>Summary: @Model.Summary</div>
     <div>Description: @Model.Description</div>
-    <div>Attendees: @Model.Attendees</div>
-    
+    <div>Attendees: @String.Join(", ", Model.Attendees)</div>
     <hr />
     <div class="space">
         <div style="clear:both">
@@ -65,9 +65,11 @@
     $(function () {
         $("#f").submit(function () {
             var f = $("#f");
-            $.get(f.prop('action'), { eventID: @Model.Id }, function(result) {
-                close(result);
-            }, 'json');
+          
+            var data = @Html.Raw(JsonConvert.SerializeObject(Model));
+            $.post(f.prop('action'), data, function (result) {
+                close(eval(result));
+            });
             return false;
         });
     });
