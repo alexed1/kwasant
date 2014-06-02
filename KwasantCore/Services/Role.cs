@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Configuration;
+using Data.Infrastructure.StructureMap;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
@@ -41,8 +42,10 @@ namespace KwasantCore.Services
         }
 
         public void Add(AspNetRolesDO aspNetRolesDO)
-        {   
-                var currRole = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(_uow.Db as KwasantDbContext));
+        {
+            DbContext context = _uow.Db as DbContext;
+            var roleStore = new RoleStore<IdentityRole>(context);
+                var currRole = new RoleManager<IdentityRole>(roleStore);
                 currRole.Create(aspNetRolesDO);            
         }
 
