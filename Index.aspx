@@ -172,8 +172,7 @@
                 </div>
 
                 <!-- this is the faq section -->
-                <section id="faq" class="text-block" data-section="3">
-                    <br/><br/><br/><br/>
+                <section id="faq" class="text-block" data-section="2">
                     <h1 class="text-center">FAQ</h1>
                     <div class="row span-12 text-center">
                         <div class="panel-group" id="accordion">

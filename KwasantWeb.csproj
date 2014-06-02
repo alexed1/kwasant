@@ -447,6 +447,7 @@
     <Content Include="Content\js\Daypilot\daypilot-scheduler.src.js" />
     <Content Include="Content\js\jquery.colorbox.js" />
     <Content Include="Content\js\jquery.js" />
+    <Content Include="Content\js\Kwasant\Popup.js" />
     <Content Include="Content\js\main.js" />
     <Content Include="Content\js\modernizr.js" />
     <Content Include="Content\js\placeholder.js" />

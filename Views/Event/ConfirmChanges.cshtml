@@ -8,6 +8,9 @@
     @Scripts.Render("~/bundles/js/moment")
     @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
     @Scripts.Render("~/bundles/js/jqueryvalidate")
+
+<script src="/Content/js/Kwasant/Popup.js"></script>
+
 }
 @section scripts
 {
@@ -53,10 +56,10 @@
 </form>
 
 <script type="text/javascript">
-    function close(result) {
-        if (parent && parent.DayPilot && parent.DayPilot.ModalStatic) {
-            parent.DayPilot.ModalStatic.close(result);
-        }
+    function close(saved) {
+        if (saved === undefined || saved == null)
+            saved = false;
+        Kwasant.IFrame.CloseMe(saved);
     }
 
     $(function () {
@@ -65,8 +68,7 @@
           
             var data = @Html.Raw(JsonConvert.SerializeObject(Model));
             $.post(f.prop('action'), data, function (result) {
-                var evaledRes = eval(result);
-                close(evaledRes);
+                close(eval(result));
             });
             return false;
         });
