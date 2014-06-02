@@ -58,7 +58,8 @@ namespace KwasantTest.Fixtures
                 Status = "Open",
                 Summary = "This is a test event summary.",
                 Transparency = "Opaque" ,
-                Attendees = TestAttendeeList1().ToList()
+                Attendees = TestAttendeeList1().ToList(),
+                CreatedBy = TestUser2()
             };
         }
 

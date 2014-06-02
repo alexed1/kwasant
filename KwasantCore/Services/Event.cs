@@ -6,6 +6,7 @@ using System.Net.Mime;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
+using Data.Validators;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
@@ -13,10 +14,11 @@ using RazorEngine;
 using StructureMap;
 using UtilitiesLib;
 using Encoding = System.Text.Encoding;
+using IEvent = Data.Interfaces.IEvent;
 
 namespace KwasantCore.Services
 {
-    public class Event
+    public class Event : IEvent
     {
         public EventDO Create (int bookingRequestID, string start, string end)
         {
@@ -103,8 +105,8 @@ namespace KwasantCore.Services
                     toEmailAddress.Name = attendeeDO.Name;
                     outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
                 }
-                outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), eventDO.Summary,
-                    eventDO.StartDate);
+
+                outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
 
                 var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
                 var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation,
@@ -158,6 +160,36 @@ namespace KwasantCore.Services
 
                 new Email(uow, outboundEmail).Send();
             }
+        }
+
+        //if we have a first name and last name, use them together
+        //else if we have a first name only, use that
+        //else if we have just an email address, use the portion preceding the @ unless there's a name
+        //else throw
+        public string GetOriginatorName(EventDO curEventDO)
+        {
+            UserDO originator = curEventDO.CreatedBy;
+            string firstName = originator.FirstName;
+            string lastName = originator.LastName;
+            if (firstName != null)
+            {
+                if (lastName == null)
+                    return firstName;
+                else
+                    return firstName + " " + lastName;
+            }
+            else
+            {
+                EmailAddressDO curEmailAddress = originator.EmailAddress;
+                if (curEmailAddress.Name != null)
+                    return curEmailAddress.Name;
+                else
+                    if (curEmailAddress.Address.isEmailAddress())
+                        return curEmailAddress.Address.Split(new char[] {'@'})[0];
+                    else throw new ArgumentException("Failed to extract originator info from this Event. Something needs to be there.");
+            }
+            
+
         }
 
         private static void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)

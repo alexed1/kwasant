@@ -1,5 +1,7 @@
 using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Services;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
@@ -33,7 +35,7 @@ namespace KwasantCore.StructureMap
         {
             public KwasantCoreRegistry()
             {
-                
+                For<IEvent>().Use<Event>();
             }
         }
 
