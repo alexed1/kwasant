@@ -40,6 +40,12 @@ namespace KwasantCore.Services
             _uow = uow;
         }
 
+        public void Add(AspNetRolesDO aspNetRolesDO)
+        {   
+                var currRole = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(_uow.Db as KwasantDbContext));
+                currRole.Create(aspNetRolesDO);            
+        }
+
         public List<RoleData> GetRoles()
         {
             List<RoleData> currRoleDataList = new List<RoleData>();

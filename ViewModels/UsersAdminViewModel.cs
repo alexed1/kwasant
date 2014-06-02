@@ -33,10 +33,6 @@ namespace ViewModel.Models
         public String PreviousRoleId { get; set; }
         public String Role { get; set; }
         public List<RoleData> Roles { get; set; }
-
-        
-        
-        
         
     }
 }

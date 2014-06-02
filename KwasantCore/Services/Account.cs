@@ -13,6 +13,7 @@ using AutoMapper;
 
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using KwasantCore.Services;
 
 namespace KwasantCore.Services
 {
