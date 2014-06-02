@@ -175,9 +175,9 @@
     <Compile Include="Migrations\201405281705446_UseEmailAddressDOOnAttendees.Designer.cs">
       <DependentUpon>201405281705446_UseEmailAddressDOOnAttendees.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201405290508061_AddDateReceived.cs" />
-    <Compile Include="Migrations\201405290508061_AddDateReceived.Designer.cs">
-      <DependentUpon>201405290508061_AddDateReceived.cs</DependentUpon>
+    <Compile Include="Migrations\201405260508061_AddDateReceived.cs" />
+    <Compile Include="Migrations\201405260508061_AddDateReceived.Designer.cs">
+      <DependentUpon>201405260508061_AddDateReceived.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
@@ -257,8 +257,8 @@
     <EmbeddedResource Include="Migrations\201405281705446_UseEmailAddressDOOnAttendees.resx">
       <DependentUpon>201405281705446_UseEmailAddressDOOnAttendees.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201405290508061_AddDateReceived.resx">
-      <DependentUpon>201405290508061_AddDateReceived.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201405260508061_AddDateReceived.resx">
+      <DependentUpon>201405260508061_AddDateReceived.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
