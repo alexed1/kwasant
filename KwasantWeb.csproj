@@ -355,6 +355,7 @@
     <Content Include="Content\css\main.css" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\background-match.jpg" />
     <Content Include="Content\img\background-test5.jpg" />
     <Content Include="Content\img\background-test6.jpg" />
