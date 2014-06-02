@@ -124,36 +124,23 @@ namespace KwasantCore.Services
             return _uow.UserRepository.FindOne(x => x.UserName == userName);
         }
 
-        [AutoComplete]
-        public bool UpdateUser(UserDO userDO, IdentityUserRole identityUserRole)
+
+        public void UpdateUser(UserDO userDO, IdentityUserRole identityUserRole)
         {
-            bool blnReturn = false;
+            userRepo.UnitOfWork.Db.Entry(userDO).State = System.Data.Entity.EntityState.Modified;
 
-            try
+            EmailAddressDO currEmailAddressDO = new EmailAddressDO();
+            currEmailAddressDO = emailAddressRepo.GetByKey(userDO.EmailAddressID);
+            currEmailAddressDO.Address = userDO.EmailAddress.Address;
+            emailAddressRepo.UnitOfWork.Db.Entry(currEmailAddressDO).State = System.Data.Entity.EntityState.Modified;
+            _uow.SaveChanges();
+            
+            //Change user's role in DB using Identity Framework if only role is changed on the fone-end.
+            if (identityUserRole != null)
             {
-                userRepo.UnitOfWork.StartTransaction();
-                userRepo.UnitOfWork.Db.Entry(userDO).State = System.Data.Entity.EntityState.Modified;
-
-                EmailAddressDO currEmailAddressDO = new EmailAddressDO();
-                currEmailAddressDO = emailAddressRepo.GetByKey(userDO.EmailAddressID);
-                currEmailAddressDO.Address = userDO.EmailAddress.Address;
-                emailAddressRepo.UnitOfWork.Db.Entry(currEmailAddressDO).State = System.Data.Entity.EntityState.Modified;
-                _uow.SaveChanges();
-
-                blnReturn = true;
-                //Change user's role in DB using Identity Framework if only role is changed on the fone-end.
-                if (identityUserRole != null)
-                {
-                    User user = new User(_uow);
-                    blnReturn = user.ChangeUserRole(identityUserRole);
-                }
-                userRepo.UnitOfWork.Commit();
-            }
-            catch (System.Exception ex)
-            {
-                blnReturn = false;
-            }
-            return blnReturn;
+                User user = new User(_uow);
+                user.ChangeUserRole(identityUserRole);
+            }            
         }
     }
 }
