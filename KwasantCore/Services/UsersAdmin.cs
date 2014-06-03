@@ -24,7 +24,7 @@ namespace KwasantCore.Services
 
                 List<UserDO> currUserDOs = uow.UserRepository.GetAll().ToList();
 
-                var currUserManager = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db));
+                var currUserManager = User.GetUserManager(uow);
 
                 foreach (UserDO userDO in currUserDOs)
                 {
@@ -67,7 +67,7 @@ namespace KwasantCore.Services
                 List<UsersAdminData> currUsersAdminDataList = new List<UsersAdminData>();
                 List<UserDO> currUserDOs = uow.UserRepository.GetAll().ToList();
 
-                var currUserManager = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db));
+                var currUserManager = User.GetUserManager(uow);
 
                 foreach (UserDO userDO in currUserDOs)
                 {

@@ -12,15 +12,15 @@ using StructureMap.TypeRules;
 
 namespace Data.Infrastructure.StructureMap
 {
-    public class MockedKwasantDbContext : KwasanttDbContext
+    public class MockedDBContext : IDBContext
     {
-        public MockedKwasantDbContext()
+        public MockedDBContext()
         {
             MigrationConfiguration.Seed(new UnitOfWork(this));
         }
 
-        private readonly Dictionary<Type, object> _cachedSets = new Dictionary<Type, object>();
-        public override int SaveChanges()
+        private Dictionary<Type, object> _cachedSets = new Dictionary<Type, object>();
+        public int SaveChanges()
         {
             //When we save in memory, we need to make sure foreign entities are saved. An example:
             //eventDO.Emails.Add(new EmailDO();
@@ -49,7 +49,7 @@ namespace Data.Infrastructure.StructureMap
                         if (propInfo == null)
                             return 0;
 
-                        return (int) propInfo.GetValue(a);
+                        return (int)propInfo.GetValue(a);
                     });
                 }
 
@@ -59,7 +59,7 @@ namespace Data.Infrastructure.StructureMap
                     if (propInfo == null)
                         continue;
 
-                    if ((int) propInfo.GetValue(row) == 0)
+                    if ((int)propInfo.GetValue(row) == 0)
                     {
                         propInfo.SetValue(row, ++maxIDAlready);
                     }
@@ -87,7 +87,7 @@ namespace Data.Infrastructure.StructureMap
                             if (AddValueToForeignSet(value))
                                 numAdded++;
                         }
-                        else if (prop.PropertyType.IsGenericType && prop.PropertyType.CanBeCastTo(typeof (IEnumerable<>)) &&
+                        else if (prop.PropertyType.IsGenericType && prop.PropertyType.CanBeCastTo(typeof(IEnumerable<>)) &&
                                  IsEntity(prop.PropertyType.GetGenericArguments()[0]))
                         {
                             //It's a collection!
@@ -115,31 +115,32 @@ namespace Data.Infrastructure.StructureMap
                 return false;
             }
 
-            MethodInfo methodToCall = checkSet.GetType().GetMethod("Add", new[] {value.GetType()});
-            methodToCall.Invoke(checkSet, new[] {value});
+            MethodInfo methodToCall = checkSet.GetType().GetMethod("Add", new[] { value.GetType() });
+            methodToCall.Invoke(checkSet, new[] { value });
             return true;
         }
 
-        public new DbSet<TEntity> Set<TEntity>() where TEntity : class
+        public IDbSet<TEntity> Set<TEntity>() where TEntity : class
         {
-            Type entityType = typeof (TEntity);
-            return (DbSet<TEntity>) (object) (Set(entityType));
+            Type entityType = typeof(TEntity);
+            return (IDbSet<TEntity>)(Set(entityType));
         }
 
-        private new MockedDbSet Set(Type entityType)
+        private object Set(Type entityType)
         {
             if (!_cachedSets.ContainsKey(entityType))
             {
-                _cachedSets[entityType] = Activator.CreateInstance(typeof(MockedDbSet<>).MakeGenericType(entityType), new []{ this });
+                _cachedSets[entityType] = Activator.CreateInstance(typeof(MockedDbSet<>).MakeGenericType(entityType), new[] { this });
             }
-            return (MockedDbSet)_cachedSets[entityType];
+            return _cachedSets[entityType];
         }
 
-        public new DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class
+        public DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class
         {
             throw new System.NotImplementedException();
         }
 
+        public IUnitOfWork UnitOfWork { get; set; }
 
         private bool IsEntity(Type type)
         {
@@ -149,7 +150,7 @@ namespace Data.Infrastructure.StructureMap
         public PropertyInfo EntityPrimaryKeyPropertyInfo(object entity)
         {
             var entityType = entity.GetType();
-            List<PropertyInfo> keys = entityType.GetProperties().Where(p => p.GetCustomAttributes(typeof (KeyAttribute), true).Any()).ToList();
+            List<PropertyInfo> keys = entityType.GetProperties().Where(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).ToList();
             if (keys.Count > 1)
                 return null;
             //If no primary key exists, we cannot use it
@@ -161,7 +162,7 @@ namespace Data.Infrastructure.StructureMap
 
         public void Dispose()
         {
-            
+
         }
     }
 }

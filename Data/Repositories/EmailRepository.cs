@@ -10,8 +10,8 @@ namespace Data.Repositories
     public class EmailRepository : GenericRepository<EmailDO>,  IEmailRepository
     {
 
-        internal EmailRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal EmailRepository(IUnitOfWork uow)
+            : base(uow)
         {
             
         }

@@ -6,8 +6,8 @@ namespace Data.Repositories
 {
     public class BookingRequestRepository : GenericRepository<BookingRequestDO>, IBookingRequestRepository
     {
-        internal BookingRequestRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal BookingRequestRepository(IUnitOfWork uow)
+            : base(uow)
         {
 
         }

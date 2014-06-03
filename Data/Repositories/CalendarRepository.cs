@@ -9,8 +9,8 @@ namespace Data.Repositories
     public class CalendarRepository : GenericRepository<CalendarDO>, ICalendarRepository
     {
         private readonly CalendarValidator _curValidator;
-        internal CalendarRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal CalendarRepository(IUnitOfWork uow)
+            : base(uow)
         {
             _curValidator = new CalendarValidator();
         }

@@ -10,7 +10,7 @@ using System.Net;
 using System.Configuration;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Infrastructure;
+
 using StructureMap;
 using Utilities;
 using KwasantWeb.ViewModels;
@@ -49,7 +49,7 @@ namespace KwasantWeb.Controllers
     {
         private UserManager<UserDO> GetUserManager(IUnitOfWork uow)
         {
-            var um = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db));
+            var um = KwasantCore.Services.User.GetUserManager(uow);
 
             var provider = new Microsoft.Owin.Security.DataProtection.DpapiDataProtectionProvider("Sample");
             um.UserTokenProvider = new Microsoft.AspNet.Identity.Owin.DataProtectorTokenProvider<UserDO>(provider.Create("EmailConfirmation"));

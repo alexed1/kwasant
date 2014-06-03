@@ -8,8 +8,8 @@ namespace Data.Repositories
 
     public class AttendeeRepository : GenericRepository<AttendeeDO>, IAttendeeRepository
     {
-        internal AttendeeRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal AttendeeRepository(IUnitOfWork uow)
+            : base(uow)
         {
 
         }

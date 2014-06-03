@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -12,8 +13,7 @@ namespace KwasantCore.Services
     {
         public void Add(IUnitOfWork uow, AspNetRolesDO aspNetRolesDO)
         {
-            var roleStore = new RoleStore<IdentityRole>(uow.Db);
-            var currRole = new RoleManager<IdentityRole>(roleStore);
+            var currRole = GetRoleManager(uow);
             currRole.Create(aspNetRolesDO);
         }
 
@@ -25,7 +25,7 @@ namespace KwasantCore.Services
 
                 Mapper.CreateMap<IdentityRole, RoleData>();
 
-                var currRole = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(uow.Db));
+                var currRole = GetRoleManager(uow);
 
                 foreach (IdentityRole role in currRole.Roles)
                 {
@@ -35,6 +35,12 @@ namespace KwasantCore.Services
 
                 return currRoleDataList;
             }
+        }
+
+        public static RoleManager<IdentityRole> GetRoleManager(IUnitOfWork uow)
+        {
+            var roleStore = ObjectFactory.GetInstance<IKwasantRoleStore>();
+            return new RoleManager<IdentityRole>(roleStore.SetUnitOfWork(uow));
         }
     }
 }

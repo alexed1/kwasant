@@ -16,7 +16,7 @@ using StructureMap;
 
 namespace Data.Migrations
 {
-    public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasanttDbContext>
+    public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasantDbContext>
     {
         public MigrationConfiguration()
         {
@@ -25,7 +25,7 @@ namespace Data.Migrations
             ContextKey = "Data.Infrastructure.KwasantKwasantDbContext";
         }
 
-        protected override void Seed(KwasanttDbContext context)
+        protected override void Seed(KwasantDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 
@@ -83,7 +83,7 @@ namespace Data.Migrations
         /// <param name="unitOfWork"></param>
         private void AddRoles(IUnitOfWork unitOfWork)
         {
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(unitOfWork.Db as KwasanttDbContext));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(unitOfWork.Db as KwasantDbContext));
 
             if (roleManager.RoleExists("Admin") == false)
             {
@@ -121,7 +121,7 @@ namespace Data.Migrations
         {
             try
             {
-                var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasanttDbContext));
+                var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasantDbContext));
                 if (um.FindByName(curUserName) == null)
                 {
                     

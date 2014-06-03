@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Data.Infrastructure;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Validators;
 using FluentValidation;
@@ -38,7 +39,7 @@ namespace KwasantCore.Services
             UserValidator curUserValidator = new UserValidator();
             curUserValidator.ValidateAndThrow(userDO);
 
-            UserManager<UserDO> userManager = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db));
+            UserManager<UserDO> userManager = GetUserManager(uow);;
             IdentityResult result = userManager.Create(userDO, password);
             if (result.Succeeded)
             {
@@ -56,7 +57,7 @@ namespace KwasantCore.Services
         {
             if (userDO != null)
             {
-                UserManager<UserDO> curUserManager = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db));
+                UserManager<UserDO> curUserManager = GetUserManager(uow);;
 
                 curUserManager.RemovePassword(userDO.Id); //remove old password
                 var curResult = curUserManager.AddPassword(userDO.Id, password); // add new password
@@ -72,7 +73,7 @@ namespace KwasantCore.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 LoginStatus curLogingStatus = LoginStatus.Successful;
-                UserManager<UserDO> curUserManager = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db));
+                UserManager<UserDO> curUserManager = GetUserManager(uow);;
                 UserDO curUser = await curUserManager.FindAsync(username, password);
                 if (curUser != null)
                 {
@@ -105,8 +106,8 @@ namespace KwasantCore.Services
         
         public bool ChangeUserRole(IUnitOfWork uow, IdentityUserRole identityUserRole)
         {
-            UserManager<UserDO> userManager = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db));
-            RoleManager<IdentityRole> roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(uow.Db));
+            UserManager<UserDO> userManager = GetUserManager(uow);;
+            RoleManager<IdentityRole> roleManager = Role.GetRoleManager(uow);
 
             IList<string> currCurrentIdentityRole = userManager.GetRoles(identityUserRole.UserId);
             IdentityResult identityResult = userManager.RemoveFromRole(identityUserRole.UserId, currCurrentIdentityRole.ToList()[0]);
@@ -118,6 +119,12 @@ namespace KwasantCore.Services
             }
 
             return identityResult.Succeeded;
+        }
+
+        public static UserManager<UserDO> GetUserManager(IUnitOfWork uow)
+        {
+            var userStore = ObjectFactory.GetInstance<IKwasantUserStore>();
+            return new UserManager<UserDO>(userStore.SetUnitOfWork(uow));
         }
     }
 }

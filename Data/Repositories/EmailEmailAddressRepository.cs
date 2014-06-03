@@ -10,8 +10,8 @@ namespace Data.Repositories
     public class RecipientRepository : GenericRepository<RecipientDO>, IRecipientRepository
     {
 
-        internal RecipientRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal RecipientRepository(IUnitOfWork uow)
+            : base(uow)
         {
 
         }

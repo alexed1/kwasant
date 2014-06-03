@@ -7,8 +7,8 @@ namespace Data.Repositories
     public class StoredFileRepository : GenericRepository<StoredFileDO>, IStoredFileRepository
     {
 
-        internal StoredFileRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal StoredFileRepository(IUnitOfWork uow)
+            : base(uow)
         {
 
         }

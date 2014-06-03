@@ -7,8 +7,8 @@ namespace Data.Repositories
     public class AspNetUserRolesRepository : GenericRepository<AspNetUserRolesDO>, IAspNetUserRolesRepository
     {
 
-        internal AspNetUserRolesRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal AspNetUserRolesRepository(IUnitOfWork uow)
+            : base(uow)
         {
             
         }

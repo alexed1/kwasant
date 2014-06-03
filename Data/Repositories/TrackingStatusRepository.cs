@@ -6,8 +6,8 @@ namespace Data.Repositories
 {
     public class TrackingStatusRepository : GenericRepository<TrackingStatusDO>, ITrackingStatusRepository
     {
-        internal TrackingStatusRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal TrackingStatusRepository(IUnitOfWork uow)
+            : base(uow)
         {
 
         }

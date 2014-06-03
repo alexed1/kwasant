@@ -15,8 +15,8 @@ namespace Data.Repositories
     {
         private EventValidator _curValidator;
 
-        internal EventRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal EventRepository(IUnitOfWork uow)
+            : base(uow)
         {
             _curValidator = new EventValidator();
             

@@ -6,8 +6,8 @@ namespace Data.Repositories
 {
     public class InstructionRepository : GenericRepository<InstructionDO>, IInstructionRepository
     {
-        internal InstructionRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal InstructionRepository(IUnitOfWork uow)
+            : base(uow)
         {
 
         }

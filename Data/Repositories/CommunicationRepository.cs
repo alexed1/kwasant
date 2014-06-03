@@ -8,8 +8,8 @@ namespace Data.Repositories
 
     public class CommunicationConfigurationRepository : GenericRepository<CommunicationConfigurationDO>, ICommunicationConfigurationRepository
     {
-        internal CommunicationConfigurationRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal CommunicationConfigurationRepository(IUnitOfWork uow)
+            : base(uow)
         {
 
         }

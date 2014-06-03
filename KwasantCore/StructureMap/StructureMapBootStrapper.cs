@@ -1,4 +1,6 @@
 using System;
+using System.Linq.Expressions;
+using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers;
@@ -45,6 +47,9 @@ namespace KwasantCore.StructureMap
             public LiveMode()
             {
                 For<IEmailPackager>().Use(new GmailPackager());
+
+                For<IKwasantRoleStore>().Use(new KwasantRoleStore());
+                For<IKwasantUserStore>().Use(new KwasantUserStore());
             }
         }
 

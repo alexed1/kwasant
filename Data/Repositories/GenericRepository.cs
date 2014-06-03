@@ -13,18 +13,18 @@ namespace Data.Repositories
     /// <typeparam name="TEntity"></typeparam>
     public class GenericRepository<TEntity> : IDisposable, IGenericRepository<TEntity> where TEntity : class
     {
-        protected readonly KwasanttDbContext Context;
+        protected readonly IUnitOfWork _uow;
         public IDbSet<TEntity> DBSet;
 
-        internal GenericRepository(KwasanttDbContext KwasantDbContext)
+        internal GenericRepository(IUnitOfWork uow)
         {
-            if (KwasantDbContext == null) throw new ArgumentNullException("KwasantDbContext");
-            KwasantDbContext = KwasantDbContext;
-            DBSet = KwasantDbContext.Set<TEntity>();
+            if (uow == null) throw new ArgumentNullException("uow");
+            _uow = uow;
+            DBSet = _uow.Db.Set<TEntity>();
         }
 
         #region Property
-        public IUnitOfWork UnitOfWork { get { return Context.UnitOfWork; } }
+        public IUnitOfWork UnitOfWork { get { return _uow; } }
 
         #endregion
 
@@ -77,7 +77,7 @@ namespace Data.Repositories
 
         public void Dispose()
         {
-            Context.UnitOfWork.Dispose();
+            _uow.Dispose();
         }
 
         #endregion

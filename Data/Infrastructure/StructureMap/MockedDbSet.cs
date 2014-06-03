@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -6,20 +7,19 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Data.Interfaces;
 
 namespace Data.Infrastructure.StructureMap
 {
-    public class MockedDbSet : MockedDbSet<object>
-    {
-        
-    }
-    public class MockedDbSet<TEntityType> : DbSet<TEntityType>
+    public class MockedDbSet<TEntityType> : IDbSet<TEntityType>
         where TEntityType : class
     {
+        private readonly IDBContext _dbContext;
         private HashSet<TEntityType> _set = new HashSet<TEntityType>();
 
-        public MockedDbSet()
-        {            
+        public MockedDbSet(IDBContext dbContext)
+        {
+            _dbContext = dbContext;
             _set = new HashSet<TEntityType>();
         }
 
@@ -28,12 +28,18 @@ namespace Data.Infrastructure.StructureMap
             return _set.GetEnumerator();
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
         public Expression Expression
         {
             get
             {
                 return _set.AsQueryable().Expression;
-            }            
+            }
+            private set { }
         }
 
         public Type ElementType
@@ -42,6 +48,7 @@ namespace Data.Infrastructure.StructureMap
             {
                 return _set.AsQueryable().ElementType;
             }
+            private set { }
         }
         public IQueryProvider Provider
         {
@@ -49,9 +56,9 @@ namespace Data.Infrastructure.StructureMap
             {
                 return _set.AsQueryable().Provider;
             }
+            private set { }
         }
-
-        public override TEntityType Find(params object[] keyValues)
+        public TEntityType Find(params object[] keyValues)
         {
             if (keyValues.Length == 0)
                 throw new Exception("No primary key provided for " + EntityName);
@@ -62,55 +69,60 @@ namespace Data.Infrastructure.StructureMap
             if (keyType != typeof(int) && keyType != typeof(String))
                 throw new Exception("Only supports int-based or string-based keys.");
 
-            if (keyType == typeof (String))
+            if (keyType == typeof(String))
             {
                 string entityPrimaryKey = keyValues[0] as string;
                 Func<TEntityType, string> compiledSelector = GetEntityKeySelectorString().Compile();
-                return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);    
+                return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
             }
             else
             {
-                
+
                 int entityPrimaryKey = (int)(keyValues[0]);
                 Func<TEntityType, int> compiledSelector = GetEntityKeySelectorInt().Compile();
                 return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
             }
+
+
         }
 
-        public override TEntityType Add(TEntityType entity)
+        public TEntityType Add(TEntityType entity)
         {
             _set.Add(entity);
             return entity;
         }
 
-        public override TEntityType Remove(TEntityType entity)
+        public TEntityType Remove(TEntityType entity)
         {
             _set.Remove(entity);
             return entity;
         }
 
-        public override TEntityType Attach(TEntityType entity)
+        public TEntityType Attach(TEntityType entity)
         {
             return entity;
         }
 
-        public override TEntityType Create()
+        public TEntityType Create()
         {
             throw new Exception("Not supported yet!");
         }
 
-        public override TDerivedEntity Create<TDerivedEntity>()
+        public TDerivedEntity Create<TDerivedEntity>() where TDerivedEntity : class, TEntityType
         {
             throw new Exception("Not supported yet!");
         }
 
-        public override ObservableCollection<TEntityType> Local
+        public ObservableCollection<TEntityType> Local
         {
             get
             {
                 return new ObservableCollection<TEntityType>(this);
             }
+            private set { }
         }
+
+
 
         protected Expression<Func<TEntityType, int>> GetEntityKeySelectorInt()
         {
@@ -160,7 +172,7 @@ namespace Data.Infrastructure.StructureMap
                 {
                     List<PropertyInfo> keys = typeof(TEntityType).GetProperties().Where(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).ToList();
                     if (!keys.Any())
-                        keys = typeof (TEntityType).GetProperties().Where(p => p.Name == "Id").ToList();
+                        keys = typeof(TEntityType).GetProperties().Where(p => p.Name == "Id").ToList();
 
                     if (keys.Count > 1)
                         throw new Exception("Entity MUST have a single primary key. Composite keys are not supported.");

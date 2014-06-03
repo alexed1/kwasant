@@ -7,8 +7,8 @@ namespace Data.Repositories
 {
     public class AttachmentRepository : GenericRepository<AttachmentDO>, IAttachmentRepository
     {
-        internal AttachmentRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal AttachmentRepository(IUnitOfWork uow)
+            : base(uow)
         {
 
         }

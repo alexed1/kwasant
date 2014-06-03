@@ -9,8 +9,8 @@ namespace Data.Repositories
 {
     public class EmailAddressRepository : GenericRepository<EmailAddressDO>,  IEmailAddressRepository
     {
-        internal EmailAddressRepository(KwasanttDbContext KwasantDbContext)
-            : base(KwasantDbContext)
+        internal EmailAddressRepository(IUnitOfWork uow)
+            : base(uow)
         {
             
         }
