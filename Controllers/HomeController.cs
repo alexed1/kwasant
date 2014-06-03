@@ -6,7 +6,7 @@ namespace KwasantWeb.Controllers
     {
         public ActionResult Index()
         {
-            return Redirect("/index.aspx");
+            return Redirect("/");
             
         }
 

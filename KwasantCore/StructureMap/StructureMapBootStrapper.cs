@@ -1,5 +1,7 @@
 using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Services;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
@@ -17,7 +19,7 @@ namespace KwasantCore.StructureMap
 
         public static void ConfigureDependencies(DependencyType type)
         {
-            
+
             switch (type)
             {
                 case DependencyType.TEST:
@@ -33,7 +35,7 @@ namespace KwasantCore.StructureMap
         {
             public KwasantCoreRegistry()
             {
-                
+                For<IEvent>().Use<Event>();
             }
         }
 
@@ -49,7 +51,7 @@ namespace KwasantCore.StructureMap
         {
             public TestMode()
             {
-                
+                For<IEmailPackager>().Use(new GmailPackager()); //we need to run tests that "really send it". may want to also do some mocks
             }
         }
 

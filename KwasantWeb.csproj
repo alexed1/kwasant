@@ -45,6 +45,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="AutoMapper">
+      <HintPath>packages\AutoMapper.3.2.1\lib\net40\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper.Net4">
+      <HintPath>packages\AutoMapper.3.2.1\lib\net40\AutoMapper.Net4.dll</HintPath>
+    </Reference>
     <Reference Include="DayPilot.Web.Mvc">
       <HintPath>lib\DayPilot.Web.Mvc.dll</HintPath>
     </Reference>
@@ -275,6 +281,7 @@
     <Compile Include="Api\GetEmailHTML.aspx.designer.cs">
       <DependentUpon>GetEmailHTML.aspx</DependentUpon>
     </Compile>
+    <Compile Include="App_Start\AutoMapperBootstrapper.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -312,6 +319,7 @@
   <ItemGroup>
     <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\Booking Details.png" />
+    <Content Include="Content\css\bootstrap-datetimepicker.css" />
     <Content Include="Content\css\bootstrap-responsive.css" />
     <Content Include="Content\css\bootstrap2.3.css" />
     <Content Include="Content\css\bootstrap3.0.css" />
@@ -346,8 +354,11 @@
     <Content Include="Content\css\default.css" />
     <Content Include="Content\css\font-awesome.css" />
     <Content Include="Content\css\main.css" />
+    <Content Include="Content\css\select2.css" />
+    <Content Include="Content\css\select2.png" />
     <Content Include="Content\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\background-match.jpg" />
     <Content Include="Content\img\background-test5.jpg" />
     <Content Include="Content\img\background-test6.jpg" />
@@ -442,6 +453,7 @@
     <Content Include="Content\js\jquery.colorbox.js" />
     <Content Include="Content\js\jquery.js" />
     <Content Include="Content\js\jquery.validate.js" />
+    <Content Include="Content\js\Kwasant\Popup.js" />
     <Content Include="Content\js\main.js" />
     <Content Include="Content\js\modernizr.js" />
     <Content Include="Content\js\moment.js" />
@@ -451,7 +463,6 @@
     <Content Include="Content\templates\inline_html_template_v1.html" />
     <Content Include="Content\templates\googletemplate1.html" />
     <Content Include="Index.aspx" />
-    <Content Include="index.html" />
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
     <Content Include="newrelic\NewRelic.Profiler.dll" />
@@ -613,6 +624,7 @@
     <Content Include="Views\Calendar\TimeHeaderCellDuration.cshtml" />
     <Content Include="Views\Calendar\Today.cshtml" />
     <Content Include="Views\Shared\_Blank.cshtml" />
+    <Content Include="Views\Event\ConfirmChanges.cshtml" />
     <Content Include="Views\Event\ConfirmEventEdits.cshtml" />
     <Content Include="Views\Event\DeleteEvent.cshtml" />
     <Content Include="Views\MandrillWebhook\Index.cshtml" />
@@ -623,7 +635,6 @@
     <Folder Include="archive\" />
     <Folder Include="Content\img\Process\" />
     <Folder Include="Controllers\Models\" />
-    <Folder Include="DependencyResolution\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Configuration\Configuration.csproj">
@@ -697,6 +708,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
+  <Import Project="packages\AutoMapper.3.2.1\tools\AutoMapper.targets" Condition="Exists('packages\AutoMapper.3.2.1\tools\AutoMapper.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

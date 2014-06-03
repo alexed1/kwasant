@@ -13,7 +13,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <% Response.Write(Styles.Render("~/bundles/css/bootstrap2.3").ToHtmlString()); %>
+    <% Response.Write(Styles.Render("~/bundles/css/bootstrap23").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/colorbox").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/frontpage").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/fontawesome").ToHtmlString()); %>
@@ -46,8 +46,8 @@
                 <!-- <a class="brand goTop"  style="background-image: url(Content/img/logo.png);"></a> -->
                 <div class="nav-collapse">
                     <ul class="nav pull-right">
-                        <li data-section="1"><a href="#services">How it Works</a></li>
-                        <li data-section="2"><a href="#price-bg">FAQ</a></li>
+                        <li data-section="2"><a href="#how_to_works">How it Works</a></li>
+                        <li data-section="3"><a href="#faq">FAQ</a></li>
                         <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
                         <li><a href="/Account/Login">SignUp/Login</a></li>
                         <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
@@ -82,6 +82,9 @@
                 
             </div>
         </div>
+        </section>
+    <section id="how_to_works" class="row text-block" data-section="2">
+        <br/>
         <div class="light-bg">
             <div class="container">
                 <h2><i class="icon-cogs"></i> How it Works </h2>
@@ -104,6 +107,12 @@
                     <br />
                     <br />
                     <br />
+                    </div>
+                </div>
+            </div>
+      </section>
+    
+            <div>
                     <!-- this is a section that breaks up the website -->
                     <div id="services-bg" class="parallax" style="background-image: url(Content/img/homepage89.png);">
                         <br />
@@ -120,7 +129,10 @@
                         </div>
                     </div>
 
-                    <h2>Details</h2>
+        <section id="details " class="row text-block">
+                   <div>
+                       
+                   <h2>Details</h2>
                     <p></p>
                     <p>We take the emails you provide to us and put them in front of of our human Booking Agents, who do what a personal assistant would do: they read the message, extract the key elements about the meeting, and enter them into a calendar.<p>
                         This generates a Meeting Invitation that we email back to you using the open “ICS” standard. If you're using common calendaring software like Google Calendar, Apple iCal, and Microsoft Outlook, these emails show up in your inbox and allow you to add them to your calendar with one click.
@@ -141,7 +153,7 @@
                     </div>
                 </div>
 
-
+         </section>
 
                 <!-- this is a section that breaks up the website -->
                 <div id="services-bg" class="parallax" style="background-image: url(Content/img/homepagesecond.jpg);">
@@ -267,39 +279,6 @@
                 </section>
                 <p></p>
 
-               
-            </div>
-            <div class="row-fluid section">
-                <!-- <div class="span6">
-                    <h3 class="with-border">Our Skills</h3>
-                    <div class="progress-block">
-                        <div class="progress">
-                            <div class="bar" style="width: 80%;"></div>
-                            <a data-section="3" class="progress-name toSection" href="#">Design</a>
-                            <span class="value">80%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="bar " style="width: 75%;"></div>
-                            <a data-section="3" class="progress-name toSection" href="#">Development</a>
-                            <span class="value">75%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="bar" style="width: 40%;"></div>
-                            <a data-section="3" class="progress-name toSection" href="#">Branding</a>
-                            <span class="value">40%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="bar" style="width: 60%;"></div>
-                            <a data-section="3" class="progress-name toSection" href="#">Usability</a>
-                            <span class="value">60%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="bar" style="width: 100%;"></div>
-                            <a data-section="3" class="progress-name toSection" href="#">Concepts</a>
-                            <span class="value">100%</span>
-                        </div>
-                    </div>
-                </div> -->
                
             </div>
 
@@ -948,6 +927,7 @@
                 </section> -->
 
             <section id="contacts" class="text-block" data-section="4">
+                <br/>
                 <div class="dark-bg">
                     <div class="container">
                         <h2><i class="icon-map-marker"></i> Get in touch</h2>

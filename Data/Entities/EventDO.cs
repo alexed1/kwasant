@@ -8,7 +8,7 @@ using IEvent = Data.Interfaces.IEvent;
 
 namespace Data.Entities
 {
-    public class EventDO : IEvent
+    public class EventDO
     {
         [Key]
         public int Id { get; set; }
@@ -40,6 +40,13 @@ namespace Data.Entities
         [ForeignKey("BookingRequest")]
         public int BookingRequestID { get; set; }
         public virtual BookingRequestDO BookingRequest { get; set; }
+
+
+        public EventDO()
+        {
+            Attendees = new List<AttendeeDO>();
+            Emails = new List<EmailDO>();
+        }
 
         public void CopyFrom(EventDO eventDO)
         {

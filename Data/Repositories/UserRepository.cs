@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
@@ -12,9 +13,9 @@ namespace Data.Repositories
             
         }
 
-        public UserDO GetOrCreateUser(BookingRequestDO currMessage)
+        public UserDO GetOrCreateUser(BookingRequestDO curMessage)
         {
-            string fromEmailAddress = currMessage.From.Address;
+            string fromEmailAddress = curMessage.From.Address;
             UserRepository userRepo = UnitOfWork.UserRepository;
             UserDO curUser = userRepo.DBSet.Local.FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
             if(curUser == null)
@@ -22,13 +23,14 @@ namespace Data.Repositories
 
             if (curUser == null)
             {
-                curUser = new UserDO
-                {
-                    UserName = fromEmailAddress,
-                    EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress, currMessage.From.Name),
-                    FirstName = currMessage.From.Name
-                };
-                userRepo.Add(curUser);
+                curUser = new UserDO();
+                curUser.UserName = fromEmailAddress;
+                curUser.FirstName = curMessage.From.Name;
+                curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
+                curMessage.User = curUser;
+                userRepo.Add(curUser);          
+                UnitOfWork.SaveChanges();
+                AlertManager.CustomerCreated(curUser);
             }
             return curUser;
         }
