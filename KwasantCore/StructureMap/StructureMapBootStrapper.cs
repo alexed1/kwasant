@@ -58,6 +58,9 @@ namespace KwasantCore.StructureMap
             public TestMode()
             {
                 For<IEmailPackager>().Use(new GmailPackager()); //we need to run tests that "really send it". may want to also do some mocks
+
+                For<IKwasantRoleStore>().Use(new MockedRoleStore());
+                For<IKwasantUserStore>().Use(new MockedUserStore());
             }
         }
 
