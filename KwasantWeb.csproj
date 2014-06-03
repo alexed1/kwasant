@@ -296,6 +296,7 @@
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\KController.cs" />
     <Compile Include="Controllers\MonthController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\StructureMapControllerFactory.cs" />

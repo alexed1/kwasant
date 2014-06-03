@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Security.Policy;
+using System.Web.UI;
+using AutoMapper;
 using Data.Entities;
 using Data.Entities.Enumerations;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Validators;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
+using KwasantICS.DDay.iCal.Serialization;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using RazorEngine;
 using StructureMap;
@@ -20,35 +25,80 @@ namespace KwasantCore.Services
 {
     public class Event : IEvent
     {
-        public EventDO Create (int bookingRequestID, string start, string end)
+
+        //this is called when a booker clicks on the calendar to create a new event. The form has not yet been filled out, so only 
+        //some info about the event is known.
+        public EventDO Create(EventDO curEventDO, IUnitOfWork uow)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+             curEventDO.IsAllDay = curEventDO.StartDate.Equals(curEventDO.StartDate.Date) && curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate); ;          
+             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
+            curEventDO.CreatedBy = bookingRequestDO.User;
+            curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);       
+            curEventDO.Status = "Instantiated";
+            return curEventDO;
+        }
+     
+
+        //takes submitted form data and updates as necessary
+        //in general, the new event data will simply overwrite the old data. 
+        //in some cases, additional work is necessary to handle the changes
+
+        public void Update(IUnitOfWork uow, EventDO newEventData)
+        {
+            //curEventDO.IsAllDay = curEventDO.StartDate.Equals(curEventDO.StartDate.Date) && curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate); ;          
+            EventDO curEventDO = uow.EventRepository.GetByKey(newEventData.Id);
+          
+            if (curEventDO == null)
+                    throw new ApplicationException("should not be able to call this Update method with an ID that doesn't match an existing event");
+            switch (curEventDO.Status)
             {
-                var startDate = DateTime.Parse(start);
-                var endDate = DateTime.Parse(end);
+                case "Instantiated":
 
-                var isAllDay = startDate.Equals(startDate.Date) && startDate.AddDays(1).Equals(endDate);
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+                    //this is a new event that was instantiated and stored during #Create
 
-                //BookingRequests don't actually have "recipients". We are actually the sole recipient of a BookingRequest.
-                //A BookingRequest should not really be thought of as an Email. It should be thought of as a service request from a customer that shares a lot of data properties with our Email object
-                //Later in the process, an Event may be created that corresponds to this BookingRequest, and that Event may have Attendees, and may generate
-                //outbound Emails that have Recipients.
-                ///WRONG: Attendees = String.Join(",", bookingRequestDO.Recipients.Select(eea => eea.EmailAddress.Address).Distinct()),
-                //initially, the only attendee is the user who created the booking request
-
-                var curEventDO = new EventDO();
-
-                curEventDO.IsAllDay = isAllDay;
-                curEventDO.StartDate = startDate;
-                curEventDO.EndDate = endDate;
-                curEventDO.BookingRequestID = bookingRequestDO.Id;
-                curEventDO.CreatedBy = bookingRequestDO.User;
-                curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
-                return curEventDO;
+                    break;
+                case "Dispatched":
+                case "Undispatched":
+                    //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
+                    //Undispatched is the uncommon case where the event is created, queued up with outbound emails ready to go, and then the event gets changed
+                    if (EventHasChanged(curEventDO, newEventData))
+                    {
+                        //mark the new attendees with status "New"
+                    }
+                    else
+                    {
+                        //create an EventChangeRecord to store the change information to put into the update email
+                        //mark all attendees with status "NeedsUpdate"
+                    }
+                    break;
 
             }
+            
+            //use the new information, mapping it to overwrite the old information
+            Mapper.Map<EventDO, EventDO>(newEventData, curEventDO);
+            //attendees must be handled manually. automapper can't currently do it
+            curEventDO.Attendees = newEventData.Attendees;
+            //if event times have changed, may need to send updates
+
+
+            curEventDO = newEventData;
+
+
         }
+
+        private void SendEventUpdates(EventDO curEvent, EventDO newEventData)
+        {
+            // if eventtimes have changed
+           //send an event update email to attendees
+        }
+
+        private bool EventHasChanged(EventDO oldEventDO, EventDO newEventDO)
+        {
+            //determine if changes warrant an update message
+            //return true or false
+            return false;
+        }
+
 
         public EventDO AddAttendee(UserDO curUserDO, EventDO curEvent)
         {
@@ -58,6 +108,8 @@ namespace KwasantCore.Services
             return curEvent;
         }
 
+        //this is no longer used because we don't want to do string processing when we can instead work with objects
+        //now, the controller maps the incoming attendee strings into attendee objects early in the process.
         //Processes the incoming attendee information, which is currently just a comma delimited string
         public void ManageAttendeeList(IUnitOfWork uow, EventDO eventDO, string curAttendees)
         {
@@ -81,140 +133,6 @@ namespace KwasantCore.Services
             }
         }
 
-
-        public int Dispatch(EventDO eventDO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var emailAddressRepository = uow.EmailAddressRepository;
-                if (eventDO.Attendees == null)
-                    eventDO.Attendees = new List<AttendeeDO>();
-                EmailDO outboundEmail = new EmailDO();
-                iCalendar ddayCalendar = new iCalendar();
-                DDayEvent dDayEvent = new DDayEvent();
-
-                //configure the sender information
-                string fromEmail = ConfigRepository.Get("fromEmail");
-                string fromName = ConfigRepository.Get("fromName");
-                var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
-                fromEmailAddr.Name = fromName;
-                outboundEmail.From = fromEmailAddr;
-
-                //setup attendees
-                foreach (var attendeeDO in eventDO.Attendees)
-                {
-                    var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress.Address);
-                    toEmailAddress.Name = attendeeDO.Name;
-                    outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
-                }
-
-                outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
-
-                var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
-                var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation,
-                    new RazorViewModel(eventDO));
-                outboundEmail.HTMLText = parsedHTMLEmail;
-                outboundEmail.PlainText = parsedPlainEmail;
-
-                //prepare the outbound email
-                outboundEmail.Status = EmailStatus.QUEUED;
-                if (eventDO.Emails == null)
-                    eventDO.Emails = new List<EmailDO>();
-                eventDO.Emails.Add(outboundEmail);
-
-               //configure start and end time
-                if (eventDO.IsAllDay)
-                {
-                    dDayEvent.IsAllDay = true;
-                }
-                else
-                {
-                    dDayEvent.DTStart = new iCalDateTime(eventDO.StartDate);
-                    dDayEvent.DTEnd = new iCalDateTime(eventDO.EndDate);
-                }
-                dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
-                dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
-
-                //configure text fields
-                dDayEvent.Location = eventDO.Location;
-                dDayEvent.Description = eventDO.Description;
-                dDayEvent.Summary = eventDO.Summary;
-
-                //more attendee configuration
-                foreach (AttendeeDO attendee in eventDO.Attendees)
-                {
-                    dDayEvent.Attendees.Add(new KwasantICS.DDay.iCal.DataTypes.Attendee()
-                    {
-                        CommonName = attendee.Name,
-                        Type = "INDIVIDUAL",
-                        Role = "REQ-PARTICIPANT",
-                        ParticipationStatus = ParticipationStatus.NeedsAction,
-                        RSVP = true,
-                        Value = new Uri("mailto:" + attendee.EmailAddress),
-                    });
-                    attendee.Event = eventDO;
-                }
-
-                //final assembly of event
-                dDayEvent.Organizer = new Organizer(fromEmail) {CommonName = fromName};
-                ddayCalendar.Events.Add(dDayEvent);
-                ddayCalendar.Method = CalendarMethods.Request;
-                AttachCalendarToEmail(ddayCalendar, outboundEmail);
-
-                //send the invite email
-                return new Email(uow, outboundEmail).Send();
-            }
-        }
-
-        //if we have a first name and last name, use them together
-        //else if we have a first name only, use that
-        //else if we have just an email address, use the portion preceding the @ unless there's a name
-        //else throw
-        public string GetOriginatorName(EventDO curEventDO)
-        {
-            UserDO originator = curEventDO.CreatedBy;
-            string firstName = originator.FirstName;
-            string lastName = originator.LastName;
-            if (firstName != null)
-            {
-                if (lastName == null)
-                    return firstName;
-
-                return firstName + " " + lastName;
-            }
-
-            EmailAddressDO curEmailAddress = originator.EmailAddress;
-            if (curEmailAddress.Name != null)
-                return curEmailAddress.Name;
-
-            if (curEmailAddress.Address.IsEmailAddress())
-                return curEmailAddress.Address.Split(new[] {'@'})[0];
-
-            throw new ArgumentException("Failed to extract originator info from this Event. Something needs to be there.");
-        }
-
-        private static void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)
-        {
-            iCalendarSerializer serializer = new iCalendarSerializer(iCal);
-            string fileToAttach = serializer.Serialize(iCal);
-
-            AttachmentDO attachmentDO = GetAttachment(fileToAttach);
-
-            if (emailDO.Attachments == null)
-                emailDO.Attachments = new List<AttachmentDO>();
-
-            attachmentDO.Email = emailDO;
-            emailDO.Attachments.Add(attachmentDO);
-        }
-
-        private static AttachmentDO GetAttachment(string fileToAttach)
-        {
-            return Email.CreateNewAttachment(
-                new System.Net.Mail.Attachment(
-                    new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
-                    new ContentType { MediaType = "application/ics", Name = "invite.ics" }
-                    ) { TransferEncoding = TransferEncoding.Base64 });
-        }
         
     }
 

@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
+using KwasantCore.Managers.CommunicationManager;
 using KwasantCore.Services;
 using StructureMap;
 using Utilities.Logging;
@@ -75,6 +76,8 @@ namespace Daemons
             while (ProcessNextEventNoWait()) { }
             IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
             EmailRepository emailRepository = unitOfWork.EmailRepository;
+            EventRepository eventRepository = unitOfWork.EventRepository;
+            CommunicationManager _comm = new CommunicationManager();
             var numSent = 0;
             foreach (EmailDO email in emailRepository.FindList(e => e.Status == EmailStatus.QUEUED))
             {
@@ -82,6 +85,10 @@ namespace Daemons
                 numSent++;
             }
             Logger.GetLogger().Info(numSent + " emails sent.");
+            foreach (EventDO curEvent in eventRepository.FindList(e => e.Status == "Undispatched"))
+            {
+                _comm.DispatchInvitations(curEvent);
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Infrastructure;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
@@ -14,22 +15,36 @@ using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
-    public class EventController : Controller
+    public class EventController : KController
     {
+        private Event _event;
+        private Attendee _attendee;
+
+        public EventController()
+        {
+            _event = new Event();
+            _attendee = new Attendee();
+        }
       
         //Renders a form to accept a new event
         public ActionResult New(int bookingRequestID, string start, string end)
         {
+            using (var uow = UOW())
+            {
+                //unpack the form data into an EventDO 
+                EventDO submittedEventData = new EventDO();
+                submittedEventData.BookingRequestID = bookingRequestID;
+                submittedEventData.StartDate = DateTime.Parse(start);
+                submittedEventData.EndDate = DateTime.Parse(end);
+                EventDO createdEvent = _event.Create(submittedEventData, uow);
+                uow.SaveChanges();
 
-            //load event from Event service
-            var curEvent = new Event();
-            var curEventDO = curEvent.Create(bookingRequestID, start, end);
+                //put it in a view model to hand to the view
+                var curEventVM = Mapper.Map<EventDO, EventViewModel>(createdEvent);
 
-            //put it in a view model to hand to the view
-            var curEventVM = Mapper.Map<EventDO, EventViewModel>(curEventDO);
-
-            //construct a Calendar view model for this Calendar View 
-            return View("~/Views/Event/Edit.cshtml", curEventVM);
+                //construct a Calendar view model for this Calendar View 
+                return View("~/Views/Event/Edit.cshtml", curEventVM);
+            }
         }
 
 
@@ -75,27 +90,43 @@ namespace KwasantWeb.Controllers
             return View(eventViewModel);
         }
 
-        public ActionResult SubmitChange(EventViewModel eventViewModel)
+  
+        //processes events that have been entered into the form and confirmed
+        public ActionResult ProcessConfirmedEvent(EventViewModel eventVM)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = UOW())
             {
-                EventDO eventDO = eventViewModel.Id == 0
-                    ? new EventDO { CreatedByID = User.Identity.GetUserId() }
-                    : uow.EventRepository.GetByKey(eventViewModel.Id);
-
-                Mapper.Map(eventViewModel, eventDO);
-                new Event().ManageAttendeeList(uow, eventDO, eventViewModel.Attendees);
-                    
-                if (eventViewModel.Id == 0)
+                //unpack view model
+                EventDO submittedEventDO = Mapper.Map<EventDO>(eventVM);
+                submittedEventDO.Attendees = _attendee.ConvertFromString(uow, eventVM.Attendees);
+                if (eventVM.Id == 0)
                 {
-                    uow.EventRepository.Add(eventDO);
+                    throw new ApplicationException("event should have been created and saved in #new, so Id should not be zero");
+                }
+                else
+                {
+                    _event.Update(uow, submittedEventDO);
+
                 }
 
-                uow.SaveChanges();
-            }
+                //EventDO eventDO = eventViewModel.Id == 0
+                    //    ? new EventDO { CreatedByID = User.Identity.GetUserId() }
+                    //    : uow.EventRepository.GetByKey(eventViewModel.Id);
 
-            return JavaScript(SimpleJsonSerializer.Serialize(true));
-        }
+                    //Mapper.Map(eventViewModel, eventDO);
+                    //new Event().ManageAttendeeList(uow, eventDO, eventViewModel.Attendees);
+
+                    //if (eventViewModel.Id == 0)
+                    //{
+                    //    uow.EventRepository.Add(eventDO);
+                    //}
+
+                    //uow.SaveChanges();          
+
+                    return JavaScript(SimpleJsonSerializer.Serialize(true));
+                }
+            }
+        
 
         public ActionResult DeleteEvent(int eventID)
         {

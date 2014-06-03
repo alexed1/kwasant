@@ -46,6 +46,31 @@ namespace KwasantCore.Services
             }
             return curAttendee;
         }
+
+        //the Event View Model returns attendees as a string. we'll want to do something more sophisticated involving typeahead and ajax but for now this is it
+        //we want to convert that string into objects as quickly as possible once the data is on the server.
+        public List<AttendeeDO> ConvertFromString(IUnitOfWork uow, string attendeeString)
+        {
+            List<AttendeeDO> curList = new List<AttendeeDO>();
+            AttendeeDO curAttendeeDO;
+            //split the string
+            var attendees = attendeeString.Split(',').ToList();
+            foreach (var attendee in attendees)
+            {
+                 //create an attendee
+                //check the db. if we know about the email use that for the attendee
+                //else create a new email address and use that.
+                curAttendeeDO = new AttendeeDO                   
+                {
+                    EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee),
+                    Name = attendee
+                };
+                //uow.AttendeeRepository.Add(curAttendeeDO); these don't have event ids yet, so let's not save them
+                curList.Add(curAttendeeDO);
+            }
+
+            return curList;
+        }
         
                 
 

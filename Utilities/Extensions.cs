@@ -10,6 +10,8 @@ namespace Utilities
         }
     }
 
+
+
     public static class StringExtension
     {
         public static Uri AsUri(this string value)

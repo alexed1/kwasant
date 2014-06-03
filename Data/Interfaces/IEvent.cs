@@ -4,7 +4,7 @@ namespace Data.Interfaces
 {
     public interface IEvent
     {
-        int Dispatch(EventDO curEventDO);
+        int GenerateEmail (EventDO curEventDO);
         string GetOriginatorName(EventDO curEventDO);
     }
 }
