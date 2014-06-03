@@ -21,8 +21,6 @@ namespace KwasantWeb.Controllers.Helpers
             foreach (UsersAdminData usersAdminData in usersAdminDataList)
             {
                 UsersAdminViewModel usersAdminViewModel = Mapper.Map<UsersAdminData, UsersAdminViewModel>(usersAdminData);
-                //Manually map first name field coz it does not map by Auto Mapper.
-                usersAdminViewModel.LastName = usersAdminData.LastName;
                 currUsersAdminViewModels.Add(usersAdminViewModel);
             }
 

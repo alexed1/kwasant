@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Policy;
@@ -233,7 +234,7 @@ namespace KwasantWeb.Controllers
                 if (!IsDirty(usersAdminViewModel))
                     return RedirectToAction("Index", "User");
 
-                UserDO userDO = new UserDO();
+                var userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == usersAdminViewModel.UserId);
                 userDO.Id = usersAdminViewModel.UserId;
                 userDO.FirstName = usersAdminViewModel.FirstName;
                 userDO.LastName = usersAdminViewModel.LastName;
