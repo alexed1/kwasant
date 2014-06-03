@@ -485,13 +485,13 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Api\GetAttachment.ashx" />
     <Content Include="Content\img\.DS_Store" />
     <Content Include="Content\img\blue_tag.psd" />
     <Content Include="Content\img\Database layout.pdf" />
     <Content Include="Content\img\Email thread .docx" />
     <Content Include="Content\img\Workflow.vsdx" />
     <Content Include="Content\img\Workflow_v2.vsdx" />
-    <Content Include="Api\GetAttachment.ashx" />
     <None Include="Properties\PublishProfiles\kwasant.pubxml" />
     <Content Include="shortcodes.html" />
     <Content Include="Themes\areas.css" />
@@ -633,7 +633,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
-    <Folder Include="Content\img\Process\" />
     <Folder Include="Controllers\Models\" />
   </ItemGroup>
   <ItemGroup>
