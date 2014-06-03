@@ -21,7 +21,7 @@ namespace KwasantCore.Services
 {
     public class Email
     {
-        private IUnitOfWork _uow;
+        private readonly IUnitOfWork _uow;
         private EmailDO _curEmailDO;
         private EventValidator _curEventValidator;
         #region Constructor
@@ -37,6 +37,7 @@ namespace KwasantCore.Services
             _uow = uow;
             _curEventValidator = new EventValidator();
         }
+
         public Email(IUnitOfWork uow, EventDO eventDO): this(uow)
         {
             _curEmailDO = CreateStandardInviteEmail(eventDO);
@@ -65,8 +66,6 @@ namespace KwasantCore.Services
             var gmailPackager = ObjectFactory.GetInstance<IEmailPackager>();
             gmailPackager.Send(_curEmailDO);
             _curEmailDO.Status = EmailStatus.DISPATCHED;
-            _uow.EmailRepository.Add(_curEmailDO);
-            _uow.SaveChanges();
             return _curEmailDO.Id;
         }
 

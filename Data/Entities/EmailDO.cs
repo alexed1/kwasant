@@ -31,7 +31,7 @@ namespace Data.Entities
 
         [ForeignKey("From"), Required]
         public int FromID { get; set; }
-        public EmailAddressDO From { get; set; }
+        public virtual EmailAddressDO From { get; set; }
 
         public IEnumerable<EmailAddressDO> To
         {
