@@ -68,35 +68,32 @@ namespace KwasantCore.Services
             }
         }
 
-        public async Task<LoginStatus> Login(string username, string password, bool isPersistent)
+        public async Task<LoginStatus> Login(IUnitOfWork uow, string username, string password, bool isPersistent)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            LoginStatus curLogingStatus = LoginStatus.Successful;
+            UserManager<UserDO> curUserManager = GetUserManager(uow);;
+            UserDO curUser = await curUserManager.FindAsync(username, password);
+            if (curUser != null)
             {
-                LoginStatus curLogingStatus = LoginStatus.Successful;
-                UserManager<UserDO> curUserManager = GetUserManager(uow);;
-                UserDO curUser = await curUserManager.FindAsync(username, password);
-                if (curUser != null)
+                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
+
+                ClaimsIdentity identity = await curUserManager.CreateIdentityAsync(curUser, DefaultAuthenticationTypes.ApplicationCookie);
+
+                if (identity.IsAuthenticated == false)
                 {
-                    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-
-                    ClaimsIdentity identity = await curUserManager.CreateIdentityAsync(curUser, DefaultAuthenticationTypes.ApplicationCookie);
-
-                    if (identity.IsAuthenticated == false)
-                    {
-                        throw new ApplicationException("There was an error logging in. Please try again later.");
-                    }
-                    AuthenticationManager.SignIn(new AuthenticationProperties
-                    {
-                        IsPersistent = isPersistent
-                    }, identity);
+                    throw new ApplicationException("There was an error logging in. Please try again later.");
                 }
-                else
+                AuthenticationManager.SignIn(new AuthenticationProperties
                 {
-                    curLogingStatus = LoginStatus.InvalidCredential;
-                }
-
-                return curLogingStatus;
+                    IsPersistent = isPersistent
+                }, identity);
             }
+            else
+            {
+                curLogingStatus = LoginStatus.InvalidCredential;
+            }
+
+            return curLogingStatus;
         }
 
         public void LogOff()
@@ -106,7 +103,7 @@ namespace KwasantCore.Services
         
         public bool ChangeUserRole(IUnitOfWork uow, IdentityUserRole identityUserRole)
         {
-            UserManager<UserDO> userManager = GetUserManager(uow);;
+            UserManager<UserDO> userManager = GetUserManager(uow);
             RoleManager<AspNetRolesDO> roleManager = Role.GetRoleManager(uow);
 
             IList<string> currCurrentIdentityRole = userManager.GetRoles(identityUserRole.UserId);
@@ -124,7 +121,11 @@ namespace KwasantCore.Services
         public static UserManager<UserDO> GetUserManager(IUnitOfWork uow)
         {
             var userStore = ObjectFactory.GetInstance<IKwasantUserStore>();
-            return new UserManager<UserDO>(userStore.SetUnitOfWork(uow));
+            var um = new UserManager<UserDO>(userStore.SetUnitOfWork(uow));
+            var provider = new Microsoft.Owin.Security.DataProtection.DpapiDataProtectionProvider("Sample");
+            um.UserTokenProvider = new Microsoft.AspNet.Identity.Owin.DataProtectorTokenProvider<UserDO>(provider.Create("EmailConfirmation"));
+
+            return um;
         }
     }
 }

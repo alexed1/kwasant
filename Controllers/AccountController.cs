@@ -1,21 +1,22 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
-using System.Web.Mvc;
-using System.Threading.Tasks;
-using Data.Entities.Enumerations;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using System.Net.Mail;
-using System.Net;
 using System.Configuration;
+using System.Net;
+using System.Net.Mail;
+using System.Security.Policy;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 using Data.Entities;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
-
-using StructureMap;
-using Utilities;
-using KwasantWeb.ViewModels;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
+using KwasantWeb.ViewModels;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using StructureMap;
+using Utilities;
 using ViewModel.Models;
 
 namespace KwasantWeb.Controllers
@@ -44,59 +45,49 @@ namespace KwasantWeb.Controllers
         }
     }
 
-    [Authorize]
+    [System.Web.Http.Authorize]
     public class AccountController : Controller
-    {
-        private UserManager<UserDO> GetUserManager(IUnitOfWork uow)
-        {
-            var um = KwasantCore.Services.User.GetUserManager(uow);
-
-            var provider = new Microsoft.Owin.Security.DataProtection.DpapiDataProtectionProvider("Sample");
-            um.UserTokenProvider = new Microsoft.AspNet.Identity.Owin.DataProtectorTokenProvider<UserDO>(provider.Create("EmailConfirmation"));
-            return um;
-        }
-            
-            
-        [AllowAnonymous]
+    {          
+        [System.Web.Http.AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
-        [AllowAnonymous]
+        [System.Web.Http.AllowAnonymous]
         public ActionResult Register()
         {
             return View();
         }
 
-        [AllowAnonymous]
+        [System.Web.Http.AllowAnonymous]
         public ActionResult RegistrationSuccessful()
         {
             return View();
         }
 
-        [AllowAnonymous]
+        [System.Web.Http.AllowAnonymous]
         public ActionResult MyAccount()
         {
             return View();
         }
 
-        [AllowAnonymous]
+        [System.Web.Http.AllowAnonymous]
         public ActionResult LogOff()
         {
             new User().LogOff();
             return RedirectToAction("Login", "Account");
         }
 
-        [AllowAnonymous]
+        [System.Web.Http.AllowAnonymous]
         public ActionResult Confirm(RegisterViewModel model)
         {
             return View(model);
         }
 
-        [HttpPost]
-        [AllowAnonymous]
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.AllowAnonymous]
         [ValidateAntiForgeryToken]
         public  ActionResult Register(RegisterViewModel model)
         {
@@ -127,8 +118,8 @@ namespace KwasantWeb.Controllers
             return View();
         }
 
-        [HttpPost]
-        [AllowAnonymous]
+        [System.Web.Http.HttpPost]
+        [System.Web.Http.AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
@@ -183,7 +174,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var um = GetUserManager(uow);
+                var um = KwasantCore.Services.User.GetUserManager(uow);
                 string code = await um.GenerateEmailConfirmationTokenAsync(curUserDO.Id);
                 var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = curUserDO.Id, code = code }, protocol: Request.Url.Scheme);
                 um.EmailService = new KwasantEmailService();
@@ -191,8 +182,8 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        [HttpGet]
-        [AllowAnonymous]
+        [System.Web.Http.HttpGet]
+        [System.Web.Http.AllowAnonymous]
         public ActionResult ConfirmEmail(string userId, string code)
         {
             string returnViewName = "RegistrationSuccessful";
@@ -233,7 +224,7 @@ namespace KwasantWeb.Controllers
             return View(currUsersAdminViewModel);
         }
 
-        [HttpPost]
+        [System.Web.Http.HttpPost]
         public ActionResult Edit(UsersAdminViewModel usersAdminViewModel)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

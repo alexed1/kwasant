@@ -77,7 +77,7 @@ namespace KwasantCore.Services
                     {
                         if (userDO.EmailConfirmed)
                         {
-                            curLoginStatus = await new User().Login(username, password, isPersistent);
+                            curLoginStatus = await new User().Login(uow, username, password, isPersistent);
                         }
                     }
                 }
@@ -99,8 +99,6 @@ namespace KwasantCore.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.UserRepository.UnitOfWork.Db.Entry(userDO).State = System.Data.Entity.EntityState.Modified;
-
                 EmailAddressDO currEmailAddressDO = uow.EmailAddressRepository.GetByKey(userDO.EmailAddressID);
                 currEmailAddressDO.Address = userDO.EmailAddress.Address;
 
