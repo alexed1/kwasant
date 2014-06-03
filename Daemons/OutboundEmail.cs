@@ -76,7 +76,7 @@ namespace Daemons
             IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
             EmailRepository emailRepository = unitOfWork.EmailRepository;
             var numSent = 0;
-            foreach (EmailDO email in emailRepository.FindList(e => e.Status == EmailStatus.QUEUED))
+            foreach (EmailDO email in emailRepository.FindList(e => e.Status == EmailStatus.UNPROCESSED))
             {
                 new Email(unitOfWork, email).Send();
                 numSent++;
