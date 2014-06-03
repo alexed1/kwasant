@@ -11,8 +11,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Kwasant</title>
     <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link rel='shortcut icon' type='image/x-icon' href='Content/img/favicon.ico' />
     <% Response.Write(Styles.Render("~/bundles/css/bootstrap23").ToHtmlString()); %>
 	<% Response.Write(Styles.Render("~/bundles/css/bootstrap-responsive").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/colorbox").ToHtmlString()); %>
