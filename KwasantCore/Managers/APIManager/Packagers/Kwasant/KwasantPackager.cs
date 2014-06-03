@@ -87,4 +87,18 @@ namespace KwasantCore.Managers.APIManager.Packagers.Kwasant
         public string Name { get; set; }
         public string Message { get; set; }
     }
+
+    public class DatatablesPackager 
+    {
+        private JsonSerializer jsonSerializer;
+
+        public DatatablesPackager()
+        {
+           
+            jsonSerializer = new JsonSerializer();
+        }
+        public string PackDatatableObject(object dataObject) {
+            return jsonSerializer.Serialize(dataObject);
+        }
+    }
 }
