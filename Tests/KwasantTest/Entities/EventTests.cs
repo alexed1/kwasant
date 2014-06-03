@@ -154,6 +154,7 @@ namespace KwasantTest.Entities
         {
             //SETUP      
             EventDO curOriginalEventDO = _fixture.TestEvent1();
+            curOriginalEventDO.CreatedBy = _fixture.TestUser();
             curOriginalEventDO.Attendees = new List<AttendeeDO> { _fixture.TestAttendee1() };
 
             //EXECUTE

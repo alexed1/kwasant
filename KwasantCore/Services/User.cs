@@ -1,22 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Configuration;
 using Data.Validators;
 using FluentValidation;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
-//using System.Data.Entity.Validation;
-using System.Diagnostics;
 using System.Web;
-using Microsoft.Owin.Host.SystemWeb;
-using System.Data.Entity;
-
 using Data.Interfaces;
 using Data.Entities;
-using StructureMap;
 using Data.Repositories;
 using Utilities;
 using Data.Infrastructure;

@@ -1,25 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Configuration;
-using Data.Infrastructure.StructureMap;
+﻿using System.Collections.Generic;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
-//using System.Data.Entity.Validation;
-using System.Diagnostics;
 using System.Web;
-using Microsoft.Owin.Host.SystemWeb;
 using System.Data.Entity;
-
 using Data.Interfaces;
 using Data.Entities;
-using StructureMap;
-using Data.Repositories;
-using Utilities;
 using Data.Infrastructure;
-using KwasantCore;
 using AutoMapper;
 
 namespace KwasantCore.Services
@@ -45,8 +32,8 @@ namespace KwasantCore.Services
         {
             DbContext context = _uow.Db as DbContext;
             var roleStore = new RoleStore<IdentityRole>(context);
-                var currRole = new RoleManager<IdentityRole>(roleStore);
-                currRole.Create(aspNetRolesDO);            
+            var currRole = new RoleManager<IdentityRole>(roleStore);
+            currRole.Create(aspNetRolesDO);
         }
 
         public List<RoleData> GetRoles()
