@@ -21,7 +21,6 @@ namespace KwasantWeb.Controllers
         private IBookingRequestRepository curBookingRequestRepository;
         private KwasantPackager API;
 
-        KwasantDbContext db = new KwasantDbContext();
 
         public EmailController(IUnitOfWork uow)
         {

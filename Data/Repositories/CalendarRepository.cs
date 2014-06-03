@@ -1,4 +1,5 @@
-﻿using Data.Interfaces;
+﻿using Data.Infrastructure;
+using Data.Interfaces;
 using Data.Entities;
 using Data.Validators;
 using FluentValidation;
@@ -8,8 +9,8 @@ namespace Data.Repositories
     public class CalendarRepository : GenericRepository<CalendarDO>, ICalendarRepository
     {
         private readonly CalendarValidator _curValidator;
-        internal CalendarRepository(IDBContext dbContext)
-            : base(dbContext)
+        internal CalendarRepository(KwasanttDbContext KwasantDbContext)
+            : base(KwasantDbContext)
         {
             _curValidator = new CalendarValidator();
         }

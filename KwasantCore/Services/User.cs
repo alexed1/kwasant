@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Validators;
 using FluentValidation;

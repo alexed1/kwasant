@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
@@ -7,8 +8,8 @@ namespace Data.Repositories
 
     public class CommunicationConfigurationRepository : GenericRepository<CommunicationConfigurationDO>, ICommunicationConfigurationRepository
     {
-        internal CommunicationConfigurationRepository(IDBContext dbContext)
-            : base(dbContext)
+        internal CommunicationConfigurationRepository(KwasanttDbContext KwasantDbContext)
+            : base(KwasantDbContext)
         {
 
         }

@@ -30,7 +30,7 @@ namespace KwasantWeb
             ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
 
             //Database.SetInitializer(new ShnexyInitializer());
-            KwasantDbContext db = new KwasantDbContext();
+            KwasanttDbContext db = new KwasanttDbContext();
             db.Database.Initialize(true);
 
             //AutoMapper create map configuration

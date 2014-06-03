@@ -7,8 +7,8 @@ namespace Data.Repositories
 {
     public class UserRepository : GenericRepository<UserDO>, IUserRepository
     {
-        internal UserRepository(IDBContext dbContext)
-            : base(dbContext)
+        internal UserRepository(KwasanttDbContext KwasantDbContext)
+            : base(KwasantDbContext)
         {
             
         }

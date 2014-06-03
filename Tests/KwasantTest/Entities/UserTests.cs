@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
@@ -31,17 +32,17 @@ namespace KwasantTest.Entities
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var role = new Role(uow);
-                role.Add(_fixture.TestRole());
+                var role = new Role();
+                role.Add(uow, _fixture.TestRole());
                 var u = new UserDO();
-                var user = new User(uow);
+                var user = new User();
 
                 //SETUP                 
 
                 UserDO currUserDO = new UserDO();
-                user.Add(currUserDO);
-
-                UserDO currRetrivedUserDO = user.FindByEmailId(currUserDO.EmailAddressID);
+                uow.UserRepository.Add(currUserDO);
+               
+                UserDO currRetrivedUserDO = uow.UserRepository.GetQuery().FirstOrDefault(uu => currUserDO.EmailAddressID == uu.EmailAddressID);
             }
         }
 

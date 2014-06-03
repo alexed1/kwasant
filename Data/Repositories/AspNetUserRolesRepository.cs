@@ -1,4 +1,5 @@
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
@@ -6,8 +7,8 @@ namespace Data.Repositories
     public class AspNetUserRolesRepository : GenericRepository<AspNetUserRolesDO>, IAspNetUserRolesRepository
     {
 
-        internal AspNetUserRolesRepository(IDBContext dbContext)
-            : base(dbContext)
+        internal AspNetUserRolesRepository(KwasanttDbContext KwasantDbContext)
+            : base(KwasantDbContext)
         {
             
         }

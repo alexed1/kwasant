@@ -36,7 +36,7 @@ namespace KwasantWeb.Controllers
 
         public ActionResult Index()
         {
-            UsersAdmin currUsersAdmin = new UsersAdmin(_uow);
+            UsersAdmin currUsersAdmin = new UsersAdmin();
             List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData();
             List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;
 
@@ -49,7 +49,7 @@ namespace KwasantWeb.Controllers
             if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            UsersAdmin currUsersAdmin = new UsersAdmin(_uow);
+            UsersAdmin currUsersAdmin = new UsersAdmin();
             List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData(userId, roleId);
 
             List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;

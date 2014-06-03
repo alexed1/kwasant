@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using Data.Infrastructure;
 using Data.Repositories;
 
 namespace Data.Interfaces
@@ -32,7 +33,7 @@ namespace Data.Interfaces
         /// <summary>
         /// Return the database reference for this UOW
         /// </summary>
-        DbContext Db { get; }
+        KwasanttDbContext Db { get; }
 
         /// <summary>
         /// Starts a transaction on this unit of work

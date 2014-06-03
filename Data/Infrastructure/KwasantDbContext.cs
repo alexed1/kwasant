@@ -14,13 +14,13 @@ using Data.Migrations;
 
 namespace Data.Infrastructure
 {
-    public class KwasantDbContext : IdentityDbContext<IdentityUser>, IDBContext
+    public class KwasanttDbContext : IdentityDbContext<IdentityUser>
     {
         //Do not change this value! If you want to change the database you connect to, edit your web.config file
-        public KwasantDbContext()
+        public KwasanttDbContext()
             : base("name=KwasantDB")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<KwasantDbContext, MigrationConfiguration>());
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<KwasanttDbContext, MigrationConfiguration>());
         }
 
         public override int SaveChanges()

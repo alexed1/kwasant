@@ -1,4 +1,6 @@
-﻿using Data.Entities;
+﻿using System.Data.Entity;
+using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
@@ -8,8 +10,8 @@ namespace Data.Repositories
     public class EmailRepository : GenericRepository<EmailDO>,  IEmailRepository
     {
 
-        internal EmailRepository(IDBContext dbContext)
-            : base(dbContext)
+        internal EmailRepository(KwasanttDbContext KwasantDbContext)
+            : base(KwasantDbContext)
         {
             
         }

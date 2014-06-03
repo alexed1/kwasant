@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
@@ -7,8 +8,8 @@ namespace Data.Repositories
 
     public class AttendeeRepository : GenericRepository<AttendeeDO>, IAttendeeRepository
     {
-        internal AttendeeRepository(IDBContext dbContext)
-            : base(dbContext)
+        internal AttendeeRepository(KwasanttDbContext KwasantDbContext)
+            : base(KwasantDbContext)
         {
 
         }

@@ -1,12 +1,13 @@
 ﻿using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
 {
     public class TrackingStatusRepository : GenericRepository<TrackingStatusDO>, ITrackingStatusRepository
     {
-        internal TrackingStatusRepository(IDBContext dbContext)
-            : base(dbContext)
+        internal TrackingStatusRepository(KwasanttDbContext KwasantDbContext)
+            : base(KwasantDbContext)
         {
 
         }

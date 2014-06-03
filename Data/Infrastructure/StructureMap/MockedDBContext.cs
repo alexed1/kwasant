@@ -12,9 +12,9 @@ using StructureMap.TypeRules;
 
 namespace Data.Infrastructure.StructureMap
 {
-    public class MockedDBContext : DbContext//, IDBContext
+    public class MockedKwasantDbContext : KwasanttDbContext
     {
-        public MockedDBContext()
+        public MockedKwasantDbContext()
         {
             MigrationConfiguration.Seed(new UnitOfWork(this));
         }
@@ -135,12 +135,11 @@ namespace Data.Infrastructure.StructureMap
             return (MockedDbSet)_cachedSets[entityType];
         }
 
-        public DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class
+        public new DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class
         {
             throw new System.NotImplementedException();
         }
 
-        public IUnitOfWork UnitOfWork { get; set; }
 
         private bool IsEntity(Type type)
         {

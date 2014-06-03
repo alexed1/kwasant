@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using KwasantCore.Services;
-using Data.Infrastructure;
-using Data.Repositories;
 using Data.Interfaces;
 using StructureMap;
 
@@ -16,7 +12,7 @@ namespace ViewModel.Models
         public UsersAdminViewModel()
         {
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            Role role = new Role(_uow);
+            Role role = new Role();
             List<RoleData> roleList = role.GetRoles();
             Roles = roleList;
         }        

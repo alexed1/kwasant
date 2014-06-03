@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Transactions;
@@ -11,9 +12,9 @@ namespace Data.Infrastructure
     public class UnitOfWork : IUnitOfWork
     {
         private TransactionScope _transaction;
-        private readonly IDBContext _context;
+        private readonly KwasanttDbContext _context;
 
-        internal UnitOfWork(IDBContext context)
+        internal UnitOfWork(KwasanttDbContext context)
         {
             context.UnitOfWork = this;
             _context = context;
@@ -220,7 +221,7 @@ namespace Data.Infrastructure
             
         }
 
-        public IDBContext Db
+        public KwasanttDbContext Db
         {
             get { return _context; }
         }

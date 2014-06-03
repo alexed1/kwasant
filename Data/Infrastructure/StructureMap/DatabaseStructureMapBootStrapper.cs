@@ -31,7 +31,7 @@ namespace Data.Infrastructure.StructureMap
             public LiveMode()
             {
                 //Do not remove _ => (This gives us lazy execution, and a new unit of work & context each call). Removing this will cause the application to be unstable with threads.
-                For<IUnitOfWork>().Use(_ => new UnitOfWork(new KwasantDbContext()));
+                For<IUnitOfWork>().Use(_ => new UnitOfWork(new KwasanttDbContext()));
             }
         }
 
@@ -39,7 +39,7 @@ namespace Data.Infrastructure.StructureMap
         {
             public TestMode()
             {
-                For<IUnitOfWork>().Use(new UnitOfWork(new MockedDBContext()));
+                For<IUnitOfWork>().Use(new UnitOfWork(new MockedKwasantDbContext()));
                 //For<IUserStore<UserDO>>().Use(a => a. new UserStore<UserDO>())
             }
         }

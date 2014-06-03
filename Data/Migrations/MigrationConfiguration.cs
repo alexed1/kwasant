@@ -16,16 +16,16 @@ using StructureMap;
 
 namespace Data.Migrations
 {
-    public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasantDbContext>
+    public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasanttDbContext>
     {
         public MigrationConfiguration()
         {
             //Do not ever turn this on! It will break database upgrades
             AutomaticMigrationsEnabled = false;
-            ContextKey = "Data.Infrastructure.KwasantDbContext";
+            ContextKey = "Data.Infrastructure.KwasantKwasantDbContext";
         }
 
-        protected override void Seed(KwasantDbContext context)
+        protected override void Seed(KwasanttDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 
@@ -35,7 +35,7 @@ namespace Data.Migrations
             //The object factory decides what context to use, based on the environment.
             //In this situation, we need to be sure to use the provided context.
 
-            //This class is _not_ mockable - it's a core part of EF. Some seeding, however, is mockable (see the static function Seed and how MockedDBContext uses it).
+            //This class is _not_ mockable - it's a core part of EF. Some seeding, however, is mockable (see the static function Seed and how MockedKwasantDbContext uses it).
             var unitOfWork = new UnitOfWork(context);
             Seed(unitOfWork);
 
@@ -83,7 +83,7 @@ namespace Data.Migrations
         /// <param name="unitOfWork"></param>
         private void AddRoles(IUnitOfWork unitOfWork)
         {
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(unitOfWork.Db as KwasantDbContext));
+            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(unitOfWork.Db as KwasanttDbContext));
 
             if (roleManager.RoleExists("Admin") == false)
             {
@@ -100,7 +100,7 @@ namespace Data.Migrations
         /// Add 'Admin' roles. Curretly only user with Email "alex@kwasant.com" and password 'alex@1234'
         /// has been added.
         /// </summary>
-        /// <param name="unitOfWork">of type ShnexyDbContext</param>
+        /// <param name="unitOfWork">of type ShnexyKwasantDbContext</param>
         /// <returns>True if created successfully otherwise false</returns>
         private void AddAdmins(IUnitOfWork unitOfWork)
         {
@@ -121,7 +121,7 @@ namespace Data.Migrations
         {
             try
             {
-                var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasantDbContext));
+                var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasanttDbContext));
                 if (um.FindByName(curUserName) == null)
                 {
                     
