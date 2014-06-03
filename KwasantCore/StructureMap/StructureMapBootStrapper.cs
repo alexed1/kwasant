@@ -1,3 +1,4 @@
+using System;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers;
@@ -55,6 +56,6 @@ namespace KwasantCore.StructureMap
             }
         }
 
-        #endregion
+        #endregion       
     }
 }

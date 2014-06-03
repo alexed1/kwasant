@@ -22,7 +22,7 @@ namespace KwasantWeb.Controllers.Helpers
             {
                 UsersAdminViewModel usersAdminViewModel = Mapper.Map<UsersAdminData, UsersAdminViewModel>(usersAdminData);
                 //Manually map first name field coz it does not map by Auto Mapper.
-                usersAdminViewModel.LastName = usersAdminData.LasttName;
+                usersAdminViewModel.LastName = usersAdminData.LastName;
                 currUsersAdminViewModels.Add(usersAdminViewModel);
             }
 

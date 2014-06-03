@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
@@ -7,19 +6,20 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Data.Interfaces;
 
 namespace Data.Infrastructure.StructureMap
 {
-    public class MockedDbSet<TEntityType> : IDbSet<TEntityType>
+    public class MockedDbSet : MockedDbSet<object>
+    {
+        
+    }
+    public class MockedDbSet<TEntityType> : DbSet<TEntityType>
         where TEntityType : class
     {
-        private readonly IDBContext _dbContext;
         private HashSet<TEntityType> _set = new HashSet<TEntityType>();
 
-        public MockedDbSet(IDBContext dbContext)
-        {
-            _dbContext = dbContext;
+        public MockedDbSet()
+        {            
             _set = new HashSet<TEntityType>();
         }
 
@@ -28,18 +28,12 @@ namespace Data.Infrastructure.StructureMap
             return _set.GetEnumerator();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
         public Expression Expression
         {
             get
             {
                 return _set.AsQueryable().Expression;
-            }
-            private set { }
+            }            
         }
 
         public Type ElementType
@@ -48,7 +42,6 @@ namespace Data.Infrastructure.StructureMap
             {
                 return _set.AsQueryable().ElementType;
             }
-            private set { }
         }
         public IQueryProvider Provider
         {
@@ -56,9 +49,9 @@ namespace Data.Infrastructure.StructureMap
             {
                 return _set.AsQueryable().Provider;
             }
-            private set { }
         }
-        public TEntityType Find(params object[] keyValues)
+
+        public override TEntityType Find(params object[] keyValues)
         {
             if (keyValues.Length == 0)
                 throw new Exception("No primary key provided for " + EntityName);
@@ -82,47 +75,42 @@ namespace Data.Infrastructure.StructureMap
                 Func<TEntityType, int> compiledSelector = GetEntityKeySelectorInt().Compile();
                 return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
             }
-
-            
         }
 
-        public TEntityType Add(TEntityType entity)
+        public override TEntityType Add(TEntityType entity)
         {
             _set.Add(entity);
             return entity;
         }
 
-        public TEntityType Remove(TEntityType entity)
+        public override TEntityType Remove(TEntityType entity)
         {
             _set.Remove(entity);
             return entity;
         }
 
-        public TEntityType Attach(TEntityType entity)
+        public override TEntityType Attach(TEntityType entity)
         {
             return entity;
         }
 
-        public TEntityType Create()
+        public override TEntityType Create()
         {
             throw new Exception("Not supported yet!");
         }
 
-        public TDerivedEntity Create<TDerivedEntity>() where TDerivedEntity : class, TEntityType
+        public override TDerivedEntity Create<TDerivedEntity>()
         {
             throw new Exception("Not supported yet!");
         }
 
-        public ObservableCollection<TEntityType> Local
+        public override ObservableCollection<TEntityType> Local
         {
             get
             {
                 return new ObservableCollection<TEntityType>(this);
             }
-            private set { }
         }
-
-
 
         protected Expression<Func<TEntityType, int>> GetEntityKeySelectorInt()
         {

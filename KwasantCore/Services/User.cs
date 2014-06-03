@@ -1,26 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Data.Interfaces;
 using Data.Validators;
 using FluentValidation;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using System.Web;
-using Data.Interfaces;
 using Data.Entities;
-using Data.Repositories;
+using StructureMap;
 using Utilities;
-using Data.Infrastructure;
 
 namespace KwasantCore.Services
 {
     public class User
     {
-        private readonly IUnitOfWork _uow;
-        private UserRepository userRepo;        
-
-        private IAuthenticationManager AuthenticationManager
+        private static IAuthenticationManager AuthenticationManager
         {
             get
             {
@@ -28,26 +26,19 @@ namespace KwasantCore.Services
             }
         }
 
-        public User(IUnitOfWork uow)
+        public UserDO Register (IUnitOfWork uow, string userName, string password, string role)
         {
-            _uow = uow;            
-        }
+            var userDO = new UserDO();
+            userDO.FirstName = userName;
+            userDO.LastName = userName;
+            userDO.UserName = userName;
+            uow.UserRepository.Add(userDO);
 
-        public void Add(UserDO userDO)
-        {
-            userRepo.Add(userDO);
-        }
+            UserValidator curUserValidator = new UserValidator();
+            curUserValidator.ValidateAndThrow(userDO);
 
-        public  UserDO Register (UserDO userDO, string role)
-        {
-
-            UserValidator _curUserValidator = new UserValidator();
-            _curUserValidator.ValidateAndThrow(userDO);
-
-            RegistrationStatus curRegStatus = RegistrationStatus.Successful;
-
-            var userManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
-            var result =  userManager.Create(userDO, userDO.Password);
+            UserManager<UserDO> userManager = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db));
+            IdentityResult result = userManager.Create(userDO, password);
             if (result.Succeeded)
             {
                 userManager.AddToRole(userDO.Id, role);
@@ -60,14 +51,14 @@ namespace KwasantCore.Services
             return userDO;
         }
 
-        public void UpdatePassword(UserDO userDO)
+        public void UpdatePassword(IUnitOfWork uow, UserDO userDO, string password)
         {
             if (userDO != null)
             {
-                var curUserManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
+                UserManager<UserDO> curUserManager = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db));
 
-                IdentityResult curResult = curUserManager.RemovePassword(userDO.Id); //remove old password
-                curResult = curUserManager.AddPassword(userDO.Id, userDO.Password); // add new password
+                curUserManager.RemovePassword(userDO.Id); //remove old password
+                var curResult = curUserManager.AddPassword(userDO.Id, password); // add new password
                 if (curResult.Succeeded == false)
                 {
                     throw new ApplicationException("There was a problem trying to change your password. Please try again.");
@@ -75,56 +66,49 @@ namespace KwasantCore.Services
             }
         }
 
-        public async Task<LoginStatus> Login(UserDO userDO, bool isPersistent)
+        public async Task<LoginStatus> Login(string username, string password, bool isPersistent)
         {
-            LoginStatus curLogingStatus = LoginStatus.Successful;
-            var curUserManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
-            var curUser = await curUserManager.FindAsync(userDO.UserName, userDO.Password);
-            if (curUser != null)
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-
-                var identity = await curUserManager.CreateIdentityAsync(
-                                curUser, DefaultAuthenticationTypes.ApplicationCookie);
-
-                if (identity.IsAuthenticated == false)
+                LoginStatus curLogingStatus = LoginStatus.Successful;
+                UserManager<UserDO> curUserManager = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db));
+                UserDO curUser = await curUserManager.FindAsync(username, password);
+                if (curUser != null)
                 {
-                    throw new ApplicationException("There was an error logging in. Please try again later.");
-                }
-                AuthenticationManager.SignIn(
-                   new AuthenticationProperties()
-                   {
-                       IsPersistent = isPersistent
-                   }, identity);
-            }
-            else
-            {
-                curLogingStatus = LoginStatus.InvalidCredential;
-            }
+                    AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
 
-            return curLogingStatus;
+                    ClaimsIdentity identity = await curUserManager.CreateIdentityAsync(curUser, DefaultAuthenticationTypes.ApplicationCookie);
+
+                    if (identity.IsAuthenticated == false)
+                    {
+                        throw new ApplicationException("There was an error logging in. Please try again later.");
+                    }
+                    AuthenticationManager.SignIn(new AuthenticationProperties
+                    {
+                        IsPersistent = isPersistent
+                    }, identity);
+                }
+                else
+                {
+                    curLogingStatus = LoginStatus.InvalidCredential;
+                }
+
+                return curLogingStatus;
+            }
         }
 
         public void LogOff()
         {
             AuthenticationManager.SignOut();
         }
-
-        public UserDO FindByEmailId(int Id)
+        
+        public bool ChangeUserRole(IUnitOfWork uow, IdentityUserRole identityUserRole)
         {
-            return userRepo.FindOne(p => p.EmailAddress.Id == Id);
+            UserManager<UserDO> userManager = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db));
+            RoleManager<IdentityRole> roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(uow.Db));
 
-        }
-
-        public bool ChangeUserRole(IdentityUserRole identityUserRole)
-        {
-            IdentityResult identityResult = null;            
-
-            var userManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(_uow.Db as KwasantDbContext));
-
-            var currCurrentIdentityRole = userManager.GetRoles(identityUserRole.UserId);
-            identityResult = userManager.RemoveFromRole(identityUserRole.UserId, currCurrentIdentityRole.ToList()[0]);
+            IList<string> currCurrentIdentityRole = userManager.GetRoles(identityUserRole.UserId);
+            IdentityResult identityResult = userManager.RemoveFromRole(identityUserRole.UserId, currCurrentIdentityRole.ToList()[0]);
 
             if (identityResult.Succeeded)
             {

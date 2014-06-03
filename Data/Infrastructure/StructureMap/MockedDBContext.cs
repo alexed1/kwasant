@@ -12,15 +12,15 @@ using StructureMap.TypeRules;
 
 namespace Data.Infrastructure.StructureMap
 {
-    public class MockedDBContext : IDBContext
+    public class MockedDBContext : DbContext//, IDBContext
     {
         public MockedDBContext()
         {
             MigrationConfiguration.Seed(new UnitOfWork(this));
         }
 
-        private Dictionary<Type, object> _cachedSets = new Dictionary<Type, object>();
-        public int SaveChanges()
+        private readonly Dictionary<Type, object> _cachedSets = new Dictionary<Type, object>();
+        public override int SaveChanges()
         {
             //When we save in memory, we need to make sure foreign entities are saved. An example:
             //eventDO.Emails.Add(new EmailDO();
@@ -120,19 +120,19 @@ namespace Data.Infrastructure.StructureMap
             return true;
         }
 
-        public IDbSet<TEntity> Set<TEntity>() where TEntity : class
+        public new DbSet<TEntity> Set<TEntity>() where TEntity : class
         {
             Type entityType = typeof (TEntity);
-            return (IDbSet<TEntity>) (Set(entityType));
+            return (DbSet<TEntity>) (object) (Set(entityType));
         }
 
-        private object Set(Type entityType)
+        private new MockedDbSet Set(Type entityType)
         {
             if (!_cachedSets.ContainsKey(entityType))
             {
                 _cachedSets[entityType] = Activator.CreateInstance(typeof(MockedDbSet<>).MakeGenericType(entityType), new []{ this });
             }
-            return _cachedSets[entityType];
+            return (MockedDbSet)_cachedSets[entityType];
         }
 
         public DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class

@@ -142,7 +142,6 @@
     <Compile Include="Infrastructure\FileManager.cs" />
     <Compile Include="Infrastructure\KwasantDbContext.cs" />
     <Compile Include="Infrastructure\UnitOfWork.cs" />
-    <Compile Include="Interfaces\IDBContext.cs" />
     <Compile Include="Interfaces\IPerson.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\ISaveHook.cs" />

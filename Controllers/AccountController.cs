@@ -10,15 +10,13 @@ using System.Net;
 using System.Configuration;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Repositories;
 using Data.Infrastructure;
+using StructureMap;
 using Utilities;
 using KwasantWeb.ViewModels;
 using KwasantCore.Services;
-using KwasantCore.Managers.IdentityManager;
 using KwasantWeb.Controllers.Helpers;
 using ViewModel.Models;
-using AutoMapper;
 
 namespace KwasantWeb.Controllers
 {
@@ -27,48 +25,38 @@ namespace KwasantWeb.Controllers
     /// </summary>
     public class KwasantEmailService : IIdentityMessageService
     {
-        IUnitOfWork _uow;
-        Account _account;
-
-        public KwasantEmailService(IUnitOfWork uow)
-        {
-            _uow = uow;
-            _account = new Account(_uow);
-        }
-
         public async Task SendAsync(IdentityMessage message)
         {
-            String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
 
-            EmailDO emailDO = new EmailDO();
-            emailDO.AddEmailRecipient(EmailParticipantType.TO, Email.GenerateEmailAddress(_uow, new MailAddress(message.Destination)));
-            emailDO.From = Email.GenerateEmailAddress(_uow, new MailAddress(senderMailAddress));
+                EmailDO emailDO = new EmailDO();
+                emailDO.AddEmailRecipient(EmailParticipantType.TO, Email.GenerateEmailAddress(uow, new MailAddress(message.Destination)));
+                emailDO.From = Email.GenerateEmailAddress(uow, new MailAddress(senderMailAddress));
 
-            emailDO.Subject = message.Subject;
-            emailDO.HTMLText = message.Body;
+                emailDO.Subject = message.Subject;
+                emailDO.HTMLText = message.Body;
 
-            Email userEmail = new Email(_uow, emailDO);
-            userEmail.Send();
+                Email userEmail = new Email(uow, emailDO);
+                userEmail.Send();
+            }
         }
     }
 
     [Authorize]
     public class AccountController : Controller
     {
-        private IUnitOfWork _uow;
-        private Account _account;
-        private UserManager<UserDO> _userManager;
-
-        public AccountController(IUnitOfWork uow)
+        private UserManager<UserDO> GetUserManager(IUnitOfWork uow)
         {
-            _uow = uow;
-            _account = new Account(_uow);
-            _userManager = new UserManager<UserDO>(new UserStore<UserDO>(_uow.Db as KwasantDbContext));
+            var um = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db));
 
             var provider = new Microsoft.Owin.Security.DataProtection.DpapiDataProtectionProvider("Sample");
-            _userManager.UserTokenProvider = new Microsoft.AspNet.Identity.Owin.DataProtectorTokenProvider<UserDO>(provider.Create("EmailConfirmation"));
+            um.UserTokenProvider = new Microsoft.AspNet.Identity.Owin.DataProtectorTokenProvider<UserDO>(provider.Create("EmailConfirmation"));
+            return um;
         }
-
+            
+            
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -97,7 +85,7 @@ namespace KwasantWeb.Controllers
         [AllowAnonymous]
         public ActionResult LogOff()
         {
-            _account.LogOff();
+            new User().LogOff();
             return RedirectToAction("Login", "Account");
         }
 
@@ -116,25 +104,13 @@ namespace KwasantWeb.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var curUserDO = new UserDO()
-                    {
-                        UserName = model.Email.Trim(),
-                        EmailAddress = _uow.EmailAddressRepository.GetOrCreateEmailAddress(model.Email.Trim()),
-                        FirstName = model.Email.Trim()
-                    };
-                    curUserDO.Password = model.Password.Trim();
-                    curUserDO.EmailConfirmed = true; //this line essentially disables email confirmation
-
-                    RegistrationStatus curRegStatus =  _account.Register(curUserDO);
+                    RegistrationStatus curRegStatus = new Account().Register(model.Email.Trim(), model.Password.Trim());
                     if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", "You are already registered with us. Please login.");
                     }
                     else
                     {
-                        //await SendEmailConfirmation(curUserDO); email confirmation is currently turned off
-                        
-
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -160,11 +136,7 @@ namespace KwasantWeb.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    UserDO curUserDO = new UserDO();
-                    curUserDO.UserName = model.Email.Trim();
-                    curUserDO.Password = model.Password.Trim();
-
-                    LoginStatus curLoginStatus = await _account.Login(curUserDO, model.RememberMe);
+                    LoginStatus curLoginStatus = await new Account().Login(model.Email.Trim(), model.Password, model.RememberMe);
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:
@@ -180,11 +152,7 @@ namespace KwasantWeb.Controllers
                             break;
 
                         default:
-                            if (curUserDO.EmailConfirmed == false)
-                            {
-                                ModelState.AddModelError("", "Please accept the confirmation mail sent to you to activate your account.");
-                            }
-                            else if (curLoginStatus == LoginStatus.Successful)
+                            if (curLoginStatus == LoginStatus.Successful)
                             {
                                 //return Redirect(!String.IsNullOrEmpty(returnUrl) ? returnUrl : "/index.aspx");
                                 //RedirectedToHomePage();
@@ -213,10 +181,14 @@ namespace KwasantWeb.Controllers
         /// <param name="curUserDO"></param>
         private async Task SendEmailConfirmation(UserDO curUserDO)
         {
-            string code = await _userManager.GenerateEmailConfirmationTokenAsync(curUserDO.Id);
-            var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = curUserDO.Id, code = code }, protocol: Request.Url.Scheme);
-            _userManager.EmailService = new KwasantEmailService(_uow);
-            await _userManager.SendEmailAsync(curUserDO.Id, "Confirm your account", "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">Click here</a>");
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var um = GetUserManager(uow);
+                string code = await um.GenerateEmailConfirmationTokenAsync(curUserDO.Id);
+                var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = curUserDO.Id, code = code }, protocol: Request.Url.Scheme);
+                um.EmailService = new KwasantEmailService();
+                await um.SendEmailAsync(curUserDO.Id, "Confirm your account", "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">Click here</a>");
+            }
         }
 
         [HttpGet]
@@ -226,11 +198,14 @@ namespace KwasantWeb.Controllers
             string returnViewName = "RegistrationSuccessful";
             try
             {
-                UserDO curUserDO = _uow.UserRepository.FindOne(u => u.Id == userId);
-                if (curUserDO != null)
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    curUserDO.EmailConfirmed = true;
-                    _uow.SaveChanges();
+                    UserDO curUserDO = uow.UserRepository.FindOne(u => u.Id == userId);
+                    if (curUserDO != null)
+                    {
+                        curUserDO.EmailConfirmed = true;
+                        uow.SaveChanges();
+                    }
                 }
             }
             catch (Exception ex)
@@ -248,7 +223,7 @@ namespace KwasantWeb.Controllers
             if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            UsersAdmin currUsersAdmin = new UsersAdmin(_uow);
+            UsersAdmin currUsersAdmin = new UsersAdmin();
             List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData(userId, roleId);
 
             List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;
@@ -261,35 +236,41 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult Edit(UsersAdminViewModel usersAdminViewModel)
         {
-            
-            //Check if any field edited by user on the font-end.
-            if (!IsDirty(usersAdminViewModel))
-                return RedirectToAction("Index", "User");
-
-            UserDO userDO = new UserDO();
-            userDO.Id = usersAdminViewModel.UserId;
-            userDO.FirstName = usersAdminViewModel.FirstName;
-            userDO.LastName = usersAdminViewModel.LastName;
-            userDO.EmailAddress = new EmailAddressDO() { Id = usersAdminViewModel.EmailAddressID, Address = usersAdminViewModel.EmailAddress };
-
-            userDO.EmailAddressID = usersAdminViewModel.EmailAddressID;
-            userDO.UserName = usersAdminViewModel.EmailAddress;
-
-            IdentityUserRole identityUserRole = null;
-
-            // Set RoleId & UserId if role is changed on the font-end other wise IdentityUserRole is set to null and user's role will not be updated.
-            if (usersAdminViewModel.RoleId != usersAdminViewModel.PreviousRoleId)
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                identityUserRole = new IdentityUserRole();
-                identityUserRole.RoleId = usersAdminViewModel.RoleId;
-                identityUserRole.UserId = usersAdminViewModel.UserId;
+                //Check if any field edited by user on the font-end.
+                if (!IsDirty(usersAdminViewModel))
+                    return RedirectToAction("Index", "User");
+
+                UserDO userDO = new UserDO();
+                userDO.Id = usersAdminViewModel.UserId;
+                userDO.FirstName = usersAdminViewModel.FirstName;
+                userDO.LastName = usersAdminViewModel.LastName;
+                userDO.EmailAddress = new EmailAddressDO()
+                {
+                    Id = usersAdminViewModel.EmailAddressID,
+                    Address = usersAdminViewModel.EmailAddress
+                };
+
+                userDO.EmailAddressID = usersAdminViewModel.EmailAddressID;
+                userDO.UserName = usersAdminViewModel.EmailAddress;
+
+                IdentityUserRole identityUserRole = null;
+
+                // Set RoleId & UserId if role is changed on the font-end other wise IdentityUserRole is set to null and user's role will not be updated.
+                if (usersAdminViewModel.RoleId != usersAdminViewModel.PreviousRoleId)
+                {
+                    identityUserRole = new IdentityUserRole();
+                    identityUserRole.RoleId = usersAdminViewModel.RoleId;
+                    identityUserRole.UserId = usersAdminViewModel.UserId;
+
+                    User user = new User();
+                    user.ChangeUserRole(uow, identityUserRole);
+                }
+
+                uow.SaveChanges();
+                return RedirectToAction("Index", "User");
             }
-
-            //bool blnResult = false;
-            //blnResult = 
-           _account.UpdateUser(userDO, identityUserRole);
-
-            return RedirectToAction("Index", "User");
         }
 
         private bool IsDirty(UsersAdminViewModel usersAdminViewModel)

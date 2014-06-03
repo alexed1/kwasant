@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Owin.Security;
-using System.Web;
 using System.Data.Entity;
-using Data.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
 using AutoMapper;
@@ -13,21 +10,6 @@ namespace KwasantCore.Services
 {
     public class Role
     {
-        private readonly IUnitOfWork _uow;
-
-        private IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                return HttpContext.Current.GetOwinContext().Authentication;
-            }
-        }
-
-        public Role(IUnitOfWork uow)
-        {
-            _uow = uow;
-        }
-
         public void Add(AspNetRolesDO aspNetRolesDO)
         {
             DbContext context = _uow.Db as DbContext;

@@ -10,7 +10,7 @@ namespace KwasantCore.Services
     {
         public String UserId { get; set; }
         public String FirstName { get; set; }
-        public String LasttName { get; set; }
+        public String LastName { get; set; }
         public int EmailAddressID { get; set; }
         public String EmailAddress { get; set; }
         public String RoleId { get; set; }

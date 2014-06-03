@@ -32,7 +32,7 @@ namespace Data.Interfaces
         /// <summary>
         /// Return the database reference for this UOW
         /// </summary>
-        IDBContext Db { get; }
+        DbContext Db { get; }
 
         /// <summary>
         /// Starts a transaction on this unit of work
