@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.WindowsAzure;
 
-namespace UtilitiesLib
+namespace Utilities
 {
     public static class ConfigRepository
     {

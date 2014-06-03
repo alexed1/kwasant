@@ -13,7 +13,8 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <% Response.Write(Styles.Render("~/bundles/css/bootstrap2.3").ToHtmlString()); %>
+    <% Response.Write(Styles.Render("~/bundles/css/bootstrap23").ToHtmlString()); %>
+	<% Response.Write(Styles.Render("~/bundles/css/bootstrap-responsive").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/colorbox").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/frontpage").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/fontawesome").ToHtmlString()); %>
@@ -46,8 +47,8 @@
                 <!-- <a class="brand goTop"  style="background-image: url(Content/img/logo.png);"></a> -->
                 <div class="nav-collapse">
                     <ul class="nav pull-right">
-                        <li data-section="1"><a href="#services">How it Works</a></li>
-                        <li data-section="2"><a href="#price-bg">FAQ</a></li>
+                        <li data-section="2"><a href="#how_to_works">How it Works</a></li>
+                        <li data-section="3"><a href="#faq">FAQ</a></li>
                         <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
                         <li><a href="/Account/Login">SignUp/Login</a></li>
                         <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
@@ -82,20 +83,19 @@
                 
             </div>
         </div>
+    </section>
+    <section id="how_to_works" class="row text-block" data-section="2">
+        <br/>
         <div class="light-bg">
             <div class="container">
-                <h2><i class="icon-cogs"></i> How it Works </h2>
+				<h2><i class="fa fa-cogs"></i> How it Works </h2>
                 <div class="section clearfix">
                     <strong>1. Send one of your emails to Kwa@sant.com</strong>
-
                     <p></p>
-
-                    <strong>
-                        2. One of our Bookers will read the thread and build a meeting invitation
-                    </strong>  <p></p>
-                    <strong>
-                        3. The meeting invitation gets sent back to you and your attendees
-                    </strong><p></p>
+					<strong>2. One of our Bookers will read the thread and build a meeting invitation</strong>  
+					<p></p>
+					<strong>3. The meeting invitation gets sent back to you and your attendees</strong>
+					<p></p>
                     <strong>4. Add it to your calendar with a single click</strong>
                     <p></p>
                     <p></p>
@@ -104,209 +104,172 @@
                     <br />
                     <br />
                     <br />
-                    <!-- this is a section that breaks up the website -->
-                    <div id="services-bg" class="parallax" style="background-image: url(Content/img/homepage89.png);">
-                        <br />
-                        <br />
-                        <div class="#fff-bg">
-                            <div class="text">
-                                <blockquote>
-                                    <h2>Kwasant </h2>
-
-                                    <small> It just takes one step..</small>
-                                </blockquote>
-                            </div>
-                            <a href="#" data-section="2" class="toSection"><i class="icon-double-angle-down"></i></a>
-                        </div>
-                    </div>
-
-                    <h2>Details</h2>
-                    <p></p>
-                    <p>We take the emails you provide to us and put them in front of of our human Booking Agents, who do what a personal assistant would do: they read the message, extract the key elements about the meeting, and enter them into a calendar.<p>
-                        This generates a Meeting Invitation that we email back to you using the open “ICS” standard. If you're using common calendaring software like Google Calendar, Apple iCal, and Microsoft Outlook, these emails show up in your inbox and allow you to add them to your calendar with one click.
-
-                        Think of us as your personal assistant. If we can read your email and figure out the meeting time, we’ll do it. You don’t have to give the information to us in any special format.
-                        If the information you send us is too ambiguous, we’ll send you back a request for clarification. We delete all email we receive 7 days after the event is scheduled.
-                    </p>
                 </div>
-                <div class="row-fluid section">
-
-                    <div class="span12 text-center">
-                        <!-- <h3 class="with-border">Watch who we are</h3> -->
-                        
-                        <img src="Content/img/How_it_works_diagram.png" />
-                        <!-- <div class="videoWrapper">
-                            <iframe src="http://player.vimeo.com/video/20596477?color=39ae77" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
-                        </div> -->
-                    </div>
-                </div>
-
-
-
+			</div>
+			<div>
                 <!-- this is a section that breaks up the website -->
-                <div id="services-bg" class="parallax" style="background-image: url(Content/img/homepagesecond.jpg);">
+                <div id="services-bg" class="parallax" style="background-image: url(Content/img/homepage89.png);">
+                    <br />
+                    <br />
+                    <div class="#fff-bg">
+                        <div class="text">
+                            <blockquote>
+                                <h2>Kwasant </h2>
+
+                                <small> It just takes one step..</small>
+                            </blockquote>
+                        </div>
+						<a href="#" data-section="2" class="toSection"><i class="fa fa-angle-double-down"></i></a>
+                    </div>
+                </div>
+				<div class="container">
+					<section id="details" class="details-section">
+						<div>
+							<h2>Details</h2>
+							<p></p>
+							<p>We take the emails you provide to us and put them in front of of our human Booking Agents, who do what a personal assistant would do: they read the message, extract the key elements about the meeting, and enter them into a calendar.<p>
+							This generates a Meeting Invitation that we email back to you using the open “ICS” standard. If you're using common calendaring software like Google Calendar, Apple iCal, and Microsoft Outlook, these emails show up in your inbox and allow you to add them to your calendar with one click.
+
+							Think of us as your personal assistant. If we can read your email and figure out the meeting time, we’ll do it. You don’t have to give the information to us in any special format.
+							If the information you send us is too ambiguous, we’ll send you back a request for clarification. We delete all email we receive 7 days after the event is scheduled.
+							</p>
+						</div>
+						<div class="row-fluid section">
+							<div class="span12 text-center">
+								<!-- <h3 class="with-border">Watch who we are</h3> -->                        
+								<img src="Content/img/How_it_works_diagram.png" />
+								<!-- <div class="videoWrapper">
+								<iframe src="http://player.vimeo.com/video/20596477?color=39ae77" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+								</div> -->
+							</div>
+						</div>
+					</section>
+				</div>
+                <!-- this is a section that breaks up the website -->
+				<div id="services-bg-sec" class="parallax" style="background-image: url(Content/img/homepagesecond.jpg);">
                     <br />
                     <br />
                     <div class="#fff-bg">
                         <div class="text">
                             <blockquote>
                                 <h2>kwaSant - The Next Thing You Can't Live Without</h2>
-
                                 <small> We use your email to build your calendar.</small>
                             </blockquote>
                         </div>
-                        <a href="#" data-section="2" class="toSection"><i class="icon-double-angle-down"></i></a>
+						<a href="#" data-section="2" class="toSection"><i class="fa fa-angle-double-down"></i></a>
                     </div>
                 </div>
-
+				<div class="container faq-section">
                 <!-- this is the faq section -->
-                <section id="faq" class="text-block" data-section="2">
-                    <h1 class="text-center">FAQ</h1>
-                    <div class="row span-12 text-center">
-                        <div class="panel-group" id="accordion">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-                                            Just what problem are you solving here?
-                                        </a>
-                                    </h4>
-                                </div>
-                                <div id="collapseOne" class="panel-collapse collapse in">
-                                    <div class="panel-body">
-                                        The internet offers fantastic services these days, but it’s still an annoying task to convert conversations into useful meeting requests. Some people have personal assistants to help with this, but most of us don’t. Now, you can get personal assistant help when you need it.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-                                            How do you make money?
-                                        </a>
-                                    </h4>
-                                </div>
-                                <div id="collapseTwo" class="panel-collapse collapse">
-                                    <div class="panel-body">
-                                        Someday, we’re probably going to charge a small monthly fee for booking services. But everyone using BookIt now will get at least one free year of service.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-                                            What email addresses do you use?
-                                        </a>
-                                    </h4>
-                                </div>
-                                <div id="collapseThree" class="panel-collapse collapse">
-                                    <div class="panel-body">
-                                        We send your meeting request right back to the address you sent your information from. However, you’ll soon be able to specify which address to use.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
-                                            What else do you do?
-                                        </a>
-                                    </h4>
-                                </div>
-                                <div id="collapseFour" class="panel-collapse collapse">
-                                    <div class="panel-body">
-                                        We're working on adding a bunch of additional ways you can save time by tapping into our web assistants.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">
-                                            Can you also send a meeting invite to the other attendees?
-                                        </a>
-                                    </h4>
-                                </div>
-                                <div id="collapseFive" class="panel-collapse collapse">
-                                    <div class="panel-body">
-                                        Yes, they'll get one too.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix">
-                                            What if I don't give you enough detail about the meeting? Do you just guess?
-                                        </a>
-                                    </h4>
-                                </div>
-                                <div id="collapseSix" class="panel-collapse collapse">
-                                    <div class="panel-body">
-                                        In general, we'll book the information we're sure about, and if necessary, email you for clarification.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h4 class="panel-title">
-                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven">
-                                            Do you have a mascot?
-                                        </a>
-                                    </h4>
-                                </div>
-                                <div id="collapseSeven" class="panel-collapse collapse">
-                                    <div class="panel-body">
-                                        Yes. Feast your eyes on Kwasant the Kat
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                <p></p>
-
-               
-            </div>
-            <div class="row-fluid section">
-                <!-- <div class="span6">
-                    <h3 class="with-border">Our Skills</h3>
-                    <div class="progress-block">
-                        <div class="progress">
-                            <div class="bar" style="width: 80%;"></div>
-                            <a data-section="3" class="progress-name toSection" href="#">Design</a>
-                            <span class="value">80%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="bar " style="width: 75%;"></div>
-                            <a data-section="3" class="progress-name toSection" href="#">Development</a>
-                            <span class="value">75%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="bar" style="width: 40%;"></div>
-                            <a data-section="3" class="progress-name toSection" href="#">Branding</a>
-                            <span class="value">40%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="bar" style="width: 60%;"></div>
-                            <a data-section="3" class="progress-name toSection" href="#">Usability</a>
-                            <span class="value">60%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="bar" style="width: 100%;"></div>
-                            <a data-section="3" class="progress-name toSection" href="#">Concepts</a>
-                            <span class="value">100%</span>
-                        </div>
-                    </div>
-                </div> -->
-               
-            </div>
-
-
-
-
-
+					<section id="faq" class="text-block" data-section="3">
+						<h1 class="text-center">FAQ</h1>
+						<div class="row span-12 text-center">
+							<div class="panel-group" id="accordion">
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+												Just what problem are you solving here?
+											</a>
+										</h4>
+									</div>
+									<div id="collapseOne" class="panel-collapse collapse in">
+										<div class="panel-body">
+											The internet offers fantastic services these days, but it’s still an annoying task to convert conversations into useful meeting requests. Some people have personal assistants to help with this, but most of us don’t. Now, you can get personal assistant help when you need it.
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+												How do you make money?
+											</a>
+										</h4>
+									</div>
+									<div id="collapseTwo" class="panel-collapse collapse">
+										<div class="panel-body">
+											Someday, we’re probably going to charge a small monthly fee for booking services. But everyone using BookIt now will get at least one free year of service.
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+												What email addresses do you use?
+											</a>
+										</h4>
+									</div>
+									<div id="collapseThree" class="panel-collapse collapse">
+										<div class="panel-body">
+											We send your meeting request right back to the address you sent your information from. However, you’ll soon be able to specify which address to use.
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
+												What else do you do?
+											</a>
+										</h4>
+									</div>
+									<div id="collapseFour" class="panel-collapse collapse">
+										<div class="panel-body">
+											We're working on adding a bunch of additional ways you can save time by tapping into our web assistants.
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">
+												Can you also send a meeting invite to the other attendees?
+											</a>
+										</h4>
+									</div>
+									<div id="collapseFive" class="panel-collapse collapse">
+										<div class="panel-body">
+											Yes, they'll get one too.
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseSix">
+												What if I don't give you enough detail about the meeting? Do you just guess?
+											</a>
+										</h4>
+									</div>
+									<div id="collapseSix" class="panel-collapse collapse">
+										<div class="panel-body">
+											In general, we'll book the information we're sure about, and if necessary, email you for clarification.
+										</div>
+									</div>
+								</div>
+								<div class="panel panel-default">
+									<div class="panel-heading">
+										<h4 class="panel-title">
+											<a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven">
+												Do you have a mascot?
+											</a>
+										</h4>
+									</div>
+									<div id="collapseSeven" class="panel-collapse collapse">
+										<div class="panel-body">
+											Yes. Feast your eyes on Kwasant the Kat
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</section>
+				</div>
+			</div>			
+        </div>
+    </section>  
             <!-- meet the team
 
                                 <div class="section">
@@ -948,9 +911,10 @@
                 </section> -->
 
             <section id="contacts" class="text-block" data-section="4">
+                <br/>
                 <div class="dark-bg">
                     <div class="container">
-                        <h2><i class="icon-map-marker"></i> Get in touch</h2>
+                        <h2><i class="fa fa-map-marker"></i> Get in touch</h2>
                         <p>Drop us a line.</p>
                         <div class="row-fluid section">
                             <div class="span8">
@@ -979,7 +943,7 @@
                                 <h4>Get in touch</h4>
                                 <div class="info-block">
                                     <article class="clearfix">
-                                        <i class="icon-globe"></i>
+                                        <i class="fa fa-globe"></i>
                                         <address>
                                             3741 Buchanan Street<br />
                                             San Francisco, CA 94123<br />
@@ -987,11 +951,11 @@
                                         </address>
                                     </article>
                                     <article class="clearfix">
-                                        <i class="icon-phone"></i>
+                                        <i class="fa fa-phone"></i>
                                         <p>8 417 274 2933</p>
                                     </article>
                                     <article class="clearfix">
-                                        <i class="icon-envelope"></i>
+                                        <i class="fa fa-envelope"></i>
                                         <p><a href="mailto:info@kwasant.com">info@kwasant.com</a></p>
                                     </article>
                                 </div>
@@ -1002,24 +966,24 @@
                                     <ul class="unstyled clearfix">
                                         <li>
                                             <a target="_blank" title="" href="#">
-                                                <i class="icon-twitter"></i>
+                                                <i class="fa fa-twitter"></i>
                                             </a>
                                         </li>
                                         <li>
                                             <a target="_blank" title="" href="#">
-                                                <i class="icon-facebook"></i>
-                                            </a>
-                                        </li>
-
-                                        <li>
-                                            <a target="_blank" title="" href="#">
-                                                <i class="icon-linkedin"></i>
+                                                <i class="fa fa-facebook"></i>
                                             </a>
                                         </li>
 
                                         <li>
                                             <a target="_blank" title="" href="#">
-                                                <i class="icon-google-plus"></i>
+                                                <i class="fa fa-linkedin"></i>
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a target="_blank" title="" href="#">
+                                                <i class="fa fa-google-plus"></i>
                                             </a>
                                         </li>
 
@@ -1053,7 +1017,7 @@
                 </div>
             </footer>
 
-            <a class="goTop goTop-link"><i class="icon-arrow-up"></i></a>
+            <a class="goTop goTop-link"><i class="fa fa-arrow-up"></i></a>
 
 
             <% Response.Write(Scripts.Render("~/bundles/js/jquery").ToHtmlString()); %>

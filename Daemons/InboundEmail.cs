@@ -12,7 +12,6 @@ using S22.Imap;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
-using UtilitiesLib;
 
 namespace Daemons
 {
@@ -66,6 +65,8 @@ namespace Daemons
             {
                 client = _client ??
                          new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
+
+                
             }
             catch (ConfigurationException ex)
             {
@@ -96,7 +97,8 @@ namespace Daemons
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
                 BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
                 
-                var message = client.GetMessage(uid);
+                var message = client.GetMessage(uid);                
+                
                 try
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);

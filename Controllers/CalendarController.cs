@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
@@ -34,6 +35,13 @@ namespace KwasantWeb.Controllers
             }
         }
 
+   
+ 
+
+
+        #endregion "Action"
+
+        #region "DayPilot-Related Methods"
         public ActionResult Day(int bookingRequestID)
         {
             return new DayPilotCalendarControl(bookingRequestID).CallBack(this);

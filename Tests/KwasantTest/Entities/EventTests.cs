@@ -9,6 +9,7 @@ using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using Utilities;
 
 namespace KwasantTest.Entities
 {
@@ -29,35 +30,36 @@ namespace KwasantTest.Entities
         }
 
         //this is a core integration test: get the ics message through
-        [Test, Ignore]
+        [Test]
         [Category("Invitation")]
         public void Event_Dispatch_CanSendICS()
         {
             EventRepository eventRepo = _uow.EventRepository;
-            AttendeeRepository attendeesRepo = _uow.AttendeeRepository;
-            List<AttendeeDO> attendees =
-                new List<AttendeeDO>
-                {
-                    _fixture.TestAttendee1(),
-                    _fixture.TestAttendee2()
-                };
-            attendees.ForEach(attendeesRepo.Add);
+            //AttendeeRepository attendeesRepo = _uow.AttendeeRepository;
+            //List<AttendeeDO> attendees =
+            //    new List<AttendeeDO>
+            //    {
+            //        _fixture.TestAttendee1(),
+            //        _fixture.TestAttendee2()
+            //    };
+            //attendees.ForEach(attendeesRepo.Add);
 
-            EventDO eventDO = new EventDO
-            {
-                Description = "This is my test invitation",
-                Summary = @"My test invitation",
-                Location = @"Some place!",
-                StartDate = DateTime.Today.AddMinutes(5),
-                EndDate = DateTime.Today.AddMinutes(15),
-                Attendees = attendees,
-                Emails = new List<EmailDO>()
-            };
+            EventDO eventDO = _fixture.TestEvent4();
             eventRepo.Add(eventDO);
             var curEvent = new Event();
-            curEvent.Dispatch(eventDO);
+            int emailID = curEvent.Dispatch(eventDO);
 
-            //Verify success
+            //Verify emails created in memory
+            EmailDO resultEmail = eventDO.Emails[0];
+            string expectedSubject = string.Format(ConfigRepository.Get("emailSubject"), curEvent.GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
+
+            Assert.AreEqual(resultEmail.Subject, expectedSubject );
+
+            //Verify emails stored to disk properly
+            EmailDO retrievedEmail = _uow.EmailRepository.GetByKey(emailID);
+            Assert.AreEqual(retrievedEmail.Subject, expectedSubject);
+
+
             //use imap to load unread messages from the test customer account
             //verify that one of the messages is a proper ICS message
             //retry every 15 seconds for 1 minute
@@ -168,5 +170,33 @@ namespace KwasantTest.Entities
             //VERIFY            
             Assert.IsNull(curDeletedEventDO);
         }
+
+
+        //CreatesOutboundEmails when an event is confirmed
+        //setup:
+        //create a sample event
+        //dispatch it using event#dispatch
+        //verify that an email has been created
+
+        [Test]
+        [Category("Event")]
+        public void Event_CreateFailsIfNoCreatedBy()
+        {
+            //SETUP      
+            EventDO curOriginalEventDO = _fixture.TestEvent1();
+            curOriginalEventDO.Attendees = new List<AttendeeDO> { _fixture.TestAttendee1() };
+            curOriginalEventDO.CreatedBy = null;
+
+            //EXECUTE
+            Assert.Throws<ValidationException>(() =>
+            {
+                _uow.EventRepository.Add(curOriginalEventDO);
+                _uow.SaveChanges();
+
+            });
+            
+
+        }
+
     }
 }

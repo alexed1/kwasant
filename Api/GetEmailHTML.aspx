@@ -85,8 +85,8 @@ img
         <div>
             <table width="100%">
                 <tr>
-                    <td class="displayLabel">To:</td>
-                    <td><%=GetTo()%></td>
+                    <td class="displayLabel">Email:</td>
+                    <td><%=GetEmail()%></td>
                 </tr>
                 <tr>
                     <td class="displayLabel">CC:</td>
@@ -96,10 +96,7 @@ img
                     <td class="displayLabel">BCC:</td>
                     <td><%=GetBCC()%></td>
                 </tr>
-                <tr>
-                    <td class="displayLabel">Email:</td>
-                    <td><%=GetEmail()%></td>
-                </tr>
+
                 <tr>
                     <td class="displayLabel">From:</td>
                     <td><%=GetFromPerson()%></td>

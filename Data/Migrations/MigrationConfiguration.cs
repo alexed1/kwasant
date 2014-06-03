@@ -20,8 +20,7 @@ namespace Data.Migrations
     {
         public MigrationConfiguration()
         {
-            AutomaticMigrationsEnabled = true;
-            //AutomaticMigrationDataLossAllowed = false;
+            AutomaticMigrationsEnabled = false;
             ContextKey = "Data.Infrastructure.KwasantDbContext";
         }
 
@@ -124,7 +123,8 @@ namespace Data.Migrations
                 var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasantDbContext));
                 if (um.FindByName(curUserName) == null)
                 {
-                    var user = new UserDO
+                    
+                    var user = new UserDO()
                     {
                         UserName = curUserName,
                         EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),

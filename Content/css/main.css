@@ -1,3 +1,8 @@
+.panel-body {
+    line-height: 1.2em;
+}
+
+
 html,
 button,
 input,
@@ -320,7 +325,11 @@ p .btn{
     width: 45px;
 	z-index: 20;
 	cursor: pointer;
-}	
+}
+.goTop-link i.fa-arrow-up {
+	height: 45px;
+	line-height: 45px;
+}
 .label, .badge {
     background-color: #D85E17;
     color: #FFFFFF;
@@ -846,7 +855,7 @@ blockquote h2 i{
 	padding: 30px 0 45px;
 }
 .light-bg{
-	padding: 30px 0 45px;
+	padding: 30px 0;
 	position: relative;
 	background: #0E0E0E;
 }
@@ -908,6 +917,16 @@ blockquote h2 i{
 }
 .link-block li a:hover{
 	color: #D85E17;
+}
+
+/*FAQ section*/
+.faq-section {
+	padding-top: 30px;
+}
+
+/*details section*/
+#details.details-section {
+	padding-top: 30px;
 }
 
 /*services*/
@@ -1572,7 +1591,7 @@ address {color: #D85E17;}
 }
 
 body {
-  padding-top: 20px;
+  /*padding-top: 20px;*/
 }
 
 .footer {

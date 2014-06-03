@@ -1,15 +1,18 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.EnterpriseServices;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Infrastructure;
 using Data.Repositories;
 using StructureMap;
 using Utilities;
+using KwasantCore.Managers;
 using KwasantCore.Managers.IdentityManager;
 using AutoMapper;
+using KwasantCore.Managers.CommunicationManager;
 
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -41,25 +44,25 @@ namespace KwasantCore.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public async Task<RegistrationStatus> Register(UserDO userRegStrings)
+        public  RegistrationStatus Register(UserDO userRegStrings)
         {
             RegistrationStatus curRegStatus = RegistrationStatus.Pending;
-
+            UserDO curUserDO = null;
             //check if we know this email address
 
             EmailAddressDO existingEmailAddressDO = _uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == userRegStrings.Email);
             if (existingEmailAddressDO != null)
             {
-                //this should be improved. doesn't take advantage of inheritance.
-                UserDO curUserDO = _curUser.FindByEmailId(existingEmailAddressDO.Id);
+                
+                 curUserDO = _curUser.FindByEmailId(existingEmailAddressDO.Id);
                 if (curUserDO != null)
                 {
-
                     if (curUserDO.Password == null)
                     {
                         //this is an existing implicit user, who sent in a request in the past, had a UserDO created, and now is registering. Add the password
                         curUserDO.Password = userRegStrings.Password;
                         _identityManager.AttachPassword(curUserDO);
+                        curRegStatus = RegistrationStatus.Successful;
                     }
                     else
                     {
@@ -67,18 +70,18 @@ namespace KwasantCore.Services
                         curRegStatus = RegistrationStatus.UserMustLogIn;
                     }
                 }
-                else  //existingEmailAddressDO is Person
-                {
-                    curRegStatus = RegistrationStatus.Successful;
                 }
-            }
             else
             {
                 //this email address unknown.  new user. create an EmailAddress object, then create a User
-                curRegStatus = await _identityManager.RegisterNewUser(userRegStrings);
+                
+                curUserDO =  _curUser.Register(userRegStrings, "Customer");
                 curRegStatus = RegistrationStatus.Successful;
+                
             }
 
+            if (curRegStatus == RegistrationStatus.Successful)
+                AlertManager.CustomerCreated(curUserDO);
             return curRegStatus;
         }
 

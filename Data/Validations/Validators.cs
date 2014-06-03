@@ -30,7 +30,11 @@ namespace Data.Validators
 
             RuleFor(eventDO => eventDO.Attendees).SetValidator(new ListMustContainAtLeastOneItem<AttendeeDO>())
                 .WithMessage("Event must have at least one attendee");
-
+            
+            RuleFor(eventDO => eventDO.CreatedBy)
+                .NotNull()
+                .WithMessage("CreatedBy is Required");
+        
         }
 
         //=================================================================
@@ -41,9 +45,9 @@ namespace Data.Validators
             ValidationResult results = Validate(curEventDO);
             if (results.IsValid)
                 return;
-  
+
             throw new ValidationException(results.Errors);
-            
+
         }
     }
 
@@ -71,5 +75,5 @@ namespace Data.Validators
         }
     }
 
- 
+
 }
