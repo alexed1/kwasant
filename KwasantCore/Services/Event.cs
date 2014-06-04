@@ -108,7 +108,8 @@ namespace KwasantCore.Services
                 outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
             }
 
-            outboundEmail.Subject = String.Format("Invitation from: ", GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
+            outboundEmail.Subject = "Invitation from: " + GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +
+                                    eventDO.StartDate;
 
             var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
             var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation,
