@@ -57,7 +57,7 @@ namespace KwasantTest.Entities
 
             //Verify emails created in memory
             EmailDO resultEmail = eventDO.Emails[0];
-            string expectedSubject = string.Format(ConfigRepository.Get("emailSubject"), curEvent.GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
+            string expectedSubject = string.Format("Invitation from: ", curEvent.GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
 
             Assert.AreEqual(resultEmail.Subject, expectedSubject );
 
