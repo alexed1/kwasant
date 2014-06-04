@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Web;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
@@ -96,6 +97,7 @@ namespace KwasantCore.Services
             //configure the sender information
             string fromEmail = ConfigRepository.Get("fromEmail");
             string fromName = ConfigRepository.Get("fromName");
+
             var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
             fromEmailAddr.Name = fromName;
             outboundEmail.From = fromEmailAddr;

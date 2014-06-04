@@ -1,7 +1,10 @@
 ﻿@{
 
-var linkTo = Utilities.ConfigRepository.Get("emailLinkTo");
-var imageURL = Utilities.ConfigRepository.Get("emailImageURL");
+var serverURL = Utilities.Server.ServerUrl;
+
+var linkTo = serverURL;
+var imageURL = serverURL + "Content/img/EmailLogo.png";
+
 var time = Model.IsAllDay
 ? "All day - " + Model.StartDate.ToString("ddd d MMM")
 : Model.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " + Model.EndDate.ToString("hh:mm tt");

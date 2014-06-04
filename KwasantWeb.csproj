@@ -395,6 +395,7 @@
     <Content Include="Content\img\client-6.png" />
     <Content Include="Content\img\controls.png" />
     <Content Include="Content\img\Croissant\croissant_nolic.jpg" />
+    <Content Include="Content\img\EmailLogo.png" />
     <Content Include="Content\img\example_using_kwasant_email.png" />
     <Content Include="Content\img\from_this_to_this.png" />
     <Content Include="Content\img\glyphicons-halflings-white.png" />
