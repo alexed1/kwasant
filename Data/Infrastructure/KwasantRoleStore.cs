@@ -8,12 +8,12 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Data.Infrastructure
 {
-    public class KwasantRoleStore : RoleStore<AspNetRolesDO>, IKwasantRoleStore
+    public class KwasantRoleStore : RoleStore<IdentityRole>, IKwasantRoleStore
     {
-        public IRoleStore<AspNetRolesDO, string> SetUnitOfWork(IUnitOfWork uow)
+        public IRoleStore<IdentityRole, string> SetUnitOfWork(IUnitOfWork uow)
         {
             if (uow.Db is DbContext)
-                return new RoleStore<AspNetRolesDO>(uow.Db as DbContext);
+                return new RoleStore<IdentityRole>(uow.Db as DbContext);
             throw new Exception("Invalid mocking setup.");
         }
     }

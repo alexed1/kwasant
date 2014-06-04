@@ -104,7 +104,7 @@ namespace KwasantCore.Services
         public bool ChangeUserRole(IUnitOfWork uow, IdentityUserRole identityUserRole)
         {
             UserManager<UserDO> userManager = GetUserManager(uow);
-            RoleManager<AspNetRolesDO> roleManager = Role.GetRoleManager(uow);
+            RoleManager<IdentityRole> roleManager = Role.GetRoleManager(uow);
 
             IList<string> currCurrentIdentityRole = userManager.GetRoles(identityUserRole.UserId);
             IdentityResult identityResult = userManager.RemoveFromRole(identityUserRole.UserId, currCurrentIdentityRole.ToList()[0]);

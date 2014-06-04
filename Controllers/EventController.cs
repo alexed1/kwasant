@@ -6,6 +6,7 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using DayPilot.Web.Mvc.Json;
+using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
@@ -14,6 +15,7 @@ using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
+    [KwasantAuthorize(Roles = "Admin")]
     public class EventController : Controller
     {
       

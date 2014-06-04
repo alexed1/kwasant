@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Linq;
 using System.Reflection;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -87,6 +88,7 @@ namespace Data.Migrations
         {
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(unitOfWork.Db as KwasantDbContext));
 
+            var roles = roleManager.Roles.ToList();
             if (roleManager.RoleExists("Admin") == false)
             {
                 roleManager.Create(new IdentityRole("Admin"));
@@ -124,9 +126,10 @@ namespace Data.Migrations
             try
             {
                 var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasantDbContext));
-                if (um.FindByName(curUserName) == null)
+                var existingUser = um.FindByName(curUserName);
+                if (existingUser == null)
                 {
-                    
+
                     var user = new UserDO()
                     {
                         UserName = curUserName,
@@ -135,29 +138,30 @@ namespace Data.Migrations
                         EmailConfirmed = true
                     };
 
-                    IdentityResult ir = um.Create(user, curPassword);          
+                    IdentityResult ir = um.Create(user, curPassword);
 
                     if (!ir.Succeeded)
                         return;
 
                     um.AddToRole(user.Id, "Admin");
                 }
-            }
-            catch (DbEntityValidationException ex)
-            {
-                var sb = new StringBuilder();
-
-                foreach (var failure in ex.EntityValidationErrors)
+                else
                 {
-                    sb.AppendFormat("{0} failed validation\n", failure.Entry.Entity.GetType());
-                    foreach (var error in failure.ValidationErrors)
-                    {
-                        sb.AppendFormat("- {0} : {1}", error.PropertyName, error.ErrorMessage);
-                        sb.AppendLine();
-                    }
+                    if (!um.IsInRole(existingUser.Id, "Admin"))
+                        um.AddToRole(existingUser.Id, "Admin");
                 }
-
-                throw new DbEntityValidationException("Entity Validation Failed - errors follow:\n" + sb, ex); // Add the original exception as the innerException
+            }
+            catch (DbEntityValidationException e)
+            {
+                string errorFormat = @"Validation failed for entity [{0}]. Validation errors:" + Environment.NewLine + @"{1}";
+                var errorList = new List<String>();
+                foreach (var entityValidationError in e.EntityValidationErrors)
+                {
+                    var entityName = entityValidationError.Entry.Entity.GetType().Name;
+                    var errors = String.Join(Environment.NewLine, entityValidationError.ValidationErrors.Select(a => a.PropertyName + ": " + a.ErrorMessage));
+                    errorList.Add(String.Format(errorFormat, entityName, errors));
+                }
+                throw new Exception(String.Join(Environment.NewLine + Environment.NewLine, errorList) + Environment.NewLine, e);
             }
         }
     }

@@ -37,10 +37,10 @@ namespace KwasantCore.Services
             }
         }
 
-        public static RoleManager<AspNetRolesDO> GetRoleManager(IUnitOfWork uow)
+        public static RoleManager<IdentityRole> GetRoleManager(IUnitOfWork uow)
         {
             var roleStore = ObjectFactory.GetInstance<IKwasantRoleStore>();
-            return new RoleManager<AspNetRolesDO>(roleStore.SetUnitOfWork(uow));
+            return new RoleManager<IdentityRole>(roleStore.SetUnitOfWork(uow));
         }
     }
 }

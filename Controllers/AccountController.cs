@@ -50,7 +50,7 @@ namespace KwasantWeb.Controllers
     public class AccountController : Controller
     {          
         [System.Web.Http.AllowAnonymous]
-        public ActionResult Login(string returnUrl)
+        public ActionResult Index(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
             return View();
@@ -78,7 +78,7 @@ namespace KwasantWeb.Controllers
         public ActionResult LogOff()
         {
             new User().LogOff();
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Index", "Account");
         }
 
         [System.Web.Http.AllowAnonymous]
@@ -128,7 +128,9 @@ namespace KwasantWeb.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    LoginStatus curLoginStatus = await new Account().Login(model.Email.Trim(), model.Password, model.RememberMe);
+
+                    string username = model.Email.Trim();
+                    LoginStatus curLoginStatus = await new Account().Login(username, model.Password, model.RememberMe);
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:
@@ -146,9 +148,21 @@ namespace KwasantWeb.Controllers
                         default:
                             if (curLoginStatus == LoginStatus.Successful)
                             {
-                                //return Redirect(!String.IsNullOrEmpty(returnUrl) ? returnUrl : "/index.aspx");
-                                //RedirectedToHomePage();
-                                return RedirectToAction("Index", "Admin");
+                                if (!String.IsNullOrEmpty(returnUrl))
+                                    return Redirect(returnUrl);
+
+                                bool isAdmin;
+                                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                                {
+                                    var userManager = KwasantCore.Services.User.GetUserManager(uow);
+                                    var user = userManager.FindByName(username);
+                                    isAdmin = userManager.IsInRole(user.Id, "Admin");
+                                }
+
+                                if (isAdmin)
+                                    return RedirectToAction("Index", "Admin");
+
+                                return Redirect("/");
                             }
                             break;
                     }
@@ -164,7 +178,7 @@ namespace KwasantWeb.Controllers
             }
 
             // If we got this far, something failed, redisplay form
-            return View(model);
+            return View("Index", model);
         }
 
         /// <summary>

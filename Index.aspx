@@ -50,7 +50,7 @@
                         <li data-section="2"><a href="#how_to_works">How it Works</a></li>
                         <li data-section="3"><a href="#faq">FAQ</a></li>
                         <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
-                        <li><a href="/Account/Login">SignUp/Login</a></li>
+                        <li><a href="/Account/Index">SignUp/Login</a></li>
                         <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
                         <li data-section="4"><a href="#contacts">Contact</a></li>
                     </ul>

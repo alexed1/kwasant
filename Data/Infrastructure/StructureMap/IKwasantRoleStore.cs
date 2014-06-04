@@ -5,8 +5,8 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Data.Infrastructure.StructureMap
 {
-    public interface IKwasantRoleStore : IRoleStore<AspNetRolesDO, string>
+    public interface IKwasantRoleStore : IRoleStore<IdentityRole, string>
     {
-        IRoleStore<AspNetRolesDO, string> SetUnitOfWork(IUnitOfWork uow);
+        IRoleStore<IdentityRole, string> SetUnitOfWork(IUnitOfWork uow);
     }
 }

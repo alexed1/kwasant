@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Data.Infrastructure.StructureMap
 {
@@ -14,36 +15,36 @@ namespace Data.Infrastructure.StructureMap
             _uow.Dispose();
         }
 
-        public Task CreateAsync(AspNetRolesDO role)
+        public Task CreateAsync(IdentityRole role)
         {
             _uow.AspNetRolesRepository.Add(role);
             return Task.FromResult<object>(null);
         }
 
-        public Task UpdateAsync(AspNetRolesDO role)
+        public Task UpdateAsync(IdentityRole role)
         {
             return Task.FromResult<object>(null);
         }
 
-        public Task DeleteAsync(AspNetRolesDO role)
+        public Task DeleteAsync(IdentityRole role)
         {
             _uow.AspNetRolesRepository.Remove(role);
             return Task.FromResult<object>(null);
         }
 
-        public Task<AspNetRolesDO> FindByIdAsync(string roleId)
+        public Task<IdentityRole> FindByIdAsync(string roleId)
         {
             var role = _uow.AspNetRolesRepository.GetQuery().FirstOrDefault(r => r.Id == roleId);
             return Task.FromResult(role);
         }
 
-        public Task<AspNetRolesDO> FindByNameAsync(string roleName)
+        public Task<IdentityRole> FindByNameAsync(string roleName)
         {
             var role = _uow.AspNetRolesRepository.GetQuery().FirstOrDefault(r => r.Name == roleName);
             return Task.FromResult(role);
         }
 
-        public IRoleStore<AspNetRolesDO, string> SetUnitOfWork(IUnitOfWork uow)
+        public IRoleStore<IdentityRole, string> SetUnitOfWork(IUnitOfWork uow)
         {
             _uow = uow;
             return this;

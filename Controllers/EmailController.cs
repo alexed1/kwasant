@@ -10,11 +10,13 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
+using KwasantCore.Managers.IdentityManager;
 using Utilities;
 using Utilities.Logging;
 
 namespace KwasantWeb.Controllers
 {
+    [KwasantAuthorize(Roles = "Admin")]
     public class EmailController : Controller
     {
         private IUnitOfWork _uow;

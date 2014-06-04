@@ -13,6 +13,10 @@ namespace Data.Migrations
             AddColumn("dbo.AspNetUserRoles", "Discriminator", c => c.String(nullable: false, maxLength: 128));
             CreateIndex("dbo.AspNetRoles", new[] { "AspNetUserRolesDO_UserId", "AspNetUserRolesDO_RoleId" });
             AddForeignKey("dbo.AspNetRoles", new[] { "AspNetUserRolesDO_UserId", "AspNetUserRolesDO_RoleId" }, "dbo.AspNetUserRoles", new[] { "UserId", "RoleId" });
+
+            //Remove all existing roles and role assignments - the table is updated and will be repopulated with the seeding
+            Sql(@"delete from AspNetUserRoles
+delete from AspNetRoles");
         }
         
         public override void Down()
