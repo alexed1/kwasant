@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
@@ -19,6 +20,7 @@ namespace KwasantTest.Entities
     {
         public IUnitOfWork _uow;
         private FixtureData _fixture;
+        private Event _event;
 
         [SetUp]
         public void Setup()
@@ -26,8 +28,9 @@ namespace KwasantTest.Entities
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
 
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            
             _fixture = new FixtureData();
+            _event = new Event();
+            
         }
 
         //this is a core integration test: get the ics message through
@@ -57,8 +60,9 @@ namespace KwasantTest.Entities
 
             //Verify emails created in memory
             EmailDO resultEmail = eventDO.Emails[0];
-            string expectedSubject = string.Format("Invitation from: ", curEvent.GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
-
+            string expectedSubject =
+                string.Format("Invitation from: " + _event.GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +
+                              eventDO.StartDate);
             Assert.AreEqual(resultEmail.Subject, expectedSubject );
 
             //Verify emails stored to disk properly
