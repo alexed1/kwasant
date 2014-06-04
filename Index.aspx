@@ -1,4 +1,5 @@
-﻿<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+﻿<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!-->
@@ -17,10 +18,8 @@
 	<% Response.Write(Styles.Render("~/bundles/css/bootstrap-responsive").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/colorbox").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/frontpage").ToHtmlString()); %>
-    <% Response.Write(Styles.Render("~/bundles/css/fontawesome").ToHtmlString()); %>
-
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-
+	<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <script src="Content/js/respond.min.js"></script>
@@ -30,8 +29,6 @@
     <!--[if lt IE 7]>
         <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-
-
     <div class="navbar navbar-fixed-top">
         <div class="navbar-inner">
             <div class="container">
@@ -40,25 +37,23 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </a>
-                <a class="brand goTop" href="index.aspx"><img class="floating" src="Content/img/perfect-krawsant.png"> Kwasant</a>
+                <a class="brand goTop" href="index.aspx"><img class="floating" src="Content/img/perfect-krawsant.png" alt="Kwasant" title="Kwasant">Kwasant</a>
                 <!-- <img src="img/logo.png"></a> -->
-                <br />
-                
+                <br />                
                 <!-- <a class="brand goTop"  style="background-image: url(Content/img/logo.png);"></a> -->
                 <div class="nav-collapse">
                     <ul class="nav pull-right">
-                        <li data-section="2"><a href="#how_to_works">How it Works</a></li>
-                        <li data-section="3"><a href="#faq">FAQ</a></li>
+                        <li data-section="2"><a href="#how_to_works" title="How it Works">How it Works</a></li>
+                        <li data-section="3"><a href="#faq" title="FAQ">FAQ</a></li>
                         <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
-                        <li><a href="/Account/Index">SignUp/Login</a></li>
+                        <li><a href="/Account/Index" title="SignUp/Login">SignUp/Login</a></li>
                         <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
-                        <li data-section="4"><a href="#contacts">Contact</a></li>
+                        <li data-section="4"><a href="#contacts" title="Contact">Contact</a></li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
-
 
     <div id="welcome" class="parallax" style="background-image: url(Content/img/background-test9.jpg);">
         <div id="logotext" class="text">
@@ -72,13 +67,9 @@
         <div class="features dark-bg">
             <div class="container">
                 <div class="row-fluid">
-                    <h2 class="text-center"><b>Schedule a Meeting in One Step</h2></b>
-                    <%--<article class="span4">
-                        <i class=
-                    "icon-resize-full"></i>--%>
-   
-
-                    <img class="pull-center" src="Content/img/from_this_to_this.png" />
+                    <h2 class="text-center"><b>Schedule a Meeting in One Step</b></h2>
+                    <%--<article class="span4"> <i class="icon-resize-full"></i>--%>  
+                    <img class="pull-center" src="Content/img/from_this_to_this.png" alt="Schedule a Meeting in One Step" />
                 </div>
                 
             </div>
@@ -100,7 +91,7 @@
                     <p></p>
                     <p></p>
                     <p></p>
-                    <img class="pull-center"  src="Content/img/example_using_kwasant_email.png" />
+                    <img class="pull-center" src="Content/img/example_using_kwasant_email.png" alt="Example using kwasant email" />
                     <br />
                     <br />
                     <br />
@@ -114,8 +105,7 @@
                     <div class="#fff-bg">
                         <div class="text">
                             <blockquote>
-                                <h2>Kwasant </h2>
-
+                                <h2>Kwasant</h2>
                                 <small> It just takes one step..</small>
                             </blockquote>
                         </div>
@@ -128,16 +118,14 @@
 							<h2>Details</h2>
 							<p></p>
 							<p>We take the emails you provide to us and put them in front of of our human Booking Agents, who do what a personal assistant would do: they read the message, extract the key elements about the meeting, and enter them into a calendar.<p>
-							This generates a Meeting Invitation that we email back to you using the open “ICS” standard. If you're using common calendaring software like Google Calendar, Apple iCal, and Microsoft Outlook, these emails show up in your inbox and allow you to add them to your calendar with one click.
-
-							Think of us as your personal assistant. If we can read your email and figure out the meeting time, we’ll do it. You don’t have to give the information to us in any special format.
-							If the information you send us is too ambiguous, we’ll send you back a request for clarification. We delete all email we receive 7 days after the event is scheduled.
-							</p>
+							This generates a Meeting Invitation that we email back to you using the open "ICS" standard. If you're using common calendaring software like Google Calendar, Apple iCal, and Microsoft Outlook, these emails show up in your inbox and allow you to add them to your calendar with one click.
+							Think of us as your personal assistant. If we can read your email and figure out the meeting time, we'll do it. You don’t have to give the information to us in any special format.
+							If the information you send us is too ambiguous, we'll send you back a request for clarification. We delete all email we receive 7 days after the event is scheduled.</p>
 						</div>
 						<div class="row-fluid section">
 							<div class="span12 text-center">
 								<!-- <h3 class="with-border">Watch who we are</h3> -->                        
-								<img src="Content/img/How_it_works_diagram.png" />
+								<img src="Content/img/How_it_works_diagram.png" alt="How it works" />
 								<!-- <div class="videoWrapper">
 								<iframe src="http://player.vimeo.com/video/20596477?color=39ae77" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 								</div> -->
@@ -919,7 +907,7 @@
                         <div class="row-fluid section">
                             <div class="span8">
                                 <h3 class="with-border">Want to ask something?</h3>
-                                <form class="form clearfix" action="">
+                                <form class="form clearfix" action="#">
                                     <input type="text" class="span12" placeholder="Name" name="name">
                                     <input type="email" class="span12" placeholder="Email" name="email">
                                     <input type="text" class="span12" placeholder="Subject" name="subject">
@@ -932,9 +920,7 @@
                     </div>
                 </div>
             </section>
-            <!--
-                    <iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.ru/?ie=UTF8&amp;ll=37.775735,-122.422543&amp;spn=0.070962,0.153122&amp;t=m&amp;z=13&amp;output=embed"></iframe>
-                -->
+            <!-- <iframe width="100%" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.ru/?ie=UTF8&amp;ll=37.775735,-122.422543&amp;spn=0.070962,0.153122&amp;t=m&amp;z=13&amp;output=embed"></iframe> -->
             <footer>
                 <div class="light-bg">
                     <div class="container">
@@ -946,8 +932,7 @@
                                         <i class="fa fa-globe"></i>
                                         <address>
                                             3741 Buchanan Street<br />
-                                            San Francisco, CA 94123<br />
-
+                                            San Francisco, CA 94123
                                         </address>
                                     </article>
                                     <article class="clearfix">
@@ -965,24 +950,24 @@
                                 <div class="social">
                                     <ul class="unstyled clearfix">
                                         <li>
-                                            <a target="_blank" title="" href="#">
+                                            <a target="_blank" title="Twitter" href="#">
                                                 <i class="fa fa-twitter"></i>
                                             </a>
                                         </li>
                                         <li>
-                                            <a target="_blank" title="" href="#">
+                                            <a target="_blank" title="Facebook" href="#">
                                                 <i class="fa fa-facebook"></i>
                                             </a>
                                         </li>
 
                                         <li>
-                                            <a target="_blank" title="" href="#">
+                                            <a target="_blank" title="Linkedin" href="#">
                                                 <i class="fa fa-linkedin"></i>
                                             </a>
                                         </li>
 
                                         <li>
-                                            <a target="_blank" title="" href="#">
+                                            <a target="_blank" title="Google+" href="#">
                                                 <i class="fa fa-google-plus"></i>
                                             </a>
                                         </li>
@@ -1017,7 +1002,7 @@
                 </div>
             </footer>
 
-            <a class="goTop goTop-link"><i class="fa fa-arrow-up"></i></a>
+            <a class="goTop goTop-link" title="Go Top"><i class="fa fa-arrow-up"></i></a>
 
 
             <% Response.Write(Scripts.Render("~/bundles/js/jquery").ToHtmlString()); %>
