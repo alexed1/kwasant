@@ -183,6 +183,10 @@
     <Compile Include="Migrations\201406020755535_Synchronise.Designer.cs">
       <DependentUpon>201406020755535_Synchronise.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406042127475_initial.cs" />
+    <Compile Include="Migrations\201406042127475_initial.Designer.cs">
+      <DependentUpon>201406042127475_initial.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\AttendeeRepository.cs" />
@@ -266,6 +270,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406020755535_Synchronise.resx">
       <DependentUpon>201406020755535_Synchronise.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406042127475_initial.resx">
+      <DependentUpon>201406042127475_initial.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
