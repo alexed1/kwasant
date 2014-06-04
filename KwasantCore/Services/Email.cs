@@ -60,13 +60,14 @@ namespace KwasantCore.Services
             MandrillPackager.PostMessageSendTemplate(templateName, message, mergeFields);
         }
 
-        public void Send()
+        public int Send()
         {
             var gmailPackager = ObjectFactory.GetInstance<IEmailPackager>();
             gmailPackager.Send(_curEmailDO);
             _curEmailDO.Status = EmailStatus.DISPATCHED;
             _uow.EmailRepository.Add(_curEmailDO);
             _uow.SaveChanges();
+            return _curEmailDO.Id;
         }
 
         public static void InitialiseWebhook(String url)
