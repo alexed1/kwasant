@@ -22,7 +22,9 @@ namespace Data.Migrations
         {
             //Do not ever turn this on! It will break database upgrades
             AutomaticMigrationsEnabled = false;
-            ContextKey = "Data.Infrastructure.KwasantKwasantDbContext";
+
+            //Do not modify this, otherwise migrations will run twice!
+            ContextKey = "Data.Infrastructure.KwasantDbContext";
         }
 
         protected override void Seed(KwasantDbContext context)
