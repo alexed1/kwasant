@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
@@ -90,8 +91,11 @@ namespace KwasantWeb.Controllers
                 {
                     uow.EventRepository.Add(eventDO);
                 }
-
+                eventDO.CreatedBy = uow.BookingRequestRepository.GetByKey(eventViewModel.BookingRequestID).User;
                 uow.SaveChanges();
+                Event _event = new Event();
+                _event.Dispatch(eventDO);
+
             }
 
             return JavaScript(SimpleJsonSerializer.Serialize(true));
