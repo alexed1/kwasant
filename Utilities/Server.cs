@@ -7,5 +7,7 @@ namespace Utilities
         public static String ServerPhysicalPath { get; set; }
         public static String ServerHostName { get; set; }
         public static String ServerUrl { get; set; }
+
+        public static bool IsDevMode { get; set; }
     }
 }

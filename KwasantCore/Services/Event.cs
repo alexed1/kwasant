@@ -11,6 +11,7 @@ using Data.Validators;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
+using Microsoft.AspNet.Identity;
 using RazorEngine;
 using StructureMap;
 using Utilities;

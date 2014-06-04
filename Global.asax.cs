@@ -67,6 +67,7 @@ namespace KwasantWeb
             if (!_IsInitialised)
             {
                 SetServerUrl(HttpContext.Current);
+                Utilities.Server.IsDevMode = Utilities.Server.ServerHostName.Contains("localhost");
                 _IsInitialised = true;
             }
         }

@@ -4,6 +4,12 @@ var serverURL = Utilities.Server.ServerUrl;
 
 var linkTo = serverURL;
 var imageURL = serverURL + "Content/img/EmailLogo.png";
+if(Utilities.Server.IsDevMode)
+{
+imageURL = "kwasant.com/Content/img/EmailLogo.png";
+}
+
+var customerID = "2e5479ea-9276-4458-b44c-3ff4e4e840dd";
 
 var time = Model.IsAllDay
 ? "All day - " + Model.StartDate.ToString("ddd d MMM")
@@ -69,6 +75,9 @@ var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
                                     }
                                 </tbody>
                             </table>
+                        </td>
+                        <td>
+                            <a href="@linkTo/Api/EventResponse.aspx?answer=going&userID=@customerID">I'm going!</a>
                         </td>
                     </tr>
                 </tbody>
