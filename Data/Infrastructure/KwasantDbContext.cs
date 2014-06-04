@@ -95,7 +95,9 @@ namespace Data.Infrastructure
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
+            modelBuilder.Entity<UserAgentInfoDO>().ToTable("UserAgentInfos");
             modelBuilder.Entity<UserDO>().ToTable("Users");
+
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)
