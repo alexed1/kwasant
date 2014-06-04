@@ -5,6 +5,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using AutoMapper;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Infrastructure;
@@ -62,6 +63,42 @@ namespace KwasantWeb.Controllers
                 return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Calendar", action = "Index", id = id }));
             }
             //return View(email);
+        }
+
+        [HttpGet]
+        public ActionResult SetStatus(int? id, bool isprocessed = false)
+        {
+            if (id == null)
+            {
+                return Json("fail", JsonRequestBehavior.AllowGet);
+            }
+            BookingRequestDO bookingRequestDO = curBookingRequestRepository.GetByKey(id);
+
+            if (bookingRequestDO == null)
+            {
+                return Json("fail", JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                using (var uow = _uow)
+                {
+                    var bookrequest = Mapper.Map<BookingRequestDO>(bookingRequestDO);
+                    bookrequest.Status = EmailStatus.INVALID;
+                    if (isprocessed) {
+                        bookrequest.Status = EmailStatus.PROCESSED;
+                    }
+                    bookrequest.User = bookingRequestDO.User;
+                    uow.SaveChanges();
+                    if (isprocessed)
+                    {
+                        return RedirectToAction("Index", "BookingRequest");
+                    }
+                    else
+                    {
+                        return Json("success", JsonRequestBehavior.AllowGet);
+                    }
+                }
+            }
         }
 
 	}

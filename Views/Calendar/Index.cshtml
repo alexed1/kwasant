@@ -123,6 +123,8 @@
     <div class="row">
         <div id="emailInfoBox" class="col-md-4 container_box" style="border: none; height: 100%; padding: 0px; width: 420px;">
             <iframe src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style="border: none; height: 100%; margin-top: -7px; width: 100%;"></iframe>
+            <a href="@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id,isprocessed=true})">
+            <button style="width: 120px;font-size:14px;height:40px;">Mark Processed</button></a>
         </div>
 
         <div id="divCalender" class="col-md-6 container_box" style="padding-bottom: 79px;">

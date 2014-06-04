@@ -8,9 +8,10 @@
 <table id="tblbookingrequest" class="table">
     <thead>
         <tr>
-            <th>HTMLText</th>
-            <th>Subject</th>
             <th style="width:15%">Action</th>
+            <th>Body</th>
+            <th>Subject</th>
+            <th>From</th>
         </tr>
     </thead>
 </table>
@@ -23,22 +24,38 @@
             var table = $('#tblbookingrequest').DataTable({
                 data: JSON.parse(response),
                 columns: [
-                    { data: 'htmltext' },
-                    { data: 'subject' },
                     {
                         data: null,
                         defaultContent: "<button value='detail'>Details</button>&nbsp;&nbsp;<button value='invalid'>Invalid</button>"
-                    }
+                    },
+                    { data: 'htmltext' },
+                    { data: 'subject' },
+                    { data: 'from[]' }
                 ],
             });
 
             $('#tblbookingrequest tbody').on('click', 'button', function () {
                 var data = table.row($(this).parents('tr')).data();
+                var parentcontrol = this;
                 if ($(this).val() == "detail") {
                     window.location.href = '@Url.Action("Details")' + "/" + data.id;
                 }
                 else {
-                    $(this).parents('tr').remove();
+                    $.ajax({
+                        url: "/BookingRequest/SetStatus",
+                        dataType: "json",
+                        contentType: "application/json",
+                        type: "GET",
+                        data: { id: data.id },
+                        success: function (response) {
+                            if (response == "success") {
+                                $(parentcontrol).parents('tr').remove();
+                            }
+                            else {
+                                alert("Process fail, please try again.");
+                            }
+                        }
+                    });
                 }
             });
         }
