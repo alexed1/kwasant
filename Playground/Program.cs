@@ -23,9 +23,6 @@ namespace Playground
 
             KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);
-
-            Expression<Func<EventDO, int>> selector = a => a.Id;
-            var name = (selector.Body as dynamic).Member.Name;
         }
     }
 }

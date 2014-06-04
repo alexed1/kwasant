@@ -76,6 +76,9 @@ namespace KwasantWeb.App_Start
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap30").Include(
                 "~/Content/css/bootstrap3.0.css"
                 ));
+			bundles.Add(new StyleBundle("~/bundles/css/bootstrap-responsive").Include(
+				"~/Content/css/bootstrap-responsive.css"
+				));
             bundles.Add(new StyleBundle("~/bundles/css/colorbox").Include(
                 "~/Content/css/colorbox.css"
                 ));
