@@ -210,12 +210,22 @@
             return false;
         }
 
+        var fromDate = $('#StartDate');
+        var toDate = $('#EndDate');
+
+        if (!($('#chkAllDay').is(':checked'))) {
+            if (fromDate.data("DateTimePicker").getDate() > toDate.data("DateTimePicker").getDate()) {
+                alert("Start date can't be greater than End Date");
+                return false;
+            }
+        }
+
         var f = $("#f");
         if (!f.valid())
             return false;
 
-        var fromDate = $('#StartDate');
-        var toDate = $('#EndDate');
+        //var fromDate = $('#StartDate');
+        //var toDate = $('#EndDate');
 
         fromDate.data("DateTimePicker").enable();
         toDate.data("DateTimePicker").enable();
@@ -253,12 +263,12 @@
         fromDate.datetimepicker();
         toDate.datetimepicker();
 
-        $("#StartDate").on("dp.change", function (e) {
-            toDate.data("DateTimePicker").setMinDate(e.date);
-        });
-        $("#EndDate").on("dp.change", function (e) {
-            fromDate.data("DateTimePicker").setMaxDate(e.date);
-        });
+        //$("#StartDate").on("dp.change", function (e) {
+        //    toDate.data("DateTimePicker").setMinDate(e.date);
+        //});
+        //$("#EndDate").on("dp.change", function (e) {
+        //    fromDate.data("DateTimePicker").setMaxDate(e.date);
+        //});
 
         fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString("MM/dd/yyyy hh:mm tt")');
         toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString("MM/dd/yyyy hh:mm tt")');
