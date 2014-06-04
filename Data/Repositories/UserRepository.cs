@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
@@ -12,22 +13,24 @@ namespace Data.Repositories
             
         }
 
-        public UserDO GetOrCreateUser(BookingRequestDO currMessage)
+        public UserDO GetOrCreateUser(BookingRequestDO curMessage)
         {
-            string fromEmailAddress = currMessage.From.Address;
+            string fromEmailAddress = curMessage.From.Address;
             UserRepository userRepo = UnitOfWork.UserRepository;
-            UserDO curUser = userRepo.DBSet.Local.FirstOrDefault(c => c.PersonDO.EmailAddress.Address == fromEmailAddress);
+            UserDO curUser = userRepo.DBSet.Local.FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
             if(curUser == null)
-                curUser = userRepo.GetQuery().FirstOrDefault(c => c.PersonDO.EmailAddress.Address == fromEmailAddress);
+                curUser = userRepo.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
 
             if (curUser == null)
             {
                 curUser = new UserDO();
                 curUser.UserName = fromEmailAddress;
-                curUser.PersonDO = new PersonDO();
-                curUser.PersonDO.FirstName = currMessage.From.Name;
-                curUser.PersonDO.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
-                userRepo.Add(curUser);
+                curUser.FirstName = curMessage.From.Name;
+                curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
+                curMessage.User = curUser;
+                userRepo.Add(curUser);          
+                UnitOfWork.SaveChanges();
+                AlertManager.CustomerCreated(curUser);
             }
             return curUser;
         }

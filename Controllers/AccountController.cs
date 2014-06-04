@@ -14,6 +14,7 @@ using Data.Infrastructure;
 using Utilities;
 using KwasantWeb.ViewModels;
 using KwasantCore.Services;
+using KwasantCore.Managers.IdentityManager;
 
 namespace KwasantWeb.Controllers
 {
@@ -34,8 +35,8 @@ namespace KwasantWeb.Controllers
             String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
 
             EmailDO emailDO = new EmailDO();
-            emailDO.AddEmailParticipant(EmailParticipantType.TO, Email.GenerateEmailAddress(_uow, new MailAddress(message.Destination)));
-            emailDO.AddEmailParticipant(EmailParticipantType.FROM, Email.GenerateEmailAddress(_uow, new MailAddress(senderMailAddress)));
+            emailDO.AddEmailRecipient(EmailParticipantType.TO, Email.GenerateEmailAddress(_uow, new MailAddress(message.Destination)));
+            emailDO.From = Email.GenerateEmailAddress(_uow, new MailAddress(senderMailAddress));
 
             emailDO.Subject = message.Subject;
             emailDO.HTMLText = message.Body;
@@ -103,18 +104,22 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model)
+        public  ActionResult Register(RegisterViewModel model)
         {
             try
             { 
                 if (ModelState.IsValid)
                 {
-                    UserDO curUserDO = new UserDO();
-                    curUserDO.UserName = model.Email.Trim();
+                    var curUserDO = new UserDO()
+                    {
+                        UserName = model.Email.Trim(),
+                        EmailAddress = _uow.EmailAddressRepository.GetOrCreateEmailAddress(model.Email.Trim()),
+                        FirstName = model.Email.Trim()
+                    };
                     curUserDO.Password = model.Password.Trim();
                     curUserDO.EmailConfirmed = true; //this line essentially disables email confirmation
 
-                    RegistrationStatus curRegStatus = await _account.Register(curUserDO);
+                    RegistrationStatus curRegStatus =  _account.Register(curUserDO);
                     if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", "You are already registered with us. Please login.");
@@ -122,6 +127,8 @@ namespace KwasantWeb.Controllers
                     else
                     {
                         //await SendEmailConfirmation(curUserDO); email confirmation is currently turned off
+                        
+
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -173,7 +180,9 @@ namespace KwasantWeb.Controllers
                             }
                             else if (curLoginStatus == LoginStatus.Successful)
                             {
-                                return Redirect(!String.IsNullOrEmpty(returnUrl) ? returnUrl : "/index.aspx");
+                                //return Redirect(!String.IsNullOrEmpty(returnUrl) ? returnUrl : "/index.aspx");
+                                //RedirectedToHomePage();
+                                return RedirectToAction("Index", "Admin");
                             }
                             break;
                     }

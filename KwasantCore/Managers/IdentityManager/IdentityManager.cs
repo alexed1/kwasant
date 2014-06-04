@@ -20,32 +20,12 @@ namespace KwasantCore.Managers.IdentityManager
     public class IdentityManager
     {
         private User _user;
-        private Person _person;
         IUnitOfWork _uow;
 
         public IdentityManager(IUnitOfWork uow)
         {
             _user = new User(uow);
-            _person = new Person(uow);
             _uow = uow;
-        }
-
-  
-        public async Task<UserDO> ConvertExistingPerson(PersonDO personDO, UserDO userRegStrings)
-        {
-            UserDO newUserDO = new UserDO
-            {
-                UserName = userRegStrings.UserName,
-                PersonDO = userRegStrings.PersonDO,
-                Password = userRegStrings.Password
-            };
-             RegistrationStatus curRegStatus = await _user.Create(newUserDO, "Customer");
-             if (curRegStatus == RegistrationStatus.Successful)
-             {
-                 _person.Delete(personDO);
-             }
-
-             return newUserDO;
         }
 
         //converts an "implicit" user, which is created when someone emails a request, to an "explict" user who has actually registered
@@ -57,14 +37,7 @@ namespace KwasantCore.Managers.IdentityManager
             }
         }
 
-        public async Task<RegistrationStatus> RegisterNewUser(UserDO userDO)
-        {
-            RegistrationStatus curRegStatus = RegistrationStatus.Pending;
-            
-            curRegStatus = await _user.Create(userDO, "Customer");
 
-            return curRegStatus;
-        }
 
         public async Task<LoginStatus> Login(UserDO userDO, bool isPersistent)
         {

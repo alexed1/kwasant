@@ -1,16 +1,8 @@
 ﻿using System.Web.Mvc;
+using KwasantCore.Managers.IdentityManager;
 
 namespace KwasantWeb.Controllers
 {
-    public class KwasantAuthorizeAttribute : AuthorizeAttribute
-    {
-        protected override void HandleUnauthorizedRequest(AuthorizationContext context)
-        {
-            // redirect to Error page
-            context.Result = new RedirectResult("/Account/Login?returnURL=" + context.RequestContext.HttpContext.Request.Path);
-        }
-    }
-
     public class AdminController : Controller
     {
         //

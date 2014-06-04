@@ -14,7 +14,7 @@ namespace Data.Interfaces
 
         int PersonId { get; set; }
 
-        PersonDO Owner { get; set; }        
+        UserDO Owner { get; set; }        
         
     }
 }

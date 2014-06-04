@@ -11,14 +11,13 @@ namespace Data.Interfaces
         AttachmentRepository AttachmentRepository { get; }
         AttendeeRepository AttendeeRepository { get; }
         EmailAddressRepository EmailAddressRepository { get; }
-        EmailEmailAddressRepository EmailEmailAddressRepository { get; }
+        RecipientRepository RecipientRepository { get; }
         BookingRequestRepository BookingRequestRepository { get; }
         CalendarRepository CalendarRepository { get; }
         CommunicationConfigurationRepository CommunicationConfigurationRepository { get; }
         EmailRepository EmailRepository { get; }
         EventRepository EventRepository { get; }
         InstructionRepository InstructionRepository { get; }
-        PersonRepository PersonRepository { get; }
         StoredFileRepository StoredFileRepository { get; }
         TrackingStatusRepository TrackingStatusRepository { get; }
         UserRepository UserRepository { get; }

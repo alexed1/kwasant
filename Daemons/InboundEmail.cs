@@ -65,6 +65,8 @@ namespace Daemons
             {
                 client = _client ??
                          new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
+
+                
             }
             catch (ConfigurationException ex)
             {
@@ -84,10 +86,10 @@ namespace Daemons
             string logString;
 
             //the difference in syntax makes it easy to have nonzero hits stand out visually in the log dashboard
-            if (uids.Count()>0)           
-                logString = GetType().Name + " - 0 emails found...";
+            if (uids.Any())           
+                logString = GetType().Name + " - " + uids.Count() + " emails found!";      
             else
-                logString = GetType().Name + " - " + uids.Count() + "emails found!";
+                logString = GetType().Name + " - 0 emails found...";
             Logger.GetLogger().Info(logString);
 
             foreach (var uid in uids)
@@ -95,7 +97,8 @@ namespace Daemons
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
                 BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
                 
-                var message = client.GetMessage(uid);
+                var message = client.GetMessage(uid);                
+                
                 try
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);

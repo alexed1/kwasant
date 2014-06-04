@@ -1,4 +1,5 @@
-﻿using Data.Entities.Enumerations;
+﻿using System.Collections.Generic;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 
 namespace Data.Entities
@@ -10,5 +11,7 @@ namespace Data.Entities
 
         public TrackingType Type { get; set; }
         public TrackingStatus Status { get; set; }
+
+
     }
 }
