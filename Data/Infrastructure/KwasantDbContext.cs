@@ -11,6 +11,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
 
+
 namespace Data.Infrastructure
 {
     public class KwasantDbContext : IdentityDbContext<IdentityUser>, IDBContext
@@ -95,6 +96,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserDO>().ToTable("Users");
+            modelBuilder.Entity<Kact>().ToTable("Kacts");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

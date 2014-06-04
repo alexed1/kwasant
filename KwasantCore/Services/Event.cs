@@ -35,6 +35,7 @@ namespace KwasantCore.Services
             curEventDO.CreatedBy = bookingRequestDO.User;
             curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);       
             curEventDO.Status = "Instantiated";
+
             return curEventDO;
         }
      
