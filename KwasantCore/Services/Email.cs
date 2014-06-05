@@ -4,18 +4,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using System.Net.Mime;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;
 using FluentValidation;
-using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Managers.CommunicationManager;
 using Microsoft.WindowsAzure;
-using StructureMap;
 
 namespace KwasantCore.Services
 {
@@ -63,9 +60,7 @@ namespace KwasantCore.Services
 
         public int Send()
         {
-            var gmailPackager = ObjectFactory.GetInstance<IEmailPackager>();
-            gmailPackager.Send(_curEmailDO);
-            _curEmailDO.Status = EmailStatus.DISPATCHED;
+            _curEmailDO.Status = EmailStatus.QUEUED;
             return _curEmailDO.Id;
         }
 

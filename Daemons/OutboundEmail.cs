@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Services;
 using StructureMap;
 using Utilities.Logging;
@@ -79,7 +80,9 @@ namespace Daemons
                 var numSent = 0;
                 foreach (EmailDO email in emailRepository.FindList(e => e.Status == EmailStatus.QUEUED))
                 {
-                    new Email(unitOfWork, email).Send();
+                    var gmailPackager = ObjectFactory.GetInstance<IEmailPackager>();
+                    gmailPackager.Send(email);
+                    email.Status = EmailStatus.SENT;
                     numSent++;
                 }
                 unitOfWork.SaveChanges();
