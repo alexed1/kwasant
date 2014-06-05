@@ -97,7 +97,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserDO>().ToTable("Users");
-            modelBuilder.Entity<Kact>().ToTable("Kacts");
+            modelBuilder.Entity<KactDO>().ToTable("Kacts");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

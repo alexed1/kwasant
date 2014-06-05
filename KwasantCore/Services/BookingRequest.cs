@@ -12,13 +12,14 @@ namespace KwasantCore.Services
 {
     public static class BookingRequest
     {
-        public static void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
+        public static void ProcessNewBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
             bookingRequest.Status = EmailStatus.UNPROCESSED;
+            //Publish alert: Email.BookingRequest.Created
         }
 
         private static List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)

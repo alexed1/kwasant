@@ -1,6 +1,7 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
 using FluentValidation;
+using KwasantCore.Managers.CommunicationManager;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
@@ -13,6 +14,7 @@ namespace KwasantTest.Services
     {
         private FixtureData _fixture;
         private IEvent _event;
+        private CommunicationManager _comm;
 
         [SetUp]
         public void Setup()
@@ -21,6 +23,7 @@ namespace KwasantTest.Services
 
             _fixture = new FixtureData();
             _event = new Event();
+            _comm = new CommunicationManager();
         }
 
         [Test]
@@ -29,7 +32,7 @@ namespace KwasantTest.Services
         {
             EventDO curEvent = _fixture.TestEvent2();
 
-            string originator = _event.GetOriginatorName(curEvent);
+            string originator = _comm.GetOriginatorName(curEvent);
             Assert.AreNotEqual(originator, null);
         }
 
@@ -43,7 +46,7 @@ namespace KwasantTest.Services
             curOriginator.FirstName = null;
             curOriginator.LastName = null;
             curOriginator.EmailAddress.Name = "John Smallberries";
-            string originator = _event.GetOriginatorName(curEvent);
+            string originator = _comm.GetOriginatorName(curEvent);
             Assert.AreEqual(originator, curOriginator.EmailAddress.Name);
         }
 
@@ -58,7 +61,7 @@ namespace KwasantTest.Services
             curOriginator.LastName = null;
             curOriginator.EmailAddress.Name = null;
             curOriginator.EmailAddress.Address = "john@smallberries.com";
-            string originator = _event.GetOriginatorName(curEvent);
+            string originator = _comm.GetOriginatorName(curEvent);
             Assert.AreEqual(originator, "john");
         }
 
@@ -75,7 +78,7 @@ namespace KwasantTest.Services
             curOriginator.EmailAddress.Address = null;
             Assert.Throws<ValidationException>(() =>
             {
-                string originator = _event.GetOriginatorName(curEvent);
+                string originator = _comm.GetOriginatorName(curEvent);
             });
 
 

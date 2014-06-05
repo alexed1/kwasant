@@ -138,7 +138,15 @@ namespace Data.Infrastructure
                 return _trackingStatusRepository ?? (_trackingStatusRepository = new TrackingStatusRepository(this));
             }
         }
+        private KactRepository _KactRepository;
 
+        public KactRepository KactRepository
+        {
+            get
+            {
+                return _KactRepository ?? (_KactRepository = new KactRepository(this));
+            }
+        }
         private UserRepository _userRepository;
 
         public UserRepository UserRepository

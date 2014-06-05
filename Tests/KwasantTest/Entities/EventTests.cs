@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using FluentValidation;
+using KwasantCore.Managers.CommunicationManager;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
@@ -21,6 +22,7 @@ namespace KwasantTest.Entities
         public IUnitOfWork _uow;
         private FixtureData _fixture;
         private Event _event;
+        private CommunicationManager _comm;
 
         [SetUp]
         public void Setup()
@@ -30,6 +32,7 @@ namespace KwasantTest.Entities
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixture = new FixtureData();
             _event = new Event();
+            _comm = new CommunicationManager();
             
         }
 
@@ -54,14 +57,14 @@ namespace KwasantTest.Entities
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curEvent.Dispatch(uow, eventDO);
+               // curEvent.Dispatch(uow, eventDO); REWRITE THIS TEST
                 uow.SaveChanges();
             }
 
             //Verify emails created in memory
             EmailDO resultEmail = eventDO.Emails[0];
             string expectedSubject =
-                string.Format("Invitation from: " + _event.GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +
+                string.Format("Invitation from: " + _comm.GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +
                               eventDO.StartDate);
             Assert.AreEqual(resultEmail.Subject, expectedSubject );
 

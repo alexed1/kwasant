@@ -102,7 +102,7 @@ namespace Daemons
                 try
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-                    BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
+                    BookingRequest.ProcessNewBookingRequest(unitOfWork, bookingRequest);
 
                     unitOfWork.SaveChanges();
                 }

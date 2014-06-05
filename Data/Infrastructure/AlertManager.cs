@@ -10,6 +10,9 @@ namespace Data.Infrastructure
         public delegate void CustomerCreatedHandler(DateTime createdDate, string userID);
         public static event CustomerCreatedHandler AlertCustomerCreated;
 
+        public delegate void BookingRequestCreatedHandler(BookingRequestDO curBR);
+        public static event BookingRequestCreatedHandler AlertBookingRequestCreated;
+
         #region Method
         
         /// <summary>
@@ -19,6 +22,14 @@ namespace Data.Infrastructure
         {
             if (AlertCustomerCreated != null)
                 AlertCustomerCreated(DateTime.Now, curUser.Id);
+        }
+
+        public static void BookingRequestCreated(BookingRequestDO curBR)
+        {
+            if (AlertBookingRequestCreated != null)
+                AlertBookingRequestCreated(curBR);
+            
+                
         }
    
         #endregion

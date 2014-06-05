@@ -25,6 +25,8 @@ namespace Data.Interfaces
         AspNetUserRolesRepository AspNetUserRolesRepository { get; }
         AspNetRolesRepository AspNetRolesRepository { get; }
 
+        KactRepository KactRepository { get; }
+
         /// <summary>
         /// Call this to commit the unit of work
         /// </summary>

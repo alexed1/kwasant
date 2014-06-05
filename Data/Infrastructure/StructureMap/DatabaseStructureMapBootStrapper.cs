@@ -1,5 +1,6 @@
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
@@ -23,6 +24,7 @@ namespace Data.Infrastructure.StructureMap
                 For<ICalendar>().Use<CalendarDO>();
                 For<IAspNetRoles>().Use<AspNetRolesDO>();
                 For<IAspNetUserRoles>().Use<AspNetUserRolesDO>();
+             
             }
         }
 
