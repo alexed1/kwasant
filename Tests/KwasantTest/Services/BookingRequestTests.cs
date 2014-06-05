@@ -44,9 +44,17 @@ namespace KwasantTest.Services
             BookingRequest.ProcessNewBookingRequest(_uow, bookingRequest);
 
             customersNow = _uow.UserRepository.GetAll().ToList();
+
+      
             Assert.AreEqual(1, customersNow.Count);
             Assert.AreEqual("customer@gmail.com", customersNow.First().EmailAddress.Address);
             Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
+            //test analytics system
+
+
+
+            KactDO curAction = _uow.KactRepository.FindOne(k => k.ObjectId == bookingRequest.Id);
+            Assert.NotNull(curAction);
         }
 
         [Test]

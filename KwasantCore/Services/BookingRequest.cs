@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Data.Constants;
 using Data.Entities;
 using Data.Entities.Enumerations;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 
@@ -19,7 +20,7 @@ namespace KwasantCore.Services
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
             bookingRequest.Status = EmailStatus.UNPROCESSED;
-            //Publish alert: Email.BookingRequest.Created
+            AlertManager.BookingRequestCreated(bookingRequest);
         }
 
         private static List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)

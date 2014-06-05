@@ -8,6 +8,7 @@ using Daemons;
 using Data.Infrastructure;
 using KwasantCore.Managers.CommunicationManager;
 using KwasantCore.Services;
+using KwasantCore.Managers;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
 using KwasantWeb.Controllers;
@@ -50,6 +51,10 @@ namespace KwasantWeb
 
             CommunicationManager curCommManager = new CommunicationManager();
             curCommManager.SubscribeToAlerts();
+
+            
+            AnalyticsManager curAnalyticsManager = new AnalyticsManager();
+            curAnalyticsManager.SubscribeToAlerts();
         }
 
         protected void Application_Error(Object sender, EventArgs e)

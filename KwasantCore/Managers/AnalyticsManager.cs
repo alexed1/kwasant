@@ -10,9 +10,9 @@ using Microsoft.WindowsAzure;
 using StructureMap;
 using Utilities.Logging;
 
-namespace KwasantCore.Managers.AnalyticsManager
+namespace KwasantCore.Managers
 {
-    class AnalyticsManager
+    public class AnalyticsManager
     {
         public AnalyticsManager()
         {
@@ -20,7 +20,7 @@ namespace KwasantCore.Managers.AnalyticsManager
         }
 
 
-        private void SubscribeToAlerts()
+        public void SubscribeToAlerts()
         {
               AlertManager.AlertBookingRequestCreated += ProcessBookingRequestCreated;
         }
