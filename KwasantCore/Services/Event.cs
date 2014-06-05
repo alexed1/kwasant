@@ -45,7 +45,7 @@ namespace KwasantCore.Services
         //in some cases, additional work is necessary to handle the changes
 
         public void Update(IUnitOfWork uow, EventDO newEventData)
-        {
+            {
             //curEventDO.IsAllDay = curEventDO.StartDate.Equals(curEventDO.StartDate.Date) && curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate); ;          
             EventDO curEventDO = uow.EventRepository.GetByKey(newEventData.Id);
           
@@ -91,7 +91,7 @@ namespace KwasantCore.Services
         {
             // if eventtimes have changed
            //send an event update email to attendees
-        }
+            }
 
         private bool EventHasChanged(EventDO oldEventDO, EventDO newEventDO)
         {

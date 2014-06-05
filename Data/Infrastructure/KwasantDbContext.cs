@@ -6,6 +6,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Linq;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Entity.ModelConfiguration;
 
 using Data.Entities;
 using Data.Interfaces;
@@ -109,14 +110,14 @@ namespace Data.Infrastructure
                 .IsRequired()
                 .HasColumnAnnotation(
                     "Index",
-                    new IndexAnnotation(new IndexAttribute("IX_User_EmailAddress", 1) {IsUnique = true}));
+                    new IndexAnnotation(new IndexAttribute("IX_User_EmailAddress", 1) { IsUnique = true }));
 
             modelBuilder.Entity<EmailAddressDO>()
                 .Property(ea => ea.Address)
                 .IsRequired()
                 .HasColumnAnnotation(
                     "Index",
-                    new IndexAnnotation(new IndexAttribute("IX_EmailAddress_Address", 1) {IsUnique = true}));
+                    new IndexAnnotation(new IndexAttribute("IX_EmailAddress_Address", 1) { IsUnique = true }));
 
             modelBuilder.Entity<EventDO>()
                 .HasMany(ev => ev.Emails)
@@ -149,6 +150,7 @@ namespace Data.Infrastructure
                     ts.Id,
                     ts.ForeignTableName
                 });
+
 
             base.OnModelCreating(modelBuilder);
         }

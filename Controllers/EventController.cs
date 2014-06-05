@@ -6,7 +6,9 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Infrastructure;
+using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
+using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
@@ -15,11 +17,14 @@ using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
+    [KwasantAuthorize(Roles = "Admin")]
     public class EventController : KController
+  
+
     {
         private Event _event;
         private Attendee _attendee;
-
+      
         public EventController()
         {
             _event = new Event();
@@ -39,12 +44,12 @@ namespace KwasantWeb.Controllers
                 EventDO createdEvent = _event.Create(submittedEventData, uow);
                 uow.SaveChanges();
 
-                //put it in a view model to hand to the view
+            //put it in a view model to hand to the view
                 var curEventVM = Mapper.Map<EventDO, EventViewModel>(createdEvent);
 
-                //construct a Calendar view model for this Calendar View 
-                return View("~/Views/Event/Edit.cshtml", curEventVM);
-            }
+            //construct a Calendar view model for this Calendar View 
+            return View("~/Views/Event/Edit.cshtml", curEventVM);
+        }
         }
 
 
@@ -107,7 +112,10 @@ namespace KwasantWeb.Controllers
                 {
                     _event.Update(uow, submittedEventDO);
 
-                }
+                uow.SaveChanges();
+            
+
+            }
 
                 //EventDO eventDO = eventViewModel.Id == 0
                     //    ? new EventDO { CreatedByID = User.Identity.GetUserId() }
@@ -123,10 +131,10 @@ namespace KwasantWeb.Controllers
 
                     //uow.SaveChanges();          
 
-                    return JavaScript(SimpleJsonSerializer.Serialize(true));
-                }
+            return JavaScript(SimpleJsonSerializer.Serialize(true));
+        }
             }
-        
+
 
         public ActionResult DeleteEvent(int eventID)
         {

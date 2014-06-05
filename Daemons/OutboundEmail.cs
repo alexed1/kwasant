@@ -74,7 +74,8 @@ namespace Daemons
         protected override void Run()
         {
             while (ProcessNextEventNoWait()) { }
-            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+            using (IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
             EmailRepository emailRepository = unitOfWork.EmailRepository;
             EventRepository eventRepository = unitOfWork.EventRepository;
             CommunicationManager _comm = new CommunicationManager();
@@ -84,6 +85,7 @@ namespace Daemons
                 new Email(unitOfWork, email).Send();
                 numSent++;
             }
+                unitOfWork.SaveChanges();
             Logger.GetLogger().Info(numSent + " emails sent.");
             foreach (EventDO curEvent in eventRepository.FindList(e => e.Status == "Undispatched"))
             {
@@ -91,4 +93,5 @@ namespace Daemons
             }
         }
     }
+}
 }
