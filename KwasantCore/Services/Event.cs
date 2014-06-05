@@ -89,8 +89,6 @@ namespace KwasantCore.Services
             var emailAddressRepository = uow.EmailAddressRepository;
             if (eventDO.Attendees == null)
                 eventDO.Attendees = new List<AttendeeDO>();
-            EmailDO outboundEmail = new EmailDO();
-            outboundEmail.DateReceived = DateTime.Now;
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();
@@ -101,30 +99,9 @@ namespace KwasantCore.Services
 
             var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
             fromEmailAddr.Name = fromName;
-            outboundEmail.From = fromEmailAddr;
 
-            //setup attendees
-            foreach (var attendeeDO in eventDO.Attendees)
-            {
-                var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress.Address);
-                toEmailAddress.Name = attendeeDO.Name;
-                outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
-            }
-
-            outboundEmail.Subject = "Invitation from: " + GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +
-                                    eventDO.StartDate;
-
-            var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
-            var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation,
-                new RazorViewModel(eventDO));
-            outboundEmail.HTMLText = parsedHTMLEmail;
-            outboundEmail.PlainText = parsedPlainEmail;
-
-            //prepare the outbound email
-            outboundEmail.Status = EmailStatus.QUEUED;
             if (eventDO.Emails == null)
                 eventDO.Emails = new List<EmailDO>();
-            eventDO.Emails.Add(outboundEmail);
 
             //configure start and end time
             if (eventDO.IsAllDay)
@@ -160,10 +137,35 @@ namespace KwasantCore.Services
             }
 
             //final assembly of event
-            dDayEvent.Organizer = new Organizer(fromEmail) {CommonName = fromName};
+            dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
             ddayCalendar.Events.Add(dDayEvent);
             ddayCalendar.Method = CalendarMethods.Request;
-            AttachCalendarToEmail(ddayCalendar, outboundEmail);
+
+            foreach (var attendeeDO in eventDO.Attendees)
+            {
+                EmailDO outboundEmail = new EmailDO();
+                outboundEmail.DateReceived = DateTime.Now;
+
+                outboundEmail.From = fromEmailAddr;
+                
+                var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress.Address);
+                toEmailAddress.Name = attendeeDO.Name;
+                outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
+                outboundEmail.Subject = "Invitation from: " + GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " + eventDO.StartDate;
+
+                var user = uow.UserRepository.GetOrCreateUser(toEmailAddress);
+
+                var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO) { UserID = user.Id });
+                var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO) { UserID = user.Id });
+                outboundEmail.HTMLText = parsedHTMLEmail;
+                outboundEmail.PlainText = parsedPlainEmail;
+
+                eventDO.Emails.Add(outboundEmail);
+
+                AttachCalendarToEmail(ddayCalendar, outboundEmail);
+
+                new Email(uow, outboundEmail).Send();
+            }
         }
 
         //if we have a first name and last name, use them together
@@ -220,6 +222,7 @@ namespace KwasantCore.Services
 
     public class RazorViewModel
     {
+        public String UserID { get; set; }
         public bool IsAllDay { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

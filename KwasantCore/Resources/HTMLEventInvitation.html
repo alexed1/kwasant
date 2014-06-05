@@ -9,7 +9,7 @@ if(Utilities.Server.IsDevMode)
 imageURL = "kwasant.com/Content/img/EmailLogo.png";
 }
 
-var customerID = "2e5479ea-9276-4458-b44c-3ff4e4e840dd";
+var customerID = Model.UserID;
 
 var time = Model.IsAllDay
 ? "All day - " + Model.StartDate.ToString("ddd d MMM")

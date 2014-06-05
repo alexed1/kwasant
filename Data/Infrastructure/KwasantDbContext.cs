@@ -61,7 +61,7 @@ namespace Data.Infrastructure
 
             foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
             {
-                entity.Entity.SaveHook(entity);
+                entity.Entity.BeforeSave();
             }
 
             var saveResult = base.SaveChanges();
