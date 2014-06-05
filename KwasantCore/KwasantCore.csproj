@@ -143,6 +143,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Managers\APIManager\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\GmailPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\IEmailPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\Mandrill\MandrillPackager.cs" />

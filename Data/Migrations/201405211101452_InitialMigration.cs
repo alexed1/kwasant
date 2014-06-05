@@ -123,7 +123,7 @@ namespace Data.Migrations
                         Subject = c.String(),
                         HTMLText = c.String(),
                         PlainText = c.String(),
-                        Status = c.String(),
+                        Status = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
             

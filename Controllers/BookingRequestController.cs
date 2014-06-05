@@ -11,7 +11,10 @@ using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
+using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
+using KwasantCore.Services;
+using StructureMap;
 using Utilities;
 using Utilities.Logging;
 
@@ -19,15 +22,11 @@ namespace KwasantWeb.Controllers
 {
     public class BookingRequestController : Controller
     {
-        private IUnitOfWork _uow;
-        private IBookingRequestRepository curBookingRequestRepository;
-        private DatatablesPackager API;
+        private DataTablesPackager _datatables;
 
-        public BookingRequestController(IUnitOfWork uow)
+        public BookingRequestController()
         {
-            _uow = uow;
-            curBookingRequestRepository = _uow.BookingRequestRepository;
-            API = new DatatablesPackager();
+            _datatables = new DataTablesPackager();
         }
 
         // GET: /BookingRequest/
@@ -37,11 +36,14 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetUnprocessedRequest()
+        public ActionResult ShowUnprocessedRequest()
         {
-            var jsonResult = Json(API.PackDatatableObject(curBookingRequestRepository.GetAll().Where(e => e.Status == EmailStatus.UNPROCESSED).OrderByDescending(e => e.Id).ToList()), JsonRequestBehavior.AllowGet);
-            jsonResult.MaxJsonLength = int.MaxValue;
-            return jsonResult;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var jsonResult = Json(_datatables.Pack(BookingRequest.GetUnprocessed(uow.BookingRequestRepository)), JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
         }
 
         // GET: /BookingRequest/Details/5
@@ -51,7 +53,11 @@ namespace KwasantWeb.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            BookingRequestDO bookingRequestDO = curBookingRequestRepository.GetByKey(id);
+            BookingRequestDO bookingRequestDO = null;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);   
+            }
 
             if (bookingRequestDO == null)
             {
@@ -62,44 +68,37 @@ namespace KwasantWeb.Controllers
                 //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
                 return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Calendar", action = "Index", id = id }));
             }
-            //return View(email);
         }
 
-        [HttpGet]
-        public ActionResult SetStatus(int? id, bool isprocessed = false)
-        {
-            if (id == null)
-            {
-                return Json("fail", JsonRequestBehavior.AllowGet);
-            }
-            BookingRequestDO bookingRequestDO = curBookingRequestRepository.GetByKey(id);
 
-            if (bookingRequestDO == null)
+        [HttpGet]
+        public ActionResult SetStatus(int? id, string targetStatus)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return Json("fail", JsonRequestBehavior.AllowGet);
-            }
-            else
-            {
-                using (var uow = _uow)
+                if (id == null)
                 {
-                    var bookrequest = Mapper.Map<BookingRequestDO>(bookingRequestDO);
-                    bookrequest.Status = EmailStatus.INVALID;
-                    if (isprocessed) {
-                        bookrequest.Status = EmailStatus.PROCESSED;
-                    }
-                    bookrequest.User = bookingRequestDO.User;
-                    uow.SaveChanges();
-                    if (isprocessed)
+                    return Json(new Error { Name = "Parameter Missing", Message = "Id is required" }, JsonRequestBehavior.AllowGet);
+                }
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                if (bookingRequestDO == null)
+                {
+                    return Json(new Error { Name = "Invalid Request", Message = "Booking Request does not exists" }, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    BookingRequest.SetStatus(uow, bookingRequestDO, targetStatus.ToLower());
+                    switch (targetStatus.ToLower())
                     {
-                        return RedirectToAction("Index", "BookingRequest");
-                    }
-                    else
-                    {
-                        return Json("success", JsonRequestBehavior.AllowGet);
+                        case "invalid":
+                            return Json(new Error { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
+                        case "processed":
+                            return RedirectToAction("Index", "BookingRequest");
+                        default:
+                            return Json(new Error { Name = "Failure", Message = "Invalid status change request" }, JsonRequestBehavior.AllowGet);
                     }
                 }
             }
         }
-
 	}
 }
