@@ -267,6 +267,7 @@ namespace Data.Migrations
                     {
                         Id = c.Int(nullable: false),
                         User_Id = c.String(nullable: false, maxLength: 128),
+                        BookingStatus = c.String()
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Emails", t => t.Id)

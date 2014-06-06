@@ -18,35 +18,35 @@ namespace KwasantCore.Services
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
-            bookingRequest.Status = EmailStatus.UNPROCESSED;
+            bookingRequest.BookingStatus = BookingStatus.UNPROCESSED;
         }
 
         public static object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.Status == EmailStatus.UNPROCESSED).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
+            return curBookingRequestRepository.GetAll().Where(e => e.BookingStatus == BookingStatus.UNPROCESSED).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
         }
 
         public static void SetStatus(IUnitOfWork uow, BookingRequestDO bookingRequestDO, string targetStatus)
         {
-            EmailStatus newstatus = getBookingStatus(targetStatus);
-            if (newstatus != 0)
+            string newstatus = getBookingStatus(targetStatus);
+            if (newstatus != "invalid status")
             {
-                bookingRequestDO.Status = newstatus;
+                bookingRequestDO.BookingStatus = newstatus;
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
             }
         }
 
-        private static EmailStatus getBookingStatus(string targetStatus)
+        private static string getBookingStatus(string targetStatus)
         {
             switch (targetStatus)
             {
                 case "invalid":
-                    return EmailStatus.INVALID;
+                    return BookingStatus.INVALID;
                 case "processed":
-                    return EmailStatus.PROCESSED;
+                    return BookingStatus.PROCESSED;
                 default:
-                    return 0;
+                    return "invalid status";
             }
         }
 
