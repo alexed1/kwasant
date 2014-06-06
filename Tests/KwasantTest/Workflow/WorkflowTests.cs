@@ -117,8 +117,9 @@ namespace KwasantTest.Workflow
                             .FirstOrDefault(v => string.Equals(v.ContentType.MediaType, "application/ics"));
                         if (icsView != null)
                         {
-                            var cal = iCalendar.LoadFromStream(icsView.ContentStream)[0];
-                            if (cal.Events[0].Start.Value == start && 
+                            var cal = iCalendar.LoadFromStream(icsView.ContentStream).FirstOrDefault();
+                            if (cal != null && cal.Events.Count > 0 && 
+                                cal.Events[0].Start.Value == start && 
                                 cal.Events[0].End.Value == end)
                             {
                                 inviteMessage = curMessage;
