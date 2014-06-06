@@ -26,6 +26,9 @@ namespace Data.Infrastructure
 
         public override int SaveChanges()
         {
+        
+
+
             ChangeTracker.DetectChanges();
             //Debug code!
             List<object> adds = ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();

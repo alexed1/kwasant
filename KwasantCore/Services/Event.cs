@@ -76,14 +76,32 @@ namespace KwasantCore.Services
             }
             
             //use the new information, mapping it to overwrite the old information
-            Mapper.Map<EventDO, EventDO>(newEventData, curEventDO);
-            //attendees must be handled manually. automapper can't currently do it
-            curEventDO.Attendees = newEventData.Attendees;
+            curEventDO = Mapper.Map<EventDO, EventDO>(newEventData, curEventDO);
+
+            //KillTheOrphans(curEventDO, uow);
+           
+            curEventDO.Attendees = newEventData.Attendees; //this breaks
             //if event times have changed, may need to send updates
+          // curEventDO = newEventData;
 
+           // uow.EventRepository.Add(curEventDO); 
+            //uow.SaveChanges();
 
-            curEventDO = newEventData;
+        }
 
+        private void KillTheOrphans(EventDO curEventDO, IUnitOfWork uow)
+        {
+             //manually clear out old attendees because EF isn't smart enough to handle a simple update: http://blog.oneunicorn.com/2012/06/02/deleting-orphans-with-entity-framework/
+            //oh, but you can't do it with foreach, because of http://stackoverflow.com/questions/2024179/c-sharp-collection-was-modified-enumeration-operation-may-not-execute
+            List<AttendeeDO> unbelievablyStupidTempList = new List<AttendeeDO>();
+            foreach (var patheticOrphan in curEventDO.Attendees)
+                unbelievablyStupidTempList.Add(patheticOrphan);
+
+            foreach (var patheticOrphan in unbelievablyStupidTempList) 
+            {
+                uow.AttendeeRepository.Remove(patheticOrphan);
+            }
+            
 
         }
 

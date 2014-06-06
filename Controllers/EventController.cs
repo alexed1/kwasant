@@ -42,6 +42,7 @@ namespace KwasantWeb.Controllers
                 submittedEventData.StartDate = DateTime.Parse(start);
                 submittedEventData.EndDate = DateTime.Parse(end);
                 EventDO createdEvent = _event.Create(submittedEventData, uow);
+                uow.EventRepository.Add(createdEvent);
                 uow.SaveChanges();
 
             //put it in a view model to hand to the view
@@ -111,25 +112,10 @@ namespace KwasantWeb.Controllers
                 else
                 {
                     _event.Update(uow, submittedEventDO);
-
-                uow.SaveChanges();
+                  //  uow.SaveChanges(); FIX THIS 
             
 
-            }
-
-                //EventDO eventDO = eventViewModel.Id == 0
-                    //    ? new EventDO { CreatedByID = User.Identity.GetUserId() }
-                    //    : uow.EventRepository.GetByKey(eventViewModel.Id);
-
-                    //Mapper.Map(eventViewModel, eventDO);
-                    //new Event().ManageAttendeeList(uow, eventDO, eventViewModel.Attendees);
-
-                    //if (eventViewModel.Id == 0)
-                    //{
-                    //    uow.EventRepository.Add(eventDO);
-                    //}
-
-                    //uow.SaveChanges();          
+                }       
 
             return JavaScript(SimpleJsonSerializer.Serialize(true));
         }
