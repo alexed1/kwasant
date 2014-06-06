@@ -128,10 +128,12 @@
     <Compile Include="Daemons\InboundEmailTests.cs" />
     <Compile Include="Daemons\OperationsMonitorTests.cs" />
     <Compile Include="Daemons\OutboundEmailTests.cs" />
+    <Compile Include="Entities\UserTests.cs" />
     <Compile Include="Fixtures\FixtureData - Attendee.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />
+    <Compile Include="Fixtures\FixtureData - Role.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
     <Compile Include="Services\BookingRequestTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
@@ -145,7 +147,9 @@
     <Compile Include="Workflow\WorkflowTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

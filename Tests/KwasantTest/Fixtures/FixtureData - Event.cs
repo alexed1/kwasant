@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using KwasantICS.DDay.iCal;
@@ -79,9 +80,27 @@ namespace KwasantTest.Fixtures
                 Status = "Open",
                 Summary = "This is a test event summary.",
                 Transparency = "Opaque",
-                Attendees = TestAttendeeList1().ToList()
+                Attendees = TestAttendeeList1().ToList(),
+                CreatedBy = TestUser2()
             };
         }
+
+        public EventDO TestEvent4()
+        {
+            return new EventDO()
+            {
+                Description = "This is my test invitation",
+                Summary = @"My test invitation",
+                Location = @"Some place!",
+                StartDate = DateTime.Today.AddMinutes(5),
+                EndDate = DateTime.Today.AddMinutes(15),
+                Attendees = TestAttendeeList1().ToList(),
+                Emails = new List<EmailDO>(),
+                CreatedBy = TestUser2()
+            };
+        }
+
+    
 
 
     }

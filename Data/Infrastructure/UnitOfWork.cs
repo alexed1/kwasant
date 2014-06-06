@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Transactions;
@@ -15,7 +16,6 @@ namespace Data.Infrastructure
 
         internal UnitOfWork(IDBContext context)
         {
-            context.UnitOfWork = this;
             _context = context;
         }
 
@@ -25,7 +25,7 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _attachmentRepository ?? (_attachmentRepository = new AttachmentRepository(_context));
+                return _attachmentRepository ?? (_attachmentRepository = new AttachmentRepository(this));
             }
         }
 
@@ -35,7 +35,7 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _attendeeRepository ?? (_attendeeRepository = new AttendeeRepository(_context));
+                return _attendeeRepository ?? (_attendeeRepository = new AttendeeRepository(this));
             }
         }
 
@@ -45,7 +45,7 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _emailAddressRepository ?? (_emailAddressRepository = new EmailAddressRepository(_context));
+                return _emailAddressRepository ?? (_emailAddressRepository = new EmailAddressRepository(this));
             }
         }
 
@@ -54,7 +54,7 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _recipientRepository ?? (_recipientRepository = new RecipientRepository(_context));
+                return _recipientRepository ?? (_recipientRepository = new RecipientRepository(this));
             }
         }
 
@@ -64,7 +64,7 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _bookingRequestRepository ?? (_bookingRequestRepository = new BookingRequestRepository(_context));
+                return _bookingRequestRepository ?? (_bookingRequestRepository = new BookingRequestRepository(this));
             }
         }
 
@@ -74,7 +74,7 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _calendarRepository ?? (_calendarRepository = new CalendarRepository(_context));
+                return _calendarRepository ?? (_calendarRepository = new CalendarRepository(this));
             }
         }
 
@@ -85,7 +85,7 @@ namespace Data.Infrastructure
             get
             {
                 return _communicationConfigurationRepository ??
-                       (_communicationConfigurationRepository = new CommunicationConfigurationRepository(_context));
+                       (_communicationConfigurationRepository = new CommunicationConfigurationRepository(this));
             }
         }
 
@@ -95,7 +95,7 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _emailRepository ?? (_emailRepository = new EmailRepository(_context));
+                return _emailRepository ?? (_emailRepository = new EmailRepository(this));
             }
         }
 
@@ -105,7 +105,7 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _eventRepository ?? (_eventRepository = new EventRepository(_context));
+                return _eventRepository ?? (_eventRepository = new EventRepository(this));
             }
         }
 
@@ -115,7 +115,7 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _instructionRepository ?? (_instructionRepository = new InstructionRepository(_context));
+                return _instructionRepository ?? (_instructionRepository = new InstructionRepository(this));
             }
         }
         
@@ -125,7 +125,7 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _storedFileRepository ?? (_storedFileRepository = new StoredFileRepository(_context));
+                return _storedFileRepository ?? (_storedFileRepository = new StoredFileRepository(this));
             }
         }
 
@@ -135,7 +135,7 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _trackingStatusRepository ?? (_trackingStatusRepository = new TrackingStatusRepository(_context));
+                return _trackingStatusRepository ?? (_trackingStatusRepository = new TrackingStatusRepository(this));
             }
         }
 
@@ -145,7 +145,27 @@ namespace Data.Infrastructure
         {
             get
             {
-                return _userRepository ?? (_userRepository = new UserRepository(_context));
+                return _userRepository ?? (_userRepository = new UserRepository(this));
+            }
+        }
+
+        private AspNetUserRolesRepository _aspNetUserRolesRepository;
+
+        public AspNetUserRolesRepository AspNetUserRolesRepository
+        {
+            get
+            {
+                return _aspNetUserRolesRepository ?? (_aspNetUserRolesRepository = new AspNetUserRolesRepository(this));
+            }
+        }
+
+        private AspNetRolesRepository _aspNetRolesRepository;
+
+        public AspNetRolesRepository AspNetRolesRepository
+        {
+            get
+            {
+                return _aspNetRolesRepository ?? (_aspNetRolesRepository = new AspNetRolesRepository(this));
             }
         }
 
