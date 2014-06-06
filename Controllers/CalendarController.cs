@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
+using KwasantCore.Managers.IdentityManager;
 using KwasantWeb.Controllers.DayPilot;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
@@ -15,6 +16,7 @@ using StructureMap;
 namespace KwasantWeb.Controllers
 {
     [HandleError]
+    [KwasantAuthorize(Roles = "Admin")]
     public class CalendarController : Controller
     {
         #region "Action"

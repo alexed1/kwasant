@@ -45,6 +45,8 @@ namespace KwasantCore.Services
                 curEventDO.BookingRequestID = bookingRequestDO.Id;
                 curEventDO.CreatedBy = bookingRequestDO.User;
                 curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
+                uow.EventRepository.Add(curEventDO);
+                uow.SaveChanges();
                 return curEventDO;
 
             }
