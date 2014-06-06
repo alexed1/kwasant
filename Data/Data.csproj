@@ -117,6 +117,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\InstructionConstants.cs" />
+    <Compile Include="Entities\AspNetRolesDO.cs" />
+    <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
@@ -128,10 +130,18 @@
     <Compile Include="Entities\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Infrastructure\AlertManager.cs" />
+    <Compile Include="Infrastructure\KwasantRoleStore.cs" />
+    <Compile Include="Infrastructure\KwasantUserStore.cs" />
+    <Compile Include="Infrastructure\StructureMap\IKwasantRoleStore.cs" />
+    <Compile Include="Infrastructure\StructureMap\IKwasantUserStore.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedDBContext.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedDbSet.cs" />
     <Compile Include="Infrastructure\StructureMap\DatabaseStructureMapBootStrapper.cs" />
+    <Compile Include="Infrastructure\StructureMap\MockedRoleStore.cs" />
+    <Compile Include="Infrastructure\StructureMap\MockedUserStore.cs" />
     <Compile Include="Infrastructure\TrackingStatus.cs" />
+    <Compile Include="Interfaces\IAspNetRoles.cs" />
+    <Compile Include="Interfaces\IAspNetUserRoles.cs" />
     <Compile Include="Interfaces\ICalendar.cs" />
     <Compile Include="Interfaces\ICustomField.cs" />
     <Compile Include="Entities\TrackingStatusDO.cs" />
@@ -183,7 +193,13 @@
     <Compile Include="Migrations\201406020755535_Synchronise.Designer.cs">
       <DependentUpon>201406020755535_Synchronise.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406040918453_UpdateAspRoles.cs" />
+    <Compile Include="Migrations\201406040918453_UpdateAspRoles.Designer.cs">
+      <DependentUpon>201406040918453_UpdateAspRoles.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
+    <Compile Include="Repositories\AspNetRolesRepository.cs" />
+    <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
     <Compile Include="Repositories\AttendeeRepository.cs" />
     <Compile Include="Repositories\BookingRequestRepository.cs" />
@@ -217,6 +233,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\TrackingStatusRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Validations\EventValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\EmailAddressValidator.cs" />
     <Compile Include="Validations\CalendarValidator.cs" />
@@ -266,6 +283,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406020755535_Synchronise.resx">
       <DependentUpon>201406020755535_Synchronise.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406040918453_UpdateAspRoles.resx">
+      <DependentUpon>201406040918453_UpdateAspRoles.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
