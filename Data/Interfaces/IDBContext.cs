@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using Data.Entities;
 
 namespace Data.Interfaces
 {
@@ -14,7 +13,5 @@ namespace Data.Interfaces
 
         DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity)
             where TEntity : class;
-
-        IUnitOfWork UnitOfWork { get; set; }
     }
 }

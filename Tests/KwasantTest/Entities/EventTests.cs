@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
@@ -18,6 +20,7 @@ namespace KwasantTest.Entities
     {
         public IUnitOfWork _uow;
         private FixtureData _fixture;
+        private Event _event;
 
         [SetUp]
         public void Setup()
@@ -25,8 +28,9 @@ namespace KwasantTest.Entities
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
 
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            
             _fixture = new FixtureData();
+            _event = new Event();
+            
         }
 
         //this is a core integration test: get the ics message through
@@ -47,16 +51,22 @@ namespace KwasantTest.Entities
             EventDO eventDO = _fixture.TestEvent4();
             eventRepo.Add(eventDO);
             var curEvent = new Event();
-            int emailID = curEvent.Dispatch(eventDO);
+            
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curEvent.Dispatch(uow, eventDO);
+                uow.SaveChanges();
+            }
 
             //Verify emails created in memory
             EmailDO resultEmail = eventDO.Emails[0];
-            string expectedSubject = string.Format(ConfigRepository.Get("emailSubject"), curEvent.GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
-
+            string expectedSubject =
+                string.Format("Invitation from: " + _event.GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +
+                              eventDO.StartDate);
             Assert.AreEqual(resultEmail.Subject, expectedSubject );
 
             //Verify emails stored to disk properly
-            EmailDO retrievedEmail = _uow.EmailRepository.GetByKey(emailID);
+            EmailDO retrievedEmail = _uow.EmailRepository.GetQuery().First();
             Assert.AreEqual(retrievedEmail.Subject, expectedSubject);
 
 
@@ -154,6 +164,7 @@ namespace KwasantTest.Entities
         {
             //SETUP      
             EventDO curOriginalEventDO = _fixture.TestEvent1();
+            curOriginalEventDO.CreatedBy = _fixture.TestUser();
             curOriginalEventDO.Attendees = new List<AttendeeDO> { _fixture.TestAttendee1() };
 
             //EXECUTE
