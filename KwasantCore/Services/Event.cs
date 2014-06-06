@@ -153,7 +153,7 @@ namespace KwasantCore.Services
                     Role = "REQ-PARTICIPANT",
                     ParticipationStatus = ParticipationStatus.NeedsAction,
                     RSVP = true,
-                    Value = new Uri("mailto:" + attendee.EmailAddress),
+                    Value = new Uri(string.Concat("mailto:", attendee.EmailAddress.Address)),
                 });
                 attendee.Event = eventDO;
             }
