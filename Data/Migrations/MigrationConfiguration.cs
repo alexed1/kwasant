@@ -39,7 +39,7 @@ namespace Data.Migrations
             Seed(unitOfWork);
 
             AddRoles(unitOfWork);
-            AddAdmins(unitOfWork);
+           // AddAdmins(unitOfWork);
 
             unitOfWork.SaveChanges();
         }
