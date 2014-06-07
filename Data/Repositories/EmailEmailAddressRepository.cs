@@ -1,6 +1,4 @@
-﻿using System.Data.Entity;
-using Data.Entities;
-using Data.Infrastructure;
+﻿using Data.Entities;
 using Data.Interfaces;
 
 namespace Data.Repositories
@@ -10,8 +8,8 @@ namespace Data.Repositories
     public class RecipientRepository : GenericRepository<RecipientDO>, IRecipientRepository
     {
 
-        internal RecipientRepository(IUnitOfWork uow)
-            : base(uow)
+        internal RecipientRepository(IDBContext dbContext)
+            : base(dbContext)
         {
 
         }

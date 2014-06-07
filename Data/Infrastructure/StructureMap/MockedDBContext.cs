@@ -49,7 +49,7 @@ namespace Data.Infrastructure.StructureMap
                         if (propInfo == null)
                             return 0;
 
-                        return (int)propInfo.GetValue(a);
+                        return (int) propInfo.GetValue(a);
                     });
                 }
 
@@ -59,7 +59,7 @@ namespace Data.Infrastructure.StructureMap
                     if (propInfo == null)
                         continue;
 
-                    if ((int)propInfo.GetValue(row) == 0)
+                    if ((int) propInfo.GetValue(row) == 0)
                     {
                         propInfo.SetValue(row, ++maxIDAlready);
                     }
@@ -87,7 +87,7 @@ namespace Data.Infrastructure.StructureMap
                             if (AddValueToForeignSet(value))
                                 numAdded++;
                         }
-                        else if (prop.PropertyType.IsGenericType && prop.PropertyType.CanBeCastTo(typeof(IEnumerable<>)) &&
+                        else if (prop.PropertyType.IsGenericType && prop.PropertyType.CanBeCastTo(typeof (IEnumerable<>)) &&
                                  IsEntity(prop.PropertyType.GetGenericArguments()[0]))
                         {
                             //It's a collection!
@@ -115,22 +115,22 @@ namespace Data.Infrastructure.StructureMap
                 return false;
             }
 
-            MethodInfo methodToCall = checkSet.GetType().GetMethod("Add", new[] { value.GetType() });
-            methodToCall.Invoke(checkSet, new[] { value });
+            MethodInfo methodToCall = checkSet.GetType().GetMethod("Add", new[] {value.GetType()});
+            methodToCall.Invoke(checkSet, new[] {value});
             return true;
         }
 
         public IDbSet<TEntity> Set<TEntity>() where TEntity : class
         {
-            Type entityType = typeof(TEntity);
-            return (IDbSet<TEntity>)(Set(entityType));
+            Type entityType = typeof (TEntity);
+            return (IDbSet<TEntity>) (Set(entityType));
         }
 
         private object Set(Type entityType)
         {
             if (!_cachedSets.ContainsKey(entityType))
             {
-                _cachedSets[entityType] = Activator.CreateInstance(typeof(MockedDbSet<>).MakeGenericType(entityType), new[] { this });
+                _cachedSets[entityType] = Activator.CreateInstance(typeof(MockedDbSet<>).MakeGenericType(entityType), new []{ this });
             }
             return _cachedSets[entityType];
         }
@@ -150,7 +150,7 @@ namespace Data.Infrastructure.StructureMap
         public PropertyInfo EntityPrimaryKeyPropertyInfo(object entity)
         {
             var entityType = entity.GetType();
-            List<PropertyInfo> keys = entityType.GetProperties().Where(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).ToList();
+            List<PropertyInfo> keys = entityType.GetProperties().Where(p => p.GetCustomAttributes(typeof (KeyAttribute), true).Any()).ToList();
             if (keys.Count > 1)
                 return null;
             //If no primary key exists, we cannot use it
@@ -162,7 +162,7 @@ namespace Data.Infrastructure.StructureMap
 
         public void Dispose()
         {
-
+            
         }
     }
 }

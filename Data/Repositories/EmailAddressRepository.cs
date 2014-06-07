@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Linq;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
 {
     public class EmailAddressRepository : GenericRepository<EmailAddressDO>,  IEmailAddressRepository
     {
-        internal EmailAddressRepository(IUnitOfWork uow)
-            : base(uow)
+        internal EmailAddressRepository(IDBContext dbContext)
+            : base(dbContext)
         {
             
         }
