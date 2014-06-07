@@ -1,13 +1,12 @@
 ﻿using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
 {
     public class BookingRequestRepository : GenericRepository<BookingRequestDO>, IBookingRequestRepository
     {
-        internal BookingRequestRepository(IUnitOfWork uow)
-            : base(uow)
+        internal BookingRequestRepository(IDBContext dbContext)
+            : base(dbContext)
         {
 
         }

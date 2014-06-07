@@ -3,11 +3,11 @@ using KwasantCore.Managers.IdentityManager;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorizeAttribute(Roles = "Admin")]
     public class AdminController : Controller
     {
         //
         // GET: /Admin/
+        [KwasantAuthorizeAttribute(Roles = "Admin")]
         public ActionResult Index()
         {
             //var engine = new Engine();

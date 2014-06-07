@@ -3,18 +3,18 @@
    http://www.daypilot.org/
 */
 
-if (typeof (DayPilot) === 'undefined') {
+if (typeof(DayPilot) === 'undefined') {
     DayPilot = {};
 }
 
-(function () {
+(function() {
 
     DayPilot.ModalStatic = {};
 
     DayPilot.ModalStatic.list = [];
 
     // hide the last one
-    DayPilot.ModalStatic.hide = function () {
+    DayPilot.ModalStatic.hide = function() {
         if (this.list.length > 0) {
             var last = this.list.pop();
             if (last) {
@@ -23,7 +23,7 @@ if (typeof (DayPilot) === 'undefined') {
         }
     };
 
-    DayPilot.ModalStatic.remove = function (modal) {
+    DayPilot.ModalStatic.remove = function(modal) {
         var list = DayPilot.ModalStatic.list;
         for (var i = 0; i < list.length; i++) {
             if (list[i] === modal) {
@@ -33,19 +33,19 @@ if (typeof (DayPilot) === 'undefined') {
         }
     };
 
-    DayPilot.ModalStatic.close = function (result) {
+    DayPilot.ModalStatic.close = function(result) {
         DayPilot.ModalStatic.result(result);
         DayPilot.ModalStatic.hide();
     };
 
-    DayPilot.ModalStatic.result = function (r) {
+    DayPilot.ModalStatic.result = function(r) {
         var list = DayPilot.ModalStatic.list;
         if (list.length > 0) {
             list[list.length - 1].result = r;
         }
     };
 
-    DayPilot.ModalStatic.displayed = function (modal) {
+    DayPilot.ModalStatic.displayed = function(modal) {
         var list = DayPilot.ModalStatic.list;
         for (var i = 0; i < list.length; i++) {
             if (list[i] === modal) {
@@ -57,7 +57,7 @@ if (typeof (DayPilot) === 'undefined') {
 
     var isIE = (navigator && navigator.userAgent && navigator.userAgent.indexOf("MSIE") !== -1);
 
-    DayPilot.Modal = function () {
+    DayPilot.Modal = function() {
 
         // default values
         this.autoStretch = true;  // height will be increased automatically to avoid scrollbar, until this.maxHeight is reached
@@ -87,7 +87,7 @@ if (typeof (DayPilot) === 'undefined') {
         this.start = null;
         this.coords = null;
 
-        this.showHtml = function (html) {
+        this.showHtml = function(html) {
 
             if (DayPilot.ModalStatic.displayed(this)) {
                 throw "This modal dialog is already displayed.";
@@ -99,8 +99,8 @@ if (typeof (DayPilot) === 'undefined') {
             this.update();
 
             if (this.useIframe) {
-                var delayed = function (p, innerHTML) {
-                    return function () {
+                var delayed = function(p, innerHTML) {
+                    return function() {
                         p.setInnerHTML(p.id + "iframe", innerHTML);
                     };
                 };
@@ -116,11 +116,11 @@ if (typeof (DayPilot) === 'undefined') {
 
         };
 
-        this.rounded = function () {
+        this.rounded = function() {
             return this.corners && this.corners.toLowerCase() === 'rounded';
         };
 
-        this.showUrl = function (url) {
+        this.showUrl = function(url) {
 
             if (DayPilot.ModalStatic.displayed(this)) {
                 throw "This modal dialog is already displayed.";
@@ -141,7 +141,7 @@ if (typeof (DayPilot) === 'undefined') {
             this.register();
         };
 
-        this.update = function () {
+        this.update = function() {
             var win = window;
             var doc = document;
 
@@ -149,7 +149,7 @@ if (typeof (DayPilot) === 'undefined') {
 
             //alert("scrollY:" + this.main.window.pageYOffset);
 
-            var height = function () {
+            var height = function() {
                 return This.windowRect().y;
             };
 
@@ -162,9 +162,9 @@ if (typeof (DayPilot) === 'undefined') {
                 this.hideDiv.style.zIndex = this.zIndex;
             }
             this.hideDiv.style.display = '';
-
-            window.setTimeout(function () {
-                This.hideDiv.onclick = function () { This.hide(); };
+            
+            window.setTimeout(function() {
+                This.hideDiv.onclick = function() { This.hide(); };
             }, 500);
 
             this.div.className = this.className;
@@ -199,20 +199,20 @@ if (typeof (DayPilot) === 'undefined') {
             */
         };
 
-        this.onIframeLoad = function () {
+        this.onIframeLoad = function() {
             This.iframe.contentWindow.modal = This;
             if (This.autoStretch) {
                 This.stretch();
             }
         };
 
-        this.stretch = function () {
-            var height = function () {
+        this.stretch = function() {
+            var height = function() {
                 return This.windowRect().y;
             };
 
             var max = this.maxHeight || height() - 2 * this.top;
-            for (var h = this.height; h < max && this.hasScrollbar() ; h += 10) {
+            for (var h = this.height; h < max && this.hasScrollbar(); h += 10) {
                 this.iframe.style.height = (h) + 'px';
                 this.div.style.height = h + 'px';
             }
@@ -228,14 +228,14 @@ if (typeof (DayPilot) === 'undefined') {
                     this.div.style.height = h + (borderHeight * 2) + 'px';
                 }
             }
-
+            
             if (this.autoStretchFirstLoadOnly) {
                 this.ue(this.iframe, "load", this.onIframeLoad);
             }
 
         };
 
-        this.hasScrollbar = function () {
+        this.hasScrollbar = function() {
             var document = this.iframe.contentWindow.document;
             var root = document.compatMode === 'BackCompat' ? document.body : document.documentElement;
             var isVerticalScrollbar = root.scrollHeight > root.clientHeight;
@@ -243,7 +243,7 @@ if (typeof (DayPilot) === 'undefined') {
             return isVerticalScrollbar;
         };
 
-        this.windowRect = function () {
+        this.windowRect = function() {
             var doc = document;
 
             if (doc.compatMode === "CSS1Compat" && doc.documentElement && doc.documentElement.clientWidth) {
@@ -258,7 +258,7 @@ if (typeof (DayPilot) === 'undefined') {
             }
         };
 
-        this.register = function () {
+        this.register = function() {
             if (this.registered) {
                 return;
             }
@@ -273,7 +273,7 @@ if (typeof (DayPilot) === 'undefined') {
 
         };
 
-        this.drag = function (e) {
+        this.drag = function(e) {
             if (!This.coords) {
                 return;
             }
@@ -291,7 +291,7 @@ if (typeof (DayPilot) === 'undefined') {
 
         };
 
-        this.drop = function (e) {
+        this.drop = function(e) {
             // no drag&drop
             if (!This.coords) {
                 return;
@@ -302,7 +302,7 @@ if (typeof (DayPilot) === 'undefined') {
             This.coords = null;
         };
 
-        this.maskIframe = function () {
+        this.maskIframe = function() {
             if (!this.useIframe) {
                 return;
             }
@@ -325,7 +325,7 @@ if (typeof (DayPilot) === 'undefined') {
             this.mask = mask;
         };
 
-        this.unmaskIframe = function () {
+        this.unmaskIframe = function() {
             if (!this.useIframe) {
                 return;
             }
@@ -334,7 +334,7 @@ if (typeof (DayPilot) === 'undefined') {
             this.mask = null;
         };
 
-        this.resize = function () {
+        this.resize = function() {
 
             if (!This.hideDiv) {
                 return;
@@ -358,7 +358,7 @@ if (typeof (DayPilot) === 'undefined') {
         };
 
         // already available in common.js but this file should be standalone
-        this.re = function (el, ev, func) {
+        this.re = function(el, ev, func) {
             if (el.addEventListener) {
                 el.addEventListener(ev, func, false);
             } else if (el.attachEvent) {
@@ -367,7 +367,7 @@ if (typeof (DayPilot) === 'undefined') {
         };
 
         // unregister event
-        this.ue = function (el, ev, func) {
+        this.ue = function(el, ev, func) {
             if (el.removeEventListener) {
                 el.removeEventListener(ev, func, false);
             } else if (el.detachEvent) {
@@ -376,7 +376,7 @@ if (typeof (DayPilot) === 'undefined') {
         };
 
         // mouse coords
-        this.mc = function (ev) {
+        this.mc = function(ev) {
             if (ev.pageX || ev.pageY) {
                 return { x: ev.pageX, y: ev.pageY };
             }
@@ -387,7 +387,7 @@ if (typeof (DayPilot) === 'undefined') {
         };
 
         // absolute element position on page
-        this.abs = function (element) {
+        this.abs = function(element) {
             var r = {
                 x: element.offsetLeft,
                 y: element.offsetTop
@@ -404,7 +404,7 @@ if (typeof (DayPilot) === 'undefined') {
         };
 
 
-        this.create = function () {
+        this.create = function() {
             var hide = document.createElement("div");
             hide.id = this.id + "hide";
             hide.style.position = 'fixed';
@@ -414,7 +414,7 @@ if (typeof (DayPilot) === 'undefined') {
             hide.style.bottom = "0px";
             hide.style.backgroundColor = "black";
             hide.style.opacity = 0.50;
-            hide.oncontextmenu = function () { return false; };
+            hide.oncontextmenu = function() { return false; };
 
             document.body.appendChild(hide);
 
@@ -451,13 +451,13 @@ if (typeof (DayPilot) === 'undefined') {
         };
 
 
-        this.dragStart = function (e) {
+        this.dragStart = function(e) {
             This.maskIframe();
             This.coords = This.mc(e || window.event);
             This.start = { x: This.div.offsetLeft, y: This.div.offsetTop };
         };
 
-        this.setInnerHTML = function (id, innerHTML) {
+        this.setInnerHTML = function(id, innerHTML) {
             var frame = window.frames[id];
 
             var doc = frame.contentWindow || frame.document || frame.contentDocument;
@@ -469,12 +469,12 @@ if (typeof (DayPilot) === 'undefined') {
             doc.body.innerHTML = innerHTML;
         };
 
-        this.close = function (result) {
+        this.close = function(result) {
             this.result = result;
             this.hide();
         };
 
-        this.hide = function () {
+        this.hide = function() {
             if (this.div) {
                 this.div.style.display = 'none';
                 this.hideDiv.style.display = 'none';

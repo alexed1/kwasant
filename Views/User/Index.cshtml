@@ -1,56 +1,33 @@
-﻿@model IEnumerable<ViewModel.Models.UsersAdminViewModel>
-
-@{
-    ViewBag.Title = "Users";
-}
-
-<h3>Users</h3>
-<hr />
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            First Name
-        </th>
-        <th>
-            Last Name
-        </th>
-        <th>
-            Email Address
-        </th>
-        <th>
-            Role
-        </th>
-        <th></th>
-    </tr>
+﻿@*@model IEnumerable<Kwasant.Models.User>
 
     @{
-        if (Model != null)
-        {
-
-            foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.FirstName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LastName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EmailAddress)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Role)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Details", "Details", new { userId = item.UserId, roleId = item.RoleId })
-                    </td>
-                </tr>
-            }
-        }
+        ViewBag.Title = "Index";
     }
 
-</table>
+    <h2>Index</h2>
+
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id=item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id=item.Id })
+            </td>
+        </tr>
+    }
+
+    </table>*@
