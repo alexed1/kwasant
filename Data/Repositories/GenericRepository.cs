@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
-using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
@@ -13,18 +12,18 @@ namespace Data.Repositories
     /// <typeparam name="TEntity"></typeparam>
     public class GenericRepository<TEntity> : IDisposable, IGenericRepository<TEntity> where TEntity : class
     {
-        protected readonly IUnitOfWork _uow;
+        protected readonly IDBContext DBContext;
         public IDbSet<TEntity> DBSet;
 
-        internal GenericRepository(IUnitOfWork uow)
+        internal GenericRepository(IDBContext dbContext)
         {
-            if (uow == null) throw new ArgumentNullException("uow");
-            _uow = uow;
-            DBSet = _uow.Db.Set<TEntity>();
+            if (dbContext == null) throw new ArgumentNullException("dbContext");
+            DBContext = dbContext;
+            DBSet = dbContext.Set<TEntity>();
         }
 
         #region Property
-        public IUnitOfWork UnitOfWork { get { return _uow; } }
+        public IUnitOfWork UnitOfWork { get { return DBContext.UnitOfWork; } }
 
         #endregion
 
@@ -77,7 +76,7 @@ namespace Data.Repositories
 
         public void Dispose()
         {
-            _uow.Dispose();
+            DBContext.UnitOfWork.Dispose();
         }
 
         #endregion

@@ -1,10 +1,7 @@
 using Data.Entities;
 using Data.Interfaces;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using StructureMap.Configuration.DSL;
-using IUser = Data.Interfaces.IUser;
 
 namespace Data.Infrastructure.StructureMap
 {
@@ -21,8 +18,6 @@ namespace Data.Infrastructure.StructureMap
                 For<IEmailAddress>().Use<EmailAddressDO>();
                 For<IUser>().Use<UserDO>();
                 For<ICalendar>().Use<CalendarDO>();
-                For<IAspNetRoles>().Use<AspNetRolesDO>();
-                For<IAspNetUserRoles>().Use<AspNetUserRolesDO>();
             }
         }
 
@@ -40,7 +35,6 @@ namespace Data.Infrastructure.StructureMap
             public TestMode()
             {
                 For<IUnitOfWork>().Use(new UnitOfWork(new MockedDBContext()));
-                //For<IUserStore<UserDO>>().Use(a => a. new UserStore<UserDO>())
             }
         }
     }

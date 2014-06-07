@@ -69,21 +69,21 @@ namespace Data.Infrastructure.StructureMap
             if (keyType != typeof(int) && keyType != typeof(String))
                 throw new Exception("Only supports int-based or string-based keys.");
 
-            if (keyType == typeof(String))
+            if (keyType == typeof (String))
             {
                 string entityPrimaryKey = keyValues[0] as string;
                 Func<TEntityType, string> compiledSelector = GetEntityKeySelectorString().Compile();
-                return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+                return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);    
             }
             else
             {
-
+                
                 int entityPrimaryKey = (int)(keyValues[0]);
                 Func<TEntityType, int> compiledSelector = GetEntityKeySelectorInt().Compile();
                 return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
             }
 
-
+            
         }
 
         public TEntityType Add(TEntityType entity)
@@ -172,7 +172,7 @@ namespace Data.Infrastructure.StructureMap
                 {
                     List<PropertyInfo> keys = typeof(TEntityType).GetProperties().Where(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).ToList();
                     if (!keys.Any())
-                        keys = typeof(TEntityType).GetProperties().Where(p => p.Name == "Id").ToList();
+                        keys = typeof (TEntityType).GetProperties().Where(p => p.Name == "Id").ToList();
 
                     if (keys.Count > 1)
                         throw new Exception("Entity MUST have a single primary key. Composite keys are not supported.");

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Diagnostics;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Validators;
 using FluentValidation;
@@ -15,8 +13,8 @@ namespace Data.Repositories
     {
         private EventValidator _curValidator;
 
-        internal EventRepository(IUnitOfWork uow)
-            : base(uow)
+        internal EventRepository(IDBContext dbContext)
+            : base(dbContext)
         {
             _curValidator = new EventValidator();
             

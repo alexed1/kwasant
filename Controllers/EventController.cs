@@ -7,7 +7,6 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
-using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
@@ -16,10 +15,9 @@ using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Admin")]
     public class EventController : Controller
     {
-
+      
         //Renders a form to accept a new event
         public ActionResult New(int bookingRequestID, string start, string end)
         {
@@ -92,7 +90,7 @@ namespace KwasantWeb.Controllers
                 var eve = new Event();
 
                 eve.ManageAttendeeList(uow, eventDO, eventViewModel.Attendees);
-
+                    
                 if (eventViewModel.Id == 0)
                     uow.EventRepository.Add(eventDO);
 
@@ -101,7 +99,7 @@ namespace KwasantWeb.Controllers
 
 
                 uow.SaveChanges();
-
+            
 
             }
 
