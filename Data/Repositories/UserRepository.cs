@@ -7,8 +7,8 @@ namespace Data.Repositories
 {
     public class UserRepository : GenericRepository<UserDO>, IUserRepository
     {
-        internal UserRepository(IDBContext dbContext)
-            : base(dbContext)
+        internal UserRepository(IUnitOfWork uow)
+            : base(uow)
         {
             
         }
@@ -28,7 +28,7 @@ namespace Data.Repositories
                 curUser.FirstName = curMessage.From.Name;
                 curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 curMessage.User = curUser;
-                userRepo.Add(curUser);          
+                userRepo.Add(curUser);
                 UnitOfWork.SaveChanges();
                 AlertManager.CustomerCreated(curUser);
             }

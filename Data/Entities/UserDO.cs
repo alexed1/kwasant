@@ -10,17 +10,6 @@ namespace Data.Entities
 {
     public class UserDO : IdentityUser, IUser
     {
-        /// <summary>
-        /// This property may not be required a base class has property called PasswordHash 
-        /// where password is stored in encrypted form and decrypted when it is fetched.
-        /// </summary>
-        [NotMapped]
-        public string Password
-        {
-            get { return base.PasswordHash; }
-            set { base.PasswordHash = value; }
-        }
-
         public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
 
         public String FirstName { get; set; }
@@ -31,6 +20,9 @@ namespace Data.Entities
 
         [Required]
         public virtual EmailAddressDO EmailAddress { get; set; }
+
+       // public virtual ICollection<AspNetRolesDO> Roles { get; set; }
+        
     }
 }
 
