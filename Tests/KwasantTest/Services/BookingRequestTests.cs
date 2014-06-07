@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Mail;
 using Data.Constants;
 using Data.Entities;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
@@ -10,6 +11,7 @@ using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using KwasantWeb.Controllers;
 
 namespace KwasantTest.Services
 {
@@ -170,6 +172,31 @@ namespace KwasantTest.Services
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
             Assert.AreEqual(InstructionConstants.TravelTime.Add120MinutesTravelTime, bookingRequest.Instructions.First().Id);
+        }
+
+        [Test]
+        [Category("BRM")]
+        public void ShowUnprocessedRequestTest()
+        {
+            object requests = BookingRequest.GetUnprocessed(_uow.BookingRequestRepository);
+            object requestNow = _uow.BookingRequestRepository.GetAll().Where(e => e.BookingStatus == BookingStatus.UNPROCESSED).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
+
+            Assert.AreEqual(requestNow, requests);
+        }
+
+        [Test]
+        [Category("BRM")]
+        public void SetStatusTest()
+        {
+            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")){};
+
+            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
+
+            BookingRequest.SetStatus(_uow, bookingRequest, "invalid");
+            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.BookingStatus == BookingStatus.INVALID);
+            Assert.AreEqual(1, requestNow.Count());
         }
     }
 }
