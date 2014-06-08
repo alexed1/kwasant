@@ -75,16 +75,16 @@ namespace Daemons
             while (ProcessNextEventNoWait()) { }
             using (IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-            EmailRepository emailRepository = unitOfWork.EmailRepository;
-            var numSent = 0;
-            foreach (EmailDO email in emailRepository.FindList(e => e.Status == EmailStatus.QUEUED))
-            {
-                new Email(unitOfWork, email).Send();
-                numSent++;
-            }
+                EmailRepository emailRepository = unitOfWork.EmailRepository;
+                var numSent = 0;
+                foreach (EmailDO email in emailRepository.FindList(e => e.Status == EmailStatus.QUEUED))
+                {
+                    new Email(unitOfWork, email).Send();
+                    numSent++;
+                }
                 unitOfWork.SaveChanges();
-            Logger.GetLogger().Info(numSent + " emails sent.");
+                Logger.GetLogger().Info(numSent + " emails sent.");
+            }
         }
     }
-}
 }

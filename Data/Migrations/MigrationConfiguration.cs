@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Migrations;
+using System.Linq;
 using System.Reflection;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -20,7 +21,10 @@ namespace Data.Migrations
     {
         public MigrationConfiguration()
         {
+            //Do not ever turn this on! It will break database upgrades
             AutomaticMigrationsEnabled = false;
+
+            //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.KwasantDbContext";
         }
 
@@ -34,12 +38,12 @@ namespace Data.Migrations
             //The object factory decides what context to use, based on the environment.
             //In this situation, we need to be sure to use the provided context.
 
-            //This class is _not_ mockable - it's a core part of EF. Some seeding, however, is mockable (see the static function Seed and how MockedDBContext uses it).
+            //This class is _not_ mockable - it's a core part of EF. Some seeding, however, is mockable (see the static function Seed and how MockedKwasantDbContext uses it).
             var unitOfWork = new UnitOfWork(context);
             Seed(unitOfWork);
 
             AddRoles(unitOfWork);
-           // AddAdmins(unitOfWork);
+            AddAdmins(unitOfWork);
 
             unitOfWork.SaveChanges();
         }
@@ -52,7 +56,7 @@ namespace Data.Migrations
 
         private static void SeedInstructions(IUnitOfWork unitOfWork)
         {
-            Type[] nestedTypes = typeof (InstructionConstants).GetNestedTypes();
+            Type[] nestedTypes = typeof(InstructionConstants).GetNestedTypes();
             var instructionsToAdd = new List<InstructionDO>();
             foreach (Type nestedType in nestedTypes)
             {
@@ -63,7 +67,7 @@ namespace Data.Migrations
                     object value = constant.GetValue(null);
                     instructionsToAdd.Add(new InstructionDO
                     {
-                        Id = (int) value,
+                        Id = (int)value,
                         Name = name,
                         Category = nestedType.Name
                     });
@@ -84,6 +88,7 @@ namespace Data.Migrations
         {
             var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(unitOfWork.Db as KwasantDbContext));
 
+            var roles = roleManager.Roles.ToList();
             if (roleManager.RoleExists("Admin") == false)
             {
                 roleManager.Create(new IdentityRole("Admin"));
@@ -99,7 +104,7 @@ namespace Data.Migrations
         /// Add 'Admin' roles. Curretly only user with Email "alex@kwasant.com" and password 'alex@1234'
         /// has been added.
         /// </summary>
-        /// <param name="unitOfWork">of type ShnexyDbContext</param>
+        /// <param name="unitOfWork">of type ShnexyKwasantDbContext</param>
         /// <returns>True if created successfully otherwise false</returns>
         private void AddAdmins(IUnitOfWork unitOfWork)
         {
@@ -121,39 +126,42 @@ namespace Data.Migrations
             try
             {
                 var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasantDbContext));
-                if (um.FindByName(curUserName) == null)
+                var existingUser = um.FindByName(curUserName);
+                if (existingUser == null)
                 {
-                    
+
                     var user = new UserDO()
                     {
                         UserName = curUserName,
-                        EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),    
+                        EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
                         FirstName = curUserName,
                         EmailConfirmed = true
                     };
 
                     IdentityResult ir = um.Create(user, curPassword);
+
                     if (!ir.Succeeded)
                         return;
 
                     um.AddToRole(user.Id, "Admin");
                 }
-            }
-            catch (DbEntityValidationException ex)
-            {
-                var sb = new StringBuilder();
-
-                foreach (var failure in ex.EntityValidationErrors)
+                else
                 {
-                    sb.AppendFormat("{0} failed validation\n", failure.Entry.Entity.GetType());
-                    foreach (var error in failure.ValidationErrors)
-                    {
-                        sb.AppendFormat("- {0} : {1}", error.PropertyName, error.ErrorMessage);
-                        sb.AppendLine();
-                    }
+                    if (!um.IsInRole(existingUser.Id, "Admin"))
+                        um.AddToRole(existingUser.Id, "Admin");
                 }
-
-                throw new DbEntityValidationException("Entity Validation Failed - errors follow:\n" + sb, ex); // Add the original exception as the innerException
+            }
+            catch (DbEntityValidationException e)
+            {
+                string errorFormat = @"Validation failed for entity [{0}]. Validation errors:" + Environment.NewLine + @"{1}";
+                var errorList = new List<String>();
+                foreach (var entityValidationError in e.EntityValidationErrors)
+                {
+                    var entityName = entityValidationError.Entry.Entity.GetType().Name;
+                    var errors = String.Join(Environment.NewLine, entityValidationError.ValidationErrors.Select(a => a.PropertyName + ": " + a.ErrorMessage));
+                    errorList.Add(String.Format(errorFormat, entityName, errors));
+                }
+                throw new Exception(String.Join(Environment.NewLine + Environment.NewLine, errorList) + Environment.NewLine, e);
             }
         }
     }

@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
 {
     public class EmailAddressRepository : GenericRepository<EmailAddressDO>,  IEmailAddressRepository
     {
-        internal EmailAddressRepository(IDBContext dbContext)
-            : base(dbContext)
+        internal EmailAddressRepository(IUnitOfWork uow)
+            : base(uow)
         {
             
         }
@@ -23,11 +25,6 @@ namespace Data.Repositories
             {
                 matchingEmailAddress = new EmailAddressDO { Address = email };
                 UnitOfWork.EmailAddressRepository.Add(matchingEmailAddress);
-
-                //we automatically create a new "implicit" User object for each email address we learn about.
-                UserDO newUser = new UserDO();
-                newUser.EmailAddress = matchingEmailAddress;
-                UnitOfWork.UserRepository.Add(newUser);
             }
             if(!String.IsNullOrEmpty(name))
                 matchingEmailAddress.Name = name;
