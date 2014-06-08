@@ -140,7 +140,7 @@ namespace KwasantCore.Services
 
             emailDO.Attachments.ForEach(a => a.Email = emailDO);
             emailDO.Status = EmailStatus.QUEUED;
-            
+
             emailRepository.Add(emailDO);
             return emailDO;
         }

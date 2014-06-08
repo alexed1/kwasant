@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
+using KwasantCore.Managers.IdentityManager;
 using KwasantWeb.Controllers.DayPilot;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
@@ -15,6 +16,7 @@ using StructureMap;
 namespace KwasantWeb.Controllers
 {
     [HandleError]
+    [KwasantAuthorize(Roles = "Admin")]
     public class CalendarController : Controller
     {
         #region "Action"
@@ -35,8 +37,8 @@ namespace KwasantWeb.Controllers
             }
         }
 
-   
- 
+
+
 
 
         #endregion "Action"
@@ -50,7 +52,7 @@ namespace KwasantWeb.Controllers
         public ActionResult Month(int bookingRequestID)
         {
             return new DayPilotMonthControl(bookingRequestID).CallBack(this);
-        }  
+        }
 
         public ActionResult Rtl()
         {

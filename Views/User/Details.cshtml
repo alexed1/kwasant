@@ -1,26 +1,27 @@
-﻿@*@model Kwasant.Models.User
+﻿@model ViewModel.Models.UsersAdminViewModel
 
-    @{
-        ViewBag.Title = "Details";
-    }
+@using ViewModel.Models;
 
-    <h2>Details</h2>
+@{
+    ViewBag.Title = "User Details";
+}
 
-    <div>
-        <h4>User</h4>
-        <hr />
-        <dl class="dl-horizontal">
-            <dt>
-                @Html.DisplayNameFor(model => model.Name)
-            </dt>
-
-            <dd>
-                @Html.DisplayFor(model => model.Name)
-            </dd>
-
-        </dl>
+<h3>Details</h3>
+<hr />
+<div>    
+    <div style="padding-left:400px">        
+        @Html.ActionLink("Edit", "Edit", "Account", new { userId = @Model.UserId, roleId = @Model.RoleId }, null)         
     </div>
+    <dl class="dl-horizontal">
+        @{  
+                <dt>First Name :</dt> <dd>@Model.FirstName</dd>
+                <dt>Last Name  :</dt> <dd>@Model.LastName</dd>
+                <dt>Email Address  :</dt> <dd>@Model.EmailAddress</dd>
+                <dt>Role  :</dt> <dd>@Model.Role</dd>            
+         }        
+    </dl>
     <p>
-        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
         @Html.ActionLink("Back to List", "Index")
-    </p>*@
+    </p>
+</div>
+
