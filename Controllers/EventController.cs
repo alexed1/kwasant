@@ -16,7 +16,7 @@ using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Admin")]
+   // [KwasantAuthorize(Roles = "Admin")]
     public class EventController : Controller
     {
 
