@@ -27,6 +27,7 @@ namespace Data.Repositories
                 //we automatically create a new "implicit" User object for each email address we learn about.
                 UserDO newUser = new UserDO();
                 newUser.EmailAddress = matchingEmailAddress;
+                newUser.UserName = matchingEmailAddress.Address;
                 UnitOfWork.UserRepository.Add(newUser);
             }
             if(!String.IsNullOrEmpty(name))
