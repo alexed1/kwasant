@@ -14,6 +14,9 @@ using NUnit.Framework;
 using StructureMap;
 using Utilities;
 using System.Web.Mvc;
+using System.Net.Mail;
+using System.Linq;
+using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 
 namespace KwasantTest.Controllers
 {
@@ -37,11 +40,39 @@ namespace KwasantTest.Controllers
         [Category("BRM")]
         public void ShowUnprocessedRequestTest()
         {
-            //BookingRequestController controller = new BookingRequestController();
-            //ActionResult jsonResult = controller.ShowUnprocessedRequest();
-            
-            //string res = _datatables.Pack(BookingRequest.GetUnprocessed(_uow.BookingRequestRepository));
-            //Assert.AreEqual(_datatables.Pack(BookingRequest.GetUnprocessed(_uow.BookingRequestRepository)), jsonResult.ToString());
+            BookingRequestController controller = new BookingRequestController();
+            JsonResult jsonResultActual = controller.ShowUnprocessedRequest() as JsonResult;
+
+            string jsonResultExpected = _datatables.Pack(BookingRequest.GetUnprocessed(_uow.BookingRequestRepository));
+            Assert.AreEqual(jsonResultExpected, jsonResultActual.Data.ToString());
+
+            AddTestRequestData();
+            JsonResult jsonResultActualProcessed = controller.ShowUnprocessedRequest() as JsonResult;
+            string jsonResultExpectedProcessed = _datatables.Pack(BookingRequest.GetUnprocessed(_uow.BookingRequestRepository));
+            Assert.AreEqual(jsonResultExpectedProcessed, jsonResultActualProcessed.Data.ToString());
+
+        }
+
+        [Test]
+        [Category("BRM")]
+        public void SetStatusTest()
+        {
+            AddTestRequestData();
+
+            BookingRequestController controller = new BookingRequestController();
+            int id = _uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
+            JsonResult jsonResultActual = controller.SetStatus(id, "invalid") as JsonResult;
+            Assert.AreEqual("Success", ((Error)jsonResultActual.Data).Name);
+
+        }
+
+        private void AddTestRequestData()
+        {
+            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { };
+
+            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
         }
     }
 }
