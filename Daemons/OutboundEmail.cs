@@ -26,7 +26,7 @@ namespace Daemons
                     return;
                 }
 
-                emailToUpdate.Status = EmailStatus.SENT;
+                emailToUpdate.EmailStatus = EmailStatus.SENT;
                 unitOfWork.SaveChanges();
             });
 
@@ -43,7 +43,7 @@ namespace Daemons
 
                 Logger.GetLogger().Error(String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason));
 
-                emailToUpdate.Status = EmailStatus.SEND_REJECTED;
+                emailToUpdate.EmailStatus = EmailStatus.SEND_REJECTED;
                 unitOfWork.SaveChanges();
             });
 
@@ -60,7 +60,7 @@ namespace Daemons
 
                 Logger.GetLogger().Error(String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}", errorCode, name, message, emailID));
 
-                emailToUpdate.Status = EmailStatus.SEND_CRITICAL_ERROR;
+                emailToUpdate.EmailStatus = EmailStatus.SEND_CRITICAL_ERROR;
                 unitOfWork.SaveChanges();
             });
         }
@@ -77,7 +77,7 @@ namespace Daemons
             {
                 EmailRepository emailRepository = unitOfWork.EmailRepository;
                 var numSent = 0;
-                foreach (EmailDO email in emailRepository.FindList(e => e.Status == EmailStatus.QUEUED))
+                foreach (EmailDO email in emailRepository.FindList(e => e.EmailStatus == EmailStatus.QUEUED))
                 {
                     new Email(unitOfWork, email).Send();
                     numSent++;

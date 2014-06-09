@@ -14,11 +14,13 @@ namespace KwasantCore.Services
     {
         public static void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
+
+            bookingRequest.BookingStatus = "Unprocessed";
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
-            bookingRequest.BookingStatus = BookingStatus.UNPROCESSED;
+            
         }
 
         public static object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)

@@ -40,7 +40,10 @@ namespace KwasantCore.Managers.APIManager.Packagers
             mailMessage.Subject = email.Subject;
             mailMessage.IsBodyHtml = true;
 
-            var htmlView = AlternateView.CreateAlternateViewFromString(email.HTMLText, Encoding.UTF8, "text/html");
+            if (email.PlainText == null || email.HTMLText == null)
+                throw new ArgumentException("Trying to send an email that doesn't have both an HTML and plain text body");
+    
+            var htmlView = AlternateView.CreateAlternateViewFromString(email.HTMLText, Encoding.UTF8, "text/html");            
             var plainView = AlternateView.CreateAlternateViewFromString(email.PlainText, Encoding.UTF8, "text/plain");
 
             if (!ConfigRepository.Get<bool>("compressEmail"))

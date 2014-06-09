@@ -65,7 +65,7 @@ namespace KwasantCore.Services
         {
             var gmailPackager = ObjectFactory.GetInstance<IEmailPackager>();
             gmailPackager.Send(_curEmailDO);
-            _curEmailDO.Status = EmailStatus.DISPATCHED;
+            _curEmailDO.EmailStatus = EmailStatus.DISPATCHED;
             return _curEmailDO.Id;
         }
 
@@ -139,7 +139,7 @@ namespace KwasantCore.Services
             }
 
             emailDO.Attachments.ForEach(a => a.Email = emailDO);
-            emailDO.Status = EmailStatus.QUEUED;
+            emailDO.EmailStatus = EmailStatus.QUEUED;
 
             emailRepository.Add(emailDO);
             return emailDO;
@@ -192,7 +192,7 @@ namespace KwasantCore.Services
             }
             createdEmail.Subject = "Invitation via Kwasant: " + curEventDO.Summary + "@ " + curEventDO.StartDate;
             createdEmail.HTMLText = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";
-            createdEmail.Status = EmailStatus.QUEUED;
+            createdEmail.EmailStatus = EmailStatus.QUEUED;
 
             if (CloudConfigurationManager.GetSetting("ArchiveOutboundEmail") == "true")
             {

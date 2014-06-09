@@ -113,6 +113,7 @@ namespace KwasantCore.Services
             outboundEmail.Subject = "Invitation from: " + GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +
                                     eventDO.StartDate;
 
+            
             var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
             var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation,
                 new RazorViewModel(eventDO));
@@ -120,7 +121,7 @@ namespace KwasantCore.Services
             outboundEmail.PlainText = parsedPlainEmail;
 
             //prepare the outbound email
-            outboundEmail.Status = EmailStatus.QUEUED;
+            outboundEmail.EmailStatus = EmailStatus.QUEUED;
             if (eventDO.Emails == null)
                 eventDO.Emails = new List<EmailDO>();
             eventDO.Emails.Add(outboundEmail);

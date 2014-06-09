@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddDateReceived : IMigrationMetadata
+    public sealed partial class StatusToEmailStatus : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddDateReceived));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(StatusToEmailStatus));
         
         string IMigrationMetadata.Id
         {
-            get { return "201405260508061_AddDateReceived"; }
+            get { return "201406092112336_StatusToEmailStatus"; }
         }
         
         string IMigrationMetadata.Source
