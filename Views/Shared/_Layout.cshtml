@@ -6,34 +6,55 @@
     <title>@ViewBag.Title - Kwasant</title>
     @Styles.Render("~/bundles/css/bootstrap30")    
     @Styles.Render("~/bundles/css/default")
-    @RenderSection("styles", required: false)
-    
-    
+	@Styles.Render("~/bundles/css/colorbox")
+    @RenderSection("styles", required: false)     
     @Scripts.Render("~/bundles/js/jquery")
-    @RenderSection("immediateScripts", required:false)
+    @RenderSection("immediateScripts", required:false)	
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+	<link href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+	<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="Content/js/respond.min.js"></script>
+	<![endif]-->
 </head>
 <body>
-    <div class="container">
-        <div class="masthead">
-            <h3 class="text-muted">@Html.ActionLink("Kwasant", "Index", "Home")</h3>
-                 <section id="login">
-                    @Html.Partial("_LoginPartial")
-                </section>
-        </div>
-    </div>
+	<!--[if lt IE 7]>
+		<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+	<![endif]-->
+	<div id="main-container">
+		<header class="navbar navbar-static-top site-header">
+			<div class="site-header-wrap">
+				<div class="site-header-inner">
+					<div class="container">
+						<div class="navbar-header">
+							<h3 class="brand goTop">
+								<a href="@Url.Action("Index", "Home")"><img class="floating" src="../Content/img/perfect-krawsant.png" alt="Kwasant" title="Kwasant" />Kwasant</a>
+							</h3>
+							<section id="login">
+								@Html.Partial("_LoginPartial")
+							</section>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>	
 
+		<div class="container body-content">
+			@RenderBody()        
+		</div>
+		<div class="footer-clear">&nbsp;</div>
+	</div>
 
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - Maginot Technologies, LLC Confidential</p>
-        </footer>
-    </div>
+	<footer class="site-footer">
+		<div class="container">
+			<p>&copy; @DateTime.Now.Year - Maginot Technologies, LLC Confidential</p>
+		</div>
+	</footer>
 
     @Scripts.Render("~/bundles/js/modernizr")
-    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/bootstrap31")
     @Scripts.Render("~/bundles/js/common")
+
     @RenderSection("scripts", required: false)
 
 </body>

@@ -443,6 +443,7 @@
     <Content Include="Content\img\test-background4.jpg" />
     <Content Include="Content\img\Workflowv2.png" />
     <Content Include="Content\js\bootstrap-datetimepicker.js" />
+    <Content Include="Content\js\bootstrap.3.1.1.min.js" />
     <Content Include="Content\js\bootstrap.js" />
     <Content Include="Content\js\common.js" />
     <Content Include="Content\js\Daypilot\daypilot-bubble.src.js" />
