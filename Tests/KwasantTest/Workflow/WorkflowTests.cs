@@ -46,7 +46,7 @@ namespace KwasantTest.Workflow
 
 
 
-        [Test, Ignore]
+        [Test]
         [Category("Workflow")]
         public void Workflow_CanReceiveInvitationOnEmailInTime()
         {
@@ -106,7 +106,6 @@ namespace KwasantTest.Workflow
                 var startString = lines[1].Remove(0, startPrefix.Length);
                 var endString = lines[2].Remove(0, endPrefix.Length);
                 var e = new Event();
-                var curEventDO = _fixture.TestEvent1();
                 var edo = e.Create(request.Id, startString, endString);
                 edo.Description = "test event description";
                 _uow.EventRepository.Add(edo);
