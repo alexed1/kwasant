@@ -30,26 +30,20 @@
 						<div class="navbar-header">
 							<h3 class="brand goTop">
 								<a href="@Url.Action("Index", "Home")"><img class="floating" src="../Content/img/perfect-krawsant.png" alt="Kwasant" title="Kwasant" />Kwasant</a>
-							</h3>
-                        
-                  
+							</h3>                      
 							<section id="login">
 								@Html.Partial("_LoginPartial")
 							</section>
-                </div>
-            </div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</header>	
-
+		</header>
 		<div class="container body-content">
 			@RenderBody()        
 		</div>
 		<div class="footer-clear">&nbsp;</div>
 	</div>
-
 	<footer class="site-footer">
 		<div class="container">
 			<p>&copy; @DateTime.Now.Year - Maginot Technologies, LLC Confidential</p>
@@ -59,7 +53,6 @@
     @Scripts.Render("~/bundles/js/modernizr")
     @Scripts.Render("~/bundles/js/bootstrap31")
     @Scripts.Render("~/bundles/js/common")
-
     @RenderSection("scripts", required: false)
 
 </body>
