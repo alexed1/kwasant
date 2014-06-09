@@ -8,54 +8,59 @@
 <table id="tblbookingrequest" class="table">
     <thead>
         <tr>
-            <th style="width:15%">Action</th>
             <th>Body</th>
             <th>Subject</th>
             <th>From</th>
+            <th style="width:15%">Action</th>
         </tr>
     </thead>
 </table>
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $.getJSON("/BookingRequest/GetUnprocessedRequest", {}, showRequests);
+        $.getJSON("/BookingRequest/ShowUnprocessedRequest", {}, showRequests);
 
         function showRequests(response) {
             var table = $('#tblbookingrequest').DataTable({
                 data: JSON.parse(response),
                 columns: [
+                    { data: 'body' },
+                    { data: 'request.subject' },
+                    { data: 'request.from[]' },
                     {
-                        data: null,
-                        defaultContent: "<button value='detail'>Details</button>&nbsp;&nbsp;<button value='invalid'>Invalid</button>"
-                    },
-                    { data: 'htmltext' },
-                    { data: 'subject' },
-                    { data: 'from[]' }
+                      data: null,
+                      defaultContent: "<button value='detail'>Details</button>&nbsp;&nbsp;<button value='invalid'>Invalid</button>"
+                    }
                 ],
             });
 
             $('#tblbookingrequest tbody').on('click', 'button', function () {
                 var data = table.row($(this).parents('tr')).data();
                 var parentcontrol = this;
-                if ($(this).val() == "detail") {
-                    window.location.href = '@Url.Action("Details")' + "/" + data.id;
-                }
-                else {
-                    $.ajax({
-                        url: "/BookingRequest/SetStatus",
-                        dataType: "json",
-                        contentType: "application/json",
-                        type: "GET",
-                        data: { id: data.id },
-                        success: function (response) {
-                            if (response == "success") {
-                                $(parentcontrol).parents('tr').remove();
+
+                switch ($(this).val()) {
+                    case "detail":
+                        window.location.href = '@Url.Action("Details")' + "/" + data.request.id;
+                        break;
+                    case "invalid":
+                        $.ajax({
+                            url: "/BookingRequest/SetStatus",
+                            dataType: "json",
+                            contentType: "application/json",
+                            type: "GET",
+                            data: { id: data.request.id, targetStatus: 'invalid' },
+                            success: function (response) {
+                                if (response.Name == "Success") {
+                                    $(parentcontrol).parents('tr').remove();
+                                }
+                                else {
+                                    alert(response.Message);
+                                }
                             }
-                            else {
-                                alert("Process fail, please try again.");
-                            }
-                        }
-                    });
+                        });
+                        break;
+                    default:
+                        alert("Not a valid action!");
                 }
             });
         }

@@ -10,5 +10,8 @@ namespace Data.Entities
         public virtual UserDO User { get; set; }
 
         public List<InstructionDO> Instructions { get; set; }
+
+        [Required]
+        public string BookingStatus { get; set; }
     }
 }

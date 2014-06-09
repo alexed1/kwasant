@@ -296,10 +296,12 @@
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
+    <Compile Include="Controllers\Helpers\Mapper.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MonthController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\StructureMapControllerFactory.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ViewModels\AccountVM.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -314,6 +316,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
+    <Compile Include="ViewModels\UsersAdminViewModel.cs" />
     <Compile Include="ViewModels\ProcessCreateEventViewModel.cs" />
     <Compile Include="Webhooks\MandrillWebhookController.cs" />
   </ItemGroup>
@@ -435,6 +438,7 @@
     <Content Include="Content\img\controls.png" />
     <Content Include="Content\img\Croissant\croissant_nolic.jpg" />
     <Content Include="Content\img\example_using_kwasant_email.png" />
+    <Content Include="Content\img\favicon.ico" />
     <Content Include="Content\img\from_this_to_this.png" />
     <Content Include="Content\img\glyphicons-halflings-white.png" />
     <Content Include="Content\img\glyphicons-halflings.png" />
@@ -535,6 +539,7 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Api\GetAttachment.ashx" />
     <Content Include="Content\img\.DS_Store" />
     <Content Include="Content\img\blue_tag.psd" />
     <Content Include="Content\img\Database layout.pdf" />
@@ -660,7 +665,7 @@
     <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
     <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
     <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
-    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\Index.cshtml" />
     <Content Include="Views\Account\Manage.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
@@ -668,7 +673,6 @@
     <Content Include="Views\User\Create.cshtml" />
     <Content Include="Views\User\Delete.cshtml" />
     <Content Include="Views\User\Details.cshtml" />
-    <Content Include="Views\User\Edit.cshtml" />
     <Content Include="Views\User\Index.cshtml" />
     <Content Include="Views\Message\Create.cshtml" />
     <Content Include="Views\Message\Delete.cshtml" />
@@ -721,7 +725,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
-    <Folder Include="Content\img\Process\" />
     <Folder Include="Controllers\Models\" />
   </ItemGroup>
   <ItemGroup>

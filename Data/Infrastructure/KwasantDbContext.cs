@@ -6,6 +6,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Linq;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Entity.ModelConfiguration;
 
 using Data.Entities;
 using Data.Interfaces;
@@ -14,12 +15,12 @@ using Data.Migrations;
 namespace Data.Infrastructure
 {
     public class KwasantDbContext : IdentityDbContext<IdentityUser>, IDBContext
-    {       
+    {
         //Do not change this value! If you want to change the database you connect to, edit your web.config file
         public KwasantDbContext()
             : base("name=KwasantDB")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<KwasantDbContext, MigrationConfiguration>()); 
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<KwasantDbContext, MigrationConfiguration>());
         }
 
         public override int SaveChanges()
@@ -107,14 +108,14 @@ namespace Data.Infrastructure
                 .IsRequired()
                 .HasColumnAnnotation(
                     "Index",
-                    new IndexAnnotation(new IndexAttribute("IX_User_EmailAddress", 1) {IsUnique = true}));
+                    new IndexAnnotation(new IndexAttribute("IX_User_EmailAddress", 1) { IsUnique = true }));
 
             modelBuilder.Entity<EmailAddressDO>()
                 .Property(ea => ea.Address)
                 .IsRequired()
                 .HasColumnAnnotation(
                     "Index",
-                    new IndexAnnotation(new IndexAttribute("IX_EmailAddress_Address", 1) {IsUnique = true}));
+                    new IndexAnnotation(new IndexAttribute("IX_EmailAddress_Address", 1) { IsUnique = true }));
 
             modelBuilder.Entity<EventDO>()
                 .HasMany(ev => ev.Emails)
@@ -130,7 +131,7 @@ namespace Data.Infrastructure
                 .Map(
                     mapping => mapping.MapLeftKey("BookingRequestID").MapRightKey("InstructionID").ToTable("BookingRequestInstruction")
                 );
-            
+
             modelBuilder.Entity<AttachmentDO>()
                 .HasRequired(a => a.Email)
                 .WithMany(e => e.Attachments)
@@ -147,6 +148,7 @@ namespace Data.Infrastructure
                     ts.Id,
                     ts.ForeignTableName
                 });
+            
 
             base.OnModelCreating(modelBuilder);
         }

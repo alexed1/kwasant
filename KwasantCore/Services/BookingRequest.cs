@@ -18,7 +18,36 @@ namespace KwasantCore.Services
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
-            bookingRequest.Status = EmailStatus.UNPROCESSED;
+            bookingRequest.BookingStatus = BookingStatus.UNPROCESSED;
+        }
+
+        public static object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)
+        {
+            return curBookingRequestRepository.GetAll().Where(e => e.BookingStatus == BookingStatus.UNPROCESSED).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
+        }
+
+        public static void SetStatus(IUnitOfWork uow, BookingRequestDO bookingRequestDO, string targetStatus)
+        {
+            string newstatus = getBookingStatus(targetStatus);
+            if (newstatus != "invalid status")
+            {
+                bookingRequestDO.BookingStatus = newstatus;
+                bookingRequestDO.User = bookingRequestDO.User;
+                uow.SaveChanges();
+            }
+        }
+
+        private static string getBookingStatus(string targetStatus)
+        {
+            switch (targetStatus)
+            {
+                case "invalid":
+                    return BookingStatus.INVALID;
+                case "processed":
+                    return BookingStatus.PROCESSED;
+                default:
+                    return "invalid status";
+            }
         }
 
         private static List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)

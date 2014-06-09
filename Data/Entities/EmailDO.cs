@@ -18,8 +18,7 @@ namespace Data.Entities
         public String PlainText { get; set; }
         public DateTime DateReceived { get; set; }
 
-        //public virtual EmailStatus Status { get; set; }
-        public String Status { get; set; }
+        public virtual EmailStatus Status { get; set; }
 
         [InverseProperty("Email")]
         public virtual List<RecipientDO> Recipients { get; set; }
@@ -32,7 +31,7 @@ namespace Data.Entities
 
         [ForeignKey("From"), Required]
         public int FromID { get; set; }
-        public EmailAddressDO From { get; set; }
+        public virtual EmailAddressDO From { get; set; }
 
         public IEnumerable<EmailAddressDO> To
         {
