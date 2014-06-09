@@ -25,7 +25,7 @@ namespace KwasantCore.Services
 
         public static object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.BookingStatus == BookingStatus.UNPROCESSED).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
+            return curBookingRequestRepository.GetAll().Where(e => e.BookingStatus == "Unprocessed").OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
         }
 
         public static void SetStatus(IUnitOfWork uow, BookingRequestDO bookingRequestDO, string targetStatus)
@@ -44,9 +44,9 @@ namespace KwasantCore.Services
             switch (targetStatus)
             {
                 case "invalid":
-                    return BookingStatus.INVALID;
+                    return "Invalid";
                 case "processed":
-                    return BookingStatus.PROCESSED;
+                    return "Processed";
                 default:
                     return "invalid status";
             }

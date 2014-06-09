@@ -139,8 +139,8 @@ namespace KwasantCore.Services
             }
 
             emailDO.Attachments.ForEach(a => a.Email = emailDO);
-            emailDO.EmailStatus = EmailStatus.QUEUED;
-
+            //emailDO.EmailStatus = EmailStatus.QUEUED; we no longer want to set this here. not all Emails are outbound emails. This should only be set in functions like Event#Dispatch
+            emailDO.EmailStatus = EmailStatus.UNSTARTED; //we'll use this new state so that every email has a valid status.
             emailRepository.Add(emailDO);
             return emailDO;
         }

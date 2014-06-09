@@ -121,7 +121,7 @@
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
-    <Compile Include="Entities\Enumerations\BookingStatus.cs" />
+    <Compile Include="Entities\Enumerations\StringEnumerations.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
     <Compile Include="Entities\Enumerations\CommunicationType.cs" />
     <Compile Include="Entities\Enumerations\EmailParticipantType.cs" />
