@@ -37,6 +37,7 @@ namespace KwasantTest.Fixtures
 
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddHours(1),
+                Description = "Description of  Event",
                 Priority = 1,
                 Sequence = 1,
                 IsAllDay = false

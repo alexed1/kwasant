@@ -102,6 +102,9 @@ namespace Daemons
                 try
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                    //assign the owner of the booking request to be the owner of the From address
+                    bookingRequest.User =
+                        unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address);
                     BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
 
                     unitOfWork.SaveChanges();
@@ -111,6 +114,7 @@ namespace Daemons
                     Logger.GetLogger().Error("Failed to process inbound message.", e);
                     client.RemoveMessageFlags(uid, null, MessageFlag.Seen);
                     Logger.GetLogger().Info("Message marked as unread.");
+                    throw new ApplicationException(e.Message);
                 }
             }
 

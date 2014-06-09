@@ -287,6 +287,7 @@
     switcher.show(dp_day);
 
     function eventClick(e) {
+        if (checkactivewindow()) { return false; }
         Kwasant.IFrame.Display('/Event/Edit/?eventID=' + e.id(),
             {
                 horizontalAlign: 'right',
@@ -295,6 +296,7 @@
     }
 
     function eventNew(start, end) {
+        if (checkactivewindow()) { return false; }
         Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end,
             {
                 horizontalAlign: 'right',
@@ -303,6 +305,7 @@
     }
 
     function eventMove(e, newStart, newEnd) {
+        if (checkactivewindow()) { return false; }
         Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd,        
             {
                 modal: true,
@@ -332,6 +335,18 @@
         $.each(daypilotControls, function (i, ele) {
             ele.clearSelection('refresh');
         });
+    }
+
+    function checkactivewindow() {
+        var isanyactivewindow = false;
+        $(document).find("iframe").each(function () {
+            if ($(this).attr("style").indexOf("z-index") > 0) {
+                if ($(this).attr("style").indexOf("display: none") < 0) {
+                    isanyactivewindow = true;
+                }
+            }
+        });
+        return isanyactivewindow;
     }
 
 </script>
