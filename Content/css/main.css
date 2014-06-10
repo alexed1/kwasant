@@ -715,6 +715,9 @@ blockquote h2 i{
 	box-shadow: 0px 1px 2px rgba(0,0,0,0.7);
 	line-height: 1.5; 
 }
+#logotext.text:hover {
+	cursor: pointer;
+}
 .lt-ie9 #logotext.text{
 	background: url('img/ie-black-bg.png')
 }
@@ -922,6 +925,12 @@ blockquote h2 i{
 /*FAQ section*/
 .faq-section {
 	padding-top: 30px;
+}
+
+/*How it works section*/
+.how-it-works-section h2 {
+	padding: 0;
+	margin-top: 0;
 }
 
 /*details section*/
