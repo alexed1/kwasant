@@ -121,6 +121,7 @@
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
+    <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
     <Compile Include="Entities\Enumerations\CommunicationType.cs" />
     <Compile Include="Entities\Enumerations\EmailParticipantType.cs" />
@@ -149,6 +150,7 @@
     <Compile Include="Infrastructure\KwasantDbContext.cs" />
     <Compile Include="Infrastructure\UnitOfWork.cs" />
     <Compile Include="Interfaces\IDBContext.cs" />
+    <Compile Include="Interfaces\IEnvelope.cs" />
     <Compile Include="Interfaces\IPerson.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\ISaveHook.cs" />
@@ -208,6 +210,7 @@
     <Compile Include="Repositories\CommunicationRepository.cs" />
     <Compile Include="Repositories\EmailAddressRepository.cs" />
     <Compile Include="Repositories\EmailRepository.cs" />
+    <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\GenericRepository.cs" />
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />

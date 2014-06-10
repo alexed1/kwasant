@@ -10,14 +10,21 @@ namespace KwasantCore.Managers.APIManager.Packagers
 {
     public class GmailPackager : IEmailPackager
     {
-        public void Send(EmailDO email)
+        public void Send(EnvelopeDO envelope)
         {
-            var smtpClient = new SmtpClient(ConfigRepository.Get("OutboundEmailHost"), ConfigRepository.Get<int>("OutboundEmailPort"))
-        {
-                EnableSsl = true,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential() { UserName = ConfigRepository.Get("OutboundUserName"), Password = ConfigRepository.Get("OutboundUserPassword") }
-            };
+            var email = envelope.Email;
+            var smtpClient = new SmtpClient(ConfigRepository.Get("OutboundEmailHost"),
+                                            ConfigRepository.Get<int>("OutboundEmailPort"))
+                                 {
+                                     EnableSsl = true,
+                                     UseDefaultCredentials = false,
+                                     Credentials =
+                                         new NetworkCredential()
+                                             {
+                                                 UserName = ConfigRepository.Get("OutboundUserName"),
+                                                 Password = ConfigRepository.Get("OutboundUserPassword")
+                                             }
+                                 };
 
             var mailMessage = new MailMessage();
             mailMessage.From = new MailAddress(email.From.Address, email.From.Name);

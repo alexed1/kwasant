@@ -56,17 +56,22 @@ namespace KwasantCore.Services
         /// <summary>
         /// This implementation of Send uses the Mandrill API
         /// </summary>
-        public void SendTemplate(string templateName, EmailDO message, Dictionary<string, string> mergeFields)
+        public int SendTemplate(string templateName, EmailDO message, Dictionary<string, string> mergeFields)
         {
-            MandrillPackager.PostMessageSendTemplate(templateName, message, mergeFields);
+            var envelope = Envelope.CreateMandrillEnvelope(message, templateName, mergeFields);
+            message.Status = EmailStatus.QUEUED;
+            _uow.EnvelopeRepository.Add(envelope);
+            _uow.SaveChanges();
+            return envelope.Id;
         }
 
         public int Send()
         {
-            var gmailPackager = ObjectFactory.GetInstance<IEmailPackager>();
-            gmailPackager.Send(_curEmailDO);
-            _curEmailDO.Status = EmailStatus.DISPATCHED;
-            return _curEmailDO.Id;
+            var envelope = Envelope.CreateGmailEnvelope(_curEmailDO);
+            _curEmailDO.Status = EmailStatus.QUEUED;
+            _uow.EnvelopeRepository.Add(envelope);
+            _uow.SaveChanges();
+            return envelope.Id;
         }
 
         public static void InitialiseWebhook(String url)

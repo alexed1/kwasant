@@ -72,22 +72,25 @@ namespace KwasantTest.Services
 
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("Email")]
-        public void CanSendSIE_MANUALTEST()
+        public void CanSendSIE()
         {
             //SETUP  
             _curEventDO = _fixture.TestEvent2();
             string expectedSubject = "Invitation via Kwasant: " + _curEventDO.Summary + "@ " + _curEventDO.StartDate;
 
-
             //EXECUTE
+            _uow.EventRepository.Add(_curEventDO);
+            _uow.SaveChanges();
+
             var email = new Email(_uow, _curEventDO);
             email.Send();
 
             //VERIFY
-            //implement a technique later to go and pull from the email inbox and verify. for now, verify by hand.
-
+            var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Subject == expectedSubject);
+            Assert.NotNull(envelope, "Envelope was not created.");
+            Assert.Contains(_curEventDO, envelope.Email.Events, "Envelope doesn't contain the event.");
         }
 
         [Test]
@@ -98,16 +101,15 @@ namespace KwasantTest.Services
             EmailDO _curEmailDO = _fixture.TestEmail1();
             
             //EXECUTE
-            Email curEmail = new Email(_uow, _curEmailDO);
+            _uow.EmailRepository.Add(_curEmailDO);
+            _uow.SaveChanges();
 
-            var mockEmailer = new Mock<IEmailPackager>();
-            mockEmailer.Setup(a => a.Send(_curEmailDO)).Verifiable();
-            ObjectFactory.Initialize(a => a.For<IEmailPackager>().Use(mockEmailer.Object));
-            //VERIFY
+            Email curEmail = new Email(_uow, _curEmailDO);
             curEmail.Send();
 
-            mockEmailer.Verify();
-
+            //VERIFY
+            var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Id == _curEmailDO.Id);
+            Assert.NotNull(envelope, "Envelope was not created.");
         }
    
        

@@ -5,6 +5,8 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
+using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Services;
 using StructureMap;
 using Utilities.Logging;
@@ -75,12 +77,20 @@ namespace Daemons
             while (ProcessNextEventNoWait()) { }
             using (IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                EmailRepository emailRepository = unitOfWork.EmailRepository;
+                EnvelopeRepository envelopeRepository = unitOfWork.EnvelopeRepository;
                 var numSent = 0;
-                foreach (EmailDO email in emailRepository.FindList(e => e.Status == EmailStatus.QUEUED))
+                foreach (EnvelopeDO envelope in envelopeRepository.FindList(e => e.Email.Status == EmailStatus.QUEUED))
                 {
-                    new Email(unitOfWork, email).Send();
-                    numSent++;
+                    var packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
+                    if (packager != null)
+                    {
+                        packager.Send(envelope);
+                        numSent++;
+                    }
+                    else
+                    {
+                        Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", envelope.Handler);
+                    }
                 }
                 unitOfWork.SaveChanges();
                 Logger.GetLogger().Info(numSent + " emails sent.");
