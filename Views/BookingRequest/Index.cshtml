@@ -17,16 +17,20 @@
 </table>
 
 <script type="text/javascript">
+    //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
-        $.getJSON("/BookingRequest/ShowUnprocessedRequest", {}, showRequests);
+        //Ajax call to get all unprocessed booking request from server.
+        $.getJSON("/BookingRequest/ShowUnprocessed", {}, showRequests);
 
+        //Ajax call success function
         function showRequests(response) {
+            //Initiating and providing the json object to Datatable to bind the table "tblbookingrequest" showing Body, Subject and From of the request.
             var table = $('#tblbookingrequest').DataTable({
                 data: JSON.parse(response),
                 columns: [
                     { data: 'body' },
                     { data: 'request.subject' },
-                    { data: 'request.from[]' },
+                    { data: 'request.from.address' },
                     {
                       data: null,
                       defaultContent: "<button value='detail'>Details</button>&nbsp;&nbsp;<button value='invalid'>Invalid</button>"
@@ -34,15 +38,19 @@
                 ],
             });
 
+            //This function will bind a click function on every button in table "tblbookingrequest"
             $('#tblbookingrequest tbody').on('click', 'button', function () {
                 var data = table.row($(this).parents('tr')).data();
                 var parentcontrol = this;
 
+                //checking clicked button value for appropriate action
                 switch ($(this).val()) {
                     case "detail":
+                        //redirecting to main calendar view for details
                         window.location.href = '@Url.Action("Details")' + "/" + data.request.id;
                         break;
                     case "invalid":
+                        //setting status of booking request to "INVALID" and removing the row
                         $.ajax({
                             url: "/BookingRequest/SetStatus",
                             dataType: "json",
@@ -51,6 +59,7 @@
                             data: { id: data.request.id, targetStatus: 'invalid' },
                             success: function (response) {
                                 if (response.Name == "Success") {
+                                    //removing the current row
                                     $(parentcontrol).parents('tr').remove();
                                 }
                                 else {
@@ -60,6 +69,7 @@
                         });
                         break;
                     default:
+                        //generates an alert for invalid selection, generally it won't happen.
                         alert("Not a valid action!");
                 }
             });

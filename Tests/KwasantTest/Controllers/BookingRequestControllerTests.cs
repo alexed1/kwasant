@@ -41,13 +41,13 @@ namespace KwasantTest.Controllers
         public void ShowUnprocessedRequestTest()
         {
             BookingRequestController controller = new BookingRequestController();
-            JsonResult jsonResultActual = controller.ShowUnprocessedRequest() as JsonResult;
+            JsonResult jsonResultActual = controller.ShowUnprocessed() as JsonResult;
 
             string jsonResultExpected = _datatables.Pack(BookingRequest.GetUnprocessed(_uow.BookingRequestRepository));
             Assert.AreEqual(jsonResultExpected, jsonResultActual.Data.ToString());
 
             AddTestRequestData();
-            JsonResult jsonResultActualProcessed = controller.ShowUnprocessedRequest() as JsonResult;
+            JsonResult jsonResultActualProcessed = controller.ShowUnprocessed() as JsonResult;
             string jsonResultExpectedProcessed = _datatables.Pack(BookingRequest.GetUnprocessed(_uow.BookingRequestRepository));
             Assert.AreEqual(jsonResultExpectedProcessed, jsonResultActualProcessed.Data.ToString());
 

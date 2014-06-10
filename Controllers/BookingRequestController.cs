@@ -36,7 +36,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpGet]
-        public ActionResult ShowUnprocessedRequest()
+        public ActionResult ShowUnprocessed()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
