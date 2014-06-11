@@ -100,5 +100,16 @@ namespace KwasantWeb.Controllers
                 }
             }
         }
+
+        [HttpGet]
+        public ActionResult GetBookingRequests(int? id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var jsonResult = Json(_datatables.Pack(BookingRequest.GetBookingRequests(uow.BookingRequestRepository, id.Value)), JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
 	}
 }
