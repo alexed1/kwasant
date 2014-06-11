@@ -11,6 +11,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using KwasantCore.Managers.IdentityManager;
+using StructureMap;
 using Utilities;
 using Utilities.Logging;
 
@@ -24,9 +25,9 @@ namespace KwasantWeb.Controllers
         private KwasantPackager API;
 
 
-        public EmailController(IUnitOfWork uow)
+        public EmailController()
         {
-            _uow = uow;
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             curBookingRequestRepository = _uow.BookingRequestRepository;
             API = new KwasantPackager();
         }

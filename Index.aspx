@@ -140,7 +140,7 @@
                     <div class="#fff-bg">
                         <div class="text">
                             <blockquote>
-                                <h2>kwaSant - The Next Thing You Can't Live Without</h2>
+                                <h2>Kwasant - The Next Thing You Can't Live Without</h2>
                                 <small> We use your email to build your calendar.</small>
                             </blockquote>
                         </div>

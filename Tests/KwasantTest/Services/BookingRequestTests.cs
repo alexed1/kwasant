@@ -44,6 +44,7 @@ namespace KwasantTest.Services
             BookingRequest.ProcessNewBookingRequest(_uow, bookingRequest);
 
             customersNow = _uow.UserRepository.GetAll().ToList();
+<<<<<<< HEAD
 
       
             Assert.AreEqual(1, customersNow.Count);
@@ -55,6 +56,11 @@ namespace KwasantTest.Services
 
             KactDO curAction = _uow.KactRepository.FindOne(k => k.ObjectId == bookingRequest.Id);
             Assert.NotNull(curAction);
+=======
+            Assert.AreEqual(2, customersNow.Count);
+            Assert.AreEqual("customer@gmail.com", customersNow[0].EmailAddress.Address);
+            Assert.AreEqual("Mister Customer", customersNow[0].EmailAddress.Name);
+>>>>>>> dev
         }
 
         [Test]
@@ -80,9 +86,9 @@ namespace KwasantTest.Services
             BookingRequest.ProcessNewBookingRequest(_uow, bookingRequest);
 
             customersNow = _uow.UserRepository.GetAll().ToList();
-            Assert.AreEqual(1, customersNow.Count);
-            Assert.AreEqual(user.EmailAddress, customersNow.First().EmailAddress);
-            Assert.AreEqual(user.FirstName, customersNow.First().FirstName);
+            Assert.AreEqual(2, customersNow.Count);
+            Assert.AreEqual(user.EmailAddress, customersNow[0].EmailAddress);
+            Assert.AreEqual(user.FirstName, customersNow[0].FirstName);
         }
 
         [Test]
