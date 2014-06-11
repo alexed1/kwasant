@@ -197,6 +197,10 @@
     <Compile Include="Migrations\201406040918453_UpdateAspRoles.Designer.cs">
       <DependentUpon>201406040918453_UpdateAspRoles.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.cs" />
+    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.Designer.cs">
+      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -287,6 +291,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406040918453_UpdateAspRoles.resx">
       <DependentUpon>201406040918453_UpdateAspRoles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406111328209_EmailDO_AddDateCreated.resx">
+      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

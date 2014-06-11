@@ -17,6 +17,7 @@ namespace Data.Entities
         public String HTMLText { get; set; }
         public String PlainText { get; set; }
         public DateTime DateReceived { get; set; }
+        public DateTime DateCreated { get; set; }
 
         public virtual EmailStatus Status { get; set; }
 
@@ -62,6 +63,7 @@ namespace Data.Entities
             Recipients = new List<RecipientDO>();
             Attachments = new List<AttachmentDO>();
             Events = new List<EventDO>();
+            DateCreated = DateTime.UtcNow;
         }
 
         public void AddEmailRecipient(EmailParticipantType type, EmailAddressDO emailAddress)
