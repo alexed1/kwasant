@@ -1,24 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Mime;
-using System.Security.Policy;
-using System.Web.UI;
-using AutoMapper;
 using Data.Entities;
-using Data.Entities.Enumerations;
-using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Validators;
-using KwasantICS.DDay.iCal;
-using KwasantICS.DDay.iCal.DataTypes;
-using KwasantICS.DDay.iCal.Serialization;
-using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
-using RazorEngine;
-using StructureMap;
-using Utilities;
-using Encoding = System.Text.Encoding;
 using IEvent = Data.Interfaces.IEvent;
 
 namespace KwasantCore.Services
@@ -30,28 +14,25 @@ namespace KwasantCore.Services
         //some info about the event is known.
         public EventDO Create(EventDO curEventDO, IUnitOfWork uow)
         {
-             curEventDO.IsAllDay = curEventDO.StartDate.Equals(curEventDO.StartDate.Date) && curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate); ;          
-             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
+            curEventDO.IsAllDay = curEventDO.StartDate.Equals(curEventDO.StartDate.Date) &&
+                                  curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate);
+
+            var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
             curEventDO.CreatedBy = bookingRequestDO.User;
-            curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);       
+            curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
             curEventDO.Status = "Instantiated";
 
             return curEventDO;
         }
-     
+
 
         //takes submitted form data and updates as necessary
         //in general, the new event data will simply overwrite the old data. 
         //in some cases, additional work is necessary to handle the changes
 
-        public void Update(IUnitOfWork uow, EventDO newEventData)
-            {
-            //curEventDO.IsAllDay = curEventDO.StartDate.Equals(curEventDO.StartDate.Date) && curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate); ;          
-            EventDO curEventDO = uow.EventRepository.GetByKey(newEventData.Id);
-          
-            if (curEventDO == null)
-                    throw new ApplicationException("should not be able to call this Update method with an ID that doesn't match an existing event");
-            switch (curEventDO.Status)
+        public void Update(IUnitOfWork uow, EventDO eventDO)
+        {
+            switch (eventDO.Status)
             {
                 case "Instantiated":
 
@@ -62,7 +43,7 @@ namespace KwasantCore.Services
                 case "Undispatched":
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
                     //Undispatched is the uncommon case where the event is created, queued up with outbound emails ready to go, and then the event gets changed
-                    if (EventHasChanged(curEventDO, newEventData))
+                    if (EventHasChanged(eventDO, eventDO))
                     {
                         //mark the new attendees with status "New"
                     }
@@ -72,44 +53,14 @@ namespace KwasantCore.Services
                         //mark all attendees with status "NeedsUpdate"
                     }
                     break;
-
             }
-            
-            //use the new information, mapping it to overwrite the old information
-            curEventDO = Mapper.Map<EventDO, EventDO>(newEventData, curEventDO);
-
-            //KillTheOrphans(curEventDO, uow);
-           
-            curEventDO.Attendees = newEventData.Attendees; //this breaks
-            //if event times have changed, may need to send updates
-          // curEventDO = newEventData;
-
-           // uow.EventRepository.Add(curEventDO); 
-            //uow.SaveChanges();
-
-        }
-
-        private void KillTheOrphans(EventDO curEventDO, IUnitOfWork uow)
-        {
-             //manually clear out old attendees because EF isn't smart enough to handle a simple update: http://blog.oneunicorn.com/2012/06/02/deleting-orphans-with-entity-framework/
-            //oh, but you can't do it with foreach, because of http://stackoverflow.com/questions/2024179/c-sharp-collection-was-modified-enumeration-operation-may-not-execute
-            List<AttendeeDO> unbelievablyStupidTempList = new List<AttendeeDO>();
-            foreach (var patheticOrphan in curEventDO.Attendees)
-                unbelievablyStupidTempList.Add(patheticOrphan);
-
-            foreach (var patheticOrphan in unbelievablyStupidTempList) 
-            {
-                uow.AttendeeRepository.Remove(patheticOrphan);
-            }
-            
-
         }
 
         private void SendEventUpdates(EventDO curEvent, EventDO newEventData)
         {
             // if eventtimes have changed
-           //send an event update email to attendees
-            }
+            //send an event update email to attendees
+        }
 
         private bool EventHasChanged(EventDO oldEventDO, EventDO newEventDO)
         {
@@ -126,33 +77,6 @@ namespace KwasantCore.Services
             curEvent.Attendees.Add(curAttendeeDO);
             return curEvent;
         }
-
-        //this is no longer used because we don't want to do string processing when we can instead work with objects
-        //now, the controller maps the incoming attendee strings into attendee objects early in the process.
-        //Processes the incoming attendee information, which is currently just a comma delimited string
-        public void ManageAttendeeList(IUnitOfWork uow, EventDO eventDO, string curAttendees)
-        {
-            var attendees = curAttendees.Split(',').ToList();
-
-            var eventAttendees = eventDO.Attendees ?? new List<AttendeeDO>();
-            var attendeesToDelete = eventAttendees.Where(attendee => !attendees.Contains(attendee.EmailAddress.Address)).ToList();
-            foreach (var attendeeToDelete in attendeesToDelete)
-                uow.AttendeeRepository.Remove(attendeeToDelete);
-
-            foreach (var attendee in attendees.Where(att => !eventAttendees.Select(a => a.EmailAddress.Address).Contains(att)))
-            {
-                var newAttendee = new AttendeeDO
-                {
-                    EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee),
-                    Event = eventDO,
-                    EventID = eventDO.Id,
-                    Name = attendee
-                };
-                uow.AttendeeRepository.Add(newAttendee);
-            }
-        }
-
-        
     }
 
     public class RazorViewModel
@@ -173,7 +97,9 @@ namespace KwasantCore.Services
             Summary = ev.Summary;
             Description = ev.Description;
             Location = ev.Location;
-            Attendees = ev.Attendees.Select(a => new RazorAttendeeViewModel { Name = a.Name, EmailAddress = a.EmailAddress.Address}).ToList();
+            Attendees =
+                ev.Attendees.Select(
+                    a => new RazorAttendeeViewModel {Name = a.Name, EmailAddress = a.EmailAddress.Address}).ToList();
         }
 
         public class RazorAttendeeViewModel

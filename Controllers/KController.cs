@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http.Controllers;
+﻿using System.Web.Mvc;
 using Data.Interfaces;
 using StructureMap;
-using System.Web.Mvc;
 
-namespace Data.Infrastructure
+namespace KwasantWeb.Controllers
 {
-
-
     public class KController : Controller
     {
-
-        public IUnitOfWork UOW()
+        public IUnitOfWork GetUnitOfWork()
         {
             return ObjectFactory.GetInstance<IUnitOfWork>();
         }

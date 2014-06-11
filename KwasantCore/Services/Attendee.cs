@@ -49,31 +49,26 @@ namespace KwasantCore.Services
 
         //the Event View Model returns attendees as a string. we'll want to do something more sophisticated involving typeahead and ajax but for now this is it
         //we want to convert that string into objects as quickly as possible once the data is on the server.
-        public List<AttendeeDO> ConvertFromString(IUnitOfWork uow, string attendeeString)
+        public void ManageAttendeeList(IUnitOfWork uow, EventDO eventDO, string curAttendees)
         {
-            List<AttendeeDO> curList = new List<AttendeeDO>();
-            AttendeeDO curAttendeeDO;
-            //split the string
-            var attendees = attendeeString.Split(',').ToList();
-            foreach (var attendee in attendees)
+            var attendees = curAttendees.Split(',').ToList();
+
+            var eventAttendees = eventDO.Attendees ?? new List<AttendeeDO>();
+            var attendeesToDelete = eventAttendees.Where(attendee => !attendees.Contains(attendee.EmailAddress.Address)).ToList();
+            foreach (var attendeeToDelete in attendeesToDelete)
+                uow.AttendeeRepository.Remove(attendeeToDelete);
+
+            foreach (var attendee in attendees.Where(att => !eventAttendees.Select(a => a.EmailAddress.Address).Contains(att)))
             {
-                 //create an attendee
-                //check the db. if we know about the email use that for the attendee
-                //else create a new email address and use that.
-                curAttendeeDO = new AttendeeDO                   
+                var newAttendee = new AttendeeDO
                 {
                     EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee),
+                    Event = eventDO,
+                    EventID = eventDO.Id,
                     Name = attendee
                 };
-                //uow.AttendeeRepository.Add(curAttendeeDO); these don't have event ids yet, so let's not save them
-                curList.Add(curAttendeeDO);
+                uow.AttendeeRepository.Add(newAttendee);
             }
-
-            return curList;
         }
-        
-                
-
-
     }
 }

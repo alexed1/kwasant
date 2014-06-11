@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Infrastructure;
-using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 
 
@@ -19,22 +15,20 @@ namespace KwasantWeb.Controllers
 {
     [KwasantAuthorize(Roles = "Admin")]
     public class EventController : KController
-  
-
     {
         private Event _event;
         private Attendee _attendee;
-      
+
         public EventController()
         {
             _event = new Event();
             _attendee = new Attendee();
         }
-      
+
         //Renders a form to accept a new event
         public ActionResult New(int bookingRequestID, string start, string end)
         {
-            using (var uow = UOW())
+            using (var uow = GetUnitOfWork())
             {
                 //unpack the form data into an EventDO 
                 EventDO submittedEventData = new EventDO();
@@ -45,12 +39,12 @@ namespace KwasantWeb.Controllers
                 uow.EventRepository.Add(createdEvent);
                 uow.SaveChanges();
 
-            //put it in a view model to hand to the view
+                //put it in a view model to hand to the view
                 var curEventVM = Mapper.Map<EventDO, EventViewModel>(createdEvent);
 
-            //construct a Calendar view model for this Calendar View 
-            return View("~/Views/Event/Edit.cshtml", curEventVM);
-        }
+                //construct a Calendar view model for this Calendar View 
+                return View("~/Views/Event/Edit.cshtml", curEventVM);
+            }
         }
 
 
@@ -96,30 +90,28 @@ namespace KwasantWeb.Controllers
             return View(eventViewModel);
         }
 
-  
         //processes events that have been entered into the form and confirmed
         public ActionResult ProcessConfirmedEvent(EventViewModel eventVM)
         {
-            using (var uow = UOW())
+            using (var uow = GetUnitOfWork())
             {
-                //unpack view model
-                EventDO submittedEventDO = Mapper.Map<EventDO>(eventVM);
-                submittedEventDO.Attendees = _attendee.ConvertFromString(uow, eventVM.Attendees);
                 if (eventVM.Id == 0)
-                {
                     throw new ApplicationException("event should have been created and saved in #new, so Id should not be zero");
-                }
-                else
-                {
-                    _event.Update(uow, submittedEventDO);
-                  //  uow.SaveChanges(); FIX THIS 
-            
 
-                }       
+                var existingEvent = uow.EventRepository.GetByKey(eventVM.Id);
 
-            return JavaScript(SimpleJsonSerializer.Serialize(true));
-        }
+                if (existingEvent == null)
+                    throw new ApplicationException("should not be able to call this Update method with an ID that doesn't match an existing event");
+
+                Mapper.Map(eventVM, existingEvent);
+                _attendee.ManageAttendeeList(uow, existingEvent, eventVM.Attendees);
+
+                _event.Update(uow, existingEvent);
+                uow.SaveChanges();
+
+                return JavaScript(SimpleJsonSerializer.Serialize(true));
             }
+        }
 
 
         public ActionResult DeleteEvent(int eventID)
