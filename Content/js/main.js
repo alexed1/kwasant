@@ -60,8 +60,8 @@ $(document).ready(function(){
 		mywindow = $(window),
 		htmlbody = $('html,body'),
 		offsetTop = $('.navbar').height();
-		if ($('#logotext').length) {
-			links.push($('#logotext')[0]);
+		if ($('#welcome').length) {
+			links.push($('#welcome')[0]);
 		}
 	section.waypoint({
 		 handler: function (direction) {

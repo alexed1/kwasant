@@ -55,8 +55,8 @@
         </div>
     </div>
 
-    <div id="welcome" class="parallax" style="background-image: url(Content/img/background-test9.jpg);">		
-        <div id="logotext" class="text" data-section="1">
+    <div id="welcome" class="parallax" style="background-image: url(Content/img/background-test9.jpg);"  data-section="1">		
+        <div id="logotext" class="text">
 			<h1>Kwasant</h1>
 			<!-- <div class="love text-center" style="background-image: url(Content/img/logo.png);"></div> -->
 			<p>We schedule your meetings for you</p>
