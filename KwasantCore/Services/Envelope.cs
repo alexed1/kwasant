@@ -26,9 +26,12 @@ namespace KwasantCore.Services
                                    TemplateName = temlateName, 
                                    Handler = EnvelopeDO.MandrillHander
                                };
-            foreach (var pair in mergeData)
+            if (mergeData != null)
             {
-                envelope.MergeData.Add(pair);
+                foreach (var pair in mergeData)
+                {
+                    envelope.MergeData.Add(pair);
+                }
             }
             return envelope;
         }

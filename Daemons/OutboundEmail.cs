@@ -81,15 +81,16 @@ namespace Daemons
                 var numSent = 0;
                 foreach (EnvelopeDO envelope in envelopeRepository.FindList(e => e.Email.Status == EmailStatus.QUEUED))
                 {
-                    var packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
-                    if (packager != null)
+                    try
                     {
+                        IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
                         packager.Send(envelope);
                         numSent++;
                     }
-                    else
+                    catch (StructureMapConfigurationException ex)
                     {
                         Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", envelope.Handler);
+                        throw new UnknownEmailPackagerException(string.Format("Unknown email packager: {0}", envelope.Handler), ex);
                     }
                 }
                 unitOfWork.SaveChanges();

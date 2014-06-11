@@ -90,7 +90,6 @@ namespace KwasantTest.Services
             //VERIFY
             var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Subject == expectedSubject);
             Assert.NotNull(envelope, "Envelope was not created.");
-            Assert.Contains(_curEventDO, envelope.Email.Events, "Envelope doesn't contain the event.");
         }
 
         [Test]

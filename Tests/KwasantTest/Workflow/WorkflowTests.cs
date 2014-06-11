@@ -27,10 +27,6 @@ namespace KwasantTest.Workflow
     public class WorkflowTests
     {
         private IUnitOfWork _uow;
-        /*
-                private FixtureData _fixture;
-                private SmtpClient _smtpClient;
-        */
         private string _testUserEmail;
         private string _testUserEmailPassword;
 
@@ -46,14 +42,14 @@ namespace KwasantTest.Workflow
 
 
 
-        [Test]
+        [Test, Ignore]
         [Category("Workflow")]
         public void Workflow_CanReceiveInvitationOnEmailInTime()
         {
             //SETUP
-            var emailToRequestTimeout = TimeSpan.FromSeconds(30);
-            var requestToEmailTimeout = TimeSpan.FromSeconds(30);
-            var totalOperationTimeout = TimeSpan.FromSeconds(60);
+            var emailToRequestTimeout = TimeSpan.FromSeconds(60);
+            var requestToEmailTimeout = TimeSpan.FromSeconds(60);
+            var totalOperationTimeout = TimeSpan.FromSeconds(120);
 
             var subject = string.Format("Event {0}", Guid.NewGuid());
             var now = DateTime.Now;
@@ -83,8 +79,12 @@ namespace KwasantTest.Workflow
             Stopwatch emailToRequestDuration = new Stopwatch();
             Stopwatch requestToEmailDuration = new Stopwatch();
 
+            InboundEmail inboundDaemon = new InboundEmail();
+            OutboundEmail outboundDaemon = new OutboundEmail();
+
             //EXECUTE
             emailService.Send();
+            DaemonTests.RunDaemonOnce(outboundDaemon);
 
             totalOperationDuration.Start();
             emailToRequestDuration.Start();
@@ -92,7 +92,6 @@ namespace KwasantTest.Workflow
             BookingRequestDO request;
             do
             {
-                InboundEmail inboundDaemon = new InboundEmail();
                 DaemonTests.RunDaemonOnce(inboundDaemon);
                 request =
                     _uow.BookingRequestRepository.FindOne(
@@ -114,7 +113,6 @@ namespace KwasantTest.Workflow
 
                 requestToEmailDuration.Start();
 
-                OutboundEmail outboundDaemon = new OutboundEmail();
                 DaemonTests.RunDaemonOnce(outboundDaemon);
 
                 MailMessage inviteMessage = null;

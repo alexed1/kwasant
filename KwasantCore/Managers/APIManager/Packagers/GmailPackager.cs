@@ -12,6 +12,10 @@ namespace KwasantCore.Managers.APIManager.Packagers
     {
         public void Send(EnvelopeDO envelope)
         {
+            if (envelope == null)
+                throw new ArgumentNullException("envelope");
+            if (!string.Equals(envelope.Handler, EnvelopeDO.GmailHander))
+                throw new ArgumentException("This envelope should not be handled with Gmail.", "envelope");
             var email = envelope.Email;
             var smtpClient = new SmtpClient(ConfigRepository.Get("OutboundEmailHost"),
                                             ConfigRepository.Get<int>("OutboundEmailPort"))

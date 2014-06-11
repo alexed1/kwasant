@@ -16,18 +16,32 @@ namespace Data.Entities
         class MergeDataDictionary : IDictionary<string, string>
         {
             private readonly EnvelopeDO _envelope;
-            private Dictionary<string, string> _dictionary;
+            private Lazy<Dictionary<string, string>> _dictionary;
+
+            private Dictionary<string, string> CreateInnerDictionary()
+            {
+                return string.IsNullOrEmpty(_envelope.MergeDataString) 
+                    ? new Dictionary<string, string>() 
+                    : JsonConvert.DeserializeObject<Dictionary<string, string>>(_envelope.MergeDataString);
+            }
+
             private IDictionary<string, string> Dictionary
             {
                 get
                 {
-                    return _dictionary ?? (_dictionary = JsonConvert.DeserializeObject<Dictionary<string, string>>(_envelope.MergeDataString));
+                    return _dictionary.Value;
                 }
             } 
 
             public MergeDataDictionary(EnvelopeDO envelope)
             {
                 _envelope = envelope;
+                Refresh();
+            }
+
+            public void Refresh()
+            {
+                _dictionary = new Lazy<Dictionary<string, string>>(CreateInnerDictionary, true);
             }
 
             private void UpdateEnvelope()
@@ -129,9 +143,11 @@ namespace Data.Entities
         public const string GmailHander = "Gmail";
         public const string MandrillHander = "Mandrill";
 
+        private readonly MergeDataDictionary _mergeData;
+
         public EnvelopeDO()
         {
-            MergeData = new MergeDataDictionary(this);
+            _mergeData = new MergeDataDictionary(this);
         }
 
         [Key]
@@ -139,13 +155,19 @@ namespace Data.Entities
         public string Handler { get; set; }
         public string TemplateName { get; set; }
         [NotMapped]
-        public IDictionary<string, string> MergeData { get; private set; }
+        public IDictionary<string, string> MergeData { get { return _mergeData; } }
         [NotMapped]
-        IEmail IEnvelope.Email { get; set; }
+        IEmail IEnvelope.Email
+        {
+            get { return Email; }
+            set { Email = value as EmailDO; }
+        }
         [Required]
         public EmailDO Email { get; set; }
+        
         [Column("MergeData")]
-        public string MergeDataString { get; set; }
+        public string MergeDataString { get; set; } // change notifications to MergeData dictionary should be added (by calling _mergeData.Refresh()) in future if needed.
+        
         [ForeignKey("Email"), Required]
         public int EmailID { get; set; }
     }
