@@ -396,6 +396,7 @@
         return isanyactivewindow;
     }
 
+    //funtion to load booking request info in iframe "frminfo" on "tbluserrequests" request row click.
     function loadrequest(id) {
         $("#hdnrequestid").val(id);
         $("#btnProcessed").attr("href", "@Url.Action("SetStatus", "BookingRequest", new { id = "requestid", targetStatus = "processed" })".replace("requestid", id));
@@ -411,12 +412,16 @@
         //Ajax call to get all unprocessed booking request from server according to user.
         $.getJSON("@Url.Action("GetBookingRequests", "BookingRequest")", { id: "@Model.Id" }, showRequests);
 
+        //Ajax call success function
         function showRequests(response) {
-            var result = JSON.parse(response)
+            var result = JSON.parse(response);
 
+            //Iterating each object in response result
             $(result).each(function () {
+                //Converting in appropriate date format
                 var date = new Date(this.date_received);
                 date = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+                //appending each request row in table "tbluserrequests"
                 $("#tbluserrequests").append("<tr onclick='javascript:loadrequest(" + this.id + ");' style='border-bottom:1px solid grey;cursor:pointer;'><td>" + date + "</td><td>" + this.subject + "</td></tr>");
             });
         }
