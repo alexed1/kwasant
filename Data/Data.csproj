@@ -140,9 +140,11 @@
     <Compile Include="Infrastructure\StructureMap\MockedRoleStore.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedUserStore.cs" />
     <Compile Include="Infrastructure\TrackingStatus.cs" />
+    <Compile Include="Entities\Enumerations\ClarificationStatus.cs" />
     <Compile Include="Interfaces\IAspNetRoles.cs" />
     <Compile Include="Interfaces\IAspNetUserRoles.cs" />
     <Compile Include="Interfaces\ICalendar.cs" />
+    <Compile Include="Interfaces\IClarificationRequest.cs" />
     <Compile Include="Interfaces\ICustomField.cs" />
     <Compile Include="Entities\TrackingStatusDO.cs" />
     <Compile Include="Infrastructure\FileManager.cs" />
