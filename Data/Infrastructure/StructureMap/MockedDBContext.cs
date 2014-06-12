@@ -36,6 +36,16 @@ namespace Data.Infrastructure.StructureMap
             return 1;
         }
 
+        public List<KwasantDbContext.PropertyChangeInformation> GetEntityModifications<T>(T entity) where T : class
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<KwasantDbContext.EntityChangeInformation> GetModifiedEntities()
+        {
+            throw new NotImplementedException();
+        }
+
         private void AssignIDs()
         {
             foreach (var set in _cachedSets)

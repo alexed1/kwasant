@@ -43,7 +43,8 @@ namespace KwasantCore.Services
                 case "Undispatched":
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
                     //Undispatched is the uncommon case where the event is created, queued up with outbound emails ready to go, and then the event gets changed
-                    if (EventHasChanged(eventDO, eventDO))
+                    
+                    if (EventHasChanged(uow, eventDO))
                     {
                         //mark the new attendees with status "New"
                     }
@@ -62,8 +63,9 @@ namespace KwasantCore.Services
             //send an event update email to attendees
         }
 
-        private bool EventHasChanged(EventDO oldEventDO, EventDO newEventDO)
+        private bool EventHasChanged(IUnitOfWork uow, EventDO eventDO)
         {
+            var changedProperties = uow.Db.GetEntityModifications(eventDO);
             //determine if changes warrant an update message
             //return true or false
             return false;

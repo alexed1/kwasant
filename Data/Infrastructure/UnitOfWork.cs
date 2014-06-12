@@ -225,8 +225,9 @@ namespace Data.Infrastructure
                 }
                 throw new Exception(String.Join(Environment.NewLine + Environment.NewLine, errorList) + Environment.NewLine, e);
             }
-            
         }
+
+
 
         public IDBContext Db
         {

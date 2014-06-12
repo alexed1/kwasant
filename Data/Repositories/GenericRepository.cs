@@ -31,7 +31,7 @@ namespace Data.Repositories
         #region Method
 
         public TEntity GetByKey(object keyValue)
-        {
+        {            
             return DBSet.Find(keyValue);
         }
 
