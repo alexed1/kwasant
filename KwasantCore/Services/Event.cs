@@ -35,7 +35,7 @@ namespace KwasantCore.Services
             switch (eventDO.Status)
             {
                 case "Instantiated":
-
+                    eventDO.Status = "Undispatched";
                     //this is a new event that was instantiated and stored during #Create
 
                     break;
