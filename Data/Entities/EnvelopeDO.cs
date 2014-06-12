@@ -163,7 +163,7 @@ namespace Data.Entities
             set { Email = value as EmailDO; }
         }
         [Required]
-        public EmailDO Email { get; set; }
+        public virtual EmailDO Email { get; set; }
         
         [Column("MergeData")]
         public string MergeDataString { get; set; } // change notifications to MergeData dictionary should be added (by calling _mergeData.Refresh()) in future if needed.
