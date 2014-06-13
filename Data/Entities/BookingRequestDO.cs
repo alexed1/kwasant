@@ -10,5 +10,7 @@ namespace Data.Entities
         public virtual UserDO User { get; set; }
 
         public List<InstructionDO> Instructions { get; set; }
+
+        public virtual ClarificationRequestDO ClarificationRequest { get; set; }
     }
 }

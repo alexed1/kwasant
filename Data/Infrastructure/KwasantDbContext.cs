@@ -86,6 +86,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
+            modelBuilder.Entity<ClarificationRequestDO>().ToTable("ClarificationRequests");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
@@ -131,6 +132,14 @@ namespace Data.Infrastructure
                 .Map(
                     mapping => mapping.MapLeftKey("BookingRequestID").MapRightKey("InstructionID").ToTable("BookingRequestInstruction")
                 );
+
+            modelBuilder.Entity<ClarificationRequestDO>()
+                .HasRequired(cr => cr.BookingRequest)
+                .WithOptional(br => br.ClarificationRequest);
+
+            modelBuilder.Entity<ClarificationQuestionDO>()
+                .HasOptional(cq => cq.ClarificationRequest)
+                .WithMany(cr => cr.Questions);
 
             modelBuilder.Entity<AttachmentDO>()
                 .HasRequired(a => a.Email)
