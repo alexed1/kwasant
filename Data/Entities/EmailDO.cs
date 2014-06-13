@@ -19,7 +19,7 @@ namespace Data.Entities
         public DateTime DateReceived { get; set; }
         public DateTime DateCreated { get; set; }
 
-        public virtual EmailStatus Status { get; set; }
+        public virtual EmailStatus EmailStatus { get; set; }
 
         [InverseProperty("Email")]
         public virtual List<RecipientDO> Recipients { get; set; }
