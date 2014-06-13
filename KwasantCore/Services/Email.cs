@@ -26,6 +26,8 @@ namespace KwasantCore.Services
         private EventValidator _curEventValidator;
         #region Constructor
 
+
+      
         /// <summary>
         /// Initialize EmailManager
         /// </summary>
@@ -209,5 +211,27 @@ namespace KwasantCore.Services
             _uow.SaveChanges();
             return createdEmail;
         }
+
+        public void SendMailContact(string name, string emailAddress, string subject, string message)
+        {
+                var email = new Email(_uow,
+                new EmailDO()
+                {
+                    From = Email.GenerateEmailAddress(_uow, new MailAddress(emailAddress, name)),
+                    Recipients = new List<RecipientDO>()
+                                         {
+                                             new RecipientDO()
+                                                 {
+                                                       EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("info@kwasant.com")),
+                                                       Type = EmailParticipantType.TO
+                                                 }
+                                         },
+                    Subject = subject,
+                    PlainText = message,
+                    HTMLText = message
+                });
+                email.Send();
+        }
+
     }
 }

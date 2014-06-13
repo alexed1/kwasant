@@ -96,6 +96,7 @@
                     <br />
                     <br />
                 </div>
+               
 			</div>
 			<div>
                 <!-- this is a section that breaks up the website -->
@@ -908,11 +909,12 @@
                             <div class="span8">
                                 <h3 class="with-border">Want to ask something?</h3>
                                 <form class="form clearfix" action="#">
-                                    <input type="text" class="span12" placeholder="Name" name="name">
-                                    <input type="email" class="span12" placeholder="Email" name="email">
-                                    <input type="text" class="span12" placeholder="Subject" name="subject">
-                                    <textarea class="span12" placeholder="Message" name="message" rows="6"></textarea>
-                                    <button class="btn btn-large pull-right" type="submit">Submit</button>
+                                    <input type="text" class="span12" placeholder="Name" name="name" id="name">
+                                    <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailAddress">
+                                    <input type="text" class="span12" placeholder="Subject" name="subject" id="subject">
+                                    <textarea class="span12" placeholder="Message" name="message" rows="6" id="message"></textarea>
+                                     <button class="btn btn-large pull-right" type="button" onclick="SendMail();">Submit</button>
+                                   <%-- <button class="btn btn-large pull-right" type="submit">Submit</button>--%>
                                 </form>
                             </div>
 
@@ -1014,3 +1016,29 @@
             <% Response.Write(Scripts.Render("~/bundles/js/main").ToHtmlString()); %>
 </body>
 </html>
+
+<script type="text/javascript">
+
+
+    // this function is used to get values and sent pass these values to “ProcessSubmittedEmail” action method on "HomeController" using ajax
+    //and display contant result to user using alert
+    function SendMail()
+    {
+       $.ajax({
+           url: "/Home/ProcessSubmittedEmail",
+           type: "POST",
+           async: true,
+           data: { 'name': $('#name').val(), 'emailAddress': $('#emailAddress').val(), 'subject': $('#subject').val(), 'message': $('#message').val() },
+           success: function (result) {
+               if (result == "success") {
+                   $('#name').val(""); $('#emailAddress').val(""); $('#subject').val(""); $('#message').val("");
+                   alert("Email Send Successfully ");
+               }
+               else {
+                   alert(result);
+               }
+           }
+       });
+    }
+
+</script>
