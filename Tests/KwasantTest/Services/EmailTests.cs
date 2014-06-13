@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
@@ -90,6 +91,7 @@ namespace KwasantTest.Services
             //VERIFY
             var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Subject == expectedSubject);
             Assert.NotNull(envelope, "Envelope was not created.");
+            Assert.Equals(envelope.Handler, EnvelopeDO.GmailHander);
         }
 
         [Test]
@@ -109,8 +111,28 @@ namespace KwasantTest.Services
             //VERIFY
             var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Id == _curEmailDO.Id);
             Assert.NotNull(envelope, "Envelope was not created.");
+            Assert.Equals(envelope.Handler, EnvelopeDO.GmailHander);
         }
-   
-       
+
+        [Test]
+        [Category("Email")]
+        public void CanSendTemplateEmail()
+        {
+            // SETUP
+            EmailDO _curEmailDO = _fixture.TestEmail1();
+            const string templateName = "test_template";
+
+            // EXECUTE
+            var email = new Email(_uow);
+            email.SendTemplate(templateName,
+                               _curEmailDO,
+                               new Dictionary<string, string>() {{"test_key", "test_value"}});
+
+            // VERIFY
+            var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Id == _curEmailDO.Id);
+            Assert.NotNull(envelope, "Envelope was not created.");
+            Assert.Equals(envelope.TemplateName, templateName);
+            Assert.Equals(envelope.Handler, EnvelopeDO.MandrillHander);
+        }
     }
 }
