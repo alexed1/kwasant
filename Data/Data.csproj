@@ -124,6 +124,8 @@
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\Enumerations\ClarificationQuestionStatus.cs" />
+    <Compile Include="Entities\EnvelopeDO.cs" />
+    <Compile Include="Entities\Enumerations\StringEnumerations.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
     <Compile Include="Entities\Enumerations\CommunicationType.cs" />
     <Compile Include="Entities\Enumerations\EmailParticipantType.cs" />
@@ -155,57 +157,26 @@
     <Compile Include="Infrastructure\KwasantDbContext.cs" />
     <Compile Include="Infrastructure\UnitOfWork.cs" />
     <Compile Include="Interfaces\IDBContext.cs" />
+    <Compile Include="Interfaces\IEnvelope.cs" />
     <Compile Include="Interfaces\IPerson.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\ISaveHook.cs" />
     <Compile Include="Interfaces\IUserRepository.cs" />
-    <Compile Include="Migrations\201405211101452_InitialMigration.cs" />
-    <Compile Include="Migrations\201405211101452_InitialMigration.Designer.cs">
-      <DependentUpon>201405211101452_InitialMigration.cs</DependentUpon>
+    <Compile Include="Migrations\201406091515483_initial.cs" />
+    <Compile Include="Migrations\201406091515483_initial.Designer.cs">
+      <DependentUpon>201406091515483_initial.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201405260508061_AddDateReceived.cs" />
-    <Compile Include="Migrations\201405260508061_AddDateReceived.Designer.cs">
-      <DependentUpon>201405260508061_AddDateReceived.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201405271146464_FixingEventModel.cs" />
-    <Compile Include="Migrations\201405271146464_FixingEventModel.Designer.cs">
-      <DependentUpon>201405271146464_FixingEventModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201405271244102_Rename_EmailEmailAddresses_to_Recipients.cs" />
-    <Compile Include="Migrations\201405271244102_Rename_EmailEmailAddresses_to_Recipients.Designer.cs">
-      <DependentUpon>201405271244102_Rename_EmailEmailAddresses_to_Recipients.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201405271313557_AddForeignKeyForCreatedBy.cs" />
-    <Compile Include="Migrations\201405271313557_AddForeignKeyForCreatedBy.Designer.cs">
-      <DependentUpon>201405271313557_AddForeignKeyForCreatedBy.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201405271324070_MakeCreatedByRequired.cs" />
-    <Compile Include="Migrations\201405271324070_MakeCreatedByRequired.Designer.cs">
-      <DependentUpon>201405271324070_MakeCreatedByRequired.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201405280918080_RemovePersonDO.cs" />
-    <Compile Include="Migrations\201405280918080_RemovePersonDO.Designer.cs">
-      <DependentUpon>201405280918080_RemovePersonDO.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201405281017062_AddFromEmailAddressAsOneToOne.cs" />
-    <Compile Include="Migrations\201405281017062_AddFromEmailAddressAsOneToOne.Designer.cs">
-      <DependentUpon>201405281017062_AddFromEmailAddressAsOneToOne.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201405281705446_UseEmailAddressDOOnAttendees.cs" />
-    <Compile Include="Migrations\201405281705446_UseEmailAddressDOOnAttendees.Designer.cs">
-      <DependentUpon>201405281705446_UseEmailAddressDOOnAttendees.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201406020755535_Synchronise.cs" />
-    <Compile Include="Migrations\201406020755535_Synchronise.Designer.cs">
-      <DependentUpon>201406020755535_Synchronise.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201406040918453_UpdateAspRoles.cs" />
-    <Compile Include="Migrations\201406040918453_UpdateAspRoles.Designer.cs">
-      <DependentUpon>201406040918453_UpdateAspRoles.cs</DependentUpon>
+    <Compile Include="Migrations\201406092112336_StatusToEmailStatus.cs" />
+    <Compile Include="Migrations\201406092112336_StatusToEmailStatus.Designer.cs">
+      <DependentUpon>201406092112336_StatusToEmailStatus.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.cs" />
     <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.Designer.cs">
       <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406110747088_AddEnvelopeDO.cs" />
+    <Compile Include="Migrations\201406110747088_AddEnvelopeDO.Designer.cs">
+      <DependentUpon>201406110747088_AddEnvelopeDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -218,6 +189,7 @@
     <Compile Include="Repositories\CommunicationRepository.cs" />
     <Compile Include="Repositories\EmailAddressRepository.cs" />
     <Compile Include="Repositories\EmailRepository.cs" />
+    <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\GenericRepository.cs" />
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />
@@ -265,41 +237,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201405211101452_InitialMigration.resx">
-      <DependentUpon>201405211101452_InitialMigration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201406091515483_initial.resx">
+      <DependentUpon>201406091515483_initial.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201405260508061_AddDateReceived.resx">
-      <DependentUpon>201405260508061_AddDateReceived.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201405271146464_FixingEventModel.resx">
-      <DependentUpon>201405271146464_FixingEventModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201405271244102_Rename_EmailEmailAddresses_to_Recipients.resx">
-      <DependentUpon>201405271244102_Rename_EmailEmailAddresses_to_Recipients.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201405271313557_AddForeignKeyForCreatedBy.resx">
-      <DependentUpon>201405271313557_AddForeignKeyForCreatedBy.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201405271324070_MakeCreatedByRequired.resx">
-      <DependentUpon>201405271324070_MakeCreatedByRequired.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201405280918080_RemovePersonDO.resx">
-      <DependentUpon>201405280918080_RemovePersonDO.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201405281017062_AddFromEmailAddressAsOneToOne.resx">
-      <DependentUpon>201405281017062_AddFromEmailAddressAsOneToOne.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201405281705446_UseEmailAddressDOOnAttendees.resx">
-      <DependentUpon>201405281705446_UseEmailAddressDOOnAttendees.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406020755535_Synchronise.resx">
-      <DependentUpon>201406020755535_Synchronise.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406040918453_UpdateAspRoles.resx">
-      <DependentUpon>201406040918453_UpdateAspRoles.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201406092112336_StatusToEmailStatus.resx">
+      <DependentUpon>201406092112336_StatusToEmailStatus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406111328209_EmailDO_AddDateCreated.resx">
       <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406110747088_AddEnvelopeDO.resx">
+      <DependentUpon>201406110747088_AddEnvelopeDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

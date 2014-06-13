@@ -56,17 +56,22 @@ namespace KwasantCore.Services
         /// <summary>
         /// This implementation of Send uses the Mandrill API
         /// </summary>
-        public void SendTemplate(string templateName, EmailDO message, Dictionary<string, string> mergeFields)
+        public int SendTemplate(string templateName, EmailDO message, Dictionary<string, string> mergeFields)
         {
-            MandrillPackager.PostMessageSendTemplate(templateName, message, mergeFields);
+            var envelope = Envelope.CreateMandrillEnvelope(message, templateName, mergeFields);
+            message.EmailStatus = EmailStatus.QUEUED;
+            _uow.EnvelopeRepository.Add(envelope);
+            _uow.SaveChanges();
+            return envelope.Id;
         }
 
         public int Send()
         {
-            var gmailPackager = ObjectFactory.GetInstance<IEmailPackager>();
-            gmailPackager.Send(_curEmailDO);
-            _curEmailDO.Status = EmailStatus.DISPATCHED;
-            return _curEmailDO.Id;
+            var envelope = Envelope.CreateGmailEnvelope(_curEmailDO);
+            _curEmailDO.EmailStatus = EmailStatus.QUEUED;
+            _uow.EnvelopeRepository.Add(envelope);
+            _uow.SaveChanges();
+            return envelope.Id;
         }
 
         public static void InitialiseWebhook(String url)
@@ -139,8 +144,8 @@ namespace KwasantCore.Services
             }
 
             emailDO.Attachments.ForEach(a => a.Email = emailDO);
-            emailDO.Status = EmailStatus.QUEUED;
-            
+            //emailDO.EmailStatus = EmailStatus.QUEUED; we no longer want to set this here. not all Emails are outbound emails. This should only be set in functions like Event#Dispatch
+            emailDO.EmailStatus = EmailStatus.UNSTARTED; //we'll use this new state so that every email has a valid status.
             emailRepository.Add(emailDO);
             return emailDO;
         }
@@ -192,7 +197,7 @@ namespace KwasantCore.Services
             }
             createdEmail.Subject = "Invitation via Kwasant: " + curEventDO.Summary + "@ " + curEventDO.StartDate;
             createdEmail.HTMLText = "This is a Kwasant Event Request. For more information, see http://www.kwasant.com";
-            createdEmail.Status = EmailStatus.QUEUED;
+            createdEmail.EmailStatus = EmailStatus.QUEUED;
 
             if (CloudConfigurationManager.GetSetting("ArchiveOutboundEmail") == "true")
             {

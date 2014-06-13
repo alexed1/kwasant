@@ -5,6 +5,8 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
+using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Services;
 using StructureMap;
 using Utilities.Logging;
@@ -28,7 +30,7 @@ namespace Daemons
                     return;
                 }
 
-                emailToUpdate.Status = EmailStatus.SENT;
+                emailToUpdate.EmailStatus = EmailStatus.SENT;
                 unitOfWork.SaveChanges();
             });
 
@@ -45,7 +47,7 @@ namespace Daemons
 
                 Logger.GetLogger().Error(String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason));
 
-                emailToUpdate.Status = EmailStatus.SEND_REJECTED;
+                emailToUpdate.EmailStatus = EmailStatus.SEND_REJECTED;
                 unitOfWork.SaveChanges();
             });
 
@@ -62,7 +64,7 @@ namespace Daemons
 
                 Logger.GetLogger().Error(String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}", errorCode, name, message, emailID));
 
-                emailToUpdate.Status = EmailStatus.SEND_CRITICAL_ERROR;
+                emailToUpdate.EmailStatus = EmailStatus.SEND_CRITICAL_ERROR;
                 unitOfWork.SaveChanges();
             });
         }
@@ -77,12 +79,21 @@ namespace Daemons
             while (ProcessNextEventNoWait()) { }
             using (IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                EmailRepository emailRepository = unitOfWork.EmailRepository;
+                EnvelopeRepository envelopeRepository = unitOfWork.EnvelopeRepository;
                 var numSent = 0;
-                foreach (EmailDO email in emailRepository.FindList(e => e.Status == EmailStatus.QUEUED))
+                foreach (EnvelopeDO envelope in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailStatus.QUEUED))
                 {
-                    new Email(unitOfWork, email).Send();
-                    numSent++;
+                    try
+                    {
+                        IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
+                        packager.Send(envelope);
+                        numSent++;
+                    }
+                    catch (StructureMapConfigurationException ex)
+                    {
+                        Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", envelope.Handler);
+                        throw new UnknownEmailPackagerException(string.Format("Unknown email packager: {0}", envelope.Handler), ex);
+                    }
                 }
                 unitOfWork.SaveChanges();
 

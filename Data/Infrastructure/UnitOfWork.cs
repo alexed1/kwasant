@@ -109,6 +109,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private EnvelopeRepository _envelopeRepository;
+
+        public EnvelopeRepository EnvelopeRepository
+        {
+            get
+            {
+                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
+            }
+        }
+
         private EventRepository _eventRepository;
 
         public EventRepository EventRepository

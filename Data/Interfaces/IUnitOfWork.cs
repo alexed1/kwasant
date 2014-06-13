@@ -18,6 +18,7 @@ namespace Data.Interfaces
         ClarificationRequestRepository ClarificationRequestRepository { get; }
         CommunicationConfigurationRepository CommunicationConfigurationRepository { get; }
         EmailRepository EmailRepository { get; }
+        EnvelopeRepository EnvelopeRepository { get; }
         EventRepository EventRepository { get; }
         InstructionRepository InstructionRepository { get; }
         StoredFileRepository StoredFileRepository { get; }
