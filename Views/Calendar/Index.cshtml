@@ -136,6 +136,11 @@
                 padding: 5px;
                 text-decoration: none;
             }
+
+        .activeRequest
+        {
+            background-color: #aaa;
+        }
     </style>
     @Styles.Render("~/bundles/css/daypilot")
     @Styles.Render("~/bundles/css/default")
@@ -397,10 +402,13 @@
     }
 
     //funtion to load booking request info in iframe "frminfo" on "tbluserrequests" request row click.
-    function loadrequest(id) {
+    //called by : rows in tbluserrequests on click
+    function loadrequest(id, ele) {
+        $("#tbluserrequests tr").attr("class", "");
+        $(ele).attr("class", "activeRequest");
         $("#hdnrequestid").val(id);
         $("#btnProcessed").attr("href", "@Url.Action("SetStatus", "BookingRequest", new { id = "requestid", targetStatus = "processed" })".replace("requestid", id));
-        $("#frminfo").attr("src", "/Api/GetEmailHTML.aspx?emailID=" + id);
+        $("#frminfo")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
         dp_day.backendUrl = "@Url.Content("~/Calendar/Day?bookingRequestID=")" + id;
         dp_week.backendUrl = "@Url.Content("~/Calendar/Backend?bookingRequestID=")" + id;
         dp_month.backendUrl = "@Url.Content("~/Calendar/Month?bookingRequestID=")" + id;
@@ -412,7 +420,7 @@
         //Ajax call to get all unprocessed booking request from server according to user.
         $.getJSON("@Url.Action("GetBookingRequests", "BookingRequest")", { id: "@Model.Id" }, showRequests);
 
-        //Ajax call success function
+        //Parsing and binding the retrieved booking requests
         function showRequests(response) {
             var result = JSON.parse(response);
 
@@ -422,7 +430,12 @@
                 var date = new Date(this.date_received);
                 date = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
                 //appending each request row in table "tbluserrequests"
-                $("#tbluserrequests").append("<tr onclick='javascript:loadrequest(" + this.id + ");' style='border-bottom:1px solid grey;cursor:pointer;'><td>" + date + "</td><td>" + this.subject + "</td></tr>");
+                if ("@Model.Id" != this.id) {
+                    $("#tbluserrequests").append("<tr onclick='javascript:loadrequest(" + this.id + ",this);' style='border-bottom:1px solid grey;cursor:pointer;'><td>" + date + "</td><td>" + this.subject + "</td></tr>");
+                }
+                else {
+                    $("#tbluserrequests").append("<tr onclick='javascript:loadrequest(" + this.id + ",this);' style='border-bottom:1px solid grey;cursor:pointer;' class='activeRequest'><td>" + date + "</td><td>" + this.subject + "</td></tr>");
+                }
             });
         }
     });
