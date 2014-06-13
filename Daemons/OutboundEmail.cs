@@ -13,6 +13,8 @@ namespace Daemons
 {
     public class OutboundEmail : Daemon
     {
+
+        private string logString;
         public OutboundEmail()
         {
             RegisterEvent<string, int>(MandrillPackagerEventHandler.EmailSent, (id, emailID) =>
@@ -83,7 +85,18 @@ namespace Daemons
                     numSent++;
                 }
                 unitOfWork.SaveChanges();
-                Logger.GetLogger().Info(numSent + " emails sent.");
+
+
+                if (numSent == 0)
+                {
+                    logString = "nothing sent";
+                }
+                else
+                {
+                    logString = "Emails sent:" + numSent;
+                }
+                    
+                Logger.GetLogger().Info(logString);
             }
         }
     }
