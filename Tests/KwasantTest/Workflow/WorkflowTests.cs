@@ -66,7 +66,7 @@ namespace KwasantTest.Workflow
                                          {
                                              new RecipientDO()
                                                  {
-                                                     EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintakeclone@gmail.com")),
+                                                     EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintegration@gmail.com")),
                                                      Type = EmailParticipantType.TO
                                                  }
                                          },
@@ -81,6 +81,8 @@ namespace KwasantTest.Workflow
 
             InboundEmail inboundDaemon = new InboundEmail();
             OutboundEmail outboundDaemon = new OutboundEmail();
+
+            ImapClient client = new ImapClient("imap.gmail.com", 993, _testUserEmail.Split('@')[0], _testUserEmailPassword, AuthMethod.Login, true);
 
             //EXECUTE
             emailService.Send();
@@ -108,18 +110,18 @@ namespace KwasantTest.Workflow
                 var edo = e.Create(request.Id, startString, endString);
                 edo.Description = "test event description";
                 _uow.EventRepository.Add(edo);
+
                 e.Dispatch(_uow, edo);
-                _uow.SaveChanges();
 
                 requestToEmailDuration.Start();
 
                 DaemonTests.RunDaemonOnce(outboundDaemon);
 
                 MailMessage inviteMessage = null;
+                uint inviteMessageId = 0;
                 do
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(1));
-                    ImapClient client = new ImapClient("imap.gmail.com", 993, _testUserEmail.Split('@')[0], _testUserEmailPassword, AuthMethod.Login, true);
                     var uids = client.Search(SearchCondition.Unseen()).ToList();
                     foreach (var uid in uids)
                     {
@@ -133,6 +135,7 @@ namespace KwasantTest.Workflow
                                 cal.Events[0].Start.Value == start && 
                                 cal.Events[0].End.Value == end)
                             {
+                                inviteMessageId = uid;
                                 inviteMessage = curMessage;
                                 break;
                             }
@@ -140,6 +143,14 @@ namespace KwasantTest.Workflow
                     }
                 } while (inviteMessage == null && requestToEmailDuration.Elapsed < requestToEmailTimeout);
                 requestToEmailDuration.Stop();
+
+                var requestMessages = client.Search(SearchCondition.Subject(subject)).ToList();
+                client.DeleteMessages(requestMessages);
+
+                if (inviteMessage != null)
+                {
+                    client.DeleteMessage(inviteMessageId);
+                }
             }
             totalOperationDuration.Stop();
 

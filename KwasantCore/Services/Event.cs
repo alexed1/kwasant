@@ -121,7 +121,6 @@ namespace KwasantCore.Services
             outboundEmail.PlainText = parsedPlainEmail;
 
             //prepare the outbound email
-            outboundEmail.EmailStatus = EmailStatus.QUEUED;
             if (eventDO.Emails == null)
                 eventDO.Emails = new List<EmailDO>();
             eventDO.Emails.Add(outboundEmail);
@@ -164,6 +163,8 @@ namespace KwasantCore.Services
             ddayCalendar.Events.Add(dDayEvent);
             ddayCalendar.Method = CalendarMethods.Request;
             AttachCalendarToEmail(ddayCalendar, outboundEmail);
+            var email = new Email(uow, outboundEmail);
+            email.Send();
         }
 
         //if we have a first name and last name, use them together
