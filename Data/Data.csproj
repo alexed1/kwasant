@@ -178,6 +178,10 @@
     <Compile Include="Migrations\201406110747088_AddEnvelopeDO.Designer.cs">
       <DependentUpon>201406110747088_AddEnvelopeDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406131703335_AddClarificationRequest.cs" />
+    <Compile Include="Migrations\201406131703335_AddClarificationRequest.Designer.cs">
+      <DependentUpon>201406131703335_AddClarificationRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -185,6 +189,7 @@
     <Compile Include="Repositories\AttendeeRepository.cs" />
     <Compile Include="Repositories\BookingRequestRepository.cs" />
     <Compile Include="Repositories\CalendarRepository.cs" />
+    <Compile Include="Repositories\ClarificationRequestRepository.cs" />
     <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
     <Compile Include="Repositories\CommunicationRepository.cs" />
     <Compile Include="Repositories\EmailAddressRepository.cs" />
@@ -248,6 +253,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406110747088_AddEnvelopeDO.resx">
       <DependentUpon>201406110747088_AddEnvelopeDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406131703335_AddClarificationRequest.resx">
+      <DependentUpon>201406131703335_AddClarificationRequest.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

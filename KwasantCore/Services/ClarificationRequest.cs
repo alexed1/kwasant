@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +42,8 @@ namespace KwasantCore.Services
         public void Send(ClarificationRequestDO request)
         {
             var email = new Email(_uow);
-            email.SendTemplate("clarification_request_v1", request, new Dictionary<string, string>() { { "crid", "" } }); // TODO: add CR id hash
+            var encryptedRequestId = request.Id.ToString(CultureInfo.InvariantCulture); // TODO: replace with real utility invoke.
+            email.SendTemplate("clarification_request_v1", request, new Dictionary<string, string>() { { "crid", encryptedRequestId } });
         }
     }
 }
