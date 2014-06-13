@@ -59,7 +59,7 @@ namespace KwasantCore.Services
         public int SendTemplate(string templateName, EmailDO message, Dictionary<string, string> mergeFields)
         {
             var envelope = Envelope.CreateMandrillEnvelope(message, templateName, mergeFields);
-            message.Status = EmailStatus.QUEUED;
+            message.EmailStatus = EmailStatus.QUEUED;
             _uow.EnvelopeRepository.Add(envelope);
             _uow.SaveChanges();
             return envelope.Id;
@@ -68,7 +68,7 @@ namespace KwasantCore.Services
         public int Send()
         {
             var envelope = Envelope.CreateGmailEnvelope(_curEmailDO);
-            _curEmailDO.Status = EmailStatus.QUEUED;
+            _curEmailDO.EmailStatus = EmailStatus.QUEUED;
             _uow.EnvelopeRepository.Add(envelope);
             _uow.SaveChanges();
             return envelope.Id;

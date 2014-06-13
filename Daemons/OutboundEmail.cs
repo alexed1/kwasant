@@ -81,7 +81,7 @@ namespace Daemons
             {
                 EnvelopeRepository envelopeRepository = unitOfWork.EnvelopeRepository;
                 var numSent = 0;
-                foreach (EnvelopeDO envelope in envelopeRepository.FindList(e => e.Email.Status == EmailStatus.QUEUED))
+                foreach (EnvelopeDO envelope in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailStatus.QUEUED))
                 {
                     try
                     {
