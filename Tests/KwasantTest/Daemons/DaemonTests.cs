@@ -14,7 +14,16 @@ namespace KwasantTest.Daemons
         public static void RunDaemonOnce<TDaemon>(TDaemon daemon)
             where TDaemon : Daemon
         {
-            typeof (TDaemon).GetMethod("Run", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).Invoke(daemon, null);
+            try
+            {
+                typeof(TDaemon).GetMethod("Run", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public).Invoke(daemon, null);
+            }
+            catch (TargetInvocationException ex)
+            {
+                if (ex.InnerException != null)
+                    throw ex.InnerException;
+                throw;
+            }
         }
 
         [Test, Category("Threaded")]

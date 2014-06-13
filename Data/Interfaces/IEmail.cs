@@ -20,5 +20,6 @@ namespace Data.Interfaces
         //IEnumerable<EmailAddress> CC { get; set; }
         //IEnumerable<Attachment> Attachments { get; set; }
         List<EventDO> Events { get; set; }
+        DateTime DateCreated { get; set; }
     }
 }
