@@ -27,10 +27,6 @@ namespace KwasantTest.Workflow
     public class WorkflowTests
     {
         private IUnitOfWork _uow;
-        /*
-                private FixtureData _fixture;
-                private SmtpClient _smtpClient;
-        */
         private string _testUserEmail;
         private string _testUserEmailPassword;
 
@@ -51,9 +47,9 @@ namespace KwasantTest.Workflow
         public void Workflow_CanReceiveInvitationOnEmailInTime()
         {
             //SETUP
-            var emailToRequestTimeout = TimeSpan.FromSeconds(30);
-            var requestToEmailTimeout = TimeSpan.FromSeconds(30);
-            var totalOperationTimeout = TimeSpan.FromSeconds(60);
+            var emailToRequestTimeout = TimeSpan.FromSeconds(60);
+            var requestToEmailTimeout = TimeSpan.FromSeconds(60);
+            var totalOperationTimeout = TimeSpan.FromSeconds(120);
 
             var subject = string.Format("Event {0}", Guid.NewGuid());
             var now = DateTime.Now;
@@ -70,7 +66,7 @@ namespace KwasantTest.Workflow
                                          {
                                              new RecipientDO()
                                                  {
-                                                     EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintakeclone@gmail.com")),
+                                                     EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintegration@gmail.com")),
                                                      Type = EmailParticipantType.TO
                                                  }
                                          },
@@ -83,8 +79,14 @@ namespace KwasantTest.Workflow
             Stopwatch emailToRequestDuration = new Stopwatch();
             Stopwatch requestToEmailDuration = new Stopwatch();
 
+            InboundEmail inboundDaemon = new InboundEmail();
+            OutboundEmail outboundDaemon = new OutboundEmail();
+
+            ImapClient client = new ImapClient("imap.gmail.com", 993, _testUserEmail.Split('@')[0], _testUserEmailPassword, AuthMethod.Login, true);
+
             //EXECUTE
             emailService.Send();
+            DaemonTests.RunDaemonOnce(outboundDaemon);
 
             totalOperationDuration.Start();
             emailToRequestDuration.Start();
@@ -92,7 +94,6 @@ namespace KwasantTest.Workflow
             BookingRequestDO request;
             do
             {
-                InboundEmail inboundDaemon = new InboundEmail();
                 DaemonTests.RunDaemonOnce(inboundDaemon);
                 request =
                     _uow.BookingRequestRepository.FindOne(
@@ -109,19 +110,18 @@ namespace KwasantTest.Workflow
                 var edo = e.Create(request.Id, startString, endString);
                 edo.Description = "test event description";
                 _uow.EventRepository.Add(edo);
+
                 e.Dispatch(_uow, edo);
-                _uow.SaveChanges();
 
                 requestToEmailDuration.Start();
 
-                OutboundEmail outboundDaemon = new OutboundEmail();
                 DaemonTests.RunDaemonOnce(outboundDaemon);
 
                 MailMessage inviteMessage = null;
+                uint inviteMessageId = 0;
                 do
                 {
                     Thread.Sleep(TimeSpan.FromSeconds(1));
-                    ImapClient client = new ImapClient("imap.gmail.com", 993, _testUserEmail.Split('@')[0], _testUserEmailPassword, AuthMethod.Login, true);
                     var uids = client.Search(SearchCondition.Unseen()).ToList();
                     foreach (var uid in uids)
                     {
@@ -135,6 +135,7 @@ namespace KwasantTest.Workflow
                                 cal.Events[0].Start.Value == start && 
                                 cal.Events[0].End.Value == end)
                             {
+                                inviteMessageId = uid;
                                 inviteMessage = curMessage;
                                 break;
                             }
@@ -142,6 +143,14 @@ namespace KwasantTest.Workflow
                     }
                 } while (inviteMessage == null && requestToEmailDuration.Elapsed < requestToEmailTimeout);
                 requestToEmailDuration.Stop();
+
+                var requestMessages = client.Search(SearchCondition.Subject(subject)).ToList();
+                client.DeleteMessages(requestMessages);
+
+                if (inviteMessage != null)
+                {
+                    client.DeleteMessage(inviteMessageId);
+                }
             }
             totalOperationDuration.Stop();
 

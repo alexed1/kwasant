@@ -10,14 +10,25 @@ namespace KwasantCore.Managers.APIManager.Packagers
 {
     public class GmailPackager : IEmailPackager
     {
-        public void Send(EmailDO email)
+        public void Send(EnvelopeDO envelope)
         {
-            var smtpClient = new SmtpClient(ConfigRepository.Get("OutboundEmailHost"), ConfigRepository.Get<int>("OutboundEmailPort"))
-        {
-                EnableSsl = true,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential() { UserName = ConfigRepository.Get("OutboundUserName"), Password = ConfigRepository.Get("OutboundUserPassword") }
-            };
+            if (envelope == null)
+                throw new ArgumentNullException("envelope");
+            if (!string.Equals(envelope.Handler, EnvelopeDO.GmailHander))
+                throw new ArgumentException("This envelope should not be handled with Gmail.", "envelope");
+            var email = envelope.Email;
+            var smtpClient = new SmtpClient(ConfigRepository.Get("OutboundEmailHost"),
+                                            ConfigRepository.Get<int>("OutboundEmailPort"))
+                                 {
+                                     EnableSsl = true,
+                                     UseDefaultCredentials = false,
+                                     Credentials =
+                                         new NetworkCredential()
+                                             {
+                                                 UserName = ConfigRepository.Get("OutboundUserName"),
+                                                 Password = ConfigRepository.Get("OutboundUserPassword")
+                                             }
+                                 };
 
             var mailMessage = new MailMessage();
             mailMessage.From = new MailAddress(email.From.Address, email.From.Name);
@@ -40,7 +51,10 @@ namespace KwasantCore.Managers.APIManager.Packagers
             mailMessage.Subject = email.Subject;
             mailMessage.IsBodyHtml = true;
 
-            var htmlView = AlternateView.CreateAlternateViewFromString(email.HTMLText, Encoding.UTF8, "text/html");
+            if (email.PlainText == null || email.HTMLText == null)
+                throw new ArgumentException("Trying to send an email that doesn't have both an HTML and plain text body");
+    
+            var htmlView = AlternateView.CreateAlternateViewFromString(email.HTMLText, Encoding.UTF8, "text/html");            
             var plainView = AlternateView.CreateAlternateViewFromString(email.PlainText, Encoding.UTF8, "text/plain");
 
             if (!ConfigRepository.Get<bool>("compressEmail"))
