@@ -22,9 +22,9 @@
         //Ajax call to get all unprocessed booking request from server.
         $.getJSON("/BookingRequest/ShowUnprocessed", {}, showRequests);
 
-        //Ajax call success function
+        //Inserts retrieved booking request json into DataTable Widget
         function showRequests(response) {
-            //Initiating and providing the json object to Datatable to bind the table "tblbookingrequest" showing Body, Subject and From of the request.
+            //This configuration supports two buttons (Invalid and Details) and several columns of data
             var table = $('#tblbookingrequest').DataTable({
                 data: JSON.parse(response),
                 columns: [
@@ -43,7 +43,7 @@
                 var data = table.row($(this).parents('tr')).data();
                 var parentcontrol = this;
 
-                //checking clicked button value for appropriate action
+                //checking clicked button value for appropriate action this will be either "detail" or "invalid"
                 switch ($(this).val()) {
                     case "detail":
                         //redirecting to main calendar view for details
