@@ -91,7 +91,7 @@ namespace KwasantTest.Services
             //VERIFY
             var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Subject == expectedSubject);
             Assert.NotNull(envelope, "Envelope was not created.");
-            Assert.Equals(envelope.Handler, EnvelopeDO.GmailHander);
+            Assert.AreEqual(envelope.Handler, EnvelopeDO.GmailHander, "Envelope handler should be Gmail");
         }
 
         [Test]
@@ -111,7 +111,7 @@ namespace KwasantTest.Services
             //VERIFY
             var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Id == _curEmailDO.Id);
             Assert.NotNull(envelope, "Envelope was not created.");
-            Assert.Equals(envelope.Handler, EnvelopeDO.GmailHander);
+            Assert.AreEqual(envelope.Handler, EnvelopeDO.GmailHander, "Envelope handler should be Gmail");
         }
 
         [Test]
@@ -132,7 +132,7 @@ namespace KwasantTest.Services
             var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Id == _curEmailDO.Id);
             Assert.NotNull(envelope, "Envelope was not created.");
             Assert.Equals(envelope.TemplateName, templateName);
-            Assert.Equals(envelope.Handler, EnvelopeDO.MandrillHander);
+            Assert.AreEqual(envelope.Handler, EnvelopeDO.MandrillHander, "Envelope handler should be Mandrill");
         }
     }
 }
