@@ -55,11 +55,11 @@
         </div>
     </div>
 
-    <div id="welcome" class="parallax" style="background-image: url(Content/img/background-test9.jpg);">
+    <div id="welcome" class="parallax" style="background-image: url(Content/img/background-test9.jpg);"  data-section="1">		
         <div id="logotext" class="text">
-            <h1>Kwasant</h1>
-            <!-- <div class="love text-center" style="background-image: url(Content/img/logo.png);"></div> -->
-            <p>We schedule your meetings for you</p>
+			<h1>Kwasant</h1>
+			<!-- <div class="love text-center" style="background-image: url(Content/img/logo.png);"></div> -->
+			<p>We schedule your meetings for you</p>
         </div>
     </div>
 
@@ -76,9 +76,8 @@
         </div>
     </section>
     <section id="how_to_works" class="row text-block" data-section="2">
-        <br/>
         <div class="light-bg">
-            <div class="container">
+            <div class="container how-it-works-section">
 				<h2><i class="fa fa-cogs"></i> How it Works </h2>
                 <div class="section clearfix">
                     <strong>1. Send one of your emails to Kwa@sant.com</strong>
@@ -92,9 +91,6 @@
                     <p></p>
                     <p></p>
                     <img class="pull-center" src="Content/img/example_using_kwasant_email.png" alt="Example using kwasant email" />
-                    <br />
-                    <br />
-                    <br />
                 </div>
 			</div>
 			<div>
@@ -147,9 +143,10 @@
 						<a href="#" data-section="2" class="toSection"><i class="fa fa-angle-double-down"></i></a>
                     </div>
                 </div>
+				<div  class="text-block" data-section="3">
 				<div class="container faq-section">
                 <!-- this is the faq section -->
-					<section id="faq" class="text-block" data-section="3">
+					<section id="faq">
 						<h1 class="text-center">FAQ</h1>
 						<div class="row span-12 text-center">
 							<div class="panel-group" id="accordion">
@@ -899,7 +896,6 @@
                 </section> -->
 
             <section id="contacts" class="text-block" data-section="4">
-                <br/>
                 <div class="dark-bg">
                     <div class="container">
                         <h2><i class="fa fa-map-marker"></i> Get in touch</h2>
