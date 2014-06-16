@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Web;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
@@ -10,6 +11,7 @@ using Data.Validators;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
+using Microsoft.AspNet.Identity;
 using RazorEngine;
 using StructureMap;
 using Utilities;
@@ -195,7 +197,7 @@ namespace KwasantCore.Services
             outboundEmail.PlainText = plainTextBody;
 
             //prepare the outbound email
-            outboundEmail.Status = EmailStatus.QUEUED;
+            outboundEmail.EmailStatus = EmailStatus.QUEUED;
             if (eventDO.Emails == null)
                 eventDO.Emails = new List<EmailDO>();
 
@@ -280,6 +282,7 @@ namespace KwasantCore.Services
 
     public class RazorViewModel
     {
+        public String UserID { get; set; }
         public bool IsAllDay { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }

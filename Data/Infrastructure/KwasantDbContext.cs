@@ -102,7 +102,7 @@ namespace Data.Infrastructure
 
             foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
             {
-                entity.Entity.SaveHook(entity);
+                entity.Entity.BeforeSave();
             }
 
             var saveResult = base.SaveChanges();
@@ -131,18 +131,27 @@ namespace Data.Infrastructure
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
+            modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
+            modelBuilder.Entity<UserAgentInfoDO>().ToTable("UserAgentInfos");
             modelBuilder.Entity<UserDO>().ToTable("Users");
             modelBuilder.Entity<KactDO>().ToTable("Kacts");
+
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)
                 .WithMany()
                 .HasForeignKey(a => a.FromID)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<EnvelopeDO>()
+                .HasRequired(e => e.Email)
+                .WithMany()
+                .HasForeignKey(e => e.EmailID)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<UserDO>()

@@ -65,7 +65,7 @@ namespace Data.Entities
             }
         }
 
-        void ISaveHook.SaveHook(DbEntityEntry<ISaveHook> entity)
+        void ISaveHook.BeforeSave()
         {
             FileManager.SaveFile(this);
         }

@@ -7,6 +7,6 @@ namespace Data.Interfaces
     /// </summary>
     public interface ISaveHook
     {
-        void SaveHook(DbEntityEntry<ISaveHook> entity);
+        void BeforeSave();
     }
 }

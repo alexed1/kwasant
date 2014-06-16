@@ -99,6 +99,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private EnvelopeRepository _envelopeRepository;
+
+        public EnvelopeRepository EnvelopeRepository
+        {
+            get
+            {
+                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
+            }
+        }
+
         private EventRepository _eventRepository;
 
         public EventRepository EventRepository
@@ -154,6 +164,16 @@ namespace Data.Infrastructure
             get
             {
                 return _userRepository ?? (_userRepository = new UserRepository(this));
+            }
+        }
+
+        private UserAgentInfoRepository _userAgentInfoRepository;
+
+        public UserAgentInfoRepository UserAgentInfoRepository
+        {
+            get
+            {
+                return _userAgentInfoRepository ?? (_userAgentInfoRepository = new UserAgentInfoRepository(this));
             }
         }
 
