@@ -9,7 +9,8 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using StructureMap;
 using KwasantCore.Services;
-
+using System.Net.Mail;
+using Utilities.Logging;
 
 namespace KwasantWeb.Controllers
 {
@@ -37,33 +38,38 @@ namespace KwasantWeb.Controllers
         }
 
 
-        /// <summary>
-        /// This method is used to call EmailAddressValidator , if emailAddress is valid then call SendMailContact()  Method  in email class.    
-        /// </summary>
-        /// <returns>Contant Result if Email sent successfully than return success otherwise return Appropriate error </returns>
-        public ActionResult ProcessSubmittedEmail(string name, string emailAddress, string subject, string message)
+        
+        //  EmailAddress  is valid then send mail .    
+        // return success or  error 
+        public ActionResult ProcessSubmittedEmail(string name, string emailId, string message)
         {
             string result = "";
             try
             {
-               var EmailAddressDO = new EmailAddressDO();
-               EmailAddressDO.Address = emailAddress;
+                var EmailAddressDO = new EmailAddressDO(emailId);
+           
                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
                emailAddressValidator.ValidateAndThrow(EmailAddressDO);
+
+               EmailAddress emailAddress = new EmailAddress();
+
                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                {
                    Email email = new Email(uow);
-                   email.SendMailContact(name, emailAddress, subject, message);
+                   emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
+                   EmailDO emaildo = email.GenerateBasicMessage(EmailAddressDO, message);
+                   (new Email(uow, emaildo)).Send();
                }
                result ="success";
             }
             catch (System.Exception ex)
             {
-                string[] errorMsg =  ex.Message.Split('-');
+                string[] errorMsg = ex.Message.Split('-');
                 if (errorMsg.Length > 2)
                     result = errorMsg[2];
                 else
                     result=ex.Message;
+                Logger.GetLogger().Error("Error processing a home page email form submission.", ex);
             }
             return Content(result);
         }

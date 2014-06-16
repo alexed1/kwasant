@@ -910,11 +910,12 @@
                                 <h3 class="with-border">Want to ask something?</h3>
                                 <form class="form clearfix" action="#">
                                     <input type="text" class="span12" placeholder="Name" name="name" id="name">
-                                    <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailAddress">
-                                    <input type="text" class="span12" placeholder="Subject" name="subject" id="subject">
+                                    <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailId">
+                                   <%-- <input type="text" class="span12" placeholder="Subject" name="subject" id="subject">--%>
                                     <textarea class="span12" placeholder="Message" name="message" rows="6" id="message"></textarea>
                                      <button class="btn btn-large pull-right" type="button" onclick="SendMail();">Submit</button>
-                                   <%-- <button class="btn btn-large pull-right" type="submit">Submit</button>--%>
+                                
+                                     <span id="spMessage" style="color:#D85E17; font-weight: bold;" ></span>
                                 </form>
                             </div>
 
@@ -1028,14 +1029,14 @@
            url: "/Home/ProcessSubmittedEmail",
            type: "POST",
            async: true,
-           data: { 'name': $('#name').val(), 'emailAddress': $('#emailAddress').val(), 'subject': $('#subject').val(), 'message': $('#message').val() },
+           data: { 'name': $('#name').val(), 'emailId': $('#emailId').val(), 'message': $('#message').val() },
            success: function (result) {
                if (result == "success") {
-                   $('#name').val(""); $('#emailAddress').val(""); $('#subject').val(""); $('#message').val("");
-                   alert("Email Send Successfully ");
+                   $('#name').val(""); $('#emailId').val(""); $('#message').val("");
+                   $('#spMessage').html("Email Submitted");
                }
                else {
-                   alert(result);
+                   $('#spMessage').html(result);
                }
            }
        });

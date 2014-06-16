@@ -46,7 +46,7 @@ namespace KwasantTest.Services
             
             //EXECUTE
             var curEmail = new Email(_uow, _curEventDO);
-            curEmail.CreateStandardInviteEmail(_curEventDO);
+            curEmail.GenerateInvitation(_curEventDO);
             //VERIFY
             //Assert.AreEqual(_curEmailDO.Subject,  expectedSubject);
 

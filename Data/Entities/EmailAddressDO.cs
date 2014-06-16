@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Data.Interfaces;
 using StructureMap;
+using Data.Validators;
+using FluentValidation;
 
 namespace Data.Entities
 {
@@ -21,6 +23,15 @@ namespace Data.Entities
         public EmailAddressDO()
         {
             Recipients = new List<RecipientDO>();
+        }
+
+
+        public EmailAddressDO(string emailAddress)
+        {
+            Address = emailAddress;
+
+           
+
         }
     }
 }

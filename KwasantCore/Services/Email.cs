@@ -17,6 +17,9 @@ using KwasantCore.Managers.CommunicationManager;
 using Microsoft.WindowsAzure;
 using StructureMap;
 
+using KwasantCore.Services;
+
+
 namespace KwasantCore.Services
 {
     public class Email
@@ -42,7 +45,7 @@ namespace KwasantCore.Services
 
         public Email(IUnitOfWork uow, EventDO eventDO): this(uow)
         {
-            _curEmailDO = CreateStandardInviteEmail(eventDO);
+            _curEmailDO = GenerateInvitation(eventDO);
         }
 
         public Email(IUnitOfWork uow, EmailDO curEmailDO) : this(uow)
@@ -179,7 +182,11 @@ namespace KwasantCore.Services
             return att;
         }
 
-        public EmailDO CreateStandardInviteEmail(EventDO curEventDO)
+
+
+
+
+        public EmailDO GenerateInvitation(EventDO curEventDO)
         {
             _curEventValidator.ValidateEvent(curEventDO);
             string fromEmail = CommunicationManager.GetFromEmail();
@@ -212,26 +219,31 @@ namespace KwasantCore.Services
             return createdEmail;
         }
 
-        public void SendMailContact(string name, string emailAddress, string subject, string message)
+
+        public EmailDO GenerateBasicMessage(EmailAddressDO emailAddressDO, string message)
         {
-                var email = new Email(_uow,
-                new EmailDO()
-                {
-                    From = Email.GenerateEmailAddress(_uow, new MailAddress(emailAddress, name)),
-                    Recipients = new List<RecipientDO>()
+            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+            emailAddressValidator.ValidateAndThrow(emailAddressDO);
+
+            return new EmailDO()
+            {
+                From = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress(emailAddressDO.Address, emailAddressDO.Name)),
+                Recipients = new List<RecipientDO>()
                                          {
-                                             new RecipientDO()
+                                              new RecipientDO()
                                                  {
-                                                       EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("info@kwasant.com")),
+                                                       EmailAddress = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress("info@kwasant.com")),
                                                        Type = EmailParticipantType.TO
                                                  }
                                          },
-                    Subject = subject,
-                    PlainText = message,
-                    HTMLText = message
-                });
-                email.Send();
+                Subject = "",
+                PlainText = message,
+                HTMLText = message
+            };
         }
+
+
+       
 
     }
 }
