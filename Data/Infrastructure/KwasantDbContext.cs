@@ -90,6 +90,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
+            modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
@@ -103,6 +104,12 @@ namespace Data.Infrastructure
                 .HasRequired(a => a.From)
                 .WithMany()
                 .HasForeignKey(a => a.FromID)
+                .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<EnvelopeDO>()
+                .HasRequired(e => e.Email)
+                .WithMany()
+                .HasForeignKey(e => e.EmailID)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<UserDO>()

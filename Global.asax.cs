@@ -30,7 +30,6 @@ namespace KwasantWeb
 
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE); //set to either "test" or "live"
-            ControllerBuilder.Current.SetControllerFactory(new StructureMapControllerFactory());
 
             KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);

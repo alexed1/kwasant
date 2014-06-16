@@ -84,7 +84,7 @@ namespace KwasantCore.Managers.CommunicationManager
                 {
                     Subject = "New booking request!",
                     HTMLText = String.Format(message, bookingRequest.From.Address),
-                    Status = EmailStatus.QUEUED
+                    EmailStatus = EmailStatus.QUEUED
                 };
 
                 outboundEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress("scheduling@kwasant.com", "Kwasant Scheduling Services");

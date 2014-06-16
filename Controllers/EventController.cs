@@ -19,7 +19,7 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize(Roles = "Admin")]
     public class EventController : Controller
     {
-      
+
         //Renders a form to accept a new event
         public ActionResult New(int bookingRequestID, string start, string end)
         {
@@ -92,7 +92,7 @@ namespace KwasantWeb.Controllers
                 var eve = new Event();
 
                 eve.ManageAttendeeList(uow, eventDO, eventViewModel.Attendees);
-                    
+
                 if (eventViewModel.Id == 0)
                     uow.EventRepository.Add(eventDO);
 
@@ -101,7 +101,7 @@ namespace KwasantWeb.Controllers
 
 
                 uow.SaveChanges();
-            
+
 
             }
 

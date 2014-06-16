@@ -10,14 +10,16 @@
 }
 @section styles{
     <style type="text/css">
-        body {
+        body
+        {
             padding-bottom: 20px;
             padding-top: 50px;
         }
 
         /* Set padding to keep content from hitting the edges */
 
-        .body-content {
+        .body-content
+        {
             padding-left: 15px;
             padding-right: 15px;
         }
@@ -26,23 +28,45 @@
 
         input,
         select,
-        textarea { max-width: 280px; }
+        textarea
+        {
+            max-width: 280px;
+        }
 
         /* styles for validation helpers */
 
-        .field-validation-error { color: #b94a48; }
+        .field-validation-error
+        {
+            color: #b94a48;
+        }
 
-        .field-validation-valid { display: none; }
+        .field-validation-valid
+        {
+            display: none;
+        }
 
-        input.input-validation-error { border: 1px solid #b94a48; }
+        input.input-validation-error
+        {
+            border: 1px solid #b94a48;
+        }
 
-        input[type="checkbox"].input-validation-error { border: 0 none; }
+        input[type="checkbox"].input-validation-error
+        {
+            border: 0 none;
+        }
 
-        .validation-summary-errors { color: #b94a48; }
+        .validation-summary-errors
+        {
+            color: #b94a48;
+        }
 
-        .validation-summary-valid { display: none; }
+        .validation-summary-valid
+        {
+            display: none;
+        }
 
-        .bookingAgentFormControlBorder {
+        .bookingAgentFormControlBorder
+        {
             border: 2px solid gray;
             color: #000000;
             font-size: 0.85em;
@@ -52,22 +76,31 @@
             text-align: left;
         }
 
-        .label_vertical_alignment {
+        .label_vertical_alignment
+        {
             position: relative;
             top: 10px;
         }
 
-        .container_box {
+        .container_box
+        {
             border: 2px solid gray;
             min-height: 800px;
             padding-left: 20px;
         }
 
-        .mid_container_text { font-size: 0.85em; }
+        .mid_container_text
+        {
+            font-size: 0.85em;
+        }
 
-        .divider_height { height: 20px; }
+        .divider_height
+        {
+            height: 20px;
+        }
 
-        .bookingAgentFormControlBorder {
+        .bookingAgentFormControlBorder
+        {
             border: 2px solid gray;
             color: #000000;
             font-size: 0.85em;
@@ -78,7 +111,8 @@
             text-align: left;
         }
 
-        #toolbar {
+        #toolbar
+        {
             background: none;
             border: none;
             margin: 10px 0px 20px 0px;
@@ -86,20 +120,26 @@
             width: 174px;
         }
 
-        #toolbar a {
-            background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e2e2e2));
-            background: -webkit-linear-gradient(top, #fafafa 0%, #e2e2e2);
-            background: -moz-linear-gradient(top, #fafafa 0%, #e2e2e2);
-            background: -ms-linear-gradient(top, #fafafa 0%, #e2e2e2);
-            background: -o-linear-gradient(top, #fafafa 0%, #e2e2e2);
-            background: linear-gradient(top, #fafafa 0%, #e2e2e2);
-            border: 1px solid #aaa;
-            color: #666;
-            display: inline-block;
-            filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#fafafa", endColorStr="#e2e2e2");
-            height: 35px;
-            padding: 5px;
-            text-decoration: none;
+            #toolbar a
+            {
+                background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e2e2e2));
+                background: -webkit-linear-gradient(top, #fafafa 0%, #e2e2e2);
+                background: -moz-linear-gradient(top, #fafafa 0%, #e2e2e2);
+                background: -ms-linear-gradient(top, #fafafa 0%, #e2e2e2);
+                background: -o-linear-gradient(top, #fafafa 0%, #e2e2e2);
+                background: linear-gradient(top, #fafafa 0%, #e2e2e2);
+                border: 1px solid #aaa;
+                color: #666;
+                display: inline-block;
+                filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#fafafa", endColorStr="#e2e2e2");
+                height: 35px;
+                padding: 5px;
+                text-decoration: none;
+            }
+
+        .activeRequest
+        {
+            background-color: #aaa;
         }
     </style>
     @Styles.Render("~/bundles/css/daypilot")
@@ -122,7 +162,20 @@
 <div class="jumbotron" style="padding-left: 20px; padding-right: 20px; width: 1270px;">
     <div class="row">
         <div id="emailInfoBox" class="col-md-4 container_box" style="border: none; height: 100%; padding: 0px; width: 420px;">
-            <iframe src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style="border: none; height: 100%; margin-top: -7px; width: 100%;"></iframe>
+            <a id="btnProcessed" href="@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, targetStatus = "processed" })">
+                <button style="width: 120px; font-size: 14px; height: 40px;">Mark Processed</button></a><br />
+            <br />
+            <iframe id="frminfo" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style="border: none; height: auto;min-height:300px; margin-top: -7px; width: 100%;"></iframe>
+            <table style="box-shadow: #000 0px 0px 10px; margin: 10px; width: 95%;" role="grid">
+                <thead>
+                    <tr role="row">
+                        <th style="width: 30%; text-align: center; font-size: 14px;">Date Received</th>
+                        <th style="width: 70%; text-align: center; font-size: 14px;">Subject</th>
+                    </tr>
+                </thead>
+                <tbody id="tbluserrequests" style="border-top: 1px solid grey;">
+                </tbody>
+            </table>
         </div>
 
         <div id="divCalender" class="col-md-6 container_box" style="padding-bottom: 79px;">
@@ -233,10 +286,10 @@
                         TimeRangeSelectedJavaScript = "eventNew(start, end)",
                     })
                 </div>
-                
+
             </div>
         </div>
-        
+
         <div class="col-lg-2 container_box" style="float: left; padding-bottom: 101px; padding-top: 53px; position: relative;">
             @Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
             {
@@ -249,24 +302,24 @@
     </div>
 </div>
 <div class="row">
-    @Html.ActionLink("Back to booking requests", "Index", "Email")
+    @Html.ActionLink("Back to booking requests", "Index", "BookingRequest")
 </div>
 <div class="row">
     @Html.ActionLink("Show Users", "Index", "User")
 </div>
-
+<input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid"/>
 
 <script type="text/javascript">
 
-    $("#toolbar_day").click(function() {
+    $("#toolbar_day").click(function () {
         $("#divCalender").css("padding-bottom", "79px");
     });
 
-    $("#toolbar_week").click(function() {
+    $("#toolbar_week").click(function () {
         $("#divCalender").css("padding-bottom", "170px");
     });
 
-    $("#toolbar_month").click(function() {
+    $("#toolbar_month").click(function () {
         $("#divCalender").css("padding-bottom", "79px");
     });
 
@@ -285,6 +338,7 @@
     switcher.show(dp_day);
 
     function eventClick(e) {
+        if (checkactivewindow()) { return false; }
         Kwasant.IFrame.Display('/Event/Edit/?eventID=' + e.id(),
             {
                 horizontalAlign: 'right',
@@ -293,7 +347,9 @@
     }
 
     function eventNew(start, end) {
-        Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + @Model.Id + '&start=' + start + '&end=' + end,
+        if (checkactivewindow()) { return false; }
+        var id = $("#hdnrequestid").val();
+        Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&start=' + start + '&end=' + end,
             {
                 horizontalAlign: 'right',
                 callback: refresh
@@ -301,7 +357,8 @@
     }
 
     function eventMove(e, newStart, newEnd) {
-        Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd,        
+        if (checkactivewindow()) { return false; }
+        Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd,
             {
                 modal: true,
                 callback: refresh
@@ -315,7 +372,7 @@
                 callback: refresh
             });
     }
-    
+
     function refresh(result) {
         var daypilotControls = [
                         dp_day,
@@ -331,5 +388,56 @@
             ele.clearSelection('refresh');
         });
     }
+
+    function checkactivewindow() {
+        var isanyactivewindow = false;
+        $(document).find("iframe").each(function () {
+            if ($(this).attr("style").indexOf("z-index") > 0) {
+                if ($(this).attr("style").indexOf("display: none") < 0) {
+                    isanyactivewindow = true;
+                }
+            }
+        });
+        return isanyactivewindow;
+    }
+
+    //funtion to load booking request info in iframe "frminfo" on "tbluserrequests" request row click.
+    //called by : rows in tbluserrequests on click
+    function loadrequest(id, ele) {
+        $("#tbluserrequests tr").attr("class", "");
+        $(ele).attr("class", "activeRequest");
+        $("#hdnrequestid").val(id);
+        $("#btnProcessed").attr("href", "@Url.Action("SetStatus", "BookingRequest", new { id = "requestid", targetStatus = "processed" })".replace("requestid", id));
+        $("#frminfo")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
+        dp_day.backendUrl = "@Url.Content("~/Calendar/Day?bookingRequestID=")" + id;
+        dp_week.backendUrl = "@Url.Content("~/Calendar/Backend?bookingRequestID=")" + id;
+        dp_month.backendUrl = "@Url.Content("~/Calendar/Month?bookingRequestID=")" + id;
+        refresh(true);
+    }
+
+    //Document ready function, will run after page is ready and all elements are loaded.
+    $(document).ready(function () {
+        //Ajax call to get all unprocessed booking request from server according to user.
+        $.getJSON("@Url.Action("GetBookingRequests", "BookingRequest")", { id: "@Model.Id" }, showRequests);
+
+        //Parsing and binding the retrieved booking requests
+        function showRequests(response) {
+            var result = JSON.parse(response);
+
+            //Iterating each object in response result
+            $(result).each(function () {
+                //Converting in appropriate date format
+                var date = new Date(this.date_received);
+                date = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+                //appending each request row in table "tbluserrequests"
+                if ("@Model.Id" != this.id) {
+                    $("#tbluserrequests").append("<tr onclick='javascript:loadrequest(" + this.id + ",this);' style='border-bottom:1px solid grey;cursor:pointer;'><td>" + date + "</td><td>" + this.subject + "</td></tr>");
+                }
+                else {
+                    $("#tbluserrequests").append("<tr onclick='javascript:loadrequest(" + this.id + ",this);' style='border-bottom:1px solid grey;cursor:pointer;' class='activeRequest'><td>" + date + "</td><td>" + this.subject + "</td></tr>");
+                }
+            });
+        }
+    });
 
 </script>

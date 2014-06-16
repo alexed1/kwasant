@@ -47,6 +47,8 @@ namespace KwasantCore.Services
                 curEventDO.BookingRequestID = bookingRequestDO.Id;
                 curEventDO.CreatedBy = bookingRequestDO.User;
                 curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
+                uow.EventRepository.Add(curEventDO);
+                uow.SaveChanges();
                 return curEventDO;
 
             }
@@ -131,7 +133,7 @@ namespace KwasantCore.Services
                     Role = "REQ-PARTICIPANT",
                     ParticipationStatus = ParticipationStatus.NeedsAction,
                     RSVP = true,
-                    Value = new Uri("mailto:" + attendee.EmailAddress),
+                    Value = new Uri(string.Concat("mailto:", attendee.EmailAddress.Address)),
                 });
                 attendee.Event = eventDO;
             }
@@ -163,8 +165,8 @@ namespace KwasantCore.Services
                 eventDO.Emails.Add(outboundEmail);
 
                 AttachCalendarToEmail(ddayCalendar, outboundEmail);
-
-                new Email(uow, outboundEmail).Send();
+            var email = new Email(uow, outboundEmail);
+            email.Send();
             }
         }
 

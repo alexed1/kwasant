@@ -17,6 +17,7 @@ namespace Data.Interfaces
         CalendarRepository CalendarRepository { get; }
         CommunicationConfigurationRepository CommunicationConfigurationRepository { get; }
         EmailRepository EmailRepository { get; }
+        EnvelopeRepository EnvelopeRepository { get; }
         EventRepository EventRepository { get; }
         InstructionRepository InstructionRepository { get; }
         StoredFileRepository StoredFileRepository { get; }

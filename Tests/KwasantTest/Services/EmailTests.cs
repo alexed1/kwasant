@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
@@ -73,22 +74,25 @@ namespace KwasantTest.Services
 
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("Email")]
-        public void CanSendSIE_MANUALTEST()
+        public void CanSendSIE()
         {
             //SETUP  
             _curEventDO = _fixture.TestEvent2();
             string expectedSubject = "Invitation via Kwasant: " + _curEventDO.Summary + "@ " + _curEventDO.StartDate;
 
-
             //EXECUTE
+            _uow.EventRepository.Add(_curEventDO);
+            _uow.SaveChanges();
+
             var email = new Email(_uow, _curEventDO);
             email.Send();
 
             //VERIFY
-            //implement a technique later to go and pull from the email inbox and verify. for now, verify by hand.
-
+            var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Subject == expectedSubject);
+            Assert.NotNull(envelope, "Envelope was not created.");
+            Assert.AreEqual(envelope.Handler, EnvelopeDO.GmailHander, "Envelope handler should be Gmail");
         }
 
         [Test]
@@ -99,12 +103,38 @@ namespace KwasantTest.Services
             EmailDO _curEmailDO = _fixture.TestEmail1();
             
             //EXECUTE
+            _uow.EmailRepository.Add(_curEmailDO);
+            _uow.SaveChanges();
+
             Email curEmail = new Email(_uow, _curEmailDO);
+            curEmail.Send();
 
             //VERIFY
-            curEmail.Send();
-            
-            Assert.AreEqual(EmailStatus.QUEUED, _curEmailDO.Status);
-        }  
+            var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Id == _curEmailDO.Id);
+            Assert.NotNull(envelope, "Envelope was not created.");
+            Assert.AreEqual(envelope.Handler, EnvelopeDO.GmailHander, "Envelope handler should be Gmail");
+            Assert.AreEqual(EmailStatus.QUEUED, _curEmailDO.EmailStatus);
+        }
+
+        [Test]
+        [Category("Email")]
+        public void CanSendTemplateEmail()
+        {
+            // SETUP
+            EmailDO _curEmailDO = _fixture.TestEmail1();
+            const string templateName = "test_template";
+
+            // EXECUTE
+            var email = new Email(_uow);
+            email.SendTemplate(templateName,
+                               _curEmailDO,
+                               new Dictionary<string, string>() {{"test_key", "test_value"}});
+
+            // VERIFY
+            var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Id == _curEmailDO.Id);
+            Assert.NotNull(envelope, "Envelope was not created.");
+            Assert.Equals(envelope.TemplateName, templateName);
+            Assert.AreEqual(envelope.Handler, EnvelopeDO.MandrillHander, "Envelope handler should be Mandrill");
+        }
     }
 }

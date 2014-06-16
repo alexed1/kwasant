@@ -10,18 +10,56 @@ using Data.Repositories;
 
 namespace KwasantCore.Services
 {
-    public static class BookingRequest
+    public class BookingRequest
     {
-        public static void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
+        public void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
+
+            bookingRequest.BookingStatus = "Unprocessed";
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
-            bookingRequest.Status = EmailStatus.UNPROCESSED;
+            
         }
 
-        private static List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)
+        public List<BookingRequestDO> GetBookingRequests(IBookingRequestRepository curBookingRequestRepository, int id)
+        {
+            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == (from requests in curBookingRequestRepository.GetAll()
+                                                                                 where requests.Id == id
+                                                                                 select requests.User.Id).FirstOrDefault()).Where(e => e.BookingStatus == "Unprocessed").ToList();
+        }
+
+        public object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)
+        {
+            return curBookingRequestRepository.GetAll().Where(e => e.BookingStatus == "Unprocessed").OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
+        }
+
+        public void SetStatus(IUnitOfWork uow, BookingRequestDO bookingRequestDO, string targetStatus)
+        {
+            string newstatus = getBookingStatus(targetStatus);
+            if (newstatus != "invalid status")
+            {
+                bookingRequestDO.BookingStatus = newstatus;
+                bookingRequestDO.User = bookingRequestDO.User;
+                uow.SaveChanges();
+            }
+        }
+
+        private string getBookingStatus(string targetStatus)
+        {
+            switch (targetStatus)
+            {
+                case "invalid":
+                    return "Invalid";
+                case "processed":
+                    return "Processed";
+                default:
+                    return "invalid status";
+            }
+        }
+
+        private List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)
         {
             List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?) travelTime).ToList();
             instructionIDs.Add(ProcessAllDay(emailBody));
@@ -30,7 +68,7 @@ namespace KwasantCore.Services
             return instructionRepo.GetQuery().Where(i => instructionIDs.Contains(i.Id)).ToList();
         }
 
-        private static IEnumerable<int> ProcessTravelTime(string emailBody)
+        private IEnumerable<int> ProcessTravelTime(string emailBody)
         {
             const string regex = "{0}CC|CC{0}";
 
@@ -60,7 +98,7 @@ namespace KwasantCore.Services
         }
 
 
-        private static int? ProcessAllDay(string emailBody)
+        private int? ProcessAllDay(string emailBody)
         {
             const string regex = "(ccADE)";
 
