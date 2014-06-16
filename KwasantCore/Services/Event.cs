@@ -60,12 +60,14 @@ namespace KwasantCore.Services
         //in some cases, additional work is necessary to handle the changes
         public void Update(IUnitOfWork uow, EventDO eventDO)
         {
-            var t= Utilities.Server.ServerUrl;
+            //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
+            var t = Utilities.Server.ServerUrl;
             String htmlText;
             String plainText;
             switch (eventDO.Status)
             {
                 case "Instantiated":
+                {
                     eventDO.Status = "Undispatched";
                     htmlText = GetEmailHTMLTextForNew(eventDO);
                     plainText = GetEmailPlainTextForNew(eventDO);
@@ -80,6 +82,7 @@ namespace KwasantCore.Services
                     }
 
                     break;
+                }
                 case "Dispatched":
                 case "Undispatched":
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
@@ -87,19 +90,40 @@ namespace KwasantCore.Services
                     
                     if (EventHasChanged(uow, eventDO))
                     {
-                        //mark the new attendees with status "New"
+                        eventDO.Status = "Undispatched";
+
+                        //First we create emails for new attendees. These attendees recieve the 'New event' email.
+                        var calendar = GetCalendarObject(eventDO);
+                        htmlText = GetEmailHTMLTextForNew(eventDO);
+                        plainText = GetEmailPlainTextForNew(eventDO);
+                        foreach (var attendeeDO in eventDO.Attendees.Where(a => a.Id == 0))
+                        {
+                            var emailDO = CreateEmail(uow, eventDO, attendeeDO, htmlText, plainText);
+                            var email = new Email(uow, emailDO);
+                            AttachCalendarToEmail(calendar, emailDO);
+                            email.Send();
+                        }
+
+                        //Then we grab existing attendees, and we send them the 'Event updated' email instead. Currently, it's the same email - but in the future we can modify the two methods below.
+                        htmlText = GetEmailHTMLTextForUpdate(eventDO);
+                        plainText = GetEmailPlainTextForUpdate(eventDO);
+                        foreach (var attendeeDO in eventDO.Attendees.Where(a => a.Id > 0))
+                        {
+                            var emailDO = CreateEmail(uow, eventDO, attendeeDO, htmlText, plainText);
+                            var email = new Email(uow, emailDO);
+                            AttachCalendarToEmail(calendar, emailDO);
+                            email.Send();
+                        }
+
                     }
                     else
                     {
-                        //create an EventChangeRecord to store the change information to put into the update email
-                        //mark all attendees with status "NeedsUpdate"
+                        //If the event hasn't changed - we don't need a new email..?
                     }
                     break;
                 default:
                     throw new Exception("Invalid event status");
             }
-
-            //AttachCalendarToEmail(ddayCalendar, outboundEmail);
         }
 
         private iCalendar GetCalendarObject(EventDO eventDO)
