@@ -133,7 +133,7 @@ namespace KwasantTest.Services
             // VERIFY
             var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Id == _curEmailDO.Id);
             Assert.NotNull(envelope, "Envelope was not created.");
-            Assert.Equals(envelope.TemplateName, templateName);
+            Assert.AreEqual(envelope.TemplateName, templateName);
             Assert.AreEqual(envelope.Handler, EnvelopeDO.MandrillHander, "Envelope handler should be Mandrill");
         }
     }
