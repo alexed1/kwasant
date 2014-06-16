@@ -57,7 +57,7 @@ namespace KwasantTest.Entities
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-               // curEvent.Dispatch(uow, eventDO); REWRITE THIS TEST
+                curEvent.Update(uow, eventDO);
                 uow.SaveChanges();
             }
 
