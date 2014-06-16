@@ -73,9 +73,32 @@ img
 {
     border:none;
 }
+
+/**************************Context Menu CSS*****************************/
+.css-title:before {
+    content: "Quick Copy";
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    background: #DDD;
+    padding: 2px;
+
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    font-weight: bold;
+}
+.css-title :first-child {
+    margin-top: 20px;
+}
+/**************************Context Menu CSS**************/
     </style>
 </head>
 <body>
+    <%=System.Web.Optimization.Scripts.Render("~/bundles/js/jquery")%>
+    <script src="../Scripts/ContextMenu/jquery.contextMenu.js"></script>
+    <link href="../Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
     <form id="form1" runat="server" style="width: 400px;">
     <div class="info" style="height:100%;">
         <div id="emailSubject" class="subHeading">
@@ -114,5 +137,56 @@ img
         <br />
     </div>
     </form>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var activeframe;
+            var currentSelection = "";
+            var allPoints = [];
+            $(document).mouseup(function (e) {
+                var selectedText = window.getSelection();
+                $(this).unbind("mousemove", trackPoints);
+                if (selectedText != '') {
+                    $(window.parent.document).find("iframe").each(function () {
+                        if (($(this).attr("src").indexOf("Event") > 0) && !($(this).attr("style").indexOf("display: none;") > 0)) {
+                            $('.context-menu-two').contextMenu();
+                            $('.context-menu-list').offset({ top: allPoints[allPoints.length - 1].y, left: allPoints[allPoints.length - 1].x });
+                            $("#context-menu-layer").remove();
+                            allPoints = [];
+                            activeframe = this;
+                            currentSelection = selectedText;
+                        }
+                    });
+                }
+            }).mousedown(function (e) {
+                $(this).bind("mousemove", trackPoints);
+            });
+
+            // register menu with title provided by CSS
+            $.contextMenu({
+                selector: '.context-menu-two',
+                className: 'css-title',
+                callback: function (key, options) {
+                    $(activeframe).contents().find(key).val(currentSelection);
+                    currentSelection = "";
+                    //var m = "clicked: " + key;
+                    //window.console && console.log(m) || alert(m);
+                },
+                items: {
+                    "description": { name: "Description" },
+                    "location": { name: "Location" },
+                    "start": { name: "Start Time" },
+                    "end": { name: "End Time" },
+                    "attendees": { name: "Attendees" },
+                    "#summary": { name: "Summary" },
+                    "sep": "---------",
+                    "quit": { name: "Quit" }
+                }
+            });
+
+            function trackPoints(e) {
+                allPoints.push({ x: e.pageX, y: e.pageY });
+            }
+        });
+    </script>
 </body>
 </html>

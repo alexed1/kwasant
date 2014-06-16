@@ -322,6 +322,7 @@
   <ItemGroup>
     <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\Booking Details.png" />
+    <Content Include="Content\ContextMenu\jquery.contextMenu.css" />
     <Content Include="Content\css\bootstrap-datetimepicker.css" />
     <Content Include="Content\css\bootstrap-responsive.css" />
     <Content Include="Content\css\bootstrap2.3.css" />
@@ -553,6 +554,7 @@
     <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\psd\collection.psd" />
     <None Include="Properties\PublishProfiles\kwasant.pubxml" />
     <None Include="Scripts\jquery-1.7-vsdoc.js" />
+    <Content Include="Scripts\ContextMenu\jquery.contextMenu.js" />
     <Content Include="Scripts\DataTables-1.10.0\extensions\AutoFill\js\dataTables.autoFill.js" />
     <Content Include="Scripts\DataTables-1.10.0\extensions\AutoFill\js\dataTables.autoFill.min.js" />
     <Content Include="Scripts\DataTables-1.10.0\extensions\AutoFill\Readme.txt" />
