@@ -1,5 +1,6 @@
 ﻿using System;
 using Data.Entities;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using FluentValidation;
@@ -100,16 +101,10 @@ namespace KwasantTest.Services
             //EXECUTE
             Email curEmail = new Email(_uow, _curEmailDO);
 
-            var mockEmailer = new Mock<IEmailPackager>();
-            mockEmailer.Setup(a => a.Send(_curEmailDO)).Verifiable();
-            ObjectFactory.Initialize(a => a.For<IEmailPackager>().Use(mockEmailer.Object));
             //VERIFY
             curEmail.Send();
-
-            mockEmailer.Verify();
-
-        }
-   
-       
+            
+            Assert.AreEqual(EmailStatus.QUEUED, _curEmailDO.Status);
+        }  
     }
 }
