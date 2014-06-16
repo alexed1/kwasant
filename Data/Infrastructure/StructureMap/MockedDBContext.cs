@@ -6,6 +6,7 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
+using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
 using StructureMap.TypeRules;
@@ -31,9 +32,34 @@ namespace Data.Infrastructure.StructureMap
             //Looping causes us to pickup each foreign link and be sure everything is persisted in memory
             while (AddForeignValues() > 0) ;
 
+            var addedRows = GetAdds().ToList();
+
             AssignIDs();
 
+
+            foreach (var newBookingRequestDO in addedRows.OfType<BookingRequestDO>())
+                AlertManager.BookingRequestCreated(newBookingRequestDO);
+
+
             return 1;
+        }
+
+        private IEnumerable<object> GetAdds()
+        {
+            foreach (var set in _cachedSets)
+            {
+                foreach (object row in set.Value as IEnumerable)
+                {
+                    var propInfo = EntityPrimaryKeyPropertyInfo(row);
+                    if (propInfo == null)
+                        continue;
+
+                    if ((int) propInfo.GetValue(row) == 0)
+                    {
+                        yield return row;
+                    }
+                }
+            }
         }
 
         public List<KwasantDbContext.PropertyChangeInformation> GetEntityModifications<T>(T entity) where T : class

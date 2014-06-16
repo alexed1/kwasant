@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
+using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
@@ -43,6 +44,9 @@ namespace KwasantTest.Services
         [Category("BRM")]
         public void NewCustomerCreated()
         {
+            AnalyticsManager curAnalyticsManager = new AnalyticsManager();
+            curAnalyticsManager.SubscribeToAlerts();
+
             List<UserDO> customersNow = _uow.UserRepository.GetAll().ToList();
             Assert.AreEqual(0, customersNow.Count);
 
@@ -53,6 +57,8 @@ namespace KwasantTest.Services
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
             (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+
+            _uow.SaveChanges();
 
             customersNow = _uow.UserRepository.GetAll().ToList();
 

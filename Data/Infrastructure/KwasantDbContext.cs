@@ -111,6 +111,11 @@ namespace Data.Infrastructure
                 entity.State = EntityState.Unchanged;
             }
 
+            foreach (DbEntityEntry<BookingRequestDO> newBookingRequest in ChangeTracker.Entries<BookingRequestDO>())
+            {
+                AlertManager.BookingRequestCreated(newBookingRequest.Entity);
+            }
+
             return saveResult;
         }
 

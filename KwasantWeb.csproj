@@ -742,7 +742,7 @@
       <Name>Configuration</Name>
     </ProjectReference>
     <ProjectReference Include="Daemons\Daemons.csproj">
-      <Project>{3f8ea787-04c0-400a-adfa-58f4172adf65}</Project>
+      <Project>{b15ea73e-e0d0-4604-bcfc-ddafb67f872d}</Project>
       <Name>Daemons</Name>
     </ProjectReference>
     <ProjectReference Include="Data\Data.csproj">

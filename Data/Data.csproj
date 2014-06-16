@@ -226,6 +226,10 @@
     <Compile Include="Migrations\201406050428446_add_Kact.Designer.cs">
       <DependentUpon>201406050428446_add_Kact.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406161151254_Synchronise.16.06.2014.cs" />
+    <Compile Include="Migrations\201406161151254_Synchronise.16.06.2014.Designer.cs">
+      <DependentUpon>201406161151254_Synchronise.16.06.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -341,6 +345,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406050428446_add_Kact.resx">
       <DependentUpon>201406050428446_add_Kact.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406161151254_Synchronise.16.06.2014.resx">
+      <DependentUpon>201406161151254_Synchronise.16.06.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

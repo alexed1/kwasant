@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
-using System.Web;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
@@ -11,9 +10,7 @@ using Data.Validators;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
-using Microsoft.AspNet.Identity;
 using RazorEngine;
-using StructureMap;
 using Utilities;
 using Encoding = System.Text.Encoding;
 using IEvent = Data.Interfaces.IEvent;
@@ -63,6 +60,7 @@ namespace KwasantCore.Services
         //in some cases, additional work is necessary to handle the changes
         public void Update(IUnitOfWork uow, EventDO eventDO)
         {
+            var t= Utilities.Server.ServerUrl;
             String htmlText;
             String plainText;
             switch (eventDO.Status)
@@ -72,11 +70,11 @@ namespace KwasantCore.Services
                     htmlText = GetEmailHTMLTextForNew(eventDO);
                     plainText = GetEmailPlainTextForNew(eventDO);
 
-                    var email = new Email(uow, eventDO);
                     var calendar = GetCalendarObject(eventDO);
                     foreach (var attendeeDO in eventDO.Attendees)
                     {
                         var emailDO = CreateEmail(uow, eventDO, attendeeDO, htmlText, plainText);
+                        var email = new Email(uow, emailDO);
                         AttachCalendarToEmail(calendar, emailDO);
                         email.Send();
                     }
@@ -97,6 +95,8 @@ namespace KwasantCore.Services
                         //mark all attendees with status "NeedsUpdate"
                     }
                     break;
+                default:
+                    throw new Exception("Invalid event status");
             }
 
             //AttachCalendarToEmail(ddayCalendar, outboundEmail);

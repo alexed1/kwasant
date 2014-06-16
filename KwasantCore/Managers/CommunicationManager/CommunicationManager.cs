@@ -206,7 +206,7 @@ namespace KwasantCore.Managers.CommunicationManager
             outboundEmail.HTMLText = parsedHTMLEmail;
             outboundEmail.PlainText = parsedPlainEmail;
 
-            outboundEmail.Status = EmailStatus.QUEUED;
+            outboundEmail.EmailStatus = EmailStatus.QUEUED;
 
             return outboundEmail;
         }

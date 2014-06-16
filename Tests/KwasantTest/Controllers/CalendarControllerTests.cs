@@ -30,28 +30,5 @@ namespace KwasantTest.Services
             _fixture = new FixtureData();
             //_curEventDO = new EventDO();
         }
-
-       
-
-        [Test]
-        [Category("Email")]
-        public void CanCreateStandardInviteEmail()
-        {
-            //SETUP  
-            _curEventDO = _fixture.TestEvent2();
-            string expectedSubject = "Invitation via Kwasant: " + _curEventDO.Summary + "@ " + _curEventDO.StartDate;
-           
-            
-            //EXECUTE
-            var curEmail = new Email(_uow, _curEventDO);
-            curEmail.CreateStandardInviteEmail(_curEventDO);
-            //VERIFY
-            //Assert.AreEqual(_curEmailDO.Subject,  expectedSubject);
-
-        }
-
-      
-   
-       
     }
 }

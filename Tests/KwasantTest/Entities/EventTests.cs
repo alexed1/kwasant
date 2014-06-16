@@ -63,14 +63,12 @@ namespace KwasantTest.Entities
 
             //Verify emails created in memory
             EmailDO resultEmail = eventDO.Emails[0];
-            string expectedSubject =
-                string.Format("Invitation from: " + _comm.GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +
-                              eventDO.StartDate);
-            Assert.AreEqual(resultEmail.Subject, expectedSubject );
+            string expectedSubject = string.Format("Invitation from: " + _comm.GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +eventDO.StartDate);
+            Assert.AreEqual(expectedSubject, resultEmail.Subject);
 
             //Verify emails stored to disk properly
             EmailDO retrievedEmail = _uow.EmailRepository.GetQuery().First();
-            Assert.AreEqual(retrievedEmail.Subject, expectedSubject);
+            Assert.AreEqual(expectedSubject, retrievedEmail.Subject);
 
 
             //use imap to load unread messages from the test customer account
