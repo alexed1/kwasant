@@ -40,7 +40,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack((new BookingRequest()).GetUnprocessed(uow.BookingRequestRepository)), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_datatables.Pack(new BookingRequest().GetUnprocessed(uow.BookingRequestRepository)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }

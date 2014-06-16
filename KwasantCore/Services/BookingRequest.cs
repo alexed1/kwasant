@@ -32,7 +32,24 @@ namespace KwasantCore.Services
 
         public object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.BookingStatus == "Unprocessed").OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
+            return
+                curBookingRequestRepository.GetAll()
+                    .Where(e => e.BookingStatus == "Unprocessed")
+                    .OrderByDescending(e => e.DateReceived)
+                    .Select(
+                        e =>
+                            new
+                            {
+                                id = e.Id,
+                                subject = e.Subject,
+                                fromAddress = e.From.Address,
+                                dateReceived = e.DateReceived.ToString("yy-mm-dd"),
+                                body =
+                                    e.HTMLText.Trim().Length > 400
+                                        ? e.HTMLText.Trim().Substring(0, 400)
+                                        : e.HTMLText.Trim()
+                            })
+                    .ToList();
         }
 
         public void SetStatus(IUnitOfWork uow, BookingRequestDO bookingRequestDO, string targetStatus)

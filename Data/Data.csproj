@@ -213,6 +213,14 @@
     <Compile Include="Migrations\201406041306162_AddUserAgentInfoTable.Designer.cs">
       <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406161014494_StatusToEmailStatus.cs" />
+    <Compile Include="Migrations\201406161014494_StatusToEmailStatus.Designer.cs">
+      <DependentUpon>201406161014494_StatusToEmailStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406161039127_SetupDefaultEmailAndBookingStatuses.cs" />
+    <Compile Include="Migrations\201406161039127_SetupDefaultEmailAndBookingStatuses.Designer.cs">
+      <DependentUpon>201406161039127_SetupDefaultEmailAndBookingStatuses.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -318,6 +326,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406041306162_AddUserAgentInfoTable.resx">
       <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406161014494_StatusToEmailStatus.resx">
+      <DependentUpon>201406161014494_StatusToEmailStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406161039127_SetupDefaultEmailAndBookingStatuses.resx">
+      <DependentUpon>201406161039127_SetupDefaultEmailAndBookingStatuses.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
