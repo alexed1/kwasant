@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Infrastructure;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 
@@ -20,9 +21,6 @@ namespace Data.Entities
 
         [Required]
         public virtual EmailAddressDO EmailAddress { get; set; }
-
-       // public virtual ICollection<AspNetRolesDO> Roles { get; set; }
-        
     }
 }
 

@@ -30,6 +30,15 @@ namespace KwasantTest.Services
             _fixture = new FixtureData();
         }
 
+        private void AddTestRequestData()
+        {
+            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { };
+
+            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+        }
+
         [Test]
         [Category("BRM")]
         public void NewCustomerCreated()
@@ -197,6 +206,16 @@ namespace KwasantTest.Services
             (new BookingRequest()).SetStatus(_uow, bookingRequest, "invalid");
             IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.BookingStatus == "Invalid");
             Assert.AreEqual(1, requestNow.Count());
+        }
+
+        [Test]
+        [Category("BRM")]
+        public void GetBookingRequestsTest()
+        {
+            AddTestRequestData();
+            int id = _uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
+            List<BookingRequestDO> requests = (new BookingRequest()).GetBookingRequests(_uow.BookingRequestRepository, id);
+            Assert.AreEqual(1, requests.Count);
         }
     }
 }

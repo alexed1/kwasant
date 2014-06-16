@@ -3,16 +3,16 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class initial : DbMigration
+    public partial class AddDateReceived : DbMigration
     {
         public override void Up()
         {
-            AlterColumn("dbo.Emails", "Status", c => c.String());
+            AddColumn("dbo.Emails", "DateReceived", c => c.DateTime(nullable: false));
         }
         
         public override void Down()
         {
-            AlterColumn("dbo.Emails", "Status", c => c.Int(nullable: false));
+            DropColumn("dbo.Emails", "DateReceived");
         }
     }
 }
