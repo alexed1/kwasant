@@ -22,7 +22,8 @@ namespace Data.Migrations
         public MigrationConfiguration()
         {
             //Do not ever turn this on! It will break database upgrades
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
 
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.KwasantDbContext";

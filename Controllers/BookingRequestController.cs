@@ -40,7 +40,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(BookingRequest.GetUnprocessed(uow.BookingRequestRepository)), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_datatables.Pack((new BookingRequest()).GetUnprocessed(uow.BookingRequestRepository)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -87,7 +87,7 @@ namespace KwasantWeb.Controllers
                 }
                 else
                 {
-                    BookingRequest.SetStatus(uow, bookingRequestDO, targetStatus.ToLower());
+                    (new BookingRequest()).SetStatus(uow, bookingRequestDO, targetStatus.ToLower());
                     switch (targetStatus.ToLower())
                     {
                         case "invalid":
@@ -106,7 +106,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(BookingRequest.GetBookingRequests(uow.BookingRequestRepository, id.Value)), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_datatables.Pack((new BookingRequest()).GetBookingRequests(uow.BookingRequestRepository, id.Value)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }

@@ -158,6 +158,7 @@
     <Compile Include="Managers\APIManager\Packagers\Mandrill\MandrillPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\Kwasant\KwasantPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\Twilio\TwilioPackager.cs" />
+    <Compile Include="Managers\APIManager\Packagers\UnknownEmailPackagerException.cs" />
     <Compile Include="Managers\APIManager\Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Managers\APIManager\Transmitters\Restful\RestfulCall.cs" />
     <Compile Include="Managers\APIManager\Transmitters\Restful\RestfulResponse.cs" />
@@ -172,6 +173,7 @@
     </Compile>
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\Attendee.cs" />
+    <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Email.cs" />

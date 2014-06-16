@@ -121,6 +121,7 @@
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
+    <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\Enumerations\StringEnumerations.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
     <Compile Include="Entities\Enumerations\CommunicationType.cs" />
@@ -150,6 +151,7 @@
     <Compile Include="Infrastructure\KwasantDbContext.cs" />
     <Compile Include="Infrastructure\UnitOfWork.cs" />
     <Compile Include="Interfaces\IDBContext.cs" />
+    <Compile Include="Interfaces\IEnvelope.cs" />
     <Compile Include="Interfaces\IPerson.cs" />
     <Compile Include="Interfaces\IRepository.cs" />
     <Compile Include="Interfaces\ISaveHook.cs" />
@@ -162,6 +164,14 @@
     <Compile Include="Migrations\201406092112336_StatusToEmailStatus.Designer.cs">
       <DependentUpon>201406092112336_StatusToEmailStatus.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.cs" />
+    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.Designer.cs">
+      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406110747088_AddEnvelopeDO.cs" />
+    <Compile Include="Migrations\201406110747088_AddEnvelopeDO.Designer.cs">
+      <DependentUpon>201406110747088_AddEnvelopeDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -173,6 +183,7 @@
     <Compile Include="Repositories\CommunicationRepository.cs" />
     <Compile Include="Repositories\EmailAddressRepository.cs" />
     <Compile Include="Repositories\EmailRepository.cs" />
+    <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\GenericRepository.cs" />
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />
@@ -225,6 +236,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406092112336_StatusToEmailStatus.resx">
       <DependentUpon>201406092112336_StatusToEmailStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406111328209_EmailDO_AddDateCreated.resx">
+      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406110747088_AddEnvelopeDO.resx">
+      <DependentUpon>201406110747088_AddEnvelopeDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

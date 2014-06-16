@@ -42,7 +42,7 @@ namespace KwasantTest.Controllers
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            BookingRequest.ProcessBookingRequest(_uow, bookingRequest);
+            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
         }
 
         [Test]
@@ -52,12 +52,12 @@ namespace KwasantTest.Controllers
             BookingRequestController controller = new BookingRequestController();
             JsonResult jsonResultActual = controller.ShowUnprocessed() as JsonResult;
 
-            string jsonResultExpected = _datatables.Pack(BookingRequest.GetUnprocessed(_uow.BookingRequestRepository));
+            string jsonResultExpected = _datatables.Pack((new BookingRequest()).GetUnprocessed(_uow.BookingRequestRepository));
             Assert.AreEqual(jsonResultExpected, jsonResultActual.Data.ToString());
 
             AddTestRequestData();
             JsonResult jsonResultActualProcessed = controller.ShowUnprocessed() as JsonResult;
-            string jsonResultExpectedProcessed = _datatables.Pack(BookingRequest.GetUnprocessed(_uow.BookingRequestRepository));
+            string jsonResultExpectedProcessed = _datatables.Pack((new BookingRequest()).GetUnprocessed(_uow.BookingRequestRepository));
             Assert.AreEqual(jsonResultExpectedProcessed, jsonResultActualProcessed.Data.ToString());
 
         }
@@ -83,10 +83,9 @@ namespace KwasantTest.Controllers
 
             BookingRequestController controller = new BookingRequestController();
             int id = _uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
-            string jsonResultExpected = _datatables.Pack(BookingRequest.GetBookingRequests(_uow.BookingRequestRepository, id));
+            string jsonResultExpected = _datatables.Pack((new BookingRequest()).GetBookingRequests(_uow.BookingRequestRepository, id));
             JsonResult jsonResultActual = controller.GetBookingRequests(id) as JsonResult;
             Assert.AreEqual(jsonResultExpected, jsonResultActual.Data.ToString());
-
         }
 
         

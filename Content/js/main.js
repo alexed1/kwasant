@@ -60,6 +60,9 @@ $(document).ready(function(){
 		mywindow = $(window),
 		htmlbody = $('html,body'),
 		offsetTop = $('.navbar').height();
+		if ($('#welcome').length) {
+			links.push($('#welcome')[0]);
+		}
 	section.waypoint({
 		 handler: function (direction) {
 			var datasection = $(this).attr('data-section');
@@ -87,7 +90,8 @@ $(document).ready(function(){
 	if(windowWidth < 980){
 		function goToByScroll(datasection) {
 			htmlbody.animate({
-				scrollTop: $('.text-block[data-section="' + datasection + '"]').offset().top}, 1000);
+				scrollTop: $('.text-block[data-section="' + datasection + '"]').offset().top - offsetTop
+			}, 1000);
 		}
 	}
 

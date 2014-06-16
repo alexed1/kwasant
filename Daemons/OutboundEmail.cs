@@ -5,6 +5,8 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
+using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Services;
 using StructureMap;
 using Utilities.Logging;
@@ -13,6 +15,8 @@ namespace Daemons
 {
     public class OutboundEmail : Daemon
     {
+
+        private string logString;
         public OutboundEmail()
         {
             RegisterEvent<string, int>(MandrillPackagerEventHandler.EmailSent, (id, emailID) =>
@@ -75,15 +79,35 @@ namespace Daemons
             while (ProcessNextEventNoWait()) { }
             using (IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                EmailRepository emailRepository = unitOfWork.EmailRepository;
+                EnvelopeRepository envelopeRepository = unitOfWork.EnvelopeRepository;
                 var numSent = 0;
-                foreach (EmailDO email in emailRepository.FindList(e => e.EmailStatus == EmailStatus.QUEUED))
+                foreach (EnvelopeDO envelope in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailStatus.QUEUED))
                 {
-                    new Email(unitOfWork, email).Send();
-                    numSent++;
+                    try
+                    {
+                        IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
+                        packager.Send(envelope);
+                        numSent++;
+                    }
+                    catch (StructureMapConfigurationException ex)
+                    {
+                        Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", envelope.Handler);
+                        throw new UnknownEmailPackagerException(string.Format("Unknown email packager: {0}", envelope.Handler), ex);
+                    }
                 }
                 unitOfWork.SaveChanges();
-                Logger.GetLogger().Info(numSent + " emails sent.");
+
+
+                if (numSent == 0)
+                {
+                    logString = "nothing sent";
+                }
+                else
+                {
+                    logString = "Emails sent:" + numSent;
+                }
+                    
+                Logger.GetLogger().Info(logString);
             }
         }
     }
