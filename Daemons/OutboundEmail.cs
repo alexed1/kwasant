@@ -89,31 +89,35 @@ namespace Daemons
             while (ProcessNextEventNoWait())
             {
             }
+
             using (IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 EnvelopeRepository envelopeRepository = unitOfWork.EnvelopeRepository;
                 EventRepository eventRepository = unitOfWork.EventRepository;
                 CommunicationManager _comm = new CommunicationManager();
                 var numSent = 0;
-                foreach (
-                    EnvelopeDO envelope in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailStatus.QUEUED))
+                foreach (EnvelopeDO envelope in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailStatus.QUEUED))
                 {
-                    try
+                    using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
-                        packager.Send(envelope);
-                        numSent++;
-                    }
-                    catch (StructureMapConfigurationException ex)
-                    {
-                        Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", envelope.Handler);
-                        throw new UnknownEmailPackagerException(
-                            string.Format("Unknown email packager: {0}", envelope.Handler), ex);
+                        try
+                        {
+                            IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
+                            packager.Send(envelope);
+                            numSent++;
+
+                            var email = subUow.EmailRepository.GetByKey(envelope.EmailID);
+                            email.EmailStatus = EmailStatus.DISPATCHED;
+                            subUow.SaveChanges();
+                        }
+                        catch (StructureMapConfigurationException ex)
+                        {
+                            Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", envelope.Handler);
+                            throw new UnknownEmailPackagerException(string.Format("Unknown email packager: {0}", envelope.Handler), ex);
+                        }
                     }
                 }
-                unitOfWork.SaveChanges();
-
-
+                
                 if (numSent == 0)
                 {
                     logString = "nothing sent";

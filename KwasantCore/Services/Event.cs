@@ -62,20 +62,16 @@ namespace KwasantCore.Services
         {
             //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
             var t = Utilities.Server.ServerUrl;
-            String htmlText;
-            String plainText;
             switch (eventDO.Status)
             {
                 case "Instantiated":
                 {
                     eventDO.Status = "Undispatched";
-                    htmlText = GetEmailHTMLTextForNew(eventDO);
-                    plainText = GetEmailPlainTextForNew(eventDO);
 
                     var calendar = GetCalendarObject(eventDO);
                     foreach (var attendeeDO in eventDO.Attendees)
                     {
-                        var emailDO = CreateEmail(uow, eventDO, attendeeDO, htmlText, plainText);
+                        var emailDO = CreateEmail(uow, eventDO, attendeeDO, false);
                         var email = new Email(uow, emailDO);
                         AttachCalendarToEmail(calendar, emailDO);
                         email.Send();
@@ -91,30 +87,16 @@ namespace KwasantCore.Services
                     if (EventHasChanged(uow, eventDO))
                     {
                         eventDO.Status = "Undispatched";
-
-                        //First we create emails for new attendees. These attendees recieve the 'New event' email.
                         var calendar = GetCalendarObject(eventDO);
-                        htmlText = GetEmailHTMLTextForNew(eventDO);
-                        plainText = GetEmailPlainTextForNew(eventDO);
-                        foreach (var attendeeDO in eventDO.Attendees.Where(a => a.Id == 0))
+                        
+                        foreach (var attendeeDO in eventDO.Attendees)
                         {
-                            var emailDO = CreateEmail(uow, eventDO, attendeeDO, htmlText, plainText);
+                            //Id > 0 means it's an existing attendee, so we need to send the 'update' email to them.
+                            var emailDO = CreateEmail(uow, eventDO, attendeeDO, attendeeDO.Id > 0);
                             var email = new Email(uow, emailDO);
                             AttachCalendarToEmail(calendar, emailDO);
                             email.Send();
                         }
-
-                        //Then we grab existing attendees, and we send them the 'Event updated' email instead. Currently, it's the same email - but in the future we can modify the two methods below.
-                        htmlText = GetEmailHTMLTextForUpdate(eventDO);
-                        plainText = GetEmailPlainTextForUpdate(eventDO);
-                        foreach (var attendeeDO in eventDO.Attendees.Where(a => a.Id > 0))
-                        {
-                            var emailDO = CreateEmail(uow, eventDO, attendeeDO, htmlText, plainText);
-                            var email = new Email(uow, emailDO);
-                            AttachCalendarToEmail(calendar, emailDO);
-                            email.Send();
-                        }
-
                     }
                     else
                     {
@@ -175,27 +157,27 @@ namespace KwasantCore.Services
             return ddayCalendar;
         }
 
-        private String GetEmailHTMLTextForUpdate(EventDO eventDO)
+        private String GetEmailHTMLTextForUpdate(EventDO eventDO, String userID)
         {
-            return Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
+            return Razor.Parse(Properties.Resources.HTMLEventInvitation_Update, new RazorViewModel(eventDO, userID));
         }
 
-        private String GetEmailPlainTextForUpdate(EventDO eventDO)
+        private String GetEmailPlainTextForUpdate(EventDO eventDO, String userID)
         {
-            return Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO));
+            return Razor.Parse(Properties.Resources.PlainEventInvitation_Update, new RazorViewModel(eventDO, userID));
         }
 
-        private String GetEmailHTMLTextForNew(EventDO eventDO)
+        private String GetEmailHTMLTextForNew(EventDO eventDO, String userID)
         {
-            return Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
+            return Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO, userID));
         }
 
-        private String GetEmailPlainTextForNew(EventDO eventDO)
+        private String GetEmailPlainTextForNew(EventDO eventDO, String userID)
         {
-            return Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO));
+            return Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO, userID));
         }
 
-        private EmailDO CreateEmail(IUnitOfWork uow, EventDO eventDO, AttendeeDO attendeeDO, string htmlBody, string plainTextBody)
+        private EmailDO CreateEmail(IUnitOfWork uow, EventDO eventDO, AttendeeDO attendeeDO, bool isUpdate)
         {
             string fromEmail = ConfigRepository.Get("fromEmail");
             string fromName = ConfigRepository.Get("fromName");
@@ -215,10 +197,21 @@ namespace KwasantCore.Services
             toEmailAddress.Name = attendeeDO.Name;
             outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
 
-            outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
+            var userID = uow.UserRepository.GetQuery().First(u => u.EmailAddressID == attendeeDO.EmailAddressID).Id;
 
-            outboundEmail.HTMLText = htmlBody;
-            outboundEmail.PlainText = plainTextBody;
+            if (isUpdate)
+            {
+
+                outboundEmail.Subject = GetEmailHTMLTextForUpdate(eventDO, userID);
+                outboundEmail.HTMLText = GetEmailPlainTextForUpdate(eventDO, userID);
+                outboundEmail.PlainText = String.Format(ConfigRepository.Get("emailSubjectUpdated"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
+            }
+            else
+            {
+                outboundEmail.Subject = GetEmailHTMLTextForNew(eventDO, userID);
+                outboundEmail.HTMLText = GetEmailPlainTextForNew(eventDO, userID);
+                outboundEmail.PlainText = String.Format(ConfigRepository.Get("emailSubject"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
+            }
 
             //prepare the outbound email
             outboundEmail.EmailStatus = EmailStatus.QUEUED;
@@ -291,7 +284,7 @@ namespace KwasantCore.Services
             var changedProperties = uow.Db.GetEntityModifications(eventDO);
             //determine if changes warrant an update message
             //return true or false
-            return false;
+            return true;
         }
 
 
@@ -315,7 +308,7 @@ namespace KwasantCore.Services
         public String Location { get; set; }
         public List<RazorAttendeeViewModel> Attendees { get; set; }
 
-        public RazorViewModel(EventDO ev)
+        public RazorViewModel(EventDO ev, String userID)
         {
             IsAllDay = ev.IsAllDay;
             StartDate = ev.StartDate;
@@ -323,9 +316,8 @@ namespace KwasantCore.Services
             Summary = ev.Summary;
             Description = ev.Description;
             Location = ev.Location;
-            Attendees =
-                ev.Attendees.Select(
-                    a => new RazorAttendeeViewModel {Name = a.Name, EmailAddress = a.EmailAddress.Address}).ToList();
+            Attendees = ev.Attendees.Select(a => new RazorAttendeeViewModel {Name = a.Name, EmailAddress = a.EmailAddress.Address}).ToList();
+            UserID = userID;
         }
 
         public class RazorAttendeeViewModel

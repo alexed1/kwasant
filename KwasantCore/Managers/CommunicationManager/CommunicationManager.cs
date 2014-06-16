@@ -201,8 +201,7 @@ namespace KwasantCore.Managers.CommunicationManager
 
             //configure body
             var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO));
-            var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation,
-                new RazorViewModel(eventDO));
+            var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO));
             outboundEmail.HTMLText = parsedHTMLEmail;
             outboundEmail.PlainText = parsedPlainEmail;
 
