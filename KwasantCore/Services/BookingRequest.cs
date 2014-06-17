@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 
@@ -14,13 +13,11 @@ namespace KwasantCore.Services
     {
         public void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-
             bookingRequest.BookingStatus = "Unprocessed";
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
-            
         }
 
         public List<BookingRequestDO> GetBookingRequests(IBookingRequestRepository curBookingRequestRepository, int id)

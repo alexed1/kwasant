@@ -25,7 +25,7 @@
     @Styles.Render("~/bundles/css/select2")
     @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
 }
-<form id="f" method="post" style="margin:10px" action="@Url.Action("SubmitChange", "Event")">
+<form id="f" method="post" style="margin:10px" action="@Url.Action("ProcessConfirmedEvent", "Event")">
     <h3>Confirm Changes</h3>
     <hr />
     <div>You are <b>@Html.Raw(Model.Id == 0 ? "creating a new" : "editing an existing")</b> event.</div>

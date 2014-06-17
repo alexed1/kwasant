@@ -64,6 +64,7 @@ namespace Data.Entities
             Attachments = new List<AttachmentDO>();
             Events = new List<EventDO>();
             DateCreated = DateTime.UtcNow;
+            DateReceived = DateTime.UtcNow;
         }
 
         public void AddEmailRecipient(EmailParticipantType type, EmailAddressDO emailAddress)

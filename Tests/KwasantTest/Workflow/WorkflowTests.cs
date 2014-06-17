@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Mail;
 using System.Threading;
 using Daemons;
@@ -15,7 +12,6 @@ using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantICS.DDay.iCal;
 using KwasantTest.Daemons;
-using KwasantTest.Fixtures;
 using NUnit.Framework;
 using S22.Imap;
 using StructureMap;
@@ -107,11 +103,10 @@ namespace KwasantTest.Workflow
                 var startString = lines[1].Remove(0, startPrefix.Length);
                 var endString = lines[2].Remove(0, endPrefix.Length);
                 var e = new Event();
-                var edo = e.Create(request.Id, startString, endString);
+                var edo = e.Create(_uow, request.Id, startString, endString);
                 edo.Description = "test event description";
                 _uow.EventRepository.Add(edo);
-
-                e.Dispatch(_uow, edo);
+                e.Update(_uow, edo);
 
                 requestToEmailDuration.Start();
 
@@ -150,7 +145,7 @@ namespace KwasantTest.Workflow
                 if (inviteMessage != null)
                 {
                     client.DeleteMessage(inviteMessageId);
-                }
+            }
             }
             totalOperationDuration.Stop();
 

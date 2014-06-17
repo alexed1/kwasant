@@ -17,6 +17,12 @@ namespace KwasantWeb.App_Start
             
             Mapper.CreateMap<EventViewModel, EventDO>()
                 .ForMember(eventDO => eventDO.Attendees, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.Status, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.CreatedBy, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.CreatedByID, opts => opts.Ignore());
+
+            Mapper.CreateMap<EventDO, EventDO>()
+                .ForMember(eventDO => eventDO.Attendees, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.CreatedBy, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.CreatedByID, opts => opts.Ignore());
 

@@ -1,5 +1,3 @@
-using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
 using Microsoft.AspNet.Identity.EntityFramework;
 

@@ -16,11 +16,82 @@ namespace Data.Infrastructure
 {
     public class KwasantDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {
+        public class PropertyChangeInformation
+        {
+            public String PropertyName;
+            public Object OriginalValue;
+            public Object NewValue;
+
+            public override string ToString()
+            {
+                const string displayChange = "[{0}]: [{1}] -> [{2}]";
+                return String.Format(displayChange, PropertyName, OriginalValue, NewValue);
+            }
+        }
+
+        public class EntityChangeInformation
+        {
+            public String EntityName;
+            public List<PropertyChangeInformation> Changes;
+        }
+
         //Do not change this value! If you want to change the database you connect to, edit your web.config file
         public KwasantDbContext()
             : base("name=KwasantDB")
         {
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<KwasantDbContext, MigrationConfiguration>());
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<KwasantDbContext, MigrationConfiguration>()); 
+        }
+
+
+        public List<PropertyChangeInformation> GetEntityModifications<T>(T entity)
+            where T : class
+        {
+            return GetEntityModifications(Entry(entity));
+        }
+
+        private List<PropertyChangeInformation> GetEntityModifications<T>(DbEntityEntry<T> entity)
+            where T : class
+        {
+            return GetEntityModifications((DbEntityEntry) entity);
+        }
+
+        private List<PropertyChangeInformation> GetEntityModifications(DbEntityEntry entity)
+        {
+            List<PropertyChangeInformation> changedValues = new List<PropertyChangeInformation>();
+            foreach (string prop in entity.OriginalValues.PropertyNames)
+            {
+                object originalValue = entity.OriginalValues[prop];
+                object currentValue = entity.CurrentValues[prop];
+                if ((originalValue == null && currentValue != null) ||
+                    (originalValue != null && !originalValue.Equals(currentValue)))
+                {
+                    changedValues.Add(new PropertyChangeInformation {PropertyName = prop, OriginalValue = originalValue, NewValue = currentValue});
+                }
+            }
+
+            return changedValues;
+        }
+
+        public List<EntityChangeInformation> GetModifiedEntities()
+        {
+            var res = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified)
+                .Select(e =>
+                {
+                    string actualName = (e.Entity.GetType().FullName.StartsWith("System.Data.Entity.DynamicProxies") &&
+                                        e.Entity.GetType().BaseType != null)
+                    ? e.Entity.GetType().BaseType.Name
+                    : e.Entity.GetType().FullName;
+
+                    return new EntityChangeInformation
+                    {
+                        EntityName = actualName,
+                        Changes = GetEntityModifications(e)
+                    };
+                })
+                .Where(e => e.Changes.Any())
+                .ToList();
+
+            return res;
         }
 
         public override int SaveChanges()
@@ -29,35 +100,7 @@ namespace Data.Infrastructure
             //Debug code!
             List<object> adds = ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();
             List<object> deletes = ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToList();
-            var modifies = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified)
-                .Select(e =>
-                {
-                    const string displayChange = "[{0}]: [{1}] -> [{2}]";
-                    List<string> changedValues = new List<String>();
-                    foreach (string prop in e.OriginalValues.PropertyNames)
-                    {
-                        object originalValue = e.OriginalValues[prop];
-                        object currentValue = e.CurrentValues[prop];
-                        if ((originalValue == null && currentValue != null) ||
-                            (originalValue != null && !originalValue.Equals(currentValue)))
-                        {
-                            changedValues.Add(String.Format(displayChange, prop, originalValue,
-                                currentValue));
-                        }
-                    }
-
-                    string actualName = (e.Entity.GetType().FullName.StartsWith("System.Data.Entity.DynamicProxies") &&
-                                         e.Entity.GetType().BaseType != null)
-                        ? e.Entity.GetType().BaseType.Name
-                        : e.Entity.GetType().FullName;
-                    return new
-                    {
-                        EntityName = actualName,
-                        ChangedValue = changedValues
-                    };
-                })
-                .Where(e => e.ChangedValue != null && e.ChangedValue.Count > 0)
-                .ToList();
+            //var modifies = ChangeTracker.Entries()
 
             foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
             {
@@ -68,6 +111,11 @@ namespace Data.Infrastructure
             foreach (var entity in ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged))
             {
                 entity.State = EntityState.Unchanged;
+            }
+
+            foreach (DbEntityEntry<BookingRequestDO> newBookingRequest in ChangeTracker.Entries<BookingRequestDO>())
+            {
+                AlertManager.BookingRequestCreated(newBookingRequest.Entity);
             }
 
             return saveResult;
@@ -100,6 +148,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserAgentInfoDO>().ToTable("UserAgentInfos");
             modelBuilder.Entity<UserDO>().ToTable("Users");
+            modelBuilder.Entity<KactDO>().ToTable("Kacts");
 
 
             modelBuilder.Entity<EmailDO>()
@@ -152,7 +201,7 @@ namespace Data.Infrastructure
                 .HasOptional(cq => cq.ClarificationRequest)
                 .WithMany(cr => cr.Questions)
                 .HasForeignKey(cq => cq.ClarificationRequestId);
-
+            
             modelBuilder.Entity<AttachmentDO>()
                 .HasRequired(a => a.Email)
                 .WithMany(e => e.Attachments)
@@ -169,7 +218,7 @@ namespace Data.Infrastructure
                     ts.Id,
                     ts.ForeignTableName
                 });
-            
+
 
             base.OnModelCreating(modelBuilder);
         }

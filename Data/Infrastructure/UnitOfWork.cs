@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Transactions;
@@ -158,7 +157,15 @@ namespace Data.Infrastructure
                 return _trackingStatusRepository ?? (_trackingStatusRepository = new TrackingStatusRepository(this));
             }
         }
+        private KactRepository _KactRepository;
 
+        public KactRepository KactRepository
+        {
+            get
+            {
+                return _KactRepository ?? (_KactRepository = new KactRepository(this));
+            }
+        }
         private UserRepository _userRepository;
 
         public UserRepository UserRepository
@@ -247,8 +254,9 @@ namespace Data.Infrastructure
                 }
                 throw new Exception(String.Join(Environment.NewLine + Environment.NewLine, errorList) + Environment.NewLine, e);
             }
-            
         }
+
+
 
         public IDBContext Db
         {

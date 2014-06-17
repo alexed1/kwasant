@@ -1,22 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Web;
+﻿using System.Net;
 using System.Web.Mvc;
 using System.Web.Routing;
-using AutoMapper;
 using Data.Entities;
-using Data.Entities.Enumerations;
-using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using KwasantCore.Services;
 using StructureMap;
-using Utilities;
-using Utilities.Logging;
 
 namespace KwasantWeb.Controllers
 {
