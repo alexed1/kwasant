@@ -16,10 +16,18 @@ namespace KwasantWeb.App_Start
                 "~/Content/js/jquery.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
-                "~/Content/js/bootstrap.js",
-                "~/Content/js/bootstrap-responsive.js"
+			bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
+				"~/Content/js/bootstrap.js",
+				"~/Content/js/bootstrap-responsive.js"
+				));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/bootstrap31").Include(
+				"~/Content/js/bootstrap.3.1.1.min.js"
                 ));
+
+			bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
+				"~/Content/js/jquery.js"
+				));
 
             bundles.Add(new ScriptBundle("~/bundles/js/colorbox").Include(
                 "~/Content/js/jquery.colorbox.js"
@@ -40,6 +48,10 @@ namespace KwasantWeb.App_Start
             bundles.Add(new ScriptBundle("~/bundles/js/common").Include(
                 "~/Content/js/common.js"
                 ));
+
+			bundles.Add(new ScriptBundle("~/bundles/js/customjs").Include(
+				"~/Content/js/custom.js"
+				));
 
             bundles.Add(new ScriptBundle("~/bundles/js/daypilot").Include(
                 "~/Content/js/Daypilot/daypilot-common.src.js",
