@@ -107,5 +107,18 @@ namespace KwasantTest.Services
             Assert.AreEqual(0, result.Count);
         }
 
+
+        [Test]
+        public void TestComplexTLD()
+        {
+            var att = new Attendee();
+            //This is valid TLD - as per http://data.iana.org/TLD/tlds-alpha-by-domain.txt
+            var result = att.GetEmailAddresses("rjrudman@gmail.XN--CLCHC0EA0B2G2A9GCD");
+
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual(String.Empty, result[0].Name);
+            Assert.AreEqual("rjrudman@gmail.XN--CLCHC0EA0B2G2A9GCD", result[0].Email);
+        }
+
     }
 }

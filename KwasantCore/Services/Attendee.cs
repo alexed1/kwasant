@@ -80,8 +80,8 @@ namespace KwasantCore.Services
             //Domains can only contain letters or numbers.
             const string domainRegex = @"[a-zA-Z0-9]+";
 
-            //Top level domain must be at least two characters long. Only allows letters.
-            const string tldRegex = @"[a-zA-Z]{2,}";
+            //Top level domain must be at least two characters long. Only allows letters, numbers or dashes.
+            const string tldRegex = @"[a-zA-Z0-9\-]{2,}";
 
             //The name part is optional; we can find emails like 'rjrudman@gmail.com', or '<Robert Rudman>rjrudman@gmail.com'.
             //The regex uses named groups; 'name' and 'email'.
