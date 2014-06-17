@@ -99,16 +99,6 @@ namespace KwasantTest.Services
         }
 
         [Test]
-        public void TestInvalidTLD_Numbers()
-        {
-            var att = new Attendee();
-            var result = att.GetEmailAddresses("rjrudman@gmail.c24om");
-
-            Assert.AreEqual(0, result.Count);
-        }
-
-
-        [Test]
         public void TestComplexTLD()
         {
             var att = new Attendee();
