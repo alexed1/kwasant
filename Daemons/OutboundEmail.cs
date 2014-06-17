@@ -106,7 +106,7 @@ namespace Daemons
                             packager.Send(envelope);
                             numSent++;
 
-                            var email = subUow.EmailRepository.GetByKey(envelope.EmailID);
+                            var email = envelope.Email;
                             email.EmailStatus = EmailStatus.DISPATCHED;
                             subUow.SaveChanges();
                         }
@@ -121,10 +121,6 @@ namespace Daemons
                 if (numSent == 0)
                 {
                     logString = "nothing sent";
-                    foreach (EventDO curEvent in eventRepository.FindList(e => e.Status == "Undispatched"))
-                    {
-                        _comm.DispatchInvitations(curEvent);
-                    }
                 }
                 else
                 {

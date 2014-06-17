@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Mail;
 using System.Net.Mime;
 using Data.Entities;
 using Data.Entities.Enumerations;
@@ -17,7 +15,6 @@ using KwasantICS.DDay.iCal.DataTypes;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using RazorEngine;
 using StructureMap;
-using Twilio;
 using Microsoft.WindowsAzure;
 using KwasantCore.Services;
 using Utilities;
@@ -28,7 +25,6 @@ namespace KwasantCore.Managers.CommunicationManager
     public class CommunicationManager
     {
         //Register for interesting events
-
         public void SubscribeToAlerts()
         {
             AlertManager.AlertCustomerCreated += NewCustomerWorkflow;
@@ -51,25 +47,59 @@ namespace KwasantCore.Managers.CommunicationManager
             _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null); 
         }
 
-        public void DispatchInvitations(EventDO curEventDO)
+        public void DispatchInvitations(IUnitOfWork uow, EventDO eventDO)
         {
-            //if (curEventDO.EventChangeRecord != null)
-           // {
-           //     GenerateChangedMeetingEmails(curEventDO);
-           // }
-       // else
-            //{
-                GenerateStandardInvitation(curEventDO);
-                curEventDO.Status = "Processed";
-            // }
+            //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
+            var t = Utilities.Server.ServerUrl;
+            switch (eventDO.Status)
+            {
+                case "Instantiated":
+                    {
+                        eventDO.Status = "Undispatched";
+
+                        var calendar = GetCalendarObject(eventDO);
+                        foreach (var attendeeDO in eventDO.Attendees)
+                        {
+                            var emailDO = CreateEmail(uow, eventDO, attendeeDO, false);
+                            var email = new Email(uow, emailDO);
+                            AttachCalendarToEmail(calendar, emailDO);
+                            email.Send();
+                        }
+
+                        break;
+                    }
+                case "Dispatched":
+                    //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
+                    if (EventHasChanged(uow, eventDO))
+                    {
+                        eventDO.Status = "Dispatched";
+                        var calendar = GetCalendarObject(eventDO);
+
+                        foreach (var attendeeDO in eventDO.Attendees)
+                        {
+                            //Id > 0 means it's an existing attendee, so we need to send the 'update' email to them.
+                            var emailDO = CreateEmail(uow, eventDO, attendeeDO, attendeeDO.Id > 0);
+                            var email = new Email(uow, emailDO);
+                            AttachCalendarToEmail(calendar, emailDO);
+                            email.Send();
+                        }
+                    }
+                    else
+                    {
+                        //If the event hasn't changed - we don't need a new email..?
+                    }
+                    break;
+                default:
+                    throw new Exception("Invalid event status");
+            }
         }
 
-        //processing involves creating a DDay event using the DDay library. This allows us to easily generate the ICS formats needed
-        public iCalendar GenerateICSAttachment(IUnitOfWork uow, EventDO eventDO)
+        private iCalendar GetCalendarObject(EventDO eventDO)
         {
+            string fromEmail = ConfigRepository.Get("fromEmail");
+            string fromName = ConfigRepository.Get("fromName");
+
             iCalendar ddayCalendar = new iCalendar();
-
-
             DDayEvent dDayEvent = new DDayEvent();
 
             //configure start and end time
@@ -90,7 +120,7 @@ namespace KwasantCore.Managers.CommunicationManager
             dDayEvent.Description = eventDO.Description;
             dDayEvent.Summary = eventDO.Summary;
 
-            //generate ics attendee structures
+            //more attendee configuration
             foreach (AttendeeDO attendee in eventDO.Attendees)
             {
                 dDayEvent.Attendees.Add(new KwasantICS.DDay.iCal.DataTypes.Attendee()
@@ -104,30 +134,87 @@ namespace KwasantCore.Managers.CommunicationManager
                 });
                 attendee.Event = eventDO;
             }
+
             //final assembly of event
-            string fromEmail = ConfigRepository.Get("fromEmail");
-            string fromName = ConfigRepository.Get("fromName");
             dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
             ddayCalendar.Events.Add(dDayEvent);
             ddayCalendar.Method = CalendarMethods.Request;
+
             return ddayCalendar;
-
         }
 
-        //this  generates the outbound email and packages up its ics attachments
-        public void GenerateStandardInvitation(EventDO eventDO)
+        private String GetEmailHTMLTextForUpdate(EventDO eventDO, String userID)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var emailAddressRepository = uow.EmailAddressRepository;
-
-                EmailDO outboundEmail = GenerateInviteEmail(uow, eventDO);
-                eventDO.Emails.Add(outboundEmail);
-                AttachCalendarToEmail(GenerateICSAttachment(uow, eventDO), outboundEmail);
-
-            }
+            return Razor.Parse(Properties.Resources.HTMLEventInvitation_Update, new RazorViewModel(eventDO, userID));
         }
 
+        private String GetEmailPlainTextForUpdate(EventDO eventDO, String userID)
+        {
+            return Razor.Parse(Properties.Resources.PlainEventInvitation_Update, new RazorViewModel(eventDO, userID));
+        }
+
+        private String GetEmailHTMLTextForNew(EventDO eventDO, String userID)
+        {
+            return Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO, userID));
+        }
+
+        private String GetEmailPlainTextForNew(EventDO eventDO, String userID)
+        {
+            return Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO, userID));
+        }
+
+        private EmailDO CreateEmail(IUnitOfWork uow, EventDO eventDO, AttendeeDO attendeeDO, bool isUpdate)
+        {
+            string fromEmail = ConfigRepository.Get("fromEmail");
+            string fromName = ConfigRepository.Get("fromName");
+
+            var emailAddressRepository = uow.EmailAddressRepository;
+            if (eventDO.Attendees == null)
+                eventDO.Attendees = new List<AttendeeDO>();
+
+            EmailDO outboundEmail = new EmailDO();
+
+            //configure the sender information
+            var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
+            fromEmailAddr.Name = fromName;
+            outboundEmail.From = fromEmailAddr;
+
+            var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress.Address);
+            toEmailAddress.Name = attendeeDO.Name;
+            outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
+
+            var userID = uow.UserRepository.GetQuery().First(u => u.EmailAddressID == attendeeDO.EmailAddressID).Id;
+
+            if (isUpdate)
+            {
+
+                outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubjectUpdated"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
+                outboundEmail.HTMLText = GetEmailHTMLTextForUpdate(eventDO, userID);
+                outboundEmail.PlainText = GetEmailPlainTextForUpdate(eventDO, userID);
+            }
+            else
+            {
+                outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
+                outboundEmail.HTMLText = GetEmailHTMLTextForNew(eventDO, userID);
+                outboundEmail.PlainText = GetEmailPlainTextForNew(eventDO, userID);
+            }
+
+            //prepare the outbound email
+            outboundEmail.EmailStatus = EmailStatus.QUEUED;
+            if (eventDO.Emails == null)
+                eventDO.Emails = new List<EmailDO>();
+
+            eventDO.Emails.Add(outboundEmail);
+
+            return outboundEmail;
+        }
+
+        private bool EventHasChanged(IUnitOfWork uow, EventDO eventDO)
+        {
+            //Stub method for now
+            return true;
+        }
+        
         //if we have a first name and last name, use them together
         //else if we have a first name only, use that
         //else if we have just an email address, use the portion preceding the @ unless there's a name
@@ -175,41 +262,6 @@ namespace KwasantCore.Managers.CommunicationManager
                     new ContentType { MediaType = "application/ics", Name = "invite.ics" }
                     ) { TransferEncoding = TransferEncoding.Base64 });
         }
-
-        private EmailDO GenerateInviteEmail(IUnitOfWork uow, EventDO eventDO)
-        {
-            EmailDO outboundEmail = new EmailDO();
-
-            //configure the sender information
-            string fromEmail = ConfigRepository.Get("fromEmail");
-            string fromName = ConfigRepository.Get("fromName");
-            var fromEmailAddr = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromEmail);
-            fromEmailAddr.Name = fromName;
-            outboundEmail.From = fromEmailAddr;
-
-
-            //setup attendees
-            foreach (var attendeeDO in eventDO.Attendees)
-            {
-                var toEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress.Address);
-                toEmailAddress.Name = attendeeDO.Name;
-                outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
-            }
-
-            //configure subject
-            outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
-
-            //configure body
-            var parsedHTMLEmail = Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO, null));
-            var parsedPlainEmail = Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO, null));
-            outboundEmail.HTMLText = parsedHTMLEmail;
-            outboundEmail.PlainText = parsedPlainEmail;
-
-            outboundEmail.EmailStatus = EmailStatus.QUEUED;
-
-            return outboundEmail;
-        }
-
 
         public void ProcessBRNotifications(IList<BookingRequestDO> bookingRequests)
         {
@@ -285,6 +337,36 @@ namespace KwasantCore.Managers.CommunicationManager
             }
             throw new ArgumentException("Missing value for 'fromName'");
 
+        }
+    }
+
+    public class RazorViewModel
+    {
+        public String UserID { get; set; }
+        public bool IsAllDay { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public String Summary { get; set; }
+        public String Description { get; set; }
+        public String Location { get; set; }
+        public List<RazorAttendeeViewModel> Attendees { get; set; }
+
+        public RazorViewModel(EventDO ev, String userID)
+        {
+            IsAllDay = ev.IsAllDay;
+            StartDate = ev.StartDate;
+            EndDate = ev.EndDate;
+            Summary = ev.Summary;
+            Description = ev.Description;
+            Location = ev.Location;
+            Attendees = ev.Attendees.Select(a => new RazorAttendeeViewModel { Name = a.Name, EmailAddress = a.EmailAddress.Address }).ToList();
+            UserID = userID;
+        }
+
+        public class RazorAttendeeViewModel
+        {
+            public String EmailAddress { get; set; }
+            public String Name { get; set; }
         }
     }
 }

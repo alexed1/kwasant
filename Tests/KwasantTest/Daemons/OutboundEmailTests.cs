@@ -8,6 +8,7 @@ using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using Moq;
+using NUnit.Core;
 using NUnit.Framework;
 using StructureMap;
 
@@ -33,40 +34,53 @@ namespace KwasantTest.Daemons
         [Category("OutboundEmail")]
         public void CanSendGmailEnvelope()
         {
-            // SETUP
-            var email = _fixtureData.TestEmail1();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // SETUP
+                var email = _fixtureData.TestEmail1();
 
-            // EXECUTE
-            var emailService = new Email(_uow, email);
-            var envelopeId = emailService.Send();
-            var envelope = _uow.EnvelopeRepository.GetByKey(envelopeId);
-            var mockEmailer = new Mock<IEmailPackager>();
-            mockEmailer.Setup(a => a.Send(envelope)).Verifiable();
-            ObjectFactory.Configure(a => a.For<IEmailPackager>().Use(mockEmailer.Object).Named(EnvelopeDO.GmailHander));
-            DaemonTests.RunDaemonOnce(_outboundEmailDaemon);
+                uow.EmailRepository.Add(email);
 
-            // VERIFY
-            mockEmailer.Verify(a => a.Send(envelope), "OutboundEmail daemon didn't dispatch email via Gmail.");
+                // EXECUTE
+                var emailService = new Email(_uow, email);
+                var envelope = emailService.Send();
+
+                uow.SaveChanges();
+
+                var mockEmailer = new Mock<IEmailPackager>();
+                mockEmailer.Setup(a => a.Send(envelope)).Verifiable();
+                ObjectFactory.Configure(
+                    a => a.For<IEmailPackager>().Use(mockEmailer.Object).Named(EnvelopeDO.GmailHander));
+                DaemonTests.RunDaemonOnce(_outboundEmailDaemon);
+
+                // VERIFY
+                mockEmailer.Verify(a => a.Send(envelope), "OutboundEmail daemon didn't dispatch email via Gmail.");
+            }
         }
 
         [Test]
         [Category("OutboundEmail")]
         public void CanSendMandrillEnvelope()
         {
-            // SETUP
-            var email = _fixtureData.TestEmail1();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // SETUP
+                var email = _fixtureData.TestEmail1();
 
-            // EXECUTE
-            var emailService = new Email(_uow, email);
-            var envelopeId = emailService.SendTemplate("template", email, null);
-            var envelope = _uow.EnvelopeRepository.GetByKey(envelopeId);
-            var mockEmailer = new Mock<IEmailPackager>();
-            mockEmailer.Setup(a => a.Send(envelope)).Verifiable();
-            ObjectFactory.Configure(a => a.For<IEmailPackager>().Use(mockEmailer.Object).Named(EnvelopeDO.MandrillHander));
-            DaemonTests.RunDaemonOnce(_outboundEmailDaemon);
+                // EXECUTE
+                var emailService = new Email(_uow, email);
+                var envelope = emailService.SendTemplate("template", email, null);
+                uow.SaveChanges();
+                
+                var mockEmailer = new Mock<IEmailPackager>();
+                mockEmailer.Setup(a => a.Send(envelope)).Verifiable();
+                ObjectFactory.Configure(
+                    a => a.For<IEmailPackager>().Use(mockEmailer.Object).Named(EnvelopeDO.MandrillHander));
+                DaemonTests.RunDaemonOnce(_outboundEmailDaemon);
 
-            // VERIFY
-            mockEmailer.Verify(a => a.Send(envelope), "OutboundEmail daemon didn't dispatch email via Mandrill.");
+                // VERIFY
+                mockEmailer.Verify(a => a.Send(envelope), "OutboundEmail daemon didn't dispatch email via Mandrill.");
+            }
         }
 
         [Test]
