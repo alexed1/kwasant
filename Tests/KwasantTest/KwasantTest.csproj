@@ -93,6 +93,7 @@
     <Compile Include="Fixtures\FixtureData - Event.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
+    <Compile Include="Services\AttendeeTests.cs" />
     <Compile Include="Services\BookingRequestTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Entities\CustomerTests.cs" />
