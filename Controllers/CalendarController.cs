@@ -7,7 +7,9 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
+using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Services;
 using KwasantWeb.Controllers.DayPilot;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
@@ -16,9 +18,16 @@ using StructureMap;
 namespace KwasantWeb.Controllers
 {
     [HandleError]
-    [KwasantAuthorize(Roles = "Admin")]
+    //[KwasantAuthorize(Roles = "Admin")]
     public class CalendarController : Controller
     {
+        private DataTablesPackager _datatables;
+
+        public CalendarController()
+        {
+            _datatables = new DataTablesPackager();
+        }
+
         #region "Action"
 
         public ActionResult Index(int id = 0)
@@ -212,5 +221,17 @@ namespace KwasantWeb.Controllers
             return new DayPilotNavigatorControl().CallBack(this);
         }
         #endregion "DayPilot-Related Methods"
+
+        #region "Quick Copy Methods"
+        [HttpGet]
+        public ActionResult ProcessQuickCopy(string copyType,string selectedText)
+        {
+            string value = (new Calendar()).ProcessQuickCopy(copyType, selectedText);
+            string status = "valid";
+            if (value == "Invalid Selection") { status = "invalid"; }
+            var jsonResult = Json(new { status = status, value = value, copytype = copyType }, JsonRequestBehavior.AllowGet);
+            return jsonResult;
+        }
+        #endregion "Quick Copy Methods"
     }
 }

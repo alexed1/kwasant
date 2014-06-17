@@ -23,11 +23,11 @@
                     toDate.data("DateTimePicker").enable();
                 }
             };
-
+            var data;
             $(document).ready(function () {
                 $('#chkAllDay').click(hideShowDates);
 
-                var data = [@Html.Raw(String.Join(",", Model.Attendees.Split(',').Select(a =>
+                data = [@Html.Raw(String.Join(",", Model.Attendees.Split(',').Select(a =>
                                 "{id: '" + a + "', text: '" + a + "'}"
                                 )))];
 
@@ -36,8 +36,11 @@
                         return { id: term, text: term };
                     },
                     validateFormat: function (term) {
-                        if (!isEmail(term))
+                        var atPos = term.indexOf('@Html.Raw("@")');
+                        var dotPos = term.lastIndexOf('.');
+                        if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 2 <= dotPos)) {
                             return "Invalid Email";
+                        }
                         return null;
                     },
                     multiple: true,
@@ -176,6 +179,8 @@
 </form>
 
 <script type="text/javascript">
+    var fromdata;
+    var todata;
     var isunsaved = false;
     function checkunsaveddata() {
         if (!isunsaved) {
@@ -270,7 +275,21 @@
         fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString("MM/dd/yyyy hh:mm tt")');
         toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString("MM/dd/yyyy hh:mm tt")');
 
+        fromdata = $('#StartDate').data("DateTimePicker");
+        todata = $('#EndDate').data("DateTimePicker");
+
         hideShowDates();
     });
 
+    function removethis(id) {
+        var removedid = $(id).closest("li").find("div").html();
+        var existingAttendees = $("#attendeesSel").val().split(',');
+
+        var removeindex = existingAttendees.indexOf(removedid);
+        if (removeindex > -1) {
+            existingAttendees.splice(removeindex, 1);
+        }
+        $("#attendeesSel").val(existingAttendees.join());
+        $(id).closest("li").remove();
+    }
 </script>

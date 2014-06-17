@@ -160,18 +160,6 @@
     <Compile Include="Migrations\201406091515483_initial.Designer.cs">
       <DependentUpon>201406091515483_initial.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201406092112336_StatusToEmailStatus.cs" />
-    <Compile Include="Migrations\201406092112336_StatusToEmailStatus.Designer.cs">
-      <DependentUpon>201406092112336_StatusToEmailStatus.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.cs" />
-    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.Designer.cs">
-      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201406110747088_AddEnvelopeDO.cs" />
-    <Compile Include="Migrations\201406110747088_AddEnvelopeDO.Designer.cs">
-      <DependentUpon>201406110747088_AddEnvelopeDO.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -233,15 +221,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201406091515483_initial.resx">
       <DependentUpon>201406091515483_initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406092112336_StatusToEmailStatus.resx">
-      <DependentUpon>201406092112336_StatusToEmailStatus.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406111328209_EmailDO_AddDateCreated.resx">
-      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406110747088_AddEnvelopeDO.resx">
-      <DependentUpon>201406110747088_AddEnvelopeDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

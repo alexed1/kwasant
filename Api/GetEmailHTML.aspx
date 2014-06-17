@@ -97,8 +97,10 @@ img
 </head>
 <body>
     <%=System.Web.Optimization.Scripts.Render("~/bundles/js/jquery")%>
+    <%=System.Web.Optimization.Scripts.Render("~/bundles/js/select2")%>
     <script src="../Scripts/ContextMenu/jquery.contextMenu.js"></script>
     <link href="../Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
+
     <form id="form1" runat="server" style="width: 400px;">
     <div class="info" style="height:100%;">
         <div id="emailSubject" class="subHeading">
@@ -136,6 +138,7 @@ img
         </div>
         <br />
     </div>
+        <div class="context-menu-two box menu-1"></div>
     </form>
     <script type="text/javascript">
         $(document).ready(function () {
@@ -166,17 +169,33 @@ img
                 selector: '.context-menu-two',
                 className: 'css-title',
                 callback: function (key, options) {
-                    $(activeframe).contents().find(key).val(currentSelection);
+                    switch (key) {
+                        case "#description":
+                        case "#location":
+                        case "#summary":
+                            $(activeframe).contents().find(key).val(currentSelection);
+                            break;
+                        case "#attendees":
+                            processCopy("attendees", currentSelection);
+                            break;
+                        case "#start":
+                            processCopy("start", currentSelection);
+                            break;
+                        case "#end":
+                            processCopy("end", currentSelection);
+                            break;
+                        default:
+                    }
                     currentSelection = "";
                     //var m = "clicked: " + key;
                     //window.console && console.log(m) || alert(m);
                 },
                 items: {
-                    "description": { name: "Description" },
-                    "location": { name: "Location" },
-                    "start": { name: "Start Time" },
-                    "end": { name: "End Time" },
-                    "attendees": { name: "Attendees" },
+                    "#description": { name: "Description" },
+                    "#location": { name: "Location" },
+                    "#start": { name: "Start Time" },
+                    "#end": { name: "End Time" },
+                    "#attendees": { name: "Attendees" },
                     "#summary": { name: "Summary" },
                     "sep": "---------",
                     "quit": { name: "Quit" }
@@ -186,6 +205,37 @@ img
             function trackPoints(e) {
                 allPoints.push({ x: e.pageX, y: e.pageY });
             }
+
+            function processCopy(copytype, selectedtext) {
+                var data = ({
+                    copyType: String(copytype),
+                    selectedText: String(selectedtext)
+                });
+                $.getJSON("/Calendar/ProcessQuickCopy", data, copyRequest);
+            }
+
+            function copyRequest(response) {
+                var responseJson = response;
+                if (responseJson.status == "valid") {
+                    switch (responseJson.copytype) {
+                        case "attendees":
+                            $(activeframe).contents().find(".select2-choices").prepend("<li class='select2-search-choice'><div>" + responseJson.value + "</div><a href='#' onclick='javascript:removethis(this);' class='select2-search-choice-close' tabindex='-1'></a></li>");
+                            var newAttendees = $(activeframe).contents().find("#attendeesSel").val().split(',');
+                            newAttendees.push(responseJson.value);
+                            $(activeframe).contents().find("#attendeesSel").val(newAttendees.join());
+                            break;
+                        case "start":
+                            var iFrame = $(activeframe);
+                            iFrame.get(0).contentWindow.fromdata.setDate(responseJson.value);
+                            break;
+                        case "end":
+                            var iFrame = $(activeframe);
+                            iFrame.get(0).contentWindow.todata.setDate(responseJson.value);
+                            break;
+                    }
+                } else { alert(responseJson.value); }
+            }
+
         });
     </script>
 </body>
