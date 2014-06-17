@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Daemons;
 using Data.Entities;
 using Data.Interfaces;
@@ -8,7 +7,6 @@ using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using Moq;
-using NUnit.Core;
 using NUnit.Framework;
 using StructureMap;
 

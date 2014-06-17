@@ -3,7 +3,6 @@ using System.Linq;
 using System.Net.Mail;
 using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers;
@@ -12,7 +11,6 @@ using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
-using KwasantWeb.Controllers;
 
 namespace KwasantTest.Services
 {

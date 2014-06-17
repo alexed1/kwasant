@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
-using System.Net.Mail;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.Managers;
 using KwasantCore.Services;
 using S22.Imap;
 

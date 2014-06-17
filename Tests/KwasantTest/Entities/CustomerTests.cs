@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Repositories;
 using KwasantCore.Managers.CommunicationManager;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;

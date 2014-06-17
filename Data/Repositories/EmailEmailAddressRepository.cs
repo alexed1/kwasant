@@ -1,6 +1,4 @@
-﻿using System.Data.Entity;
-using Data.Entities;
-using Data.Infrastructure;
+﻿using Data.Entities;
 using Data.Interfaces;
 
 namespace Data.Repositories

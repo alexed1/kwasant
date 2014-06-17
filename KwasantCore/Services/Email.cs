@@ -9,10 +9,7 @@ using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;
-using FluentValidation;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
-using KwasantCore.Managers.CommunicationManager;
-using Microsoft.WindowsAzure;
 
 namespace KwasantCore.Services
 {

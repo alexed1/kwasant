@@ -1,5 +1,4 @@
 ﻿using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories

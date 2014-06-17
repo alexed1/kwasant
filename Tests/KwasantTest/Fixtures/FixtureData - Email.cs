@@ -1,6 +1,5 @@
 ﻿using Data.Entities;
 using Data.Entities.Enumerations;
-using Data.Repositories;
 
 namespace KwasantTest.Fixtures
 {

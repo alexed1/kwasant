@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
-using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 

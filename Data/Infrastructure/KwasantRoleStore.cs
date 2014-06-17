@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Data.Entity;
-using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Microsoft.AspNet.Identity;

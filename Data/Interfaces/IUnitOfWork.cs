@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Data.Entity;
-using Data.Infrastructure;
 using Data.Repositories;
 
 namespace Data.Interfaces

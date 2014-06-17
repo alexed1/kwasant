@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
@@ -12,7 +10,6 @@ using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
-using Utilities;
 
 namespace KwasantTest.Entities
 {
