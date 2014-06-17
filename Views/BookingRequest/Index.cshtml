@@ -10,6 +10,7 @@
         <tr>
             <th>Body</th>
             <th>Subject</th>
+            <th>Date Recieved</th>
             <th>From</th>
             <th style="width:15%">Action</th>
         </tr>
@@ -27,13 +28,15 @@
             //This configuration supports two buttons (Invalid and Details) and several columns of data
             var table = $('#tblbookingrequest').DataTable({
                 data: JSON.parse(response),
+                order: [ 2, 'desc' ],
                 columns: [
                     { data: 'body' },
-                    { data: 'request.subject' },
-                    { data: 'request.from.address' },
+                    { data: 'subject' },
+                    { data: 'date_received' },
+                    { data: 'from_address' },
                     {
-                      data: null,
-                      defaultContent: "<button value='detail'>Details</button>&nbsp;&nbsp;<button value='invalid'>Invalid</button>"
+                        data: null,
+                        defaultContent: "<button value='detail'>Details</button>&nbsp;&nbsp;<button value='invalid'>Invalid</button>"
                     }
                 ],
             });
@@ -47,7 +50,7 @@
                 switch ($(this).val()) {
                     case "detail":
                         //redirecting to main calendar view for details
-                        window.location.href = '@Url.Action("Details")' + "/" + data.request.id;
+                        window.location.href = '@Url.Action("Details")' + "/" + data.id;
                         break;
                     case "invalid":
                         //setting status of booking request to "INVALID" and removing the row

@@ -192,6 +192,10 @@
       <Project>{d940efca-2d57-466c-8103-54db173f1bd2}</Project>
       <Name>KwasantICS</Name>
     </ProjectReference>
+    <ProjectReference Include="..\UAParser\UAParser.csproj">
+      <Project>{83c63bea-1859-4dd5-ae08-9a0fec269b17}</Project>
+      <Name>UAParser</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>

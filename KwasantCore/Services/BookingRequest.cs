@@ -23,9 +23,33 @@ namespace KwasantCore.Services
             
         }
 
+        public List<BookingRequestDO> GetBookingRequests(IBookingRequestRepository curBookingRequestRepository, int id)
+        {
+            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == (from requests in curBookingRequestRepository.GetAll()
+                                                                                 where requests.Id == id
+                                                                                 select requests.User.Id).FirstOrDefault()).Where(e => e.BookingStatus == "Unprocessed").ToList();
+        }
+
         public object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.BookingStatus == "Unprocessed").OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
+            return
+                curBookingRequestRepository.GetAll()
+                    .Where(e => e.BookingStatus == "Unprocessed")
+                    .OrderByDescending(e => e.DateReceived)
+                    .Select(
+                        e =>
+                            new
+                            {
+                                id = e.Id,
+                                subject = e.Subject,
+                                fromAddress = e.From.Address,
+                                dateReceived = e.DateReceived.ToString("yy-mm-dd"),
+                                body =
+                                    e.HTMLText.Trim().Length > 400
+                                        ? e.HTMLText.Trim().Substring(0, 400)
+                                        : e.HTMLText.Trim()
+                            })
+                    .ToList();
         }
 
         public void SetStatus(IUnitOfWork uow, BookingRequestDO bookingRequestDO, string targetStatus)

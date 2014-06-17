@@ -7,6 +7,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Services;
 using StructureMap;
 using Utilities.Logging;
@@ -87,8 +88,8 @@ namespace Daemons
                     {
                         IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
                         packager.Send(envelope);
-                        numSent++;
-                    }
+                    numSent++;
+                }
                     catch (StructureMapConfigurationException ex)
                     {
                         Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", envelope.Handler);
@@ -101,14 +102,14 @@ namespace Daemons
                 if (numSent == 0)
                 {
                     logString = "nothing sent";
-                }
+            }
                 else
                 {
                     logString = "Emails sent:" + numSent;
-                }
+        }
                     
                 Logger.GetLogger().Info(logString);
-            }
-        }
+    }
+}
     }
 }

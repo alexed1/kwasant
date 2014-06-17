@@ -271,6 +271,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\EventResponse.aspx.cs">
+      <DependentUpon>EventResponse.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Api\EventResponse.aspx.designer.cs">
+      <DependentUpon>EventResponse.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Api\GetAttachment.ashx.cs">
       <DependentUpon>GetAttachment.ashx</DependentUpon>
     </Compile>
@@ -323,6 +330,7 @@
     <Compile Include="Webhooks\MandrillWebhookController.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\Booking Details.png" />
     <Content Include="Content\css\bootstrap-datetimepicker.css" />
@@ -439,6 +447,7 @@
     <Content Include="Content\img\client-6.png" />
     <Content Include="Content\img\controls.png" />
     <Content Include="Content\img\Croissant\croissant_nolic.jpg" />
+    <Content Include="Content\img\EmailLogo.png" />
     <Content Include="Content\img\example_using_kwasant_email.png" />
     <Content Include="Content\img\favicon.ico" />
     <Content Include="Content\img\from_this_to_this.png" />
@@ -750,6 +759,10 @@
     <ProjectReference Include="KwasantICS\KwasantICS.csproj">
       <Project>{d940efca-2d57-466c-8103-54db173f1bd2}</Project>
       <Name>KwasantICS</Name>
+    </ProjectReference>
+    <ProjectReference Include="UAParser\UAParser.csproj">
+      <Project>{83c63bea-1859-4dd5-ae08-9a0fec269b17}</Project>
+      <Name>UAParser</Name>
     </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

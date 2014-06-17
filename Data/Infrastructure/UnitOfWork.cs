@@ -169,6 +169,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private UserAgentInfoRepository _userAgentInfoRepository;
+
+        public UserAgentInfoRepository UserAgentInfoRepository
+        {
+            get
+            {
+                return _userAgentInfoRepository ?? (_userAgentInfoRepository = new UserAgentInfoRepository(this));
+            }
+        }
+
         private AspNetUserRolesRepository _aspNetUserRolesRepository;
 
         public AspNetUserRolesRepository AspNetUserRolesRepository

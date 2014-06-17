@@ -36,6 +36,15 @@ namespace KwasantTest.Controllers
             _datatables = new DataTablesPackager();
         }
 
+        private void AddTestRequestData()
+        {
+            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { };
+
+            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+        }
+
         [Test]
         [Category("BRM")]
         public void ShowUnprocessedRequestTest()
@@ -66,13 +75,19 @@ namespace KwasantTest.Controllers
 
         }
 
-        private void AddTestRequestData()
+        [Test]
+        [Category("BRM")]
+        public void GetBookingRequestsTest()
         {
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { };
+            AddTestRequestData();
 
-            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+            BookingRequestController controller = new BookingRequestController();
+            int id = _uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
+            string jsonResultExpected = _datatables.Pack((new BookingRequest()).GetBookingRequests(_uow.BookingRequestRepository, id));
+            JsonResult jsonResultActual = controller.GetBookingRequests(id) as JsonResult;
+            Assert.AreEqual(jsonResultExpected, jsonResultActual.Data.ToString());
         }
+
+        
     }
 }

@@ -61,7 +61,7 @@ namespace Data.Infrastructure
 
             foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
             {
-                entity.Entity.SaveHook(entity);
+                entity.Entity.BeforeSave();
             }
 
             var saveResult = base.SaveChanges();
@@ -98,7 +98,9 @@ namespace Data.Infrastructure
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
+            modelBuilder.Entity<UserAgentInfoDO>().ToTable("UserAgentInfos");
             modelBuilder.Entity<UserDO>().ToTable("Users");
+
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)
