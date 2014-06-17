@@ -8,7 +8,7 @@ namespace Data.Migrations
         public override void Up()
         {
             CreateTable(
-                "dbo.ClarificationQuestions",
+                "dbo.Questions",
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
@@ -40,12 +40,12 @@ namespace Data.Migrations
         {
             DropForeignKey("dbo.ClarificationRequests", "BookingRequestId", "dbo.BookingRequests");
             DropForeignKey("dbo.ClarificationRequests", "Id", "dbo.Emails");
-            DropForeignKey("dbo.ClarificationQuestions", "ClarificationRequestId", "dbo.ClarificationRequests");
+            DropForeignKey("dbo.Questions", "ClarificationRequestId", "dbo.ClarificationRequests");
             DropIndex("dbo.ClarificationRequests", new[] { "BookingRequestId" });
             DropIndex("dbo.ClarificationRequests", new[] { "Id" });
-            DropIndex("dbo.ClarificationQuestions", new[] { "ClarificationRequestId" });
+            DropIndex("dbo.Questions", new[] { "ClarificationRequestId" });
             DropTable("dbo.ClarificationRequests");
-            DropTable("dbo.ClarificationQuestions");
+            DropTable("dbo.Questions");
         }
     }
 }

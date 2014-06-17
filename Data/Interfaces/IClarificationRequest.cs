@@ -12,6 +12,6 @@ namespace Data.Interfaces
     {
         int BookingRequestId { get; set; }
         ClarificationStatus ClarificationStatus { get; set; }
-        IList<ClarificationQuestionDO> Questions { get; } 
+        IList<QuestionDO> Questions { get; } 
     }
 }

@@ -7,11 +7,11 @@ using Data.Entities.Enumerations;
 
 namespace Data.Interfaces
 {
-    public interface IClarificationQuestion
+    public interface IQuestion
     {
         int Id { get; set; }
         int? ClarificationRequestId { get; set; }
-        ClarificationQuestionStatus Status { get; set; }
+        QuestionStatus Status { get; set; }
         string Text { get; set; }
         string Response { get; set; }
     }

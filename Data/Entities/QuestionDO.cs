@@ -10,14 +10,14 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class ClarificationQuestionDO : IClarificationQuestion
+    public class QuestionDO : IQuestion
     {
-        #region Implementation of IClarificationQuestion
+        #region Implementation of IQuestion
 
         [Key]
         public int Id { get; set; }
         public int? ClarificationRequestId { get; set; }
-        public ClarificationQuestionStatus Status { get; set; }
+        public QuestionStatus Status { get; set; }
         [Required]
         public string Text { get; set; }
         public string Response { get; set; }

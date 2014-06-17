@@ -103,11 +103,11 @@ namespace KwasantWeb.Controllers
                 clarificationRequest.Recipients.Remove(recipientDo);
             }
 
-            clarificationRequest.Questions.Add(new ClarificationQuestionDO()
+            clarificationRequest.Questions.Add(new QuestionDO()
             {
                 ClarificationRequest = clarificationRequest,
                 ClarificationRequestId = clarificationRequest.Id,
-                Status = ClarificationQuestionStatus.Unanswered,
+                Status = QuestionStatus.Unanswered,
                 Text = viewModel.Question
             });
             uow.SaveChanges();

@@ -135,7 +135,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<ClarificationRequestDO>().ToTable("ClarificationRequests");
-            modelBuilder.Entity<ClarificationQuestionDO>().ToTable("ClarificationQuestions");
+            modelBuilder.Entity<QuestionDO>().ToTable("Questions");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
@@ -197,7 +197,7 @@ namespace Data.Infrastructure
                 .WithMany()
                 .HasForeignKey(cr => cr.BookingRequestId);
 
-            modelBuilder.Entity<ClarificationQuestionDO>()
+            modelBuilder.Entity<QuestionDO>()
                 .HasOptional(cq => cq.ClarificationRequest)
                 .WithMany(cr => cr.Questions)
                 .HasForeignKey(cq => cq.ClarificationRequestId);

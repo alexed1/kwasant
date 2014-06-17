@@ -68,11 +68,11 @@
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
-    <Compile Include="Entities\ClarificationQuestionDO.cs" />
+    <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\KactDO.cs" />
-    <Compile Include="Entities\Enumerations\ClarificationQuestionStatus.cs" />
+    <Compile Include="Entities\Enumerations\QuestionStatus.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\Enumerations\StringEnumerations.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
@@ -99,7 +99,7 @@
     <Compile Include="Interfaces\IAspNetRoles.cs" />
     <Compile Include="Interfaces\IAspNetUserRoles.cs" />
     <Compile Include="Interfaces\ICalendar.cs" />
-    <Compile Include="Interfaces\IClarificationQuestion.cs" />
+    <Compile Include="Interfaces\IQuestion.cs" />
     <Compile Include="Interfaces\IClarificationRequest.cs" />
     <Compile Include="Interfaces\ICustomField.cs" />
     <Compile Include="Entities\TrackingStatusDO.cs" />

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Entities.Enumerations
 {
-    public enum ClarificationQuestionStatus
+    public enum QuestionStatus
     {
         Unanswered,
         Answered
