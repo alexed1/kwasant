@@ -12,13 +12,23 @@ namespace Data.Entities
 {
     public class ClarificationRequestDO : EmailDO, IClarificationRequest
     {
+        private IList<ClarificationQuestionDO> _questions;
+
+        public ClarificationRequestDO()
+        {
+            _questions = new List<ClarificationQuestionDO>();
+        }
+
         #region Implementation of IClarificationRequest
         public int BookingRequestId { get; set; }
         [ForeignKey("BookingRequestId"), Required]
         public virtual BookingRequestDO BookingRequest { get; set; }
         public ClarificationStatus ClarificationStatus { get; set; }
-
-        public virtual IList<ClarificationQuestionDO> Questions { get; set; }
+        public virtual IList<ClarificationQuestionDO> Questions
+        {
+            get { return _questions; }
+            set { _questions = value; }
+        }
 
         #endregion
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Entities;
 using Data.Entities.Enumerations;
 
 namespace Data.Interfaces
@@ -11,5 +12,6 @@ namespace Data.Interfaces
     {
         int BookingRequestId { get; set; }
         ClarificationStatus ClarificationStatus { get; set; }
+        IList<ClarificationQuestionDO> Questions { get; } 
     }
 }

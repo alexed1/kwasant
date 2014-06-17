@@ -29,13 +29,7 @@ namespace KwasantCore.Services
                        {
                            BookingRequestId = bookingRequest.Id,
                        };
-            result.Recipients.Add(new RecipientDO()
-                                      {
-                                          Email = result, 
-                                          EmailAddress = bookingRequest.User.EmailAddress,
-                                          EmailAddressID = bookingRequest.User.EmailAddressID,
-                                          Type = EmailParticipantType.TO
-                                      });
+            result.AddEmailRecipient(EmailParticipantType.TO, bookingRequest.User.EmailAddress);
             return result;
         }
 
