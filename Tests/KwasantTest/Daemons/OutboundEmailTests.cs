@@ -90,8 +90,8 @@ namespace KwasantTest.Daemons
 
             // EXECUTE
             var emailService = new Email(_uow, email);
-            var envelopeId = emailService.SendTemplate("template", email, null);
-            var envelope = _uow.EnvelopeRepository.GetByKey(envelopeId);
+            var envelope = emailService.SendTemplate("template", email, null);
+            
             envelope.Handler = "INVALID EMAIL PACKAGER";
             _uow.SaveChanges();
 
