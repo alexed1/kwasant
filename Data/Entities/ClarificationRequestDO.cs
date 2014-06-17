@@ -21,7 +21,6 @@ namespace Data.Entities
 
         #region Implementation of IClarificationRequest
         public int BookingRequestId { get; set; }
-        [ForeignKey("BookingRequestId"), Required]
         public virtual BookingRequestDO BookingRequest { get; set; }
         public ClarificationStatus ClarificationStatus { get; set; }
         public virtual IList<ClarificationQuestionDO> Questions

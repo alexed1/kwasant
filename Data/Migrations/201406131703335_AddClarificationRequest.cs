@@ -14,7 +14,7 @@ namespace Data.Migrations
                         Id = c.Int(nullable: false, identity: true),
                         ClarificationRequestId = c.Int(),
                         Status = c.Int(nullable: false),
-                        Text = c.String(),
+                        Text = c.String(nullable: false),
                         Response = c.String(),
                     })
                 .PrimaryKey(t => t.Id)

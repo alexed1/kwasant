@@ -18,6 +18,7 @@ namespace Data.Entities
         public int Id { get; set; }
         public int? ClarificationRequestId { get; set; }
         public ClarificationQuestionStatus Status { get; set; }
+        [Required]
         public string Text { get; set; }
         public string Response { get; set; }
 

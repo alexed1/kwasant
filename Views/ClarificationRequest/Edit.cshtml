@@ -6,33 +6,31 @@
 {
     @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/select2")
-    @Scripts.Render("~/bundles/js/moment")
-    @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
     @Scripts.Render("~/bundles/js/jqueryvalidate")
 
     <script src="/Content/js/Kwasant/Popup.js"></script>
 
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(document).ready(function() {
             var data = [@Html.Raw(String.Join(",", Model.Recipients.Split(',').Select(a =>
                                 "{id: '" + a + "', text: '" + a + "'}"
                                 )))];
 
-                $('#attendeesSel').select2({
-                    createSearchChoice: function (term) {
-                        return { id: term, text: term };
-                    },
-                    validateFormat: function (term) {
-                        if (!isEmail(term))
-                            return "Invalid Email";
-                        return null;
-                    },
-                    multiple: true,
-                    data: [],
-                    width: '100%',
-                });
-                $('#attendeesSel').select2('data', data);
+            $('#recipientsSel').select2({
+                createSearchChoice: function(term) {
+                    return { id: term, text: term };
+                },
+                validateFormat: function(term) {
+                    if (!isEmail(term))
+                        return "Invalid Email";
+                    return null;
+                },
+                multiple: true,
+                data: [],
+                width: '100%',
             });
+            $('#recipientsSel').select2('data', data);
+        });
     </script>
 }
 @section scripts
@@ -46,13 +44,7 @@
     @Styles.Render("~/bundles/css/bootstrap30")
     @Styles.Render("~/bundles/css/default")
     @Styles.Render("~/bundles/css/select2")
-    @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
     <style>
-        .glyphicon-calendar:before
-        {
-            content: "\e109"; /* This was broken in the bootstrap css...?? */
-        }
-
         .formItem
         {
             display: inline-flex;
@@ -69,10 +61,19 @@
     </style>
 }
 
-<form id="f">
+<form id="f" method="POST" action="@Url.Action("AddAnotherQuestion", "ClarificationRequest")">
     <h3>
         @Html.Raw(Model.Id == 0 ? "New Clarification Request" : "Editing Clarification Request")
     </h3>
+    @if (Model.QuestionsCount > 0)
+    {
+    <h4>
+        @Html.Raw(string.Format("There {0} {1} question{2} already in this request.", 
+        Model.QuestionsCount > 1 ? "are" : "is", 
+        Model.QuestionsCount, 
+        Model.QuestionsCount % 10 == 1 ? "" : "s"))
+    </h4>
+    }
     <hr />
     <div class="formItem">
         <div class="formLabel">
@@ -80,16 +81,16 @@
        
         </div>
         
-        <input name="Question" class="form-control col-md-1" value="" required />
+        <input id="question" name="Question" class="form-control col-md-1" value="" required />
 
     </div>
     
     <div class="formItem">
         <div class="formLabel">
-            Attendees
+            Recipients
        
         </div>
-        <input type="hidden" name="Attendees" id="attendeesSel" />
+        <input type="hidden" name="Recipients" id="recipientsSel" />
     </div>
     @{
 
@@ -102,8 +103,8 @@
     <div class="space">
         <div style="clear: both">
             <div style="float: left">
-                <input id="btnAddAnotherQuestion" type="submit" value="Add Another Question" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
-                <input id="btnSave" type="submit" value="Send" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
+                <input id="btnAddAnotherQuestion" type="submit" value="Add Another Question" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 150px;" />
+                <input id="btnSend" type="button" value="Send" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
             </div>
             <div style="float: left">
                 <a href="javascript:checkunsaveddata();">
@@ -130,9 +131,19 @@
         }
     }
 
-    $(document).ready(function () {
-        $(".form-control").change(function () {
+    $(document).ready(function() {
+        $(".form-control").change(function() {
             isunsaved = true;
+        });
+
+        $('#btnSend').click(function() {
+            $.post('@Url.Action("Send", "ClarificationRequest")',
+                $('#f').serialize(),
+                function (result) {
+                    close(result);
+                },
+                'json');
+            return false;
         });
     });
 
@@ -142,32 +153,8 @@
         Kwasant.IFrame.CloseMe(saved);
     }
 
-    function postQuestion(url) {
-        if (!isunsaved) {
-            close();
-            return false;
-        }
-
-        var f = $("#f");
-        if (!f.valid())
-            return false;
-
-        var data = @Html.Raw(JsonConvert.SerializeObject(Model));
-
-        return $.post(url, data);
-    }
-
-    $("#btnAddAnotherQuestion").click(function () {
-        postQuestion('@Url.Action("AddAnotherQuestion", "ClarificationRequest")');
-        return false;
-    });
-
-    $("#btnSave").click(function () {
-        postQuestion('@Url.Action("Send", "ClarificationRequest")');
-        return false;
-    });
-
     $(function () {
+        $('#question').focus();
         $('#f').validate();
     });
 

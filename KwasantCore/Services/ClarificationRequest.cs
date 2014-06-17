@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Globalization;
 using System.Linq;
+using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
@@ -27,8 +29,11 @@ namespace KwasantCore.Services
         {
             var result = new ClarificationRequestDO()
                        {
+                           DateReceived = DateTime.Now,
                            BookingRequestId = bookingRequest.Id,
                        };
+            String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
+            result.From = Email.GenerateEmailAddress(_uow, new MailAddress(senderMailAddress));
             result.AddEmailRecipient(EmailParticipantType.TO, bookingRequest.User.EmailAddress);
             return result;
         }

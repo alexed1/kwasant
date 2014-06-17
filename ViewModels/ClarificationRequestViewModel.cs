@@ -25,5 +25,6 @@ namespace KwasantWeb.ViewModels
         public int BookingRequestId { get; set; }
         public string Recipients { get; set; }
         public string Question { get; set; }
+        public int QuestionsCount { get; set; }
     }
 }

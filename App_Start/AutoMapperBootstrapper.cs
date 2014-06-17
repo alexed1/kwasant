@@ -21,6 +21,7 @@ namespace KwasantWeb.App_Start
                 .ForMember(eventDO => eventDO.CreatedByID, opts => opts.Ignore());
 
             Mapper.CreateMap<ClarificationRequestDO, ClarificationRequestViewModel>()
+                .ForMember(cr => cr.QuestionsCount, opts => opts.ResolveUsing(cr => cr.Questions.Count))
                 .ForMember(cr => cr.Recipients, opts => opts.ResolveUsing(ev => String.Join(",", ev.Recipients.Select(eea => eea.EmailAddress.Address).Distinct())));
         }
     }
