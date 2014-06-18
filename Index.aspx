@@ -24,6 +24,15 @@
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <script src="Content/js/respond.min.js"></script>
     <![endif]-->
+    <style>
+
+        .inputset input, textarea {
+       width: 450px;
+        }
+
+
+    </style>
+
 </head>
 <body>
     <!--[if lt IE 7]>
@@ -90,7 +99,42 @@
                     <p></p>
                     <p></p>
                     <p></p>
-                    <img class="pull-center" src="Content/img/example_using_kwasant_email.png" alt="Example using kwasant email" />
+                    
+                    <div style="float: left;width: 60%;" >
+
+                        <img class="pull-center" src="Content/img/example_using_kwasant_email.png" alt="Example using kwasant email" />
+                    </div>
+
+                     <div >
+                        <form class="" id="frmTryItOut" action="#">
+
+                            <table class="inputset" style="border:none;">
+                                <tr>
+                                    <h2><i class="fa fa-key"></i> Try It Out </h2>
+                                </tr>
+                                <tr>
+                                    <td ></td>
+                                </tr>
+                                <tr>
+                                    <td><input type="text" class="" placeholder="Email" name="Email" id="emailIdReqBooking"></td>
+                                </tr>
+                                <tr>
+                                    <td> <textarea class="" placeholder="Meeting Information" name="MeetingInfo" rows="10" id="meetingInfo"></textarea></td>
+                                </tr>
+                                <tr>
+                                    <td><button class="btn btn-large pull-right" type="button" onclick="SendMailMeetingRequest()">Convert it!</button></td>
+                                </tr>
+
+                                 <tr>
+                                    <td align="center"><h2 style="font-size:16px; line-height:25px;" id="spBookingRequestMsg"> </h2></td>
+                                </tr>
+                            </table>
+                                    
+                                   
+                                    
+                                </form>
+                        </div>
+                 
                 </div>
 			</div>
 			<div>
@@ -1010,3 +1054,26 @@
             <% Response.Write(Scripts.Render("~/bundles/js/main").ToHtmlString()); %>
 </body>
 </html>
+<script type="text/javascript">
+    function SendMailMeetingRequest()
+    {
+       
+        $.ajax({
+            url: "/Home/ProcessHomePageBookingRequest",
+            type: "POST",
+            async: true,
+            data: { 'emailAddress': $('#emailIdReqBooking').val(), 'meetingInfo': $('#meetingInfo').val()},
+            success: function (result) {
+                if (result == "success") {
+                    $('#spBookingRequestMsg').html("Request Booking Created Successfully");
+                    //alert("Request Booking Created Successfully ");
+                }
+                else {
+                    //alert(result);
+                    $('#spBookingRequestMsg').html(result);
+                }
+            }
+        });
+    }
+
+</script>
