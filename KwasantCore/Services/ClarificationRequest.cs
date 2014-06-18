@@ -30,7 +30,7 @@ namespace KwasantCore.Services
         {
             var newClarificationRequestDo = new ClarificationRequestDO()
                                              {
-                                                 DateReceived = DateTime.Now,
+                                                 DateReceived = DateTime.UtcNow,
                                                  BookingRequestId = bookingRequest.Id,
                                              };
             String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
