@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.Annotations;
+using System.Data.Entity.SqlServer;
 using System.Linq;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
@@ -14,6 +15,9 @@ namespace Data.Infrastructure
 {
     public class KwasantDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {
+        //This is to ensure compile will break if the reference to sql server is removed
+        private static Type m_SqlProvider = typeof(SqlProviderServices);
+
         public class PropertyChangeInformation
         {
             public String PropertyName;
@@ -22,6 +26,7 @@ namespace Data.Infrastructure
 
             public override string ToString()
             {
+                
                 const string displayChange = "[{0}]: [{1}] -> [{2}]";
                 return String.Format(displayChange, PropertyName, OriginalValue, NewValue);
             }
