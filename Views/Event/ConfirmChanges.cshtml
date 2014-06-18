@@ -30,7 +30,7 @@
     <hr />
     <div>You are <b>@Html.Raw(Model.Id == 0 ? "creating a new" : "editing an existing")</b> event.</div>
     <div style="@Html.Raw(Model.IsAllDay ? String.Empty : "display:none;")">
-        <div>* All day event * - @Model.StartDate.ToShortDateString()</div>
+        <div>* All day event * - @Model.StartDate.ToString()</div>
     </div>
     <div style="@Html.Raw(Model.IsAllDay ? "display:none;" : String.Empty)">
         <div>Start Date: @Model.StartDate</div>

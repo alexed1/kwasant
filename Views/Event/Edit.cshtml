@@ -108,7 +108,7 @@
             <!-- Align the date pickers -->
         </div>
         <div class='col-md-4' style="padding-left: 0; padding-right:5px;">
-            <div class='input-group date' id='StartDate' data-date-format="MM/DD/YYYY hh:mm a">
+            <div class='input-group date' id='StartDate' data-date-format="MM/DD/YYYY hh:mm a [GMT]ZZ">
                 <input type='text' name="StartDate" class="form-control" />
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
@@ -119,7 +119,7 @@
             <label style="padding-top: 6px; font-weight: normal">to</label>
         </div>
         <div class='col-md-4' style="padding-right: 0; padding-left:5px;">
-            <div class='input-group date' id='EndDate' data-date-format="MM/DD/YYYY hh:mm a">
+            <div class='input-group date' id='EndDate' data-date-format="MM/DD/YYYY hh:mm a [GMT]ZZ">
                 <input type='text' name="EndDate" class="form-control" />
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
@@ -257,18 +257,11 @@
         var fromDate = $('#StartDate');
         var toDate = $('#EndDate');
 
-        fromDate.datetimepicker();
-        toDate.datetimepicker();
+        fromDate.datetimepicker( { offsetInMinutes: @Model.BookingRequestTimezoneOffsetInMinutes });
+        toDate.datetimepicker({ offsetInMinutes: @Model.BookingRequestTimezoneOffsetInMinutes });
 
-        //$("#StartDate").on("dp.change", function (e) {
-        //    toDate.data("DateTimePicker").setMinDate(e.date);
-        //});
-        //$("#EndDate").on("dp.change", function (e) {
-        //    fromDate.data("DateTimePicker").setMaxDate(e.date);
-        //});
-
-        fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString("MM/dd/yyyy hh:mm tt")');
-        toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString("MM/dd/yyyy hh:mm tt")');
+        fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff")');
+        toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff")');
 
         hideShowDates();
     });

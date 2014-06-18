@@ -182,6 +182,10 @@
     <Compile Include="Migrations\201406161151254_Synchronise.16.06.2014.Designer.cs">
       <DependentUpon>201406161151254_Synchronise.16.06.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406180920055_ChangeToDateTimesWithOffset.cs" />
+    <Compile Include="Migrations\201406180920055_ChangeToDateTimesWithOffset.Designer.cs">
+      <DependentUpon>201406180920055_ChangeToDateTimesWithOffset.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -292,6 +296,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406161151254_Synchronise.16.06.2014.resx">
       <DependentUpon>201406161151254_Synchronise.16.06.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406180920055_ChangeToDateTimesWithOffset.resx">
+      <DependentUpon>201406180920055_ChangeToDateTimesWithOffset.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

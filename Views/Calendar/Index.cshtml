@@ -234,8 +234,10 @@
 
                     @Html.DayPilotCalendar("dp_week", new DayPilotCalendarConfig
                     {
+
                         ViewType = ViewType.Week,
                         BackendUrl = Url.Content("~/Calendar/Backend?bookingRequestID=" + Model.Id),
+                        
                         EventMoveHandling = EventMoveHandlingType.JavaScript,
                         EventResizeHandling = EventResizeHandlingType.JavaScript,
                         TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
@@ -349,7 +351,7 @@
     function eventNew(start, end) {
         if (checkactivewindow()) { return false; }
         var id = $("#hdnrequestid").val();
-        Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&start=' + start + '&end=' + end,
+        Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&start=' + start + 'z&end=' + end + 'z',
             {
                 horizontalAlign: 'right',
                 callback: refresh
@@ -358,7 +360,7 @@
 
     function eventMove(e, newStart, newEnd) {
         if (checkactivewindow()) { return false; }
-        Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd,
+        Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z',
             {
                 modal: true,
                 callback: refresh

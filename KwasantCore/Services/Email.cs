@@ -104,14 +104,18 @@ namespace KwasantCore.Services
             if (String.IsNullOrEmpty(body))
                 body = mailMessage.Body;
 
-            String strDate = String.Empty;
-            strDate = mailMessage.Headers["Date"];
+            String strDateRecieved = String.Empty;
+            strDateRecieved = mailMessage.Headers["Date"];
+
+            String strDateCreated = String.Empty;
+            strDateCreated = mailMessage.Headers["Date"];
 
             TEmailType emailDO = new TEmailType
             {                
                 Subject = mailMessage.Subject,
                 HTMLText = body,
-                DateReceived = Convert.ToDateTime(strDate),
+                DateReceived = Convert.ToDateTime(strDateRecieved),
+                DateCreated = Convert.ToDateTime(strDateCreated),
                 Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),
                 Events = null
             };

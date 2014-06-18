@@ -13,8 +13,9 @@ namespace KwasantWeb.App_Start
         {
             Mapper.CreateMap<EventDO, EventViewModel>()
                 .ForMember(ev => ev.Attendees, opts => opts.ResolveUsing(ev => String.Join(",", ev.Attendees.Select(eea => eea.EmailAddress.Address).Distinct())))
-                .ForMember(ev => ev.CreatedByAddress, opts => opts.ResolveUsing(evdo => evdo.CreatedBy.EmailAddress.Address));
-            
+                .ForMember(ev => ev.CreatedByAddress, opts => opts.ResolveUsing(evdo => evdo.CreatedBy.EmailAddress.Address))
+                .ForMember(ev => ev.BookingRequestTimezoneOffsetInMinutes, opts => opts.ResolveUsing(evdo => evdo.BookingRequest.DateCreated.Offset.TotalMinutes * - 1));
+
             Mapper.CreateMap<EventViewModel, EventDO>()
                 .ForMember(eventDO => eventDO.Attendees, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.Status, opts => opts.Ignore())
