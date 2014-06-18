@@ -5,33 +5,9 @@
 @section immediateScripts
 {
     @Scripts.Render("~/bundles/js/jquery")
-    @Scripts.Render("~/bundles/js/select2")
     @Scripts.Render("~/bundles/js/jqueryvalidate")
 
     <script src="/Content/js/Kwasant/Popup.js"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            var data = [@Html.Raw(String.Join(",", Model.Recipients.Split(',').Select(a =>
-                                "{id: '" + a + "', text: '" + a + "'}"
-                                )))];
-
-            $('#recipientsSel').select2({
-                createSearchChoice: function(term) {
-                    return { id: term, text: term };
-                },
-                validateFormat: function(term) {
-                    if (!isEmail(term))
-                        return "Invalid Email";
-                    return null;
-                },
-                multiple: true,
-                data: [],
-                width: '100%',
-            });
-            $('#recipientsSel').select2('data', data);
-        });
-    </script>
 }
 @section scripts
 {
@@ -43,7 +19,6 @@
 {
     @Styles.Render("~/bundles/css/bootstrap30")
     @Styles.Render("~/bundles/css/default")
-    @Styles.Render("~/bundles/css/select2")
     <style>
         .formItem
         {
@@ -75,22 +50,22 @@
     </h4>
     }
     <hr />
+    <div id="sendError"></div>
     <div class="formItem">
         <div class="formLabel">
-            Enter message for Customer
+            To:
+       
+        </div>
+        <input type="text" value="@Model.Recipients" disabled="disabled" />
+    </div>
+    <div class="formItem">
+        <div class="formLabel">
+            Enter Message
        
         </div>
         
         <input id="question" name="Question" class="form-control col-md-1" value="" required />
 
-    </div>
-    
-    <div class="formItem">
-        <div class="formLabel">
-            Recipients
-       
-        </div>
-        <input type="hidden" name="Recipients" id="recipientsSel" />
     </div>
     @{
 
@@ -103,11 +78,11 @@
     <div class="space">
         <div style="clear: both">
             <div style="float: left">
-                <input id="btnAddAnotherQuestion" type="submit" value="Add Another Question" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 150px;" />
+                <input id="btnAddAnotherQuestion" type="submit" value="Add Another Question" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 150px; display: none;" />
                 <input id="btnSend" type="button" value="Send" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
             </div>
             <div style="float: left">
-                <a href="javascript:checkunsaveddata();">
+                <a href="javascript:closeWithUnsavedDataCheck(modifiedState);">
                     <div style="width: 100px;">Cancel</div>
                 </a>
             </div>
@@ -118,40 +93,27 @@
 </form>
 
 <script type="text/javascript">
-    var isunsaved = false;
-    function checkunsaveddata() {
-        if (!isunsaved) {
-            close();
-        }
-        else {
-            if (confirm("you are about to lose data, continue?")) {
-                isunsaved = false;
-                close();
-            } else { return false; }
-        }
-    }
-
+    var modifiedState = { modified: false };
     $(document).ready(function() {
         $(".form-control").change(function() {
-            isunsaved = true;
+            modifiedState.modified = true;
         });
 
         $('#btnSend').click(function() {
             $.post('@Url.Action("Send", "ClarificationRequest")',
                 $('#f').serialize(),
                 function (result) {
-                    close(result);
+                    if (result.success) {
+                        $('#sendError').text('');
+                        close(true);
+                    } else {
+                        $('#sendError').text(result.error);
+                    }
                 },
                 'json');
             return false;
         });
     });
-
-    function close(saved) {
-        if (saved === undefined || saved == null)
-            saved = false;
-        Kwasant.IFrame.CloseMe(saved);
-    }
 
     $(function () {
         $('#question').focus();
