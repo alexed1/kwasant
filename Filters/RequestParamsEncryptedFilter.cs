@@ -21,21 +21,17 @@ namespace KwasantWeb.Filters
             {
                 var encryptedParams = filterContext.HttpContext.Request.QueryString[PARAMETER_NAME];
                 var decryptedParams = Decrypt(encryptedParams);
-                foreach (var param in decryptedParams.Split('&'))
-                {
-                    var parts = param.Split('=');
-                    var key = parts[0];
-                    var value = parts.Length > 1 ? parts[1] : "";
-                    filterContext.ActionParameters[key] = value;
-                }
-/*
-                var url = new StringBuilder(filterContext.HttpContext.Request.RawUrl);
-                url.Remove()
-
-                filterContext.Result = new RedirectResult();
-*/
+                var url = filterContext.HttpContext.Request.RawUrl;
+                var urlBuilder = new StringBuilder(url);
+                var indexOfParams = url.IndexOf('?') + 1;
+                urlBuilder.Remove(indexOfParams, url.Length - indexOfParams);
+                urlBuilder.Append(decryptedParams);
+                filterContext.Result = new RedirectResult(urlBuilder.ToString());
             }
-            this.OnActionExecuting(filterContext);
+            else
+            {
+                this.OnActionExecuting(filterContext);
+            }
         }
 
 
