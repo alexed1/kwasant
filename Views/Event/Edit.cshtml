@@ -226,9 +226,6 @@
         if (!f.valid())
             return false;
 
-        //var fromDate = $('#StartDate');
-        //var toDate = $('#EndDate');
-
         fromDate.data("DateTimePicker").enable();
         toDate.data("DateTimePicker").enable();
 
@@ -281,6 +278,7 @@
         hideShowDates();
     });
 
+    //function to remove attendee on close icon click, which was added using quick copy function on mail info section
     function removethis(id) {
         var removedid = $(id).closest("li").find("div").html();
         var existingAttendees = $("#attendeesSel").val().split(',');

@@ -18,15 +18,9 @@ using StructureMap;
 namespace KwasantWeb.Controllers
 {
     [HandleError]
-    //[KwasantAuthorize(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Admin")]
     public class CalendarController : Controller
     {
-        private DataTablesPackager _datatables;
-
-        public CalendarController()
-        {
-            _datatables = new DataTablesPackager();
-        }
 
         #region "Action"
 
