@@ -182,6 +182,10 @@
     <Compile Include="Migrations\201406161151254_Synchronise.16.06.2014.Designer.cs">
       <DependentUpon>201406161151254_Synchronise.16.06.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406181634147_Synchronise1.cs" />
+    <Compile Include="Migrations\201406181634147_Synchronise1.Designer.cs">
+      <DependentUpon>201406181634147_Synchronise1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -292,6 +296,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406161151254_Synchronise.16.06.2014.resx">
       <DependentUpon>201406161151254_Synchronise.16.06.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406181634147_Synchronise1.resx">
+      <DependentUpon>201406181634147_Synchronise1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

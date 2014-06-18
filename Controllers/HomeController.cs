@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using KwasantWeb.Filters;
 
 namespace KwasantWeb.Controllers
 {
@@ -15,6 +16,16 @@ namespace KwasantWeb.Controllers
             ViewBag.Message = "Your application description page.";
 
             return View();
+        }
+
+        [RequestParamsEncryptedFilter]
+        public ActionResult AboutEnc(int id, string s)
+        {
+            ViewBag.Message = "Your application description page.";
+            ViewBag.Id = id;
+            ViewBag.S = s;
+
+            return View("About");
         }
 
         public ActionResult Contact()
