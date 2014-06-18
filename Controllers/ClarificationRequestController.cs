@@ -39,6 +39,7 @@ namespace KwasantWeb.Controllers
             }
         }
 
+/*
         [HttpPost]
         public ActionResult AddAnotherQuestion(ClarificationRequestViewModel viewModel)
         {
@@ -62,6 +63,7 @@ namespace KwasantWeb.Controllers
                 }
             }
         }
+*/
 
         [HttpPost]
         public ActionResult Send(ClarificationRequestViewModel viewModel)
