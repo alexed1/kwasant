@@ -106,7 +106,7 @@ namespace Daemons
                             packager.Send(envelope);
                             numSent++;
 
-                            var email = subUow.EmailRepository.GetQuery().First(e => e.Id == envelope.Email.Id);
+                            var email = subUow.EmailRepository.GetQuery().First(e => e.Id == envelope.Email.Id); // probably "= envelope.Email" will work now...
                             email.EmailStatus = EmailStatus.DISPATCHED;
                             subUow.SaveChanges();
                         }
