@@ -1,19 +1,15 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity.Validation;
-using System.Text;
-
 using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using StructureMap;
 
 namespace Data.Migrations
 {

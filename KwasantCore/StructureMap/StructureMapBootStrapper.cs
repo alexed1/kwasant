@@ -1,9 +1,9 @@
-using System;
-using System.Linq.Expressions;
+using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Services;
 using StructureMap;
 using StructureMap.Configuration.DSL;
@@ -46,7 +46,9 @@ namespace KwasantCore.StructureMap
         {
             public LiveMode()
             {
-                For<IEmailPackager>().Use(new GmailPackager());
+                
+                For<IEmailPackager>().Use(new GmailPackager()).Named(EnvelopeDO.GmailHander);
+                For<IEmailPackager>().Use(new MandrillPackager()).Named(EnvelopeDO.MandrillHander);
 
                 For<IKwasantRoleStore>().Use(new KwasantRoleStore());
                 For<IKwasantUserStore>().Use(new KwasantUserStore());
@@ -57,7 +59,9 @@ namespace KwasantCore.StructureMap
         {
             public TestMode()
             {
-                For<IEmailPackager>().Use(new GmailPackager()); //we need to run tests that "really send it". may want to also do some mocks
+                //we need to run tests that "really send it". may want to also do some mocks
+                For<IEmailPackager>().Use(new GmailPackager()).Named(EnvelopeDO.GmailHander);
+                For<IEmailPackager>().Use(new MandrillPackager()).Named(EnvelopeDO.MandrillHander);
 
                 For<IKwasantRoleStore>().Use(new MockedRoleStore());
                 For<IKwasantUserStore>().Use(new MockedUserStore());

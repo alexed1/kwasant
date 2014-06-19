@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Interfaces;
 using Data.Entities;
 using StructureMap;
-using Data.Infrastructure;
 
 
 namespace KwasantCore.Services

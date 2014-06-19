@@ -1,38 +1,50 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Web.Mvc;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 
 
 namespace KwasantWeb.Controllers
 {
-   // [KwasantAuthorize(Roles = "Admin")]
-    public class EventController : Controller
+    [KwasantAuthorize(Roles = "Admin")]
+    public class EventController : KController
     {
+        private Event _event;
+        private Attendee _attendee;
+
+        public EventController()
+        {
+            _event = new Event();
+            _attendee = new Attendee();
+        }
 
         //Renders a form to accept a new event
         public ActionResult New(int bookingRequestID, string start, string end)
         {
-
-            //load event from Event service
-            var curEvent = new Event();
-            var curEventDO = curEvent.Create(bookingRequestID, start, end);
+            using (var uow = GetUnitOfWork())
+            {
+                //unpack the form data into an EventDO 
+                EventDO submittedEventData = new EventDO();
+                submittedEventData.BookingRequestID = bookingRequestID;
+                submittedEventData.StartDate = DateTime.Parse(start);
+                submittedEventData.EndDate = DateTime.Parse(end);
+                EventDO createdEvent = _event.Create(submittedEventData, uow);
+                uow.EventRepository.Add(createdEvent);
+                uow.SaveChanges();
 
             //put it in a view model to hand to the view
-            var curEventVM = Mapper.Map<EventDO, EventViewModel>(curEventDO);
+                var curEventVM = Mapper.Map<EventDO, EventViewModel>(createdEvent);
 
             //construct a Calendar view model for this Calendar View 
             return View("~/Views/Event/Edit.cshtml", curEventVM);
+        }
         }
 
 
@@ -78,35 +90,29 @@ namespace KwasantWeb.Controllers
             return View(eventViewModel);
         }
 
-        public ActionResult SubmitChange(EventViewModel eventViewModel)
+        //processes events that have been entered into the form and confirmed
+        public ActionResult ProcessConfirmedEvent(EventViewModel eventVM)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = GetUnitOfWork())
             {
-                var userRow = uow.UserRepository.GetByKey(User.Identity.GetUserId());
-                EventDO eventDO = eventViewModel.Id == 0
-                    ? new EventDO { CreatedByID = userRow.Id, CreatedBy = userRow }
-                    : uow.EventRepository.GetByKey(eventViewModel.Id);
+                if (eventVM.Id == 0)
+                    throw new ApplicationException("event should have been created and saved in #new, so Id should not be zero");
 
-                Mapper.Map(eventViewModel, eventDO);
+                var existingEvent = uow.EventRepository.GetByKey(eventVM.Id);
 
-                var eve = new Event();
+                if (existingEvent == null)
+                    throw new ApplicationException("should not be able to call this Update method with an ID that doesn't match an existing event");
 
-                eve.ManageAttendeeList(uow, eventDO, eventViewModel.Attendees);
+                Mapper.Map(eventVM, existingEvent);
+                _attendee.ManageAttendeeList(uow, existingEvent, eventVM.Attendees);
 
-                if (eventViewModel.Id == 0)
-                    uow.EventRepository.Add(eventDO);
-
-                eventDO.CreatedBy = uow.BookingRequestRepository.GetByKey(eventViewModel.BookingRequestID).User;
-                eve.Dispatch(uow, eventDO);
-
-
+                _event.Update(uow, existingEvent);
                 uow.SaveChanges();
-
-
-            }
 
             return JavaScript(SimpleJsonSerializer.Serialize(true));
         }
+        }
+
 
         public ActionResult DeleteEvent(int eventID)
         {

@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using Data.Entities;
-using Data.Infrastructure;
-using Data.Interfaces;
-using Data.Repositories;
-using KwasantCore.Services;
+﻿using Data.Infrastructure;
 using KwasantCore.StructureMap;
-using StructureMap;
 
 namespace Playground
 {

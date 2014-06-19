@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Transactions;
@@ -99,6 +98,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private EnvelopeRepository _envelopeRepository;
+
+        public EnvelopeRepository EnvelopeRepository
+        {
+            get
+            {
+                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
+            }
+        }
+
         private EventRepository _eventRepository;
 
         public EventRepository EventRepository
@@ -138,7 +147,15 @@ namespace Data.Infrastructure
                 return _trackingStatusRepository ?? (_trackingStatusRepository = new TrackingStatusRepository(this));
             }
         }
+        private KactRepository _KactRepository;
 
+        public KactRepository KactRepository
+        {
+            get
+            {
+                return _KactRepository ?? (_KactRepository = new KactRepository(this));
+            }
+        }
         private UserRepository _userRepository;
 
         public UserRepository UserRepository
@@ -146,6 +163,16 @@ namespace Data.Infrastructure
             get
             {
                 return _userRepository ?? (_userRepository = new UserRepository(this));
+            }
+        }
+
+        private UserAgentInfoRepository _userAgentInfoRepository;
+
+        public UserAgentInfoRepository UserAgentInfoRepository
+        {
+            get
+            {
+                return _userAgentInfoRepository ?? (_userAgentInfoRepository = new UserAgentInfoRepository(this));
             }
         }
 
@@ -217,8 +244,9 @@ namespace Data.Infrastructure
                 }
                 throw new Exception(String.Join(Environment.NewLine + Environment.NewLine, errorList) + Environment.NewLine, e);
             }
-            
         }
+
+
 
         public IDBContext Db
         {

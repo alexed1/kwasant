@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using AutoMapper;
 using KwasantCore.Services;
 using ViewModel.Models;
-using Microsoft.AspNet.Identity.EntityFramework;
-using Data.Entities;
 
 namespace KwasantWeb.Controllers.Helpers
 {

@@ -1,6 +1,5 @@
 namespace Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     
     public partial class Rename_EmailEmailAddresses_to_Recipients : DbMigration

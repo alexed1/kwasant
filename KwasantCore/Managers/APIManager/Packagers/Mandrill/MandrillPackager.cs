@@ -11,7 +11,7 @@ using JsonSerializer = KwasantCore.Managers.APIManager.Serializers.Json.JsonSeri
 namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
 { 
     //uses the Mandrill API at https://mandrillapp.com/settings/index
-    public static class MandrillPackager
+    public class MandrillPackager : IEmailPackager
     {
         public delegate void EmailSuccessArgs(string mandrillID, int emailID);
         public static event EmailSuccessArgs EmailSent;
@@ -73,7 +73,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
         ///Mandrill's API essentially inserts an array of email addresses inside a message which is put with a key inside what we'll call a "package"
         ///See https://mandrillapp.com/api/docs/messages.JSON.html#method=send
         /// </summary>
-        public static void PostMessageSendTemplate(String templateName, EmailDO message, Dictionary<string, string> mergeFields)
+        public static void PostMessageSendTemplate(String templateName, EmailDO message, IDictionary<string, string> mergeFields)
         {
             RestfulCall curCall = new RestfulCall(baseURL, "/messages/send-template.json", Method.POST);
             MandrillTemplatePackage curTemplatePackage = new MandrillTemplatePackage(MandrillKey, message);
@@ -314,6 +314,19 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
 
             return response.Content;
         }
+
+        #region Implementation of IEmailPackager
+
+        public void Send(EnvelopeDO envelope)
+        {
+            if (envelope == null)
+                throw new ArgumentNullException("envelope");
+            if (!string.Equals(envelope.Handler, EnvelopeDO.MandrillHander))
+                throw new ArgumentException("This envelope should not be handled with Mandrill.", "envelope");
+            PostMessageSendTemplate(envelope.TemplateName, envelope.Email, envelope.MergeData);
+        }
+
+        #endregion
     }
 
     //=============================================================================================================================================

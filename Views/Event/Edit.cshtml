@@ -36,11 +36,8 @@
                         return { id: term, text: term };
                     },
                     validateFormat: function (term) {
-                        var atPos = term.indexOf('@@');
-                        var dotPos = term.lastIndexOf('.');
-                        if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 2 <= dotPos)) {
+                        if (!isEmail(term))
                             return "Invalid Email";
-                        }
                         return null;
                     },
                     multiple: true,

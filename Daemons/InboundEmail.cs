@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
-using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
@@ -102,8 +100,9 @@ namespace Daemons
                 try
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-                    BookingRequest.ProcessBookingRequest(unitOfWork, bookingRequest);
-
+                    //assign the owner of the booking request to be the owner of the From address
+                    bookingRequest.User = unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address); 
+                    (new BookingRequest()).ProcessBookingRequest(unitOfWork, bookingRequest);
                     unitOfWork.SaveChanges();
                 }
                 catch (Exception e)

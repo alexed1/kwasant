@@ -90,6 +90,7 @@ namespace KwasantTest.Fixtures
         {
             return new EventDO()
             {
+                Status = "Instantiated",
                 Description = "This is my test invitation",
                 Summary = @"My test invitation",
                 Location = @"Some place!",
