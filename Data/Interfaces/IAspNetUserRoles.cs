@@ -1,8 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using Data.Entities;
-
-namespace Data.Interfaces
+﻿namespace Data.Interfaces
 {
     public interface IAspNetUserRoles
     {

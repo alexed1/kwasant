@@ -1,6 +1,6 @@
 ﻿using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Validators;
 
 namespace Data.Repositories
 {

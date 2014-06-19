@@ -88,7 +88,7 @@ namespace KwasantWeb.Controllers.DayPilot
                     break;
 
                 case "refresh":
-                    UpdateWithMessage("Changes Saved.");
+                    Update();
                     break;
 
                 case "selected":

@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
-using Data.Repositories;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;

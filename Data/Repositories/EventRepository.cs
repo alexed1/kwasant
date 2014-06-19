@@ -1,8 +1,4 @@
-﻿using System;
-using System.Data.Entity;
-using System.Diagnostics;
-using Data.Entities;
-using Data.Infrastructure;
+﻿using Data.Entities;
 using Data.Interfaces;
 using Data.Validators;
 using FluentValidation;
