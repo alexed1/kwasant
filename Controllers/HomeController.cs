@@ -46,30 +46,29 @@ namespace KwasantWeb.Controllers
             string result = "";
             try
             {
-               EmailAddressDO emailAddressDO = new EmailAddressDO(emailId);
-           
-               EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-               emailAddressValidator.ValidateAndThrow(emailAddressDO);
+                EmailAddressDO emailAddressDO = new EmailAddressDO(emailId);
 
-               EmailAddress emailAddress = new EmailAddress();
+                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+                emailAddressValidator.ValidateAndThrow(emailAddressDO);
 
-               using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
-               {
-                   Email email = new Email(uow);
-                   emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
-                   EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
-                   email.Send(emailDO);
-               }
-               result ="success";
+                EmailAddress emailAddress = new EmailAddress();
+
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    Email email = new Email(uow);
+                    emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
+                    EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
+                    email.Send(emailDO);
+                }
+                result = "success";
+            }
+            catch (ValidationException ex)
+            {
+                result = "You need to provide a valid Email Address.";
             }
             catch (System.Exception ex)
             {
-
-                string[] errorMsg = ex.Message.Split('-');
-                if (errorMsg.Length > 2)
-                    result = errorMsg[2];
-                else
-                    result = "Something went wrong with our effort to send this message. Sorry! Please try emailing your message directly to info@kwasant.com";
+                result = "Something went wrong with our effort to send this message. Sorry! Please try emailing your message directly to info@kwasant.com";
                 Logger.GetLogger().Error("Error processing a home page email form submission.", ex);
             }
             return Content(result);
