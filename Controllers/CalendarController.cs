@@ -9,7 +9,7 @@ using StructureMap;
 namespace KwasantWeb.Controllers
 {
     [HandleError]
-    //[KwasantAuthorize(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Admin")]
     public class CalendarController : Controller
     {
         #region "Action"
