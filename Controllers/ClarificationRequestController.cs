@@ -75,7 +75,9 @@ namespace KwasantWeb.Controllers
                 {
                     var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow,viewModel.BookingRequestId, viewModel.Id);
                     clarificationRequest.UpdateClarificationRequest(uow, curClarificationRequestDO, Mapper.Map<ClarificationRequestDO>(viewModel));
-                    clarificationRequest.Send(curClarificationRequestDO);
+                    var responseUrl = clarificationRequest.GenerateResponseURL(curClarificationRequestDO,
+                                                                               "http://kwasant.com/crr?{0}"); // later it will be replaced with Url.HttpRouteUrl method invoke
+                    clarificationRequest.Send(curClarificationRequestDO, responseUrl); 
                     return Json(new { success = true });
                 }
                 catch (BookingRequestNotFoundException)

@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
-using System.Linq;
+using System.Net;
 using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using KwasantCore.Exceptions;
-using KwasantCore.Managers.APIManager.Packagers;
-using StructureMap;
+using Utilities;
 
 namespace KwasantCore.Services
 {
@@ -39,11 +36,20 @@ namespace KwasantCore.Services
             return newClarificationRequestDo;
         }
 
-        public void Send(ClarificationRequestDO request)
+        public void Send(ClarificationRequestDO request, string responseUrl)
         {
+            if (request == null)
+                throw new ArgumentNullException("request");
             var email = new Email(_uow);
-            var encryptedRequestId = request.Id.ToString(CultureInfo.InvariantCulture); // TODO: replace with real utility invoke.
-            email.SendTemplate("clarification_request_v1", request, new Dictionary<string, string>() { { "crid", encryptedRequestId } });
+            email.SendTemplate("clarification_request_v1", request, new Dictionary<string, string>() { { "response_url", responseUrl } });
+        }
+
+        public string GenerateResponseURL(ClarificationRequestDO clarificationRequestDO, string responseUrlFormat)
+        {
+            if (clarificationRequestDO == null)
+                throw new ArgumentNullException("clarificationRequestDO");
+            var encryptedParams = WebUtility.UrlEncode(Encryption.Encrypt(string.Format("id={0}", clarificationRequestDO.Id)));
+            return string.Format(responseUrlFormat, encryptedParams);
         }
 
         public ClarificationRequestDO GetOrCreateClarificationRequest(IUnitOfWork uow, int bookingRequestId, int clarificationRequestId = 0)
