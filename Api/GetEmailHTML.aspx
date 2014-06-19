@@ -76,7 +76,8 @@ img
     </style>
 </head>
 <body>
-    <form id="form1" runat="server" style="width: 400px;">
+     <%--style="width: 400px;"--%>
+    <form id="form1" runat="server">
     <div class="info" style="height:100%;">
         <div id="emailSubject" class="subHeading">
             <%=GetEmailSubject()%>

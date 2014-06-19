@@ -1243,7 +1243,8 @@ pre code {
 
 @media (min-width: 1200px) {
   .container {
-    max-width: 1170px;
+    /*max-width: 1170px;*/
+    max-width: 100%
   }
   .col-lg-1,
   .col-lg-2,
@@ -1275,6 +1276,7 @@ pre code {
   }
   .col-lg-6 {
     width: 50%;
+
   }
   .col-lg-7 {
     width: 58.333333333333336%;
@@ -1402,6 +1404,11 @@ pre code {
   .col-lg-offset-11 {
     margin-left: 91.66666666666666%;
   }
+
+    .col-md-6{
+   
+    width:600px;
+    }
 }
 
 table {

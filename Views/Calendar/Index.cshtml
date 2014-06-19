@@ -158,10 +158,11 @@
     @Scripts.Render("~/bundles/js/bootstrap")
     @Scripts.Render("~/bundles/js/common")
 }
-
-<div class="jumbotron" style="padding-left: 20px; padding-right: 20px; width: 1270px;">
+@*width: 1270px;*@
+<div class="jumbotron" style="padding-left: 20px; padding-right: 20px;">
     <div class="row">
-        <div id="emailInfoBox" class="col-md-4 container_box" style="border: none; height: 100%; padding: 0px; width: 420px;">
+         @*width: 420px;*@
+        <div id="emailInfoBox" class="col-md-5 container_box" style="border: none; height: 100%; padding: 0px;">
             <a id="btnProcessed" href="@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, targetStatus = "processed" })">
                 <button style="width: 120px; font-size: 14px; height: 40px;">Mark Processed</button></a><br />
             <br />
