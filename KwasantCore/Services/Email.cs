@@ -74,6 +74,12 @@ namespace KwasantCore.Services
             return _curEmailDO.Id;
         }
 
+        public void Send(EmailDO emailDO)
+        {
+            _curEmailDO = emailDO;
+            Send();
+        }
+
         public static void InitialiseWebhook(String url)
         {
             MandrillPackager.InitialiseWebhook(url);

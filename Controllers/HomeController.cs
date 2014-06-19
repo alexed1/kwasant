@@ -40,16 +40,16 @@ namespace KwasantWeb.Controllers
 
         
         //  EmailAddress  is valid then send mail .    
-        // return success or  error 
+        // return "success" or  error 
         public ActionResult ProcessSubmittedEmail(string name, string emailId, string message)
         {
             string result = "";
             try
             {
-                var EmailAddressDO = new EmailAddressDO(emailId);
+               EmailAddressDO emailAddressDO = new EmailAddressDO(emailId);
            
                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-               emailAddressValidator.ValidateAndThrow(EmailAddressDO);
+               emailAddressValidator.ValidateAndThrow(emailAddressDO);
 
                EmailAddress emailAddress = new EmailAddress();
 
@@ -57,18 +57,19 @@ namespace KwasantWeb.Controllers
                {
                    Email email = new Email(uow);
                    emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
-                   EmailDO emaildo = email.GenerateBasicMessage(EmailAddressDO, message);
-                   (new Email(uow, emaildo)).Send();
+                   EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
+                   email.Send(emailDO);
                }
                result ="success";
             }
             catch (System.Exception ex)
             {
+
                 string[] errorMsg = ex.Message.Split('-');
                 if (errorMsg.Length > 2)
                     result = errorMsg[2];
                 else
-                    result=ex.Message;
+                    result = "Something went wrong with our effort to send this message. Sorry! Please try emailing your message directly to info@kwasant.com";
                 Logger.GetLogger().Error("Error processing a home page email form submission.", ex);
             }
             return Content(result);
