@@ -72,8 +72,11 @@
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
+    <Compile Include="Entities\QuestionDO.cs" />
+    <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\KactDO.cs" />
+    <Compile Include="Entities\Enumerations\QuestionStatus.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\Enumerations\StringEnumerations.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
@@ -96,9 +99,12 @@
     <Compile Include="Infrastructure\StructureMap\MockedRoleStore.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedUserStore.cs" />
     <Compile Include="Infrastructure\TrackingStatus.cs" />
+    <Compile Include="Entities\Enumerations\ClarificationStatus.cs" />
     <Compile Include="Interfaces\IAspNetRoles.cs" />
     <Compile Include="Interfaces\IAspNetUserRoles.cs" />
     <Compile Include="Interfaces\ICalendar.cs" />
+    <Compile Include="Interfaces\IQuestion.cs" />
+    <Compile Include="Interfaces\IClarificationRequest.cs" />
     <Compile Include="Interfaces\ICustomField.cs" />
     <Compile Include="Entities\TrackingStatusDO.cs" />
     <Compile Include="Infrastructure\FileManager.cs" />
@@ -166,6 +172,10 @@
     <Compile Include="Migrations\201406041306162_AddUserAgentInfoTable.Designer.cs">
       <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406131703335_AddClarificationRequest.cs" />
+    <Compile Include="Migrations\201406131703335_AddClarificationRequest.Designer.cs">
+      <DependentUpon>201406131703335_AddClarificationRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201406161014494_StatusToEmailStatus.cs" />
     <Compile Include="Migrations\201406161014494_StatusToEmailStatus.Designer.cs">
       <DependentUpon>201406161014494_StatusToEmailStatus.cs</DependentUpon>
@@ -194,6 +204,7 @@
     <Compile Include="Repositories\BookingRequestRepository.cs" />
     <Compile Include="Repositories\CalendarRepository.cs" />
     <Compile Include="Repositories\KactRepository.cs" />
+    <Compile Include="Repositories\ClarificationRequestRepository.cs" />
     <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
     <Compile Include="Repositories\CommunicationRepository.cs" />
     <Compile Include="Repositories\EmailAddressRepository.cs" />
@@ -284,6 +295,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406041306162_AddUserAgentInfoTable.resx">
       <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406131703335_AddClarificationRequest.resx">
+      <DependentUpon>201406131703335_AddClarificationRequest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406161014494_StatusToEmailStatus.resx">
       <DependentUpon>201406161014494_StatusToEmailStatus.cs</DependentUpon>
