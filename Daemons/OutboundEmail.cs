@@ -77,6 +77,65 @@ namespace Daemons
                     emailToUpdate.EmailStatus = EmailStatus.SEND_CRITICAL_ERROR;
                     unitOfWork.SaveChanges();
                 });
+
+            RegisterEvent<int>(GmailPackagerEventHandler.EmailSent, emailID =>
+            {
+                IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+                EmailRepository emailRepository = unitOfWork.EmailRepository;
+                var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
+                if (emailToUpdate == null)
+                {
+                    Logger.GetLogger()
+                        .Error("Email id " + emailID +
+                               " recieved a callback saying it was sent from Gmail, but the email was not found in our database");
+                    return;
+                }
+
+                emailToUpdate.EmailStatus = EmailStatus.SENT;
+                unitOfWork.SaveChanges();
+            });
+
+            RegisterEvent<string, int>(GmailPackagerEventHandler.EmailRejected, (reason, emailID) =>
+            {
+                IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+                EmailRepository emailRepository = unitOfWork.EmailRepository;
+                var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
+                if (emailToUpdate == null)
+                {
+                    Logger.GetLogger()
+                        .Error("Email id " + emailID +
+                               " recieved a callback saying it was rejected from Gmail, but the email was not found in our database");
+                    return;
+                }
+
+                Logger.GetLogger()
+                    .Error(String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason));
+
+                emailToUpdate.EmailStatus = EmailStatus.SEND_REJECTED;
+                unitOfWork.SaveChanges();
+            });
+
+            RegisterEvent<int, string, string, int>(GmailPackagerEventHandler.EmailCriticalError,
+                (errorCode, name, message, emailID) =>
+                {
+                    IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+                    EmailRepository emailRepository = unitOfWork.EmailRepository;
+                    var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
+                    if (emailToUpdate == null)
+                    {
+                        Logger.GetLogger()
+                            .Error("Email id " + emailID +
+                                   " recieved a callback saying it recieved a critical error from Gmail, but the email was not found in our database");
+                        return;
+                    }
+
+                    Logger.GetLogger()
+                        .Error(String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}",
+                            errorCode, name, message, emailID));
+
+                    emailToUpdate.EmailStatus = EmailStatus.SEND_CRITICAL_ERROR;
+                    unitOfWork.SaveChanges();
+                });
         }
 
         public override int WaitTimeBetweenExecution
