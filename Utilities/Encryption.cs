@@ -36,7 +36,7 @@ namespace Utilities
                     {
                         cryptoStream.Write(plainText, 0, plainText.Length);
                         cryptoStream.FlushFinalBlock();
-                        return WebUtility.UrlEncode(Convert.ToBase64String(memoryStream.ToArray()));
+                        return Convert.ToBase64String(memoryStream.ToArray());
                     }
                 }
             }
