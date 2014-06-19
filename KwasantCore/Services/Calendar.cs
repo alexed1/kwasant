@@ -24,7 +24,7 @@ namespace KwasantCore.Services
                             returnvalue = selectedText;
                         }
                     }
-                    catch { returnvalue = "Invalid Selection"; }
+                    catch(ValidationException ex) { returnvalue = "Invalid Selection"; }
                     break;
                 case "start":
                     returnvalue = selectedText.GenerateDateFromText();
