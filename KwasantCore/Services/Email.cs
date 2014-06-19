@@ -107,15 +107,23 @@ namespace KwasantCore.Services
             String strDateRecieved = String.Empty;
             strDateRecieved = mailMessage.Headers["Date"];
 
+            DateTimeOffset dateRecieved;
+            if (!DateTimeOffset.TryParse(strDateRecieved, out dateRecieved))
+                dateRecieved = DateTimeOffset.Now;
+
             String strDateCreated = String.Empty;
             strDateCreated = mailMessage.Headers["Date"];
+
+            DateTimeOffset dateCreated;
+            if (!DateTimeOffset.TryParse(strDateCreated, out dateCreated))
+                dateCreated = DateTimeOffset.Now;
 
             TEmailType emailDO = new TEmailType
             {                
                 Subject = mailMessage.Subject,
                 HTMLText = body,
-                DateReceived = Convert.ToDateTime(strDateRecieved),
-                DateCreated = Convert.ToDateTime(strDateCreated),
+                DateReceived = dateRecieved,
+                DateCreated = dateCreated,
                 Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),
                 Events = null
             };

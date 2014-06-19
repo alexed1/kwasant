@@ -59,7 +59,7 @@ namespace KwasantCore.Managers.CommunicationManager
             {
                 case "Instantiated":
                     {
-                        eventDO.Status = "Undispatched";
+                        eventDO.Status = "Dispatched";
 
                         var calendar = GetCalendarObject(eventDO);
                         foreach (var attendeeDO in eventDO.Attendees)
@@ -76,7 +76,6 @@ namespace KwasantCore.Managers.CommunicationManager
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
                     if (EventHasChanged(uow, eventDO))
                     {
-                        eventDO.Status = "Dispatched";
                         var calendar = GetCalendarObject(eventDO);
 
                         foreach (var attendeeDO in eventDO.Attendees)
