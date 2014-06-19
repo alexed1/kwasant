@@ -18,16 +18,6 @@ namespace KwasantWeb.Controllers
             return View();
         }
 
-        [RequestParamsEncryptedFilter]
-        public ActionResult AboutEnc(int id, string s)
-        {
-            ViewBag.Message = "Your application description page.";
-            ViewBag.Id = id;
-            ViewBag.S = s;
-
-            return View("About");
-        }
-
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";

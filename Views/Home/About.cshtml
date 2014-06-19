@@ -1,15 +1,7 @@
-﻿@using KwasantWeb.Filters
-@{
+﻿@{
     ViewBag.Title = "About";
 }
 <h2>@ViewBag.Title.</h2>
 <h3>@ViewBag.Message</h3>
 
 <p>Use this area to provide additional information.</p>
-
-@{
-    var query = string.IsNullOrEmpty(Request.Url.Query) ? "" : Request.Url.Query.Remove(0, 1);
-}
-<p>@Html.Raw(string.Format("{0}={1}", query, RequestParamsEncryptedFilter.Encrypt(query)))</p>
-<p>@ViewBag.Id</p>
-<p>@ViewBag.S</p>
