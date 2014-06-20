@@ -106,7 +106,7 @@ namespace KwasantWeb.Controllers
                 Mapper.Map(eventVM, existingEvent);
                 _attendee.ManageAttendeeList(uow, existingEvent, eventVM.Attendees);
 
-                _event.Update(uow, existingEvent);
+                _event.Process(uow, existingEvent);
                 uow.SaveChanges();
 
                 return JavaScript(SimpleJsonSerializer.Serialize(true));
