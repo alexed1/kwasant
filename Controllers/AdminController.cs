@@ -3,7 +3,7 @@ using KwasantCore.Managers.IdentityManager;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorizeAttribute(Roles = "Admin")]
+   // [KwasantAuthorizeAttribute(Roles = "Admin")]
     public class AdminController : Controller
     {
         //

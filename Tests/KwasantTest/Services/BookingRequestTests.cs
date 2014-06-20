@@ -93,8 +93,8 @@ namespace KwasantTest.Services
 
             customersNow = _uow.UserRepository.GetAll().ToList();
             Assert.AreEqual(2, customersNow.Count);
-            Assert.AreEqual(user.EmailAddress, customersNow[0].EmailAddress);
-            Assert.AreEqual(user.FirstName, customersNow[0].FirstName);
+            Assert.AreEqual(user.EmailAddress, customersNow.First().EmailAddress);
+            Assert.AreEqual(user.FirstName, customersNow.First().FirstName);
         }
 
         [Test]

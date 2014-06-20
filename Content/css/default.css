@@ -268,7 +268,7 @@ h4 {
 /*Header Styles*/
 
 .site-header {	
-	background: url(../img/background-test9.jpg) no-repeat fixed 50% -160px;	
+	background: url(/Content/img/background-test9.jpg) no-repeat fixed 50% -160px;	
 	background-size: cover;
 	border-bottom: 0 none;
 

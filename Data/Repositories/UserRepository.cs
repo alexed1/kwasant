@@ -7,11 +7,10 @@ namespace Data.Repositories
 {
     public class UserRepository : GenericRepository<UserDO>, IUserRepository
     {
-        private UserValidator _curValidator;
         internal UserRepository(IUnitOfWork uow)
             : base(uow)
         {
-            _curValidator = new UserValidator();
+            
         }
         public override void Add(UserDO entity)
         {

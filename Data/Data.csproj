@@ -172,9 +172,9 @@
     <Compile Include="Migrations\201406041306162_AddUserAgentInfoTable.Designer.cs">
       <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201406131703335_AddClarificationRequest.cs" />
-    <Compile Include="Migrations\201406131703335_AddClarificationRequest.Designer.cs">
-      <DependentUpon>201406131703335_AddClarificationRequest.cs</DependentUpon>
+    <Compile Include="Migrations\201406201157338_AddClarificationRequest.cs" />
+    <Compile Include="Migrations\201406201157338_AddClarificationRequest.Designer.cs">
+      <DependentUpon>201406201157338_AddClarificationRequest.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201406161014494_StatusToEmailStatus.cs" />
     <Compile Include="Migrations\201406161014494_StatusToEmailStatus.Designer.cs">
@@ -192,9 +192,13 @@
     <Compile Include="Migrations\201406161151254_Synchronise.16.06.2014.Designer.cs">
       <DependentUpon>201406161151254_Synchronise.16.06.2014.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201406181634147_Synchronise1.cs" />
-    <Compile Include="Migrations\201406181634147_Synchronise1.Designer.cs">
-      <DependentUpon>201406181634147_Synchronise1.cs</DependentUpon>
+    <Compile Include="Migrations\201406201103557_Add_ActivityStatus.cs" />
+    <Compile Include="Migrations\201406201103557_Add_ActivityStatus.Designer.cs">
+      <DependentUpon>201406201103557_Add_ActivityStatus.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406201157339_Synchronise.20.06.2014.cs" />
+    <Compile Include="Migrations\201406201157339_Synchronise.20.06.2014.Designer.cs">
+      <DependentUpon>201406201157339_Synchronise.20.06.2014.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -237,7 +241,6 @@
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Validations\EventValidator.cs" />
-    <Compile Include="Validations\BookingRequestValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\EmailAddressValidator.cs" />
     <Compile Include="Validations\CalendarValidator.cs" />
@@ -296,8 +299,8 @@
     <EmbeddedResource Include="Migrations\201406041306162_AddUserAgentInfoTable.resx">
       <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406131703335_AddClarificationRequest.resx">
-      <DependentUpon>201406131703335_AddClarificationRequest.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201406201157338_AddClarificationRequest.resx">
+      <DependentUpon>201406201157338_AddClarificationRequest.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406161014494_StatusToEmailStatus.resx">
       <DependentUpon>201406161014494_StatusToEmailStatus.cs</DependentUpon>
@@ -311,8 +314,11 @@
     <EmbeddedResource Include="Migrations\201406161151254_Synchronise.16.06.2014.resx">
       <DependentUpon>201406161151254_Synchronise.16.06.2014.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406181634147_Synchronise1.resx">
-      <DependentUpon>201406181634147_Synchronise1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201406201103557_Add_ActivityStatus.resx">
+      <DependentUpon>201406201103557_Add_ActivityStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406201157339_Synchronise.20.06.2014.resx">
+      <DependentUpon>201406201157339_Synchronise.20.06.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
