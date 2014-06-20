@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Data.Entity;
 using System.Linq;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
@@ -30,6 +28,7 @@ namespace Data.Repositories
                 UserDO newUser = new UserDO();
                 newUser.EmailAddress = matchingEmailAddress;
                 newUser.UserName = matchingEmailAddress.Address;
+                newUser.FirstName = name;
                 UnitOfWork.UserRepository.Add(newUser);
             }
             if(!String.IsNullOrEmpty(name))

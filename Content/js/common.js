@@ -34,3 +34,26 @@ function getURL(key) {
 
     return retValue;
 }
+
+function isEmail(email) {
+    var regex = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    return regex.test(email);
+}
+
+/*** Kwasant.IFrame functions ***/
+function closeWithUnsavedDataCheck(modifiedState) {
+    if (!modifiedState.modified) {
+        close();
+    }
+    else if (confirm("you are about to lose data, continue?")) {
+        modifiedState.modified = false;
+        close();
+    }
+    return false;
+}
+
+function close(saved) {
+    if (saved === undefined || saved == null)
+        saved = false;
+    Kwasant.IFrame.CloseMe(saved);
+}

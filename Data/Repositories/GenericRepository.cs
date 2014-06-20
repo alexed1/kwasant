@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
-using Data.Infrastructure;
 using Data.Interfaces;
 
 namespace Data.Repositories
@@ -31,7 +30,7 @@ namespace Data.Repositories
         #region Method
 
         public TEntity GetByKey(object keyValue)
-        {
+        {            
             return DBSet.Find(keyValue);
         }
 

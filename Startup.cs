@@ -8,8 +8,6 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantWeb;
-using Microsoft.Ajax.Utilities;
 using Microsoft.Owin;
 using Microsoft.WindowsAzure;
 using Owin;

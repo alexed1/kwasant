@@ -36,11 +36,8 @@
                         return { id: term, text: term };
                     },
                     validateFormat: function (term) {
-                        var atPos = term.indexOf('@@');
-                        var dotPos = term.lastIndexOf('.');
-                        if (atPos < 1 || (dotPos - atPos < 2) || (term.length - 2 <= dotPos)) {
+                        if (!isEmail(term))
                             return "Invalid Email";
-                        }
                         return null;
                     },
                     multiple: true,
@@ -168,7 +165,7 @@
                 <input id="btnSave" type="submit" value="OK" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
             </div>
             <div style="float: left">
-                <a href="javascript:checkunsaveddata();">
+                <a href="javascript:closeWithUnsavedDataCheck(modifiedState);">
                     <div style="width: 100px;">Cancel</div>
                 </a>
             </div>
@@ -179,33 +176,16 @@
 </form>
 
 <script type="text/javascript">
-    var isunsaved = false;
-    function checkunsaveddata() {
-        if (!isunsaved) {
-            close();
-        }
-        else {
-            if (confirm("you are about to lose data, continue?")) {
-                isunsaved = false;
-                close();
-            } else { return false; }
-        }
-    }
+    var modifiedState = new { modified: false };
 
     $(document).ready(function () {
         $(".form-control").change(function () {
-            isunsaved = true;
+            modifiedState.modified = true;
         });
     });
 
-    function close(saved) {
-        if (saved === undefined || saved == null)
-            saved = false;
-        Kwasant.IFrame.CloseMe(saved);
-    }
-
     $("#f").submit(function () {
-        if (!isunsaved) {
+        if (!modifiedState.modified) {
             close();
             return false;
         }

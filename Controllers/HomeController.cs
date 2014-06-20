@@ -3,7 +3,7 @@ using Data.Validators;
 using FluentValidation;
 using Data.Entities;
 using System.Collections.Generic;
-
+using KwasantWeb.Filters;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
@@ -29,7 +29,7 @@ namespace KwasantWeb.Controllers
 
             return View();
         }
-       
+
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";

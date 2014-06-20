@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Data.Interfaces;
-using StructureMap;
-using Data.Validators;
-using FluentValidation;
 
 namespace Data.Entities
 {
@@ -29,9 +25,6 @@ namespace Data.Entities
         public EmailAddressDO(string emailAddress)
         {
             Address = emailAddress;
-
-           
-
         }
     }
 }

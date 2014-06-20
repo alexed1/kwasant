@@ -1,16 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Web.Mvc;
-using AutoMapper;
-using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
-using DayPilot.Web.Mvc.Json;
 using KwasantCore.Managers.IdentityManager;
 using KwasantWeb.Controllers.DayPilot;
-using KwasantWeb.ViewModels;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 
 namespace KwasantWeb.Controllers
