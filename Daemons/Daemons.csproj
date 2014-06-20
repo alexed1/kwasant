@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Daemon.cs" />
+    <Compile Include="EventExposers\GmailPackagerEventHandler.cs" />
     <Compile Include="EventExposers\ExposedEvent.cs" />
     <Compile Include="EventExposers\MandrillPackagerEventHandler.cs" />
     <Compile Include="InboundEmail.cs" />
