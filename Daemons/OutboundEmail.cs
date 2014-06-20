@@ -106,7 +106,7 @@ namespace Daemons
                             packager.Send(envelope);
                             numSent++;
 
-                            var email = envelope.Email;
+                            var email = subUow.EmailRepository.GetQuery().First(e => e.Id == envelope.Email.Id);
                             email.EmailStatus = EmailStatus.DISPATCHED;
                             subUow.SaveChanges();
                         }
