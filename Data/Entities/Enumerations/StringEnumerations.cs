@@ -6,9 +6,6 @@ namespace Data.Entities.Enumerations
     {
 
         public static List<string> BookingStatus = new List<string>() {"Unprocessed", "Processed", "CheckedOut", "Invalid"};
-
-    
-    
-
+        public static List<string> EventState = new List<string>() {"Booking", "ReadyForDispatch", "DispatchComplete"};
     }
 }
