@@ -59,6 +59,7 @@ namespace KwasantCore.Services
             var envelope = Envelope.CreateGmailEnvelope(_curEmailDO);
             _curEmailDO.EmailStatus = EmailStatus.QUEUED;
             _uow.EnvelopeRepository.Add(envelope);
+            _uow.SaveChanges();
             return envelope;
         }
 

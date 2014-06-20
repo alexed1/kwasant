@@ -69,7 +69,7 @@ namespace KwasantCore.Services
                 UserDO userDO = uow.UserRepository.FindOne(x => x.UserName == username);
                 if (userDO != null)
                 {
-                    if (userDO.PasswordHash.Length == 0)
+                    if (string.IsNullOrEmpty(userDO.PasswordHash))
                     {
                         curLoginStatus = LoginStatus.ImplicitUser;
                     }

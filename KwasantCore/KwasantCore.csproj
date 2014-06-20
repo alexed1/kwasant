@@ -68,6 +68,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\System.Web.Razor.dll</HintPath>
@@ -119,6 +120,8 @@
     </Compile>
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\Attendee.cs" />
+    <Compile Include="Exceptions\BookingRequestNotFoundException.cs" />
+    <Compile Include="Services\ClarificationRequest.cs" />
     <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\BookingRequest.cs" />
