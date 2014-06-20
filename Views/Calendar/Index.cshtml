@@ -166,7 +166,7 @@
             <a id="btnProcessed" href="@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, targetStatus = "processed" })">
                 <button style="width: 120px; font-size: 14px; height: 40px;">Mark Processed</button></a><br />
             <br />
-            <iframe id="frminfo" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style="border: none; height: auto;min-height:300px; margin-top: -7px; width: 100%;"></iframe>
+            <iframe id="frminfo" onload="iframeLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style="border: none; margin-top: -7px; width: 100%;"></iframe>
             <table style="box-shadow: #000 0px 0px 10px; margin: 10px; width: 95%;" role="grid">
                 <thead>
                     <tr role="row">
@@ -440,5 +440,15 @@
             });
         }
     });
+
+    //this function will adjust the height of Booking Request info iframe according to content in iframe.
+    function iframeLoaded() {
+        var iFrameID = document.getElementById('frminfo');
+        if (iFrameID) {
+            // here you can make the height, I delete it first, then I make it again
+            iFrameID.height = "";
+            iFrameID.height = (iFrameID.contentWindow.document.body.scrollHeight + 30) + "px" ;
+        }
+    }
 
 </script>
