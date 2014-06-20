@@ -209,6 +209,8 @@ namespace KwasantCore.Managers.CommunicationManager
 
             eventDO.Emails.Add(outboundEmail);
 
+            uow.EmailRepository.Add(outboundEmail);
+
             return outboundEmail;
         }
 
