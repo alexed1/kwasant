@@ -51,7 +51,7 @@ namespace KwasantCore.Managers.CommunicationManager
         {
             //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
             var t = Utilities.Server.ServerUrl;
-            switch (eventDO.ActivityStatus)
+            switch (eventDO.State)
             {
                 case "Booking":
                     {
