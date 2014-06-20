@@ -76,7 +76,7 @@ img
 
 /**************************Context Menu CSS*****************************/
 .css-title:before {
-    content: "Quick Copy";
+    /*content: "Quick Copy";*/
     display: block;
     position: absolute;
     top: 0;
@@ -173,6 +173,11 @@ img
                         }
                     });
                 }
+                else {
+                    if ($('.context-menu-list').attr("style").indexOf("display: none") == -1) {
+                        $('.context-menu').contextMenu("hide");
+                    }
+                }
             }).mousedown(function (e) {
                 $(this).bind("mousemove", trackPoints);
             });
@@ -180,7 +185,6 @@ img
             //registering menu with title provided by CSS
             $.contextMenu({
                 selector: '.context-menu',
-                className: 'css-title',
                 callback: function (key, options) {
 
                     //checking key for the option selected and performing operations accordingly.
@@ -209,14 +213,19 @@ img
                     currentSelection = "";
                 },
                 items: {
-                    "#description": { name: "Description" },
-                    "#location": { name: "Location" },
-                    "#start": { name: "Start Time" },
-                    "#end": { name: "End Time" },
-                    "#attendees": { name: "Attendees" },
                     "#summary": { name: "Summary" },
-                    "sep": "---------",
-                    "quit": { name: "Quit" }
+                    "sep1": "---------",
+                    "#start": { name: "Start Time" },
+                    "sep2": "---------",
+                    "#end": { name: "End Time" },
+                    "sep3": "---------",
+                    "#location": { name: "Location" },
+                    "sep4": "---------",
+                    "#description": { name: "Description" },
+                    "sep5": "---------",
+                    "#attendees": { name: "Attendees" }
+                    //"sep": "---------",
+                    //"quit": { name: "Quit" }
                 }
             });
 
