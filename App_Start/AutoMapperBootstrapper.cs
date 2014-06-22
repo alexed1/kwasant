@@ -43,6 +43,11 @@ namespace KwasantWeb.App_Start
                                                                        }
                                                                }))
                 .ForMember(cr => cr.Recipients, opts => opts.Ignore());
+
+            Mapper.CreateMap<ClarificationRequestDO, ClarificationResponseViewModel>()
+                .ForMember(cr => cr.Question, opts => opts.ResolveUsing(cr => cr.Questions.Last().Text))
+                .ForMember(cr => cr.Subject, opts => opts.ResolveUsing(cr => cr.BookingRequest.Subject))
+                .ForMember(cr => cr.Body, opts => opts.ResolveUsing(cr => cr.BookingRequest.HTMLText));
         }
     }
 }

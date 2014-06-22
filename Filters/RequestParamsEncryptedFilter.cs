@@ -17,16 +17,33 @@ namespace KwasantWeb.Filters
 
         void IActionFilter.OnActionExecuting(ActionExecutingContext filterContext)
         {
-            if (filterContext.HttpContext.Request.QueryString.AllKeys.Contains(PARAMETER_NAME))
+            if (filterContext.HttpContext.Request.QueryString.Count == 1)
             {
-                var encryptedParams = filterContext.HttpContext.Request.QueryString[PARAMETER_NAME];
-                var decryptedParams = Encryption.Decrypt(encryptedParams);
-                var url = filterContext.HttpContext.Request.RawUrl;
-                var urlBuilder = new StringBuilder(url);
-                var indexOfParams = url.IndexOf('?') + 1;
-                urlBuilder.Remove(indexOfParams, url.Length - indexOfParams);
-                urlBuilder.Append(decryptedParams);
-                filterContext.Result = new RedirectResult(urlBuilder.ToString());
+                // two options:
+                // 1) ?enc=<encrypted_params>
+                string encryptedParams = filterContext.HttpContext.Request.QueryString[PARAMETER_NAME];
+                // 2) ?<encrypted_params>
+                if (encryptedParams == null && filterContext.HttpContext.Request.QueryString.GetKey(0) == null)
+                {
+                    encryptedParams = filterContext.HttpContext.Request.QueryString[0];
+                }
+                if (!string.IsNullOrEmpty(encryptedParams))
+                {
+                    try
+                    {
+                        var decryptedParams = Encryption.Decrypt(encryptedParams);
+                        var url = filterContext.HttpContext.Request.RawUrl;
+                        var urlBuilder = new StringBuilder(url);
+                        var indexOfParams = url.IndexOf('?') + 1;
+                        urlBuilder.Remove(indexOfParams, url.Length - indexOfParams);
+                        urlBuilder.Append(decryptedParams);
+                        filterContext.Result = new RedirectResult(urlBuilder.ToString());
+                    }
+                    catch (Exception ex)
+                    {
+                        this.OnActionExecuting(filterContext);
+                    }
+                }
             }
             else
             {

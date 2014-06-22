@@ -12,15 +12,17 @@ using DayPilot.Web.Mvc.Json;
 using KwasantCore.Exceptions;
 using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
+using KwasantWeb.App_Start;
+using KwasantWeb.Filters;
 using KwasantWeb.ViewModels;
 using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
     [HandleError]
-    //[KwasantAuthorize(Roles = "Admin")]
     public class ClarificationRequestController : Controller
     {
+        [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Edit(int bookingRequestId, int clarificationRequestId = 0)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -65,6 +67,7 @@ namespace KwasantWeb.Controllers
         }
 */
 
+        [KwasantAuthorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult Send(ClarificationRequestViewModel viewModel)
         {
@@ -75,8 +78,8 @@ namespace KwasantWeb.Controllers
                 {
                     var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow,viewModel.BookingRequestId, viewModel.Id);
                     clarificationRequest.UpdateClarificationRequest(uow, curClarificationRequestDO, Mapper.Map<ClarificationRequestDO>(viewModel));
-                    var responseUrl = clarificationRequest.GenerateResponseURL(curClarificationRequestDO,
-                                                                               "http://kwasant.com/crr?{0}"); // later it will be replaced with Url.HttpRouteUrl method invoke
+                    var responseUrlFormat = string.Concat(Url.Action("", RouteConfig.ShowClarificationResponseUrl, new { }, this.Request.Url.Scheme), "?{0}");
+                    var responseUrl = clarificationRequest.GenerateResponseURL(curClarificationRequestDO, responseUrlFormat);
                     clarificationRequest.Send(curClarificationRequestDO, responseUrl); 
                     return Json(new { success = true });
                 }
@@ -91,6 +94,20 @@ namespace KwasantWeb.Controllers
             }
         }
 
-
+        [KwasantAuthorize(Roles = "Customer")]
+        [RequestParamsEncryptedFilter]
+        public ActionResult ShowClarificationResponse(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curClarificationRequestDO = uow.ClarificationRequestRepository.GetByKey(id);
+                if (curClarificationRequestDO == null)
+                    return HttpNotFound("Clarification request not found.");
+                if (curClarificationRequestDO.BookingRequest == null)
+                    return HttpNotFound("Booking request not found.");
+                var curClarificationResponseViewModel = Mapper.Map<ClarificationRequestDO, ClarificationResponseViewModel>(curClarificationRequestDO);
+                return View("~/Views/ClarificationResponse/New.cshtml", curClarificationResponseViewModel);
+            }
+        }
     }
 }

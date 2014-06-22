@@ -219,6 +219,7 @@
     <Compile Include="Controllers\BookingRequestController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\ClarificationRequestController.cs" />
+    <Compile Include="Controllers\ClarificationResponseController.cs" />
     <Compile Include="Controllers\DayPilot\DayPilotMonthControl.cs" />
     <Compile Include="Controllers\DayPilot\DayPilotCalendarControl.cs" />
     <Compile Include="Controllers\DayPilot\DayPilotNavigatorControl.cs" />
@@ -245,6 +246,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\ClarificationResponseViewModel.cs" />
     <Compile Include="ViewModels\QuestionViewModel.cs" />
     <Compile Include="ViewModels\ClarificationRequestViewModel.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
@@ -657,6 +659,7 @@
     <Content Include="Views\Account\Confirm.cshtml" />
     <Content Include="Views\BookingRequest\Index.cshtml" />
     <Content Include="Views\ClarificationRequest\Edit.cshtml" />
+    <Content Include="Views\ClarificationResponse\New.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
