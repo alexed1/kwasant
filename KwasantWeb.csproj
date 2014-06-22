@@ -660,6 +660,8 @@
     <Content Include="Views\BookingRequest\Index.cshtml" />
     <Content Include="Views\ClarificationRequest\Edit.cshtml" />
     <Content Include="Views\ClarificationResponse\New.cshtml" />
+    <Content Include="Views\ClarificationResponse\ProcessSubmittedClarificationData.cshtml" />
+    <Content Include="Views\ClarificationResponse\AllAnswered.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -19,24 +19,9 @@
 {
     @Styles.Render("~/bundles/css/bootstrap30")
     @Styles.Render("~/bundles/css/default")
-    <style>
-        .formItem
-        {
-            display: inline-flex;
-            width: 100%;
-            padding-top: 15px;
-        }
-
-        .formLabel
-        {
-            width: 100px;
-            min-width: 100px;
-            padding-top: 5px
-        }
-    </style>
 }
 
-<form id="f" method="POST" action="@Url.Action("AddAnotherQuestion", "ClarificationRequest")">
+<form id="f">
     <h3>
         @Html.Raw(Model.Id == 0 ? "New Clarification Request" : "Editing Clarification Request")
     </h3>

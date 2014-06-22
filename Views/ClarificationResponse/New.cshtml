@@ -1,41 +1,20 @@
 ﻿@model KwasantWeb.ViewModels.ClarificationResponseViewModel
 
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
-@{
-    ViewBag.Title = "New Clarification Response";
-}
 @section immediateScripts
 {
     @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/jqueryvalidate")
-
-    <script src="/Content/js/Kwasant/Popup.js"></script>
 }
 @section scripts
 {
     @Scripts.Render("~/bundles/js/modernizr")
     @Scripts.Render("~/bundles/js/bootstrap")
-    @Scripts.Render("~/bundles/js/common")
 }
 @section styles
 {
     @Styles.Render("~/bundles/css/bootstrap30")
     @Styles.Render("~/bundles/css/default")
-    <style>
-        .formItem
-        {
-            display: inline-flex;
-            width: 100%;
-            padding-top: 15px;
-        }
-
-        .formLabel
-        {
-            width: 100px;
-            min-width: 100px;
-            padding-top: 5px
-        }
-    </style>
 }
 
 
@@ -44,6 +23,7 @@
     @Html.HiddenFor(m => m.Id)
     @Html.HiddenFor(m => m.BookingRequestId)
     <h2>We need clarification about the following to finish booking your event:</h2>
+    @Html.HiddenFor(m => m.QuestionId)
     @Html.HiddenFor(m => m.Question)
     <div>@Html.Raw(Model.Question)</div>
     <div class="formItem">

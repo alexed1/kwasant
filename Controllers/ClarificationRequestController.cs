@@ -27,14 +27,14 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var clarificationRequest = new ClarificationRequest(uow);
+                var clarificationRequest = new ClarificationRequest();
 
                 try
                 {
                     var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow, bookingRequestId, clarificationRequestId);
                     return View(Mapper.Map<ClarificationRequestViewModel>(curClarificationRequestDO));
                 }
-                catch (BookingRequestNotFoundException)
+                catch (EntityNotFoundException<BookingRequestDO>)
                 {
                     return HttpNotFound("Booking request not found.");
                 }
@@ -47,10 +47,10 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var clarificationRequest = new ClarificationRequest(uow);
+                var clarificationRequest = new ClarificationRequest();
                 try
                 {
-                    var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow,viewModel.BookingRequestId, viewModel.Id);
+                    var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow, viewModel.BookingRequestId, viewModel.Id);
                     clarificationRequest.UpdateClarificationRequest(uow, curClarificationRequestDO, Mapper.Map<ClarificationRequestDO>(viewModel));
                     return RedirectToAction("Edit",
                                             new
@@ -73,19 +73,19 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var clarificationRequest = new ClarificationRequest(uow);
+                var clarificationRequest = new ClarificationRequest();
                 try
                 {
-                    var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow,viewModel.BookingRequestId, viewModel.Id);
+                    var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow, viewModel.BookingRequestId, viewModel.Id);
                     clarificationRequest.UpdateClarificationRequest(uow, curClarificationRequestDO, Mapper.Map<ClarificationRequestDO>(viewModel));
                     var responseUrlFormat = string.Concat(Url.Action("", RouteConfig.ShowClarificationResponseUrl, new { }, this.Request.Url.Scheme), "?{0}");
                     var responseUrl = clarificationRequest.GenerateResponseURL(curClarificationRequestDO, responseUrlFormat);
-                    clarificationRequest.Send(curClarificationRequestDO, responseUrl); 
+                    clarificationRequest.Send(uow, curClarificationRequestDO, responseUrl); 
                     return Json(new { success = true });
                 }
-                catch (BookingRequestNotFoundException)
+                catch (EntityNotFoundException ex)
                 {
-                    return HttpNotFound("Booking request not found.");
+                    return HttpNotFound(ex.Message);
                 }
                 catch (Exception ex)
                 {
@@ -105,6 +105,8 @@ namespace KwasantWeb.Controllers
                     return HttpNotFound("Clarification request not found.");
                 if (curClarificationRequestDO.BookingRequest == null)
                     return HttpNotFound("Booking request not found.");
+                if (curClarificationRequestDO.Questions.Count(q => q.Status == QuestionStatus.Unanswered) == 0)
+                    return View("~/Views/ClarificationResponse/AllAnswered.cshtml");
                 var curClarificationResponseViewModel = Mapper.Map<ClarificationRequestDO, ClarificationResponseViewModel>(curClarificationRequestDO);
                 return View("~/Views/ClarificationResponse/New.cshtml", curClarificationResponseViewModel);
             }

@@ -480,6 +480,20 @@ input[type="submit"].btn:hover {
 
 }
 
+.formItem
+{
+    display: inline-flex;
+    width: 100%;
+    padding-top: 15px;
+}
+
+.formLabel
+{
+    width: 100px;
+    min-width: 100px;
+    padding-top: 5px;
+}
+
 /*Responsive Styles*/
 
 @media (max-width: 767px) {

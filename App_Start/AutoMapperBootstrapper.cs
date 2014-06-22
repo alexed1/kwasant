@@ -45,9 +45,24 @@ namespace KwasantWeb.App_Start
                 .ForMember(cr => cr.Recipients, opts => opts.Ignore());
 
             Mapper.CreateMap<ClarificationRequestDO, ClarificationResponseViewModel>()
-                .ForMember(cr => cr.Question, opts => opts.ResolveUsing(cr => cr.Questions.Last().Text))
+                .ForMember(cr => cr.QuestionId, opts => opts.ResolveUsing(cr => cr.Questions.First(q => q.Status == QuestionStatus.Unanswered).Id))
+                .ForMember(cr => cr.Question, opts => opts.ResolveUsing(cr => cr.Questions.First(q => q.Status == QuestionStatus.Unanswered).Text))
+                .ForMember(cr => cr.Response, opts => opts.ResolveUsing(cr => cr.Questions.First(q => q.Status == QuestionStatus.Unanswered).Response))
                 .ForMember(cr => cr.Subject, opts => opts.ResolveUsing(cr => cr.BookingRequest.Subject))
                 .ForMember(cr => cr.Body, opts => opts.ResolveUsing(cr => cr.BookingRequest.HTMLText));
+            Mapper.CreateMap<ClarificationResponseViewModel, ClarificationRequestDO>()
+                .ForMember(cr => cr.Questions,
+                           opts => opts.ResolveUsing(cr => new List<QuestionDO>()
+                                                               {
+                                                                   new QuestionDO()
+                                                                       {
+                                                                           ClarificationRequestId = cr.Id,
+                                                                           Id = cr.QuestionId,
+                                                                           Text = cr.Question,
+                                                                           Response = cr.Response,
+                                                                           Status = QuestionStatus.Answered
+                                                                       }
+                                                               }));
         }
     }
 }
