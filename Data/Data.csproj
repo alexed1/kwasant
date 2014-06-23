@@ -123,7 +123,6 @@
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\Enumerations\StringEnumerations.cs" />
-    <Compile Include="Entities\MeetingInformationDO.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
     <Compile Include="Entities\Enumerations\CommunicationType.cs" />
     <Compile Include="Entities\Enumerations\EmailParticipantType.cs" />
@@ -202,17 +201,17 @@
     <Compile Include="Migrations\201406040918453_UpdateAspRoles.Designer.cs">
       <DependentUpon>201406040918453_UpdateAspRoles.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.cs" />
-    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.Designer.cs">
-      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
+    <Compile Include="Migrations\201406041306162_AddUserAgentInfoTable.cs" />
+    <Compile Include="Migrations\201406041306162_AddUserAgentInfoTable.Designer.cs">
+      <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201406110747088_AddEnvelopeDO.cs" />
     <Compile Include="Migrations\201406110747088_AddEnvelopeDO.Designer.cs">
       <DependentUpon>201406110747088_AddEnvelopeDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201406041306162_AddUserAgentInfoTable.cs" />
-    <Compile Include="Migrations\201406041306162_AddUserAgentInfoTable.Designer.cs">
-      <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
+    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.cs" />
+    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.Designer.cs">
+      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201406161014494_StatusToEmailStatus.cs" />
     <Compile Include="Migrations\201406161014494_StatusToEmailStatus.Designer.cs">
@@ -262,7 +261,6 @@
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="Validations\EventValidator.cs" />
     <Compile Include="Validations\BookingRequestValidator.cs" />
-    <Compile Include="Validations\MeetingInformationValidator.cs" />
     <Compile Include="Validations\UserValidator.cs" />
     <Compile Include="Validations\EmailAddressValidator.cs" />
     <Compile Include="Validations\CalendarValidator.cs" />
@@ -320,14 +318,14 @@
     <EmbeddedResource Include="Migrations\201406040918453_UpdateAspRoles.resx">
       <DependentUpon>201406040918453_UpdateAspRoles.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406111328209_EmailDO_AddDateCreated.resx">
-      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201406041306162_AddUserAgentInfoTable.resx">
+      <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406110747088_AddEnvelopeDO.resx">
       <DependentUpon>201406110747088_AddEnvelopeDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406041306162_AddUserAgentInfoTable.resx">
-      <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201406111328209_EmailDO_AddDateCreated.resx">
+      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406161014494_StatusToEmailStatus.resx">
       <DependentUpon>201406161014494_StatusToEmailStatus.cs</DependentUpon>

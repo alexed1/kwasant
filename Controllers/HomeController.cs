@@ -5,8 +5,9 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Validations;
 using StructureMap;
+using System;
+using Utilities.Logging;
 namespace KwasantWeb.Controllers
 {
     public class HomeController : Controller
@@ -43,20 +44,19 @@ namespace KwasantWeb.Controllers
                 EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
                 emailAddressValidator.ValidateAndThrow(emailAddressDO);
 
-                MeetingInformationDO meetingInformationDO = new MeetingInformationDO(meetingInfo);
-
-                MeetingInformationValidator meetingInformationValidator = new MeetingInformationValidator();
-                meetingInformationValidator.ValidateAndThrow(meetingInformationDO); 
+                if (meetingInfo.Trim().Length < 30)
+                    return Content("Meeting information must have at least 30 characters");
                
                 return RedirectToAction("Generate", "BookingRequest", new { emailAddress = emailAddress, meetingInfo = meetingInfo });
             }
-            catch (System.Exception ex)
+            catch (ValidationException ex)
             {
-                string[] errorMsg = ex.Message.Split('-');
-                if (errorMsg.Length > 2)
-                    result = errorMsg[2];
-                else
-                    result = ex.Message;
+                result = "You need to provide a valid Email Address.";
+            }
+            catch (Exception ex)
+            {
+                result = "Something went wrong. Sorry about that";
+                Logger.GetLogger().Error("Error processing a home page try it out form schedule me", ex);
             }
             return Content(result);
         }

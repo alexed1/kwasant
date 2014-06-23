@@ -1600,9 +1600,7 @@ address {color: #D85E17;}
     filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#fafafa", endColorStr="#e2e2e2");
 }
 
-body {
-  /*padding-top: 20px;*/
-}
+
 
 .footer {
   border-top: 1px solid #eee;
@@ -1687,5 +1685,13 @@ body {
     padding-left: 0;
     padding-right: 0;
   }
-}
+
+ }
+
+
+.TryItOutfield {
+   width: 97% !important;
+  }
+
+
 
