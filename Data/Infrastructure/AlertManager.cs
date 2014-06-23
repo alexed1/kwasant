@@ -7,8 +7,11 @@ namespace Data.Infrastructure
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
     {       
-        public delegate void CustomerCreatedHandler(DateTime createdDate, string userID);
+        public delegate void CustomerCreatedHandler(DateTime createdDate, UserDO userDO);
         public static event CustomerCreatedHandler AlertCustomerCreated;
+
+        public delegate void BookingRequestCreatedHandler(BookingRequestDO curBR);
+        public static event BookingRequestCreatedHandler AlertBookingRequestCreated;
 
         #region Method
         
@@ -18,7 +21,15 @@ namespace Data.Infrastructure
         public static void CustomerCreated(UserDO curUser)
         {
             if (AlertCustomerCreated != null)
-                AlertCustomerCreated(DateTime.Now, curUser.Id);
+                AlertCustomerCreated(DateTime.Now, curUser);
+        }
+
+        public static void BookingRequestCreated(BookingRequestDO curBR)
+        {
+            if (AlertBookingRequestCreated != null)
+                AlertBookingRequestCreated(curBR);
+            
+                
         }
    
         #endregion

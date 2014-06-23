@@ -1,0 +1,123 @@
+﻿@using Data.Entities.Enumerations
+@using Newtonsoft.Json
+@model KwasantWeb.ViewModels.ClarificationRequestViewModel
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+
+    <script src="/Content/js/Kwasant/Popup.js"></script>
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
+@section styles
+{
+    @Styles.Render("~/bundles/css/bootstrap30")
+    @Styles.Render("~/bundles/css/default")
+    <style>
+        .formItem
+        {
+            display: inline-flex;
+            width: 100%;
+            padding-top: 15px;
+        }
+
+        .formLabel
+        {
+            width: 100px;
+            min-width: 100px;
+            padding-top: 5px
+        }
+    </style>
+}
+
+<form id="f" method="POST" action="@Url.Action("AddAnotherQuestion", "ClarificationRequest")">
+    <h3>
+        @Html.Raw(Model.Id == 0 ? "New Clarification Request" : "Editing Clarification Request")
+    </h3>
+    @if (Model.QuestionsCount > 0)
+    {
+    <h4>
+        @Html.Raw(string.Format("There {0} {1} question{2} already in this request.", 
+        Model.QuestionsCount > 1 ? "are" : "is", 
+        Model.QuestionsCount, 
+        Model.QuestionsCount % 10 == 1 ? "" : "s"))
+    </h4>
+    }
+    <hr />
+    <div id="sendError"></div>
+    <div class="formItem">
+        <div class="formLabel">
+            To:
+       
+        </div>
+        <input type="text" value="@Model.Recipients" disabled="disabled" />
+    </div>
+    <div class="formItem">
+        <div class="formLabel">
+            Enter Message
+       
+        </div>
+        
+        <input id="question" name="Question" class="form-control col-md-1" value="" required />
+
+    </div>
+    @{
+
+        <div style="display: none">
+            @Html.TextBox("Id", @Model.Id, new { @class = "form-control col-md-1" })
+            @Html.TextBox("BookingRequestId", @Model.BookingRequestId, new { @class = "form-control col-md-1" })
+        </div>
+    }
+    <hr />
+    <div class="space">
+        <div style="clear: both">
+            <div style="float: left">
+                <input id="btnAddAnotherQuestion" type="submit" value="Add Another Question" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 150px; display: none;" />
+                <input id="btnSend" type="button" value="Send" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
+            </div>
+            <div style="float: left">
+                <a href="javascript:closeWithUnsavedDataCheck(modifiedState);">
+                    <div style="width: 100px;">Cancel</div>
+                </a>
+            </div>
+        </div>
+        <br />
+        <br />
+    </div>
+</form>
+
+<script type="text/javascript">
+    var modifiedState = { modified: false };
+    $(document).ready(function() {
+        $(".form-control").change(function() {
+            modifiedState.modified = true;
+        });
+
+        $('#btnSend').click(function() {
+            $.post('@Url.Action("Send", "ClarificationRequest")',
+                $('#f').serialize(),
+                function (result) {
+                    if (result.success) {
+                        $('#sendError').text('');
+                        close(true);
+                    } else {
+                        $('#sendError').text(result.error);
+                    }
+                },
+                'json');
+            return false;
+        });
+    });
+
+    $(function () {
+        $('#question').focus();
+        $('#f').validate();
+    });
+
+</script>

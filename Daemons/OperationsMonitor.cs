@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Entities.Enumerations;
@@ -7,7 +6,6 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.CommunicationManager;
-using KwasantCore.Services;
 using StructureMap;
 
 namespace Daemons

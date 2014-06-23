@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Data.Entities.Enumerations;
+﻿using Data.Entities.Enumerations;
 using Data.Interfaces;
 
 namespace Data.Entities

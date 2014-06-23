@@ -9,9 +9,6 @@
 //------------------------------------------------------------------------------
 
 namespace KwasantCore.Properties {
-    using System;
-    
-    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -63,22 +60,52 @@ namespace KwasantCore.Properties {
         /// <summary>
         ///   Looks up a localized string similar to @{
         ///
+        ///var serverURL = Utilities.Server.ServerUrl;
+        ///
+        ///var linkTo = serverURL;
+        ///var imageURL = serverURL + &quot;Content/img/EmailLogo.png&quot;;
+        ///if(Utilities.Server.IsDevMode)
+        ///{
+        ///imageURL = &quot;kwasant.com/Content/img/EmailLogo.png&quot;;
         ///}
-        ///&lt;div&gt;
-        ///    &lt;div style=&quot;color: #D85E17; padding: 15px;&quot;&gt;
-        ///        &lt;a style=&quot;color: #D85E17; font-family: &apos;Open Sans&apos;, Helvetica, Helvetica Nue, Arial, sans-serif; font-size: 20px; text-decoration: none;&quot; href=&quot;@Model.LinkTo&quot;&gt;
-        ///            &lt;img style=&quot;vertical-align: middle&quot; src=&quot;cid:@Model.LogoContentID&quot; /&gt;
         ///
-        ///            @Model.BasicText
-        ///            &lt;/img&gt;
-        ///        &lt;/a&gt;
-        ///    &lt;/div&gt;
+        ///var customerID = Model.UserID;
         ///
-        ///    &lt;div style=&quot;background-color: rgb(255, 255, 255); border-color: rgb(170, 170, 170); border-style: solid; borde [rest of string was truncated]&quot;;.
+        ///var time = Model.IsAllDay
+        ///? &quot;All day - &quot; + Model.StartDate.ToString(&quot;ddd d MMM&quot;)
+        ///: Model.StartDate.ToString(&quot;ddd MMM d, yyyy hh:mm tt&quot;) + &quot; - &quot; + Model.EndDate.ToString(&quot;hh:mm tt&quot;);
+        ///
+        ///var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(Dat [rest of string was truncated]&quot;;.
         /// </summary>
         public static string HTMLEventInvitation {
             get {
                 return ResourceManager.GetString("HTMLEventInvitation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @{
+        ///
+        ///var serverURL = Utilities.Server.ServerUrl;
+        ///
+        ///var linkTo = serverURL;
+        ///var imageURL = serverURL + &quot;Content/img/EmailLogo.png&quot;;
+        ///if(Utilities.Server.IsDevMode)
+        ///{
+        ///imageURL = &quot;kwasant.com/Content/img/EmailLogo.png&quot;;
+        ///}
+        ///
+        ///var customerID = Model.UserID;
+        ///
+        ///var time = Model.IsAllDay
+        ///? &quot;All day - &quot; + Model.StartDate.ToString(&quot;ddd d MMM&quot;)
+        ///: Model.StartDate.ToString(&quot;ddd MMM d, yyyy hh:mm tt&quot;) + &quot; - &quot; + Model.EndDate.ToString(&quot;hh:mm tt&quot;);
+        ///
+        ///var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(Dat [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string HTMLEventInvitation_Update {
+            get {
+                return ResourceManager.GetString("HTMLEventInvitation_Update", resourceCulture);
             }
         }
         
@@ -94,21 +121,55 @@ namespace KwasantCore.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to @{
+        ///var basicText = Utilities.ConfigRepository.Get(&quot;emailBasicText&quot;);
+        ///var time = Model.IsAllDay
+        ///                        ? &quot;All day - &quot; + Model.StartDate.ToString(&quot;ddd d MMM&quot;)
+        ///                        : Model.StartDate.ToString(&quot;ddd MMM d, yyyy hh:mm tt&quot;) + &quot; - &quot; + Model.EndDate.ToString(&quot;hh:mm tt&quot;);
         ///
+        ///var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
         ///}
-        ///&lt;div&gt;
-        ///    &lt;div style=&quot;color: #D85E17; padding: 15px;&quot;&gt;
-        ///        &lt;a style=&quot;color: #D85E17; font-family: &apos;Open Sans&apos;, Helvetica, Helvetica Nue, Arial, sans-serif; font-size: 20px; text-decoration: none;&quot; href=&quot;@Model.LinkTo&quot;&gt;
-        ///            @Model.BasicText
-        ///        &lt;/a&gt;
-        ///    &lt;/div&gt;
         ///
-        ///    &lt;div style=&quot;background-color: rgb(255, 255, 255); border-color: rgb(170, 170, 170); border-style: solid; border-width: 1px 2px 2px 1px; font-family: Arial, sans-serif; max-width: 729px; width: 100%;&quot;&gt;
-        ///        &lt;div  [rest of string was truncated]&quot;;.
+        ///@basicText
+        ///@Model.Summary
+        ///@Model.Description
+        ///*When*
+        ///@time UTC+@timeZone
+        ///*Where*
+        ///@Model.Location
+        ///*Who*
+        ///@{
+        ///foreach(var [rest of string was truncated]&quot;;.
         /// </summary>
         public static string PlainEventInvitation {
             get {
                 return ResourceManager.GetString("PlainEventInvitation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to @{
+        ///var basicText = Utilities.ConfigRepository.Get(&quot;emailBasicText&quot;);
+        ///var time = Model.IsAllDay
+        ///                        ? &quot;All day - &quot; + Model.StartDate.ToString(&quot;ddd d MMM&quot;)
+        ///                        : Model.StartDate.ToString(&quot;ddd MMM d, yyyy hh:mm tt&quot;) + &quot; - &quot; + Model.EndDate.ToString(&quot;hh:mm tt&quot;);
+        ///
+        ///var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
+        ///}
+        ///
+        ///@basicText
+        ///@Model.Summary
+        ///@Model.Description
+        ///*When*
+        ///@time UTC+@timeZone
+        ///*Where*
+        ///@Model.Location
+        ///*Who*
+        ///@{
+        ///foreach(var [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string PlainEventInvitation_Update {
+            get {
+                return ResourceManager.GetString("PlainEventInvitation_Update", resourceCulture);
             }
         }
     }

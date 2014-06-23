@@ -1,5 +1,4 @@
-﻿using Data.Infrastructure;
-using Data.Interfaces;
+﻿using Data.Interfaces;
 using Data.Entities;
 using Data.Validators;
 using FluentValidation;

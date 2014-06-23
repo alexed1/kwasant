@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using Data.Interfaces;
-using StructureMap;
 
 namespace Data.Entities
 {
@@ -21,6 +19,12 @@ namespace Data.Entities
         public EmailAddressDO()
         {
             Recipients = new List<RecipientDO>();
+        }
+
+
+        public EmailAddressDO(string emailAddress)
+        {
+            Address = emailAddress;
         }
     }
 }

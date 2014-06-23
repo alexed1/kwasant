@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using Microsoft.WindowsAzure;
 using Twilio;
 using Utilities.Logging;

@@ -195,7 +195,7 @@ img
                             //client side - no server call is made, as the above 3 fields can contains anything, so need of any validation process.
                             $(activeframe).contents().find(key).val(currentSelection);
                             var iFrame = $(activeframe);
-                            iFrame.get(0).contentWindow.isunsaved = true;
+                            iFrame.get(0).contentWindow.modifiedState.modified = true;
                             break;
 
                          //below 3 field needs validation, for these server call is made for validating the selected text.
@@ -266,7 +266,7 @@ img
 
                                 //setting the value of attendee in attendee field in active iframe.
                                 $(activeframe).contents().find("#attendeesSel").val(newAttendees.join());
-                                $(activeframe).get(0).contentWindow.isunsaved = true;
+                                $(activeframe).get(0).contentWindow.modifiedState.modified = true;
                             }
                             break;
                         case "start":
@@ -275,12 +275,12 @@ img
 
                             //setting the start date field value to selected text.
                             iFrame.get(0).contentWindow.fromdata.setDate(responseJson.value);
-                            iFrame.get(0).contentWindow.isunsaved = true;
+                            iFrame.get(0).contentWindow.modifiedState.modified = true;
                             break;
                         case "end":
                             var iFrame = $(activeframe);
                             iFrame.get(0).contentWindow.todata.setDate(responseJson.value);
-                            iFrame.get(0).contentWindow.isunsaved = true;
+                            iFrame.get(0).contentWindow.modifiedState.modified = true;
                             break;
                     }
                 } else {

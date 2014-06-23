@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using FluentValidation;
+using KwasantCore.Managers.CommunicationManager;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
-using Utilities;
 
 namespace KwasantTest.Entities
 {
@@ -21,6 +19,7 @@ namespace KwasantTest.Entities
         public IUnitOfWork _uow;
         private FixtureData _fixture;
         private Event _event;
+        private CommunicationManager _comm;
 
         [SetUp]
         public void Setup()
@@ -30,6 +29,7 @@ namespace KwasantTest.Entities
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixture = new FixtureData();
             _event = new Event();
+            _comm = new CommunicationManager();
             
         }
 
@@ -54,20 +54,18 @@ namespace KwasantTest.Entities
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curEvent.Dispatch(uow, eventDO);
+                curEvent.Process(uow, eventDO);
                 uow.SaveChanges();
             }
 
             //Verify emails created in memory
             EmailDO resultEmail = eventDO.Emails[0];
-            string expectedSubject =
-                string.Format("Invitation from: " + _event.GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +
-                              eventDO.StartDate);
-            Assert.AreEqual(resultEmail.Subject, expectedSubject );
+            string expectedSubject = string.Format("Invitation from: " + _comm.GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +eventDO.StartDate);
+            Assert.AreEqual(expectedSubject, resultEmail.Subject);
 
             //Verify emails stored to disk properly
             EmailDO retrievedEmail = _uow.EmailRepository.GetQuery().First();
-            Assert.AreEqual(retrievedEmail.Subject, expectedSubject);
+            Assert.AreEqual(expectedSubject, retrievedEmail.Subject);
 
 
             //use imap to load unread messages from the test customer account

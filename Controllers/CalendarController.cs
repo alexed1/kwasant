@@ -1,9 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Web.Mvc;
-using AutoMapper;
-using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using DayPilot.Web.Mvc.Json;
@@ -11,14 +7,12 @@ using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.DayPilot;
-using KwasantWeb.ViewModels;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
     [HandleError]
-    [KwasantAuthorize(Roles = "Admin")]
+   // [KwasantAuthorize(Roles = "Admin")]
     public class CalendarController : Controller
     {
 
