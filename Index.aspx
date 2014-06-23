@@ -18,12 +18,7 @@
   ga('create', 'UA-52048536-1', 'kwasant.com');
   ga('send', 'pageview');
 
-</script>
-    
-    
-    
-    
-    
+</script>  
 
 <head>
     <meta charset="utf-8">
@@ -37,7 +32,7 @@
     <% Response.Write(Styles.Render("~/bundles/css/colorbox").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/frontpage").ToHtmlString()); %>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-	<link href="Content/css/font-awesome.css" rel="stylesheet">
+	<link href="Content/css/additionalcss/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
     <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <script src="Content/js/respond.min.js"></script>
@@ -55,10 +50,10 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </a>
-                <a class="brand goTop" href="index.aspx"><img class="floating" src="Content/img/perfect-krawsant.png" alt="Kwasant" title="Kwasant">Kwasant</a>
-                <!-- <img src="img/logo.png"></a> -->
+                <a class="brand goTop" href="index.aspx"><img class="floating" src="Content/img/site/perfect-krawsant.png" alt="Kwasant" title="Kwasant">Kwasant</a>
+                <!-- <img src="img/site/logo.png"></a> -->
                 <br />                
-                <!-- <a class="brand goTop"  style="background-image: url(Content/img/logo.png);"></a> -->
+                <!-- <a class="brand goTop"  style="background-image: url(Content/img/site/logo.png);"></a> -->
                 <div class="nav-collapse">
                     <ul class="nav pull-right">
                         <li data-section="2"><a href="#how_to_works" title="How it Works">How it Works</a></li>
@@ -73,10 +68,10 @@
         </div>
     </div>
 
-    <div id="welcome" class="parallax" style="background-image: url(Content/img/background-test9.jpg);"  data-section="1">		
+    <div id="welcome" class="parallax" style="background-image: url(Content/img/backgrounds/background-test9.jpg);"  data-section="1">		
         <div id="logotext" class="text">
 			<h1>Kwasant</h1>
-			<!-- <div class="love text-center" style="background-image: url(Content/img/logo.png);"></div> -->
+			<!-- <div class="love text-center" style="background-image: url(Content/img/site/logo.png);"></div> -->
 			<p>We schedule your meetings for you</p>
         </div>
     </div>
@@ -87,7 +82,7 @@
                 <div class="row-fluid">
                     <h2 class="text-center"><b>Schedule a Meeting in One Step</b></h2>
                     <%--<article class="span4"> <i class="icon-resize-full"></i>--%>  
-                    <img class="pull-center" src="Content/img/from_this_to_this.png" alt="Schedule a Meeting in One Step" />
+                    <img class="pull-center" src="Content/img/site/from_this_to_this.png" alt="Schedule a Meeting in One Step" />
                 </div>
                 
             </div>
@@ -108,12 +103,13 @@
                     <p></p>
                     <p></p>
                     <p></p>
-                    <img class="pull-center" src="Content/img/example_using_kwasant_email.png" alt="Example using kwasant email" />
+                    <img class="pull-center" src="Content/img/site/example_using_kwasant_email.png" alt="Example using kwasant email" />
                 </div>
+               
 			</div>
 			<div>
                 <!-- this is a section that breaks up the website -->
-                <div id="services-bg" class="parallax" style="background-image: url(Content/img/homepage89.png);">
+                <div id="services-bg" class="parallax" style="background-image: url(Content/img/backgrounds/homepage89.png);">
                     <br />
                     <br />
                     <div class="#fff-bg">
@@ -139,7 +135,7 @@
 						<div class="row-fluid section">
 							<div class="span12 text-center">
 								<!-- <h3 class="with-border">Watch who we are</h3> -->                        
-								<img src="Content/img/How_it_works_diagram.png" alt="How it works" />
+								<img src="Content/img/site/How_it_works_diagram.png" alt="How it works" />
 								<!-- <div class="videoWrapper">
 								<iframe src="http://player.vimeo.com/video/20596477?color=39ae77" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 								</div> -->
@@ -148,7 +144,7 @@
 					</section>
 				</div>
                 <!-- this is a section that breaks up the website -->
-				<div id="services-bg-sec" class="parallax" style="background-image: url(Content/img/homepagesecond.jpg);">
+				<div id="services-bg-sec" class="parallax" style="background-image: url(Content/img/backgrounds/homepagesecond.jpg);">
                     <br />
                     <br />
                     <div class="#fff-bg">
@@ -284,11 +280,13 @@
                             <div class="span8">
                                 <h3 class="with-border">Want to ask something?</h3>
                                 <form class="form clearfix" action="#">
-                                    <input type="text" class="span12" placeholder="Name" name="name">
-                                    <input type="email" class="span12" placeholder="Email" name="email">
-                                    <input type="text" class="span12" placeholder="Subject" name="subject">
-                                    <textarea class="span12" placeholder="Message" name="message" rows="6"></textarea>
-                                    <button class="btn btn-large pull-right" type="submit">Submit</button>
+                                    <input type="text" class="span12" placeholder="Name" name="name" id="name">
+                                    <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailId">
+                                   <%-- <input type="text" class="span12" placeholder="Subject" name="subject" id="subject">--%>
+                                    <textarea class="span12" placeholder="Message" name="message" rows="6" id="message"></textarea>
+                                     <button class="btn btn-large pull-right" type="button" onclick="SendMail();">Submit</button>
+                                
+                                     <span id="spMessage" style="color:#D85E17; font-weight: bold;" ></span>
                                 </form>
                             </div>
 
@@ -390,3 +388,29 @@
             <% Response.Write(Scripts.Render("~/bundles/js/main").ToHtmlString()); %>
 </body>
 </html>
+
+<script type="text/javascript">
+
+
+    // this function is used to get values and sent pass these values to “ProcessSubmittedEmail” action method on "HomeController" using ajax
+    //and display contant result to user using alert
+    function SendMail()
+    {
+       $.ajax({
+           url: "/Home/ProcessSubmittedEmail",
+           type: "POST",
+           async: true,
+           data: { 'name': $('#name').val(), 'emailId': $('#emailId').val(), 'message': $('#message').val() },
+           success: function (result) {
+               if (result == "success") {
+                   $('#name').val(""); $('#emailId').val(""); $('#message').val("");
+                   $('#spMessage').html("Email Submitted");
+               }
+               else {
+                   $('#spMessage').html(result);
+               }
+           }
+       });
+    }
+
+</script>

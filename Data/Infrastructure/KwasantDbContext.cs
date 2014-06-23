@@ -7,6 +7,8 @@ using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.SqlServer;
 using System.Linq;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Entity.ModelConfiguration;
+
 using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
@@ -137,6 +139,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
+            modelBuilder.Entity<ClarificationRequestDO>().ToTable("ClarificationRequests");
+            modelBuilder.Entity<QuestionDO>().ToTable("Questions");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
@@ -192,6 +196,16 @@ namespace Data.Infrastructure
                 .Map(
                     mapping => mapping.MapLeftKey("BookingRequestID").MapRightKey("InstructionID").ToTable("BookingRequestInstruction")
                 );
+
+            modelBuilder.Entity<ClarificationRequestDO>()
+                .HasRequired(cr => cr.BookingRequest)
+                .WithMany()
+                .HasForeignKey(cr => cr.BookingRequestId);
+
+            modelBuilder.Entity<QuestionDO>()
+                .HasOptional(cq => cq.ClarificationRequest)
+                .WithMany(cr => cr.Questions)
+                .HasForeignKey(cq => cq.ClarificationRequestId);
             
             modelBuilder.Entity<AttachmentDO>()
                 .HasRequired(a => a.Email)

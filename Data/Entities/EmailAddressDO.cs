@@ -20,5 +20,11 @@ namespace Data.Entities
         {
             Recipients = new List<RecipientDO>();
         }
+
+
+        public EmailAddressDO(string emailAddress)
+        {
+            Address = emailAddress;
+        }
     }
 }
