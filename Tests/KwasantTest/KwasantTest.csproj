@@ -109,6 +109,7 @@
     <Compile Include="Repositories\EventRepositoryTests.cs" />
     <Compile Include="Services\EmailTests.cs" />
     <Compile Include="Services\EventServiceTests.cs" />
+    <Compile Include="Utilities\EncryptionTests.cs" />
     <Compile Include="Workflow\WorkflowTests.cs" />
   </ItemGroup>
   <ItemGroup>

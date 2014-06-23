@@ -40,3 +40,20 @@ function isEmail(email) {
     return regex.test(email);
 }
 
+/*** Kwasant.IFrame functions ***/
+function closeWithUnsavedDataCheck(modifiedState) {
+    if (!modifiedState.modified) {
+        close();
+    }
+    else if (confirm("you are about to lose data, continue?")) {
+        modifiedState.modified = false;
+        close();
+    }
+    return false;
+}
+
+function close(saved) {
+    if (saved === undefined || saved == null)
+        saved = false;
+    Kwasant.IFrame.CloseMe(saved);
+}

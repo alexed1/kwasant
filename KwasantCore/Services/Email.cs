@@ -9,7 +9,15 @@ using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;
+using FluentValidation;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
+using KwasantCore.Managers.CommunicationManager;
+using Microsoft.WindowsAzure;
+using StructureMap;
+
+using KwasantCore.Services;
+
 
 namespace KwasantCore.Services
 {
@@ -20,6 +28,8 @@ namespace KwasantCore.Services
         private EventValidator _curEventValidator;
         #region Constructor
 
+
+      
         /// <summary>
         /// Initialize EmailManager
         /// </summary>
@@ -31,7 +41,7 @@ namespace KwasantCore.Services
             _uow = uow;
             _curEventValidator = new EventValidator();
         }
-        
+
         public Email(IUnitOfWork uow, EmailDO curEmailDO) : this(uow)
         {
             //should add validation here
@@ -59,7 +69,14 @@ namespace KwasantCore.Services
             var envelope = Envelope.CreateGmailEnvelope(_curEmailDO);
             _curEmailDO.EmailStatus = EmailStatus.QUEUED;
             _uow.EnvelopeRepository.Add(envelope);
+            _uow.SaveChanges();
             return envelope;
+        }
+
+        public void Send(EmailDO emailDO)
+        {
+            _curEmailDO = emailDO;
+            Send();
         }
 
         public static void InitialiseWebhook(String url)
@@ -169,5 +186,33 @@ namespace KwasantCore.Services
             att.SetData(av.ContentStream);
             return att;
         }
+
+
+
+        public EmailDO GenerateBasicMessage(EmailAddressDO emailAddressDO, string message)
+        {
+            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+            emailAddressValidator.ValidateAndThrow(emailAddressDO);
+
+            return new EmailDO()
+            {
+                From = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress(emailAddressDO.Address, emailAddressDO.Name)),
+                Recipients = new List<RecipientDO>()
+                                         {
+                                              new RecipientDO()
+                                                 {
+                                                       EmailAddress = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress("info@kwasant.com")),
+                                                       Type = EmailParticipantType.TO
+                                                 }
+                                         },
+                Subject = "",
+                PlainText = message,
+                HTMLText = message
+            };
+        }
+
+
+       
+
     }
 }

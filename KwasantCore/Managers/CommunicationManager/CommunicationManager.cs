@@ -51,16 +51,16 @@ namespace KwasantCore.Managers.CommunicationManager
         {
             //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
             var t = Utilities.Server.ServerUrl;
-            switch (eventDO.Status)
+            switch (eventDO.State)
             {
-                case "Instantiated":
+                case "Booking":
                     {
-                        eventDO.Status = "Undispatched";
+                        eventDO.State = "DispatchCompleted";
 
-                        var calendar = GetCalendarObject(eventDO);
+                        var calendar = GenerateICSCalendarStructure(eventDO);
                         foreach (var attendeeDO in eventDO.Attendees)
                         {
-                            var emailDO = CreateEmail(uow, eventDO, attendeeDO, false);
+                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, false);
                             var email = new Email(uow, emailDO);
                             AttachCalendarToEmail(calendar, emailDO);
                             email.Send();
@@ -68,17 +68,18 @@ namespace KwasantCore.Managers.CommunicationManager
 
                         break;
                     }
-                case "Dispatched":
+                case "ReadyForDispatch":
+                case "DispatchCompleted":
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
                     if (EventHasChanged(uow, eventDO))
                     {
-                        eventDO.Status = "Dispatched";
-                        var calendar = GetCalendarObject(eventDO);
+                        eventDO.State = "DispatchCompleted";
+                        var calendar = GenerateICSCalendarStructure(eventDO);
 
                         foreach (var attendeeDO in eventDO.Attendees)
                         {
                             //Id > 0 means it's an existing attendee, so we need to send the 'update' email to them.
-                            var emailDO = CreateEmail(uow, eventDO, attendeeDO, attendeeDO.Id > 0);
+                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, attendeeDO.Id > 0);
                             var email = new Email(uow, emailDO);
                             AttachCalendarToEmail(calendar, emailDO);
                             email.Send();
@@ -94,7 +95,7 @@ namespace KwasantCore.Managers.CommunicationManager
             }
         }
 
-        private iCalendar GetCalendarObject(EventDO eventDO)
+        private iCalendar GenerateICSCalendarStructure(EventDO eventDO)
         {
             string fromEmail = ConfigRepository.Get("fromEmail");
             string fromName = ConfigRepository.Get("fromName");
@@ -163,7 +164,7 @@ namespace KwasantCore.Managers.CommunicationManager
             return Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO, userID));
         }
 
-        private EmailDO CreateEmail(IUnitOfWork uow, EventDO eventDO, AttendeeDO attendeeDO, bool isUpdate)
+        private EmailDO CreateInvitationEmail(IUnitOfWork uow, EventDO eventDO, AttendeeDO attendeeDO, bool isUpdate)
         {
             string fromEmail = ConfigRepository.Get("fromEmail");
             string fromName = ConfigRepository.Get("fromName");

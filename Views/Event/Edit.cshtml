@@ -23,11 +23,11 @@
                     toDate.data("DateTimePicker").enable();
                 }
             };
-
+            var data;
             $(document).ready(function () {
                 $('#chkAllDay').click(hideShowDates);
 
-                var data = [@Html.Raw(String.Join(",", Model.Attendees.Split(',').Select(a =>
+                data = [@Html.Raw(String.Join(",", Model.Attendees.Split(',').Select(a =>
                                 "{id: '" + a + "', text: '" + a + "'}"
                                 )))];
 
@@ -165,7 +165,7 @@
                 <input id="btnSave" type="submit" value="OK" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
             </div>
             <div style="float: left">
-                <a href="javascript:checkunsaveddata();">
+                <a href="javascript:closeWithUnsavedDataCheck(modifiedState);">
                     <div style="width: 100px;">Cancel</div>
                 </a>
             </div>
@@ -176,33 +176,18 @@
 </form>
 
 <script type="text/javascript">
-    var isunsaved = false;
-    function checkunsaveddata() {
-        if (!isunsaved) {
-            close();
-        }
-        else {
-            if (confirm("you are about to lose data, continue?")) {
-                isunsaved = false;
-                close();
-            } else { return false; }
-        }
-    }
+    var modifiedState = { modified: false };
+    var fromdata;
+    var todata;
 
     $(document).ready(function () {
         $(".form-control").change(function () {
-            isunsaved = true;
+            modifiedState.modified = true;
         });
     });
 
-    function close(saved) {
-        if (saved === undefined || saved == null)
-            saved = false;
-        Kwasant.IFrame.CloseMe(saved);
-    }
-
     $("#f").submit(function () {
-        if (!isunsaved) {
+        if (!modifiedState.modified) {
             close();
             return false;
         }
@@ -220,9 +205,6 @@
         var f = $("#f");
         if (!f.valid())
             return false;
-
-        //var fromDate = $('#StartDate');
-        //var toDate = $('#EndDate');
 
         fromDate.data("DateTimePicker").enable();
         toDate.data("DateTimePicker").enable();
@@ -270,7 +252,22 @@
         fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString("MM/dd/yyyy hh:mm tt")');
         toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString("MM/dd/yyyy hh:mm tt")');
 
+        fromdata = $('#StartDate').data("DateTimePicker");
+        todata = $('#EndDate').data("DateTimePicker");
+
         hideShowDates();
     });
 
+    //function to remove attendee on close icon click, which was added using quick copy function on mail info section
+    function removethis(id) {
+        var removedid = $(id).closest("li").find("div").html();
+        var existingAttendees = $("#attendeesSel").val().split(',');
+
+        var removeindex = existingAttendees.indexOf(removedid);
+        if (removeindex > -1) {
+            existingAttendees.splice(removeindex, 1);
+        }
+        $("#attendeesSel").val(existingAttendees.join());
+        $(id).closest("li").remove();
+    }
 </script>

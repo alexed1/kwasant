@@ -3,11 +3,15 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
+using FluentValidation;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
+using Moq;
 using NUnit.Framework;
 using StructureMap;
+using Utilities;
 
 namespace KwasantTest.Services
 {
@@ -29,15 +33,15 @@ namespace KwasantTest.Services
             _fixture = new FixtureData();
             _curEventDO = new EventDO();
         }
-        
-      
+
+       
         [Test]
         [Category("Email")]
         public void CanConstructEmailWithEmailDO()
         {
             //SETUP  
             EmailDO _curEmailDO = _fixture.TestEmail1();
-            
+           
             //EXECUTE
             _uow.EmailRepository.Add(_curEmailDO);
             _uow.SaveChanges();
@@ -59,7 +63,7 @@ namespace KwasantTest.Services
             // SETUP
             EmailDO _curEmailDO = _fixture.TestEmail1();
             const string templateName = "test_template";
-
+            
             // EXECUTE
             var email = new Email(_uow);
             email.SendTemplate(templateName,

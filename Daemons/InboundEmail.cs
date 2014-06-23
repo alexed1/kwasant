@@ -110,7 +110,6 @@ namespace Daemons
                     Logger.GetLogger().Error("Failed to process inbound message.", e);
                     client.RemoveMessageFlags(uid, null, MessageFlag.Seen);
                     Logger.GetLogger().Info("Message marked as unread.");
-                    throw new ApplicationException(e.Message);
                 }
             }
 
