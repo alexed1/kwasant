@@ -254,7 +254,6 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
-    <Content Include="Content\Booking Details.png" />
     <Content Include="Content\ContextMenu\jquery.contextMenu.css" />
     <Content Include="Content\css\bootstrap-datetimepicker.css" />
     <Content Include="Content\css\bootstrap-responsive.css" />
