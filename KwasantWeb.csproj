@@ -255,11 +255,6 @@
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\ContextMenu\jquery.contextMenu.css" />
-    <Content Include="Content\css\bootstrap-datetimepicker.css" />
-    <Content Include="Content\css\bootstrap-responsive.css" />
-    <Content Include="Content\css\bootstrap2.3.css" />
-    <Content Include="Content\css\bootstrap3.0.css" />
-    <Content Include="Content\css\colorbox.css" />
     <Content Include="Content\css\additionalcss\bootstrap23\css\bootstrap2.3.css" />
     <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings-white.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings.png" />
