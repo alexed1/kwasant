@@ -192,11 +192,10 @@
     <Compile Include="Migrations\201406161151254_Synchronise.16.06.2014.Designer.cs">
       <DependentUpon>201406161151254_Synchronise.16.06.2014.cs</DependentUpon>
     </Compile>
-<<<<<<< HEAD
     <Compile Include="Migrations\201406180920055_ChangeToDateTimesWithOffset.cs" />
     <Compile Include="Migrations\201406180920055_ChangeToDateTimesWithOffset.Designer.cs">
       <DependentUpon>201406180920055_ChangeToDateTimesWithOffset.cs</DependentUpon>
-=======
+    </Compile>
     <Compile Include="Migrations\201406201103557_Add_ActivityStatus.cs" />
     <Compile Include="Migrations\201406201103557_Add_ActivityStatus.Designer.cs">
       <DependentUpon>201406201103557_Add_ActivityStatus.cs</DependentUpon>
@@ -204,7 +203,10 @@
     <Compile Include="Migrations\201406201157339_Synchronise.20.06.2014.cs" />
     <Compile Include="Migrations\201406201157339_Synchronise.20.06.2014.Designer.cs">
       <DependentUpon>201406201157339_Synchronise.20.06.2014.cs</DependentUpon>
->>>>>>> origin/dev
+    </Compile>
+    <Compile Include="Migrations\201406231703549_Sync-23.06.2014.cs" />
+    <Compile Include="Migrations\201406231703549_Sync-23.06.2014.Designer.cs">
+      <DependentUpon>201406231703549_Sync-23.06.2014.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -320,16 +322,17 @@
     <EmbeddedResource Include="Migrations\201406161151254_Synchronise.16.06.2014.resx">
       <DependentUpon>201406161151254_Synchronise.16.06.2014.cs</DependentUpon>
     </EmbeddedResource>
-<<<<<<< HEAD
     <EmbeddedResource Include="Migrations\201406180920055_ChangeToDateTimesWithOffset.resx">
       <DependentUpon>201406180920055_ChangeToDateTimesWithOffset.cs</DependentUpon>
-=======
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406201103557_Add_ActivityStatus.resx">
       <DependentUpon>201406201103557_Add_ActivityStatus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406201157339_Synchronise.20.06.2014.resx">
       <DependentUpon>201406201157339_Synchronise.20.06.2014.cs</DependentUpon>
->>>>>>> origin/dev
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406231703549_Sync-23.06.2014.resx">
+      <DependentUpon>201406231703549_Sync-23.06.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
