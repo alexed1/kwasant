@@ -70,7 +70,7 @@ namespace KwasantWeb.Controllers
         }
 
         [RequestParamsEncryptedFilter]
-        public ActionResult ShowClarificationResponse(int id)
+        public ActionResult ShowClarificationResponse(long id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

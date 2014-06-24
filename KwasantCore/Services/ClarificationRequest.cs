@@ -56,7 +56,7 @@ namespace KwasantCore.Services
         {
             if (clarificationRequestDO == null)
                 throw new ArgumentNullException("clarificationRequestDO");
-            var encryptedParams = WebUtility.UrlEncode(Encryption.Encrypt(string.Format("id={0}", clarificationRequestDO.Id)));
+            var encryptedParams = WebUtility.UrlEncode(Encryption.EncryptParams(new { id = clarificationRequestDO.Id }));
             return string.Format(responseUrlFormat, encryptedParams);
         }
 
