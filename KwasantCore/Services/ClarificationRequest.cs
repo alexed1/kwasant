@@ -24,8 +24,12 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("bookingRequest");
             var newClarificationRequestDo = new ClarificationRequestDO()
                                              {
+                                                 DateCreated = DateTime.UtcNow,
                                                  DateReceived = DateTime.UtcNow,
                                                  BookingRequestId = bookingRequest.Id,
+                                                 Subject = "We need a little more information from you",
+                                                 HTMLText = "*** This should be replaced with template body ***",
+                                                 PlainText = "*** This should be replaced with template body ***",
                                              };
             String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
             newClarificationRequestDo.From = Email.GenerateEmailAddress(uow, new MailAddress(senderMailAddress));
@@ -40,14 +44,18 @@ namespace KwasantCore.Services
             if (request == null)
                 throw new ArgumentNullException("request");
             var email = new Email(uow);
-            email.SendTemplate("clarification_request_v1", request, new Dictionary<string, string>() { { "response_url", responseUrl } });
+            email.SendTemplate("clarification_request_v2", request, new Dictionary<string, string>
+                                                                        {
+                                                                            { "RESP_URL", responseUrl },
+                                                                            { "RESPON_URL", responseUrl }
+                                                                        });
         }
 
         public string GenerateResponseURL(ClarificationRequestDO clarificationRequestDO, string responseUrlFormat)
         {
             if (clarificationRequestDO == null)
                 throw new ArgumentNullException("clarificationRequestDO");
-            var encryptedParams = WebUtility.UrlEncode(Encryption.Encrypt(string.Format("id={0}", clarificationRequestDO.Id)));
+            var encryptedParams = WebUtility.UrlEncode(Encryption.EncryptParams(new { id = clarificationRequestDO.Id }));
             return string.Format(responseUrlFormat, encryptedParams);
         }
 

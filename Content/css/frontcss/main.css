@@ -695,7 +695,7 @@ blockquote h2 i{
 	line-height: 1.2;
 }
 .lt-ie9 .parallax .text{
-	background: url('img/ie-black-bg.png')
+	background: url('/Content/img/backgrounds/ie-black-bg.png')
 }
 #welcome{
 	min-height: 250px;
@@ -720,7 +720,7 @@ blockquote h2 i{
 }
 
 .lt-ie9 #logotext.text{
-	background: url('img/ie-black-bg.png')
+	background: url('/Content/img/backgrounds/ie-black-bg.png')
 }
 #logotext h1{
 	/*text-transform: uppercase;*/
@@ -796,7 +796,7 @@ blockquote h2 i{
 	max-height: 85%;
 }
 .img-head{
-	background: url('img/browser-header.jpg') no-repeat;
+	background: url('/Content/img/site/browser-header.jpg') no-repeat;
 	background-size: cover;
 	min-height: 23px;
     min-width: 100%;
@@ -822,7 +822,7 @@ blockquote h2 i{
 .black-bg{
 	width: 100%;
 	height: 100%;
-	background: url('img/bg-overlay.png');
+	background: url('/Content/img/backgrounds/bg-overlay.png');
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -1687,5 +1687,11 @@ body {
     padding-left: 0;
     padding-right: 0;
   }
+
+ }
+
+
+.TryItOutfield {
+   width: 97% !important;
 }
 

@@ -27,11 +27,11 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var clarificationRequest = new ClarificationRequest();
+                var cr = new ClarificationRequest();
 
                 try
                 {
-                    var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow, bookingRequestId, clarificationRequestId);
+                    var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow, bookingRequestId, clarificationRequestId);
                     return View(Mapper.Map<ClarificationRequestViewModel>(curClarificationRequestDO));
                 }
                 catch (EntityNotFoundException<BookingRequestDO>)
@@ -41,46 +41,21 @@ namespace KwasantWeb.Controllers
             }
         }
 
-/*
-        [HttpPost]
-        public ActionResult AddAnotherQuestion(ClarificationRequestViewModel viewModel)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var clarificationRequest = new ClarificationRequest();
-                try
-                {
-                    var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow, viewModel.BookingRequestId, viewModel.Id);
-                    clarificationRequest.UpdateClarificationRequest(uow, curClarificationRequestDO, Mapper.Map<ClarificationRequestDO>(viewModel));
-                    return RedirectToAction("Edit",
-                                            new
-                                                {
-                                                    bookingRequestId = curClarificationRequestDO.BookingRequestId,
-                                                    clarificationRequestId = curClarificationRequestDO.Id
-                                                });
-                }
-                catch (BookingRequestNotFoundException)
-                {
-                    return HttpNotFound("Booking request not found.");
-                }
-            }
-        }
-*/
-
         [KwasantAuthorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult Send(ClarificationRequestViewModel viewModel)
         {
+            var submittedClarificationRequestDO = Mapper.Map<ClarificationRequestDO>(viewModel);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var clarificationRequest = new ClarificationRequest();
+                var cr = new ClarificationRequest();
                 try
                 {
-                    var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow, viewModel.BookingRequestId, viewModel.Id);
-                    clarificationRequest.UpdateClarificationRequest(uow, curClarificationRequestDO, Mapper.Map<ClarificationRequestDO>(viewModel));
+                    var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow,viewModel.BookingRequestId, viewModel.Id);
+                    cr.UpdateClarificationRequest(uow, curClarificationRequestDO, submittedClarificationRequestDO);
                     var responseUrlFormat = string.Concat(Url.Action("", RouteConfig.ShowClarificationResponseUrl, new { }, this.Request.Url.Scheme), "?{0}");
-                    var responseUrl = clarificationRequest.GenerateResponseURL(curClarificationRequestDO, responseUrlFormat);
-                    clarificationRequest.Send(uow, curClarificationRequestDO, responseUrl); 
+                    var responseUrl = cr.GenerateResponseURL(curClarificationRequestDO, responseUrlFormat);
+                    cr.Send(uow, curClarificationRequestDO, responseUrl); 
                     return Json(new { success = true });
                 }
                 catch (EntityNotFoundException ex)
@@ -94,9 +69,8 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        [KwasantAuthorize(Roles = "Customer")]
         [RequestParamsEncryptedFilter]
-        public ActionResult ShowClarificationResponse(int id)
+        public ActionResult ShowClarificationResponse(long id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

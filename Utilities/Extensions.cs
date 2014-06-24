@@ -125,4 +125,16 @@ namespace Utilities
             return DateTime.UtcNow;
         }
     }
+
+    public static class DateTimeQuickValidateExtensions
+    {
+        public static string GenerateDateFromText(this string selected)
+        {
+            DateTime validDatetime;
+            if (!DateTime.TryParse(selected, out validDatetime)) {
+                return "Invalid Selection";
+            }
+            return validDatetime.ToString("MM/dd/yyyy HH:mm");
+        }
+    }
 }

@@ -57,7 +57,7 @@ namespace KwasantCore.Services
         /// </summary>
         public EnvelopeDO SendTemplate(string templateName, EmailDO message, Dictionary<string, string> mergeFields)
         {
-            var envelope = Envelope.CreateMandrillEnvelope(message, templateName, mergeFields);
+            var envelope = _uow.EnvelopeRepository.CreateMandrillEnvelope(message, templateName, mergeFields);
             message.EmailStatus = EmailStatus.QUEUED;
             _uow.EnvelopeRepository.Add(envelope);
             _uow.SaveChanges();
@@ -66,7 +66,7 @@ namespace KwasantCore.Services
 
         public EnvelopeDO Send()
         {
-            var envelope = Envelope.CreateGmailEnvelope(_curEmailDO);
+            var envelope = _uow.EnvelopeRepository.CreateGmailEnvelope(_curEmailDO);
             _curEmailDO.EmailStatus = EmailStatus.QUEUED;
             _uow.EnvelopeRepository.Add(envelope);
             _uow.SaveChanges();
@@ -121,14 +121,26 @@ namespace KwasantCore.Services
             if (String.IsNullOrEmpty(body))
                 body = mailMessage.Body;
 
-            String strDate = String.Empty;
-            strDate = mailMessage.Headers["Date"];
+            String strDateRecieved = String.Empty;
+            strDateRecieved = mailMessage.Headers["Date"];
+
+            DateTimeOffset dateRecieved;
+            if (!DateTimeOffset.TryParse(strDateRecieved, out dateRecieved))
+                dateRecieved = DateTimeOffset.Now;
+
+            String strDateCreated = String.Empty;
+            strDateCreated = mailMessage.Headers["Date"];
+
+            DateTimeOffset dateCreated;
+            if (!DateTimeOffset.TryParse(strDateCreated, out dateCreated))
+                dateCreated = DateTimeOffset.Now;
 
             TEmailType emailDO = new TEmailType
             {                
                 Subject = mailMessage.Subject,
                 HTMLText = body,
-                DateReceived = Convert.ToDateTime(strDate),
+                DateReceived = dateRecieved,
+                DateCreated = dateCreated,
                 Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),
                 Events = null
             };

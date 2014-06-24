@@ -54,25 +54,25 @@ namespace KwasantTest.Workflow
             const string startPrefix = "Start:";
             const string endPrefix = "End:";
             var body = string.Format("Event details:\r\n{0}{1}\r\n{2}{3}", startPrefix, start, endPrefix, end);
-            var curEmailDO = new EmailDO()
-                                 {
-                                     From = Email.GenerateEmailAddress(_uow, new MailAddress(_testUserEmail)),
-                                     Recipients = new List<RecipientDO>()
-                                                      {
-                                                          new RecipientDO()
-                                                              {
-                                                                  EmailAddress =
-                                                                      Email.GenerateEmailAddress(
-                                                                          _uow,
-                                                                          new MailAddress("kwasantintegration@gmail.com")),
-                                                                  Type = EmailParticipantType.TO
-                                                              }
-                                                      },
-                                     Subject = subject,
-                                     PlainText = body,
-                                     HTMLText = body
-                                 };
-            var emailService = new Email(_uow, curEmailDO);
+
+            var emailDO = new EmailDO()
+            {
+                From = Email.GenerateEmailAddress(_uow, new MailAddress(_testUserEmail)),
+                Recipients = new List<RecipientDO>()
+                {
+                    new RecipientDO()
+                    {
+                        EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintegration@gmail.com")),
+                        Type = EmailParticipantType.TO
+                    }
+                },
+                Subject = subject,
+                PlainText = body,
+                HTMLText = body
+            };
+
+            _uow.EmailRepository.Add(emailDO);
+            var emailService = new Email(_uow, emailDO);
 
             Stopwatch totalOperationDuration = new Stopwatch();
             Stopwatch emailToRequestDuration = new Stopwatch();
@@ -85,6 +85,9 @@ namespace KwasantTest.Workflow
 
             //EXECUTE
             emailService.Send();
+
+            _uow.SaveChanges();
+
             DaemonTests.RunDaemonOnce(outboundDaemon);
 
             totalOperationDuration.Start();

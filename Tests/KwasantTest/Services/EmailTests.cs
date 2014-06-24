@@ -43,9 +43,6 @@ namespace KwasantTest.Services
             EmailDO _curEmailDO = _fixture.TestEmail1();
            
             //EXECUTE
-            _uow.EmailRepository.Add(_curEmailDO);
-            _uow.SaveChanges();
-
             Email curEmail = new Email(_uow, _curEmailDO);
             curEmail.Send();
 
@@ -75,6 +72,36 @@ namespace KwasantTest.Services
             Assert.NotNull(envelope, "Envelope was not created.");
             Assert.AreEqual(envelope.TemplateName, templateName);
             Assert.AreEqual(envelope.Handler, EnvelopeDO.MandrillHander, "Envelope handler should be Mandrill");
+        }
+
+        [Test]
+        [Category("Email")]
+        public void FailsToSendInvalidEmail()
+        {
+            // SETUP
+            EmailDO curEmailDO = _fixture.TestEmail1();
+            curEmailDO.Subject = "";
+
+            // EXECUTE
+            var email = new Email(_uow);
+
+            // VERIFY
+            Assert.Throws<ValidationException>(() => email.Send(curEmailDO), "Email should fail to be sent as it is invalid.");
+        }
+
+        [Test]
+        [Category("Email")]
+        public void FailsToSendInvalidTemplatedEmail()
+        {
+            // SETUP
+            EmailDO curEmailDO = _fixture.TestEmail1();
+            curEmailDO.Subject = "";
+
+            // EXECUTE
+            var email = new Email(_uow);
+
+            // VERIFY
+            Assert.Throws<ValidationException>(() => email.SendTemplate("test_template", curEmailDO, null), "Email should fail to be sent as it is invalid.");
         }
     }
 }
