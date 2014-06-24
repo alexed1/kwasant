@@ -6,6 +6,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Utilities
 {
@@ -65,6 +66,18 @@ namespace Utilities
                     }
                 }
             }
+        }
+
+        public static string EncryptParams(object parameters)
+        {
+            var paramsStr = JsonConvert.SerializeObject(parameters);
+            return Encrypt(paramsStr);
+        }
+
+        public static IDictionary<string, object> DecryptParams(string encryptedParams)
+        {
+            var decryptedParamsStr = Encryption.Decrypt(encryptedParams);
+            return JsonConvert.DeserializeObject<Dictionary<string, object>>(decryptedParamsStr);
         }
     }
 }

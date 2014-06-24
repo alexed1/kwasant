@@ -102,6 +102,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Managers\APIManager\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />
     <Compile Include="Helper\UsersAdminData.cs" />
@@ -129,7 +130,6 @@
     <Compile Include="Services\Attendee.cs" />
     <Compile Include="Services\Calendar.cs" />
     <Compile Include="Services\EmailAddress.cs" />
-    <Compile Include="Exceptions\BookingRequestNotFoundException.cs" />
     <Compile Include="Services\ClarificationRequest.cs" />
     <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Event.cs" />
