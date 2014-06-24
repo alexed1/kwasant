@@ -61,10 +61,7 @@ namespace Daemons
             IImapClient client;
             try
             {
-                client = _client ??
-                         new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
-
-                
+                client = _client ?? new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
             }
             catch (ConfigurationException ex)
             {

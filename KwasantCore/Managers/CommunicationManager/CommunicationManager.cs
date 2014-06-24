@@ -50,6 +50,10 @@ namespace KwasantCore.Managers.CommunicationManager
         public void DispatchInvitations(IUnitOfWork uow, EventDO eventDO)
         {
             //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
+            //var createdDate = eventDO.BookingRequest.DateCreated;
+            //eventDO.StartDate = eventDO.StartDate.ToOffset(createdDate.Offset);
+            //eventDO.EndDate = eventDO.EndDate.ToOffset(createdDate.Offset);
+
             var t = Utilities.Server.ServerUrl;
             switch (eventDO.State)
             {
@@ -110,11 +114,11 @@ namespace KwasantCore.Managers.CommunicationManager
             }
             else
             {
-                dDayEvent.DTStart = new iCalDateTime(eventDO.StartDate);
-                dDayEvent.DTEnd = new iCalDateTime(eventDO.EndDate);
+                dDayEvent.DTStart = new iCalDateTime(eventDO.StartDate.ToUniversalTime().DateTime);
+                dDayEvent.DTEnd = new iCalDateTime(eventDO.EndDate.ToUniversalTime().DateTime);
             }
-            dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
-            dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
+            dDayEvent.DTStamp = new iCalDateTime(DateTime.UtcNow);
+            dDayEvent.LastModified = new iCalDateTime(DateTime.UtcNow);
 
             //configure text fields
             dDayEvent.Location = eventDO.Location;
@@ -206,6 +210,8 @@ namespace KwasantCore.Managers.CommunicationManager
                 eventDO.Emails = new List<EmailDO>();
 
             eventDO.Emails.Add(outboundEmail);
+
+            uow.EmailRepository.Add(outboundEmail);
 
             return outboundEmail;
         }
@@ -355,8 +361,8 @@ namespace KwasantCore.Managers.CommunicationManager
         public RazorViewModel(EventDO ev, String userID)
         {
             IsAllDay = ev.IsAllDay;
-            StartDate = ev.StartDate;
-            EndDate = ev.EndDate;
+            StartDate = ev.StartDate.DateTime;
+            EndDate = ev.EndDate.DateTime;
             Summary = ev.Summary;
             Description = ev.Description;
             Location = ev.Location;

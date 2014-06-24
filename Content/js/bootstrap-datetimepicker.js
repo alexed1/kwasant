@@ -55,6 +55,7 @@ THE SOFTWARE.
 // ReSharper disable once InconsistentNaming
     DateTimePicker = function (element, options) {
         var defaults = {
+            offsetInMinutes: 0,
             pickDate: true,
             pickTime: true,
             useMinutes: true,
@@ -832,7 +833,8 @@ THE SOFTWARE.
         set = function () {
             pMoment.lang(picker.options.language);
             var formatted = '', input;
-            if (!picker.unset) formatted = pMoment(picker.date).format(picker.format);
+
+            if (!picker.unset) formatted = new moment.utc(picker.date._i).zone(options.offsetInMinutes, true).format(picker.format);
             getPickerInput().val(formatted);
             picker.element.data('date', formatted);
             if (!picker.options.pickTime) picker.hide();

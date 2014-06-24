@@ -160,17 +160,17 @@
     <Compile Include="Migrations\201406040918453_UpdateAspRoles.Designer.cs">
       <DependentUpon>201406040918453_UpdateAspRoles.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.cs" />
-    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.Designer.cs">
-      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
+    <Compile Include="Migrations\201406041306162_AddUserAgentInfoTable.cs" />
+    <Compile Include="Migrations\201406041306162_AddUserAgentInfoTable.Designer.cs">
+      <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201406110747088_AddEnvelopeDO.cs" />
     <Compile Include="Migrations\201406110747088_AddEnvelopeDO.Designer.cs">
       <DependentUpon>201406110747088_AddEnvelopeDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201406041306162_AddUserAgentInfoTable.cs" />
-    <Compile Include="Migrations\201406041306162_AddUserAgentInfoTable.Designer.cs">
-      <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
+    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.cs" />
+    <Compile Include="Migrations\201406111328209_EmailDO_AddDateCreated.Designer.cs">
+      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201406201157338_AddClarificationRequest.cs" />
     <Compile Include="Migrations\201406201157338_AddClarificationRequest.Designer.cs">
@@ -192,6 +192,10 @@
     <Compile Include="Migrations\201406161151254_Synchronise.16.06.2014.Designer.cs">
       <DependentUpon>201406161151254_Synchronise.16.06.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406180920055_ChangeToDateTimesWithOffset.cs" />
+    <Compile Include="Migrations\201406180920055_ChangeToDateTimesWithOffset.Designer.cs">
+      <DependentUpon>201406180920055_ChangeToDateTimesWithOffset.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201406201103557_Add_ActivityStatus.cs" />
     <Compile Include="Migrations\201406201103557_Add_ActivityStatus.Designer.cs">
       <DependentUpon>201406201103557_Add_ActivityStatus.cs</DependentUpon>
@@ -199,6 +203,10 @@
     <Compile Include="Migrations\201406201157339_Synchronise.20.06.2014.cs" />
     <Compile Include="Migrations\201406201157339_Synchronise.20.06.2014.Designer.cs">
       <DependentUpon>201406201157339_Synchronise.20.06.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406231703549_Sync-23.06.2014.cs" />
+    <Compile Include="Migrations\201406231703549_Sync-23.06.2014.Designer.cs">
+      <DependentUpon>201406231703549_Sync-23.06.2014.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -294,14 +302,14 @@
     <EmbeddedResource Include="Migrations\201406040918453_UpdateAspRoles.resx">
       <DependentUpon>201406040918453_UpdateAspRoles.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406111328209_EmailDO_AddDateCreated.resx">
-      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201406041306162_AddUserAgentInfoTable.resx">
+      <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406110747088_AddEnvelopeDO.resx">
       <DependentUpon>201406110747088_AddEnvelopeDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201406041306162_AddUserAgentInfoTable.resx">
-      <DependentUpon>201406041306162_AddUserAgentInfoTable.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201406111328209_EmailDO_AddDateCreated.resx">
+      <DependentUpon>201406111328209_EmailDO_AddDateCreated.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406201157338_AddClarificationRequest.resx">
       <DependentUpon>201406201157338_AddClarificationRequest.cs</DependentUpon>
@@ -318,11 +326,17 @@
     <EmbeddedResource Include="Migrations\201406161151254_Synchronise.16.06.2014.resx">
       <DependentUpon>201406161151254_Synchronise.16.06.2014.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406180920055_ChangeToDateTimesWithOffset.resx">
+      <DependentUpon>201406180920055_ChangeToDateTimesWithOffset.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406201103557_Add_ActivityStatus.resx">
       <DependentUpon>201406201103557_Add_ActivityStatus.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406201157339_Synchronise.20.06.2014.resx">
       <DependentUpon>201406201157339_Synchronise.20.06.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406231703549_Sync-23.06.2014.resx">
+      <DependentUpon>201406231703549_Sync-23.06.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
