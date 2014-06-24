@@ -36,7 +36,19 @@
     </style>
 }
 
-<form id="f" method="POST" action="@Url.Action("AddAnotherQuestion", "ClarificationRequest")">
+<div id="requestSentText" style="display: none;">
+    <h3>Request Sent</h3>
+    <div class="space">
+        <div style="clear: both">
+            <div style="float: left">
+                <a href="javascript:close(true);">
+                    <div style="width: 100px;">Close</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<form id="f">
     <h3>
         @Html.Raw(Model.Id == 0 ? "New Clarification Request" : "Editing Clarification Request")
     </h3>
@@ -64,21 +76,14 @@
        
         </div>
         
-        <input id="question" name="Question" class="form-control col-md-1" value="" required />
-
+        @Html.TextAreaFor(m => m.Question, 5, 20, new { @class = "form-control col-md-1" })
     </div>
-    @{
-
-        <div style="display: none">
-            @Html.TextBox("Id", @Model.Id, new { @class = "form-control col-md-1" })
-            @Html.TextBox("BookingRequestId", @Model.BookingRequestId, new { @class = "form-control col-md-1" })
-        </div>
-    }
+    @Html.HiddenFor(m => m.Id, new { @class = "form-control col-md-1" })
+    @Html.HiddenFor(m => m.BookingRequestId, new { @class = "form-control col-md-1" })
     <hr />
     <div class="space">
         <div style="clear: both">
             <div style="float: left">
-                <input id="btnAddAnotherQuestion" type="submit" value="Add Another Question" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 150px; display: none;" />
                 <input id="btnSend" type="button" value="Send" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
             </div>
             <div style="float: left">
@@ -105,7 +110,8 @@
                 function (result) {
                     if (result.success) {
                         $('#sendError').text('');
-                        close(true);
+                        $('#f').hide();
+                        $('#requestSentText').show();
                     } else {
                         $('#sendError').text(result.error);
                     }
