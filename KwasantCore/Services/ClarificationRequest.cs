@@ -45,10 +45,9 @@ namespace KwasantCore.Services
             if (request == null)
                 throw new ArgumentNullException("request");
             var email = new Email(_uow);
-            email.SendTemplate("clarification_request_v2", request, new Dictionary<string, string>
+            email.SendTemplate("clarification_request_v1", request, new Dictionary<string, string>
                                                                         {
-                                                                            { "RESP_URL", responseUrl },
-                                                                            { "RESPON_URL", responseUrl }
+                                                                            { "RESP_URL", responseUrl }
                                                                         });
         }
 
