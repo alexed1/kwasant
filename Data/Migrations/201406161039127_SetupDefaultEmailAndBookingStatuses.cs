@@ -1,12 +1,13 @@
 namespace Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     
     public partial class SetupDefaultEmailAndBookingStatuses : DbMigration
     {
         public override void Up()
         {
+            AddColumn("dbo.BookingRequests", "BookingStatus", c => c.String());
+
             Sql(@"
 
 update BookingRequests set BookingStatus = 'Unprocessed'

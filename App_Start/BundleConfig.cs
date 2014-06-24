@@ -16,10 +16,18 @@ namespace KwasantWeb.App_Start
                 "~/Content/js/jquery.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
-                "~/Content/js/bootstrap.js",
-                "~/Content/js/bootstrap-responsive.js"
+			bundles.Add(new ScriptBundle("~/bundles/js/bootstrap").Include(
+				"~/Content/js/bootstrap.js",
+				"~/Content/js/bootstrap-responsive.js"
+				));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/bootstrap31").Include(
+				"~/Content/js/bootstrap.3.1.1.min.js"
                 ));
+
+			bundles.Add(new ScriptBundle("~/bundles/js/jquery").Include(
+				"~/Content/js/jquery.js"
+				));
 
             bundles.Add(new ScriptBundle("~/bundles/js/colorbox").Include(
                 "~/Content/js/jquery.colorbox.js"
@@ -40,6 +48,10 @@ namespace KwasantWeb.App_Start
             bundles.Add(new ScriptBundle("~/bundles/js/common").Include(
                 "~/Content/js/common.js"
                 ));
+
+			bundles.Add(new ScriptBundle("~/bundles/js/customjs").Include(
+				"~/Content/js/custom.js"
+				));
 
             bundles.Add(new ScriptBundle("~/bundles/js/daypilot").Include(
                 "~/Content/js/Daypilot/daypilot-common.src.js",
@@ -71,28 +83,39 @@ namespace KwasantWeb.App_Start
 
             //Styles
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap23").Include(
-                "~/Content/css/bootstrap2.3.css"
+				"~/Content/css/additionalcss/bootstrap23/css/bootstrap2.3.css"
                 ));
+
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap30").Include(
-                "~/Content/css/bootstrap3.0.css"
+				"~/Content/css/additionalcss/bootstrap30/css/bootstrap3.0.css"
                 ));
+
 			bundles.Add(new StyleBundle("~/bundles/css/bootstrap-responsive").Include(
-				"~/Content/css/bootstrap-responsive.css"
+				"~/Content/css/additionalcss/bootstrap30/css/bootstrap-responsive.css"
 				));
+
+			bundles.Add(new StyleBundle("~/bundles/css/bootstrap-datetimepicker").Include(
+				"~/Content/css/additionalcss/bootstrap30/css/bootstrap-datetimepicker.css"
+			    ));
+
             bundles.Add(new StyleBundle("~/bundles/css/colorbox").Include(
-                "~/Content/css/colorbox.css"
+				"~/Content/css/additionalcss/colorbox/colorbox.css"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/frontpage").Include(
-                "~/Content/css/main.css"
+				"~/Content/css/frontcss/main.css"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/default").Include(
-                "~/Content/css/default.css"
+				"~/Content/css/generalcss/default.css"
                 ));
 
+			bundles.Add(new StyleBundle("~/bundles/css/backendcss").Include(
+				"~/Content/css/backendcss/default.css"
+				));
+
             bundles.Add(new StyleBundle("~/bundles/css/fontawesome").Include(
-                "~/Content/css/font-awesome.css"
+				"~/Content/css/additionalcss/font-awesome/font-awesome.css"
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/daypilot").Include(
@@ -100,13 +123,11 @@ namespace KwasantWeb.App_Start
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/select2").Include(
-               "~/Content/css/select2.css"
+			   "~/Content/css/additionalcss/select2/select2.css"
                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/bootstrap-datetimepicker").Include(
-               "~/Content/css/bootstrap-datetimepicker.css"
-               ));
-            
+			bundles.Add(new StyleBundle("~/bundles/css/temp").Include(
+			   "~/Content/css/temp/temp.css"
+			   ));         
         }
     }
 }

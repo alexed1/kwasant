@@ -5,8 +5,8 @@ namespace KwasantWeb.ViewModels
     public class EventViewModel
     {
         public int Id { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTimeOffset StartDate { get; set; }
+        public DateTimeOffset EndDate { get; set; }
         public bool IsAllDay { get; set; }
         public String Location { get; set; }
         public String Status { get; set; }
@@ -20,5 +20,7 @@ namespace KwasantWeb.ViewModels
         public String Attendees { get; set; }
         public String CreatedByAddress { get; set; }
         public String CreatedByID { get; set; }
+
+        public Double BookingRequestTimezoneOffsetInMinutes { get; set; }
     }
 }

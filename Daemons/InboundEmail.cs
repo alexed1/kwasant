@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
-using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
@@ -63,10 +61,7 @@ namespace Daemons
             IImapClient client;
             try
             {
-                client = _client ??
-                         new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
-
-                
+                client = _client ?? new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
             }
             catch (ConfigurationException ex)
             {
@@ -103,8 +98,7 @@ namespace Daemons
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
                     //assign the owner of the booking request to be the owner of the From address
-                    bookingRequest.User =
-                        unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address);
+                    bookingRequest.User = unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address); 
                     (new BookingRequest()).ProcessBookingRequest(unitOfWork, bookingRequest);
                     unitOfWork.SaveChanges();
                 }
@@ -113,7 +107,6 @@ namespace Daemons
                     Logger.GetLogger().Error("Failed to process inbound message.", e);
                     client.RemoveMessageFlags(uid, null, MessageFlag.Seen);
                     Logger.GetLogger().Info("Message marked as unread.");
-                    throw new ApplicationException(e.Message);
                 }
             }
 

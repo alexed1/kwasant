@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Configuration;
-using System.Data.Entity;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using Daemons;
 using Data.Infrastructure;
 using KwasantCore.Managers.CommunicationManager;
+using KwasantCore.ModelBinders;
 using KwasantCore.Services;
+using KwasantCore.Managers;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
-using KwasantWeb.Controllers;
-using FluentValidation;
+using KwasantWeb.ViewModels;
 using Utilities.Logging;
 
 namespace KwasantWeb
@@ -53,6 +52,13 @@ namespace KwasantWeb
 
             CommunicationManager curCommManager = new CommunicationManager();
             curCommManager.SubscribeToAlerts();
+
+            
+            AnalyticsManager curAnalyticsManager = new AnalyticsManager();
+            curAnalyticsManager.SubscribeToAlerts();
+
+//            ModelBinders.Binders.Add(typeof(EventViewModel), new KwasantDateBinder());
+            ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
         }
 
         protected void Application_Error(Object sender, EventArgs e)

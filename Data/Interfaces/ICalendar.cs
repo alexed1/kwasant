@@ -1,6 +1,5 @@
 ﻿using System;
 using Data.Entities;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Data.Interfaces

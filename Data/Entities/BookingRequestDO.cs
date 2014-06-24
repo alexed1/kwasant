@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Activities.Statements;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Data.Entities.Enumerations;
@@ -14,6 +13,9 @@ namespace Data.Entities
 
         public List<InstructionDO> Instructions { get; set; }
 
+/*
+        public virtual ClarificationRequestDO ClarificationRequest { get; set; }
+*/
         private string _bookingStatus;
 
         [Required]

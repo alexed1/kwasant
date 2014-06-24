@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
@@ -36,72 +35,13 @@ namespace KwasantTest.Services
         }
 
        
-
-        [Test]
-        [Category("Email")]
-        public void CanCreateStandardInviteEmail()
-        {
-            //SETUP  
-            _curEventDO = _fixture.TestEvent2();
-            string expectedSubject = "Invitation via Kwasant: " + _curEventDO.Summary + "@ " + _curEventDO.StartDate;
-           
-            
-            //EXECUTE
-            var curEmail = new Email(_uow, _curEventDO);
-            curEmail.CreateStandardInviteEmail(_curEventDO);
-            //VERIFY
-            //Assert.AreEqual(_curEmailDO.Subject,  expectedSubject);
-
-        }
-
-        [Test]
-        [Category("Email")]
-        public void CreateSIE_FailsIfInvalidEventInput()
-        {
-            //SETUP
-            string expectedSubject = "Invitation via Kwasant: " + _curEventDO.Summary + "@ " + _curEventDO.StartDate;
-            
-            Assert.Throws<ValidationException>(() =>
-            {
-
-                new Email(_uow, _curEventDO);
-
-            });
-            //EXECUTE
-
-            //VERIFY
-
-
-        }
-
-        [Test]
-        [Category("Email")]
-        public void CanSendSIE()
-        {
-            //SETUP  
-            _curEventDO = _fixture.TestEvent2();
-            string expectedSubject = "Invitation via Kwasant: " + _curEventDO.Summary + "@ " + _curEventDO.StartDate;
-
-            //EXECUTE
-            _uow.EventRepository.Add(_curEventDO);
-            _uow.SaveChanges();
-
-            var email = new Email(_uow, _curEventDO);
-            email.Send();
-
-            //VERIFY
-            var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Subject == expectedSubject);
-            Assert.NotNull(envelope, "Envelope was not created.");
-            Assert.AreEqual(envelope.Handler, EnvelopeDO.GmailHander, "Envelope handler should be Gmail");
-        }
-
         [Test]
         [Category("Email")]
         public void CanConstructEmailWithEmailDO()
         {
             //SETUP  
             EmailDO _curEmailDO = _fixture.TestEmail1();
-            
+           
             //EXECUTE
             _uow.EmailRepository.Add(_curEmailDO);
             _uow.SaveChanges();
@@ -123,7 +63,7 @@ namespace KwasantTest.Services
             // SETUP
             EmailDO _curEmailDO = _fixture.TestEmail1();
             const string templateName = "test_template";
-
+            
             // EXECUTE
             var email = new Email(_uow);
             email.SendTemplate(templateName,

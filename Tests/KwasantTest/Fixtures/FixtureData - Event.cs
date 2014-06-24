@@ -57,7 +57,7 @@ namespace KwasantTest.Fixtures
                 Class = "Private",
                 Description = "This is a test event description.",
                 Location = "Silicon Valley",
-                Status = "Open",
+                State = "Booking",
                 Summary = "This is a test event summary.",
                 Transparency = "Opaque" ,
                 Attendees = TestAttendeeList1().ToList(),
@@ -78,7 +78,7 @@ namespace KwasantTest.Fixtures
                 Class = "Private",
                 Description = "This is a test event description.",
                 Location = "Silicon Valley",
-                Status = "Open",
+                State = "Booking",
                 Summary = "This is a test event summary.",
                 Transparency = "Opaque",
                 Attendees = TestAttendeeList1().ToList(),
@@ -90,6 +90,7 @@ namespace KwasantTest.Fixtures
         {
             return new EventDO()
             {
+                State = "Booking",
                 Description = "This is my test invitation",
                 Summary = @"My test invitation",
                 Location = @"Some place!",
