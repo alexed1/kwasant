@@ -114,8 +114,8 @@ namespace KwasantCore.Managers.CommunicationManager
             }
             else
             {
-                dDayEvent.DTStart = new iCalDateTime(eventDO.StartDate.ToUniversalTime().DateTime);
-                dDayEvent.DTEnd = new iCalDateTime(eventDO.EndDate.ToUniversalTime().DateTime);
+                dDayEvent.DTStart = new iCalDateTime(DateTime.SpecifyKind(eventDO.StartDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
+                dDayEvent.DTEnd = new iCalDateTime(DateTime.SpecifyKind(eventDO.EndDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
             }
             dDayEvent.DTStamp = new iCalDateTime(DateTime.UtcNow);
             dDayEvent.LastModified = new iCalDateTime(DateTime.UtcNow);
