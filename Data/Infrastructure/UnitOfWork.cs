@@ -128,6 +128,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private EventStatusRepository _eventStatusRepository;
+
+        public EventStatusRepository EventStatusRepository
+        {
+            get
+            {
+                return _eventStatusRepository ?? (_eventStatusRepository = new EventStatusRepository(this));
+            }
+        }
+
         private InstructionRepository _instructionRepository;
 
         public InstructionRepository InstructionRepository

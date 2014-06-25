@@ -68,10 +68,12 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\EventStatus.cs" />
     <Compile Include="Constants\InstructionConstants.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
+    <Compile Include="Entities\EventStatusDO.cs" />
     <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
@@ -208,6 +210,14 @@
     <Compile Include="Migrations\201406231703549_Sync-23.06.2014.Designer.cs">
       <DependentUpon>201406231703549_Sync-23.06.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406251542277_Change-EventType.cs" />
+    <Compile Include="Migrations\201406251542277_Change-EventType.Designer.cs">
+      <DependentUpon>201406251542277_Change-EventType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406251552253_Sync-25.06.2014.cs" />
+    <Compile Include="Migrations\201406251552253_Sync-25.06.2014.Designer.cs">
+      <DependentUpon>201406251552253_Sync-25.06.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -215,6 +225,7 @@
     <Compile Include="Repositories\AttendeeRepository.cs" />
     <Compile Include="Repositories\BookingRequestRepository.cs" />
     <Compile Include="Repositories\CalendarRepository.cs" />
+    <Compile Include="Repositories\EventStatusRepository.cs" />
     <Compile Include="Repositories\KactRepository.cs" />
     <Compile Include="Repositories\ClarificationRequestRepository.cs" />
     <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
@@ -333,6 +344,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406231703549_Sync-23.06.2014.resx">
       <DependentUpon>201406231703549_Sync-23.06.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406251542277_Change-EventType.resx">
+      <DependentUpon>201406251542277_Change-EventType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406251552253_Sync-25.06.2014.resx">
+      <DependentUpon>201406251552253_Sync-25.06.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
