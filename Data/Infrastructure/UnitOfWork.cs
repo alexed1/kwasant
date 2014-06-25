@@ -67,6 +67,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private BookingRequestStatusRepository _bookingRequestStatusRepository;
+
+        public BookingRequestStatusRepository BookingRequestStatusRepository
+        {
+            get
+            {
+                return _bookingRequestStatusRepository ?? (_bookingRequestStatusRepository = new BookingRequestStatusRepository(this));
+            }
+        }
+
         private CalendarRepository _calendarRepository;
 
         public CalendarRepository CalendarRepository

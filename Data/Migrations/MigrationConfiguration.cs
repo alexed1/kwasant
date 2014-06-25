@@ -50,6 +50,7 @@ namespace Data.Migrations
         public static void Seed(IUnitOfWork context)
         {
             SeedConstants<EventState, EventStatusDO>(context, (id, name) => new EventStatusDO { Id = id, Name = name });
+            SeedConstants<BookingRequestStatus, BookingRequestStatusDO>(context, (id, name) => new BookingRequestStatusDO { Id = id, Name = name });
             SeedInstructions(context);
         }
 
