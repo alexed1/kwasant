@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using Data.Constants;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Infrastructure;
@@ -19,7 +20,6 @@ using Microsoft.WindowsAzure;
 using KwasantCore.Services;
 using Utilities;
 using Encoding = System.Text.Encoding;
-using EventStatus = Data.Constants.EventStatus;
 
 namespace KwasantCore.Managers.CommunicationManager
 {
@@ -58,9 +58,9 @@ namespace KwasantCore.Managers.CommunicationManager
             var t = Utilities.Server.ServerUrl;
             switch (eventDO.StateID)
             {
-                case EventStatus.Booking:
+                case EventState.Booking:
                     {
-                        eventDO.StateID = EventStatus.DispatchCompleted;
+                        eventDO.StateID = EventState.DispatchCompleted;
 
                         var calendar = GenerateICSCalendarStructure(eventDO);
                         foreach (var attendeeDO in eventDO.Attendees)
@@ -73,12 +73,12 @@ namespace KwasantCore.Managers.CommunicationManager
 
                         break;
                     }
-                case EventStatus.ReadyForDispatch:
-                case EventStatus.DispatchCompleted:
+                case EventState.ReadyForDispatch:
+                case EventState.DispatchCompleted:
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
                     if (EventHasChanged(uow, eventDO))
                     {
-                        eventDO.StateID = EventStatus.DispatchCompleted;
+                        eventDO.StateID = EventState.DispatchCompleted;
                         var calendar = GenerateICSCalendarStructure(eventDO);
 
                         foreach (var attendeeDO in eventDO.Attendees)

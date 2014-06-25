@@ -49,7 +49,7 @@ namespace Data.Migrations
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork context)
         {
-            SeedConstants<EventStatus, EventStatusDO>(context, (id, name) => new EventStatusDO { Id = id, Name = name });
+            SeedConstants<EventState, EventStatusDO>(context, (id, name) => new EventStatusDO { Id = id, Name = name });
             SeedInstructions(context);
         }
 

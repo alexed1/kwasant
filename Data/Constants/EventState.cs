@@ -1,6 +1,6 @@
 ﻿namespace Data.Constants
 {
-    public class EventStatus
+    public class EventState
     {
         public const int Booking = 1;
         public const int ReadyForDispatch = 2;
