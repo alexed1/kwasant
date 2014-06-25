@@ -157,7 +157,7 @@ namespace Data.Entities
         IEmail IEnvelope.Email
         {
             get { return Email; }
-            set { Email = value as EmailDO; }
+            set { Email = (EmailDO)value; }
         }
         [Required]
         public virtual EmailDO Email { get; set; }
