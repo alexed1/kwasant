@@ -1,0 +1,62 @@
+﻿@model KwasantWeb.ViewModels.ClarificationResponseViewModel
+
+@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+}
+@section styles
+{
+    @Styles.Render("~/bundles/css/bootstrap30")
+    @Styles.Render("~/bundles/css/default")
+}
+
+
+@using (Html.BeginForm("ProcessSubmittedClarificationData", "ClarificationResponse", FormMethod.Post))
+{
+    @Html.HiddenFor(m => m.Id)
+    @Html.HiddenFor(m => m.BookingRequestId)
+    <h2>We need clarification about the following to finish booking your event:</h2>
+    @Html.HiddenFor(m => m.QuestionId)
+    @Html.HiddenFor(m => m.Question)
+    <div>@Html.Raw(Model.Question)</div>
+    <div class="formItem">
+        <div class="formLabel">
+            Response
+        </div>
+        
+        @Html.TextBoxFor(m => m.Response, new { @class = "form-control col-md-1" })
+    </div>
+    <div class="formItem">
+        <div class="formLabel">
+            Subject
+        </div>
+        @Html.HiddenFor(m => m.Subject)
+        <div>@Html.Raw(Model.Subject)</div>
+    </div>
+    <div class="formItem">
+        <div class="formLabel">
+            Body
+        </div>
+        @Html.HiddenFor(m => m.Body)
+        <div>@Html.Raw(Model.Body)</div>
+    </div>
+    <div class="space">
+        <div style="clear: both">
+            <div style="float: left">
+                <input type="submit" value="Send" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;">
+            </div>
+        </div>
+        <br />
+        <br />
+    </div>
+    
+}
+
+

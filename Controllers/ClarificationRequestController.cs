@@ -12,77 +12,55 @@ using DayPilot.Web.Mvc.Json;
 using KwasantCore.Exceptions;
 using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
+using KwasantWeb.App_Start;
+using KwasantWeb.Filters;
 using KwasantWeb.ViewModels;
 using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
     [HandleError]
-    //[KwasantAuthorize(Roles = "Admin")]
     public class ClarificationRequestController : Controller
     {
+        [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Edit(int bookingRequestId, int clarificationRequestId = 0)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var clarificationRequest = new ClarificationRequest(uow);
+                var cr = new ClarificationRequest();
 
                 try
                 {
-                    var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow, bookingRequestId, clarificationRequestId);
+                    var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow, bookingRequestId, clarificationRequestId);
                     return View(Mapper.Map<ClarificationRequestViewModel>(curClarificationRequestDO));
                 }
-                catch (BookingRequestNotFoundException)
+                catch (EntityNotFoundException<BookingRequestDO>)
                 {
                     return HttpNotFound("Booking request not found.");
                 }
             }
         }
 
-/*
-        [HttpPost]
-        public ActionResult AddAnotherQuestion(ClarificationRequestViewModel viewModel)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var clarificationRequest = new ClarificationRequest(uow);
-                try
-                {
-                    var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow,viewModel.BookingRequestId, viewModel.Id);
-                    clarificationRequest.UpdateClarificationRequest(uow, curClarificationRequestDO, Mapper.Map<ClarificationRequestDO>(viewModel));
-                    return RedirectToAction("Edit",
-                                            new
-                                                {
-                                                    bookingRequestId = curClarificationRequestDO.BookingRequestId,
-                                                    clarificationRequestId = curClarificationRequestDO.Id
-                                                });
-                }
-                catch (BookingRequestNotFoundException)
-                {
-                    return HttpNotFound("Booking request not found.");
-                }
-            }
-        }
-*/
-
+        [KwasantAuthorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult Send(ClarificationRequestViewModel viewModel)
         {
+            var submittedClarificationRequestDO = Mapper.Map<ClarificationRequestDO>(viewModel);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var clarificationRequest = new ClarificationRequest(uow);
+                var cr = new ClarificationRequest();
                 try
                 {
-                    var curClarificationRequestDO = clarificationRequest.GetOrCreateClarificationRequest(uow,viewModel.BookingRequestId, viewModel.Id);
-                    clarificationRequest.UpdateClarificationRequest(uow, curClarificationRequestDO, Mapper.Map<ClarificationRequestDO>(viewModel));
-                    var responseUrl = clarificationRequest.GenerateResponseURL(curClarificationRequestDO,
-                                                                               "http://kwasant.com/crr?{0}"); // later it will be replaced with Url.HttpRouteUrl method invoke
-                    clarificationRequest.Send(curClarificationRequestDO, responseUrl); 
+                    var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow,viewModel.BookingRequestId, viewModel.Id);
+                    cr.UpdateClarificationRequest(uow, curClarificationRequestDO, submittedClarificationRequestDO);
+                    var responseUrlFormat = string.Concat(Url.Action("", RouteConfig.ShowClarificationResponseUrl, new { }, this.Request.Url.Scheme), "?{0}");
+                    var responseUrl = cr.GenerateResponseURL(curClarificationRequestDO, responseUrlFormat);
+                    cr.Send(uow, curClarificationRequestDO, responseUrl); 
                     return Json(new { success = true });
                 }
-                catch (BookingRequestNotFoundException)
+                catch (EntityNotFoundException ex)
                 {
-                    return HttpNotFound("Booking request not found.");
+                    return HttpNotFound(ex.Message);
                 }
                 catch (Exception ex)
                 {
@@ -91,6 +69,21 @@ namespace KwasantWeb.Controllers
             }
         }
 
-
+        [RequestParamsEncryptedFilter]
+        public ActionResult ShowClarificationResponse(long id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curClarificationRequestDO = uow.ClarificationRequestRepository.GetByKey(id);
+                if (curClarificationRequestDO == null)
+                    return HttpNotFound("Clarification request not found.");
+                if (curClarificationRequestDO.BookingRequest == null)
+                    return HttpNotFound("Booking request not found.");
+                if (curClarificationRequestDO.Questions.Count(q => q.Status == QuestionStatus.Unanswered) == 0)
+                    return View("~/Views/ClarificationResponse/AllAnswered.cshtml");
+                var curClarificationResponseViewModel = Mapper.Map<ClarificationRequestDO, ClarificationResponseViewModel>(curClarificationRequestDO);
+                return View("~/Views/ClarificationResponse/New.cshtml", curClarificationResponseViewModel);
+            }
+        }
     }
 }
