@@ -31,13 +31,14 @@ namespace KwasantCore.Services
                                                  HTMLText = "*** This should be replaced with template body ***",
                                                  PlainText = "*** This should be replaced with template body ***",
                                              };
+            ((IClarificationRequest) newClarificationRequestDo).BookingRequest = bookingRequest;
             String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
             newClarificationRequestDo.From = Email.GenerateEmailAddress(uow, new MailAddress(senderMailAddress));
             newClarificationRequestDo.AddEmailRecipient(EmailParticipantType.TO, bookingRequest.User.EmailAddress);
             return newClarificationRequestDo;
         }
 
-        public void Send(IUnitOfWork uow, ClarificationRequestDO request, string responseUrl)
+        public void Send(IUnitOfWork uow, IClarificationRequest request, string responseUrl)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -50,7 +51,7 @@ namespace KwasantCore.Services
                                                                         });
         }
 
-        public string GenerateResponseURL(ClarificationRequestDO clarificationRequestDO, string responseUrlFormat)
+        public string GenerateResponseURL(IClarificationRequest clarificationRequestDO, string responseUrlFormat)
         {
             if (clarificationRequestDO == null)
                 throw new ArgumentNullException("clarificationRequestDO");
@@ -58,11 +59,11 @@ namespace KwasantCore.Services
             return string.Format(responseUrlFormat, encryptedParams);
         }
 
-        public ClarificationRequestDO GetOrCreateClarificationRequest(IUnitOfWork uow, int bookingRequestId, int clarificationRequestId = 0)
+        public IClarificationRequest GetOrCreateClarificationRequest(IUnitOfWork uow, int bookingRequestId, int clarificationRequestId = 0)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
-            ClarificationRequestDO clarificationRequest = null;
+            IClarificationRequest clarificationRequest = null;
             if (clarificationRequestId > 0)
             {
                 clarificationRequest = uow.ClarificationRequestRepository.GetByKey(clarificationRequestId);
@@ -71,7 +72,7 @@ namespace KwasantCore.Services
             {
                 var bookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 if (bookingRequest == null)
-                    throw new EntityNotFoundException<BookingRequestDO>();
+                    throw new EntityNotFoundException<IBookingRequest>();
                 clarificationRequest = Create(uow, bookingRequest);
             }
             return clarificationRequest;
@@ -93,7 +94,7 @@ namespace KwasantCore.Services
             uow.SaveChanges();
         }
 
-        public void ProcessResponse(ClarificationRequestDO clarificationRequest)
+        public void ProcessResponse(IClarificationRequest clarificationRequest)
         {
             if (clarificationRequest == null)
                 throw new ArgumentNullException("clarificationRequest");
