@@ -82,7 +82,6 @@
     <Compile Include="Entities\KactDO.cs" />
     <Compile Include="Entities\Enumerations\QuestionStatus.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
-    <Compile Include="Entities\Enumerations\StringEnumerations.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
     <Compile Include="Entities\Enumerations\CommunicationType.cs" />
     <Compile Include="Entities\Enumerations\EmailParticipantType.cs" />
@@ -220,6 +219,10 @@
     <Compile Include="Migrations\201406251552253_Sync-25.06.2014.Designer.cs">
       <DependentUpon>201406251552253_Sync-25.06.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406261326564_Change-BookingStatusType.cs" />
+    <Compile Include="Migrations\201406261326564_Change-BookingStatusType.Designer.cs">
+      <DependentUpon>201406261326564_Change-BookingStatusType.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -353,6 +356,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406251552253_Sync-25.06.2014.resx">
       <DependentUpon>201406251552253_Sync-25.06.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406261326564_Change-BookingStatusType.resx">
+      <DependentUpon>201406261326564_Change-BookingStatusType.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

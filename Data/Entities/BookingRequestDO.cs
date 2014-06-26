@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 
 namespace Data.Entities
@@ -18,9 +16,9 @@ namespace Data.Entities
         public virtual ClarificationRequestDO ClarificationRequest { get; set; }
 */
 
-        [ForeignKey("BookingStatus")]
+        [ForeignKey("BookingRequestStatus")]
         public int BookingRequestStatusID { get; set; }
         [Required]
-        public BookingRequestStatusDO BookingRequestStatus { get; set; }
+        public virtual BookingRequestStatusDO BookingRequestStatus { get; set; }
     }
 }
