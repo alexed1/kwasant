@@ -55,7 +55,7 @@ namespace KwasantCore.Services
         /// <summary>
         /// This implementation of Send uses the Mandrill API
         /// </summary>
-        public EnvelopeDO SendTemplate(string templateName, EmailDO message, Dictionary<string, string> mergeFields)
+        public EnvelopeDO SendTemplate(string templateName, IEmail message, Dictionary<string, string> mergeFields)
         {
             var envelope = _uow.EnvelopeRepository.CreateMandrillEnvelope(message, templateName, mergeFields);
             message.EmailStatus = EmailStatus.QUEUED;

@@ -10,7 +10,7 @@ namespace Data.Validators
         {
             RuleFor(obj => obj.Address)
                 .EmailAddress()
-                .WithMessage("Email Address objects require a legitimate email address in their address field. ");
+                .WithMessage("You need to provide a valid Email Address. ");
         }
     }
 

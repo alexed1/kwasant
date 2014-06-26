@@ -20,7 +20,7 @@ namespace DDay.iCal.Test
         /// <summary>
         /// Ensures that events can be properly added to a calendar.
         /// </summary>
-        [Test, Category("Event")]
+        [Test, Category("DDay")] //Category(("Event")]
         public void Add1()
         {
             IICalendar iCal = new iCalendar();
@@ -38,7 +38,7 @@ namespace DDay.iCal.Test
         /// <summary>
         /// Ensures that events can be properly removed from a calendar.
         /// </summary>
-        [Test, Category("Event")]
+        [Test, Category("DDay")] //Category(("Event")]
         public void Remove1()
         {
             IICalendar iCal = new iCalendar();
@@ -60,7 +60,7 @@ namespace DDay.iCal.Test
         /// <summary>
         /// Ensures that events can be properly removed from a calendar.
         /// </summary>
-        [Test, Category("Event")]
+        [Test, Category("DDay")] //Category(("Event")]
         public void Remove2()
         {
             IICalendar iCal = new iCalendar();

@@ -7,6 +7,13 @@ using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using KwasantCore.Services;
 using StructureMap;
+using Utilities;
+using Utilities.Logging;
+using System.Net.Mail;
+using Data.Infrastructure.StructureMap;
+using System;
+using Data.Repositories;
+
 
 namespace KwasantWeb.Controllers
 {
@@ -82,6 +89,33 @@ namespace KwasantWeb.Controllers
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
+        }
+
+
+        //create a BookingRequest
+        public ActionResult Generate(string emailAddress,string meetingInfo)
+        {
+            string result = "";
+            try
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    MailMessage message = new MailMessage();
+                    message.From = new MailAddress(emailAddress);
+                    BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                    bookingRequest.DateReceived = DateTime.Now;
+                    bookingRequest.PlainText = meetingInfo;
+                    (new BookingRequest()).ProcessBookingRequest(uow, bookingRequest);
+                    uow.SaveChanges();
+                    result = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be";
+	}
+            }
+            catch (Exception)
+            {
+                result = "Sorry! Something went wrong. Alpha software...";
+            }
+            return Content(result);
         }
 	}
 }

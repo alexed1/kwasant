@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
-using Data.Interfaces;
 
 namespace KwasantWeb.ViewModels
 {
-    public class ClarificationRequestViewModel
+    public class ClarificationResponseViewModel
     {
         public int Id { get; set; }
         public int BookingRequestId { get; set; }
-        public string Recipients { get; set; }
-        [Required]
+        public string Subject { get; set; }
+        public string Body { get; set; }
+        public int QuestionId { get; set; }
         public string Question { get; set; }
-        public int QuestionsCount { get; set; }
+        public string Response { get; set; }
     }
 }
