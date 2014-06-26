@@ -74,8 +74,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </a>
-                <a class="brand goTop" href="index.aspx"><img class="floating" src="Content/img/perfect-krawsant.png" alt="Kwasant" title="Kwasant">Kwasant</a>
-                <!-- <img src="img/logo.png"></a> -->
+                <a class="brand goTop" href="index.aspx"><img class="floating" src="Content/img/site/perfect-krawsant.png" alt="Kwasant" title="Kwasant">Kwasant</a>
                 <br />                
                 <!-- <a class="brand goTop"  style="background-image: url(Content/img/site/logo.png);"></a> -->
                 <div class="nav-collapse">
@@ -92,10 +91,9 @@
         </div>
     </div>
 
-    <div id="welcome" class="parallax" style="background-image: url(Content/img/background-test9.jpg);"  data-section="1">		
+    <div id="welcome" class="parallax" style="background-image: url(Content/img/backgrounds/background-test9.jpg);"  data-section="1">		
         <div id="logotext" class="text">
 			<h1>Kwasant</h1>
-			<!-- <div class="love text-center" style="background-image: url(Content/img/site/logo.png);"></div> -->
 			<p>We schedule your meetings for you</p>
         </div>
     </div>

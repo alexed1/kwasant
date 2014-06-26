@@ -32,14 +32,14 @@ namespace Data.Repositories
             return envelope;
         }
 
-        public EnvelopeDO CreateMandrillEnvelope(EmailDO email, string temlateName, IDictionary<string, string> mergeData)
+        public EnvelopeDO CreateMandrillEnvelope(IEmail email, string temlateName, IDictionary<string, string> mergeData)
         {
             var envelope = new EnvelopeDO()
             {
-                Email = email,
                 TemplateName = temlateName,
                 Handler = EnvelopeDO.MandrillHander
             };
+            ((IEnvelope) envelope).Email = email;
             if (mergeData != null)
             {
                 foreach (var pair in mergeData)

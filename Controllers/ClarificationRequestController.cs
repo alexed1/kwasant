@@ -34,7 +34,7 @@ namespace KwasantWeb.Controllers
                     var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow, bookingRequestId, clarificationRequestId);
                     return View(Mapper.Map<ClarificationRequestViewModel>(curClarificationRequestDO));
                 }
-                catch (EntityNotFoundException<BookingRequestDO>)
+                catch (EntityNotFoundException<IBookingRequest>)
                 {
                     return HttpNotFound("Booking request not found.");
                 }
@@ -51,7 +51,7 @@ namespace KwasantWeb.Controllers
                 var cr = new ClarificationRequest();
                 try
                 {
-                    var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow,viewModel.BookingRequestId, viewModel.Id);
+                    var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow, submittedClarificationRequestDO.BookingRequestId, submittedClarificationRequestDO.Id);
                     cr.UpdateClarificationRequest(uow, curClarificationRequestDO, submittedClarificationRequestDO);
                     var responseUrlFormat = string.Concat(Url.Action("", RouteConfig.ShowClarificationResponseUrl, new { }, this.Request.Url.Scheme), "?{0}");
                     var responseUrl = cr.GenerateResponseURL(curClarificationRequestDO, responseUrlFormat);
