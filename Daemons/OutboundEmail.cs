@@ -9,6 +9,7 @@ using KwasantCore.Managers.CommunicationManager;
 using KwasantCore.Managers.APIManager.Packagers;
 using StructureMap;
 using Utilities.Logging;
+using Microsoft.WindowsAzure;
 
 namespace Daemons
 {
@@ -162,6 +163,10 @@ namespace Daemons
                         try
                         {
                             IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
+                            if (CloudConfigurationManager.GetSetting("ArchiveOutboundEmail") == "true")
+                            {
+                                envelope.Email.AddEmailRecipient(EmailParticipantType.BCC, new EmailAddressDO(CloudConfigurationManager.GetSetting("ArchiveEmailAddress")));   
+                            }
                             packager.Send(envelope);
                             numSent++;
 
