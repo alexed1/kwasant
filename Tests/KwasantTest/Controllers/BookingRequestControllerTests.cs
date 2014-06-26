@@ -37,7 +37,7 @@ namespace KwasantTest.Controllers
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+            (new BookingRequest()).Process(_uow, bookingRequest);
         }
 
         [Test]

@@ -61,6 +61,7 @@ namespace KwasantCore.Services
             message.EmailStatus = EmailStatus.QUEUED;
             _uow.EnvelopeRepository.Add(envelope);
             _uow.SaveChanges();
+            MandrillPackager.PostMessageSendTemplate(templateName, (EmailDO)message, mergeFields);
             return envelope;
         }
 

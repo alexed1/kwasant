@@ -98,8 +98,8 @@ namespace Daemons
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
                     //assign the owner of the booking request to be the owner of the From address
-                    bookingRequest.User = unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address); 
-                    (new BookingRequest()).ProcessBookingRequest(unitOfWork, bookingRequest);
+                    bookingRequest.User = unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address);
+                    (new BookingRequest()).Process(unitOfWork, bookingRequest);
                     unitOfWork.SaveChanges();
                 }
                 catch (Exception e)

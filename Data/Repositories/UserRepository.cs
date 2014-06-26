@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Validators;
 
@@ -32,6 +33,7 @@ namespace Data.Repositories
                 curUser.FirstName = emailAddressDO.Name;
                 curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 userRepo.Add(curUser);
+                AlertManager.CustomerCreated(curUser); 
             }
             return curUser;
         }
@@ -52,6 +54,7 @@ namespace Data.Repositories
                 curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 curMessage.User = curUser;
                 userRepo.Add(curUser);
+                AlertManager.CustomerCreated(curUser); 
             }
             return curUser;
         }
