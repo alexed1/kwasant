@@ -191,7 +191,8 @@ namespace KwasantWeb.Controllers.DayPilot
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var ev = uow.EventRepository.GetQuery().Where(e => e.BookingRequest.Id == _bookingRequestID).ToList();
+                UserDO curUserDO = uow.BookingRequestRepository.GetQuery().FirstOrDefault(br => br.Id == _bookingRequestID).User;
+                var ev = uow.EventRepository.GetQuery().Where(e => e.CreatedByID == curUserDO.Id).ToList();
                 var res = ev.Select(e =>
                 new {
                     start = e.StartDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff"),
