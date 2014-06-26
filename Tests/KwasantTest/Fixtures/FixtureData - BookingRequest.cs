@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Entities;
 using Data.Entities.Enumerations;
 
@@ -21,7 +22,7 @@ namespace KwasantTest.Fixtures
                                               HTMLText = "Booking request text",
                                               EmailStatus = EmailStatus.UNPROCESSED,
                                               DateReceived = DateTimeOffset.UtcNow,
-                                              BookingStatus = "Unprocessed",
+                                              BookingRequestStatusID = BookingRequestStatus.Pending,
                                               User = TestUser()
                                           };
             return curBookingRequestDO;
