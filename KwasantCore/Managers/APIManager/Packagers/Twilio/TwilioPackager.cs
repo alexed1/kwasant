@@ -39,12 +39,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Twilio
         {
             SMSMessage result = _twilio.SendSmsMessage(_twilioFromNumber, number, message);
             if (result.RestException != null)
-                if (result.RestException.Message ==
-                    "The From phone number +14156920295 is not a valid, SMS-capable inbound phone number or short code for your account.")
-                {
-                    Logger.GetLogger().Info("Swallowing Twilio ex."); //doing this because this exception gets thrown just because we're using the test account, and it was cluttering up the log. if you really are having twilio problems, disable this
-                }
-                else throw new Exception(result.RestException.Message);
+                throw new Exception(result.RestException.Message);
             return result;
         }
     }
