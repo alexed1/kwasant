@@ -21,6 +21,11 @@ namespace Data.Entities
 
         #region Implementation of IClarificationRequest
         public int BookingRequestId { get; set; }
+        IBookingRequest IClarificationRequest.BookingRequest
+        {
+            get { return BookingRequest; }
+            set { BookingRequest = (BookingRequestDO) value; }
+        }
         public virtual BookingRequestDO BookingRequest { get; set; }
         public ClarificationStatus ClarificationStatus { get; set; }
         public virtual IList<QuestionDO> Questions

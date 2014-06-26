@@ -38,7 +38,7 @@ namespace KwasantTest.Workflow
 
 
 
-        [Test, Ignore("Test relies on external services; this test fails half the time, which is fixed by re-running it.")]
+        [Test]
         [Category("Workflow")]
         public void Workflow_CanReceiveInvitationOnEmailInTime()
         {
@@ -48,8 +48,9 @@ namespace KwasantTest.Workflow
             var totalOperationTimeout = TimeSpan.FromSeconds(120);
 
             var subject = string.Format("Event {0}", Guid.NewGuid());
-            var now = DateTime.Now;
-            var start = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second).AddDays(1);
+            var now = DateTimeOffset.Now;
+            // iCal truncates time up to seconds so we need to truncate as well to be able to compare time
+            var start = new DateTimeOffset(now.Ticks / TimeSpan.TicksPerSecond * TimeSpan.TicksPerSecond, now.Offset).AddDays(1);
             var end = start.AddHours(1);
             const string startPrefix = "Start:";
             const string endPrefix = "End:";

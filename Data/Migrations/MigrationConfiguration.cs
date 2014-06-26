@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using Data.Repositories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity.Validation;
@@ -39,7 +41,7 @@ namespace Data.Migrations
             Seed(unitOfWork);
 
             AddRoles(unitOfWork);
-           // AddAdmins(unitOfWork);
+           //AddAdmins(unitOfWork);
 
             unitOfWork.SaveChanges();
         }
@@ -47,7 +49,31 @@ namespace Data.Migrations
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork context)
         {
+            SeedConstants<EventState, EventStatusDO>(context, (id, name) => new EventStatusDO { Id = id, Name = name });
+            SeedConstants<BookingRequestStatus, BookingRequestStatusDO>(context, (id, name) => new BookingRequestStatusDO { Id = id, Name = name });
             SeedInstructions(context);
+        }
+
+        private static void SeedConstants<TConstantsType, TConstantDO>(IUnitOfWork uow, Func<int, string, TConstantDO> creatorFunc)
+            where TConstantDO : class
+        {
+            var instructionsToAdd = new List<TConstantDO>();
+
+            FieldInfo[] constants = typeof(TConstantsType).GetFields();
+            foreach (FieldInfo constant in constants)
+            {
+                string name = constant.Name;
+                object value = constant.GetValue(null);
+                instructionsToAdd.Add(creatorFunc((int)value, name));
+            }
+            var param = Expression.Parameter(typeof (TConstantDO));
+            var exp = Expression.Lambda(Expression.Convert(Expression.Property(param, "Id"), typeof(object)), param) as Expression<Func<TConstantDO, object>>;
+
+            var repo = new GenericRepository<TConstantDO>(uow);
+            repo.DBSet.AddOrUpdate(
+                    exp,
+                    instructionsToAdd.ToArray()
+            );
         }
 
         private static void SeedInstructions(IUnitOfWork unitOfWork)
@@ -108,6 +134,7 @@ namespace Data.Migrations
             CreateAdmin("pabitra@hotmail.com", "pabi1234", unitOfWork);
             CreateAdmin("rjrudman@gmail.com", "robert1234", unitOfWork);
             CreateAdmin("quader.mamun@gmail.com", "abdul1234", unitOfWork);
+            CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
         }
 
         /// <summary>

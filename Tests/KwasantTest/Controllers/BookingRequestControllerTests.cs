@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using Data.Constants;
+using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
@@ -65,8 +66,8 @@ namespace KwasantTest.Controllers
 
             BookingRequestController controller = new BookingRequestController();
             int id = _uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
-            JsonResult jsonResultActual = controller.SetStatus(id, "invalid") as JsonResult;
-            Assert.AreEqual("Success", ((Error)jsonResultActual.Data).Name);
+            JsonResult jsonResultActual = controller.SetStatus(id, BookingRequestStatus.Invalid) as JsonResult;
+            Assert.AreEqual("Success", ((KwasantPackagedMessage)jsonResultActual.Data).Name);
 
         }
 

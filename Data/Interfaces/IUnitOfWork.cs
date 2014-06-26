@@ -18,6 +18,7 @@ namespace Data.Interfaces
         EmailRepository EmailRepository { get; }
         EnvelopeRepository EnvelopeRepository { get; }
         EventRepository EventRepository { get; }
+        EventStatusRepository EventStatusRepository { get; }
         InstructionRepository InstructionRepository { get; }
         StoredFileRepository StoredFileRepository { get; }
         TrackingStatusRepository TrackingStatusRepository { get; }

@@ -103,6 +103,7 @@
     <Compile Include="Daemons\OutboundEmailTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="Fixtures\FixtureData - Attendee.cs" />
+    <Compile Include="Fixtures\FixtureData - BookingRequest.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="Entities\EventTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\EventRepositoryTests.cs" />
+    <Compile Include="Services\ClarificationRequestTests.cs" />
     <Compile Include="Services\EmailTests.cs" />
     <Compile Include="Services\EventServiceTests.cs" />
     <Compile Include="Services\SMSTests.cs" />
