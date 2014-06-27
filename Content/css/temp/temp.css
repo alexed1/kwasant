@@ -1,0 +1,42 @@
+.col1 {
+    float: left;
+    width: 50%;
+}
+
+.col2 {
+    float: left;
+    width: 42%;
+    margin-left: 4%;
+    border: solid 1px orange;
+    padding: 1%;
+    border-radius: 10px;
+    min-height: 516px;
+    margin-bottom:9%;
+}
+
+.top-banner {
+	background-image: url('/Content/img/backgrounds/background-test9.jpg');
+}
+
+.try-it-out-form p.hint-message {
+	font-size: 16px; 
+	line-height: 25px;	
+	color: #d85e17;
+}
+
+.services-section {
+	background-image: url('/Content/img/backgrounds/homepage89.png');
+}
+
+.next-thing-section {
+	background-image: url('/Content/img/backgrounds/homepagesecond.jpg');
+}
+
+.cform .contact-hint {
+	color: #d85e17; 
+	font-weight: bold;
+}
+.cform .btn:hover {
+    border-color: #8b4f34;
+    background: #f16d20;
+}
