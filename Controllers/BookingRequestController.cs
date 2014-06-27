@@ -75,6 +75,8 @@ namespace KwasantWeb.Controllers
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 bookingRequestDO.BookingRequestStatusID = status;
+                bookingRequestDO.User = bookingRequestDO.User;
+                bookingRequestDO.BookingRequestStatus = bookingRequestDO.BookingRequestStatus;
                 uow.SaveChanges();
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
