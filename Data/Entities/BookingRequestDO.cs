@@ -17,8 +17,8 @@ namespace Data.Entities
 */
 
         [ForeignKey("BookingRequestStatus")]
-        public int BookingRequestStatusID { get; set; }
-        [Required]
+        public int BRState { get; set; }
+      //  [Required]   VERIFY THAT IT IS OK TO COMMENT THIS OUT
         public virtual BookingRequestStatusDO BookingRequestStatus { get; set; }
     }
 }
