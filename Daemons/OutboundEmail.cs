@@ -165,7 +165,21 @@ namespace Daemons
                             IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
                             if (CloudConfigurationManager.GetSetting("ArchiveOutboundEmail") == "true")
                             {
-                                envelope.Email.AddEmailRecipient(EmailParticipantType.BCC, new EmailAddressDO(CloudConfigurationManager.GetSetting("ArchiveEmailAddress")));   
+                                EmailAddressDO outboundemailaddress = new EmailAddressDO(CloudConfigurationManager.GetSetting("ArchiveEmailAddress"));
+                                if (envelope.Email.Recipients != null)
+                                {
+                                    envelope.Email.Recipients.Add(new RecipientDO()
+                                    {
+                                        Email = envelope.Email,
+                                        EmailAddress = outboundemailaddress,
+                                        Type = EmailParticipantType.BCC
+                                    });
+                                }
+                                else
+                                {
+                                    outboundemailaddress.Recipients = new System.Collections.Generic.List<RecipientDO>();
+                                    envelope.Email.AddEmailRecipient(EmailParticipantType.BCC, outboundemailaddress);
+                                }
                             }
                             packager.Send(envelope);
                             numSent++;

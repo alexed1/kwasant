@@ -162,5 +162,53 @@ namespace KwasantTest.Workflow
             Assert.Less(requestToEmailDuration.Elapsed, requestToEmailTimeout, "BookingRequest to Invitation conversion timed out.");
             Assert.Less(totalOperationDuration.Elapsed, totalOperationTimeout, "Workflow timed out.");
         }
+
+
+
+
+        [Test]
+        [Category("Workflow")]
+        public void Workflow_CanAddBcctoOutbound()
+        {
+            var subject = string.Format("Event {0}", Guid.NewGuid());
+            var now = DateTimeOffset.Now;
+            // iCal truncates time up to seconds so we need to truncate as well to be able to compare time
+            var start = new DateTimeOffset(now.Ticks / TimeSpan.TicksPerSecond * TimeSpan.TicksPerSecond, now.Offset).AddDays(1);
+            var end = start.AddHours(1);
+            const string startPrefix = "Start:";
+            const string endPrefix = "End:";
+            var body = string.Format("Event details:\r\n{0}{1}\r\n{2}{3}", startPrefix, start, endPrefix, end);
+
+            var emailDO = new EmailDO()
+            {
+                From = Email.GenerateEmailAddress(_uow, new MailAddress(_testUserEmail)),
+                Recipients = new List<RecipientDO>()
+                {
+                    new RecipientDO()
+                    {
+                        EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintegration@gmail.com")),
+                        Type = EmailParticipantType.TO
+                    }
+                },
+                Subject = subject,
+                PlainText = body,
+                HTMLText = body,
+                EmailStatus = EmailStatus.QUEUED
+            };
+
+            _uow.EmailRepository.Add(emailDO);
+            var emailService = new Email(_uow, emailDO);
+
+            var envelope = new EnvelopeDO()
+            {
+                Email = emailDO,
+                Handler = EnvelopeDO.GmailHander
+            };
+            _uow.EnvelopeRepository.Add(envelope);
+            
+            OutboundEmail outboundDaemon = new OutboundEmail();
+
+            DaemonTests.RunDaemonOnce(outboundDaemon);
+        }
     }
 }
