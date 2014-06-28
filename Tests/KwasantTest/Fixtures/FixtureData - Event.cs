@@ -35,7 +35,7 @@ namespace KwasantTest.Fixtures
         {
             return new EventDO()
             {
-
+                CreatedByID = "1",
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddHours(1),
                 Description = "Description of  Event",
@@ -51,6 +51,7 @@ namespace KwasantTest.Fixtures
             {
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddHours(1),
+                CreatedByID = "1",
                 Priority = 1,
                 Sequence = 1,
                 IsAllDay = false,
@@ -91,6 +92,7 @@ namespace KwasantTest.Fixtures
         {
             return new EventDO()
             {
+                CreatedByID = "1",
                 StateID = EventState.Booking,
                 Description = "This is my test invitation",
                 Summary = @"My test invitation",

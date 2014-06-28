@@ -3,7 +3,7 @@ using Data.Interfaces;
 
 namespace Data.Repositories
 {
-    public class BookingRequestStatusRepository : GenericRepository<BookingRequestDO>, IBookingRequestStatusRepository
+    public class BookingRequestStatusRepository : GenericRepository<BookingRequestStatusDO>, IBookingRequestStatusRepository
     {
         public BookingRequestStatusRepository(IUnitOfWork uow)
             : base(uow)
@@ -13,7 +13,7 @@ namespace Data.Repositories
     }
 
 
-    public interface IBookingRequestStatusRepository : IGenericRepository<BookingRequestDO>
+    public interface IBookingRequestStatusRepository : IGenericRepository<BookingRequestStatusDO>
     {
 
     }
