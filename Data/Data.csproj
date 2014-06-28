@@ -223,6 +223,10 @@
     <Compile Include="Migrations\201406261326564_Change-BookingStatusType.Designer.cs">
       <DependentUpon>201406261326564_Change-BookingStatusType.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406272015111_change_name_BRState2.cs" />
+    <Compile Include="Migrations\201406272015111_change_name_BRState2.Designer.cs">
+      <DependentUpon>201406272015111_change_name_BRState2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -363,6 +367,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406261326564_Change-BookingStatusType.resx">
       <DependentUpon>201406261326564_Change-BookingStatusType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406272015111_change_name_BRState2.resx">
+      <DependentUpon>201406272015111_change_name_BRState2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

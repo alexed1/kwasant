@@ -1,6 +1,6 @@
 ﻿namespace Data.Constants
 {
-    public class BookingRequestStatus
+    public class BRState
     {
         public const int Unprocessed = 1;
         public const int Processed = 2;

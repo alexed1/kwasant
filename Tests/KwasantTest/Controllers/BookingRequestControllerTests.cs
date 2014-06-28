@@ -66,7 +66,7 @@ namespace KwasantTest.Controllers
 
             BookingRequestController controller = new BookingRequestController();
             int id = _uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
-            JsonResult jsonResultActual = controller.SetStatus(id, BookingRequestStatus.Invalid) as JsonResult;
+            JsonResult jsonResultActual = controller.SetStatus(id, BRState.Invalid) as JsonResult;
             Assert.AreEqual("Success", ((KwasantPackagedMessage)jsonResultActual.Data).Name);
 
         }

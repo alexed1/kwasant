@@ -13,7 +13,7 @@ namespace KwasantCore.Services
     {
         public void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-            bookingRequest.BookingRequestStatusID = BookingRequestStatus.Unprocessed;
+            bookingRequest.BRState = BRState.Unprocessed;
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
             
             bookingRequest.User = curUser;
@@ -24,14 +24,14 @@ namespace KwasantCore.Services
         {
             return curBookingRequestRepository.GetAll().Where(e => e.User.Id == (from requests in curBookingRequestRepository.GetAll()
                                                                                  where requests.Id == id
-                                                                                 select requests.User.Id).FirstOrDefault()).Where(e => e.BookingRequestStatusID == BookingRequestStatus.Unprocessed).ToList();
+                                                                                 select requests.User.Id).FirstOrDefault()).Where(e => e.BRState == BRState.Unprocessed).ToList();
         }
 
         public object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)
         {
             return
                 curBookingRequestRepository.GetAll()
-                    .Where(e => e.BookingRequestStatusID == BookingRequestStatus.Unprocessed)
+                    .Where(e => e.BRState == BRState.Unprocessed)
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
