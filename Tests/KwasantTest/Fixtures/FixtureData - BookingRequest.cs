@@ -22,7 +22,7 @@ namespace KwasantTest.Fixtures
                                               HTMLText = "Booking request text",
                                               EmailStatus = EmailStatus.UNPROCESSED,
                                               DateReceived = DateTimeOffset.UtcNow,
-                                              BRState = BRState.Pending,
+                                              BRStateID = BRState.Pending,
                                               User = TestUser()
                                           };
             return curBookingRequestDO;
