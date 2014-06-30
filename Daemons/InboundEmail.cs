@@ -76,10 +76,8 @@ namespace Daemons
             }
 
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
-           // IEnumerable<uint> uids = client.Search(SearchCondition.Unseen()).ToList();
-            IEnumerable<uint> uids = client.Search(SearchCondition.SentBefore(DateTime.Now.AddDays(-1))).ToList();
-    
-          
+            IEnumerable<uint> uids = client.Search(SearchCondition.Unseen()).ToList();
+            //IEnumerable<uint> uids = client.Search(SearchCondition.SentSince(DateTime.Now.AddMinutes(-30))).ToList();
 
 
             string logString;
