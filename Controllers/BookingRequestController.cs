@@ -69,32 +69,16 @@ namespace KwasantWeb.Controllers
 
 
         [HttpGet]
-        public ActionResult SetStatus(int? id, string targetStatus)
+        public ActionResult SetStatus(int id, int status)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (id == null)
-                {
-                    return Json(new Error { Name = "Parameter Missing", Message = "Id is required" }, JsonRequestBehavior.AllowGet);
-                }
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                if (bookingRequestDO == null)
-                {
-                    return Json(new Error { Name = "Invalid Request", Message = "Booking Request does not exists" }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    (new BookingRequest()).SetStatus(uow, bookingRequestDO, targetStatus.ToLower());
-                    switch (targetStatus.ToLower())
-                    {
-                        case "invalid":
-                            return Json(new Error { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
-                        case "processed":
-                            return RedirectToAction("Index", "BookingRequest");
-                        default:
-                            return Json(new Error { Name = "Failure", Message = "Invalid status change request" }, JsonRequestBehavior.AllowGet);
-                    }
-                }
+                bookingRequestDO.BRStateID = status;
+                bookingRequestDO.User = bookingRequestDO.User;
+                bookingRequestDO.BRState = bookingRequestDO.BRState; //this line makes no sense.
+                uow.SaveChanges();
+                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -127,7 +111,7 @@ namespace KwasantWeb.Controllers
                     (new BookingRequest()).ProcessBookingRequest(uow, bookingRequest);
                     uow.SaveChanges();
                     result = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be";
-                }
+	}
             }
             catch (Exception)
             {

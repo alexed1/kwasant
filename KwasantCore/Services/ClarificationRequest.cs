@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using Data.Constants;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
@@ -120,7 +121,7 @@ namespace KwasantCore.Services
                     questionDO.Status = QuestionStatus.Answered;
                 }
                 curClarificationRequestDO.ClarificationStatus = ClarificationStatus.Resolved;
-                curBookingRequestDO.BookingStatus = "Pending";
+                curBookingRequestDO.BRStateID = BRState.Pending;
                 uow.SaveChanges();
             }
         }

@@ -12,7 +12,7 @@ namespace DDay.iCal.Test
         /// Tests bug 3191956 - iCalDateTime.HasTime inconsistency
         /// See https://sourceforge.net/tracker/?func=detail&aid=3191956&group_id=187422&atid=921236
         /// </summary>
-        [Test]
+        [Test, Category("DDay")] //Category(("DDay")]
         public void Bug3191956()
         {
             Queue<iCalDateTime> queue = new Queue<iCalDateTime>();
