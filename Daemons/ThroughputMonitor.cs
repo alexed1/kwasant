@@ -2,6 +2,7 @@
 using System.Linq;
 using Data.Constants;
 using Data.Interfaces;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using StructureMap;
 using Utilities;
@@ -50,7 +51,7 @@ namespace Daemons
                     if (oldBookingRequests.Any())
                     {
                         string toNumber = ConfigRepository.Get<string>("TwilioToNumber");
-                        var tw = new TwilioPackager();
+                        var tw = ObjectFactory.GetInstance<ISMSPackager>();
                         tw.SendSMS(toNumber, oldBookingRequests.Count() + " Booking requests are over-due by 30 minutes.");
                     }
                 }

@@ -5,7 +5,7 @@ using Utilities.Logging;
 
 namespace KwasantCore.Managers.APIManager.Packagers.Twilio
 {
-    public class TwilioPackager
+    public class TwilioPackager : ISMSPackager
     {
         private const string AccountSIDWebConfigName = "TWILIO_SID";
         private const string AuthTokenWebConfigName = "TWILIO_TOKEN";
