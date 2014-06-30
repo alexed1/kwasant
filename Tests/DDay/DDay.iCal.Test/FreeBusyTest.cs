@@ -20,7 +20,7 @@ namespace DDay.iCal.Test
         /// <summary>
         /// Ensures that GetFreeBusyStatus() return the correct status.
         /// </summary>
-        [Test, Category("FreeBusy")]
+        [Test, Category("DDay")] //Category(("FreeBusy")]
         public void GetFreeBusyStatus1()
         {
             IICalendar iCal = new iCalendar();

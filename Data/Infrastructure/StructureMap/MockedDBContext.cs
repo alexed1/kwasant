@@ -20,7 +20,7 @@ namespace Data.Infrastructure.StructureMap
             MigrationConfiguration.Seed(new UnitOfWork(this));
         }
 
-        private Dictionary<Type, object> _cachedSets = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, IEnumerable<object>> _cachedSets = new Dictionary<Type, IEnumerable<object>>();
         public int SaveChanges()
         {
             //When we save in memory, we need to make sure foreign entities are saved. An example:
@@ -36,12 +36,32 @@ namespace Data.Infrastructure.StructureMap
 
             AssignIDs();
 
-
+            AssertConstraints();
+            
             foreach (var newBookingRequestDO in addedRows.OfType<BookingRequestDO>())
                 AlertManager.BookingRequestCreated(newBookingRequestDO);
-
-
+            
             return 1;
+        }
+
+        private void AssertConstraints()
+        {
+            foreach (var set in _cachedSets)
+            {
+                foreach (object row in set.Value)
+                {
+                    //Check nullable constraint enforced
+                    foreach (var prop in row.GetType().GetProperties())
+                    {
+                        var hasAttribute = prop.GetCustomAttributes(typeof (RequiredAttribute)).Any();
+                        if (hasAttribute)
+                        {
+                            if(prop.GetValue(row) == null)
+                                throw new Exception("Property '" + prop.Name + "' on '" + row.GetType().Name + "' is marked as required, but is being saved with a null value.");
+                        }
+                    }
+                }
+            }
         }
 
         private IEnumerable<object> GetAdds()
@@ -77,9 +97,9 @@ namespace Data.Infrastructure.StructureMap
             foreach (var set in _cachedSets)
             {
                 int maxIDAlready = 0;
-                if ((set.Value as IEnumerable<object>).Any())
+                if (set.Value.Any())
                 {
-                    maxIDAlready = (set.Value as IEnumerable<object>).Max<object, int>(a =>
+                    maxIDAlready = set.Value.Max<object, int>(a =>
                     {
                         var propInfo = EntityPrimaryKeyPropertyInfo(a);
                         if (propInfo == null)
@@ -89,7 +109,7 @@ namespace Data.Infrastructure.StructureMap
                     });
                 }
 
-                foreach (object row in set.Value as IEnumerable)
+                foreach (var row in set.Value)
                 {
                     var propInfo = EntityPrimaryKeyPropertyInfo(row);
                     if (propInfo == null)
@@ -106,9 +126,9 @@ namespace Data.Infrastructure.StructureMap
         private int AddForeignValues()
         {
             int numAdded = 0;
-            foreach (KeyValuePair<Type, object> set in _cachedSets.ToList())
+            foreach (KeyValuePair<Type, IEnumerable<object>> set in _cachedSets.ToList())
             {
-                foreach (object row in set.Value as IEnumerable)
+                foreach (object row in set.Value)
                 {
                     PropertyInfo[] props = row.GetType().GetProperties();
                     foreach (PropertyInfo prop in props)
@@ -145,8 +165,8 @@ namespace Data.Infrastructure.StructureMap
 
         private bool AddValueToForeignSet(Object value)
         {
-            object checkSet = Set(value.GetType());
-            if ((checkSet as IEnumerable<object>).Contains(value))
+            var checkSet = Set(value.GetType());
+            if (checkSet.Contains(value))
             {
                 return false;
             }
@@ -162,11 +182,11 @@ namespace Data.Infrastructure.StructureMap
             return (IDbSet<TEntity>)(Set(entityType));
         }
 
-        private object Set(Type entityType)
+        private IEnumerable<object> Set(Type entityType)
         {
             if (!_cachedSets.ContainsKey(entityType))
             {
-                _cachedSets[entityType] = Activator.CreateInstance(typeof(MockedDbSet<>).MakeGenericType(entityType), new[] { this });
+                _cachedSets[entityType] = (IEnumerable<object>)Activator.CreateInstance(typeof(MockedDbSet<>).MakeGenericType(entityType), new[] { this });
             }
             return _cachedSets[entityType];
         }

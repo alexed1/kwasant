@@ -3,7 +3,9 @@
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!-->
-<%@ Page Language="C#"%>
+
+<%@ Page Language="C#" %>
+
 <%@ Import Namespace="System.Web.Optimization" %>
 <html class="no-js">
  <!--<![endif]-->
@@ -18,12 +20,7 @@
   ga('create', 'UA-52048536-1', 'kwasant.com');
   ga('send', 'pageview');
 
-</script>
-    
-    
-    
-    
-    
+</script>  
 
 <head>
     <meta charset="utf-8">
@@ -37,11 +34,33 @@
     <% Response.Write(Styles.Render("~/bundles/css/colorbox").ToHtmlString()); %>
     <% Response.Write(Styles.Render("~/bundles/css/frontpage").ToHtmlString()); %>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-	<link href="Content/css/font-awesome.css" rel="stylesheet">
+	<link href="Content/css/additionalcss/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
     <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <script src="Content/js/respond.min.js"></script>
     <![endif]-->
+    <style>
+
+     
+        .col1
+        {
+            float: left;
+            width: 50%;
+        }
+
+        .col2
+        {
+            float: left;
+            width: 42%;
+            margin-left: 4%;
+            border: solid 1px orange;
+            padding: 1%;
+            border-radius: 10px;
+            min-height: 516px;
+            margin-bottom:9%;
+        }
+    </style>
+
 </head>
 <body>
     <!--[if lt IE 7]>
@@ -55,10 +74,9 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </a>
-                <a class="brand goTop" href="index.aspx"><img class="floating" src="Content/img/perfect-krawsant.png" alt="Kwasant" title="Kwasant">Kwasant</a>
-                <!-- <img src="img/logo.png"></a> -->
+                <a class="brand goTop" href="index.aspx"><img class="floating" src="Content/img/site/perfect-krawsant.png" alt="Kwasant" title="Kwasant">Kwasant</a>
                 <br />                
-                <!-- <a class="brand goTop"  style="background-image: url(Content/img/logo.png);"></a> -->
+                <!-- <a class="brand goTop"  style="background-image: url(Content/img/site/logo.png);"></a> -->
                 <div class="nav-collapse">
                     <ul class="nav pull-right">
                         <li data-section="2"><a href="#how_to_works" title="How it Works">How it Works</a></li>
@@ -73,10 +91,9 @@
         </div>
     </div>
 
-    <div id="welcome" class="parallax" style="background-image: url(Content/img/background-test9.jpg);"  data-section="1">		
+    <div id="welcome" class="parallax" style="background-image: url(Content/img/backgrounds/background-test9.jpg);"  data-section="1">		
         <div id="logotext" class="text">
 			<h1>Kwasant</h1>
-			<!-- <div class="love text-center" style="background-image: url(Content/img/logo.png);"></div> -->
 			<p>We schedule your meetings for you</p>
         </div>
     </div>
@@ -87,7 +104,7 @@
                 <div class="row-fluid">
                     <h2 class="text-center"><b>Schedule a Meeting in One Step</b></h2>
                     <%--<article class="span4"> <i class="icon-resize-full"></i>--%>  
-                    <img class="pull-center" src="Content/img/from_this_to_this.png" alt="Schedule a Meeting in One Step" />
+                    <img class="pull-center" src="Content/img/site/from_this_to_this.png" alt="Schedule a Meeting in One Step" />
                 </div>
                 
             </div>
@@ -96,8 +113,12 @@
     <section id="how_to_works" class="row text-block" data-section="2">
         <div class="light-bg">
             <div class="container how-it-works-section">
-				<h2><i class="fa fa-cogs"></i> How it Works </h2>
-                <div class="section clearfix">
+
+                <div style="float: left">
+                </div>
+                <div class="col1">
+                    <div class="">
+                        <h2><i class="fa fa-cogs"></i>How it Works </h2>
                     <strong>1. Send one of your emails to Kwa@sant.com</strong>
                     <p></p>
 					<strong>2. One of our Bookers will read the thread and build a meeting invitation</strong>  
@@ -108,19 +129,30 @@
                     <p></p>
                     <p></p>
                     <p></p>
-                    <img class="pull-center" src="Content/img/example_using_kwasant_email.png" alt="Example using kwasant email" />
+                    <img class="pull-center" src="Content/img/site/example_using_kwasant_email.png" alt="Example using kwasant email" />
                 </div>
+               
 			</div>
+                <div class="col2">
+                    <form class="" id="frmTryItOut" action="#">
+                        <h2><i class="fa fa-key"></i>Try It Out </h2>
+                        <input type="text" class="span12 TryItOutfield" placeholder="Enter your email address here" name="Email" id="emailIdReqBooking">
+                        <textarea class="span12 TryItOutfield" placeholder="Example: ''Book me for a 3pm meeting next Tuesday at 3pm at Starbucks on Jones and Laguna with Sara@sant.com''" name="MeetingInfo" rows="10" id="meetingInfo"></textarea></td>
+                        <button class="btn btn-large pull-right" type="button" onclick="SendMailMeetingRequest()">Schedule Me!</button>
+                        <h2 style="font-size: 16px; line-height: 25px;" id="spBookingRequestMsg"></h2>
+                    </form>
+                </div>
+            </div>
 			<div>
                 <!-- this is a section that breaks up the website -->
-                <div id="services-bg" class="parallax" style="background-image: url(Content/img/homepage89.png);">
+                <div id="services-bg" class="parallax" style="background-image: url(Content/img/backgrounds/homepage89.png);">
                     <br />
                     <br />
                     <div class="#fff-bg">
                         <div class="text">
                             <blockquote>
                                 <h2>Kwasant</h2>
-                                <small> It just takes one step..</small>
+                                <small>It just takes one step..</small>
                             </blockquote>
                         </div>
 						<a href="#" data-section="2" class="toSection"><i class="fa fa-angle-double-down"></i></a>
@@ -131,15 +163,17 @@
 						<div>
 							<h2>Details</h2>
 							<p></p>
-							<p>We take the emails you provide to us and put them in front of of our human Booking Agents, who do what a personal assistant would do: they read the message, extract the key elements about the meeting, and enter them into a calendar.<p>
+                            <p>
+                                We take the emails you provide to us and put them in front of of our human Booking Agents, who do what a personal assistant would do: they read the message, extract the key elements about the meeting, and enter them into a calendar.<p>
 							This generates a Meeting Invitation that we email back to you using the open "ICS" standard. If you're using common calendaring software like Google Calendar, Apple iCal, and Microsoft Outlook, these emails show up in your inbox and allow you to add them to your calendar with one click.
 							Think of us as your personal assistant. If we can read your email and figure out the meeting time, we'll do it. You don’t have to give the information to us in any special format.
-							If the information you send us is too ambiguous, we'll send you back a request for clarification. We delete all email we receive 7 days after the event is scheduled.</p>
+							If the information you send us is too ambiguous, we'll send you back a request for clarification. We delete all email we receive 7 days after the event is scheduled.
+                            </p>
 						</div>
 						<div class="row-fluid section">
 							<div class="span12 text-center">
 								<!-- <h3 class="with-border">Watch who we are</h3> -->                        
-								<img src="Content/img/How_it_works_diagram.png" alt="How it works" />
+								<img src="Content/img/site/How_it_works_diagram.png" alt="How it works" />
 								<!-- <div class="videoWrapper">
 								<iframe src="http://player.vimeo.com/video/20596477?color=39ae77" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 								</div> -->
@@ -148,20 +182,20 @@
 					</section>
 				</div>
                 <!-- this is a section that breaks up the website -->
-				<div id="services-bg-sec" class="parallax" style="background-image: url(Content/img/homepagesecond.jpg);">
+				<div id="services-bg-sec" class="parallax" style="background-image: url(Content/img/backgrounds/homepagesecond.jpg);">
                     <br />
                     <br />
                     <div class="#fff-bg">
                         <div class="text">
                             <blockquote>
                                 <h2>Kwasant - The Next Thing You Can't Live Without</h2>
-                                <small> We use your email to build your calendar.</small>
+                                <small>We use your email to build your calendar.</small>
                             </blockquote>
                         </div>
 						<a href="#" data-section="2" class="toSection"><i class="fa fa-angle-double-down"></i></a>
                     </div>
                 </div>
-				<div  class="text-block" data-section="3">
+                <div class="text-block" data-section="3">
 				<div class="container faq-section">
                 <!-- this is the faq section -->
 					<section id="faq">
@@ -171,8 +205,7 @@
 								<div class="panel panel-default">
 									<div class="panel-heading">
 										<h4 class="panel-title">
-											<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-												Just what problem are you solving here?
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Just what problem are you solving here?
 											</a>
 										</h4>
 									</div>
@@ -185,8 +218,7 @@
 								<div class="panel panel-default">
 									<div class="panel-heading">
 										<h4 class="panel-title">
-											<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-												How do you make money?
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">How do you make money?
 											</a>
 										</h4>
 									</div>
@@ -199,8 +231,7 @@
 								<div class="panel panel-default">
 									<div class="panel-heading">
 										<h4 class="panel-title">
-											<a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-												What email addresses do you use?
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">What email addresses do you use?
 											</a>
 										</h4>
 									</div>
@@ -213,8 +244,7 @@
 								<div class="panel panel-default">
 									<div class="panel-heading">
 										<h4 class="panel-title">
-											<a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
-												What else do you do?
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">What else do you do?
 											</a>
 										</h4>
 									</div>
@@ -227,8 +257,7 @@
 								<div class="panel panel-default">
 									<div class="panel-heading">
 										<h4 class="panel-title">
-											<a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">
-												Can you also send a meeting invite to the other attendees?
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">Can you also send a meeting invite to the other attendees?
 											</a>
 										</h4>
 									</div>
@@ -241,8 +270,7 @@
 								<div class="panel panel-default">
 									<div class="panel-heading">
 										<h4 class="panel-title">
-											<a data-toggle="collapse" data-parent="#accordion" href="#collapseSix">
-												What if I don't give you enough detail about the meeting? Do you just guess?
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseSix">What if I don't give you enough detail about the meeting? Do you just guess?
 											</a>
 										</h4>
 									</div>
@@ -255,8 +283,7 @@
 								<div class="panel panel-default">
 									<div class="panel-heading">
 										<h4 class="panel-title">
-											<a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven">
-												Do you have a mascot?
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseSeven">Do you have a mascot?
 											</a>
 										</h4>
 									</div>
@@ -264,31 +291,33 @@
 										<div class="panel-body">
 											Yes. Feast your eyes on Kwasant the Kat
 										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</section>
-				</div>
-			</div>			
-        </div>
-    </section>  
-            
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </section>
+                                            </div>
+                                            </div>
+                                        </div>
+                </section>
+
 
             <section id="contacts" class="text-block" data-section="4">
                 <div class="dark-bg">
                     <div class="container">
-                        <h2><i class="fa fa-map-marker"></i> Get in touch</h2>
+                <h2><i class="fa fa-map-marker"></i>Get in touch</h2>
                         <p>Drop us a line.</p>
                         <div class="row-fluid section">
                             <div class="span8">
                                 <h3 class="with-border">Want to ask something?</h3>
                                 <form class="form clearfix" action="#">
-                                    <input type="text" class="span12" placeholder="Name" name="name">
-                                    <input type="email" class="span12" placeholder="Email" name="email">
-                                    <input type="text" class="span12" placeholder="Subject" name="subject">
-                                    <textarea class="span12" placeholder="Message" name="message" rows="6"></textarea>
-                                    <button class="btn btn-large pull-right" type="submit">Submit</button>
+                                    <input type="text" class="span12" placeholder="Name" name="name" id="name">
+                                    <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailId">
+                                   <%-- <input type="text" class="span12" placeholder="Subject" name="subject" id="subject">--%>
+                                    <textarea class="span12" placeholder="Message" name="message" rows="6" id="message"></textarea>
+                                     <button class="btn btn-large pull-right" type="button" onclick="SendMail();">Submit</button>
+                                
+                                     <span id="spMessage" style="color:#D85E17; font-weight: bold;" ></span>
                                 </form>
                             </div>
 
@@ -390,3 +419,51 @@
             <% Response.Write(Scripts.Render("~/bundles/js/main").ToHtmlString()); %>
 </body>
 </html>
+
+<script type="text/javascript">
+
+
+    // this function is used to get values and sent pass these values to “ProcessSubmittedEmail” action method on "HomeController" using ajax
+    //and display contant result to user using alert
+    function SendMail()
+    {
+       $.ajax({
+           url: "/Home/ProcessSubmittedEmail",
+           type: "POST",
+           async: true,
+           data: { 'name': $('#name').val(), 'emailId': $('#emailId').val(), 'message': $('#message').val() },
+           success: function (result) {
+               if (result == "success") {
+                   $('#name').val(""); $('#emailId').val(""); $('#message').val("");
+                   $('#spMessage').html("Email Submitted");
+               }
+               else {
+                   $('#spMessage').html(result);
+               }
+           }
+       });
+    }
+
+</script>
+<script type="text/javascript">
+    function SendMailMeetingRequest() {
+
+        $.ajax({
+            url: "/Home/ProcessHomePageBookingRequest",
+            type: "POST",
+            async: true,
+            data: { 'emailAddress': $('#emailIdReqBooking').val(), 'meetingInfo': $('#meetingInfo').val() },
+            success: function (result) {
+                if (result == "success") {
+                    $('#spBookingRequestMsg').html("Request Booking Created Successfully");
+                    //alert("Request Booking Created Successfully ");
+                }
+                else {
+                    //alert(result);
+                    $('#spBookingRequestMsg').html(result);
+                }
+            }
+        });
+    }
+
+</script>

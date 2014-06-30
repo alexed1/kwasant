@@ -6,7 +6,7 @@ namespace DDay.iCal.Test
     [TestFixture]
     public class ComponentTest
     {
-        [Test, Category("Component")]
+        [Test, Category("DDay")] //Category(("Component")]
         public void UniqueComponent1()
         {
             iCalendar iCal = new iCalendar();

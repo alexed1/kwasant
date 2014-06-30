@@ -57,6 +57,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Daemons\Daemons.csproj">
+      <Project>{B15EA73E-E0D0-4604-BCFC-DDAFB67F872D}</Project>
+      <Name>Daemons</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
@@ -64,6 +68,14 @@
     <ProjectReference Include="..\KwasantCore\KwasantCore.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>KwasantCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\KwasantICS\KwasantICS.csproj">
+      <Project>{D940EFCA-2D57-466C-8103-54DB173F1BD2}</Project>
+      <Name>KwasantICS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

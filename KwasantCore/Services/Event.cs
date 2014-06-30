@@ -1,4 +1,5 @@
 ﻿using System;
+using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Managers.CommunicationManager;
@@ -19,7 +20,7 @@ namespace KwasantCore.Services
             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
             curEventDO.CreatedBy = bookingRequestDO.User;
             curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
-            curEventDO.State = "Booking";
+            curEventDO.StateID = EventState.Booking;
 
             return curEventDO;
         }
@@ -39,7 +40,7 @@ namespace KwasantCore.Services
         //in some cases, additional work is necessary to handle the changes
         public void Process(IUnitOfWork uow, EventDO eventDO)
         {
-            eventDO.State = "ReadyForDispatch";
+            eventDO.StateID = EventState.ReadyForDispatch;
             new CommunicationManager().DispatchInvitations(uow, eventDO);
         }
      
