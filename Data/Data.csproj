@@ -88,7 +88,7 @@
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingType.cs" />
-    <Compile Include="Entities\EventEmailDO.cs" />
+    <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Entities\UserAgentInfoDO.cs" />
     <Compile Include="Infrastructure\AlertManager.cs" />

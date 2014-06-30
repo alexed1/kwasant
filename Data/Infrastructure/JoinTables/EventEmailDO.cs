@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Data.Entities
+namespace Data.Infrastructure.JoinTables
 {
     public class EventEmailDO
     {
