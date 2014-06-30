@@ -1,3 +1,5 @@
+/*Home Page*/
+
 .col1 {
     float: left;
     width: 50%;
@@ -40,3 +42,178 @@
     border-color: #8b4f34;
     background: #f16d20;
 }
+
+/*Calendar Index*/
+
+/* Set padding to keep content from hitting the edges */
+
+.body-content {
+    padding: 0 15px;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+
+input, select, textarea {
+    max-width: 280px;
+}
+
+/* styles for validation helpers */
+
+.field-validation-error {
+    color: #b94a48;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+input.input-validation-error {
+    border: 1px solid #b94a48;
+}
+
+input[type="checkbox"].input-validation-error {
+    border: 0 none;
+}
+
+.validation-summary-errors {
+    color: #b94a48;
+}
+
+.validation-summary-valid {
+    display: none;
+}
+
+.bookingAgentFormControlBorder {
+    border: 2px solid gray;
+    color: #000000;
+    font-size: 0.85em;
+    font-weight: normal;
+    min-height: 35px;
+    padding-left: 2px;
+    text-align: left;
+}
+
+.label_vertical_alignment {
+    position: relative;
+    top: 10px;
+}
+
+.container_box {
+    border: 2px solid gray;
+    min-height: 800px;
+    padding-left: 20px;
+}
+
+.mid_container_text {
+    font-size: 0.85em;
+}
+
+.divider_height {
+    height: 20px;
+}
+
+.bookingAgentFormControlBorder {
+    border: 2px solid gray;
+    color: #000000;
+    font-size: 0.85em;
+    font-weight: normal;
+    min-height: 50px;
+    overflow-x: auto;
+    padding-left: 2px;
+    text-align: left;
+}
+
+#toolbar {
+    background: none;
+    border: none;
+    margin: 10px 0px 20px 0px;
+    position: relative;
+    width: 174px;
+}
+
+#toolbar a {
+    background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e2e2e2));
+    background: -webkit-linear-gradient(top, #fafafa 0%, #e2e2e2);
+    background: -moz-linear-gradient(top, #fafafa 0%, #e2e2e2);
+    background: -ms-linear-gradient(top, #fafafa 0%, #e2e2e2);
+    background: -o-linear-gradient(top, #fafafa 0%, #e2e2e2);
+    background: linear-gradient(top, #fafafa 0%, #e2e2e2);
+    border: 1px solid #aaa;
+    color: #666;
+    display: inline-block;
+    filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#fafafa", endColorStr="#e2e2e2");
+    height: 35px;
+    padding: 5px;
+    text-decoration: none;
+}
+
+.activeRequest {
+    background-color: #aaa;
+}
+
+.jumbotron.calendar-section {
+	padding: 48px 20px;	
+}
+
+.calendar-section .emailInfoBox {
+	border: none; 
+	height: 100%; 
+	padding: 0;
+}
+
+.calendar-section .emailInfoBox button {
+	width: 120px; 
+	font-size: 14px; 
+	height: 40px;
+}
+
+.calendar-section .emailInfoBox iframe.frminfo {
+	width: 100%;
+	border: none; 
+	margin-top: -7px;	
+}
+
+.calendar-section .emailInfoBox table.email-info-tabele {
+	width: 95%;	
+	box-shadow: #000 0 0 10px; 
+	margin: 10px; 	
+}
+
+.calendar-section .emailInfoBox table.email-info-tabele tr th {
+	width: 70%;	
+	text-align: center;	
+	font-size: 14px;	
+}
+
+.calendar-section .emailInfoBox table.email-info-tabele tr th:first-child {
+	width: 30%;		
+}
+
+.calendar-section .emailInfoBox table.email-info-tabele tbody {
+	border-top: 1px solid #808080;
+}
+
+.calendar-section a.btnRequestClarification button {
+	width: 160px; 
+	font-size: 14px; 
+	height: 40px;	
+}
+
+.calendar-section .divCalender {
+	padding-bottom: 79px;	
+}
+
+.calendar-section .toolbar {
+	font-size: 12px; 
+	width: 100%;
+}
+
+.calendar-section .divCalender-inner {
+	padding-right: 5px
+}
+
+.calendar-section .calendar-area {
+	float: left; padding-bottom: 101px; padding-top: 53px; position: relative;
+}
+
+

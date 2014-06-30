@@ -2,7 +2,6 @@
     line-height: 1.2em;
 }
 
-
 html,
 button,
 input,
@@ -10,17 +9,21 @@ select,
 textarea {
     color: #222;
 }
+
 html {
     font-size: 1em;
 }
+
 ::-moz-selection {
     background: #b3d4fc;
     text-shadow: none;
 }
+
 ::selection {
     background: #F2E9DF;
     text-shadow: none;
 }
+
 hr {
     display: block;
     height: 1px;
@@ -29,41 +32,51 @@ hr {
     margin: 1em 0;
     padding: 0;
 }
+
 audio,
 canvas,
 img,
 video {
     vertical-align: middle;
 }
+
 fieldset {
     border: 0;
     margin: 0;
     padding: 0;
 }
+
 textarea {
     resize: vertical;
 }
+
 a{
 	color: #D85E17;
 }
+
 a:hover{
 	text-decoration: none;
 	color: #F2E9DF;
 }
+
 a:focus{
 	outline: none;
 	text-decoration: none;
 	color: #D85E17;
 }
+
 ul{
 	list-style: square;
 }
+
 ul ul{
 	list-style: circle;
 }	
+
 ul li, ol li{
 	margin: 3px 0;
 }
+
 .browsehappy {
     margin: 0.2em 0;
     background: #ccc;
@@ -74,7 +87,10 @@ ul li, ol li{
 /* ==========================================================================
    Author's custom styles
    ========================================================================== */
-html { height: 100%; }
+html { 
+	height: 100%; 
+}
+
 body { 
 	min-height: 100%; 
 	font-size: 1.5em;
@@ -520,7 +536,7 @@ p .btn{
 	border-radius: 0;
 	font-size: 14px;
 }
-.modal-footer{x
+.modal-footer{
 	background: #F2E9DF;
 	border-top: 1px solid #4d5f65;
 	box-shadow: 0 1px 0 0 #161B1D;

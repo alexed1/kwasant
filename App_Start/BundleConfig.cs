@@ -106,10 +106,6 @@ namespace KwasantWeb.App_Start
 				"~/Content/css/frontcss/main.css"
                 ));
 
-            bundles.Add(new StyleBundle("~/bundles/css/default").Include(
-				"~/Content/css/generalcss/default.css"
-                ));
-
 			bundles.Add(new StyleBundle("~/bundles/css/backendcss").Include(
 				"~/Content/css/backendcss/default.css"
 				));
