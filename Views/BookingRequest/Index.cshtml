@@ -60,7 +60,7 @@
                             dataType: "json",
                             contentType: "application/json",
                             type: "GET",
-                            data: { id: data.request.id, targetStatus: @BookingRequestStatus.Invalid },
+                            data: { id: data.id, status: "@BRState.Invalid" },
                             success: function (response) {
                                 if (response.Name == "Success") {
                                     //removing the current row

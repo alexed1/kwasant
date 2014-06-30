@@ -68,7 +68,7 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants\BookingRequestStatus.cs" />
+    <Compile Include="Constants\BRState.cs" />
     <Compile Include="Constants\EventState.cs" />
     <Compile Include="Constants\InstructionConstants.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
@@ -88,7 +88,7 @@
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingType.cs" />
-    <Compile Include="Entities\EventEmailDO.cs" />
+    <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Entities\UserAgentInfoDO.cs" />
     <Compile Include="Infrastructure\AlertManager.cs" />
@@ -222,6 +222,10 @@
     <Compile Include="Migrations\201406261326564_Change-BookingStatusType.cs" />
     <Compile Include="Migrations\201406261326564_Change-BookingStatusType.Designer.cs">
       <DependentUpon>201406261326564_Change-BookingStatusType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406272015111_change_name_BRState2.cs" />
+    <Compile Include="Migrations\201406272015111_change_name_BRState2.Designer.cs">
+      <DependentUpon>201406272015111_change_name_BRState2.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -363,6 +367,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406261326564_Change-BookingStatusType.resx">
       <DependentUpon>201406261326564_Change-BookingStatusType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406272015111_change_name_BRState2.resx">
+      <DependentUpon>201406272015111_change_name_BRState2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

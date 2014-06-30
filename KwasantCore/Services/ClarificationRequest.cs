@@ -121,7 +121,7 @@ namespace KwasantCore.Services
                     questionDO.Status = QuestionStatus.Answered;
                 }
                 curClarificationRequestDO.ClarificationStatus = ClarificationStatus.Resolved;
-                curBookingRequestDO.BookingRequestStatusID = BookingRequestStatus.Pending;
+                curBookingRequestDO.BRStateID = BRState.Pending;
                 uow.SaveChanges();
             }
         }
