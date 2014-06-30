@@ -42,8 +42,10 @@ namespace Data.Repositories
         {
             string fromEmailAddress = curMessage.From.Address;
             UserRepository userRepo = UnitOfWork.UserRepository;
+
             UserDO curUser = userRepo.DBSet.Local.FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
-            if(curUser == null)
+
+            if (curUser == null)
                 curUser = userRepo.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
 
             if (curUser == null)
@@ -54,8 +56,13 @@ namespace Data.Repositories
                 curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 curMessage.User = curUser;
                 userRepo.Add(curUser);
-                AlertManager.CustomerCreated(curUser); 
             }
+
+            if (userRepo.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress) == null)
+            {
+                AlertManager.CustomerCreated(curUser);
+            }
+
             return curUser;
         }
     }
