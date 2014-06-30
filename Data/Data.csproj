@@ -208,6 +208,10 @@
     <Compile Include="Migrations\201406231703549_Sync-23.06.2014.Designer.cs">
       <DependentUpon>201406231703549_Sync-23.06.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406301448461_AddUserGoogleAuthData.cs" />
+    <Compile Include="Migrations\201406301448461_AddUserGoogleAuthData.Designer.cs">
+      <DependentUpon>201406301448461_AddUserGoogleAuthData.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -337,6 +341,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406231703549_Sync-23.06.2014.resx">
       <DependentUpon>201406231703549_Sync-23.06.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406301448461_AddUserGoogleAuthData.resx">
+      <DependentUpon>201406301448461_AddUserGoogleAuthData.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

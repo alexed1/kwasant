@@ -5,12 +5,16 @@ using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
+using Google.Apis.Auth.OAuth2.Mvc;
+using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
+using KwasantWeb.Controllers.GoogleCalendar;
 using KwasantWeb.Controllers.Helpers;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
@@ -45,49 +49,94 @@ namespace KwasantWeb.Controllers
         }
     }
 
-    [System.Web.Http.Authorize]
+    [KwasantAuthorize]
     public class AccountController : Controller
-    {          
-        [System.Web.Http.AllowAnonymous]
+    {
+        public async Task<ActionResult> GrantGoogleCalendarAccess()
+        {
+            var result = await new AuthorizationCodeMvcApp(this, new AppFlowMetadata(this.GetUserId()))
+                                   .AuthorizeAsync(CancellationToken.None);
+
+            if (result.Credential != null)
+            {
+                return RedirectToAction("Manage", new { googleCalendarAccessGranted = true });
+            }
+            else
+            {
+                return new RedirectResult(result.RedirectUri);
+            }
+        }
+
+        public ActionResult ForbidGoogleCalendarAccess()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUserDO = uow.UserRepository.GetByKey(this.GetUserId());
+                curUserDO.GoogleAuthData = null;
+                uow.SaveChanges();
+
+                return RedirectToAction("Manage", new { googleCalendarAccessForbidden = true });
+            }    
+        }
+
+        public ActionResult Manage(bool googleCalendarAccessGranted = false, bool googleCalendarAccessForbidden = false)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUserDO = uow.UserRepository.GetByKey(this.GetUserId());
+                var curManageUserViewModel = AutoMapper.Mapper.Map<UserDO, ManageUserViewModel>(curUserDO);
+
+                if (googleCalendarAccessGranted)
+                {
+                    ViewBag.StatusMessage = "Google Calendar hooked up successfully.";
+                }
+                else if (googleCalendarAccessForbidden)
+                {
+                    ViewBag.StatusMessage = "Google Calendar access forbidden.";
+                }
+                return View(curManageUserViewModel);
+            }
+        }
+
+        [AllowAnonymous]
         public ActionResult Index(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
-        [System.Web.Http.AllowAnonymous]
+        [AllowAnonymous]
         public ActionResult Register()
         {
             return View();
         }
 
-        [System.Web.Http.AllowAnonymous]
+        [AllowAnonymous]
         public ActionResult RegistrationSuccessful()
         {
             return View();
         }
 
-        [System.Web.Http.AllowAnonymous]
         public ActionResult MyAccount()
         {
             return View();
         }
 
-        [System.Web.Http.AllowAnonymous]
+        [AllowAnonymous]
         public ActionResult LogOff()
         {
             new User().LogOff();
             return RedirectToAction("Index", "Account");
         }
 
-        [System.Web.Http.AllowAnonymous]
+        [AllowAnonymous]
         public ActionResult Confirm(RegisterViewModel model)
         {
             return View(model);
         }
 
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.AllowAnonymous]
+        [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public  ActionResult Register(RegisterViewModel model)
         {
@@ -118,8 +167,8 @@ namespace KwasantWeb.Controllers
             return View();
         }
 
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.AllowAnonymous]
+        [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
@@ -196,8 +245,8 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.AllowAnonymous]
+        [HttpGet]
+        [AllowAnonymous]
         public ActionResult ConfirmEmail(string userId, string code)
         {
             string returnViewName = "RegistrationSuccessful";
