@@ -25,6 +25,8 @@ namespace KwasantTest.Workflow
         private IUnitOfWork _uow;
         private string _testUserEmail;
         private string _testUserEmailPassword;
+        private string _archiveOutboundEmail;
+        private string _archiveOutboundPassword;
 
         [SetUp]
         public void Setup()
@@ -34,6 +36,11 @@ namespace KwasantTest.Workflow
 
             _testUserEmail = ConfigRepository.Get("OutboundUserName");
             _testUserEmailPassword = ConfigRepository.Get("OutboundUserPassword");
+
+            _archiveOutboundEmail = ConfigRepository.Get("ArchiveEmailAddress");
+            //_archiveOutboundEmail = "kwasantoutbound@gmail.com";
+            _archiveOutboundPassword = ConfigRepository.Get("ArchiveEmailPassword");
+            //_archiveOutboundPassword = "thales11";
         }
 
 
@@ -106,7 +113,7 @@ namespace KwasantTest.Workflow
 
             if (request != null)
             {
-                var lines = request.HTMLText.Split(new[] {"\r\n"}, StringSplitOptions.None);
+                var lines = request.HTMLText.Split(new[] { "\r\n" }, StringSplitOptions.None);
                 var startString = lines[1].Remove(0, startPrefix.Length);
                 var endString = lines[2].Remove(0, endPrefix.Length);
                 var e = new Event();
@@ -133,8 +140,8 @@ namespace KwasantTest.Workflow
                         if (icsView != null)
                         {
                             var cal = iCalendar.LoadFromStream(icsView.ContentStream).FirstOrDefault();
-                            if (cal != null && cal.Events.Count > 0 && 
-                                cal.Events[0].Start.Value == start && 
+                            if (cal != null && cal.Events.Count > 0 &&
+                                cal.Events[0].Start.Value == start &&
                                 cal.Events[0].End.Value == end)
                             {
                                 inviteMessageId = uid;
@@ -152,7 +159,7 @@ namespace KwasantTest.Workflow
                 if (inviteMessage != null)
                 {
                     client.DeleteMessage(inviteMessageId);
-            }
+                }
             }
             totalOperationDuration.Stop();
 
@@ -164,20 +171,18 @@ namespace KwasantTest.Workflow
         }
 
 
-
-
         [Test]
         [Category("Workflow")]
         public void Workflow_CanAddBcctoOutbound()
         {
-            var subject = string.Format("Event {0}", Guid.NewGuid());
+            var subject = string.Format("Bcc Test {0}", Guid.NewGuid());
             var now = DateTimeOffset.Now;
             // iCal truncates time up to seconds so we need to truncate as well to be able to compare time
             var start = new DateTimeOffset(now.Ticks / TimeSpan.TicksPerSecond * TimeSpan.TicksPerSecond, now.Offset).AddDays(1);
             var end = start.AddHours(1);
             const string startPrefix = "Start:";
             const string endPrefix = "End:";
-            var body = string.Format("Event details:\r\n{0}{1}\r\n{2}{3}", startPrefix, start, endPrefix, end);
+            var body = string.Format("Bcc Test details:\r\n{0}{1}\r\n{2}{3}", startPrefix, start, endPrefix, end);
 
             var emailDO = new EmailDO()
             {
@@ -197,7 +202,6 @@ namespace KwasantTest.Workflow
             };
 
             _uow.EmailRepository.Add(emailDO);
-            var emailService = new Email(_uow, emailDO);
 
             var envelope = new EnvelopeDO()
             {
@@ -205,10 +209,15 @@ namespace KwasantTest.Workflow
                 Handler = EnvelopeDO.GmailHander
             };
             _uow.EnvelopeRepository.Add(envelope);
-            
-            OutboundEmail outboundDaemon = new OutboundEmail();
 
+            OutboundEmail outboundDaemon = new OutboundEmail();
             DaemonTests.RunDaemonOnce(outboundDaemon);
+            ImapClient client = new ImapClient("imap.gmail.com", 993, _archiveOutboundEmail, _archiveOutboundPassword, AuthMethod.Login, true);
+            _uow.SaveChanges();
+            
+            var requestMessages = client.Search(SearchCondition.Subject(subject)).ToList();
+            client.DeleteMessages(requestMessages);
+            Assert.AreEqual(1, requestMessages.Count());
         }
     }
 }
