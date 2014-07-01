@@ -719,12 +719,24 @@ blockquote h2 i{
 #welcome:hover {
 	cursor: pointer;
 }
-#logotext.text {
-	width: 24em;
-	position: fixed;
+
+.landing-welcome-area {
+	width: 100%;
+	position: fixed;	
 	top: 35%;
+}
+
+.landing-welcome-area .landing-welcome-inner {
+	width: 95%;
+	margin: 0 auto;
+	overflow: hidden;	
+}
+
+#logotext.text {
+	width: 24em;	
+	margin-top: 63px;
 	font-size: 1em;
-	left: 50%;
+	float: right;
 	text-align: center;
 	border: .2em solid #fff;
 	margin-left: -12em;
@@ -733,6 +745,30 @@ blockquote h2 i{
 	text-shadow: 0px 1px 2px rgba(0,0,0,0.5);
 	box-shadow: 0px 1px 2px rgba(0,0,0,0.7);
 	line-height: 1.5; 
+}
+
+.landing-welcome-area .landing-video {
+	background: url('/Content/img/backgrounds/ie-black-bg.png');
+	padding: 10px;
+	float: left;	
+	border: 4px solid #fff;
+	box-shadow: 0px 1px 2px rgba(0,0,0,0.7);
+}
+
+.landing-welcome-area .landing-video .video-inner {
+	position: relative;
+}
+
+.landing-welcome-area .landing-video img.video-screen {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 3;
+}
+
+.landing-welcome-area .landing-video iframe {
+	position: relative;
+	z-index: 2;	
 }
 
 .lt-ie9 #logotext.text{
@@ -1344,6 +1380,12 @@ footer .info-block i{
 	clear: both;
 }
 
+@media only screen and (min-width: 1368px) {
+	.landing-welcome-area .landing-welcome-inner {
+		width: 85%;
+	}
+}
+
 @media only screen and (max-width: 1465px) {
 	#works-bg .text {
 		left: 50%;
@@ -1351,6 +1393,27 @@ footer .info-block i{
 		width: 72%;	
 	}	
 }
+
+@media only screen and (max-width: 1200px) {
+	.landing-video {
+		width: 45%;
+	}
+
+	.landing-video iframe.video-frame {
+		width: 100%;
+		height: 257px;
+	}
+
+	.landing-video img.video-screen {
+		width: 100%;
+		height: 257px;	
+	}
+
+	#logotext.text {
+		width: 45%;	
+	}
+}
+
 @media only screen and (max-width: 980px) {
 	.navbar-fixed-top,
 	.navbar-fixed-bottom,
@@ -1373,12 +1436,18 @@ footer .info-block i{
 		left: 50%;
 		top: 25%;
 	}
+
+	.landing-video {
+		display: none;
+	}
+
 	#logotext.text {
 		width: 90%;
 		margin-left: -45%;
 		position: absolute;
 		top: 30%;
 		left: 50%;
+		margin-top: 0;
 	}
 	.span3 .img-wrap .icon-zoom-in{
 		font-size: 30px;

@@ -10,6 +10,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
@@ -294,9 +295,9 @@ namespace KwasantCore.Managers.CommunicationManager
 
         private void SendBRSMSes(IEnumerable<BookingRequestDO> bookingRequests)
         {
-            TwilioPackager twil = new TwilioPackager();
             if (bookingRequests.Any())
             {
+                var twil = ObjectFactory.GetInstance<ISMSPackager>();
                 string toNumber = CloudConfigurationManager.GetSetting("TwilioToNumber");
                 twil.SendSMS(toNumber, "Inbound Email has been received");
             }

@@ -69,11 +69,21 @@ ga('send', 'pageview');
         </div>
     </div>
 
-    <div id="welcome" class="parallax top-banner"  data-section="1">		
-        <div id="logotext" class="text">
-			<h1>Kwasant</h1>
-			<p>We schedule your meetings for you</p>
-        </div>
+    <div id="welcome" class="parallax top-banner home-welcome" data-section="1">		
+		<div class="landing-welcome-area">
+			<div class="landing-welcome-inner">				
+				<div class="landing-video">
+					<div class="video-inner">
+						<img class="video-screen" src="Content/img/site/kwasant-video-screen.png" alt="Kwasant Video" />
+						<iframe class="video-frame" src="//player.vimeo.com/video/98375763" width="500" height="297" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+					</div>
+				</div>	
+				<div id="logotext" class="text">
+					<h1>Kwasant</h1>
+					<p>We schedule your meetings for you</p>
+				</div>
+			</div>			
+		</div>
     </div>
 
     <section id="about" class="row text-block" data-section="1">
@@ -383,6 +393,7 @@ ga('send', 'pageview');
     <% Response.Write(Scripts.Render("~/bundles/js/waypoints").ToHtmlString()); %>
     <% Response.Write(Scripts.Render("~/bundles/js/placeholder").ToHtmlString()); %>
     <% Response.Write(Scripts.Render("~/bundles/js/modernizr").ToHtmlString()); %>
+			<script src="http://a.vimeocdn.com/js/froogaloop2.min.js"></script>
     <% Response.Write(Scripts.Render("~/bundles/js/main").ToHtmlString()); %>
 
 	<script type="text/javascript">

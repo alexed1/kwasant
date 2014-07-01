@@ -12,6 +12,7 @@ using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Utilities;
 
 namespace Data.Migrations
 {
@@ -25,7 +26,7 @@ namespace Data.Migrations
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.KwasantDbContext";
         }
-
+        
         protected override void Seed(KwasantDbContext context)
         {
             //  This method will be called after migrating to the latest version.
@@ -41,7 +42,7 @@ namespace Data.Migrations
             Seed(unitOfWork);
 
             AddRoles(unitOfWork);
-           //AddAdmins(unitOfWork);
+            AddAdmins(unitOfWork);
 
             unitOfWork.SaveChanges();
         }
@@ -134,7 +135,7 @@ namespace Data.Migrations
             CreateAdmin("pabitra@hotmail.com", "pabi1234", unitOfWork);
             CreateAdmin("rjrudman@gmail.com", "robert1234", unitOfWork);
             CreateAdmin("quader.mamun@gmail.com", "abdul1234", unitOfWork);
-            CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
+            // CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork); see https://maginot.atlassian.net/browse/KW-272
         }
 
         /// <summary>
@@ -170,21 +171,17 @@ namespace Data.Migrations
                 }
                 else
                 {
+                    //This line forces EF to load the EmailAddress, since it's done lazily. For whatever reason, seeding admins breaks since it thinks the EmailAddress is null...
+                    var forceEmail = existingUser.EmailAddress;
+                    //This line forces the above not to be optimised out. In production, it does nothing.
+                    Console.WriteLine(forceEmail);
                     if (!um.IsInRole(existingUser.Id, "Admin"))
                         um.AddToRole(existingUser.Id, "Admin");
                 }
             }
             catch (DbEntityValidationException e)
             {
-                string errorFormat = @"Validation failed for entity [{0}]. Validation errors:" + Environment.NewLine + @"{1}";
-                var errorList = new List<String>();
-                foreach (var entityValidationError in e.EntityValidationErrors)
-                {
-                    var entityName = entityValidationError.Entry.Entity.GetType().Name;
-                    var errors = String.Join(Environment.NewLine, entityValidationError.ValidationErrors.Select(a => a.PropertyName + ": " + a.ErrorMessage));
-                    errorList.Add(String.Format(errorFormat, entityName, errors));
-                }
-                throw new Exception(String.Join(Environment.NewLine + Environment.NewLine, errorList) + Environment.NewLine, e);
+                ExceptionHandling.DisplayValidationErrors(e);
             }
         }
     }
