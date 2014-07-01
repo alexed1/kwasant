@@ -176,6 +176,11 @@
                 <tbody id="tbluserrequests" style="border-top: 1px solid grey;">
                 </tbody>
             </table>
+            <br />
+            <br />
+            <a id="btnRequestClarification" href="#">
+                <button style="width: 160px; font-size: 14px; height: 40px;">Request Clarification</button>
+            </a>
         </div>
 
         <div id="divCalender" class="col-md-6 container_box" style="padding-bottom: 79px;">
@@ -438,6 +443,14 @@
                 }
             });
         }
+
+        $('#btnRequestClarification').click(function() {
+            if (checkactivewindow()) { return false; }
+            Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.Id })',
+                {
+                    horizontalAlign: 'left',
+                });
+        });
     });
 
 </script>

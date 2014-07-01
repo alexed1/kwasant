@@ -92,7 +92,7 @@ namespace KwasantTest.Services
             (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
 
             customersNow = _uow.UserRepository.GetAll().ToList();
-            Assert.AreEqual(1, customersNow.Count);
+            Assert.AreEqual(2, customersNow.Count);
             Assert.AreEqual(user.EmailAddress, customersNow.First().EmailAddress);
             Assert.AreEqual(user.FirstName, customersNow.First().FirstName);
         }

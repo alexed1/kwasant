@@ -13,6 +13,9 @@ namespace Data.Entities
 
         public List<InstructionDO> Instructions { get; set; }
 
+/*
+        public virtual ClarificationRequestDO ClarificationRequest { get; set; }
+*/
         private string _bookingStatus;
 
         [Required]
