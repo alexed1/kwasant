@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Configuration;
 using Microsoft.WindowsAzure;
 
 namespace Utilities
 {
     public static class ConfigRepository
     {
+        public static void Set(String key, String value)
+        {
+            ConfigurationManager.AppSettings[key] = value;
+        }
+
         public static String Get(String key, bool required = true)
         {
             return Get<String>(key, required);
@@ -13,6 +19,7 @@ namespace Utilities
         public static T Get<T>(String key, bool required = true)
         {
             var stringValue = CloudConfigurationManager.GetSetting(key);
+
             if(String.IsNullOrEmpty(stringValue) && required)
                 throw new ConfigurationException("Key '" + key + "' not found.");
 

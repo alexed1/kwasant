@@ -13,10 +13,12 @@ using System.Net.Mail;
 using Data.Infrastructure.StructureMap;
 using System;
 using Data.Repositories;
+using KwasantCore.Managers.IdentityManager;
 
 
 namespace KwasantWeb.Controllers
 {
+    [KwasantAuthorizeAttribute(Roles = "Admin")]
     public class BookingRequestController : Controller
     {
         private DataTablesPackager _datatables;
@@ -74,9 +76,9 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.BRStateID = status;
+                bookingRequestDO.BRState = status;
                 bookingRequestDO.User = bookingRequestDO.User;
-                bookingRequestDO.BRState = bookingRequestDO.BRState; //this line makes no sense.
+                bookingRequestDO.BookingRequestStatus = bookingRequestDO.BookingRequestStatus; //this line makes no sense.
                 uow.SaveChanges();
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
@@ -111,7 +113,7 @@ namespace KwasantWeb.Controllers
                     (new BookingRequest()).ProcessBookingRequest(uow, bookingRequest);
                     uow.SaveChanges();
                     result = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be";
-	}
+                }
             }
             catch (Exception)
             {

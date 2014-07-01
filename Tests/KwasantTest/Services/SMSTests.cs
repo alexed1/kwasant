@@ -1,6 +1,8 @@
-﻿using KwasantCore.Managers.APIManager.Packagers.Twilio;
+﻿using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantCore.StructureMap;
 using NUnit.Framework;
+using StructureMap;
 using Utilities;
 
 namespace KwasantTest.Services
@@ -12,13 +14,14 @@ namespace KwasantTest.Services
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
+
+            ObjectFactory.Configure(a => a.For<ISMSPackager>().Use(new TwilioPackager()));
         }
 
         [Test]
         public void TestTwillioConfiguration()
         {
             //We just want to test that we can instantiate the packager
-            var twil = new TwilioPackager();
         }
 
         [Test]
@@ -26,7 +29,7 @@ namespace KwasantTest.Services
         {
             const string testBody = "Test SMS";
 
-            var twil = new TwilioPackager();
+            var twil = ObjectFactory.GetInstance<ISMSPackager>();
             var res = twil.SendSMS(ConfigRepository.Get<string>("TwilioToNumber"), testBody);
 
             Assert.AreEqual(testBody, res.Body);

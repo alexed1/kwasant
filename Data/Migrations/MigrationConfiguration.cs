@@ -25,7 +25,7 @@ namespace Data.Migrations
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.KwasantDbContext";
         }
-
+        
         protected override void Seed(KwasantDbContext context)
         {
             //  This method will be called after migrating to the latest version.
@@ -41,7 +41,7 @@ namespace Data.Migrations
             Seed(unitOfWork);
 
             AddRoles(unitOfWork);
-           //AddAdmins(unitOfWork);
+            AddAdmins(unitOfWork);
 
             unitOfWork.SaveChanges();
         }
@@ -170,6 +170,10 @@ namespace Data.Migrations
                 }
                 else
                 {
+                    //This line forces EF to load the EmailAddress, since it's done lazily. For whatever reason, seeding admins breaks since it thinks the EmailAddress is null...
+                    var forceEmail = existingUser.EmailAddress;
+                    //This line forces the above not to be optimised out. In production, it does nothing.
+                    Console.WriteLine(forceEmail);
                     if (!um.IsInRole(existingUser.Id, "Admin"))
                         um.AddToRole(existingUser.Id, "Admin");
                 }
