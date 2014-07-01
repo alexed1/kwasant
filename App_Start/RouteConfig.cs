@@ -17,12 +17,6 @@ namespace KwasantWeb.App_Start
                 defaults: new { controller = "ClarificationRequest", action = "ShowClarificationResponse", enc = UrlParameter.Optional });
 
             routes.MapRoute(
-                name: "GoogleCalendar",
-                url: "GoogleCalendar/{controller}/{action}/{id}",
-                defaults: new { action = "Index", id = UrlParameter.Optional },
-                namespaces: new[] { "KwasantWeb.Controllers.GoogleCalendar" });
-
-            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { action = "Index", id = UrlParameter.Optional});

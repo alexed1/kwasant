@@ -40,7 +40,7 @@ namespace KwasantWeb.Controllers.GoogleCalendar
         {
             get
             {
-                return "/GoogleCalendar/AuthCallback/IndexAsync";
+                return "/AuthCallback/IndexAsync";
             }
         }
     }
