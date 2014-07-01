@@ -74,9 +74,9 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.BRStateID = status;
+                bookingRequestDO.BRState = status;
                 bookingRequestDO.User = bookingRequestDO.User;
-                bookingRequestDO.BRState = bookingRequestDO.BRState; //this line makes no sense.
+                bookingRequestDO.BookingRequestStatus = bookingRequestDO.BookingRequestStatus; //this line makes no sense.
                 uow.SaveChanges();
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
