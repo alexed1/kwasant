@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Data.Entities;
+using Data.Entities.Enumerations;
 
 namespace Data.Interfaces
 {
@@ -10,16 +11,17 @@ namespace Data.Interfaces
         [Key]
         int Id { get; set; }
 
-        //EmailAddress From { get; set; }
+        EmailAddressDO From { get; set; }
         String Subject { get; set; }
         String HTMLText { get; set; }
-        DateTime DateReceived { get; set; }
+        DateTimeOffset DateReceived { get; set; }
 
         //IEnumerable<EmailAddress> To { get; set; }
         //IEnumerable<EmailAddress> BCC { get; set; }
         //IEnumerable<EmailAddress> CC { get; set; }
         //IEnumerable<Attachment> Attachments { get; set; }
         List<EventDO> Events { get; set; }
-        DateTime DateCreated { get; set; }
+        DateTimeOffset DateCreated { get; set; }
+        EmailStatus EmailStatus { get; set; }
     }
 }

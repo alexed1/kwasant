@@ -38,7 +38,7 @@ namespace KwasantTest.Workflow
 
 
 
-        [Test, Ignore("Test relies on external services; this test fails half the time, which is fixed by re-running it.")]
+        [Test]
         [Category("Workflow")]
         public void Workflow_CanReceiveInvitationOnEmailInTime()
         {
@@ -48,31 +48,32 @@ namespace KwasantTest.Workflow
             var totalOperationTimeout = TimeSpan.FromSeconds(120);
 
             var subject = string.Format("Event {0}", Guid.NewGuid());
-            var now = DateTime.Now;
-            var start = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second).AddDays(1);
+            var now = DateTimeOffset.Now;
+            // iCal truncates time up to seconds so we need to truncate as well to be able to compare time
+            var start = new DateTimeOffset(now.Ticks / TimeSpan.TicksPerSecond * TimeSpan.TicksPerSecond, now.Offset).AddDays(1);
             var end = start.AddHours(1);
             const string startPrefix = "Start:";
             const string endPrefix = "End:";
             var body = string.Format("Event details:\r\n{0}{1}\r\n{2}{3}", startPrefix, start, endPrefix, end);
-            var curEmailDO = new EmailDO()
-                                 {
-                                     From = Email.GenerateEmailAddress(_uow, new MailAddress(_testUserEmail)),
-                                     Recipients = new List<RecipientDO>()
-                                                      {
-                                                          new RecipientDO()
-                                                              {
-                                                                  EmailAddress =
-                                                                      Email.GenerateEmailAddress(
-                                                                          _uow,
-                                                                          new MailAddress("kwasantintegration@gmail.com")),
-                                                                  Type = EmailParticipantType.TO
-                                                              }
-                                                      },
-                                     Subject = subject,
-                                     PlainText = body,
-                                     HTMLText = body
-                                 };
-            var emailService = new Email(_uow, curEmailDO);
+
+            var emailDO = new EmailDO()
+            {
+                From = Email.GenerateEmailAddress(_uow, new MailAddress(_testUserEmail)),
+                Recipients = new List<RecipientDO>()
+                {
+                    new RecipientDO()
+                    {
+                        EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintegration@gmail.com")),
+                        Type = EmailParticipantType.TO
+                    }
+                },
+                Subject = subject,
+                PlainText = body,
+                HTMLText = body
+            };
+
+            _uow.EmailRepository.Add(emailDO);
+            var emailService = new Email(_uow, emailDO);
 
             Stopwatch totalOperationDuration = new Stopwatch();
             Stopwatch emailToRequestDuration = new Stopwatch();
@@ -85,6 +86,9 @@ namespace KwasantTest.Workflow
 
             //EXECUTE
             emailService.Send();
+
+            _uow.SaveChanges();
+
             DaemonTests.RunDaemonOnce(outboundDaemon);
 
             totalOperationDuration.Start();
@@ -107,6 +111,7 @@ namespace KwasantTest.Workflow
                 var endString = lines[2].Remove(0, endPrefix.Length);
                 var e = new Event();
                 var edo = e.Create(_uow, request.Id, startString, endString);
+                edo.CreatedByID = "1";
                 edo.Description = "test event description";
                 _uow.EventRepository.Add(edo);
                 e.Process(_uow, edo);

@@ -18,7 +18,7 @@ namespace DDay.iCal.Test
             tzid = "US-Eastern";
         }
 
-        [Test, Category("Journal")]
+        [Test, Category("DDay")] //Category(("Journal")]
         public void Journal1()
         {
             IICalendar iCal = iCalendar.LoadFromFile(@"Calendars\Journal\JOURNAL1.ics")[0];
@@ -32,7 +32,7 @@ namespace DDay.iCal.Test
             Assert.IsNull(j.Start);
         }
 
-        [Test, Category("Journal")]
+        [Test, Category("DDay")] //Category(("Journal")]
         public void Journal2()
         {
             IICalendar iCal = iCalendar.LoadFromFile(@"Calendars\Journal\JOURNAL2.ics")[0];

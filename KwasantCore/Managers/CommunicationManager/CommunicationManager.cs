@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using Data.Constants;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
@@ -50,12 +52,16 @@ namespace KwasantCore.Managers.CommunicationManager
         public void DispatchInvitations(IUnitOfWork uow, EventDO eventDO)
         {
             //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
+            //var createdDate = eventDO.BookingRequest.DateCreated;
+            //eventDO.StartDate = eventDO.StartDate.ToOffset(createdDate.Offset);
+            //eventDO.EndDate = eventDO.EndDate.ToOffset(createdDate.Offset);
+
             var t = Utilities.Server.ServerUrl;
-            switch (eventDO.State)
+            switch (eventDO.StateID)
             {
-                case "Booking":
+                case EventState.Booking:
                     {
-                        eventDO.State = "DispatchCompleted";
+                        eventDO.StateID = EventState.DispatchCompleted;
 
                         var calendar = GenerateICSCalendarStructure(eventDO);
                         foreach (var attendeeDO in eventDO.Attendees)
@@ -68,12 +74,12 @@ namespace KwasantCore.Managers.CommunicationManager
 
                         break;
                     }
-                case "ReadyForDispatch":
-                case "DispatchCompleted":
+                case EventState.ReadyForDispatch:
+                case EventState.DispatchCompleted:
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
                     if (EventHasChanged(uow, eventDO))
                     {
-                        eventDO.State = "DispatchCompleted";
+                        eventDO.StateID = EventState.DispatchCompleted;
                         var calendar = GenerateICSCalendarStructure(eventDO);
 
                         foreach (var attendeeDO in eventDO.Attendees)
@@ -110,11 +116,11 @@ namespace KwasantCore.Managers.CommunicationManager
             }
             else
             {
-                dDayEvent.DTStart = new iCalDateTime(eventDO.StartDate);
-                dDayEvent.DTEnd = new iCalDateTime(eventDO.EndDate);
+                dDayEvent.DTStart = new iCalDateTime(DateTime.SpecifyKind(eventDO.StartDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
+                dDayEvent.DTEnd = new iCalDateTime(DateTime.SpecifyKind(eventDO.EndDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
             }
-            dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
-            dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
+            dDayEvent.DTStamp = new iCalDateTime(DateTime.UtcNow);
+            dDayEvent.LastModified = new iCalDateTime(DateTime.UtcNow);
 
             //configure text fields
             dDayEvent.Location = eventDO.Location;
@@ -207,6 +213,8 @@ namespace KwasantCore.Managers.CommunicationManager
 
             eventDO.Emails.Add(outboundEmail);
 
+            uow.EmailRepository.Add(outboundEmail);
+
             return outboundEmail;
         }
 
@@ -287,9 +295,9 @@ namespace KwasantCore.Managers.CommunicationManager
 
         private void SendBRSMSes(IEnumerable<BookingRequestDO> bookingRequests)
         {
-            TwilioPackager twil = new TwilioPackager();
             if (bookingRequests.Any())
             {
+                var twil = ObjectFactory.GetInstance<ISMSPackager>();
                 string toNumber = CloudConfigurationManager.GetSetting("TwilioToNumber");
                 twil.SendSMS(toNumber, "Inbound Email has been received");
             }
@@ -355,8 +363,8 @@ namespace KwasantCore.Managers.CommunicationManager
         public RazorViewModel(EventDO ev, String userID)
         {
             IsAllDay = ev.IsAllDay;
-            StartDate = ev.StartDate;
-            EndDate = ev.EndDate;
+            StartDate = ev.StartDate.DateTime;
+            EndDate = ev.EndDate.DateTime;
             Summary = ev.Summary;
             Description = ev.Description;
             Location = ev.Location;

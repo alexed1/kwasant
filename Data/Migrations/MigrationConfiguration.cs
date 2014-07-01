@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using Data.Repositories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity.Validation;
@@ -10,6 +12,7 @@ using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Utilities;
 
 namespace Data.Migrations
 {
@@ -23,7 +26,7 @@ namespace Data.Migrations
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.KwasantDbContext";
         }
-
+        
         protected override void Seed(KwasantDbContext context)
         {
             //  This method will be called after migrating to the latest version.
@@ -47,7 +50,31 @@ namespace Data.Migrations
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork context)
         {
+            SeedConstants<EventState, EventStatusDO>(context, (id, name) => new EventStatusDO { Id = id, Name = name });
+            SeedConstants<BRState, BookingRequestStatusDO>(context, (id, name) => new BookingRequestStatusDO { Id = id, Name = name });
             SeedInstructions(context);
+        }
+
+        private static void SeedConstants<TConstantsType, TConstantDO>(IUnitOfWork uow, Func<int, string, TConstantDO> creatorFunc)
+            where TConstantDO : class
+        {
+            var instructionsToAdd = new List<TConstantDO>();
+
+            FieldInfo[] constants = typeof(TConstantsType).GetFields();
+            foreach (FieldInfo constant in constants)
+            {
+                string name = constant.Name;
+                object value = constant.GetValue(null);
+                instructionsToAdd.Add(creatorFunc((int)value, name));
+            }
+            var param = Expression.Parameter(typeof (TConstantDO));
+            var exp = Expression.Lambda(Expression.Convert(Expression.Property(param, "Id"), typeof(object)), param) as Expression<Func<TConstantDO, object>>;
+
+            var repo = new GenericRepository<TConstantDO>(uow);
+            repo.DBSet.AddOrUpdate(
+                    exp,
+                    instructionsToAdd.ToArray()
+            );
         }
 
         private static void SeedInstructions(IUnitOfWork unitOfWork)
@@ -108,6 +135,7 @@ namespace Data.Migrations
             CreateAdmin("pabitra@hotmail.com", "pabi1234", unitOfWork);
             CreateAdmin("rjrudman@gmail.com", "robert1234", unitOfWork);
             CreateAdmin("quader.mamun@gmail.com", "abdul1234", unitOfWork);
+            // CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork); see https://maginot.atlassian.net/browse/KW-272
         }
 
         /// <summary>
@@ -143,21 +171,17 @@ namespace Data.Migrations
                 }
                 else
                 {
+                    //This line forces EF to load the EmailAddress, since it's done lazily. For whatever reason, seeding admins breaks since it thinks the EmailAddress is null...
+                    var forceEmail = existingUser.EmailAddress;
+                    //This line forces the above not to be optimised out. In production, it does nothing.
+                    Console.WriteLine(forceEmail);
                     if (!um.IsInRole(existingUser.Id, "Admin"))
                         um.AddToRole(existingUser.Id, "Admin");
                 }
             }
             catch (DbEntityValidationException e)
             {
-                string errorFormat = @"Validation failed for entity [{0}]. Validation errors:" + Environment.NewLine + @"{1}";
-                var errorList = new List<String>();
-                foreach (var entityValidationError in e.EntityValidationErrors)
-                {
-                    var entityName = entityValidationError.Entry.Entity.GetType().Name;
-                    var errors = String.Join(Environment.NewLine, entityValidationError.ValidationErrors.Select(a => a.PropertyName + ": " + a.ErrorMessage));
-                    errorList.Add(String.Format(errorFormat, entityName, errors));
-                }
-                throw new Exception(String.Join(Environment.NewLine + Environment.NewLine, errorList) + Environment.NewLine, e);
+                ExceptionHandling.DisplayValidationErrors(e);
             }
         }
     }

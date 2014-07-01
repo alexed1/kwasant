@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using AutoMapper;
@@ -30,11 +31,15 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = GetUnitOfWork())
             {
+                if (!start.EndsWith("z"))
+                    start = start + "z";
+                if (!end.EndsWith("z"))
+                    end = end + "z";
                 //unpack the form data into an EventDO 
                 EventDO submittedEventData = new EventDO();
                 submittedEventData.BookingRequestID = bookingRequestID;
-                submittedEventData.StartDate = DateTime.Parse(start);
-                submittedEventData.EndDate = DateTime.Parse(end);
+                submittedEventData.StartDate = DateTime.Parse(start, CultureInfo.InvariantCulture, 0).ToUniversalTime();
+                submittedEventData.EndDate = DateTime.Parse(end, CultureInfo.InvariantCulture, 0).ToUniversalTime();
                 EventDO createdEvent = _event.Create(submittedEventData, uow);
                 uow.EventRepository.Add(createdEvent);
                 uow.SaveChanges();

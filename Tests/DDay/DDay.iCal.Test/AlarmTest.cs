@@ -34,7 +34,7 @@ namespace DDay.iCal.Test
             Assert.IsTrue(dates.Count == alarms.Count, "There were " + alarms.Count + " alarm occurrences; there should have been " + dates.Count + ".");
         }
 
-        [Test, Category("Alarm")]
+        [Test, Category("DDay")] //Category(("Alarm")]
         public void Alarm1()
         {
             List<IDateTime> dateTimes = new List<IDateTime>();
@@ -46,7 +46,7 @@ namespace DDay.iCal.Test
             TestAlarm("Alarm1.ics", dateTimes, new iCalDateTime(2006, 7, 1, tzid), new iCalDateTime(2006, 9, 1, tzid));
         }
 
-        [Test, Category("Alarm")]
+        [Test, Category("DDay")] //Category(("Alarm")]
         public void Alarm2()
         {
             List<IDateTime> dateTimes = new List<IDateTime>();
@@ -67,7 +67,7 @@ namespace DDay.iCal.Test
             TestAlarm("Alarm2.ics", dateTimes, new iCalDateTime(2006, 7, 1, tzid), new iCalDateTime(2006, 9, 1, tzid));
         }
 
-        [Test, Category("Alarm")]
+        [Test, Category("DDay")] //Category(("Alarm")]
         public void Alarm3()
         {
             List<IDateTime> dateTimes = new List<IDateTime>();
@@ -83,7 +83,7 @@ namespace DDay.iCal.Test
             TestAlarm("Alarm3.ics", dateTimes, new iCalDateTime(1997, 1, 1, tzid), new iCalDateTime(2000, 12, 31, tzid));
         }
 
-        [Test, Category("Alarm")]
+        [Test, Category("DDay")] //Category(("Alarm")]
         public void Alarm4()
         {
             List<IDateTime> dateTimes = new List<IDateTime>();
@@ -114,7 +114,7 @@ namespace DDay.iCal.Test
             TestAlarm("Alarm4.ics", dateTimes, new iCalDateTime(1997, 1, 1, tzid), new iCalDateTime(2000, 12, 31, tzid));
         }
 
-        [Test, Category("Alarm")]
+        [Test, Category("DDay")] //Category(("Alarm")]
         public void Alarm5()
         {
             List<IDateTime> dateTimes = new List<IDateTime>();
@@ -126,7 +126,7 @@ namespace DDay.iCal.Test
             TestAlarm("Alarm5.ics", dateTimes, new iCalDateTime(1997, 7, 1, tzid), new iCalDateTime(2000, 12, 31, tzid));
         }
 
-        [Test, Category("Alarm")]
+        [Test, Category("DDay")] //Category(("Alarm")]
         public void Alarm6()
         {
             List<IDateTime> DateTimes = new List<IDateTime>();
@@ -143,7 +143,7 @@ namespace DDay.iCal.Test
             TestAlarm("Alarm6.ics", DateTimes, new iCalDateTime(1997, 7, 1, tzid), new iCalDateTime(2000, 12, 31, tzid));
         }
 
-        [Test, Category("Alarm")]
+        [Test, Category("DDay")] //Category(("DDay")] //Category(("Alarm")]
         public void Alarm7()
         {
             List<IDateTime> dateTimes = new List<IDateTime>();

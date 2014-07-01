@@ -13,7 +13,7 @@ namespace KwasantCore.Services
     {
         public void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-            bookingRequest.BookingStatus = "Unprocessed";
+            bookingRequest.BRState = BRState.Unprocessed;
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
             
             bookingRequest.User = curUser;
@@ -24,14 +24,14 @@ namespace KwasantCore.Services
         {
             return curBookingRequestRepository.GetAll().Where(e => e.User.Id == (from requests in curBookingRequestRepository.GetAll()
                                                                                  where requests.Id == id
-                                                                                 select requests.User.Id).FirstOrDefault()).Where(e => e.BookingStatus == "Unprocessed").ToList();
+                                                                                 select requests.User.Id).FirstOrDefault()).Where(e => e.BRState == BRState.Unprocessed).ToList();
         }
 
         public object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)
         {
             return
                 curBookingRequestRepository.GetAll()
-                    .Where(e => e.BookingStatus == "Unprocessed")
+                    .Where(e => e.BRState == BRState.Unprocessed)
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
@@ -40,7 +40,7 @@ namespace KwasantCore.Services
                                 id = e.Id,
                                 subject = e.Subject,
                                 fromAddress = e.From.Address,
-                                dateReceived = e.DateReceived.ToString("yy-mm-dd"),
+                                dateReceived = e.DateReceived.ToString("yy-MM-dd"),
                                 body =
                                     e.HTMLText.Trim().Length > 400
                                         ? e.HTMLText.Trim().Substring(0, 400)
@@ -48,31 +48,7 @@ namespace KwasantCore.Services
                             })
                     .ToList();
         }
-
-        public void SetStatus(IUnitOfWork uow, BookingRequestDO bookingRequestDO, string targetStatus)
-        {
-            string newstatus = getBookingStatus(targetStatus);
-            if (newstatus != "invalid status")
-            {
-                bookingRequestDO.BookingStatus = newstatus;
-                bookingRequestDO.User = bookingRequestDO.User;
-                uow.SaveChanges();
-            }
-        }
-
-        private string getBookingStatus(string targetStatus)
-        {
-            switch (targetStatus)
-            {
-                case "invalid":
-                    return "Invalid";
-                case "processed":
-                    return "Processed";
-                default:
-                    return "invalid status";
-            }
-        }
-
+        
         private List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)
         {
             List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?) travelTime).ToList();

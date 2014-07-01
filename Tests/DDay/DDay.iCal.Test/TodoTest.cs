@@ -69,7 +69,7 @@ namespace DDay.iCal.Test
             }
         }
 
-        [Test, Category("Todo")]
+        [Test, Category("DDay")] //Category(("Todo")]
         public void Todo1()
         {
             ArrayList items = new ArrayList();
@@ -78,7 +78,7 @@ namespace DDay.iCal.Test
             TestTodoActive("Todo1.ics", items);
         }
 
-        [Test, Category("Todo")]
+        [Test, Category("DDay")] //Category(("Todo")]
         public void Todo2()
         {
             ArrayList items = new ArrayList();
@@ -90,7 +90,7 @@ namespace DDay.iCal.Test
             TestTodoActive("Todo2.ics", items);
         }
 
-        [Test, Category("Todo")]
+        [Test, Category("DDay")] //Category(("Todo")]
         public void Todo3()
         {
             ArrayList items = new ArrayList();
@@ -100,7 +100,7 @@ namespace DDay.iCal.Test
             TestTodoActive("Todo3.ics", items);
         }
 
-        [Test, Category("Todo")]
+        [Test, Category("DDay")] //Category(("Todo")]
         public void Todo4()
         {
             ArrayList items = new ArrayList();
@@ -111,7 +111,7 @@ namespace DDay.iCal.Test
             TestTodoCompleted("Todo4.ics", items);
         }
 
-        [Test, Category("Todo")]
+        [Test, Category("DDay")] //Category(("Todo")]
         public void Todo5()
         {
             ArrayList items = new ArrayList();
@@ -131,7 +131,7 @@ namespace DDay.iCal.Test
             TestTodoActive("Todo5.ics", items);
         }
 
-        [Test, Category("Todo")]
+        [Test, Category("DDay")] //Category(("Todo")]
         public void Todo6()
         {
             ArrayList items = new ArrayList();
@@ -151,7 +151,7 @@ namespace DDay.iCal.Test
             TestTodoActive("Todo6.ics", items);
         }
 
-        [Test, Category("Todo")]
+        [Test, Category("DDay")] //Category(("Todo")]
         public void Todo7()
         {
             ArrayList items = new ArrayList();
@@ -175,7 +175,7 @@ namespace DDay.iCal.Test
             TestTodoActive("Todo7.ics", items);
         }
 
-        [Test, Category("Todo")]
+        [Test, Category("DDay")] //Category(("Todo")]
         public void Todo7_1()
         {
             IICalendar iCal = iCalendar.LoadFromFile(@"Calendars\Todo\Todo7.ics")[0];
@@ -208,7 +208,7 @@ namespace DDay.iCal.Test
                 Assert.AreEqual(items[i], occurrences[i].Period.StartTime, "TODO should occur at " + items[i] + ", but does not.");            
         }
 
-        [Test, Category("Todo")]
+        [Test, Category("DDay")] //Category(("Todo")]
         public void Todo8()
         {
             ArrayList items = new ArrayList();
@@ -245,7 +245,7 @@ namespace DDay.iCal.Test
             TestTodoActive("Todo8.ics", items);
         }
 
-        [Test, Category("Todo")]
+        [Test, Category("DDay")] //Category(("Todo")]
         public void Todo9()
         {
             ArrayList items = new ArrayList();
@@ -264,7 +264,7 @@ namespace DDay.iCal.Test
         }
 
         // FIXME: re-implement
-        //[Test, Category("Todo")]
+        //[Test, Category("DDay")] //Category(("Todo")]
         //public void TODO10()
         //{
         //    iCalendar iCal = new iCalendar();
@@ -307,7 +307,7 @@ namespace DDay.iCal.Test
         //}
 
         // FIXME: re-implement
-        //[Test, Category("Todo")]
+        //[Test, Category("DDay")] //Category(("Todo")]
         //public void TODO11()
         //{
         //    iCalendar iCal = new iCalendar();

@@ -11,6 +11,7 @@ namespace Data.Interfaces
     public interface IClarificationRequest : IEmail
     {
         int BookingRequestId { get; set; }
+        IBookingRequest BookingRequest { get; set; }
         ClarificationStatus ClarificationStatus { get; set; }
         IList<QuestionDO> Questions { get; } 
     }
