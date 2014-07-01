@@ -51,6 +51,7 @@
     <Compile Include="ConfigRepository.cs" />
     <Compile Include="Encryption.cs" />
     <Compile Include="Enumerations.cs" />
+    <Compile Include="ExceptionHandling.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
