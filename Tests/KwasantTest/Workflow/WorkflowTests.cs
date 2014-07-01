@@ -111,6 +111,7 @@ namespace KwasantTest.Workflow
                 var endString = lines[2].Remove(0, endPrefix.Length);
                 var e = new Event();
                 var edo = e.Create(_uow, request.Id, startString, endString);
+                edo.CreatedByID = "1";
                 edo.Description = "test event description";
                 _uow.EventRepository.Add(edo);
                 e.Process(_uow, edo);

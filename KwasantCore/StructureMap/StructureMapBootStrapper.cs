@@ -4,6 +4,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
+using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantCore.Services;
 using StructureMap;
 using StructureMap.Configuration.DSL;
@@ -46,7 +47,7 @@ namespace KwasantCore.StructureMap
         {
             public LiveMode()
             {
-                
+                For<ISMSPackager>().Use(new TwilioPackager());
                 For<IEmailPackager>().Use(new GmailPackager()).Named(EnvelopeDO.GmailHander);
                 For<IEmailPackager>().Use(new MandrillPackager()).Named(EnvelopeDO.MandrillHander);
 

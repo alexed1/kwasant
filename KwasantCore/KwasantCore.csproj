@@ -41,6 +41,10 @@
     <Reference Include="FluentValidation.Mvc">
       <HintPath>..\packages\FluentValidation.MVC4.5.1.0.0\lib\Net40\FluentValidation.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="KwasantCore, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Daemons\bin\Debug\KwasantCore.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
@@ -111,6 +115,7 @@
     <Compile Include="Managers\APIManager\Packagers\IEmailPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\Mandrill\MandrillPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\Kwasant\KwasantPackager.cs" />
+    <Compile Include="Managers\APIManager\Packagers\ISMSPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\Twilio\TwilioPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\UnknownEmailPackagerException.cs" />
     <Compile Include="Managers\APIManager\Serializers\Json\JsonSerializer.cs" />
