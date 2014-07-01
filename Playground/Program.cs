@@ -21,7 +21,7 @@ namespace Playground
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE); //set to either "test" or "dev"
 
-            new InboundEmail().Start();
+            new ThroughputMonitor().Start();
 
             //var evdo = new EventDO();
             //evdo.StartDate = DateTime.Now;
