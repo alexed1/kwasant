@@ -39,8 +39,7 @@ namespace KwasantCore.Services
         //in general, the new event data will simply overwrite the old data. 
         //in some cases, additional work is necessary to handle the changes
         public void Process(IUnitOfWork uow, EventDO eventDO)
-        {
-            eventDO.StateID = EventState.ReadyForDispatch;
+        {            
             new CommunicationManager().DispatchInvitations(uow, eventDO);
         }
      
