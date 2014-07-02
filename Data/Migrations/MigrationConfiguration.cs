@@ -43,8 +43,6 @@ namespace Data.Migrations
 
             AddRoles(unitOfWork);
             AddAdmins(unitOfWork);
-
-            unitOfWork.SaveChanges();
         }
 
         //Method to let us seed into memory as well
