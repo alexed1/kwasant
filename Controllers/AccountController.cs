@@ -12,9 +12,9 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Google.Apis.Auth.OAuth2.Mvc;
+using KwasantCore.Managers.APIManager.Authorizers.Google;
 using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
-using KwasantWeb.Controllers.GoogleCalendar;
 using KwasantWeb.Controllers.Helpers;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
@@ -52,52 +52,6 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize]
     public class AccountController : Controller
     {
-        public async Task<ActionResult> GrantGoogleCalendarAccess()
-        {
-            var result = await new AuthorizationCodeMvcApp(this, new AppFlowMetadata(this.GetUserId()))
-                                   .AuthorizeAsync(CancellationToken.None);
-
-            if (result.Credential != null)
-            {
-                return RedirectToAction("Manage", new { googleCalendarAccessGranted = true });
-            }
-            else
-            {
-                return new RedirectResult(result.RedirectUri);
-            }
-        }
-
-        public ActionResult ForbidGoogleCalendarAccess()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curUserDO = uow.UserRepository.GetByKey(this.GetUserId());
-                curUserDO.GoogleAuthData = null;
-                uow.SaveChanges();
-
-                return RedirectToAction("Manage", new { googleCalendarAccessForbidden = true });
-            }    
-        }
-
-        public ActionResult Manage(bool googleCalendarAccessGranted = false, bool googleCalendarAccessForbidden = false)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curUserDO = uow.UserRepository.GetByKey(this.GetUserId());
-                var curManageUserViewModel = AutoMapper.Mapper.Map<UserDO, ManageUserViewModel>(curUserDO);
-
-                if (googleCalendarAccessGranted)
-                {
-                    ViewBag.StatusMessage = "Google Calendar hooked up successfully.";
-                }
-                else if (googleCalendarAccessForbidden)
-                {
-                    ViewBag.StatusMessage = "Google Calendar access forbidden.";
-                }
-                return View(curManageUserViewModel);
-            }
-        }
-
         [AllowAnonymous]
         public ActionResult Index(string returnUrl)
         {
@@ -113,11 +67,6 @@ namespace KwasantWeb.Controllers
 
         [AllowAnonymous]
         public ActionResult RegistrationSuccessful()
-        {
-            return View();
-        }
-
-        public ActionResult MyAccount()
         {
             return View();
         }
@@ -210,7 +159,7 @@ namespace KwasantWeb.Controllers
                                 if (isAdmin)
                                     return RedirectToAction("Index", "Admin");
 
-                                return Redirect("/");
+                                return RedirectToAction("MyAccount", "User");
                             }
                             break;
                     }

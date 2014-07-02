@@ -44,7 +44,6 @@ namespace Data.Infrastructure
         public KwasantDbContext()
             : base("name=KwasantDB")
         {
-            Database.Log = Console.Write;
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<KwasantDbContext, MigrationConfiguration>()); 
         }
 

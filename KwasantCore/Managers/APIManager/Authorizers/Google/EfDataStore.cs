@@ -5,9 +5,17 @@ using Google.Apis.Util.Store;
 using Newtonsoft.Json;
 using StructureMap;
 
-namespace KwasantWeb.Controllers.GoogleCalendar
+namespace KwasantCore.Managers.APIManager.Authorizers.Google
 {
-    public class EfDataStore : IDataStore
+    /// <summary>
+    /// Entity Framework implementation for storing Google tokens in the database.
+    /// </summary>
+    /// <remarks>
+    /// EfDataStore stores Google tokens at user's GoogleAuthData field in JSON format. 
+    /// As the data is generic the approach is to serialize a value to JSON first and then serialize entire pair.
+    /// In the same way at the first step of value retrieval GoogleAuthData string is deserialized into a string dictionary and at the second step string value under needed key deserialized into needed type instance.
+    /// </remarks>
+    class EfDataStore : IDataStore
     {
         private readonly string _userId;
 
@@ -27,7 +35,6 @@ namespace KwasantWeb.Controllers.GoogleCalendar
 
         public async Task StoreAsync<T>(string key, T value)
         {
-            System.Diagnostics.Debug.WriteLine("EF: Store: key={0}, oftype={1}, value={2}", key, typeof(T), value);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curUserDO = uow.UserRepository.GetByKey(_userId);
@@ -40,7 +47,6 @@ namespace KwasantWeb.Controllers.GoogleCalendar
 
         public async Task DeleteAsync<T>(string key)
         {
-            System.Diagnostics.Debug.WriteLine("EF: Delete: key={0}, oftype={1}", key, typeof(T));
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curUserDO = uow.UserRepository.GetByKey(_userId);
@@ -53,7 +59,6 @@ namespace KwasantWeb.Controllers.GoogleCalendar
 
         public async Task<T> GetAsync<T>(string key)
         {
-            System.Diagnostics.Debug.WriteLine("EF: Get: key={0}, oftype={1}", key, typeof(T));
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curUserDO = uow.UserRepository.GetByKey(_userId);
@@ -67,7 +72,6 @@ namespace KwasantWeb.Controllers.GoogleCalendar
 
         public async Task ClearAsync()
         {
-            System.Diagnostics.Debug.WriteLine("EF: Clear");
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curUserDO = uow.UserRepository.GetByKey(_userId);

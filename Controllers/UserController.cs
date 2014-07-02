@@ -1,30 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Net;
+using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using KwasantCore.Managers.APIManager.Authorizers.Google;
+using KwasantCore.Managers.IdentityManager;
+using KwasantWeb.ViewModels;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 using ViewModel.Models;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
 
 namespace KwasantWeb.Controllers
 {
+    [KwasantAuthorize(Roles = "Customer")]
     public class UserController : Controller
     {
-        IUnitOfWork _uow;
-        IUserRepository userRepo;
-        IAspNetUserRolesRepository aspNetUserRolesRepo;
-        IAspNetRolesRepository aspNetRolesRepo;
-
-        public UserController(IUnitOfWork uow)
-        {
-            _uow = uow;
-            userRepo = _uow.UserRepository;
-            aspNetUserRolesRepo = _uow.AspNetUserRolesRepository;
-            aspNetRolesRepo = _uow.AspNetRolesRepository;
-        }
-
+        [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Index()
         {
             UsersAdmin currUsersAdmin = new UsersAdmin();
@@ -34,6 +31,7 @@ namespace KwasantWeb.Controllers
             return View(currUsersAdminViewModels);
         }
 
+        [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Details(String userId, String roleId)
         {
 
@@ -49,6 +47,52 @@ namespace KwasantWeb.Controllers
 
             return View(currUsersAdminViewModel);
         }
+
+        public async Task<ActionResult> GrantGoogleCalendarAccess()
+        {
+            var authorizer = new GoogleCalendarAuthorizer(this.GetUserId(),
+                                                          this.User.Identity.GetUserName());
+            var result = await authorizer.AuthorizeAsync(
+                Url.Action("IndexAsync", "AuthCallback", null, this.Request.Url.Scheme),
+                Request.RawUrl,
+                CancellationToken.None);
+
+            if (result.Credential != null)
+            {
+                return RedirectToAction("MyAccount", new { googleCalendarAccessGranted = true });
+            }
+            else
+            {
+                return new RedirectResult(result.RedirectUri);
+            }
+        }
+
+        public async Task<ActionResult> RevokeGoogleCalendarAccess()
+        {
+            var authorizer = new GoogleCalendarAuthorizer(this.GetUserId());
+            await authorizer.RevokeAccessTokenAsync(CancellationToken.None);
+            return RedirectToAction("MyAccount", new { googleCalendarAccessForbidden = true });
+        }
+
+        public ActionResult MyAccount(bool googleCalendarAccessGranted = false, bool googleCalendarAccessForbidden = false)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUserDO = uow.UserRepository.GetByKey(this.GetUserId());
+                var curManageUserViewModel = AutoMapper.Mapper.Map<UserDO, ManageUserViewModel>(curUserDO);
+
+                if (googleCalendarAccessGranted)
+                {
+                    ViewBag.StatusMessage = "Google Calendar hooked up successfully.";
+                }
+                else if (googleCalendarAccessForbidden)
+                {
+                    ViewBag.StatusMessage = "Google Calendar access revoked.";
+                }
+                return View(curManageUserViewModel);
+            }
+        }
+
     }
 }
 
