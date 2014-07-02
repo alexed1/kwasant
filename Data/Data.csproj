@@ -243,6 +243,10 @@
     <Compile Include="Migrations\201407011015092_RenameStatusAgain.Designer.cs">
       <DependentUpon>201407011015092_RenameStatusAgain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407020904132_Sync-02.07.2014.cs" />
+    <Compile Include="Migrations\201407020904132_Sync-02.07.2014.Designer.cs">
+      <DependentUpon>201407020904132_Sync-02.07.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -402,6 +406,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407011015092_RenameStatusAgain.resx">
       <DependentUpon>201407011015092_RenameStatusAgain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407020904132_Sync-02.07.2014.resx">
+      <DependentUpon>201407020904132_Sync-02.07.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

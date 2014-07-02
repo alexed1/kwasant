@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
+    <Compile Include="Managers\APIManager\Authorizers\GoogleCalendarAuthorizer.cs" />
     <Compile Include="Managers\APIManager\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />
     <Compile Include="Helper\UsersAdminData.cs" />
