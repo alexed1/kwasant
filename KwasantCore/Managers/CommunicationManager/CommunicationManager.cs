@@ -190,8 +190,8 @@ namespace KwasantCore.Managers.CommunicationManager
             toEmailAddress.Name = attendeeDO.Name;
             outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
 
-            var userID = uow.UserRepository.GetQuery().First(u => u.EmailAddressID == attendeeDO.EmailAddressID).Id;
-
+            var userID = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress).Id;
+            
             if (isUpdate)
             {
 

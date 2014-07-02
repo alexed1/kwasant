@@ -43,8 +43,6 @@ namespace Data.Migrations
 
             AddRoles(unitOfWork);
             AddAdmins(unitOfWork);
-
-            unitOfWork.SaveChanges();
         }
 
         //Method to let us seed into memory as well
@@ -135,7 +133,7 @@ namespace Data.Migrations
             CreateAdmin("pabitra@hotmail.com", "pabi1234", unitOfWork);
             CreateAdmin("rjrudman@gmail.com", "robert1234", unitOfWork);
             CreateAdmin("quader.mamun@gmail.com", "abdul1234", unitOfWork);
-            // CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork); see https://maginot.atlassian.net/browse/KW-272
+            CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
         }
 
         /// <summary>
