@@ -142,7 +142,6 @@
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Managers\APIManager\Authorizers\Google\AppFlowMetadata.cs" />
     <Compile Include="Managers\APIManager\Authorizers\Google\AuthorizationCodeFlow.cs" />
-    <Compile Include="Managers\APIManager\Authorizers\Google\EfDataStore.cs" />
     <Compile Include="Managers\APIManager\Authorizers\Google\GoogleCalendarAuthorizer.cs" />
     <Compile Include="Managers\APIManager\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />

@@ -1,4 +1,5 @@
 using System.Web.Mvc;
+using Data.Infrastructure;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Mvc;
@@ -25,7 +26,7 @@ namespace KwasantCore.Managers.APIManager.Authorizers.Google
                                                 ClientSecret = ConfigRepository.Get("GoogleCalendarClientSecret")
                                             },
                         Scopes = new[] {"https://www.googleapis.com/auth/calendar"},
-                        DataStore = new EfDataStore(_userId),
+                        DataStore = new JSONDataStore(_userId),
                     }, email);
 
         }

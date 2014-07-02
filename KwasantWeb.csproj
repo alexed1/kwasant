@@ -82,9 +82,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Google.Apis.Auth.1.8.2\lib\net40\Google.Apis.Auth.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.Calendar.v3">
-      <HintPath>packages\Google.Apis.Calendar.v3.1.8.1.840\lib\portable-net4+sl4+wp71+win8\Google.Apis.Calendar.v3.dll</HintPath>
-    </Reference>
     <Reference Include="Google.Apis.Core, Version=1.8.2.23761, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>

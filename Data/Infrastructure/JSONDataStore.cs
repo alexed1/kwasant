@@ -5,21 +5,21 @@ using Google.Apis.Util.Store;
 using Newtonsoft.Json;
 using StructureMap;
 
-namespace KwasantCore.Managers.APIManager.Authorizers.Google
+namespace Data.Infrastructure
 {
     /// <summary>
     /// Entity Framework implementation for storing Google tokens in the database.
     /// </summary>
     /// <remarks>
-    /// EfDataStore stores Google tokens at user's GoogleAuthData field in JSON format. 
+    /// JSONDataStore stores Google tokens at user's GoogleAuthData field in JSON format. 
     /// As the data is generic the approach is to serialize a value to JSON first and then serialize entire pair.
     /// In the same way at the first step of value retrieval GoogleAuthData string is deserialized into a string dictionary and at the second step string value under needed key deserialized into needed type instance.
     /// </remarks>
-    class EfDataStore : IDataStore
+    public class JSONDataStore : IDataStore
     {
         private readonly string _userId;
 
-        public EfDataStore(string userId)
+        public JSONDataStore(string userId)
         {
             _userId = userId;
         }
