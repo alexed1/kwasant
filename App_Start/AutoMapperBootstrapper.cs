@@ -22,7 +22,8 @@ namespace KwasantWeb.App_Start
                 .ForMember(eventDO => eventDO.Attendees, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.ActivityStatus, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.CreatedBy, opts => opts.Ignore())
-                .ForMember(eventDO => eventDO.CreatedByID, opts => opts.Ignore());
+                .ForMember(eventDO => eventDO.CreatedByID, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.StateID, opts => opts.Ignore());
 
             Mapper.CreateMap<EventDO, EventDO>()
                 .ForMember(eventDO => eventDO.Attendees, opts => opts.Ignore())
