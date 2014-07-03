@@ -21,6 +21,9 @@ namespace Data.Entities
         public virtual EmailAddressDO EmailAddress { get; set; }
 
         public string GoogleAuthData { get; set; }
+
+        [InverseProperty("Owner")]
+        public virtual IList<CalendarDO> Calendars { get; set; } 
     }
 }
 

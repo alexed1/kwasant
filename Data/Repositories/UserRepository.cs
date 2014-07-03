@@ -32,6 +32,7 @@ namespace Data.Repositories
                 curUser.FirstName = emailAddressDO.Name;
                 curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 userRepo.Add(curUser);
+                UnitOfWork.CalendarRepository.CheckUserHasCalendar(curUser);
             }
             return curUser;
         }
@@ -52,6 +53,7 @@ namespace Data.Repositories
                 curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 curMessage.User = curUser;
                 userRepo.Add(curUser);
+                UnitOfWork.CalendarRepository.CheckUserHasCalendar(curUser);
             }
             return curUser;
         }
