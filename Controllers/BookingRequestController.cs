@@ -85,11 +85,13 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetBookingRequests(int? id)
+        public ActionResult GetBookingRequests(int? id, int draw, int start, int length)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack((new BookingRequest()).GetBookingRequests(uow.BookingRequestRepository, id.Value)), JsonRequestBehavior.AllowGet);
+                string userid = new BookingRequest().GetUserId(uow.BookingRequestRepository, id.Value);
+                int recordcount = (new BookingRequest()).GetBookingRequestsCount(uow.BookingRequestRepository, id.Value, userid);
+                var jsonResult = Json(new { draw = draw, recordsTotal = recordcount, recordsFiltered = recordcount, data = _datatables.Pack((new BookingRequest()).GetBookingRequests(uow.BookingRequestRepository, id.Value, start, length, userid)) }, JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }

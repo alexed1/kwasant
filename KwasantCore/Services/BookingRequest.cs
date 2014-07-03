@@ -20,11 +20,21 @@ namespace KwasantCore.Services
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
         }
 
-        public List<BookingRequestDO> GetBookingRequests(IBookingRequestRepository curBookingRequestRepository, int id)
+        public List<BookingRequestDO> GetBookingRequests(IBookingRequestRepository curBookingRequestRepository, int id, int start, int length, string userid)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == (from requests in curBookingRequestRepository.GetAll()
-                                                                                 where requests.Id == id
-                                                                                 select requests.User.Id).FirstOrDefault()).Where(e => e.BRState == BRState.Unprocessed).ToList();
+            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Skip(start).Take(length).ToList();
+        }
+
+        public int GetBookingRequestsCount(IBookingRequestRepository curBookingRequestRepository, int id, string userid)
+        {
+            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Count();
+        }
+
+        public string GetUserId(IBookingRequestRepository curBookingRequestRepository, int requestid)
+        {
+            return (from requests in curBookingRequestRepository.GetAll()
+                    where requests.Id == requestid
+                    select requests.User.Id).FirstOrDefault();
         }
 
         public object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)

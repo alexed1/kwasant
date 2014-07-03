@@ -801,3 +801,8 @@ input[type="submit"].btn
         width: 600px !important;
     }
 }
+
+.jumbotron_new
+{
+font-size:12px !important;  
+}
