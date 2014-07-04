@@ -22,14 +22,14 @@ namespace Data.Infrastructure
         {
             using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentRepository incidentRep = _uow.IncidentRepository;
+                IncidentRepository incidentRepo = _uow.IncidentRepository;
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = from;
                 incidentDO.SecondaryCategory = "intake";
                 incidentDO.CreateTime = Convert.ToDateTime(dateReceived);
                 incidentDO.Priority = 5;
                 incidentDO.Activity = "Created";
-                incidentRep.Add(incidentDO);
+                incidentRepo.Add(incidentDO);
                 _uow.SaveChanges();
             }
         }

@@ -43,6 +43,7 @@ margin-bottom:10px;
 
 <script type="text/javascript">
     var table;
+    //Get all Incident records by default
     $(document).ready(function () {
         var data = {
             "all":true,
@@ -54,6 +55,7 @@ margin-bottom:10px;
         showIncident(data);
     });
 
+    //Get  Incident records by data , data contains 5 different parameters and Incident records display on DataTable
     function showIncident(data) {
         $.getJSON("/Admin/ShowIncidentReport", data, showIncidentReport);
         function showIncidentReport(response) {
@@ -71,6 +73,7 @@ margin-bottom:10px;
         }
     }
    
+    //Get  Incident records by  last 5 Minutes
     $("#last5minutes").click(function () {
         var data = {
             "all": false,
@@ -82,6 +85,8 @@ margin-bottom:10px;
         table.destroy();
         showIncident(data);
     });
+
+    //Get  Incident records by  last hour
     $("#lastHour").click(function () {
         var data = {
             "all": false,
@@ -93,6 +98,8 @@ margin-bottom:10px;
         table.destroy();
         showIncident(data);
     });
+
+    //Get Incident records by last day
     $("#lastDay").click(function () {
         var data = {
             "all": false,
@@ -104,6 +111,8 @@ margin-bottom:10px;
         table.destroy();
         showIncident(data);
     });
+
+    //Get Incident records by last week
     $("#lastWeek").click(function () {
         var data = {
             "all": false,
@@ -115,6 +124,8 @@ margin-bottom:10px;
         table.destroy();
         showIncident(data);
     });
+
+    //Get all Incident records
     $("#All").click(function () {
         var data = {
             "all": true,
