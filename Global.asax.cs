@@ -49,6 +49,9 @@ namespace KwasantWeb
                     throw new Exception("Invalid BasePageURL (check web.config)");
             }
 
+            IncidentReporter incidentReporter = new IncidentReporter();
+            incidentReporter.SubscribeToAlerts();
+
 
             CommunicationManager curCommManager = new CommunicationManager();
             curCommManager.SubscribeToAlerts();

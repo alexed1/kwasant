@@ -10,7 +10,7 @@ using S22.Imap;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
-
+using Data.Infrastructure;
 namespace Daemons
 {
     public class InboundEmail : Daemon
@@ -77,6 +77,7 @@ namespace Daemons
 
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
             IEnumerable<uint> uids = client.Search(SearchCondition.Unseen()).ToList();
+           // IEnumerable<uint> uids = client.Search(SearchCondition.Seen()).ToList();
 
             string logString;
 
@@ -92,8 +93,8 @@ namespace Daemons
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
                 BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
                 
-                var message = client.GetMessage(uid);                
-                
+                var message = client.GetMessage(uid);
+
                 try
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
@@ -101,6 +102,7 @@ namespace Daemons
                     bookingRequest.User = unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address); 
                     (new BookingRequest()).ProcessBookingRequest(unitOfWork, bookingRequest);
                     unitOfWork.SaveChanges();
+                  
                 }
                 catch (Exception e)
                 {
@@ -108,6 +110,9 @@ namespace Daemons
                     client.RemoveMessageFlags(uid, null, MessageFlag.Seen);
                     Logger.GetLogger().Info("Message marked as unread.");
 
+                    AlertManager.EmailProcessingFailure(message.From.Address, message.Headers["Date"]);
+                    Logger.GetLogger().Info("EmailProcessingFailure Reported. ObjectID =" + uid);
+                 
                     throw e;
                 }
             }

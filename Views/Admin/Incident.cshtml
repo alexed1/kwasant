@@ -1,0 +1,130 @@
+﻿@using Data.Constants
+
+
+<h2>Incident Report</h2>
+<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+<style>
+
+.Incident_Btn input{
+padding: 10px;
+background: #D85E17;
+border: 1px solid #3E3E3E !important;
+width: 100px;
+border-radius: 4px;
+border: none;
+color:#fff;
+font-size:inherit;
+margin-bottom:10px;
+}
+</style>
+
+<div>
+<table class="Incident_Btn">
+<tr>
+<td><input type="button" value="Last 5 minutes" id="last5minutes"</td>
+<td><input type="button" value="Last Hour" id="lastHour"</td>
+<td><input type="button" value="Last Day" id="lastDay"</td>
+<td><input type="button" value="Last Week" id="lastWeek"</td>
+<td><input type="button" value="All" id="All"</td>
+</tr>
+</table>
+</div>
+<table id="tblincidentreport">
+    <thead>
+        <tr>
+            <th >Primary Category</th>
+            <th >Secondary Category</th>
+            <th>Activity</th>
+            <th >Date</th>
+        </tr>
+    </thead>
+</table>
+
+<script type="text/javascript">
+    var table;
+    $(document).ready(function () {
+        var data = {
+            "all":true,
+            "lastMinutes": -1,
+            "lastHour": false,
+            "lastDay": false,
+            "lastweek": false
+        };
+        showIncident(data);
+    });
+
+    function showIncident(data) {
+        $.getJSON("/Admin/ShowIncidentReport", data, showIncidentReport);
+        function showIncidentReport(response) {
+            $("#tblincidentreport DataTable").html("");
+            table = $('#tblincidentreport').DataTable({
+                data: JSON.parse(response),
+                order: [3, 'desc'],
+                columns: [
+                    { data: 'primary_category' },
+                    { data: 'secondary_category' },
+                    { data: 'activity' },
+                    { data: 'create_time' }
+                ],
+            });
+        }
+    }
+   
+    $("#last5minutes").click(function () {
+        var data = {
+            "all": false,
+            "lastMinutes": 5,
+            "lastHour": false,
+            "lastDay": false,
+            "lastweek": false
+        };
+        table.destroy();
+        showIncident(data);
+    });
+    $("#lastHour").click(function () {
+        var data = {
+            "all": false,
+            "lastMinutes": -1,
+            "lastHour": true,
+            "lastDay": false,
+            "lastweek": false
+        };
+        table.destroy();
+        showIncident(data);
+    });
+    $("#lastDay").click(function () {
+        var data = {
+            "all": false,
+            "lastMinutes": -1,
+            "lastHour": false,
+            "lastDay": true,
+            "lastweek": false
+        };
+        table.destroy();
+        showIncident(data);
+    });
+    $("#lastWeek").click(function () {
+        var data = {
+            "all": false,
+            "lastMinutes": -1,
+            "lastHour": false,
+            "lastDay": false,
+            "lastweek": true
+        };
+        table.destroy();
+        showIncident(data);
+    });
+    $("#All").click(function () {
+        var data = {
+            "all": true,
+            "lastMinutes": -1,
+            "lastHour": false,
+            "lastDay": false,
+            "lastweek": false
+        };
+        table.destroy();
+        showIncident(data);
+    });
+    
+</script>

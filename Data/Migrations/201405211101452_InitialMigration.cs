@@ -287,6 +287,8 @@ namespace Data.Migrations
                 .Index(t => t.Id)
                 .Index(t => t.PersonID);
 
+           
+
         }
 
         private void DropTable(String tableName)
@@ -363,6 +365,7 @@ namespace Data.Migrations
             DropTable("dbo.AspNetUsers");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetRoles");
+           
         }
     }
 }

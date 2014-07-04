@@ -76,6 +76,7 @@
     <Compile Include="Entities\BookingRequestStatusDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\EventStatusDO.cs" />
+    <Compile Include="Entities\IncidentDO.cs" />
     <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
@@ -88,6 +89,7 @@
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingType.cs" />
+    <Compile Include="Infrastructure\IncidentReporter.cs" />
     <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Entities\UserAgentInfoDO.cs" />
@@ -231,6 +233,10 @@
     <Compile Include="Migrations\201406301303258_FixDB.Designer.cs">
       <DependentUpon>201406301303258_FixDB.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407030633059_AddIncidentDO.cs" />
+    <Compile Include="Migrations\201407030633059_AddIncidentDO.Designer.cs">
+      <DependentUpon>201407030633059_AddIncidentDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -240,6 +246,7 @@
     <Compile Include="Repositories\CalendarRepository.cs" />
     <Compile Include="Repositories\BookingRequestStatusRepository.cs" />
     <Compile Include="Repositories\EventStatusRepository.cs" />
+    <Compile Include="Repositories\IncidentRepository.cs" />
     <Compile Include="Repositories\KactRepository.cs" />
     <Compile Include="Repositories\ClarificationRequestRepository.cs" />
     <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
@@ -377,6 +384,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406301303258_FixDB.resx">
       <DependentUpon>201406301303258_FixDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407030633059_AddIncidentDO.resx">
+      <DependentUpon>201407030633059_AddIncidentDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
