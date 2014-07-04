@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using Data.Constants;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
@@ -55,11 +57,11 @@ namespace KwasantCore.Managers.CommunicationManager
             //eventDO.EndDate = eventDO.EndDate.ToOffset(createdDate.Offset);
 
             var t = Utilities.Server.ServerUrl;
-            switch (eventDO.State)
+            switch (eventDO.StateID)
             {
-                case "Booking":
+                case EventState.Booking:
                     {
-                        eventDO.State = "DispatchCompleted";
+                        eventDO.StateID = EventState.DispatchCompleted;
 
                         var calendar = GenerateICSCalendarStructure(eventDO);
                         foreach (var attendeeDO in eventDO.Attendees)
@@ -72,18 +74,20 @@ namespace KwasantCore.Managers.CommunicationManager
 
                         break;
                     }
-                case "ReadyForDispatch":
-                case "DispatchCompleted":
+                case EventState.ReadyForDispatch:
+                case EventState.DispatchCompleted:
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
                     if (EventHasChanged(uow, eventDO))
                     {
-                        eventDO.State = "DispatchCompleted";
+                        eventDO.StateID = EventState.DispatchCompleted;
                         var calendar = GenerateICSCalendarStructure(eventDO);
+
+                        var newAttendees = eventDO.Attendees.Where(a => a.Id == 0).ToList();
 
                         foreach (var attendeeDO in eventDO.Attendees)
                         {
                             //Id > 0 means it's an existing attendee, so we need to send the 'update' email to them.
-                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, attendeeDO.Id > 0);
+                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, !newAttendees.Contains(attendeeDO));
                             var email = new Email(uow, emailDO);
                             AttachCalendarToEmail(calendar, emailDO);
                             email.Send();
@@ -188,8 +192,8 @@ namespace KwasantCore.Managers.CommunicationManager
             toEmailAddress.Name = attendeeDO.Name;
             outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
 
-            var userID = uow.UserRepository.GetQuery().First(u => u.EmailAddressID == attendeeDO.EmailAddressID).Id;
-
+            var userID = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress).Id;
+            
             if (isUpdate)
             {
 
@@ -293,9 +297,9 @@ namespace KwasantCore.Managers.CommunicationManager
 
         private void SendBRSMSes(IEnumerable<BookingRequestDO> bookingRequests)
         {
-            TwilioPackager twil = new TwilioPackager();
             if (bookingRequests.Any())
             {
+                var twil = ObjectFactory.GetInstance<ISMSPackager>();
                 string toNumber = CloudConfigurationManager.GetSetting("TwilioToNumber");
                 twil.SendSMS(toNumber, "Inbound Email has been received");
             }

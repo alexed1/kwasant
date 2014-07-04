@@ -17,7 +17,7 @@ namespace DDay.iCal.Test
     [TestFixture]
     public class ProgramTest
     {
-        [Test]
+        [Test, Category("DDay")] //Category(("DDay")]
         public void LoadAndDisplayCalendar()
         {
             // The following code loads and displays an iCalendar
@@ -96,7 +96,7 @@ namespace DDay.iCal.Test
                 Assert.IsTrue(iCal.Todos.Count == 1, "Calendar should contain 1 todo; however, the iCalendar loaded " + iCal.Todos.Count + " todos");
         }
 
-        [Test]
+        [Test, Category("DDay")] //Category(("DDay")]
         public void LoadFromFile()
         {
             string path = @"Calendars\Serialization\Calendar1.ics";
@@ -106,7 +106,7 @@ namespace DDay.iCal.Test
             Assert.AreEqual(14, iCal.Events.Count);
         }
 
-        [Test]
+        [Test, Category("DDay")] //Category(("DDay")]
         public void LoadFromUri()
         {
             string path = Directory.GetCurrentDirectory();
@@ -121,7 +121,7 @@ namespace DDay.iCal.Test
         /// Ensures that Period.GetHashCode() does not throw NullReferenceException, even
         /// if its properties are null.
         /// </summary>
-        [Test]
+        [Test, Category("DDay")] //Category(("DDay")]
         public void Bug3258032()
         {
             Period p = new Period();
@@ -132,7 +132,7 @@ namespace DDay.iCal.Test
         /// The following test is an aggregate of MonthlyCountByMonthDay3() and MonthlyByDay1() in the
         /// <see cref="Recurrence"/> class.
         /// </summary>
-        [Test]
+        [Test, Category("DDay")] //Category(("DDay")]
         public void Merge1()
         {
             IICalendar iCal1 = iCalendar.LoadFromFile(@"Calendars\Recurrence\MonthlyCountByMonthDay3.ics")[0];
@@ -248,7 +248,7 @@ namespace DDay.iCal.Test
             Assert.AreEqual(DateTimes1.Length, occurrences.Count, "There should be exactly " + DateTimes1.Length + " occurrences; there were " + occurrences.Count);
         }
 
-        [Test]
+        [Test, Category("DDay")] //Category(("DDay")]
         public void Merge2()
         {
             iCalendar iCal = new iCalendar();
@@ -265,7 +265,7 @@ namespace DDay.iCal.Test
         /// The following tests the MergeWith() method of iCalendar to
         /// ensure that unique component merging happens as expected.
         /// </summary>
-        [Test]
+        [Test, Category("DDay")] //Category(("DDay")]
         public void Merge3()
         {
             IICalendar iCal1 = iCalendar.LoadFromFile(@"Calendars\Recurrence\MonthlyCountByMonthDay3.ics")[0];
@@ -281,7 +281,7 @@ namespace DDay.iCal.Test
         /// Tests conversion of the system time zone to one compatible with DDay.iCal.
         /// Also tests the gaining/loss of an hour over time zone boundaries.
         /// </summary>
-        [Test]
+        [Test, Category("DDay")] //Category(("DDay")]
         public void SystemTimeZone1()
         {
             System.TimeZoneInfo tzi = System.TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
@@ -319,7 +319,7 @@ namespace DDay.iCal.Test
         /// <summary>
         /// Ensures the AddTimeZone() method works as expected.
         /// </summary>
-        [Test]
+        [Test, Category("DDay")] //Category(("DDay")]
         public void SystemTimeZone2()
         {
             System.TimeZoneInfo tzi = System.TimeZoneInfo.FindSystemTimeZoneById("Mountain Standard Time");
@@ -351,7 +351,7 @@ namespace DDay.iCal.Test
             Assert.AreEqual(TimeSpan.FromHours(-1) + TimeSpan.FromSeconds(1), result);
         }
 
-        [Test]
+        [Test, Category("DDay")] //Category(("DDay")]
         public void SystemTimeZone3()
         {
             // Per Jon Udell's test, we should be able to get all 

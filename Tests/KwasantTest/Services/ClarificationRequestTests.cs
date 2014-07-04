@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
@@ -120,7 +121,7 @@ namespace KwasantTest.Services
             Assert.AreEqual(respondedCr.Questions[0].Status, QuestionStatus.Answered);
             Assert.AreEqual(respondedCr.Questions[0].Response, "response");
             Assert.AreEqual(respondedCr.ClarificationStatus, ClarificationStatus.Resolved);
-            Assert.AreEqual(respondedCr.BookingRequest.BookingStatus, "Pending");
+            Assert.AreEqual(respondedCr.BookingRequest.BRState, BRState.Pending);
         }
     }
 }

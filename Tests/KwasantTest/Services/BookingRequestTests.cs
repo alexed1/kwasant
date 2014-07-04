@@ -60,7 +60,7 @@ namespace KwasantTest.Services
 
             customersNow = _uow.UserRepository.GetAll().ToList();
 
-            Assert.AreEqual(2, customersNow.Count);
+            Assert.AreEqual(1, customersNow.Count);
             Assert.AreEqual("customer@gmail.com", customersNow.First().EmailAddress.Address);
             Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
             //test analytics system
@@ -92,7 +92,7 @@ namespace KwasantTest.Services
             (new BookingRequest()).Process(_uow, bookingRequest);
 
             customersNow = _uow.UserRepository.GetAll().ToList();
-            Assert.AreEqual(2, customersNow.Count);
+            Assert.AreEqual(1, customersNow.Count);
             Assert.AreEqual(user.EmailAddress, customersNow.First().EmailAddress);
             Assert.AreEqual(user.FirstName, customersNow.First().FirstName);
         }
@@ -197,7 +197,7 @@ namespace KwasantTest.Services
         public void ShowUnprocessedRequestTest()
         {
             object requests = (new BookingRequest()).GetUnprocessed(_uow.BookingRequestRepository);
-            object requestNow = _uow.BookingRequestRepository.GetAll().Where(e => e.BookingStatus == "Unprocessed").OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
+            object requestNow = _uow.BookingRequestRepository.GetAll().Where(e => e.BRState == BRState.Unprocessed).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
 
             Assert.AreEqual(requestNow, requests);
     }
@@ -211,9 +211,10 @@ namespace KwasantTest.Services
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
             (new BookingRequest()).Process(_uow, bookingRequest);
+            bookingRequest.BRState = BRState.Invalid;
+            _uow.SaveChanges();
 
-            (new BookingRequest()).SetStatus(_uow, bookingRequest, "invalid");
-            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.BookingStatus == "Invalid");
+            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.BRState == BRState.Invalid);
             Assert.AreEqual(1, requestNow.Count());
 }
 

@@ -138,6 +138,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
+            modelBuilder.Entity<BookingRequestStatusDO>().ToTable("BookingRequestStatuses");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<ClarificationRequestDO>().ToTable("ClarificationRequests");
             modelBuilder.Entity<QuestionDO>().ToTable("Questions");
@@ -147,6 +148,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<EventDO>().ToTable("Events");
+            modelBuilder.Entity<EventStatusDO>().ToTable("EventStatuses");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");

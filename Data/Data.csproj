@@ -43,6 +43,18 @@
     <Reference Include="FluentValidation">
       <HintPath>..\packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
     </Reference>
+    <Reference Include="Google.Apis.Core">
+      <HintPath>..\packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
@@ -63,29 +75,45 @@
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
     <Reference Include="System.Data" />
+    <Reference Include="Zlib.Portable">
+      <HintPath>..\packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\BRState.cs" />
+    <Compile Include="Constants\EventState.cs" />
     <Compile Include="Constants\InstructionConstants.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
+    <Compile Include="Entities\BookingRequestStatusDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
+    <Compile Include="Entities\EventStatusDO.cs" />
     <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\KactDO.cs" />
     <Compile Include="Entities\Enumerations\QuestionStatus.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
-    <Compile Include="Entities\Enumerations\StringEnumerations.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
     <Compile Include="Entities\Enumerations\CommunicationType.cs" />
     <Compile Include="Entities\Enumerations\EmailParticipantType.cs" />
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingType.cs" />
-    <Compile Include="Entities\EventEmailDO.cs" />
+    <Compile Include="Infrastructure\JSONDataStore.cs" />
+    <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Entities\UserAgentInfoDO.cs" />
     <Compile Include="Infrastructure\AlertManager.cs" />
@@ -208,6 +236,42 @@
     <Compile Include="Migrations\201406231703549_Sync-23.06.2014.Designer.cs">
       <DependentUpon>201406231703549_Sync-23.06.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201406301448461_AddUserGoogleAuthData.cs" />
+    <Compile Include="Migrations\201406301448461_AddUserGoogleAuthData.Designer.cs">
+      <DependentUpon>201406301448461_AddUserGoogleAuthData.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406251542277_Change-EventType.cs" />
+    <Compile Include="Migrations\201406251542277_Change-EventType.Designer.cs">
+      <DependentUpon>201406251542277_Change-EventType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406251552253_Sync-25.06.2014.cs" />
+    <Compile Include="Migrations\201406251552253_Sync-25.06.2014.Designer.cs">
+      <DependentUpon>201406251552253_Sync-25.06.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406261326564_Change-BookingStatusType.cs" />
+    <Compile Include="Migrations\201406261326564_Change-BookingStatusType.Designer.cs">
+      <DependentUpon>201406261326564_Change-BookingStatusType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406272015111_change_name_BRState2.cs" />
+    <Compile Include="Migrations\201406272015111_change_name_BRState2.Designer.cs">
+      <DependentUpon>201406272015111_change_name_BRState2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406301303258_FixDB.cs" />
+    <Compile Include="Migrations\201406301303258_FixDB.Designer.cs">
+      <DependentUpon>201406301303258_FixDB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407010743506_Sync-01.07.2014.cs" />
+    <Compile Include="Migrations\201407010743506_Sync-01.07.2014.Designer.cs">
+      <DependentUpon>201407010743506_Sync-01.07.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407011015092_RenameStatusAgain.cs" />
+    <Compile Include="Migrations\201407011015092_RenameStatusAgain.Designer.cs">
+      <DependentUpon>201407011015092_RenameStatusAgain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407020904132_Sync-02.07.2014.cs" />
+    <Compile Include="Migrations\201407020904132_Sync-02.07.2014.Designer.cs">
+      <DependentUpon>201407020904132_Sync-02.07.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -215,6 +279,8 @@
     <Compile Include="Repositories\AttendeeRepository.cs" />
     <Compile Include="Repositories\BookingRequestRepository.cs" />
     <Compile Include="Repositories\CalendarRepository.cs" />
+    <Compile Include="Repositories\BookingRequestStatusRepository.cs" />
+    <Compile Include="Repositories\EventStatusRepository.cs" />
     <Compile Include="Repositories\KactRepository.cs" />
     <Compile Include="Repositories\ClarificationRequestRepository.cs" />
     <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
@@ -266,6 +332,10 @@
     <ProjectReference Include="..\UAParser\UAParser.csproj">
       <Project>{83c63bea-1859-4dd5-ae08-9a0fec269b17}</Project>
       <Name>UAParser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -338,6 +408,33 @@
     <EmbeddedResource Include="Migrations\201406231703549_Sync-23.06.2014.resx">
       <DependentUpon>201406231703549_Sync-23.06.2014.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406301448461_AddUserGoogleAuthData.resx">
+      <DependentUpon>201406301448461_AddUserGoogleAuthData.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406251542277_Change-EventType.resx">
+      <DependentUpon>201406251542277_Change-EventType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406251552253_Sync-25.06.2014.resx">
+      <DependentUpon>201406251552253_Sync-25.06.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406261326564_Change-BookingStatusType.resx">
+      <DependentUpon>201406261326564_Change-BookingStatusType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406272015111_change_name_BRState2.resx">
+      <DependentUpon>201406272015111_change_name_BRState2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406301303258_FixDB.resx">
+      <DependentUpon>201406301303258_FixDB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407010743506_Sync-01.07.2014.resx">
+      <DependentUpon>201407010743506_Sync-01.07.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407011015092_RenameStatusAgain.resx">
+      <DependentUpon>201407011015092_RenameStatusAgain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407020904132_Sync-02.07.2014.resx">
+      <DependentUpon>201407020904132_Sync-02.07.2014.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
@@ -346,6 +443,11 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

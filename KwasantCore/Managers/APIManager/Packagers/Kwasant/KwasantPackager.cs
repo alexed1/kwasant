@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Data.Entities;
 using KwasantCore.Managers.APIManager.Serializers.Json;
+using StructureMap.Diagnostics;
 using Utilities;
 
 namespace KwasantCore.Managers.APIManager.Packagers.Kwasant
@@ -53,7 +54,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Kwasant
       
         public void PackErrorMessage(ArgumentException ex, out string result)
         {
-            Error curError = new Error();
+            KwasantPackagedMessage curError = new KwasantPackagedMessage();
             if (ex.ParamName != null)
             {
                 curError.Name = ex.ParamName;
@@ -72,7 +73,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Kwasant
         /// </summary>
         public void PackErrorMessage(ApplicationException ex, out string result)
         {
-            Error curError = new Error();
+            KwasantPackagedMessage curError = new KwasantPackagedMessage();
             curError.Name = "LIKI API Error";
             curError.Message = ex.Message;
             result = jsonSerializer.Serialize(curError);
@@ -82,7 +83,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Kwasant
         #endregion
     }
 
-    public class Error
+    public class KwasantPackagedMessage
     {
         public string Name { get; set; }
         public string Message { get; set; }
