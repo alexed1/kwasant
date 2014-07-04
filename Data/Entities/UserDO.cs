@@ -10,6 +10,12 @@ namespace Data.Entities
 {
     public class UserDO : IdentityUser, IUser
     {
+        public UserDO()
+        {
+            BookingRequests = new List<BookingRequestDO>();
+            Calendars = new List<CalendarDO>();
+        }
+
         public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
 
         public String FirstName { get; set; }
