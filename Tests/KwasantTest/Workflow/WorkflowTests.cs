@@ -25,8 +25,8 @@ namespace KwasantTest.Workflow
         private IUnitOfWork _uow;
         private string _testUserEmail;
         private string _testUserEmailPassword;
-        private string _archiveOutboundEmail;
-        private string _archiveOutboundPassword;
+        private string _archivePollEmail;
+        private string _archivePollPassword;
 
         [SetUp]
         public void Setup()
@@ -37,10 +37,8 @@ namespace KwasantTest.Workflow
             _testUserEmail = ConfigRepository.Get("OutboundUserName");
             _testUserEmailPassword = ConfigRepository.Get("OutboundUserPassword");
 
-            _archiveOutboundEmail = ConfigRepository.Get("ArchiveEmailAddress");
-            //_archiveOutboundEmail = "kwasantoutbound@gmail.com";
-            _archiveOutboundPassword = ConfigRepository.Get("ArchiveEmailPassword");
-            //_archiveOutboundPassword = "thales11";
+            _archivePollEmail = ConfigRepository.Get("ArchivePollEmailAddress");
+            _archivePollPassword = ConfigRepository.Get("ArchivePollEmailPassword");
         }
 
 
@@ -212,7 +210,7 @@ namespace KwasantTest.Workflow
 
             OutboundEmail outboundDaemon = new OutboundEmail();
             DaemonTests.RunDaemonOnce(outboundDaemon);
-            ImapClient client = new ImapClient("imap.gmail.com", 993, _archiveOutboundEmail, _archiveOutboundPassword, AuthMethod.Login, true);
+            ImapClient client = new ImapClient("imap.gmail.com", 993, _archivePollEmail, _archivePollPassword, AuthMethod.Login, true);
             _uow.SaveChanges();
             
             var requestMessages = client.Search(SearchCondition.Subject(subject)).ToList();
