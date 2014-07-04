@@ -40,9 +40,6 @@ namespace KwasantWeb.Controllers
         [HttpGet]
         public ActionResult ShowIncidentReport(bool all, int lastMinutes, bool lastHour, bool lastDay, bool lastweek)
         {
-            var s = DateTime.Now.ToUniversalTime();
-            var ss = DateTime.Now.AddMinutes(lastMinutes).ToUniversalTime();
-           
             List<IncidentDO> incidentDOs = new List<IncidentDO>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -53,7 +50,6 @@ namespace KwasantWeb.Controllers
                 else if (lastMinutes !=-1)
                 {
                     //In this case lastMinutes is 5
-                    var sss = DateTime.Now.AddMinutes(-lastMinutes).ToUniversalTime();
                     incidentDOs = uow.IncidentRepository.GetAll().Where(x => x.CreateTime.DateTime >= DateTime.Now.AddMinutes(-lastMinutes).ToUniversalTime()).ToList();
                 }
                 else if (lastHour == true)
