@@ -13,6 +13,7 @@ namespace KwasantWeb.ViewModels
         public String Class { get; set; }
         public String Description { get; set; }
         public int Priority { get; set; }
+        
         public int Sequence { get; set; }
         public String Summary { get; set; }
         public String Category { get; set; }

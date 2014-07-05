@@ -1,0 +1,23 @@
+﻿@model KwasantWeb.ViewModels.ManageUserViewModel
+
+@{
+    ViewBag.Title = "My Account";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+<p class="text-success">@ViewBag.StatusMessage</p>
+<div class="row">
+    <div class="col-md-12">
+        @if (!Model.GoogleCalendarAccessGranted)
+        {
+            @Html.ActionLink("Grant Access to Google Calendar", "GrantGoogleCalendarAccess", null, new { @class = "btn btn-default" })
+        }
+        else
+        {
+            @Html.ActionLink("Revoke Access to Google Calendar", "RevokeGoogleCalendarAccess", null, new { @class = "btn btn-default" })
+        }
+    </div>
+</div>
+
+

@@ -7,7 +7,7 @@ namespace Data.Validators
     {
       public UserValidator()
       {
-          RuleFor(curUserDO => curUserDO.EmailAddress.Address).NotNull().WithMessage("Users must be associated with a valid EmailAddress object containing a valid email address.");
+          RuleFor(curUserDO => curUserDO.EmailAddress).Must(a => a != null && !string.IsNullOrEmpty(a.Address)).WithMessage("Users must be associated with a valid EmailAddress object containing a valid email address.");
 
       }
     }

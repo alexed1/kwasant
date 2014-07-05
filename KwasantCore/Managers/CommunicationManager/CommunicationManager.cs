@@ -82,10 +82,12 @@ namespace KwasantCore.Managers.CommunicationManager
                         eventDO.StateID = EventState.DispatchCompleted;
                         var calendar = GenerateICSCalendarStructure(eventDO);
 
+                        var newAttendees = eventDO.Attendees.Where(a => a.Id == 0).ToList();
+
                         foreach (var attendeeDO in eventDO.Attendees)
                         {
                             //Id > 0 means it's an existing attendee, so we need to send the 'update' email to them.
-                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, attendeeDO.Id > 0);
+                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, !newAttendees.Contains(attendeeDO));
                             var email = new Email(uow, emailDO);
                             AttachCalendarToEmail(calendar, emailDO);
                             email.Send();
@@ -190,8 +192,8 @@ namespace KwasantCore.Managers.CommunicationManager
             toEmailAddress.Name = attendeeDO.Name;
             outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
 
-            var userID = uow.UserRepository.GetQuery().First(u => u.EmailAddressID == attendeeDO.EmailAddressID).Id;
-
+            var userID = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress).Id;
+            
             if (isUpdate)
             {
 

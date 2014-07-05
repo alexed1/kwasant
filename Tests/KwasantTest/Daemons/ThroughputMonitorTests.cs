@@ -21,8 +21,8 @@ namespace KwasantTest.Daemons
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-            ConfigRepository.Set("ThroughputCheckingStartTime", DateTime.Now.Subtract(new TimeSpan(0, 1, 0, 0)).ToString("hh:mm") + "z");
-            ConfigRepository.Set("ThroughputCheckingEndTime", DateTime.Now.Add(new TimeSpan(0, 1, 0, 0)).ToString("hh:mm") + "z");
+            ConfigRepository.Set("ThroughputCheckingStartTime", DateTime.Now.Subtract(new TimeSpan(0, 1, 0, 0)).ToUniversalTime().ToString("hh:mm") + "z");
+            ConfigRepository.Set("ThroughputCheckingEndTime", DateTime.Now.Add(new TimeSpan(0, 1, 0, 0)).ToUniversalTime().ToString("hh:mm") + "z");
         }
 
         [Test]

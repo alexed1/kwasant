@@ -33,6 +33,7 @@ namespace KwasantCore.Services
             userDO.FirstName = userName;
             userDO.LastName = userName;
             userDO.UserName = userName;
+            userDO.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
             uow.UserRepository.Add(userDO);
 
             UserValidator curUserValidator = new UserValidator();

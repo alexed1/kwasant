@@ -43,8 +43,7 @@ namespace Data.Migrations
 
             AddRoles(unitOfWork);
             AddAdmins(unitOfWork);
-
-            unitOfWork.SaveChanges();
+            AddCustomers(unitOfWork);
         }
 
         //Method to let us seed into memory as well
@@ -124,8 +123,7 @@ namespace Data.Migrations
         }
 
         /// <summary>
-        /// Add 'Admin' roles. Curretly only user with Email "alex@kwasant.com" and password 'alex@1234'
-        /// has been added.
+        /// Add users with 'Admin' role.
         /// </summary>
         /// <param name="unitOfWork">of type ShnexyKwasantDbContext</param>
         /// <returns>True if created successfully otherwise false</returns>
@@ -135,7 +133,17 @@ namespace Data.Migrations
             CreateAdmin("pabitra@hotmail.com", "pabi1234", unitOfWork);
             CreateAdmin("rjrudman@gmail.com", "robert1234", unitOfWork);
             CreateAdmin("quader.mamun@gmail.com", "abdul1234", unitOfWork);
-            // CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork); see https://maginot.atlassian.net/browse/KW-272
+            CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
+        }
+
+        /// <summary>
+        /// Add users with 'Admin' role.
+        /// </summary>
+        /// <param name="unitOfWork">of type ShnexyKwasantDbContext</param>
+        /// <returns>True if created successfully otherwise false</returns>
+        private void AddCustomers(IUnitOfWork unitOfWork)
+        {
+            CreateCustomer("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
         }
 
         /// <summary>
@@ -147,27 +155,43 @@ namespace Data.Migrations
         /// <returns></returns>
         private void CreateAdmin(string curUserName, string curPassword, IUnitOfWork unitOfWork)
         {
+            CreateUser(curUserName, curPassword, "Admin", unitOfWork);
+        }
+
+        /// <summary>
+        /// Craete a user with role 'Customer'
+        /// </summary>
+        /// <param name="curUserName"></param>
+        /// <param name="curPassword"></param>
+        /// <param name="unitOfWork"></param>
+        /// <returns></returns>
+        private void CreateCustomer(string curUserName, string curPassword, IUnitOfWork unitOfWork)
+        {
+            CreateUser(curUserName, curPassword, "Customer", unitOfWork);
+        }
+
+        private void CreateUser(string curUserName, string curPassword, string role, IUnitOfWork unitOfWork)
+        {
             try
             {
                 var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasantDbContext));
                 var existingUser = um.FindByName(curUserName);
                 if (existingUser == null)
                 {
-
                     var user = new UserDO()
-                    {
-                        UserName = curUserName,
-                        EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
-                        FirstName = curUserName,
-                        EmailConfirmed = true
-                    };
+                                   {
+                                       UserName = curUserName,
+                                       EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
+                                       FirstName = curUserName,
+                                       EmailConfirmed = true
+                                   };
 
                     IdentityResult ir = um.Create(user, curPassword);
 
                     if (!ir.Succeeded)
                         return;
 
-                    um.AddToRole(user.Id, "Admin");
+                    um.AddToRole(user.Id, role);
                 }
                 else
                 {
@@ -175,8 +199,8 @@ namespace Data.Migrations
                     var forceEmail = existingUser.EmailAddress;
                     //This line forces the above not to be optimised out. In production, it does nothing.
                     Console.WriteLine(forceEmail);
-                    if (!um.IsInRole(existingUser.Id, "Admin"))
-                        um.AddToRole(existingUser.Id, "Admin");
+                    if (!um.IsInRole(existingUser.Id, role))
+                        um.AddToRole(existingUser.Id, role);
                 }
             }
             catch (DbEntityValidationException e)
