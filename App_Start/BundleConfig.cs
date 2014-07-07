@@ -83,50 +83,50 @@ namespace KwasantWeb.App_Start
 
             //Styles
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap23").Include(
-				"~/Content/css/additionalcss/bootstrap23/css/bootstrap2.3.css"
+				"~/Content/css/additionalcss/bootstrap23/css/bootstrap2.3.css", new CssRewriteUrlTransform()
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap30").Include(
-				"~/Content/css/additionalcss/bootstrap30/css/bootstrap3.0.css"
+				"~/Content/css/additionalcss/bootstrap30/css/bootstrap3.0.css", new CssRewriteUrlTransform()
                 ));
 
 			bundles.Add(new StyleBundle("~/bundles/css/bootstrap-responsive").Include(
-				"~/Content/css/additionalcss/bootstrap30/css/bootstrap-responsive.css"
+				"~/Content/css/additionalcss/bootstrap30/css/bootstrap-responsive.css", new CssRewriteUrlTransform()
 				));
 
 			bundles.Add(new StyleBundle("~/bundles/css/bootstrap-datetimepicker").Include(
-				"~/Content/css/additionalcss/bootstrap30/css/bootstrap-datetimepicker.css"
+				"~/Content/css/additionalcss/bootstrap30/css/bootstrap-datetimepicker.css", new CssRewriteUrlTransform()
 			    ));
 
             bundles.Add(new StyleBundle("~/bundles/css/colorbox").Include(
-				"~/Content/css/additionalcss/colorbox/colorbox.css"
+				"~/Content/css/additionalcss/colorbox/colorbox.css", new CssRewriteUrlTransform()
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/frontpage").Include(
-				"~/Content/css/frontcss/main.css"
+				"~/Content/css/frontcss/main.css", new CssRewriteUrlTransform()
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/default").Include(
-				"~/Content/css/generalcss/default.css"
+				"~/Content/css/generalcss/default.css", new CssRewriteUrlTransform()
                 ));
 
 			bundles.Add(new StyleBundle("~/bundles/css/backendcss").Include(
-				"~/Content/css/backendcss/default.css"
+				"~/Content/css/backendcss/default.css", new CssRewriteUrlTransform()
 				));
 
             bundles.Add(new StyleBundle("~/bundles/css/fontawesome").Include(
-				"~/Content/css/additionalcss/font-awesome/font-awesome.css"
+				"~/Content/css/additionalcss/font-awesome/font-awesome.css", new CssRewriteUrlTransform()
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/daypilot").Include(
-                "~/Content/css/Daypilot/*_white.css"
+				"~/Content/css/Daypilot/*_white.css", new CssRewriteUrlTransform()
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/select2").Include(
-			   "~/Content/css/additionalcss/select2/select2.css"
+			   "~/Content/css/additionalcss/select2/select2.css", new CssRewriteUrlTransform()
                ));
 			bundles.Add(new StyleBundle("~/bundles/css/temp").Include(
-			   "~/Content/css/temp/temp.css"
+			   "~/Content/css/temp/temp.css", new CssRewriteUrlTransform()
 			   ));         
         }
     }
