@@ -60,193 +60,150 @@
     @Styles.Render("~/bundles/css/backendcss")
     @Styles.Render("~/bundles/css/select2")
     @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
-    <style>
-        .glyphicon-calendar:before
-        {
-            content: "\e109"; /* This was broken in the bootstrap css...?? */
-        }
-    </style>
+	@Styles.Render("~/bundles/css/temp")
+	<link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
 }
+<div class="light-bg">
+	<form id="f" class="edit-event-form form" method="post" action="@Url.Action("ConfirmChanges", "Event")">
+		<h3 class="with-border">@Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event (Created by " + Model.CreatedByAddress + ").")</h3>
+		<div class="formItem">
+			<div class="formLabel">Summary</div>
+			<input id="summary" name="Summary" class="form-control col-md-1" value="@Model.Summary" required type='text' />
+		</div>
+		<div class="formItem">
+			<div class="formLabel">When</div>
+			<label>@Html.CheckBoxFor(m => m.IsAllDay, new { id = "chkAllDay", name = "IsAllDay" }) All day event</label>
+		</div>
+		<div id="dateGroup">
+			<div class="formItem">
+				<div class='input-group date' id='StartDate' data-date-format="MM/DD/YYYY hh:mm a [GMT]ZZ">
+					<input type='text' name="StartDate" class="form-control" />
+					<span class="input-group-addon">
+						<span class="glyphicon glyphicon-calendar"></span>
+					</span>
+				</div>
+			</div>
+			<div class="formLabel">to</div>
+			<div class="formItem">
+				<div class='input-group date' id='EndDate' data-date-format="MM/DD/YYYY hh:mm a [GMT]ZZ">
+					<input type='text' name="EndDate" class="form-control" />
+					<span class="input-group-addon">
+						<span class="glyphicon glyphicon-calendar glyphicon-nonescaped"></span>
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="formItem">
+			<div class="formLabel">Location</div>
+			<input id="location" name="Location" class="form-control col-md-1" value="@Model.Location" required type='text' />
+		</div>
+		<div class="formItem">
+			<div class="formLabel">Description</div>
+			<textarea id="description" name="Description" cols="31" rows="3" class="form-control col-md-1" required>@Html.Raw(Model.Description)</textarea>
+		</div>
+		<div class="formItem">
+			<div class="formLabel">Attendees</div>
+			<input type="hidden" name="Attendees" id="attendeesSel" />
+		</div>
+		@{
+			<div class="hidden">
+				@Html.TextBox("Id", @Model.Id, new { @class = "form-control col-md-1" })
+				@Html.TextBox("BookingRequestID", @Model.BookingRequestID, new { @class = "form-control col-md-1" })
+			</div>
+		}
+		<div class="space form-actions">
+			<input id="btnSave" type="submit" value="OK" class="btn btn-default pull-left" />
+			<a href="javascript:closeWithUnsavedDataCheck(modifiedState);" class="cancel-btn pull-left">Cancel</a>
+		</div>
+	</form>
+</div>
 
-<form id="f" method="post" action="@Url.Action("ConfirmChanges", "Event")">
-    <h3>
-        @Html.Raw(Model.Id == 0 ? "New Event" : "Editing Event (Created by " + Model.CreatedByAddress + ").")
-    </h3>
-    <hr />
-    <div class="formItem">
-        <div class="formLabel">
-            Summary
-       
-        </div>
-        <input id="summary" name="Summary" class="form-control col-md-1" value="@Model.Summary" required />
-    </div>
-    <div class="formItem">
-        <div class="formLabel">
-            When
-       
-        </div>
-        <label style="padding-top:5px;">
-            @Html.CheckBoxFor(m => m.IsAllDay, new { id = "chkAllDay", name = "IsAllDay" }) All day event
-        </label>
-    </div>
-    <div id="dateGroup" class="formItem" style="padding-top: 10px;">
-        <div class="formLabel">
-            <!-- Align the date pickers -->
-        </div>
-        <div class='col-md-4' style="padding-left: 0; padding-right:5px;">
-            <div class='input-group date' id='StartDate' data-date-format="MM/DD/YYYY hh:mm a [GMT]ZZ">
-                <input type='text' name="StartDate" class="form-control" />
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-            </div>
-        </div>
-        <div class='col-md-4' style="padding-left: 4px;">
-            <label style="padding-top: 6px; font-weight: normal">to</label>
-        </div>
-        <div class='col-md-4' style="padding-right: 0; padding-left:5px;">
-            <div class='input-group date' id='EndDate' data-date-format="MM/DD/YYYY hh:mm a [GMT]ZZ">
-                <input type='text' name="EndDate" class="form-control" />
-                <span class="input-group-addon">
-                    <span class="glyphicon glyphicon-calendar"></span>
-                </span>
-            </div>
-        </div>
-    </div>
-    
-    <div class="formItem">
-        <div class="formLabel">
-            Location
-       
-        </div>
-        <input id="location" name="Location" class="form-control col-md-1" value="@Model.Location" required />
-    </div>
-    
-    <div class="formItem">
-        <div class="formLabel">
-            Description
-       
-        </div>
-        <textarea id="description" name="Description" cols="31" rows="3" class="form-control col-md-1" required>@Html.Raw(Model.Description)</textarea>
-    </div>
-    
-    <div class="formItem">
-        <div class="formLabel">
-            Attendees
-       
-        </div>
-        <input type="hidden" name="Attendees" id="attendeesSel" />
-    </div>
-    @{
+	<script type="text/javascript">
+		var modifiedState = { modified: false };
+		var fromdata;
+		var todata;
 
-        <div style="display: none">
-            @Html.TextBox("Id", @Model.Id, new { @class = "form-control col-md-1" })
-            @Html.TextBox("BookingRequestID", @Model.BookingRequestID, new { @class = "form-control col-md-1" })
-        </div>
-    }
-    <hr />
-    <div class="space">
-        <div style="clear: both">
-            <div style="float: left">
-                <input id="btnSave" type="submit" value="OK" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;" />
-            </div>
-            <div style="float: left">
-                <a href="javascript:closeWithUnsavedDataCheck(modifiedState);">
-                    <div style="width: 100px;">Cancel</div>
-                </a>
-            </div>
-        </div>
-        <br />
-        <br />
-    </div>
-</form>
+		$(document).ready(function () {
+			$(".form-control").change(function () {
+				modifiedState.modified = true;
+			});
+		});
 
-<script type="text/javascript">
-    var modifiedState = { modified: false };
-    var fromdata;
-    var todata;
+		$("#f").submit(function () {
+			if (!modifiedState.modified) {
+				close();
+				return false;
+			}
 
-    $(document).ready(function () {
-        $(".form-control").change(function () {
-            modifiedState.modified = true;
-        });
-    });
+			var fromDate = $('#StartDate');
+			var toDate = $('#EndDate');
 
-    $("#f").submit(function () {
-        if (!modifiedState.modified) {
-            close();
-            return false;
-        }
+			if (!($('#chkAllDay').is(':checked'))) {
+				if (fromDate.data("DateTimePicker").getDate() > toDate.data("DateTimePicker").getDate()) {
+					alert("Start date can't be greater than End Date");
+					return false;
+				}
+			}
 
-        var fromDate = $('#StartDate');
-        var toDate = $('#EndDate');
+			var f = $("#f");
+			if (!f.valid())
+				return false;
 
-        if (!($('#chkAllDay').is(':checked'))) {
-            if (fromDate.data("DateTimePicker").getDate() > toDate.data("DateTimePicker").getDate()) {
-                alert("Start date can't be greater than End Date");
-                return false;
-            }
-        }
+			fromDate.data("DateTimePicker").enable();
+			toDate.data("DateTimePicker").enable();
 
-        var f = $("#f");
-        if (!f.valid())
-            return false;
+			var url = f.prop('action') + '/?' + f.serialize();
 
-        fromDate.data("DateTimePicker").enable();
-        toDate.data("DateTimePicker").enable();
+			Kwasant.IFrame.Display(url,
+				{
+					modal: true,
+					callback: function (result) {
+						if ($('#chkAllDay').attr('checked')) {
+							fromDate.data("DateTimePicker").disable();
+							toDate.data("DateTimePicker").disable();
+						} else {
+							fromDate.data("DateTimePicker").enable();
+							toDate.data("DateTimePicker").enable();
+						}
+						if (result)
+							close(true);
+					}
+				});
 
-        var url = f.prop('action') + '/?' + f.serialize();
+			return false;
+		});
 
-        Kwasant.IFrame.Display(url,
-            {
-                modal: true,
-                callback: function (result) {
-                    if ($('#chkAllDay').attr('checked')) {
-                        fromDate.data("DateTimePicker").disable();
-                        toDate.data("DateTimePicker").disable();
-                    } else {
-                        fromDate.data("DateTimePicker").enable();
-                        toDate.data("DateTimePicker").enable();
-                    }
-                    if (result)
-                        close(true);
-                }
-            });
+		$(function () {
+			$("#summary").focus();
+			$('#f').validate();
+		});
 
-        return false;
-    });
+		$(function () {
+			var fromDate = $('#StartDate');
+			var toDate = $('#EndDate');
 
-    $(function () {
-        $("#summary").focus();
-        $('#f').validate();
-    });
+			fromDate.datetimepicker( { offsetInMinutes: @Model.BookingRequestTimezoneOffsetInMinutes });
+			toDate.datetimepicker({ offsetInMinutes: @Model.BookingRequestTimezoneOffsetInMinutes });
 
-    $(function () {
-        var fromDate = $('#StartDate');
-        var toDate = $('#EndDate');
+			fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff")');
+			toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff")');
 
-        fromDate.datetimepicker( { offsetInMinutes: @Model.BookingRequestTimezoneOffsetInMinutes });
-        toDate.datetimepicker({ offsetInMinutes: @Model.BookingRequestTimezoneOffsetInMinutes });
+			fromdata = $('#StartDate').data("DateTimePicker");
+			todata = $('#EndDate').data("DateTimePicker");
 
-        fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff")');
-        toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff")');
+			hideShowDates();
+		});
 
-        fromdata = $('#StartDate').data("DateTimePicker");
-        todata = $('#EndDate').data("DateTimePicker");
+		//function to remove attendee on close icon click, which was added using quick copy function on mail info section
+		function removethis(id) {
+			var removedid = $(id).closest("li").find("div").html();
+			var existingAttendees = $("#attendeesSel").val().split(',');
 
-        hideShowDates();
-    });
-
-    //function to remove attendee on close icon click, which was added using quick copy function on mail info section
-    function removethis(id) {
-        var removedid = $(id).closest("li").find("div").html();
-        var existingAttendees = $("#attendeesSel").val().split(',');
-
-        var removeindex = existingAttendees.indexOf(removedid);
-        if (removeindex > -1) {
-            existingAttendees.splice(removeindex, 1);
-        }
-        $("#attendeesSel").val(existingAttendees.join());
-        $(id).closest("li").remove();
-    }
-</script>
+			var removeindex = existingAttendees.indexOf(removedid);
+			if (removeindex > -1) {
+				existingAttendees.splice(removeindex, 1);
+			}
+			$("#attendeesSel").val(existingAttendees.join());
+			$(id).closest("li").remove();
+		}
+	</script>

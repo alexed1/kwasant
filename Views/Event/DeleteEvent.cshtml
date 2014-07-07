@@ -22,52 +22,43 @@
     @Styles.Render("~/bundles/css/backendcss")
     @Styles.Render("~/bundles/css/select2")
     @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
+	@Styles.Render("~/bundles/css/temp")
 }
-<form id="f" method="post" style="margin:10px" action="@Url.Action("ConfirmDelete")">
-    <h3>Confirm Delete</h3>
-    <hr />
-    <div style="color:red">You are about to delete the following event</div>
-    <div style="@Html.Raw(Model.IsAllDay ? String.Empty : "display:none;")">
-        <div>* All day event *</div>
-    </div>
-    <div style="@Html.Raw(Model.IsAllDay ? "display:none;" : String.Empty)">
-        <div>Start Date: @Model.StartDate</div>
-        <div>End Date: @Model.EndDate</div>
-    </div>
-    <div>Location: @Model.Location</div>
-    <div>Summary: @Model.Summary</div>
-    <div>Description: @Model.Description</div>
-    <div>Attendees: @Model.Attendees</div>
-    
-    <hr />
-    <div class="space">
-        <div style="clear:both">
-            <div style="float:left">
-                <input id="btnSave" type="submit" value="CONFIRM" style="width: 100px; height: 30px; border: 2px solid black; margin-right:20px" />
-            </div>
-            <div style="float:left">
-                <a href="javascript:close()"><div style="width: 100px;">REJECT</div></a>
-            </div>
-        </div>
-        <br />
-        <br />
-    </div>
-</form>
+<div class="light-bg">
+	<form id="f" class="edit-event-form form" method="post" action="@Url.Action("ConfirmDelete")">
+		<h3 class="with-border">Confirm Delete</h3>
+		<div style="color:red">You are about to delete the following event</div>
+		<div style="@Html.Raw(Model.IsAllDay ? String.Empty : "display:none;")">
+			<div>* All day event *</div>
+		</div>
+		<div style="@Html.Raw(Model.IsAllDay ? "display:none;" : String.Empty)">
+			<div>Start Date: @Model.StartDate</div>
+			<div>End Date: @Model.EndDate</div>
+		</div>
+		<div>Location: @Model.Location</div>
+		<div>Summary: @Model.Summary</div>
+		<div>Description: @Model.Description</div>
+		<div>Attendees: @Model.Attendees</div>
+		<div class="space form-actions">
+			<input id="btnSave" type="submit" value="CONFIRM" class="btn btn-default pull-left" />
+			<a href="javascript:close()" class="cancel-btn pull-left">REJECT</a>
+		</div>
+	</form>
+</div>
+	<script type="text/javascript">
+		function close(saved) {
+			if (saved === undefined || saved == null)
+				saved = false;
+			Kwasant.IFrame.CloseMe(saved);
+		}
 
-<script type="text/javascript">
-    function close(saved) {
-        if (saved === undefined || saved == null)
-            saved = false;
-        Kwasant.IFrame.CloseMe(saved);
-    }
-
-    $(function () {
-        $("#f").submit(function () {
-            var f = $("#f");
-            $.get(f.prop('action'), { eventID: @Model.Id }, function(result) {
-                close(result);
-            }, 'json');
-            return false;
-        });
-    });
-</script>
+		$(function () {
+			$("#f").submit(function () {
+				var f = $("#f");
+				$.get(f.prop('action'), { eventID: @Model.Id }, function(result) {
+					close(result);
+				}, 'json');
+				return false;
+			});
+		});
+	</script>

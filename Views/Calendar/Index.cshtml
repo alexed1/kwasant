@@ -1,4 +1,4 @@
-﻿@using DayPilot.Web.Mvc
+﻿﻿@using DayPilot.Web.Mvc
 @using DayPilot.Web.Mvc.Enums
 @using DayPilot.Web.Mvc.Enums.Calendar
 @using DayPilot.Web.Mvc.Events.Calendar
@@ -6,33 +6,33 @@
 @model Data.Entities.EmailDO
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @{
-    ViewBag.Title = "Event ";
+	ViewBag.Title = "Event ";
 }
-@section styles{    
-    @Styles.Render("~/bundles/css/daypilot")
+@section styles{
+	@Styles.Render("~/bundles/css/daypilot")
 }
 @section immediateScripts
 {
-    @Scripts.Render("~/bundles/js/jquery")
-    @Scripts.Render("~/bundles/js/daypilot")
-    <script src="/Content/js/Kwasant/Popup.js"></script>
+	@Scripts.Render("~/bundles/js/jquery")
+	@Scripts.Render("~/bundles/js/daypilot")
+	<script src="/Content/js/Kwasant/Popup.js"></script>
 }
 @section scripts
 {
-    @Scripts.Render("~/bundles/js/modernizr")
-    @Scripts.Render("~/bundles/js/bootstrap")
-    @Scripts.Render("~/bundles/js/common")
+	@Scripts.Render("~/bundles/js/modernizr")
+	@Scripts.Render("~/bundles/js/bootstrap")
+	@Scripts.Render("~/bundles/js/common")
 }
 @*width: 1270px;*@
 <div class="jumbotron calendar-section">
-    <div class="row">
-         @*width: 420px;*@
+	<div class="row">
+		@*width: 420px;*@
 		<div id="emailInfoBox" class="col-md-5 container_box emailInfoBox">
 			<a id="btnProcessed" href="@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, targetStatus = "processed" })">
 				<button>Mark Processed</button>
 			</a><br />
 			<br />
-			<iframe id="frminfo" class="frminfo" onload="iframeLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id"></iframe>
+			<iframe id="frminfo" class="frminfo" onload="iframeLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style=""></iframe>
 			<table class="email-info-tabele" role="grid">
 				<thead>
 					<tr role="row">
@@ -163,24 +163,24 @@
 			</div>
 		</div>
 
-        <div class="col-lg-2 container_box calendar-area">
-            @Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
-            {
-                CssOnly = true,
-                Theme = "navigator_white",
-                ShowMonths = 1
-            })
-        </div>
+		<div class="col-lg-2 container_box calendar-area">
+			@Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
+			{
+				CssOnly = true,
+				Theme = "navigator_white",
+				ShowMonths = 1
+			})
+		</div>
 
-    </div>
+	</div>
 </div>
 <div class="row">
-    @Html.ActionLink("Back to booking requests", "Index", "BookingRequest")
+	@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")
 </div>
 <div class="row">
-    @Html.ActionLink("Show Users", "Index", "User")
+	@Html.ActionLink("Show Users", "Index", "User")
 </div>
-<input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid"/>
+<input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid" />
 
 <script type="text/javascript">
 

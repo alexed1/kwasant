@@ -4,16 +4,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Kwasant</title>
-	<link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />        
+	<link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />    
+	@Styles.Render("~/bundles/css/bootstrap30")    
     @Styles.Render("~/bundles/css/backendcss")
 	@Styles.Render("~/bundles/css/colorbox")
-	@Styles.Render("~/bundles/css/bootstrap30")
+	
 	@Styles.Render("~/bundles/css/temp")
     @RenderSection("styles", required: false)     
     @Scripts.Render("~/bundles/js/jquery")
     @RenderSection("immediateScripts", required:false)	
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
-	<link href='../Content/css/additionalcss/font-awesome/css/font-awesome.css' rel='stylesheet'>
+	<link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
 	<!--[if lt IE 9]>
 		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 		<script src="Content/js/respond.min.js"></script>
