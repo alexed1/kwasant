@@ -233,9 +233,9 @@
     <Compile Include="Migrations\201406301303258_FixDB.Designer.cs">
       <DependentUpon>201406301303258_FixDB.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201407030633059_AddIncidentDO.cs" />
-    <Compile Include="Migrations\201407030633059_AddIncidentDO.Designer.cs">
-      <DependentUpon>201407030633059_AddIncidentDO.cs</DependentUpon>
+    <Compile Include="Migrations\201407080731014_AddIncidentDO.cs" />
+    <Compile Include="Migrations\201407080731014_AddIncidentDO.Designer.cs">
+      <DependentUpon>201407080731014_AddIncidentDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -385,8 +385,8 @@
     <EmbeddedResource Include="Migrations\201406301303258_FixDB.resx">
       <DependentUpon>201406301303258_FixDB.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201407030633059_AddIncidentDO.resx">
-      <DependentUpon>201407030633059_AddIncidentDO.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201407080731014_AddIncidentDO.resx">
+      <DependentUpon>201407080731014_AddIncidentDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

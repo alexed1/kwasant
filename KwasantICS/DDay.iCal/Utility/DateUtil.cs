@@ -94,5 +94,27 @@ namespace KwasantICS.DDay.iCal.Utility
             }
             return dt;
         }
+
+
+        public DateTimeOffset GenerateDateRange(string queryPeriod)
+        {
+            DateTimeOffset dateTimeOffset = new DateTimeOffset();
+            switch (queryPeriod.ToLower())
+            {
+                case "lastminutes":
+                    dateTimeOffset = DateTimeOffset.UtcNow.AddMinutes(-5);
+                    break;
+                case "lasthour":
+                    dateTimeOffset = DateTimeOffset.UtcNow.AddHours(-1);
+                    break;
+                case "lastday":
+                    dateTimeOffset = DateTimeOffset.UtcNow.AddDays(-1);
+                    break;
+                case "lastweek":
+                    dateTimeOffset = DateTimeOffset.UtcNow.AddDays(-7);
+                    break;
+            }
+            return dateTimeOffset;
+        }
     }
 }

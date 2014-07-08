@@ -9,6 +9,7 @@ using System.Linq;
 using System;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using System.Data.Entity;
+using KwasantICS.DDay.iCal.Utility;
 namespace KwasantWeb.Controllers
 {
    // [KwasantAuthorizeAttribute(Roles = "Admin")]
@@ -38,43 +39,26 @@ namespace KwasantWeb.Controllers
 
         //Generate incident report
         [HttpGet]
-        public ActionResult ShowIncidentReport(bool all, int lastMinutes, bool lastHour, bool lastDay, bool lastweek)
+        public ActionResult ShowIncidentReport(string queryPeriod)
         {
             List<IncidentDO> incidentDOs = new List<IncidentDO>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (all == true)
+                if (queryPeriod=="all")
                 {
                     incidentDOs = uow.IncidentRepository.GetAll().ToList();
                 }
-                else if (lastMinutes !=-1)
+                else
                 {
-                    //In this case lastMinutes is 5
-                    incidentDOs = uow.IncidentRepository.GetAll().Where(x => x.CreateTime.DateTime >= DateTime.Now.AddMinutes(-lastMinutes).ToUniversalTime()).ToList();
-                }
-                else if (lastHour == true)
-                {
-                    incidentDOs = uow.IncidentRepository.GetAll().Where(x => x.CreateTime.DateTime >= DateTime.Now.AddHours(-1).ToUniversalTime()).ToList();
-                }
-                else if (lastDay == true)
-                {
-                    incidentDOs = uow.IncidentRepository.GetAll().Where(x => x.CreateTime.Date == DateTimeOffset.UtcNow.Date.AddDays(-1)).ToList();
-                  
-                }
-                else if (lastweek == true)
-                {
-                    incidentDOs = uow.IncidentRepository.GetAll().Where(x => x.CreateTime > DateTimeOffset.UtcNow.AddDays(-7)).ToList();
+                  DateUtil dateUtil = new DateUtil();
+                  DateTimeOffset dateTimeOffset = dateUtil.GenerateDateRange(queryPeriod);
+                  incidentDOs = uow.IncidentRepository.GetAll().Where(x => x.CreateTime.DateTime >= dateTimeOffset.DateTime).ToList();
                 }
                 var jsonResult = Json(_datatables.Pack(incidentDOs), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
         }
-       
-        //public ActionResult ProcessBookings()
-        //{
-        //    //get all Bookings with status = "unprocessed"
-        //    //foreach Booking, process it
-        //}
+
     }
 }

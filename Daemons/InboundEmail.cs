@@ -77,7 +77,6 @@ namespace Daemons
 
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
             IEnumerable<uint> uids = client.Search(SearchCondition.Unseen()).ToList();
-
             string logString;
 
             //the difference in syntax makes it easy to have nonzero hits stand out visually in the log dashboard
@@ -101,18 +100,11 @@ namespace Daemons
                     bookingRequest.User = unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address); 
                     (new BookingRequest()).ProcessBookingRequest(unitOfWork, bookingRequest);
                     unitOfWork.SaveChanges();
-                  
                 }
                 catch (Exception e)
                 {
-                    Logger.GetLogger().Error("Failed to process inbound message.", e);
-                    client.RemoveMessageFlags(uid, null, MessageFlag.Seen);
-                    Logger.GetLogger().Info("Message marked as unread.");
-
-                    AlertManager.EmailProcessingFailure(message.From.Address, message.Headers["Date"]);
-                    Logger.GetLogger().Info("EmailProcessingFailure Reported. ObjectID =" + uid);
-                 
-                    throw e;
+                    AlertManager.EmailProcessingFailure(message.Headers["Date"], e.Message);
+                    Logger.GetLogger().Error("EmailProcessingFailure Reported. ObjectID =" + uid);
                 }
             }
 

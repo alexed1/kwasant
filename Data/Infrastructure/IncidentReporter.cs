@@ -18,18 +18,18 @@ namespace Data.Infrastructure
             AlertManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
         }
 
-        public void ProcessAlert_EmailProcessingFailure(string from, string dateReceived)
+        public void ProcessAlert_EmailProcessingFailure(string dateReceived, string errorMessage)
         {
             using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IncidentRepository incidentRepo = _uow.IncidentRepository;
                 IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = from;
-                incidentDO.SecondaryCategory = "intake";
+                incidentDO.PrimaryCategory = "Email";
+                incidentDO.SecondaryCategory = "Intake Failure";
                 incidentDO.CreateTime = Convert.ToDateTime(dateReceived);
                 incidentDO.Priority = 5;
                 incidentDO.Activity = "Created";
-                incidentRepo.Add(incidentDO);
+                incidentDO.Notes = errorMessage;
+                _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
             }
         }

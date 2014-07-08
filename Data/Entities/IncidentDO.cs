@@ -7,7 +7,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 namespace Data.Entities
 {
-   public  class IncidentDO
+   public class IncidentDO
     {
         [Key]
         public int Id { get; set; }
@@ -16,5 +16,6 @@ namespace Data.Entities
         public String SecondaryCategory { get; set; }
         public String Activity { get; set; }
         public int Priority { get; set; }
+        public string Notes { get; set; }
     }
 }

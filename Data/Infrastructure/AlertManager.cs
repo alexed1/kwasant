@@ -13,7 +13,7 @@ namespace Data.Infrastructure
         public delegate void BookingRequestCreatedHandler(BookingRequestDO curBR);
         public static event BookingRequestCreatedHandler AlertBookingRequestCreated;
 
-        public delegate void IncidentCreatedHandler(string from, string dateReceived);
+        public delegate void IncidentCreatedHandler( string dateReceived, string errorMessage);
          public static event IncidentCreatedHandler AlertEmailProcessingFailure;
 
       
@@ -36,12 +36,12 @@ namespace Data.Infrastructure
             
                 
         }
-        
 
-        public static void EmailProcessingFailure(string from, string dateReceived)
+
+        public static void EmailProcessingFailure( string dateReceived, string errorMessage)
         {
            if (AlertEmailProcessingFailure != null)
-               AlertEmailProcessingFailure( from,  dateReceived);
+               AlertEmailProcessingFailure( dateReceived, errorMessage);
         }
    
         #endregion
