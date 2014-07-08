@@ -18,8 +18,9 @@ namespace Data.Entities
         [ForeignKey("EmailAddress")]
         public int EmailAddressID { get; set; }
 
-        [Required]
         public virtual EmailAddressDO EmailAddress { get; set; }
+
+        public string GoogleAuthData { get; set; }
     }
 }
 

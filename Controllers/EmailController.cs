@@ -10,7 +10,7 @@ using Utilities;
 
 namespace KwasantWeb.Controllers
 {
-    //[KwasantAuthorize(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Admin")]
     public class EmailController : Controller
     {
         private IUnitOfWork _uow;

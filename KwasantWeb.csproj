@@ -16,7 +16,8 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>
+    </IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -66,6 +67,28 @@
     <Reference Include="FluentValidation.Mvc">
       <HintPath>packages\FluentValidation.MVC4.5.1.0.0\lib\Net40\FluentValidation.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="Google.Apis">
+      <HintPath>packages\Google.Apis.1.8.2\lib\net40\Google.Apis.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Auth, Version=1.8.2.23763, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Google.Apis.Auth.1.8.2\lib\net40\Google.Apis.Auth.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Auth.Mvc4, Version=1.8.2.23775, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Google.Apis.Auth.Mvc.1.8.2\lib\net40\Google.Apis.Auth.Mvc4.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.8.2.23773, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Google.Apis.Auth.1.8.2\lib\net40\Google.Apis.Auth.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Core, Version=1.8.2.23761, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.PlatformServices">
+      <HintPath>packages\Google.Apis.1.8.2\lib\net40\Google.Apis.PlatformServices.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
@@ -106,6 +129,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop">
+      <HintPath>packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration">
       <HintPath>packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
@@ -121,6 +155,18 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
     </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Xml" />
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
@@ -159,6 +205,10 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="WebGrease">
       <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Zlib.Portable, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -215,13 +265,15 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\External\GoogleCalendar\AuthCallbackController.cs" />
     <Compile Include="Controllers\BookingRequestController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
     <Compile Include="Controllers\ClarificationRequestController.cs" />
     <Compile Include="Controllers\ClarificationResponseController.cs" />
-    <Compile Include="Controllers\DayPilot\DayPilotMonthControl.cs" />
-    <Compile Include="Controllers\DayPilot\DayPilotCalendarControl.cs" />
-    <Compile Include="Controllers\DayPilot\DayPilotNavigatorControl.cs" />
+    <Compile Include="Controllers\ControllerExtensions.cs" />
+    <Compile Include="Controllers\External\DayPilot\DayPilotMonthControl.cs" />
+    <Compile Include="Controllers\External\DayPilot\DayPilotCalendarControl.cs" />
+    <Compile Include="Controllers\External\DayPilot\DayPilotNavigatorControl.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
@@ -231,7 +283,7 @@
     <Compile Include="Controllers\MonthController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Controllers\ViewModels\AccountVM.cs" />
+    <Compile Include="ViewModels\MyAccountModel.cs" />
     <Compile Include="Filters\RequestParamsEncryptedFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -246,9 +298,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="ViewModels\ClarificationResponseViewModel.cs" />
+    <Compile Include="ViewModels\ExternalLoginConfirmationViewModel.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\ManageUserViewModel.cs" />
     <Compile Include="ViewModels\QuestionViewModel.cs" />
     <Compile Include="ViewModels\ClarificationRequestViewModel.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
+    <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\UsersAdminViewModel.cs" />
     <Compile Include="ViewModels\ProcessCreateEventViewModel.cs" />
     <Compile Include="Webhooks\MandrillWebhookController.cs" />
@@ -356,11 +412,21 @@
     <Content Include="Content\img\ajax-loader.gif" />
     <Content Include="Content\img\backgrounds\background-test9.jpg" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
+    <Content Include="Content\img\backgrounds\homepage89.png" />
+    <Content Include="Content\img\backgrounds\homepagesecond.jpg" />
+    <Content Include="Content\img\backgrounds\ie-black-bg.png" />
     <Content Include="Content\img\Croissant\croissant_nolic.jpg" />
     <Content Include="Content\img\EmailLogo.png" />
     <Content Include="Content\img\favicon.ico" />
     <Content Include="Content\img\Management\alexhead.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
+    <Content Include="Content\img\site\example_using_kwasant_email.png" />
+    <Content Include="Content\img\site\from_this_to_this.png" />
+    <Content Include="Content\img\site\How_it_works_diagram.png" />
+    <Content Include="Content\img\site\kwasant-video-screen.png" />
+    <Content Include="Content\img\site\logo.png" />
+    <Content Include="Content\img\site\perfect-krawsant.jpg" />
+    <Content Include="Content\img\site\perfect-krawsant.png" />
     <Content Include="Content\img\temp\old\background-match.jpg" />
     <Content Include="Content\img\temp\old\background-test5.jpg" />
     <Content Include="Content\img\temp\old\background-test6.jpg" />
@@ -658,6 +724,7 @@
     <Content Include="Views\ClarificationResponse\New.cshtml" />
     <Content Include="Views\ClarificationResponse\ProcessSubmittedClarificationData.cshtml" />
     <Content Include="Views\ClarificationResponse\AllAnswered.cshtml" />
+    <Content Include="Views\User\MyAccount.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -665,7 +732,6 @@
     <Folder Include="Content\fonts\" />
     <Folder Include="Content\img\forms\" />
     <Folder Include="Content\img\icons\" />
-    <Folder Include="Controllers\Models\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Configuration\Configuration.csproj">
@@ -736,6 +802,11 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <Import Project="packages\AutoMapper.3.2.1\tools\AutoMapper.targets" Condition="Exists('packages\AutoMapper.3.2.1\tools\AutoMapper.targets')" />
+  <Import Project="packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
