@@ -223,8 +223,7 @@ namespace KwasantTest.Services
         public void GetBookingRequestsTest()
         {
             AddTestRequestData();
-            int id = _uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
-            List<BookingRequestDO> requests = (new BookingRequest()).GetBookingRequests(_uow.BookingRequestRepository, id, 0, 10, _uow.BookingRequestRepository.GetAll().FirstOrDefault().User.Id);
+            List<BookingRequestDO> requests = (new BookingRequest()).GetAllByUserId(_uow.BookingRequestRepository, 0, 10, _uow.BookingRequestRepository.GetAll().FirstOrDefault().User.Id);
             Assert.AreEqual(1, requests.Count);
         }
     }

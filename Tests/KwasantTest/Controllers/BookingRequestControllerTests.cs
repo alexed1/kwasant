@@ -79,7 +79,7 @@ namespace KwasantTest.Controllers
 
             BookingRequestController controller = new BookingRequestController();
             int id = _uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
-            string jsonResultExpected = (new { draw = 1, recordsTotal = 1, recordsFiltered = 1, data = _datatables.Pack((new BookingRequest()).GetBookingRequests(_uow.BookingRequestRepository, id, 0, 10, _uow.BookingRequestRepository.GetAll().FirstOrDefault().User.Id)) }).ToString();
+            string jsonResultExpected = (new { draw = 1, recordsTotal = 1, recordsFiltered = 1, data = _datatables.Pack((new BookingRequest()).GetAllByUserId(_uow.BookingRequestRepository, 0, 10, _uow.BookingRequestRepository.GetAll().FirstOrDefault().User.Id)) }).ToString();
             JsonResult jsonResultActual = controller.GetBookingRequests(id, 1, 0, 10) as JsonResult;
             Assert.AreEqual(jsonResultExpected, jsonResultActual.Data.ToString());
         }

@@ -22,10 +22,12 @@ namespace KwasantWeb.Controllers
     public class BookingRequestController : Controller
     {
         private DataTablesPackager _datatables;
+        private BookingRequest _br;
 
         public BookingRequestController()
         {
             _datatables = new DataTablesPackager();
+            _br = new BookingRequest();
         }
 
         // GET: /BookingRequest/
@@ -39,7 +41,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(new BookingRequest().GetUnprocessed(uow.BookingRequestRepository)), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow.BookingRequestRepository)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -85,13 +87,21 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetBookingRequests(int? id, int draw, int start, int length)
+        public ActionResult GetBookingRequests(int? bookingRequestId, int draw, int start, int length)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string userid = new BookingRequest().GetUserId(uow.BookingRequestRepository, id.Value);
-                int recordcount = (new BookingRequest()).GetBookingRequestsCount(uow.BookingRequestRepository, id.Value, userid);
-                var jsonResult = Json(new { draw = draw, recordsTotal = recordcount, recordsFiltered = recordcount, data = _datatables.Pack((new BookingRequest()).GetBookingRequests(uow.BookingRequestRepository, id.Value, start, length, userid)) }, JsonRequestBehavior.AllowGet);
+                string userid = _br.GetUserId(uow.BookingRequestRepository, bookingRequestId.Value);
+                int recordcount = _br.GetBookingRequestsCount(uow.BookingRequestRepository, userid);
+                
+                var jsonResult = Json(new
+                {
+                    draw = draw,
+                    recordsTotal = recordcount,
+                    recordsFiltered = recordcount,
+                    data = _datatables.Pack(_br.GetAllByUserId(uow.BookingRequestRepository, start, length, userid))
+                }, JsonRequestBehavior.AllowGet);
+
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -112,7 +122,7 @@ namespace KwasantWeb.Controllers
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
                     bookingRequest.DateReceived = DateTime.Now;
                     bookingRequest.PlainText = meetingInfo;
-                    (new BookingRequest()).ProcessBookingRequest(uow, bookingRequest);
+                    _br.ProcessBookingRequest(uow, bookingRequest);
                     uow.SaveChanges();
                     result = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be";
                 }
