@@ -51,8 +51,8 @@ namespace KwasantWeb.Controllers
                 else
                 {
                   DateUtil dateUtil = new DateUtil();
-                  DateTimeOffset dateTimeOffset = dateUtil.GenerateDateRange(queryPeriod);
-                  incidentDOs = uow.IncidentRepository.GetAll().Where(x => x.CreateTime.DateTime >= dateTimeOffset.DateTime).ToList();
+                  DateTimeOffset startDate = dateUtil.GenerateDateRange(queryPeriod);
+                  incidentDOs = uow.IncidentRepository.GetAll().Where(x => x.CreateTime.DateTime >= startDate.DateTime).ToList();
                 }
                 var jsonResult = Json(_datatables.Pack(incidentDOs), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
