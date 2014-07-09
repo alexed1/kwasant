@@ -50,7 +50,7 @@ namespace KwasantCore.Services
                                 id = e.Id,
                                 subject = e.Subject,
                                 fromAddress = e.From.Address,
-                                dateReceived = e.DateReceived.ToString("yy-MM-dd"),
+                                dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
                                 body =
                                     e.HTMLText.Trim().Length > 400
                                         ? e.HTMLText.Trim().Substring(0, 400)

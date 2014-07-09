@@ -9,11 +9,11 @@
 <table id="tblbookingrequest" class="table">
     <thead>
         <tr>
+            <th style="width:10%">Date Recieved</th>
+            <th style="width:10%">From</th>
+            <th style="width:20%">Subject</th>
             <th>Body</th>
-            <th>Subject</th>
-            <th>Date Recieved</th>
-            <th>From</th>
-            <th style="width:15%">Action</th>
+            <th style="width:10%">Action</th>
         </tr>
     </thead>
 </table>
@@ -31,10 +31,10 @@
                 data: JSON.parse(response),
                 order: [ 2, 'desc' ],
                 columns: [
-                    { data: 'body' },
-                    { data: 'subject' },
                     { data: 'date_received' },
                     { data: 'from_address' },
+                    { data: 'subject' },
+                    { data: 'body' },
                     {
                         data: null,
                         defaultContent: "<button value='detail'>Details</button>&nbsp;&nbsp;<button value='invalid'>Invalid</button>"
