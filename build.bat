@@ -45,6 +45,10 @@ IF NOT DEFINED NUGET_EXE (
 echo Cleaning workspace...
 call :ExecuteCmd "git" clean -fdx
 
+:: 2. NuGet Restore
+echo Restoring nuget packages...
+call :ExecuteCmd "%NUGET_EXE%" restore Kwasant.sln
+
 :: 3. Build to the temporary path
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
   echo Building application to temp folder
