@@ -41,7 +41,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow.BookingRequestRepository)), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -91,15 +91,15 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string userid = _br.GetUserId(uow.BookingRequestRepository, bookingRequestId.Value);
-                int recordcount = _br.GetBookingRequestsCount(uow.BookingRequestRepository, userid);
+                string userId = _br.GetUserId(uow.BookingRequestRepository, bookingRequestId.Value);
+                int recordcount = _br.GetBookingRequestsCount(uow.BookingRequestRepository, userId);
                 
                 var jsonResult = Json(new
                 {
                     draw = draw,
                     recordsTotal = recordcount,
                     recordsFiltered = recordcount,
-                    data = _datatables.Pack(_br.GetAllByUserId(uow.BookingRequestRepository, start, length, userid))
+                    data = _datatables.Pack(_br.GetAllByUserId(uow.BookingRequestRepository, start, length, userId))
                 }, JsonRequestBehavior.AllowGet);
 
                 jsonResult.MaxJsonLength = int.MaxValue;

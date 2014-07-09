@@ -48,12 +48,12 @@ namespace KwasantTest.Controllers
             BookingRequestController controller = new BookingRequestController();
             JsonResult jsonResultActual = controller.ShowUnprocessed() as JsonResult;
 
-            string jsonResultExpected = _datatables.Pack((new BookingRequest()).GetUnprocessed(_uow.BookingRequestRepository));
+            string jsonResultExpected = _datatables.Pack((new BookingRequest()).GetUnprocessed(_uow));
             Assert.AreEqual(jsonResultExpected, jsonResultActual.Data.ToString());
 
             AddTestRequestData();
             JsonResult jsonResultActualProcessed = controller.ShowUnprocessed() as JsonResult;
-            string jsonResultExpectedProcessed = _datatables.Pack((new BookingRequest()).GetUnprocessed(_uow.BookingRequestRepository));
+            string jsonResultExpectedProcessed = _datatables.Pack((new BookingRequest()).GetUnprocessed(_uow));
             Assert.AreEqual(jsonResultExpectedProcessed, jsonResultActualProcessed.Data.ToString());
 
         }

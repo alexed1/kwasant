@@ -37,10 +37,10 @@ namespace KwasantCore.Services
                     select requests.User.Id).FirstOrDefault();
         }
 
-        public object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)
+        public object GetUnprocessed(IUnitOfWork uow)
         {
             return
-                curBookingRequestRepository.GetAll()
+                uow.BookingRequestRepository.GetAll()
                     .Where(e => e.BRState == BRState.Unprocessed)
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
