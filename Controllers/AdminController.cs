@@ -9,7 +9,7 @@ using System.Linq;
 using System;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using System.Data.Entity;
-using KwasantICS.DDay.iCal.Utility;
+using Utilities;
 namespace KwasantWeb.Controllers
 {
    // [KwasantAuthorizeAttribute(Roles = "Admin")]
@@ -50,8 +50,8 @@ namespace KwasantWeb.Controllers
                 }
                 else
                 {
-                  DateUtil dateUtil = new DateUtil();
-                  DateTimeOffset startDate = dateUtil.GenerateDateRange(queryPeriod);
+                  DateUtility dateUtility = new DateUtility();
+                  DateTimeOffset startDate = dateUtility.GenerateDateRange(queryPeriod);
                   incidentDOs = uow.IncidentRepository.GetAll().Where(x => x.CreateTime.DateTime >= startDate.DateTime).ToList();
                 }
                 var jsonResult = Json(_datatables.Pack(incidentDOs), JsonRequestBehavior.AllowGet);

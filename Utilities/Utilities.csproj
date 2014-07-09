@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigRepository.cs" />
+    <Compile Include="DateUtility.cs" />
     <Compile Include="Encryption.cs" />
     <Compile Include="Enumerations.cs" />
     <Compile Include="Extensions.cs" />
