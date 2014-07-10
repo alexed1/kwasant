@@ -51,6 +51,7 @@ namespace Data.Migrations
         {
             SeedConstants<EventState, EventStatusDO>(context, (id, name) => new EventStatusDO { Id = id, Name = name });
             SeedConstants<BRState, BookingRequestStatusDO>(context, (id, name) => new BookingRequestStatusDO { Id = id, Name = name });
+            SeedConstants<EventCreateType, EventCreateTypeDO>(context, (id, name) => new EventCreateTypeDO { Id = id, Name = name });
             SeedInstructions(context);
         }
 

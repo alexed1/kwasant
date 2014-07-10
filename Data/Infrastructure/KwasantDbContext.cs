@@ -149,6 +149,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<EventStatusDO>().ToTable("EventStatuses");
+            modelBuilder.Entity<EventCreateTypeDO>().ToTable("EventCreateTypes");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");

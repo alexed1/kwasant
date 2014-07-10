@@ -102,15 +102,17 @@ namespace KwasantCore.Managers.APIManager.CalDAV
                 }
             }
 
-            return multiStatus.Items
-                .Select(r =>
+            return multiStatus.Items != null 
+                ? multiStatus.Items
+                    .Select(r =>
                             {
                                 using (var stringReader = new StringReader(r.PropStat.First().Prop.CalendarData))
                                 {
                                     return (iCalendar) iCalendar.LoadFromStream(stringReader)[0];
                                 }
                             })
-                .ToArray();
+                    .ToArray() 
+                : new iCalendar[0];
         }
 
         public async Task CreateEventAsync(ICalendar calendarInfo, iCalendar calendarEvent)

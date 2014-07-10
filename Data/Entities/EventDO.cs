@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
+using Data.Constants;
 
 namespace Data.Entities
 {
@@ -54,10 +55,15 @@ namespace Data.Entities
         public virtual BookingRequestDO BookingRequest { get; set; }
 
         public DateTimeOffset DateCreated { get; set; }
-        public string CreateType { get; set; }
+
+        [ForeignKey("CreateType"), Required]
+        public int CreateTypeID { get; set; }
+
+        public virtual EventCreateTypeDO CreateType { get; set; }
 
         public EventDO()
         {
+            CreateTypeID = EventCreateType.KwasantBR;
             Attendees = new List<AttendeeDO>();
             Emails = new List<EmailDO>();
         }

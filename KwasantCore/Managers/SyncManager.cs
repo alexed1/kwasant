@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManager.CalDAV;
@@ -105,6 +106,8 @@ namespace KwasantCore.Managers
                 else
                 {
                     // created by remote
+                    incomingEvent.StateID = EventState.DispatchCompleted;
+                    incomingEvent.CreateTypeID = EventCreateType.GoogleCalendar;
                     incomingEvent.Calendar = (CalendarDO)calendar;
                     incomingEvent.CalendarID = calendar.Id;
                     incomingEvent.CreatedBy = calendar.Owner;

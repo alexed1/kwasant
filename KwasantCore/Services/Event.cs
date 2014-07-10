@@ -24,6 +24,7 @@ namespace KwasantCore.Services
 
             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
             curEventDO.CreatedBy = bookingRequestDO.User;
+            curEventDO.DateCreated = DateTimeOffset.UtcNow.ToOffset(bookingRequestDO.DateCreated.Offset);
             var curCalendar = bookingRequestDO.User.Calendars.FirstOrDefault();
             if (curCalendar == null)
                 throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");
