@@ -85,6 +85,10 @@ namespace KwasantWeb.App_Start
 				"~/Content/js/bootstrap-transition.js"
 				));
 
+			bundles.Add(new ScriptBundle("~/bundles/js/collapse").Include(
+				"~/Content/js/collapse.js"
+				));
+
             //Styles
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap23").Include(
 				"~/Content/css/additionalcss/bootstrap23/css/bootstrap2.3.css", new CssRewriteUrlTransform()

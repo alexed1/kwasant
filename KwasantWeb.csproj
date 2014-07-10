@@ -494,8 +494,10 @@
     <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
     <Content Include="Content\img\temp\team.jpg" />
     <Content Include="Content\js\bootstrap-datetimepicker.js" />
+    <Content Include="Content\js\bootstrap-transition.js" />
     <Content Include="Content\js\bootstrap.3.1.1.min.js" />
     <Content Include="Content\js\bootstrap.js" />
+    <Content Include="Content\js\collapse.js" />
     <Content Include="Content\js\common.js" />
     <Content Include="Content\js\custom.js" />
     <Content Include="Content\js\Daypilot\daypilot-bubble.src.js" />
