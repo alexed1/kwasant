@@ -5,9 +5,9 @@ namespace Data.Repositories
 {
 
 
-    public class KactRepository : GenericRepository<KactDO>, IKactRepository
+    public class FactRepository : GenericRepository<FactDO>, IFactRepository
     {
-        internal KactRepository(IUnitOfWork uow)
+        internal FactRepository(IUnitOfWork uow)
             : base(uow)
         {
 
@@ -15,7 +15,7 @@ namespace Data.Repositories
     }
 
 
-    public interface IKactRepository : IGenericRepository<KactDO>
+    public interface IFactRepository : IGenericRepository<FactDO>
     {
 
     }

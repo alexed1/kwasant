@@ -155,7 +155,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
             modelBuilder.Entity<UserAgentInfoDO>().ToTable("UserAgentInfos");
             modelBuilder.Entity<UserDO>().ToTable("Users");
-            modelBuilder.Entity<KactDO>().ToTable("Kacts");
+            modelBuilder.Entity<FactDO>().ToTable("Facts");
 
 
             modelBuilder.Entity<EmailDO>()

@@ -23,7 +23,7 @@ namespace KwasantCore.Managers
 
         public void ProcessBookingRequestCreated(BookingRequestDO curBR)
         {
-            KactDO curAction = new KactDO()
+            FactDO curAction = new FactDO()
             {
                 Name = "BookingRequest Created",
                 PrimaryCategory = "Email",
@@ -37,7 +37,7 @@ namespace KwasantCore.Managers
             if (CloudConfigurationManager.GetSetting("LogLevel") == "Verbose")
                 Logger.GetLogger().Info(curAction.Data);
             IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            uow.KactRepository.Add(curAction);
+            uow.FactRepository.Add(curAction);
                 uow.SaveChanges();
 
         }

@@ -6,7 +6,7 @@ namespace Data.Entities
 
     //Kact stands for a Kwasant Action. It's a loggable event that we'll record for our Business Intelligence activities
     //We'll switch to a better name when we think of one, but Event, Action, Activity are all taken in one way or another...
-    public class KactDO
+    public class FactDO
     {
         [Key]
         public int Id { get; set; }
