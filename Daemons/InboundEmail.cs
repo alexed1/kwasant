@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
 using S22.Imap;
-
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
@@ -101,6 +101,7 @@ namespace Daemons
                     bookingRequest.User = unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address); 
                     (new BookingRequest()).ProcessBookingRequest(unitOfWork, bookingRequest);
                     unitOfWork.SaveChanges();
+                    AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
                 }
                 catch (Exception e)
                 {
