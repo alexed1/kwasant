@@ -50,9 +50,11 @@ namespace Data.Entities
         public virtual List<EmailDO> Emails { get; set; }
 
         [ForeignKey("BookingRequest")]
-        public int BookingRequestID { get; set; }
+        public int? BookingRequestID { get; set; }
         public virtual BookingRequestDO BookingRequest { get; set; }
 
+        public DateTimeOffset DateCreated { get; set; }
+        public string CreateType { get; set; }
 
         public EventDO()
         {

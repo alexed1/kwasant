@@ -67,5 +67,11 @@ namespace KwasantCore.Managers.APIManager.Authorizers.Google
             var tokenResponse = await Flow.LoadTokenAsync(UserId, cancellationToken);
             await Flow.RefreshTokenAsync(UserId, tokenResponse.RefreshToken, cancellationToken);
         }
+
+        public async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
+        {
+            var tokenResponse = await Flow.LoadTokenAsync(UserId, cancellationToken);
+            return tokenResponse.AccessToken;
+        }
     }
 }

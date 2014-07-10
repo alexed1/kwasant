@@ -68,7 +68,7 @@ namespace KwasantWeb.App_Start
 
             Mapper.CreateMap<UserDO, ManageUserViewModel>()
                 .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(u => !string.IsNullOrEmpty(u.PasswordHash)))
-                .ForMember(mu => mu.GoogleCalendarAccessGranted, opts => opts.ResolveUsing(u => !string.IsNullOrEmpty(u.GoogleAuthData) && u.GoogleAuthData.Contains("access_token")));
+                .ForMember(mu => mu.GoogleCalendarAccessGranted, opts => opts.ResolveUsing(u => u.GrantedAccessToGoogleCalendar));
         }
     }
 }

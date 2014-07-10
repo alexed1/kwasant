@@ -26,7 +26,16 @@ namespace Data.Entities
 
         public virtual EmailAddressDO EmailAddress { get; set; }
 
+        [NotMapped]
+        IEmailAddress IUser.EmailAddress
+        {
+            get { return EmailAddress; }
+        }
+
         public string GoogleAuthData { get; set; }
+
+        [NotMapped]
+        public bool GrantedAccessToGoogleCalendar { get { return !string.IsNullOrEmpty(GoogleAuthData) && GoogleAuthData.Contains("access_token"); } }
 
         [InverseProperty("Owner")]
         public virtual IList<CalendarDO> Calendars { get; set; } 

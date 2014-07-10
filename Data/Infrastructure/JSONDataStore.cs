@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Interfaces;
@@ -38,6 +39,8 @@ namespace Data.Infrastructure
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curUserDO = uow.UserRepository.GetByKey(_userId);
+                if (curUserDO == null)
+                    throw new NullReferenceException(string.Format("No user found with id: {0}", _userId));
                 var store = GetStore(curUserDO.GoogleAuthData);
                 store[key] = JsonConvert.SerializeObject(value);
                 curUserDO.GoogleAuthData = JsonConvert.SerializeObject(store);
@@ -50,6 +53,8 @@ namespace Data.Infrastructure
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curUserDO = uow.UserRepository.GetByKey(_userId);
+                if (curUserDO == null)
+                    throw new NullReferenceException(string.Format("No user found with id: {0}", _userId));
                 var store = GetStore(curUserDO.GoogleAuthData);
                 store.Remove(key);
                 curUserDO.GoogleAuthData = JsonConvert.SerializeObject(store);
@@ -62,6 +67,8 @@ namespace Data.Infrastructure
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curUserDO = uow.UserRepository.GetByKey(_userId);
+                if (curUserDO == null)
+                    throw new NullReferenceException(string.Format("No user found with id: {0}", _userId));
                 var store = GetStore(curUserDO.GoogleAuthData);
                 string value;
                 return store.TryGetValue(key, out value)
@@ -75,6 +82,8 @@ namespace Data.Infrastructure
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curUserDO = uow.UserRepository.GetByKey(_userId);
+                if (curUserDO == null)
+                    throw new NullReferenceException(string.Format("No user found with id: {0}", _userId));
                 var store = GetStore(curUserDO.GoogleAuthData);
                 store.Clear();
                 curUserDO.GoogleAuthData = JsonConvert.SerializeObject(store);

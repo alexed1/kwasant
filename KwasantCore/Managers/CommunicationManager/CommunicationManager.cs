@@ -63,7 +63,7 @@ namespace KwasantCore.Managers.CommunicationManager
                     {
                         eventDO.StateID = EventState.DispatchCompleted;
 
-                        var calendar = GenerateICSCalendarStructure(eventDO);
+                        var calendar = Event.GenerateICSCalendarStructure(eventDO);
                         foreach (var attendeeDO in eventDO.Attendees)
                         {
                             var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, false);
@@ -80,7 +80,7 @@ namespace KwasantCore.Managers.CommunicationManager
                     if (EventHasChanged(uow, eventDO))
                     {
                         eventDO.StateID = EventState.DispatchCompleted;
-                        var calendar = GenerateICSCalendarStructure(eventDO);
+                        var calendar = Event.GenerateICSCalendarStructure(eventDO);
 
                         var newAttendees = eventDO.Attendees.Where(a => a.Id == 0).ToList();
 
@@ -101,55 +101,6 @@ namespace KwasantCore.Managers.CommunicationManager
                 default:
                     throw new Exception("Invalid event status");
             }
-        }
-
-        private iCalendar GenerateICSCalendarStructure(EventDO eventDO)
-        {
-            string fromEmail = ConfigRepository.Get("fromEmail");
-            string fromName = ConfigRepository.Get("fromName");
-
-            iCalendar ddayCalendar = new iCalendar();
-            DDayEvent dDayEvent = new DDayEvent();
-
-            //configure start and end time
-            if (eventDO.IsAllDay)
-            {
-                dDayEvent.IsAllDay = true;
-            }
-            else
-            {
-                dDayEvent.DTStart = new iCalDateTime(DateTime.SpecifyKind(eventDO.StartDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
-                dDayEvent.DTEnd = new iCalDateTime(DateTime.SpecifyKind(eventDO.EndDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
-            }
-            dDayEvent.DTStamp = new iCalDateTime(DateTime.UtcNow);
-            dDayEvent.LastModified = new iCalDateTime(DateTime.UtcNow);
-
-            //configure text fields
-            dDayEvent.Location = eventDO.Location;
-            dDayEvent.Description = eventDO.Description;
-            dDayEvent.Summary = eventDO.Summary;
-
-            //more attendee configuration
-            foreach (AttendeeDO attendee in eventDO.Attendees)
-            {
-                dDayEvent.Attendees.Add(new KwasantICS.DDay.iCal.DataTypes.Attendee()
-                {
-                    CommonName = attendee.Name,
-                    Type = "INDIVIDUAL",
-                    Role = "REQ-PARTICIPANT",
-                    ParticipationStatus = ParticipationStatus.NeedsAction,
-                    RSVP = true,
-                    Value = new Uri("mailto:" + attendee.EmailAddress),
-                });
-                attendee.Event = eventDO;
-            }
-
-            //final assembly of event
-            dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
-            ddayCalendar.Events.Add(dDayEvent);
-            ddayCalendar.Method = CalendarMethods.Request;
-
-            return ddayCalendar;
         }
 
         private String GetEmailHTMLTextForUpdate(EventDO eventDO, String userID)
