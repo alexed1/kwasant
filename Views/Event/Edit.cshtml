@@ -3,9 +3,7 @@
 @section immediateScripts
 {
     @Scripts.Render("~/bundles/js/jquery")
-    @Scripts.Render("~/bundles/js/select2")
-    @Scripts.Render("~/bundles/js/moment")
-    @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
+    @Scripts.Render("~/bundles/js/select2")    
     @Scripts.Render("~/bundles/js/jqueryvalidate")
 
     <script src="/Content/js/Kwasant/Popup.js"></script>
@@ -52,6 +50,9 @@
 {
     @Scripts.Render("~/bundles/js/modernizr")
     @Scripts.Render("~/bundles/js/bootstrap")
+	@Scripts.Render("~/bundles/js/moment")	
+	@Scripts.Render("~/bundles/js/bootstraptransition")
+	@Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
     @Scripts.Render("~/bundles/js/common")
 }
 @section styles
@@ -76,7 +77,7 @@
 		</div>
 		<div id="dateGroup">
 			<div class="formItem">
-				<div class='input-group date' id='StartDate' data-date-format="MM/DD/YYYY hh:mm a [GMT]ZZ">
+				<div class='input-group date' id='StartDate' data-date-format="mm/dd/yyyy hh:mm a [GMT]ZZ">
 					<input type='text' name="StartDate" class="form-control" />
 					<span class="input-group-addon">
 						<span class="glyphicon glyphicon-calendar"></span>

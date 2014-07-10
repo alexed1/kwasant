@@ -81,6 +81,10 @@ namespace KwasantWeb.App_Start
                 "~/Content/js/moment.js"
                 ));
 
+			bundles.Add(new ScriptBundle("~/bundles/js/bootstraptransition").Include(
+				"~/Content/js/bootstrap-transition.js"
+				));
+
             //Styles
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap23").Include(
 				"~/Content/css/additionalcss/bootstrap23/css/bootstrap2.3.css", new CssRewriteUrlTransform()
