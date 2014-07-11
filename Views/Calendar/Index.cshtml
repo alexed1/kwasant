@@ -1,4 +1,4 @@
-﻿﻿@using DayPilot.Web.Mvc
+﻿@using DayPilot.Web.Mvc
 @using DayPilot.Web.Mvc.Enums
 @using DayPilot.Web.Mvc.Enums.Calendar
 @using DayPilot.Web.Mvc.Events.Calendar
@@ -9,13 +9,17 @@
 	ViewBag.Title = "Event ";
 }
 @section styles{
-	@Styles.Render("~/bundles/css/daypilot")
+    @Styles.Render("~/bundles/css/daypilot")
+    @Styles.Render("~/bundles/css/default")
+    @Styles.Render("~/bundles/css/bootstrap30")
 }
 @section immediateScripts
 {
 	@Scripts.Render("~/bundles/js/jquery")
 	@Scripts.Render("~/bundles/js/daypilot")
 	<script src="/Content/js/Kwasant/Popup.js"></script>
+    <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+    <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 }
 @section scripts
 {
@@ -24,24 +28,23 @@
 	@Scripts.Render("~/bundles/js/common")
 }
 @*width: 1270px;*@
-<div class="jumbotron calendar-section">
+<div class="jumbotron calendar-section jumbotron_new">
 	<div class="row">
-		@*width: 420px;*@
+        @*width: 420px;*@
 		<div id="emailInfoBox" class="col-md-5 container_box emailInfoBox">
-			<a id="btnProcessed" href="@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, targetStatus = "processed" })">
+            		<a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">
 				<button>Mark Processed</button>
 			</a><br />
 			<br />
 			<iframe id="frminfo" class="frminfo" onload="iframeLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style=""></iframe>
-			<table class="email-info-tabele" role="grid">
-				<thead>
-					<tr role="row">
+            			<table id="tbluserrequests" class="email-info-tabele">
+					<thead>
+                    			<tr>
 						<th>Date Received</th>
 						<th>Subject</th>
 					</tr>
-				</thead>
-				<tbody id="tbluserrequests"></tbody>
-			</table>
+					</thead>
+				</table>
 			<br />
 			<br />
 			<a id="btnRequestClarification" class="btnRequestClarification" href="#">
@@ -277,10 +280,10 @@
     //funtion to load booking request info in iframe "frminfo" on "tbluserrequests" request row click.
     //called by : rows in tbluserrequests on click
     function loadrequest(id, ele) {
-        $("#tbluserrequests tr").attr("class", "");
-        $(ele).attr("class", "activeRequest");
+        $("#tbluserrequests tr").attr("style", "");
+        $(ele).attr("style", "background-color: #aaa;");
         $("#hdnrequestid").val(id);
-        $("#btnProcessed").attr("href", "@Url.Action("SetStatus", "BookingRequest", new { id = "requestid", targetStatus = "processed" })".replace("requestid", id));
+        $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("SetStatus", "BookingRequest", new { id = "requestid", status = Data.Constants.BRState.Processed })".replace("requestid", id) + "')");
         $("#frminfo")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
         dp_day.backendUrl = "@Url.Content("~/Calendar/Day?bookingRequestID=")" + id;
         dp_week.backendUrl = "@Url.Content("~/Calendar/Backend?bookingRequestID=")" + id;
@@ -290,29 +293,51 @@
 
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
-        //Ajax call to get all unprocessed booking request from server according to user.
-        $.getJSON("@Url.Action("GetBookingRequests", "BookingRequest")", { id: "@Model.Id" }, showRequests);
 
-        //Parsing and binding the retrieved booking requests
-        function showRequests(response) {
-            var result = JSON.parse(response);
-
-            //Iterating each object in response result
-            $(result).each(function () {
-                //Converting in appropriate date format
-                var date = new Date(this.date_received);
-                date = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-                //appending each request row in table "tbluserrequests"
-                if ("@Model.Id" != this.id) {
-                    $("#tbluserrequests").append("<tr onclick='javascript:loadrequest(" + this.id + ",this);' style='border-bottom:1px solid grey;cursor:pointer;'><td>" + date + "</td><td>" + this.subject + "</td></tr>");
+        //Parsing and binding the booking requests viewer
+        var table = $('#tbluserrequests').DataTable({
+            order: [0, 'desc'],
+            searching: false,
+            ordering: false,
+            bLengthChange: false,
+            processing: true,
+            serverSide: true, //Enabling server side processing
+            ajax:
+            {
+                //Ajax call to get all unprocessed booking request from server according to user.
+                "url": "@Url.Action("GetBookingRequests", "BookingRequest")" + "?bookingRequestId=" + "@Model.Id",
+                "dataSrc": function (json) {
+                    var orgdata = JSON.parse(json.data);
+                    return orgdata;
+                }
+            },
+            //Callback function for row created.
+            createdRow: function (row, data, index) {
+                if (data.id == $("#hdnrequestid").val()) {
+                    $(row).attr("style", "cursor:pointer;background-color: #aaa;");
                 }
                 else {
-                    $("#tbluserrequests").append("<tr onclick='javascript:loadrequest(" + this.id + ",this);' style='border-bottom:1px solid grey;cursor:pointer;' class='activeRequest'><td>" + date + "</td><td>" + this.subject + "</td></tr>");
+                    $(row).attr("style", "cursor:pointer;");
                 }
-            });
-        }
+            },
+            columns: [
+                {
+                    data: function (data) {
+                        return ConvertTODateString(data.date_received);
+                    }
+                },
+                { data: 'subject' }
+            ]
+        });
 
-        $('#btnRequestClarification').click(function() {
+
+        //This function will bind a click function on every button in table "tblbookingrequest"
+        $('#tbluserrequests').on('click', 'tr', function () {
+            var data = table.row($(this)).data();
+            loadrequest(data.id, this);
+        });
+
+        $('#btnRequestClarification').click(function () {
             if (checkactivewindow()) { return false; }
             Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.Id })',
                 {
@@ -327,8 +352,21 @@
         if (iFrameID) {
             // here you can make the height, I delete it first, then I make it again
             iFrameID.height = "";
-            iFrameID.height = (iFrameID.contentWindow.document.body.scrollHeight + 30) + "px" ;
+            iFrameID.height = (iFrameID.contentWindow.document.body.scrollHeight + 30) + "px";
         }
     }
 
+    //function to format datetime of Request viewer widget
+    function ConvertTODateString(DateToFormat) {
+        var datevalue = new Date(DateToFormat);
+        DateToFormat = datevalue.getMonth() + 1 + "/" + datevalue.getDate() + "/" + datevalue.getFullYear() + " " + datevalue.getHours() + ":" + datevalue.getMinutes();
+        return DateToFormat;
+    }
+
+    //Mark processed function will execute on click to update the Request status to "Processed".
+    function updateStatus(path) {
+        $.getJSON(path, function () {
+            window.location.href = "@Url.Action("Index", "BookingRequest")";
+        });
+    }
 </script>
