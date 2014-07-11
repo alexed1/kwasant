@@ -5,7 +5,7 @@ using Utilities.Logging;
 
 namespace KwasantCore.Managers.APIManager.Packagers.Twilio
 {
-    public class TwilioPackager
+    public class TwilioPackager : ISMSPackager
     {
         private const string AccountSIDWebConfigName = "TWILIO_SID";
         private const string AuthTokenWebConfigName = "TWILIO_TOKEN";
@@ -39,12 +39,17 @@ namespace KwasantCore.Managers.APIManager.Packagers.Twilio
         {
             SMSMessage result = _twilio.SendSmsMessage(_twilioFromNumber, number, message);
             if (result.RestException != null)
-                if (result.RestException.Message ==
-                    "The From phone number +14156920295 is not a valid, SMS-capable inbound phone number or short code for your account.")
+            {
+                if (result.RestException.MoreInfo == "https://www.twilio.com/docs/errors/21606" &&
+                    System.Diagnostics.Debugger.IsAttached)
                 {
-                    Logger.GetLogger().Info("Swallowing Twilio ex."); //doing this because this exception gets thrown just because we're using the test account, and it was cluttering up the log. if you really are having twilio problems, disable this
+                    //swallow the twilio exception that gets thrown when you use the test account, so it doesn't clutter up the logs
                 }
-                else throw new Exception(result.RestException.Message);
+                else
+                {
+                    throw new Exception(result.RestException.Message);
+                }
+            }
             return result;
         }
     }

@@ -7,16 +7,27 @@ using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using KwasantCore.Services;
 using StructureMap;
+using Utilities;
+using Utilities.Logging;
+using System.Net.Mail;
+using Data.Infrastructure.StructureMap;
+using System;
+using Data.Repositories;
+using KwasantCore.Managers.IdentityManager;
+
 
 namespace KwasantWeb.Controllers
 {
+    [KwasantAuthorizeAttribute(Roles = "Admin")]
     public class BookingRequestController : Controller
     {
         private DataTablesPackager _datatables;
+        private BookingRequest _br;
 
         public BookingRequestController()
         {
             _datatables = new DataTablesPackager();
+            _br = new BookingRequest();
         }
 
         // GET: /BookingRequest/
@@ -30,7 +41,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(new BookingRequest().GetUnprocessed(uow.BookingRequestRepository)), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -62,44 +73,65 @@ namespace KwasantWeb.Controllers
 
 
         [HttpGet]
-        public ActionResult SetStatus(int? id, string targetStatus)
+        public ActionResult SetStatus(int id, int status)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (id == null)
-                {
-                    return Json(new Error { Name = "Parameter Missing", Message = "Id is required" }, JsonRequestBehavior.AllowGet);
-                }
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                if (bookingRequestDO == null)
-                {
-                    return Json(new Error { Name = "Invalid Request", Message = "Booking Request does not exists" }, JsonRequestBehavior.AllowGet);
-                }
-                else
-                {
-                    (new BookingRequest()).SetStatus(uow, bookingRequestDO, targetStatus.ToLower());
-                    switch (targetStatus.ToLower())
-                    {
-                        case "invalid":
-                            return Json(new Error { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
-                        case "processed":
-                            return RedirectToAction("Index", "BookingRequest");
-                        default:
-                            return Json(new Error { Name = "Failure", Message = "Invalid status change request" }, JsonRequestBehavior.AllowGet);
-                    }
-                }
+                bookingRequestDO.BRState = status;
+                bookingRequestDO.User = bookingRequestDO.User;
+                bookingRequestDO.BookingRequestStatus = bookingRequestDO.BookingRequestStatus; //this line makes no sense.
+                uow.SaveChanges();
+                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
         }
 
         [HttpGet]
-        public ActionResult GetBookingRequests(int? id)
+        public ActionResult GetBookingRequests(int? bookingRequestId, int draw, int start, int length)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack((new BookingRequest()).GetBookingRequests(uow.BookingRequestRepository, id.Value)), JsonRequestBehavior.AllowGet);
+                string userId = _br.GetUserId(uow.BookingRequestRepository, bookingRequestId.Value);
+                int recordcount = _br.GetBookingRequestsCount(uow.BookingRequestRepository, userId);
+                
+                var jsonResult = Json(new
+                {
+                    draw = draw,
+                    recordsTotal = recordcount,
+                    recordsFiltered = recordcount,
+                    data = _datatables.Pack(_br.GetAllByUserId(uow.BookingRequestRepository, start, length, userId))
+                }, JsonRequestBehavior.AllowGet);
+
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
+        }
+
+
+        //create a BookingRequest
+        public ActionResult Generate(string emailAddress,string meetingInfo)
+        {
+            string result = "";
+            try
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    MailMessage message = new MailMessage();
+                    message.From = new MailAddress(emailAddress);
+                    BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                    bookingRequest.DateReceived = DateTime.Now;
+                    bookingRequest.PlainText = meetingInfo;
+                    _br.ProcessBookingRequest(uow, bookingRequest);
+                    uow.SaveChanges();
+                    result = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be";
+                }
+            }
+            catch (Exception)
+            {
+                result = "Sorry! Something went wrong. Alpha software...";
+            }
+            return Content(result);
         }
 	}
 }

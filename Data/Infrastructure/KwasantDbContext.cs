@@ -4,8 +4,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.Annotations;
+using System.Data.Entity.SqlServer;
 using System.Linq;
 using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Entity.ModelConfiguration;
+
 using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
@@ -14,6 +17,9 @@ namespace Data.Infrastructure
 {
     public class KwasantDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {
+        //This is to ensure compile will break if the reference to sql server is removed
+        private static Type m_SqlProvider = typeof(SqlProviderServices);
+
         public class PropertyChangeInformation
         {
             public String PropertyName;
@@ -22,6 +28,7 @@ namespace Data.Infrastructure
 
             public override string ToString()
             {
+                
                 const string displayChange = "[{0}]: [{1}] -> [{2}]";
                 return String.Format(displayChange, PropertyName, OriginalValue, NewValue);
             }
@@ -131,13 +138,17 @@ namespace Data.Infrastructure
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
+            modelBuilder.Entity<BookingRequestStatusDO>().ToTable("BookingRequestStatuses");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
+            modelBuilder.Entity<ClarificationRequestDO>().ToTable("ClarificationRequests");
+            modelBuilder.Entity<QuestionDO>().ToTable("Questions");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
             modelBuilder.Entity<EmailAddressDO>().ToTable("EmailAddresses");
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<EventDO>().ToTable("Events");
+            modelBuilder.Entity<EventStatusDO>().ToTable("EventStatuses");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
@@ -187,6 +198,16 @@ namespace Data.Infrastructure
                 .Map(
                     mapping => mapping.MapLeftKey("BookingRequestID").MapRightKey("InstructionID").ToTable("BookingRequestInstruction")
                 );
+
+            modelBuilder.Entity<ClarificationRequestDO>()
+                .HasRequired(cr => cr.BookingRequest)
+                .WithMany()
+                .HasForeignKey(cr => cr.BookingRequestId);
+
+            modelBuilder.Entity<QuestionDO>()
+                .HasOptional(cq => cq.ClarificationRequest)
+                .WithMany(cr => cr.Questions)
+                .HasForeignKey(cq => cq.ClarificationRequestId);
             
             modelBuilder.Entity<AttachmentDO>()
                 .HasRequired(a => a.Email)

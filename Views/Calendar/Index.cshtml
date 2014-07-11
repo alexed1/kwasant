@@ -6,308 +6,183 @@
 @model Data.Entities.EmailDO
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @{
-    ViewBag.Title = "Event ";
+	ViewBag.Title = "Event ";
 }
 @section styles{
-    <style type="text/css">
-        body
-        {
-            padding-bottom: 20px;
-            padding-top: 50px;
-        }
-
-        /* Set padding to keep content from hitting the edges */
-
-        .body-content
-        {
-            padding-left: 15px;
-            padding-right: 15px;
-        }
-
-        /* Set width on the form input elements since they're 100% wide by default */
-
-        input,
-        select,
-        textarea
-        {
-            max-width: 280px;
-        }
-
-        /* styles for validation helpers */
-
-        .field-validation-error
-        {
-            color: #b94a48;
-        }
-
-        .field-validation-valid
-        {
-            display: none;
-        }
-
-        input.input-validation-error
-        {
-            border: 1px solid #b94a48;
-        }
-
-        input[type="checkbox"].input-validation-error
-        {
-            border: 0 none;
-        }
-
-        .validation-summary-errors
-        {
-            color: #b94a48;
-        }
-
-        .validation-summary-valid
-        {
-            display: none;
-        }
-
-        .bookingAgentFormControlBorder
-        {
-            border: 2px solid gray;
-            color: #000000;
-            font-size: 0.85em;
-            font-weight: normal;
-            min-height: 35px;
-            padding-left: 2px;
-            text-align: left;
-        }
-
-        .label_vertical_alignment
-        {
-            position: relative;
-            top: 10px;
-        }
-
-        .container_box
-        {
-            border: 2px solid gray;
-            min-height: 800px;
-            padding-left: 20px;
-        }
-
-        .mid_container_text
-        {
-            font-size: 0.85em;
-        }
-
-        .divider_height
-        {
-            height: 20px;
-        }
-
-        .bookingAgentFormControlBorder
-        {
-            border: 2px solid gray;
-            color: #000000;
-            font-size: 0.85em;
-            font-weight: normal;
-            min-height: 50px;
-            overflow-x: auto;
-            padding-left: 2px;
-            text-align: left;
-        }
-
-        #toolbar
-        {
-            background: none;
-            border: none;
-            margin: 10px 0px 20px 0px;
-            position: relative;
-            width: 174px;
-        }
-
-            #toolbar a
-            {
-                background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e2e2e2));
-                background: -webkit-linear-gradient(top, #fafafa 0%, #e2e2e2);
-                background: -moz-linear-gradient(top, #fafafa 0%, #e2e2e2);
-                background: -ms-linear-gradient(top, #fafafa 0%, #e2e2e2);
-                background: -o-linear-gradient(top, #fafafa 0%, #e2e2e2);
-                background: linear-gradient(top, #fafafa 0%, #e2e2e2);
-                border: 1px solid #aaa;
-                color: #666;
-                display: inline-block;
-                filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#fafafa", endColorStr="#e2e2e2");
-                height: 35px;
-                padding: 5px;
-                text-decoration: none;
-            }
-
-        .activeRequest
-        {
-            background-color: #aaa;
-        }
-    </style>
     @Styles.Render("~/bundles/css/daypilot")
-    @Styles.Render("~/bundles/css/default")
     @Styles.Render("~/bundles/css/bootstrap30")
 }
 @section immediateScripts
 {
-    @Scripts.Render("~/bundles/js/jquery")
-    @Scripts.Render("~/bundles/js/daypilot")
-    <script src="/Content/js/Kwasant/Popup.js"></script>
+	@Scripts.Render("~/bundles/js/jquery")
+	@Scripts.Render("~/bundles/js/daypilot")
+	<script src="/Content/js/Kwasant/Popup.js"></script>
+    <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+    <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 }
 @section scripts
 {
-    @Scripts.Render("~/bundles/js/modernizr")
-    @Scripts.Render("~/bundles/js/bootstrap")
-    @Scripts.Render("~/bundles/js/common")
+	@Scripts.Render("~/bundles/js/modernizr")
+	@Scripts.Render("~/bundles/js/bootstrap")
+	@Scripts.Render("~/bundles/js/common")
 }
+@*width: 1270px;*@
+<div class="jumbotron calendar-section jumbotron_new">
+	<div class="row">
+        @*width: 420px;*@
+		<div id="emailInfoBox" class="col-md-5 container_box emailInfoBox">
+            		<a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">
+				<button>Mark Processed</button>
+			</a><br />
+			<br />
+			<iframe id="frminfo" class="frminfo" onload="iframeLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style=""></iframe>
+            			<table id="tbluserrequests" class="email-info-tabele">
+					<thead>
+                    			<tr>
+						<th>Date Received</th>
+						<th>Subject</th>
+					</tr>
+					</thead>
+				</table>
+			<br />
+			<br />
+			<a id="btnRequestClarification" class="btnRequestClarification" href="#">
+				<button>Request Clarification</button>
+			</a>
+		</div>
 
-<div class="jumbotron" style="padding-left: 20px; padding-right: 20px; width: 1270px;">
-    <div class="row">
-        <div id="emailInfoBox" class="col-md-4 container_box" style="border: none; height: 100%; padding: 0px; width: 420px;">
-            <a id="btnProcessed" href="@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, targetStatus = "processed" })">
-                <button style="width: 120px; font-size: 14px; height: 40px;">Mark Processed</button></a><br />
-            <br />
-            <iframe id="frminfo" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style="border: none; height: auto;min-height:300px; margin-top: -7px; width: 100%;"></iframe>
-            <table style="box-shadow: #000 0px 0px 10px; margin: 10px; width: 95%;" role="grid">
-                <thead>
-                    <tr role="row">
-                        <th style="width: 30%; text-align: center; font-size: 14px;">Date Received</th>
-                        <th style="width: 70%; text-align: center; font-size: 14px;">Subject</th>
-                    </tr>
-                </thead>
-                <tbody id="tbluserrequests" style="border-top: 1px solid grey;">
-                </tbody>
-            </table>
-        </div>
-
-        <div id="divCalender" class="col-md-6 container_box" style="padding-bottom: 79px;">
-            <div class="row">
-                <div id="toolbar" style="font-size: 12px; width: 100%;">
-                    <a href="#" id="toolbar_day">Day</a>
-                    <a href="#" id="toolbar_week">Week</a>
-                    <a href="#" id="toolbar_month">Month</a>
-                </div>
-            </div>
-            <div class="row">
-                <div style="padding-right: 5px">
-                    @Html.DayPilotMenu("menu1", new DayPilotMenuConfig
-                    {
-                        Items = new MenuItemCollection
+		<div id="divCalender" class="col-md-6 container_box divCalender">
+			<div class="row">
+				<div id="toolbar" class="toolbar">
+					<a href="#" id="toolbar_day">Day</a>
+					<a href="#" id="toolbar_week">Week</a>
+					<a href="#" id="toolbar_month">Month</a>
+				</div>
+			</div>
+			<div class="row">
+				<div class="divCalender-inner">
+					@Html.DayPilotMenu("menu1", new DayPilotMenuConfig
+					{
+						Items = new MenuItemCollection
                         {
                             new MenuItem {Text = "Delete", Action = MenuItemAction.JavaScript, JavaScript = "eventDelete(e)"}
                         }
-                    })
+					})
 
-                    @Html.DayPilotMenu("menu2", new DayPilotMenuConfig
-                    {
-                        Items = new MenuItemCollection
+					@Html.DayPilotMenu("menu2", new DayPilotMenuConfig
+					{
+						Items = new MenuItemCollection
                         {
                             new MenuItem {Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "alert(e.value());"}
                         }
-                    })
+					})
 
-                    @Html.DayPilotBubble("bubble")
+					@Html.DayPilotBubble("bubble")
 
-                    @Html.DayPilotCalendar("dp_day", new DayPilotCalendarConfig
-                    {
-                        BackendUrl = Url.Content("~/Calendar/Day?bookingRequestID=" + Model.Id),
-                        EventMoveHandling = EventMoveHandlingType.JavaScript,
-                        EventResizeHandling = EventResizeHandlingType.JavaScript,
-                        TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
-                        EventClickHandling = EventClickHandlingType.JavaScript,
-                        HeaderClickHandling = HeaderClickHandlingType.JavaScript,
-                        EventDeleteHandling = EventDeleteHandlingType.JavaScript,
-                        EventBackColor = "#638EDE",
-                        DurationBarVisible = false,
-                        EventHeaderVisible = false,
-                        Height = 550,
-                        HeaderHeight = 50,
-                        CellHeight = 25,
-                        CssOnly = false,
-                        ContextMenu = "menu1",
-                        Theme = "calendar_white",
-                        ViewType = ViewType.Day,
-                        EventClickJavaScript = "eventClick(e)",
-                        EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
-                        EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
-                        TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
-                        EventDeleteJavaScript = "eventDelete(e)",
-                    })
+					@Html.DayPilotCalendar("dp_day", new DayPilotCalendarConfig
+					{
+						BackendUrl = Url.Content("~/Calendar/Day?bookingRequestID=" + Model.Id),
+						EventMoveHandling = EventMoveHandlingType.JavaScript,
+						EventResizeHandling = EventResizeHandlingType.JavaScript,
+						TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
+						EventClickHandling = EventClickHandlingType.JavaScript,
+						HeaderClickHandling = HeaderClickHandlingType.JavaScript,
+						EventDeleteHandling = EventDeleteHandlingType.JavaScript,
+						EventBackColor = "#638EDE",
+						DurationBarVisible = false,
+						EventHeaderVisible = false,
+						Height = 550,
+						HeaderHeight = 50,
+						CellHeight = 25,
+						CssOnly = false,
+						ContextMenu = "menu1",
+						Theme = "calendar_white",
+						ViewType = ViewType.Day,
+						EventClickJavaScript = "eventClick(e)",
+						EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
+						EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
+						TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
+						EventDeleteJavaScript = "eventDelete(e)",
+					})
 
-                    @Html.DayPilotCalendar("dp_week", new DayPilotCalendarConfig
-                    {
-                        ViewType = ViewType.Week,
-                        BackendUrl = Url.Content("~/Calendar/Backend?bookingRequestID=" + Model.Id),
-                        EventMoveHandling = EventMoveHandlingType.JavaScript,
-                        EventResizeHandling = EventResizeHandlingType.JavaScript,
-                        TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
-                        EventClickHandling = EventClickHandlingType.JavaScript,
-                        HeaderClickHandling = HeaderClickHandlingType.JavaScript,
-                        EventDeleteHandling = EventDeleteHandlingType.JavaScript,
-                        EventBackColor = "#638EDE",
-                        DurationBarVisible = false,
-                        EventHeaderVisible = false,
-                        ShowAllDayEvents = true,
-                        AllowMultiSelect = true,
-                        Height = 550,
-                        HeaderHeight = 30,
-                        HeaderFontSize = "12px",
-                        CssOnly = false,
-                        Theme = "calendar_white",
-                        HeightSpec = HeightSpec.BusinessHours,
-                        EventBubble = "bubble",
-                        EventClickJavaScript = "eventClick(e)",
-                        EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
-                        EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
-                        TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
-                        EventDeleteJavaScript = "eventDelete(e)",
-                        ContextMenu = "menu1",
-                        HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"
-                    })
+					@Html.DayPilotCalendar("dp_week", new DayPilotCalendarConfig
+					{
 
-                    @Html.DayPilotMonth("dp_month", new DayPilotMonthConfig
-                    {
-                        BackendUrl = Url.Content("~/Calendar/Month?bookingRequestID=" + Model.Id),
-                        EventMoveHandling = DayPilot.Web.Mvc.Events.Month.EventMoveHandlingType.JavaScript,
-                        EventResizeHandling = DayPilot.Web.Mvc.Events.Month.EventResizeHandlingType.JavaScript,
-                        TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedHandlingType.JavaScript,
-                        EventClickHandling = DayPilot.Web.Mvc.Events.Month.EventClickHandlingType.JavaScript,
-                        HeaderClickHandling = DayPilot.Web.Mvc.Events.Month.HeaderClickHandlingType.JavaScript,
-                        EventFontSize = "10px",
-                        HeaderFontSize = "12px",
-                        CellHeight = 90,
-                        HeaderHeight = 50,
-                        EventHeight = 50,
-                        Height = "550",
-                        CssOnly = false,
-                        ContextMenu = "menu1",
-                        Theme = "calendar_white",
-                        EventClickJavaScript = "eventClick(e)",
-                        EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
-                        EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
-                        TimeRangeSelectedJavaScript = "eventNew(start, end)",
-                    })
-                </div>
+						ViewType = ViewType.Week,
+						BackendUrl = Url.Content("~/Calendar/Backend?bookingRequestID=" + Model.Id),
 
-            </div>
-        </div>
+						EventMoveHandling = EventMoveHandlingType.JavaScript,
+						EventResizeHandling = EventResizeHandlingType.JavaScript,
+						TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
+						EventClickHandling = EventClickHandlingType.JavaScript,
+						HeaderClickHandling = HeaderClickHandlingType.JavaScript,
+						EventDeleteHandling = EventDeleteHandlingType.JavaScript,
+						EventBackColor = "#638EDE",
+						DurationBarVisible = false,
+						EventHeaderVisible = false,
+						ShowAllDayEvents = true,
+						AllowMultiSelect = true,
+						Height = 550,
+						HeaderHeight = 30,
+						HeaderFontSize = "12px",
+						CssOnly = false,
+						Theme = "calendar_white",
+						HeightSpec = HeightSpec.BusinessHours,
+						EventBubble = "bubble",
+						EventClickJavaScript = "eventClick(e)",
+						EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
+						EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
+						TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
+						EventDeleteJavaScript = "eventDelete(e)",
+						ContextMenu = "menu1",
+						HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"
+					})
 
-        <div class="col-lg-2 container_box" style="float: left; padding-bottom: 101px; padding-top: 53px; position: relative;">
-            @Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
-            {
-                CssOnly = true,
-                Theme = "navigator_white",
-                ShowMonths = 1
-            })
-        </div>
+					@Html.DayPilotMonth("dp_month", new DayPilotMonthConfig
+					{
+						BackendUrl = Url.Content("~/Calendar/Month?bookingRequestID=" + Model.Id),
+						EventMoveHandling = DayPilot.Web.Mvc.Events.Month.EventMoveHandlingType.JavaScript,
+						EventResizeHandling = DayPilot.Web.Mvc.Events.Month.EventResizeHandlingType.JavaScript,
+						TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedHandlingType.JavaScript,
+						EventClickHandling = DayPilot.Web.Mvc.Events.Month.EventClickHandlingType.JavaScript,
+						HeaderClickHandling = DayPilot.Web.Mvc.Events.Month.HeaderClickHandlingType.JavaScript,
+						EventFontSize = "10px",
+						HeaderFontSize = "12px",
+						CellHeight = 90,
+						HeaderHeight = 50,
+						EventHeight = 50,
+						Height = "550",
+						CssOnly = false,
+						ContextMenu = "menu1",
+						Theme = "calendar_white",
+						EventClickJavaScript = "eventClick(e)",
+						EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
+						EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
+						TimeRangeSelectedJavaScript = "eventNew(start, end)",
+					})
+				</div>
 
-    </div>
+			</div>
+		</div>
+
+		<div class="col-lg-2 container_box calendar-area">
+			@Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
+			{
+				CssOnly = true,
+				Theme = "navigator_white",
+				ShowMonths = 1
+			})
+		</div>
+
+	</div>
 </div>
 <div class="row">
-    @Html.ActionLink("Back to booking requests", "Index", "BookingRequest")
+	@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")
 </div>
 <div class="row">
-    @Html.ActionLink("Show Users", "Index", "User")
+	@Html.ActionLink("Show Users", "Index", "User")
 </div>
-<input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid"/>
+<input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid" />
 
 <script type="text/javascript">
 
@@ -349,7 +224,7 @@
     function eventNew(start, end) {
         if (checkactivewindow()) { return false; }
         var id = $("#hdnrequestid").val();
-        Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&start=' + start + '&end=' + end,
+        Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&start=' + start + 'z&end=' + end + 'z',
             {
                 horizontalAlign: 'right',
                 callback: refresh
@@ -358,7 +233,7 @@
 
     function eventMove(e, newStart, newEnd) {
         if (checkactivewindow()) { return false; }
-        Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + '&newEnd=' + newEnd,
+        Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z',
             {
                 modal: true,
                 callback: refresh
@@ -404,10 +279,10 @@
     //funtion to load booking request info in iframe "frminfo" on "tbluserrequests" request row click.
     //called by : rows in tbluserrequests on click
     function loadrequest(id, ele) {
-        $("#tbluserrequests tr").attr("class", "");
-        $(ele).attr("class", "activeRequest");
+        $("#tbluserrequests tr").attr("style", "");
+        $(ele).attr("style", "background-color: #aaa;");
         $("#hdnrequestid").val(id);
-        $("#btnProcessed").attr("href", "@Url.Action("SetStatus", "BookingRequest", new { id = "requestid", targetStatus = "processed" })".replace("requestid", id));
+        $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("SetStatus", "BookingRequest", new { id = "requestid", status = Data.Constants.BRState.Processed })".replace("requestid", id) + "')");
         $("#frminfo")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
         dp_day.backendUrl = "@Url.Content("~/Calendar/Day?bookingRequestID=")" + id;
         dp_week.backendUrl = "@Url.Content("~/Calendar/Backend?bookingRequestID=")" + id;
@@ -417,27 +292,80 @@
 
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
-        //Ajax call to get all unprocessed booking request from server according to user.
-        $.getJSON("@Url.Action("GetBookingRequests", "BookingRequest")", { id: "@Model.Id" }, showRequests);
 
-        //Parsing and binding the retrieved booking requests
-        function showRequests(response) {
-            var result = JSON.parse(response);
-
-            //Iterating each object in response result
-            $(result).each(function () {
-                //Converting in appropriate date format
-                var date = new Date(this.date_received);
-                date = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-                //appending each request row in table "tbluserrequests"
-                if ("@Model.Id" != this.id) {
-                    $("#tbluserrequests").append("<tr onclick='javascript:loadrequest(" + this.id + ",this);' style='border-bottom:1px solid grey;cursor:pointer;'><td>" + date + "</td><td>" + this.subject + "</td></tr>");
+        //Parsing and binding the booking requests viewer
+        var table = $('#tbluserrequests').DataTable({
+            order: [0, 'desc'],
+            searching: false,
+            ordering: false,
+            bLengthChange: false,
+            processing: true,
+            serverSide: true, //Enabling server side processing
+            ajax:
+            {
+                //Ajax call to get all unprocessed booking request from server according to user.
+                "url": "@Url.Action("GetBookingRequests", "BookingRequest")" + "?bookingRequestId=" + "@Model.Id",
+                "dataSrc": function (json) {
+                    var orgdata = JSON.parse(json.data);
+                    return orgdata;
+                }
+            },
+            //Callback function for row created.
+            createdRow: function (row, data, index) {
+                if (data.id == $("#hdnrequestid").val()) {
+                    $(row).attr("style", "cursor:pointer;background-color: #aaa;");
                 }
                 else {
-                    $("#tbluserrequests").append("<tr onclick='javascript:loadrequest(" + this.id + ",this);' style='border-bottom:1px solid grey;cursor:pointer;' class='activeRequest'><td>" + date + "</td><td>" + this.subject + "</td></tr>");
+                    $(row).attr("style", "cursor:pointer;");
                 }
-            });
-        }
+            },
+            columns: [
+                {
+                    data: function (data) {
+                        return ConvertTODateString(data.date_received);
+                    }
+                },
+                { data: 'subject' }
+            ]
+        });
+
+
+        //This function will bind a click function on every button in table "tblbookingrequest"
+        $('#tbluserrequests').on('click', 'tr', function () {
+            var data = table.row($(this)).data();
+            loadrequest(data.id, this);
+        });
+
+        $('#btnRequestClarification').click(function () {
+            if (checkactivewindow()) { return false; }
+            Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.Id })',
+                {
+                    horizontalAlign: 'left',
+                });
+        });
     });
 
+    //this function will adjust the height of Booking Request info iframe according to content in iframe.
+    function iframeLoaded() {
+        var iFrameID = document.getElementById('frminfo');
+        if (iFrameID) {
+            // here you can make the height, I delete it first, then I make it again
+            iFrameID.height = "";
+            iFrameID.height = (iFrameID.contentWindow.document.body.scrollHeight + 30) + "px";
+        }
+    }
+
+    //function to format datetime of Request viewer widget
+    function ConvertTODateString(DateToFormat) {
+        var datevalue = new Date(DateToFormat);
+        DateToFormat = datevalue.getMonth() + 1 + "/" + datevalue.getDate() + "/" + datevalue.getFullYear() + " " + datevalue.getHours() + ":" + datevalue.getMinutes();
+        return DateToFormat;
+    }
+
+    //Mark processed function will execute on click to update the Request status to "Processed".
+    function updateStatus(path) {
+        $.getJSON(path, function () {
+            window.location.href = "@Url.Action("Index", "BookingRequest")";
+        });
+    }
 </script>

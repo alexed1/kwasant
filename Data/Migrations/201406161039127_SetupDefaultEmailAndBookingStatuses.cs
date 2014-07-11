@@ -6,6 +6,8 @@ namespace Data.Migrations
     {
         public override void Up()
         {
+            AddColumn("dbo.BookingRequests", "BookingStatus", c => c.String());
+
             Sql(@"
 
 update BookingRequests set BookingStatus = 'Unprocessed'

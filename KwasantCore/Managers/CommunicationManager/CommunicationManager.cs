@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using Data.Constants;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
@@ -50,17 +52,21 @@ namespace KwasantCore.Managers.CommunicationManager
         public void DispatchInvitations(IUnitOfWork uow, EventDO eventDO)
         {
             //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
-            var t = Utilities.Server.ServerUrl;
-            switch (eventDO.Status)
-            {
-                case "Instantiated":
-                    {
-                        eventDO.Status = "Undispatched";
+            //var createdDate = eventDO.BookingRequest.DateCreated;
+            //eventDO.StartDate = eventDO.StartDate.ToOffset(createdDate.Offset);
+            //eventDO.EndDate = eventDO.EndDate.ToOffset(createdDate.Offset);
 
-                        var calendar = GetCalendarObject(eventDO);
+            var t = Utilities.Server.ServerUrl;
+            switch (eventDO.StateID)
+            {
+                case EventState.Booking:
+                    {
+                        eventDO.StateID = EventState.DispatchCompleted;
+
+                        var calendar = GenerateICSCalendarStructure(eventDO);
                         foreach (var attendeeDO in eventDO.Attendees)
                         {
-                            var emailDO = CreateEmail(uow, eventDO, attendeeDO, false);
+                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, false);
                             var email = new Email(uow, emailDO);
                             AttachCalendarToEmail(calendar, emailDO);
                             email.Send();
@@ -68,17 +74,20 @@ namespace KwasantCore.Managers.CommunicationManager
 
                         break;
                     }
-                case "Dispatched":
+                case EventState.ReadyForDispatch:
+                case EventState.DispatchCompleted:
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
                     if (EventHasChanged(uow, eventDO))
                     {
-                        eventDO.Status = "Dispatched";
-                        var calendar = GetCalendarObject(eventDO);
+                        eventDO.StateID = EventState.DispatchCompleted;
+                        var calendar = GenerateICSCalendarStructure(eventDO);
+
+                        var newAttendees = eventDO.Attendees.Where(a => a.Id == 0).ToList();
 
                         foreach (var attendeeDO in eventDO.Attendees)
                         {
                             //Id > 0 means it's an existing attendee, so we need to send the 'update' email to them.
-                            var emailDO = CreateEmail(uow, eventDO, attendeeDO, attendeeDO.Id > 0);
+                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, !newAttendees.Contains(attendeeDO));
                             var email = new Email(uow, emailDO);
                             AttachCalendarToEmail(calendar, emailDO);
                             email.Send();
@@ -94,7 +103,7 @@ namespace KwasantCore.Managers.CommunicationManager
             }
         }
 
-        private iCalendar GetCalendarObject(EventDO eventDO)
+        private iCalendar GenerateICSCalendarStructure(EventDO eventDO)
         {
             string fromEmail = ConfigRepository.Get("fromEmail");
             string fromName = ConfigRepository.Get("fromName");
@@ -109,11 +118,11 @@ namespace KwasantCore.Managers.CommunicationManager
             }
             else
             {
-                dDayEvent.DTStart = new iCalDateTime(eventDO.StartDate);
-                dDayEvent.DTEnd = new iCalDateTime(eventDO.EndDate);
+                dDayEvent.DTStart = new iCalDateTime(DateTime.SpecifyKind(eventDO.StartDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
+                dDayEvent.DTEnd = new iCalDateTime(DateTime.SpecifyKind(eventDO.EndDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
             }
-            dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
-            dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
+            dDayEvent.DTStamp = new iCalDateTime(DateTime.UtcNow);
+            dDayEvent.LastModified = new iCalDateTime(DateTime.UtcNow);
 
             //configure text fields
             dDayEvent.Location = eventDO.Location;
@@ -163,7 +172,7 @@ namespace KwasantCore.Managers.CommunicationManager
             return Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO, userID));
         }
 
-        private EmailDO CreateEmail(IUnitOfWork uow, EventDO eventDO, AttendeeDO attendeeDO, bool isUpdate)
+        private EmailDO CreateInvitationEmail(IUnitOfWork uow, EventDO eventDO, AttendeeDO attendeeDO, bool isUpdate)
         {
             string fromEmail = ConfigRepository.Get("fromEmail");
             string fromName = ConfigRepository.Get("fromName");
@@ -183,8 +192,8 @@ namespace KwasantCore.Managers.CommunicationManager
             toEmailAddress.Name = attendeeDO.Name;
             outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
 
-            var userID = uow.UserRepository.GetQuery().First(u => u.EmailAddressID == attendeeDO.EmailAddressID).Id;
-
+            var userID = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress).Id;
+            
             if (isUpdate)
             {
 
@@ -205,6 +214,8 @@ namespace KwasantCore.Managers.CommunicationManager
                 eventDO.Emails = new List<EmailDO>();
 
             eventDO.Emails.Add(outboundEmail);
+
+            uow.EmailRepository.Add(outboundEmail);
 
             return outboundEmail;
         }
@@ -286,9 +297,9 @@ namespace KwasantCore.Managers.CommunicationManager
 
         private void SendBRSMSes(IEnumerable<BookingRequestDO> bookingRequests)
         {
-            TwilioPackager twil = new TwilioPackager();
             if (bookingRequests.Any())
             {
+                var twil = ObjectFactory.GetInstance<ISMSPackager>();
                 string toNumber = CloudConfigurationManager.GetSetting("TwilioToNumber");
                 twil.SendSMS(toNumber, "Inbound Email has been received");
             }
@@ -354,8 +365,8 @@ namespace KwasantCore.Managers.CommunicationManager
         public RazorViewModel(EventDO ev, String userID)
         {
             IsAllDay = ev.IsAllDay;
-            StartDate = ev.StartDate;
-            EndDate = ev.EndDate;
+            StartDate = ev.StartDate.DateTime;
+            EndDate = ev.EndDate.DateTime;
             Summary = ev.Summary;
             Description = ev.Description;
             Location = ev.Location;

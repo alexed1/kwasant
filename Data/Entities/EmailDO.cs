@@ -16,8 +16,8 @@ namespace Data.Entities
         public String Subject { get; set; }
         public String HTMLText { get; set; }
         public String PlainText { get; set; }
-        public DateTime DateReceived { get; set; }
-        public DateTime DateCreated { get; set; }
+        public DateTimeOffset DateReceived { get; set; }
+        public DateTimeOffset DateCreated { get; set; }
 
         public virtual EmailStatus EmailStatus { get; set; }
 

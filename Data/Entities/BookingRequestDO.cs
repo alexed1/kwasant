@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Data.Entities.Enumerations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Data.Interfaces;
 
 namespace Data.Entities
@@ -13,23 +12,13 @@ namespace Data.Entities
 
         public List<InstructionDO> Instructions { get; set; }
 
-        private string _bookingStatus;
+/*
+        public virtual ClarificationRequestDO ClarificationRequest { get; set; }
+*/
 
+        [ForeignKey("BookingRequestStatus")]
         [Required]
-        public string BookingStatus {
-            get { return _bookingStatus; }
-            set
-            {
-                if (!StringEnumerations.BookingStatus.Contains(value))
-                {
-                    throw new ApplicationException(
-                        "tried to set BookingStatus to an invalid value. See StringEnumerations class for allowable values and get approval before altering that set");
-                }
-                else
-                {
-                    _bookingStatus = value;
-                }
-            } 
-        }
+        public int? BRState { get; set; }
+        public virtual BookingRequestStatusDO BookingRequestStatus { get; set; }
     }
 }

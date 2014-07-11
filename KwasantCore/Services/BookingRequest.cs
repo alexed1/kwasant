@@ -13,25 +13,35 @@ namespace KwasantCore.Services
     {
         public void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-            bookingRequest.BookingStatus = "Unprocessed";
+            bookingRequest.BRState = BRState.Unprocessed;
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
         }
 
-        public List<BookingRequestDO> GetBookingRequests(IBookingRequestRepository curBookingRequestRepository, int id)
+        public List<BookingRequestDO> GetAllByUserId(IBookingRequestRepository curBookingRequestRepository, int start, int length, string userid)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == (from requests in curBookingRequestRepository.GetAll()
-                                                                                 where requests.Id == id
-                                                                                 select requests.User.Id).FirstOrDefault()).Where(e => e.BookingStatus == "Unprocessed").ToList();
+            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Skip(start).Take(length).ToList();
         }
 
-        public object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)
+        public int GetBookingRequestsCount(IBookingRequestRepository curBookingRequestRepository, string userid)
+        {
+            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Count();
+        }
+
+        public string GetUserId(IBookingRequestRepository curBookingRequestRepository, int bookingRequestId)
+        {
+            return (from requests in curBookingRequestRepository.GetAll()
+                    where requests.Id == bookingRequestId
+                    select requests.User.Id).FirstOrDefault();
+        }
+
+        public object GetUnprocessed(IUnitOfWork uow)
         {
             return
-                curBookingRequestRepository.GetAll()
-                    .Where(e => e.BookingStatus == "Unprocessed")
+                uow.BookingRequestRepository.GetAll()
+                    .Where(e => e.BRState == BRState.Unprocessed)
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
@@ -40,7 +50,7 @@ namespace KwasantCore.Services
                                 id = e.Id,
                                 subject = e.Subject,
                                 fromAddress = e.From.Address,
-                                dateReceived = e.DateReceived.ToString("yy-mm-dd"),
+                                dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
                                 body =
                                     e.HTMLText.Trim().Length > 400
                                         ? e.HTMLText.Trim().Substring(0, 400)
@@ -48,31 +58,7 @@ namespace KwasantCore.Services
                             })
                     .ToList();
         }
-
-        public void SetStatus(IUnitOfWork uow, BookingRequestDO bookingRequestDO, string targetStatus)
-        {
-            string newstatus = getBookingStatus(targetStatus);
-            if (newstatus != "invalid status")
-            {
-                bookingRequestDO.BookingStatus = newstatus;
-                bookingRequestDO.User = bookingRequestDO.User;
-                uow.SaveChanges();
-            }
-        }
-
-        private string getBookingStatus(string targetStatus)
-        {
-            switch (targetStatus)
-            {
-                case "invalid":
-                    return "Invalid";
-                case "processed":
-                    return "Processed";
-                default:
-                    return "invalid status";
-            }
-        }
-
+        
         private List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)
         {
             List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?) travelTime).ToList();

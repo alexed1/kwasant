@@ -1,5 +1,13 @@
-﻿using Data.Infrastructure;
+﻿using System;
+using System.Collections.Generic;
+using Daemons;
+using Data.Entities;
+using Data.Infrastructure;
 using KwasantCore.StructureMap;
+using KwasantICS.DDay.iCal;
+using KwasantICS.DDay.iCal.DataTypes;
+using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
+using Utilities;
 
 namespace Playground
 {
@@ -13,8 +21,68 @@ namespace Playground
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE); //set to either "test" or "dev"
 
-            KwasantDbContext db = new KwasantDbContext();
-            db.Database.Initialize(true);
+            new ThroughputMonitor().Start();
+
+            //var evdo = new EventDO();
+            //evdo.StartDate = DateTime.Now;
+            //evdo.EndDate = DateTime.Now.AddHours(1);
+            //evdo.Attendees = new List<AttendeeDO>();
+
+            //var iCal = GetCalendarObject(evdo);
+            //iCalendarSerializer serializer = new iCalendarSerializer(iCal);
+            //string fileToAttach = serializer.Serialize(iCal);
         }
+
+
+
+        private static iCalendar GetCalendarObject(EventDO eventDO)
+        {
+            string fromEmail = ConfigRepository.Get("fromEmail");
+            string fromName = ConfigRepository.Get("fromName");
+
+            iCalendar ddayCalendar = new iCalendar();
+            DDayEvent dDayEvent = new DDayEvent();
+
+            //configure start and end time
+            if (eventDO.IsAllDay)
+            {
+                dDayEvent.IsAllDay = true;
+            }
+            else
+            {
+                dDayEvent.DTStart = new iCalDateTime(eventDO.StartDate.ToUniversalTime().DateTime);
+                dDayEvent.DTEnd = new iCalDateTime(eventDO.EndDate.ToUniversalTime().DateTime);
+            }
+            dDayEvent.DTStamp = new iCalDateTime(DateTime.Now);
+            dDayEvent.LastModified = new iCalDateTime(DateTime.Now);
+
+            //configure text fields
+            dDayEvent.Location = eventDO.Location;
+            dDayEvent.Description = eventDO.Description;
+            dDayEvent.Summary = eventDO.Summary;
+
+            //more attendee configuration
+            foreach (AttendeeDO attendee in eventDO.Attendees)
+            {
+                dDayEvent.Attendees.Add(new KwasantICS.DDay.iCal.DataTypes.Attendee()
+                {
+                    CommonName = attendee.Name,
+                    Type = "INDIVIDUAL",
+                    Role = "REQ-PARTICIPANT",
+                    ParticipationStatus = ParticipationStatus.NeedsAction,
+                    RSVP = true,
+                    Value = new Uri("mailto:" + attendee.EmailAddress),
+                });
+                attendee.Event = eventDO;
+            }
+
+            //final assembly of event
+            dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
+            ddayCalendar.Events.Add(dDayEvent);
+            ddayCalendar.Method = CalendarMethods.Request;
+
+            return ddayCalendar;
+        }
+
     }
 }

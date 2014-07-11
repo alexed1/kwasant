@@ -1,4 +1,5 @@
 ﻿using System;
+using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Managers.CommunicationManager;
@@ -19,7 +20,7 @@ namespace KwasantCore.Services
             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
             curEventDO.CreatedBy = bookingRequestDO.User;
             curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
-            curEventDO.Status = "Instantiated";
+            curEventDO.StateID = EventState.Booking;
 
             return curEventDO;
         }
@@ -37,8 +38,8 @@ namespace KwasantCore.Services
         //takes submitted form data and updates as necessary
         //in general, the new event data will simply overwrite the old data. 
         //in some cases, additional work is necessary to handle the changes
-        public void Update(IUnitOfWork uow, EventDO eventDO)
-        {
+        public void Process(IUnitOfWork uow, EventDO eventDO)
+        {            
             new CommunicationManager().DispatchInvitations(uow, eventDO);
         }
      

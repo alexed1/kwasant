@@ -1,0 +1,90 @@
+﻿@using Data.Entities.Enumerations
+@using Newtonsoft.Json
+@model KwasantWeb.ViewModels.ClarificationRequestViewModel
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+
+    <script src="/Content/js/Kwasant/Popup.js"></script>
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
+@section styles
+{
+    @Styles.Render("~/bundles/css/bootstrap30")
+    @Styles.Render("~/bundles/css/backendcss")
+	@Styles.Render("~/bundles/css/temp")
+	<link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
+}
+<div class="light-bg">
+	<div class="edit-event-form form">
+		<div id="requestSentText" style="display: none;">
+			<h3>Request Sent</h3>
+			<div class="space form-actions">
+				<a href="javascript:close(true);" class="cancel-btn pull-left">Close</a>
+			</div>
+		</div>
+		<form id="f">
+			<h3 class="with-border">@Html.Raw(Model.Id == 0 ? "New Clarification Request" : "Editing Clarification Request")</h3>
+			@if (Model.QuestionsCount > 0) {
+				<h4>
+					@Html.Raw(string.Format("There {0} {1} question{2} already in this request.",
+					Model.QuestionsCount > 1 ? "are" : "is",
+					Model.QuestionsCount,
+					Model.QuestionsCount % 10 == 1 ? "" : "s"))
+				</h4>
+			}
+			<div id="sendError" class="validation-errors"></div>
+			<div class="formItem">
+				<div class="formLabel">To:</div>
+				<input type="text" value="@Model.Recipients" disabled="disabled" class="form-control col-md-1" />
+			</div>
+			<div class="formItem">
+				<div class="formLabel">Enter Message</div>
+				@Html.TextAreaFor(m => m.Question, 5, 20, new { @class = "form-control col-md-1" })
+			</div>
+			@Html.HiddenFor(m => m.Id, new { @class = "form-control col-md-1" })
+			@Html.HiddenFor(m => m.BookingRequestId, new { @class = "form-control col-md-1" })
+			<div class="space form-actions">
+				<input id="btnSend" type="button" value="Send" class="btn btn-default pull-left" />
+				<a href="javascript:closeWithUnsavedDataCheck(modifiedState);" class="cancel-btn pull-left">Cancel</a>
+			</div>
+		</form>
+	</div>
+</div>
+	<script type="text/javascript">
+		var modifiedState = { modified: false };
+		$(document).ready(function () {
+			$(".form-control").change(function () {
+				modifiedState.modified = true;
+			});
+
+			$('#btnSend').click(function () {
+				$.post('@Url.Action("Send", "ClarificationRequest")',
+					$('#f').serialize(),
+					function (result) {
+						if (result.success) {
+							$('#sendError').text('');
+							$('#f').hide();
+							$('#requestSentText').show();
+						} else {
+							$('#sendError').text(result.error);
+						}
+					},
+					'json');
+				return false;
+			});
+		});
+
+		$(function () {
+			$('#question').focus();
+			$('#f').validate();
+		});
+
+	</script>

@@ -41,7 +41,7 @@ namespace DDay.Collections.Test
             return categories;
         }
 
-        [Test]
+        [Test, Category("DDay")]
         public void ItemAdded1()
         {
             int itemsAdded = 0;
@@ -53,7 +53,7 @@ namespace DDay.Collections.Test
             Assert.AreEqual("Test", _Properties.Get<string>("CATEGORIES"));
         }
 
-        [Test]
+        [Test, Category("DDay")]
         public void ItemAdded2()
         {
             int itemsAdded = 0;
@@ -68,7 +68,7 @@ namespace DDay.Collections.Test
             Assert.AreEqual(2, categories.Count);
         }
 
-        [Test]
+        [Test, Category("DDay")]
         public void ItemAdded3()
         {
             int itemsAdded = 0;
@@ -102,7 +102,7 @@ namespace DDay.Collections.Test
         /// <summary>
         /// Ensures the Add() method works properly with GroupedValueListProxy.
         /// </summary>
-        [Test]
+        [Test, Category("DDay")]
         public void AddProxy1()
         {
             IList<string> proxy = _Properties.GetMany<string>("CATEGORIES");
@@ -120,7 +120,7 @@ namespace DDay.Collections.Test
             Assert.IsTrue(Categories.SequenceEqual(_Properties.AllOf("CATEGORIES").SelectMany(p => p.Values)));
         }
 
-        [Test]
+        [Test, Category("DDay")]
         public void ClearProxy1()
         {
             _Properties.Set("Test", "Test");
@@ -148,7 +148,7 @@ namespace DDay.Collections.Test
         /// <summary>
         /// Ensures the Contains() method works properly with GroupedValueListProxy.
         /// </summary>
-        [Test]
+        [Test, Category("DDay")]
         public void ContainsProxy1()
         {
             IList<string> proxy = _Properties.GetMany<string>("CATEGORIES");
@@ -157,7 +157,7 @@ namespace DDay.Collections.Test
             Assert.IsTrue(proxy.Contains("Work"));
         }
 
-        [Test]
+        [Test, Category("DDay")]
         public void CopyToProxy1()
         {
             IList<string> categories = AddCategories();
@@ -167,14 +167,14 @@ namespace DDay.Collections.Test
             Assert.IsTrue(categories.ToArray().SequenceEqual(values));
         }
 
-        [Test]
+        [Test, Category("DDay")]
         public void CountProxy1()
         {
             IList<string> categories = AddCategories();
             Assert.AreEqual(5, categories.Count);
         }
 
-        [Test]
+        [Test, Category("DDay")]
         public void RemoveProxy1()
         {
             IList<string> categories = AddCategories();
@@ -202,7 +202,7 @@ namespace DDay.Collections.Test
             Assert.AreEqual(0, categories.Count);
         }
 
-        [Test]
+        [Test, Category("DDay")]
         public void IndexOfProxy1()
         {
             IList<string> categories = AddCategories();
@@ -213,7 +213,7 @@ namespace DDay.Collections.Test
             Assert.AreEqual(4, categories.IndexOf("More"));
         }
 
-        [Test]
+        [Test, Category("DDay")]
         public void InsertProxy1()
         {
             IList<string> categories = AddCategories();
@@ -229,7 +229,7 @@ namespace DDay.Collections.Test
             Assert.AreEqual("Bla!", categories.Skip(2).First());
         }
 
-        [Test]
+        [Test, Category("DDay")]
         public void RemoveAtProxy1()
         {
             IList<string> categories = AddCategories();
@@ -247,7 +247,7 @@ namespace DDay.Collections.Test
             Assert.AreEqual(0, categories.Count);
         }
 
-        [Test]
+        [Test, Category("DDay")]
         public void RemoveAtProxy2()
         {
             IList<string> categories = AddCategories();
@@ -265,7 +265,7 @@ namespace DDay.Collections.Test
             Assert.AreEqual(0, categories.Count);
         }
 
-        [Test]
+        [Test, Category("DDay")]
         public void IndexerProxy1()
         {
             IList<string> categories = AddCategories();

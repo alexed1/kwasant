@@ -16,7 +16,8 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>true</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
-    <IISExpressSSLPort />
+    <IISExpressSSLPort>
+    </IISExpressSSLPort>
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
@@ -41,6 +42,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="AutoMapper">
       <HintPath>packages\AutoMapper.3.2.1\lib\net40\AutoMapper.dll</HintPath>
     </Reference>
@@ -54,6 +59,35 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation, Version=5.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="FluentValidation.Mvc">
+      <HintPath>packages\FluentValidation.MVC4.5.1.0.0\lib\Net40\FluentValidation.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis">
+      <HintPath>packages\Google.Apis.1.8.2\lib\net40\Google.Apis.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Auth, Version=1.8.2.23763, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Google.Apis.Auth.1.8.2\lib\net40\Google.Apis.Auth.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Auth.Mvc4, Version=1.8.2.23775, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Google.Apis.Auth.Mvc.1.8.2\lib\net40\Google.Apis.Auth.Mvc4.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.8.2.23773, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Google.Apis.Auth.1.8.2\lib\net40\Google.Apis.Auth.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.Core, Version=1.8.2.23761, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Google.Apis.PlatformServices">
+      <HintPath>packages\Google.Apis.1.8.2\lib\net40\Google.Apis.PlatformServices.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -83,6 +117,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.Owin.2.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Owin.Host.SystemWeb.2.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Owin.Security, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.Owin.Security.2.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
@@ -90,6 +128,17 @@
     <Reference Include="Microsoft.Owin.Security.Cookies, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\Microsoft.Owin.Security.Cookies.2.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop">
+      <HintPath>packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration">
       <HintPath>packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
@@ -105,6 +154,22 @@
     <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -138,6 +203,13 @@
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
+    <Reference Include="WebGrease">
+      <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Zlib.Portable, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Owin">
@@ -145,9 +217,6 @@
     </Reference>
     <Reference Include="Microsoft.Owin">
       <HintPath>..\packages\Microsoft.Owin.2.0.0\lib\net45\Microsoft.Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb">
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.2.0.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Owin.Security">
       <HintPath>..\packages\Microsoft.Owin.Security.2.0.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
@@ -196,11 +265,15 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\External\GoogleCalendar\AuthCallbackController.cs" />
     <Compile Include="Controllers\BookingRequestController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
-    <Compile Include="Controllers\DayPilot\DayPilotMonthControl.cs" />
-    <Compile Include="Controllers\DayPilot\DayPilotCalendarControl.cs" />
-    <Compile Include="Controllers\DayPilot\DayPilotNavigatorControl.cs" />
+    <Compile Include="Controllers\ClarificationRequestController.cs" />
+    <Compile Include="Controllers\ClarificationResponseController.cs" />
+    <Compile Include="Controllers\ControllerExtensions.cs" />
+    <Compile Include="Controllers\External\DayPilot\DayPilotMonthControl.cs" />
+    <Compile Include="Controllers\External\DayPilot\DayPilotCalendarControl.cs" />
+    <Compile Include="Controllers\External\DayPilot\DayPilotNavigatorControl.cs" />
     <Compile Include="Controllers\EmailController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
@@ -210,7 +283,8 @@
     <Compile Include="Controllers\MonthController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="Controllers\ViewModels\AccountVM.cs" />
+    <Compile Include="ViewModels\MyAccountModel.cs" />
+    <Compile Include="Filters\RequestParamsEncryptedFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -223,7 +297,14 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\ClarificationResponseViewModel.cs" />
+    <Compile Include="ViewModels\ExternalLoginConfirmationViewModel.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\ManageUserViewModel.cs" />
+    <Compile Include="ViewModels\QuestionViewModel.cs" />
+    <Compile Include="ViewModels\ClarificationRequestViewModel.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
+    <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\UsersAdminViewModel.cs" />
     <Compile Include="ViewModels\ProcessCreateEventViewModel.cs" />
     <Compile Include="Webhooks\MandrillWebhookController.cs" />
@@ -231,12 +312,24 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
-    <Content Include="Content\Booking Details.png" />
-    <Content Include="Content\css\bootstrap-datetimepicker.css" />
-    <Content Include="Content\css\bootstrap-responsive.css" />
-    <Content Include="Content\css\bootstrap2.3.css" />
-    <Content Include="Content\css\bootstrap3.0.css" />
-    <Content Include="Content\css\colorbox.css" />
+    <Content Include="Content\ContextMenu\jquery.contextMenu.css" />
+    <Content Include="Content\css\additionalcss\bootstrap23\css\bootstrap2.3.css" />
+    <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings-white.png" />
+    <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings.png" />
+    <Content Include="Content\css\additionalcss\bootstrap30\css\bootstrap-datetimepicker.css" />
+    <Content Include="Content\css\additionalcss\bootstrap30\css\bootstrap-responsive.css" />
+    <Content Include="Content\css\additionalcss\bootstrap30\css\bootstrap3.0.css" />
+    <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\css\additionalcss\colorbox\colorbox.css" />
+    <Content Include="Content\css\additionalcss\colorbox\img\controls.png" />
+    <Content Include="Content\css\additionalcss\colorbox\img\loading.gif" />
+    <Content Include="Content\css\additionalcss\font-awesome\css\font-awesome.css" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\css\additionalcss\select2\select2-spinner.gif" />
+    <Content Include="Content\css\additionalcss\select2\select2.css" />
+    <Content Include="Content\css\additionalcss\select2\select2.png" />
+    <Content Include="Content\css\additionalcss\select2\select2x2.png" />
+    <Content Include="Content\css\backendcss\default.css" />
     <Content Include="Content\css\daypilot\areas.css" />
     <Content Include="Content\css\daypilot\bubble_default.css" />
     <Content Include="Content\css\daypilot\calendar_blue.css" />
@@ -264,11 +357,8 @@
     <Content Include="Content\css\daypilot\scheduler_traditional.css" />
     <Content Include="Content\css\daypilot\scheduler_transparent.css" />
     <Content Include="Content\css\daypilot\scheduler_white.css" />
-    <Content Include="Content\css\default.css" />
-    <Content Include="Content\css\font-awesome.css" />
-    <Content Include="Content\css\main.css" />
-    <Content Include="Content\css\select2.css" />
-    <Content Include="Content\css\select2.png" />
+    <Content Include="Content\css\frontcss\main.css" />
+    <Content Include="Content\css\temp\temp.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.min.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\images\filler.png" />
@@ -318,93 +408,96 @@
     <Content Include="Content\DataTables-1.10.0\media\images\sort_both.png" />
     <Content Include="Content\DataTables-1.10.0\media\images\sort_desc.png" />
     <Content Include="Content\DataTables-1.10.0\media\images\sort_desc_disabled.png" />
-    <Content Include="Content\fonts\fontawesome-webfont.svg" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\img\ajax-loader.gif" />
-    <Content Include="Content\img\background-match.jpg" />
-    <Content Include="Content\img\background-test5.jpg" />
-    <Content Include="Content\img\background-test6.jpg" />
-    <Content Include="Content\img\background-test7.jpg" />
-    <Content Include="Content\img\background-test9.jpg" />
-    <Content Include="Content\img\bg-overlay.png" />
-    <Content Include="Content\img\bg1.jpg" />
-    <Content Include="Content\img\bg2.jpg" />
-    <Content Include="Content\img\bg3.jpg" />
-    <Content Include="Content\img\bg4.jpg" />
-    <Content Include="Content\img\bg5.jpg" />
-    <Content Include="Content\img\bg6.jpg" />
-    <Content Include="Content\img\bg7.jpg" />
-    <Content Include="Content\img\bg8.jpg" />
-    <Content Include="Content\img\bg9.jpg" />
-    <Content Include="Content\img\browser-header.jpg" />
-    <Content Include="Content\img\calendar5.jpg" />
-    <Content Include="Content\img\client-1.png" />
-    <Content Include="Content\img\client-2.png" />
-    <Content Include="Content\img\client-3.png" />
-    <Content Include="Content\img\client-4.png" />
-    <Content Include="Content\img\client-5.png" />
-    <Content Include="Content\img\client-6.png" />
-    <Content Include="Content\img\controls.png" />
+    <Content Include="Content\img\backgrounds\background-test9.jpg" />
+    <Content Include="Content\img\backgrounds\bg-overlay.png" />
+    <Content Include="Content\img\backgrounds\homepage89.png" />
+    <Content Include="Content\img\backgrounds\homepagesecond.jpg" />
+    <Content Include="Content\img\backgrounds\ie-black-bg.png" />
     <Content Include="Content\img\Croissant\croissant_nolic.jpg" />
     <Content Include="Content\img\EmailLogo.png" />
-    <Content Include="Content\img\example_using_kwasant_email.png" />
     <Content Include="Content\img\favicon.ico" />
-    <Content Include="Content\img\from_this_to_this.png" />
-    <Content Include="Content\img\glyphicons-halflings-white.png" />
-    <Content Include="Content\img\glyphicons-halflings.png" />
-    <Content Include="Content\img\homepage1.jpg" />
-    <Content Include="Content\img\homepage2.jpg" />
-    <Content Include="Content\img\homepage3.jpg" />
-    <Content Include="Content\img\homepage4.jpg" />
-    <Content Include="Content\img\homepage89.png" />
-    <Content Include="Content\img\homepagefirst.jpg" />
-    <Content Include="Content\img\homepagelower3.jpg" />
-    <Content Include="Content\img\homepagesecond.jpg" />
-    <Content Include="Content\img\How_it_works_diagram.png" />
-    <Content Include="Content\img\ie-black-bg.png" />
-    <Content Include="Content\img\image_1.jpg" />
-    <Content Include="Content\img\image_2.jpg" />
-    <Content Include="Content\img\image_3.jpg" />
-    <Content Include="Content\img\image_4.jpg" />
-    <Content Include="Content\img\image_5.jpg" />
-    <Content Include="Content\img\image_6.jpg" />
-    <Content Include="Content\img\image_7.jpg" />
-    <Content Include="Content\img\kwasant-logo.png" />
-    <Content Include="Content\img\largehome.jpg" />
-    <Content Include="Content\img\largehome1.jpg" />
-    <Content Include="Content\img\loading.gif" />
-    <Content Include="Content\img\logo.png" />
-    <Content Include="Content\img\logo11.png" />
-    <Content Include="Content\img\logo2.png" />
-    <Content Include="Content\img\logo5.png" />
-    <Content Include="Content\img\logo6.png" />
-    <Content Include="Content\img\logo7.png" />
-    <Content Include="Content\img\logo9.png" />
-    <Content Include="Content\img\love.jpg" />
     <Content Include="Content\img\Management\alexhead.png" />
-    <Content Include="Content\img\older-calendar.jpg" />
-    <Content Include="Content\img\perfect-krawsant.jpg" />
-    <Content Include="Content\img\perfect-krawsant.png" />
-    <Content Include="Content\img\scheduler1.jpg" />
-    <Content Include="Content\img\screen.jpg" />
-    <Content Include="Content\img\second-home.jpg" />
-    <Content Include="Content\img\step1.png" />
-    <Content Include="Content\img\step1a.png" />
-    <Content Include="Content\img\step1b.png" />
-    <Content Include="Content\img\step1c.png" />
-    <Content Include="Content\img\stock-photo-17850747-businessman-writing-in-a-planner.jpg" />
-    <Content Include="Content\img\stock-photo-18215604-daily-planner.jpg" />
-    <Content Include="Content\img\stock-photo-4316947-schedule.jpg" />
-    <Content Include="Content\img\stone-calendar.jpg" />
-    <Content Include="Content\img\team.jpg" />
-    <Content Include="Content\img\test-background.jpg" />
-    <Content Include="Content\img\test-background2.jpg" />
-    <Content Include="Content\img\test-background3.jpg" />
-    <Content Include="Content\img\test-background4.jpg" />
-    <Content Include="Content\img\Workflowv2.png" />
+    <Content Include="Content\img\site\browser-header.jpg" />
+    <Content Include="Content\img\site\example_using_kwasant_email.png" />
+    <Content Include="Content\img\site\from_this_to_this.png" />
+    <Content Include="Content\img\site\How_it_works_diagram.png" />
+    <Content Include="Content\img\site\kwasant-video-screen.png" />
+    <Content Include="Content\img\site\logo.png" />
+    <Content Include="Content\img\site\perfect-krawsant.jpg" />
+    <Content Include="Content\img\site\perfect-krawsant.png" />
+    <Content Include="Content\img\temp\old\background-match.jpg" />
+    <Content Include="Content\img\temp\old\background-test5.jpg" />
+    <Content Include="Content\img\temp\old\background-test6.jpg" />
+    <Content Include="Content\img\temp\old\background-test7.jpg" />
+    <Content Include="Content\img\temp\old\bg1.jpg" />
+    <Content Include="Content\img\temp\old\bg2.jpg" />
+    <Content Include="Content\img\temp\old\bg3.jpg" />
+    <Content Include="Content\img\temp\old\bg4.jpg" />
+    <Content Include="Content\img\temp\old\bg5.jpg" />
+    <Content Include="Content\img\temp\old\bg6.jpg" />
+    <Content Include="Content\img\temp\old\bg7.jpg" />
+    <Content Include="Content\img\temp\old\bg8.jpg" />
+    <Content Include="Content\img\temp\old\bg9.jpg" />
+    <Content Include="Content\img\temp\old\blue_tag.psd" />
+    <Content Include="Content\img\temp\old\Booking Details.png" />
+    <Content Include="Content\img\temp\old\calendar5.jpg" />
+    <Content Include="Content\img\temp\old\client-1.png" />
+    <Content Include="Content\img\temp\old\client-2.png" />
+    <Content Include="Content\img\temp\old\client-3.png" />
+    <Content Include="Content\img\temp\old\client-4.png" />
+    <Content Include="Content\img\temp\old\client-5.png" />
+    <Content Include="Content\img\temp\old\client-6.png" />
+    <Content Include="Content\img\temp\old\Database layout.pdf" />
+    <Content Include="Content\img\temp\old\Email thread .docx" />
+    <Content Include="Content\img\temp\old\homepage1.jpg" />
+    <Content Include="Content\img\temp\old\homepage2.jpg" />
+    <Content Include="Content\img\temp\old\homepage3.jpg" />
+    <Content Include="Content\img\temp\old\homepage4.jpg" />
+    <Content Include="Content\img\temp\old\homepagefirst.jpg" />
+    <Content Include="Content\img\temp\old\homepagelower3.jpg" />
+    <Content Include="Content\img\temp\old\image_1.jpg" />
+    <Content Include="Content\img\temp\old\image_2.jpg" />
+    <Content Include="Content\img\temp\old\image_3.jpg" />
+    <Content Include="Content\img\temp\old\image_4.jpg" />
+    <Content Include="Content\img\temp\old\image_5.jpg" />
+    <Content Include="Content\img\temp\old\image_6.jpg" />
+    <Content Include="Content\img\temp\old\image_7.jpg" />
+    <Content Include="Content\img\temp\old\kwasant-logo.png" />
+    <Content Include="Content\img\temp\old\largehome.jpg" />
+    <Content Include="Content\img\temp\old\largehome1.jpg" />
+    <Content Include="Content\img\temp\old\logo11.png" />
+    <Content Include="Content\img\temp\old\logo2.png" />
+    <Content Include="Content\img\temp\old\logo5.png" />
+    <Content Include="Content\img\temp\old\logo6.png" />
+    <Content Include="Content\img\temp\old\logo7.png" />
+    <Content Include="Content\img\temp\old\logo9.png" />
+    <Content Include="Content\img\temp\old\love.jpg" />
+    <Content Include="Content\img\temp\old\older-calendar.jpg" />
+    <Content Include="Content\img\temp\old\scheduler1.jpg" />
+    <Content Include="Content\img\temp\old\screen.jpg" />
+    <Content Include="Content\img\temp\old\second-home.jpg" />
+    <Content Include="Content\img\temp\old\step1.png" />
+    <Content Include="Content\img\temp\old\step1a.png" />
+    <Content Include="Content\img\temp\old\step1b.png" />
+    <Content Include="Content\img\temp\old\step1c.png" />
+    <Content Include="Content\img\temp\old\stock-photo-17850747-businessman-writing-in-a-planner.jpg" />
+    <Content Include="Content\img\temp\old\stock-photo-18215604-daily-planner.jpg" />
+    <Content Include="Content\img\temp\old\stock-photo-4316947-schedule.jpg" />
+    <Content Include="Content\img\temp\old\stone-calendar.jpg" />
+    <Content Include="Content\img\temp\old\test-background.jpg" />
+    <Content Include="Content\img\temp\old\test-background2.jpg" />
+    <Content Include="Content\img\temp\old\test-background3.jpg" />
+    <Content Include="Content\img\temp\old\test-background4.jpg" />
+    <Content Include="Content\img\temp\old\Workflow.vsdx" />
+    <Content Include="Content\img\temp\old\Workflowv2.png" />
+    <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
+    <Content Include="Content\img\temp\team.jpg" />
     <Content Include="Content\js\bootstrap-datetimepicker.js" />
+    <Content Include="Content\js\bootstrap-transition.js" />
     <Content Include="Content\js\bootstrap.3.1.1.min.js" />
     <Content Include="Content\js\bootstrap.js" />
+    <Content Include="Content\js\collapse.js" />
     <Content Include="Content\js\common.js" />
     <Content Include="Content\js\custom.js" />
     <Content Include="Content\js\Daypilot\daypilot-bubble.src.js" />
@@ -444,28 +537,24 @@
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="packages.config" />
-    <Content Include="Content\fonts\fontawesome-webfont.eot" />
-    <Content Include="Content\fonts\fontawesome-webfont.ttf" />
-    <Content Include="Content\fonts\fontawesome-webfont.woff" />
-    <Content Include="Content\fonts\FontAwesome.otf" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Api\GetAttachment.ashx" />
     <Content Include="Content\img\.DS_Store" />
-    <Content Include="Content\img\blue_tag.psd" />
-    <Content Include="Content\img\Database layout.pdf" />
-    <Content Include="Content\img\Email thread .docx" />
-    <Content Include="Content\img\Workflow.vsdx" />
-    <Content Include="Content\img\Workflow_v2.vsdx" />
     <Content Include="Api\GetAttachment.ashx" />
     <Content Include="Content\DataTables-1.10.0\media\images\Sorting icons.psd" />
     <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\psd\printer.psd" />
     <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\psd\file_types.psd" />
     <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\psd\copy document.psd" />
     <Content Include="Content\DataTables-1.10.0\extensions\TableTools\images\psd\collection.psd" />
+    <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="Content\css\additionalcss\bootstrap30\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="Content\css\additionalcss\font-awesome\fonts\FontAwesome.otf" />
     <None Include="Properties\PublishProfiles\kwasant.pubxml" />
     <None Include="Scripts\jquery-1.7-vsdoc.js" />
+    <Content Include="Scripts\ContextMenu\jquery.contextMenu.js" />
     <Content Include="Scripts\DataTables-1.10.0\extensions\AutoFill\js\dataTables.autoFill.js" />
     <Content Include="Scripts\DataTables-1.10.0\extensions\AutoFill\js\dataTables.autoFill.min.js" />
     <Content Include="Scripts\DataTables-1.10.0\extensions\AutoFill\Readme.txt" />
@@ -632,11 +721,18 @@
     <Content Include="Views\MandrillWebhook\Index.cshtml" />
     <Content Include="Views\Account\Confirm.cshtml" />
     <Content Include="Views\BookingRequest\Index.cshtml" />
+    <Content Include="Views\ClarificationRequest\Edit.cshtml" />
+    <Content Include="Views\ClarificationResponse\New.cshtml" />
+    <Content Include="Views\ClarificationResponse\ProcessSubmittedClarificationData.cshtml" />
+    <Content Include="Views\ClarificationResponse\AllAnswered.cshtml" />
+    <Content Include="Views\User\MyAccount.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
-    <Folder Include="Controllers\Models\" />
+    <Folder Include="Content\fonts\" />
+    <Folder Include="Content\img\forms\" />
+    <Folder Include="Content\img\icons\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Configuration\Configuration.csproj">
@@ -707,6 +803,11 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <Import Project="packages\AutoMapper.3.2.1\tools\AutoMapper.targets" Condition="Exists('packages\AutoMapper.3.2.1\tools\AutoMapper.targets')" />
+  <Import Project="packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

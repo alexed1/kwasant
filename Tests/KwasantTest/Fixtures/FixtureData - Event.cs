@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Constants;
 using Data.Entities;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
@@ -34,7 +35,7 @@ namespace KwasantTest.Fixtures
         {
             return new EventDO()
             {
-
+                CreatedByID = "1",
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddHours(1),
                 Description = "Description of  Event",
@@ -50,6 +51,7 @@ namespace KwasantTest.Fixtures
             {
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddHours(1),
+                CreatedByID = "1",
                 Priority = 1,
                 Sequence = 1,
                 IsAllDay = false,
@@ -57,7 +59,7 @@ namespace KwasantTest.Fixtures
                 Class = "Private",
                 Description = "This is a test event description.",
                 Location = "Silicon Valley",
-                Status = "Open",
+                StateID = EventState.Booking,
                 Summary = "This is a test event summary.",
                 Transparency = "Opaque" ,
                 Attendees = TestAttendeeList1().ToList(),
@@ -78,7 +80,7 @@ namespace KwasantTest.Fixtures
                 Class = "Private",
                 Description = "This is a test event description.",
                 Location = "Silicon Valley",
-                Status = "Open",
+                StateID = EventState.Booking,
                 Summary = "This is a test event summary.",
                 Transparency = "Opaque",
                 Attendees = TestAttendeeList1().ToList(),
@@ -90,7 +92,8 @@ namespace KwasantTest.Fixtures
         {
             return new EventDO()
             {
-                Status = "Instantiated",
+                CreatedByID = "1",
+                StateID = EventState.Booking,
                 Description = "This is my test invitation",
                 Summary = @"My test invitation",
                 Location = @"Some place!",

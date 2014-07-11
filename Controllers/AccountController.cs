@@ -5,11 +5,15 @@ using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
+using Google.Apis.Auth.OAuth2.Mvc;
+using KwasantCore.Managers.APIManager.Authorizers.Google;
+using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
 using KwasantWeb.ViewModels;
@@ -45,49 +49,43 @@ namespace KwasantWeb.Controllers
         }
     }
 
-    [System.Web.Http.Authorize]
+    [KwasantAuthorize]
     public class AccountController : Controller
-    {          
-        [System.Web.Http.AllowAnonymous]
+    {
+        [AllowAnonymous]
         public ActionResult Index(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
-        [System.Web.Http.AllowAnonymous]
+        [AllowAnonymous]
         public ActionResult Register()
         {
             return View();
         }
 
-        [System.Web.Http.AllowAnonymous]
+        [AllowAnonymous]
         public ActionResult RegistrationSuccessful()
         {
             return View();
         }
 
-        [System.Web.Http.AllowAnonymous]
-        public ActionResult MyAccount()
-        {
-            return View();
-        }
-
-        [System.Web.Http.AllowAnonymous]
+        [AllowAnonymous]
         public ActionResult LogOff()
         {
             new User().LogOff();
             return RedirectToAction("Index", "Account");
         }
 
-        [System.Web.Http.AllowAnonymous]
+        [AllowAnonymous]
         public ActionResult Confirm(RegisterViewModel model)
         {
             return View(model);
         }
 
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.AllowAnonymous]
+        [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public  ActionResult Register(RegisterViewModel model)
         {
@@ -118,8 +116,8 @@ namespace KwasantWeb.Controllers
             return View();
         }
 
-        [System.Web.Http.HttpPost]
-        [System.Web.Http.AllowAnonymous]
+        [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
         {
@@ -161,7 +159,7 @@ namespace KwasantWeb.Controllers
                                 if (isAdmin)
                                     return RedirectToAction("Index", "Admin");
 
-                                return Redirect("/");
+                                return RedirectToAction("MyAccount", "User");
                             }
                             break;
                     }
@@ -196,8 +194,8 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        [System.Web.Http.HttpGet]
-        [System.Web.Http.AllowAnonymous]
+        [HttpGet]
+        [AllowAnonymous]
         public ActionResult ConfirmEmail(string userId, string code)
         {
             string returnViewName = "RegistrationSuccessful";

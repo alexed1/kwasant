@@ -10,11 +10,21 @@ namespace Data.Entities
     {
         [Key]
         public int Id { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTimeOffset StartDate { get; set; }
+        public DateTimeOffset EndDate { get; set; }
         public string Location { get; set; }
 
-        public string Status { get; set; }
+        [NotMapped]
+        public string ActivityStatus
+        {
+            get { return String.Empty; }
+            set { throw new Exception("This field is reserved. You probably want to use 'State' instead."); }
+        }
+
+        [ForeignKey("State")]
+        public int StateID { get; set; }
+        public EventStatusDO State { get; set; }
+
         public string Transparency { get; set; }
         public string Class { get; set; }
         public string Description { get; set; }
