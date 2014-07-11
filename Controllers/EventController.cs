@@ -45,12 +45,12 @@ namespace KwasantWeb.Controllers
                 uow.EventRepository.Add(createdEvent);
                 uow.SaveChanges();
 
-            //put it in a view model to hand to the view
+                //put it in a view model to hand to the view
                 var curEventVM = Mapper.Map<EventDO, EventViewModel>(createdEvent);
 
-            //construct a Calendar view model for this Calendar View 
-            return View("~/Views/Event/Edit.cshtml", curEventVM);
-        }
+                //construct a Calendar view model for this Calendar View 
+                return View("~/Views/Event/Edit.cshtml", curEventVM);
+            }
         }
 
 

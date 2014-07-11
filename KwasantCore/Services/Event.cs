@@ -19,7 +19,13 @@ namespace KwasantCore.Services
 
             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
             curEventDO.CreatedBy = bookingRequestDO.User;
-            curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
+
+            curEventDO.BookingRequest = bookingRequestDO;
+
+            var attendee = new Attendee();
+            
+            attendee.DetectEmailsFromBookingRequest(curEventDO);
+
             curEventDO.StateID = EventState.Booking;
 
             return curEventDO;
