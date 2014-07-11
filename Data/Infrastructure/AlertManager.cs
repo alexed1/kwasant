@@ -80,7 +80,7 @@ namespace Data.Infrastructure
                 SecondaryCategory = "Intake",
                 Activity = "Received",
                 CustomerId = customerId,
-                CreateDate = DateTime.Now,
+                CreateDate = DateTimeOffset.Now,
                 ObjectId = emailId
             };
             SaveFact(curAction);
@@ -94,7 +94,7 @@ namespace Data.Infrastructure
                 SecondaryCategory = "Booking",
                 Activity = "Received",
                 CustomerId = customerId,
-                CreateDate = DateTime.Now,
+                CreateDate = DateTimeOffset.Now,
                 ObjectId = eventId
             };
             SaveFact(curAction);
@@ -108,7 +108,7 @@ namespace Data.Infrastructure
                 SecondaryCategory = "Outbound",
                 Activity = "Sent",
                 CustomerId = customerId,
-                CreateDate = DateTime.Now,
+                CreateDate = DateTimeOffset.Now,
                 ObjectId = emailId
             };
             SaveFact(curAction);

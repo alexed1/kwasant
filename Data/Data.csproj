@@ -107,7 +107,7 @@
     <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
-    <Compile Include="Entities\KactDO.cs" />
+    <Compile Include="Entities\FactDO.cs" />
     <Compile Include="Entities\Enumerations\QuestionStatus.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
@@ -280,6 +280,10 @@
     <Compile Include="Migrations\201407100603524_rename_Kacts_to_Facts.Designer.cs">
       <DependentUpon>201407100603524_rename_Kacts_to_Facts.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407110934086_change_datetime_to_offset_Fact.cs" />
+    <Compile Include="Migrations\201407110934086_change_datetime_to_offset_Fact.Designer.cs">
+      <DependentUpon>201407110934086_change_datetime_to_offset_Fact.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -445,6 +449,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407100603524_rename_Kacts_to_Facts.resx">
       <DependentUpon>201407100603524_rename_Kacts_to_Facts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407110934086_change_datetime_to_offset_Fact.resx">
+      <DependentUpon>201407110934086_change_datetime_to_offset_Fact.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

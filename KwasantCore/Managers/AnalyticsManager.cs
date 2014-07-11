@@ -30,7 +30,7 @@ namespace KwasantCore.Managers
                 SecondaryCategory = "BookingRequest",
                 Activity = "Created",
                 CustomerId = curBR.User.Id,
-                CreateDate = DateTime.Now,
+                CreateDate = DateTimeOffset.Now,
                 ObjectId = curBR.Id
             };
             curAction.Data = curAction.Name + ": ID= " + curAction.ObjectId;
