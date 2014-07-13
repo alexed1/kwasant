@@ -48,12 +48,12 @@ namespace KwasantTest.Controllers
             BookingRequestController controller = new BookingRequestController();
             JsonResult jsonResultActual = controller.ShowUnprocessed() as JsonResult;
 
-            string jsonResultExpected = _datatables.Pack((new BookingRequest()).GetUnprocessed(_uow.BookingRequestRepository));
+            string jsonResultExpected = _datatables.Pack((new BookingRequest()).GetUnprocessed(_uow));
             Assert.AreEqual(jsonResultExpected, jsonResultActual.Data.ToString());
 
             AddTestRequestData();
             JsonResult jsonResultActualProcessed = controller.ShowUnprocessed() as JsonResult;
-            string jsonResultExpectedProcessed = _datatables.Pack((new BookingRequest()).GetUnprocessed(_uow.BookingRequestRepository));
+            string jsonResultExpectedProcessed = _datatables.Pack((new BookingRequest()).GetUnprocessed(_uow));
             Assert.AreEqual(jsonResultExpectedProcessed, jsonResultActualProcessed.Data.ToString());
 
         }
@@ -79,8 +79,8 @@ namespace KwasantTest.Controllers
 
             BookingRequestController controller = new BookingRequestController();
             int id = _uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
-            string jsonResultExpected = _datatables.Pack((new BookingRequest()).GetBookingRequests(_uow.BookingRequestRepository, id));
-            JsonResult jsonResultActual = controller.GetBookingRequests(id) as JsonResult;
+            string jsonResultExpected = (new { draw = 1, recordsTotal = 1, recordsFiltered = 1, data = _datatables.Pack((new BookingRequest()).GetAllByUserId(_uow.BookingRequestRepository, 0, 10, _uow.BookingRequestRepository.GetAll().FirstOrDefault().User.Id)) }).ToString();
+            JsonResult jsonResultActual = controller.GetBookingRequests(id, 1, 0, 10) as JsonResult;
             Assert.AreEqual(jsonResultExpected, jsonResultActual.Data.ToString());
         }
 

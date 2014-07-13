@@ -20,17 +20,27 @@ namespace KwasantCore.Services
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
         }
 
-        public List<BookingRequestDO> GetBookingRequests(IBookingRequestRepository curBookingRequestRepository, int id)
+        public List<BookingRequestDO> GetAllByUserId(IBookingRequestRepository curBookingRequestRepository, int start, int length, string userid)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == (from requests in curBookingRequestRepository.GetAll()
-                                                                                 where requests.Id == id
-                                                                                 select requests.User.Id).FirstOrDefault()).Where(e => e.BRState == BRState.Unprocessed).ToList();
+            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Skip(start).Take(length).ToList();
         }
 
-        public object GetUnprocessed(IBookingRequestRepository curBookingRequestRepository)
+        public int GetBookingRequestsCount(IBookingRequestRepository curBookingRequestRepository, string userid)
+        {
+            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Count();
+        }
+
+        public string GetUserId(IBookingRequestRepository curBookingRequestRepository, int bookingRequestId)
+        {
+            return (from requests in curBookingRequestRepository.GetAll()
+                    where requests.Id == bookingRequestId
+                    select requests.User.Id).FirstOrDefault();
+        }
+
+        public object GetUnprocessed(IUnitOfWork uow)
         {
             return
-                curBookingRequestRepository.GetAll()
+                uow.BookingRequestRepository.GetAll()
                     .Where(e => e.BRState == BRState.Unprocessed)
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
@@ -40,7 +50,7 @@ namespace KwasantCore.Services
                                 id = e.Id,
                                 subject = e.Subject,
                                 fromAddress = e.From.Address,
-                                dateReceived = e.DateReceived.ToString("yy-MM-dd"),
+                                dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
                                 body =
                                     e.HTMLText.Trim().Length > 400
                                         ? e.HTMLText.Trim().Substring(0, 400)
