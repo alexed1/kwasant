@@ -25,6 +25,8 @@ namespace KwasantTest.Workflow
         private IUnitOfWork _uow;
         private string _testUserEmail;
         private string _testUserEmailPassword;
+        private string _archivePollEmail;
+        private string _archivePollPassword;
 
         [SetUp]
         public void Setup()
@@ -34,6 +36,9 @@ namespace KwasantTest.Workflow
 
             _testUserEmail = ConfigRepository.Get("OutboundUserName");
             _testUserEmailPassword = ConfigRepository.Get("OutboundUserPassword");
+
+            _archivePollEmail = ConfigRepository.Get("ArchivePollEmailAddress");
+            _archivePollPassword = ConfigRepository.Get("ArchivePollEmailPassword");
         }
 
 
@@ -106,7 +111,7 @@ namespace KwasantTest.Workflow
 
             if (request != null)
             {
-                var lines = request.HTMLText.Split(new[] {"\r\n"}, StringSplitOptions.None);
+                var lines = request.HTMLText.Split(new[] { "\r\n" }, StringSplitOptions.None);
                 var startString = lines[1].Remove(0, startPrefix.Length);
                 var endString = lines[2].Remove(0, endPrefix.Length);
                 var e = new Event();
@@ -134,8 +139,8 @@ namespace KwasantTest.Workflow
                         if (icsView != null)
                         {
                             var cal = iCalendar.LoadFromStream(icsView.ContentStream).FirstOrDefault();
-                            if (cal != null && cal.Events.Count > 0 && 
-                                cal.Events[0].Start.Value == start && 
+                            if (cal != null && cal.Events.Count > 0 &&
+                                cal.Events[0].Start.Value == start &&
                                 cal.Events[0].End.Value == end)
                             {
                                 inviteMessageId = uid;
@@ -153,7 +158,7 @@ namespace KwasantTest.Workflow
                 if (inviteMessage != null)
                 {
                     client.DeleteMessage(inviteMessageId);
-            }
+                }
             }
             totalOperationDuration.Stop();
 
@@ -162,6 +167,72 @@ namespace KwasantTest.Workflow
             Assert.Less(emailToRequestDuration.Elapsed, emailToRequestTimeout, "Email to BookingRequest conversion timed out.");
             Assert.Less(requestToEmailDuration.Elapsed, requestToEmailTimeout, "BookingRequest to Invitation conversion timed out.");
             Assert.Less(totalOperationDuration.Elapsed, totalOperationTimeout, "Workflow timed out.");
+        }
+
+
+        [Test]
+        [Category("Workflow")]
+        public void Workflow_CanAddBcctoOutbound()
+        {
+            var requestToEmailTimeout = TimeSpan.FromSeconds(60);
+            Stopwatch requestToEmailDuration = new Stopwatch();
+
+            var subject = string.Format("Bcc Test {0}", Guid.NewGuid());
+            var now = DateTimeOffset.Now;
+            // iCal truncates time up to seconds so we need to truncate as well to be able to compare time
+            var start = new DateTimeOffset(now.Ticks / TimeSpan.TicksPerSecond * TimeSpan.TicksPerSecond, now.Offset).AddDays(1);
+            var end = start.AddHours(1);
+            const string startPrefix = "Start:";
+            const string endPrefix = "End:";
+            var body = string.Format("Bcc Test details:\r\n{0}{1}\r\n{2}{3}", startPrefix, start, endPrefix, end);
+
+            var emailDO = new EmailDO()
+            {
+                From = Email.GenerateEmailAddress(_uow, new MailAddress(_testUserEmail)),
+                Recipients = new List<RecipientDO>()
+                {
+                    new RecipientDO()
+                    {
+                        EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintegration@gmail.com")),
+                        Type = EmailParticipantType.TO
+                    }
+                },
+                Subject = subject,
+                PlainText = body,
+                HTMLText = body,
+                EmailStatus = EmailStatus.QUEUED
+            };
+
+            _uow.EmailRepository.Add(emailDO);
+
+            var envelope = new EnvelopeDO()
+            {
+                Email = emailDO,
+                Handler = EnvelopeDO.GmailHander
+            };
+            _uow.EnvelopeRepository.Add(envelope);
+
+            OutboundEmail outboundDaemon = new OutboundEmail();
+            DaemonTests.RunDaemonOnce(outboundDaemon);
+            ImapClient client = new ImapClient("imap.gmail.com", 993, _archivePollEmail, _archivePollPassword, AuthMethod.Login, true);
+            _uow.SaveChanges();
+
+            requestToEmailDuration.Start();
+            int mailcount = 0;
+            do
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+                var requestMessages = client.Search(SearchCondition.Subject(subject)).ToList();
+                if (requestMessages.Count() > 0)
+                {
+                    client.DeleteMessages(requestMessages);
+                    mailcount = requestMessages.Count();
+                    break;
+                }
+            } while (requestToEmailDuration.Elapsed < requestToEmailTimeout);
+            requestToEmailDuration.Stop();
+
+            Assert.AreEqual(1, mailcount);
         }
     }
 }
