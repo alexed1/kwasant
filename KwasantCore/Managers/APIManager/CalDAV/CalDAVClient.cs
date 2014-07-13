@@ -13,53 +13,25 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManager.Authorizers.Google;
+using KwasantCore.Managers.APIManager.CalDAV.Google;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 
 namespace KwasantCore.Managers.APIManager.CalDAV
 {
-    class GoogleCalDAVClient : ICalDAVClient
+    class CalDAVClient : ICalDAVClient
     {
-        private readonly GoogleCalendarAuthorizer _googleCalendarAuthorizer;
+        private readonly ICalDAVEndPoint _endPoint;
+        private readonly IHttpChannel _channel;
 
-        public GoogleCalDAVClient(string userId)
+        public CalDAVClient(ICalDAVEndPoint endPoint, IHttpChannel channel)
         {
-            _googleCalendarAuthorizer = new GoogleCalendarAuthorizer(userId);
-        }
-
-        private const string BaseUrl = "https://apidata.googleusercontent.com/caldav/v2";
-        private const string CalendarBaseUrlFormat = BaseUrl + "/{0}";
-        private const string EventsUrlFormat = CalendarBaseUrlFormat + "/events";
-        private const string EventUrlFormat = EventsUrlFormat + "/{1}";
-
-        private async Task<HttpResponseMessage> SendRequestAsync(Func<HttpRequestMessage> requestFactoryMethod)
-        {
-            HttpResponseMessage response;
-            using (HttpClient client = new HttpClient())
-            {
-                do
-                {
-                    using (var request = requestFactoryMethod())
-                    {
-                        var accessToken = await _googleCalendarAuthorizer.GetAccessTokenAsync(CancellationToken.None);
-                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                        response = await client.SendAsync(request);
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            if (response.StatusCode == HttpStatusCode.Unauthorized)
-                            {
-                                await _googleCalendarAuthorizer.RefreshTokenAsync(CancellationToken.None);
-                                response.Dispose();
-                            }
-                            else
-                            {
-                                response.EnsureSuccessStatusCode();
-                            }
-                        }
-                    }
-                } while (!response.IsSuccessStatusCode);
-            }
-            return response;
+            if (endPoint == null)
+                throw new ArgumentNullException("endPoint");
+            if (channel == null)
+                throw new ArgumentNullException("channel");
+            _endPoint = endPoint;
+            _channel = channel;
         }
 
         private const string EventsQueryFormat =
@@ -82,18 +54,21 @@ namespace KwasantCore.Managers.APIManager.CalDAV
 
         public async Task<IEnumerable<iCalendar>> GetEventsAsync(ICalendar calendarInfo, DateTimeOffset @from, DateTimeOffset to)
         {
+            if (calendarInfo == null)
+                throw new ArgumentNullException("calendarInfo");
+
             var calendarId = calendarInfo.Owner.EmailAddress.Address;
             MultiStatus multiStatus;
 
             Func<HttpRequestMessage> requestFactoryMethod = () =>
             {
-                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("REPORT"), string.Format(EventsUrlFormat, calendarId));
+                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("REPORT"), string.Format(_endPoint.EventsUrlFormat, calendarId));
                 request.Headers.Add("Depth", "1");
                 request.Content = new StringContent(string.Format(EventsQueryFormat, @from.UtcDateTime, to.UtcDateTime), Encoding.UTF8, "application/xml");
                 return request;
             };
 
-            using (var response = await SendRequestAsync(requestFactoryMethod))
+            using (var response = await _channel.SendRequestAsync(requestFactoryMethod))
             {
                 using (var xmlStream = await response.Content.ReadAsStreamAsync())
                 {
@@ -117,12 +92,19 @@ namespace KwasantCore.Managers.APIManager.CalDAV
 
         public async Task CreateEventAsync(ICalendar calendarInfo, iCalendar calendarEvent)
         {
+            if (calendarInfo == null)
+                throw new ArgumentNullException("calendarInfo");
+            if (calendarEvent == null)
+                throw new ArgumentNullException("calendarEvent");
+            if (calendarEvent.Events == null || calendarEvent.Events.Count == 0)
+                throw new ArgumentException("iCalendar object must contain at least one event.", "calendarEvent");
+
             var calendarId = calendarInfo.Owner.EmailAddress.Address;
             var eventId = calendarEvent.Events.First().UID;
 
             Func<HttpRequestMessage> requestFactoryMethod = () =>
             {
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, string.Format(EventUrlFormat, calendarId, eventId));
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, string.Format(_endPoint.EventUrlFormat, calendarId, eventId));
                 request.Headers.Add("If-None-Match", "*");
                 iCalendarSerializer serializer = new iCalendarSerializer(calendarEvent);
                 string calendarString = serializer.Serialize(calendarEvent);
@@ -130,7 +112,7 @@ namespace KwasantCore.Managers.APIManager.CalDAV
                 return request;
             };
 
-            using (var response = await SendRequestAsync(requestFactoryMethod))
+            using (var response = await _channel.SendRequestAsync(requestFactoryMethod))
             {
             }
         }

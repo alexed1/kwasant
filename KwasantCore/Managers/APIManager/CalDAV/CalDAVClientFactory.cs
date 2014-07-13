@@ -1,4 +1,6 @@
+using System;
 using Data.Interfaces;
+using KwasantCore.Managers.APIManager.CalDAV.Google;
 
 namespace KwasantCore.Managers.APIManager.CalDAV
 {
@@ -6,13 +8,23 @@ namespace KwasantCore.Managers.APIManager.CalDAV
     {
         #region Implementation of ICalDAVClientFactory
 
-        public ICalDAVClient Create(IUser user)
+        public ICalDAVClient Create(IUser user, string provider)
         {
-            if (user.GrantedAccessToGoogleCalendar)
+            if (user == null)
+                throw new ArgumentNullException("user");
+
+            GoogleCalDAVEndPoint endPoint;
+            GoogleOAuthHttpChannel channel;
+            switch (provider)
             {
-                return new GoogleCalDAVClient(user.Id);
+                case "Google" :
+                    endPoint = new GoogleCalDAVEndPoint();
+                    channel = new GoogleOAuthHttpChannel(user.Id);
+                    break;
+                default :
+                    throw new ArgumentOutOfRangeException("provider");
             }
-            return null;
+            return new CalDAVClient(endPoint, channel);
         }
 
         #endregion

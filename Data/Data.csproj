@@ -286,6 +286,14 @@
     <Compile Include="Migrations\201407101853377_AddEventCreateType.Designer.cs">
       <DependentUpon>201407101853377_AddEventCreateType.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407111624232_AddCalendarLastSynchronized.cs" />
+    <Compile Include="Migrations\201407111624232_AddCalendarLastSynchronized.Designer.cs">
+      <DependentUpon>201407111624232_AddCalendarLastSynchronized.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407112156274_ChangeAttendeesPK.cs" />
+    <Compile Include="Migrations\201407112156274_ChangeAttendeesPK.Designer.cs">
+      <DependentUpon>201407112156274_ChangeAttendeesPK.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -457,6 +465,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407101853377_AddEventCreateType.resx">
       <DependentUpon>201407101853377_AddEventCreateType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407111624232_AddCalendarLastSynchronized.resx">
+      <DependentUpon>201407111624232_AddCalendarLastSynchronized.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407112156274_ChangeAttendeesPK.resx">
+      <DependentUpon>201407112156274_ChangeAttendeesPK.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using Data.Entities;
 using System.ComponentModel.DataAnnotations;
 
@@ -11,7 +13,10 @@ namespace Data.Interfaces
 
         String Name { get; set; }
 
-        UserDO Owner { get; set; }        
-        
+        UserDO Owner { get; set; }
+
+        IList<EventDO> Events { get; set; }
+
+        DateTimeOffset LastSynchronized { get; set; }
     }
 }

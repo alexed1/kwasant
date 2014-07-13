@@ -105,6 +105,7 @@
     <Reference Include="System.Net.Http.Extensions">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Net.Http.Primitives">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
@@ -145,11 +146,17 @@
     <Compile Include="Managers\APIManager\Authorizers\Google\AppFlowMetadata.cs" />
     <Compile Include="Managers\APIManager\Authorizers\Google\AuthorizationCodeFlow.cs" />
     <Compile Include="Managers\APIManager\Authorizers\Google\GoogleCalendarAuthorizer.cs" />
+    <Compile Include="Managers\APIManager\Authorizers\IOAuthAuthorizer.cs" />
     <Compile Include="Managers\APIManager\CalDAV\CalDAVModels.cs" />
     <Compile Include="Managers\APIManager\CalDAV\CalDAVClientFactory.cs" />
-    <Compile Include="Managers\APIManager\CalDAV\GoogleCalDAVClient.cs" />
+    <Compile Include="Managers\APIManager\CalDAV\CalDAVClient.cs" />
+    <Compile Include="Managers\APIManager\CalDAV\Google\GoogleOAuthHttpChannel.cs" />
+    <Compile Include="Managers\APIManager\CalDAV\Google\GoogleCalDAVEndPoint.cs" />
     <Compile Include="Managers\APIManager\CalDAV\ICalDAVClient.cs" />
     <Compile Include="Managers\APIManager\CalDAV\ICalDAVClientFactory.cs" />
+    <Compile Include="Managers\APIManager\CalDAV\ICalDAVEndPoint.cs" />
+    <Compile Include="Managers\APIManager\CalDAV\IHttpChannel.cs" />
+    <Compile Include="Managers\APIManager\CalDAV\OAuthHttpChannelBase.cs" />
     <Compile Include="Managers\APIManager\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />
     <Compile Include="Helper\UsersAdminData.cs" />

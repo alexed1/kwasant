@@ -130,10 +130,11 @@ namespace KwasantCore.Services
                 Sequence = remoteEvent.Sequence,
                 Summary = remoteEvent.Summary,
                 Transparency = remoteEvent.Transparency.ToString(),
+                DateCreated = remoteEvent.Created.UTC,
                 Attendees = remoteEvent.Attendees
                     .Select(a => new AttendeeDO()
                     {
-                        EmailAddress = new EmailAddressDO(a.Value.Authority),
+                        EmailAddress = new EmailAddressDO(a.Value.OriginalString.Remove(0, a.Value.Scheme.Length + 1)),
                         Name = a.CommonName
                     })
                     .ToList(),

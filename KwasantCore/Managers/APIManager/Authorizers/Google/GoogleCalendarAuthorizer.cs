@@ -9,7 +9,7 @@ using Utilities;
 
 namespace KwasantCore.Managers.APIManager.Authorizers.Google
 {
-    public class GoogleCalendarAuthorizer
+    public class GoogleCalendarAuthorizer : IOAuthAuthorizer
     {
         class AuthorizationCodeFlow : GoogleAuthorizationCodeFlow
         {

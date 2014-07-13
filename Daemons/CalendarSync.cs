@@ -13,8 +13,6 @@ namespace Daemons
 {
     class CalendarSync : Daemon
     {
-        private readonly Dictionary<int, DateTimeOffset> _synchronizationTime = new Dictionary<int, DateTimeOffset>(); 
-
         #region Overrides of Daemon
 
         public override int WaitTimeBetweenExecution
@@ -28,18 +26,13 @@ namespace Daemons
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    foreach (var curCalendar in uow.CalendarRepository.GetAll())
+                    foreach (var curCalendar in uow.CalendarRepository.GetAll().Where(c => c.Owner != null))
                     {
-                        DateTimeOffset lastSynchronized, synchronizationTime;
-                        if (!_synchronizationTime.TryGetValue(curCalendar.Id, out lastSynchronized))
-                            lastSynchronized = DateTimeOffset.MinValue;
-                        synchronizationTime = DateTimeOffset.UtcNow;
                         try
                         {
                             SyncManager syncManager = new SyncManager(new CalDAVClientFactory());
-                            await syncManager.SyncNowAsync(uow, curCalendar, lastSynchronized);
+                            await syncManager.SyncNowAsync(uow, curCalendar);
                             uow.SaveChanges();
-                            _synchronizationTime[curCalendar.Id] = synchronizationTime;
                         }
                         catch (Exception ex)
                         {
