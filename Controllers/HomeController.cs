@@ -88,6 +88,7 @@ namespace KwasantWeb.Controllers
                     emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
                     EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
                     email.Send(emailDO);
+                    uow.SaveChanges();
                 }
                 result = "success";
             }

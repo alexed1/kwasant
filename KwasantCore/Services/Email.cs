@@ -60,8 +60,6 @@ namespace KwasantCore.Services
             var envelope = _uow.EnvelopeRepository.CreateMandrillEnvelope(message, templateName, mergeFields);
             message.EmailStatus = EmailStatus.QUEUED;
             _uow.EnvelopeRepository.Add(envelope);
-            _uow.SaveChanges();
-            MandrillPackager.PostMessageSendTemplate(templateName, (EmailDO)message, mergeFields);
             return envelope;
         }
 
@@ -70,7 +68,6 @@ namespace KwasantCore.Services
             var envelope = _uow.EnvelopeRepository.CreateGmailEnvelope(_curEmailDO);
             _curEmailDO.EmailStatus = EmailStatus.QUEUED;
             _uow.EnvelopeRepository.Add(envelope);
-            _uow.SaveChanges();
             return envelope;
         }
 

@@ -112,15 +112,26 @@ namespace Data.Infrastructure
                 entity.Entity.BeforeSave();
             }
 
+            foreach (DbEntityEntry<BookingRequestDO> newBookingRequest in ChangeTracker.Entries<BookingRequestDO>())
+            {
+                AlertManager.BookingRequestCreated(this.UnitOfWork, newBookingRequest.Entity);
+            }
+
+            // do not send to Admins
+            foreach (DbEntityEntry<UserDO> newUser in ChangeTracker.Entries<UserDO>()
+                .Where(u => u.State.HasFlag(EntityState.Added)))
+            {
+                if (newUser.Entity.Roles.All(r => UnitOfWork.AspNetRolesRepository.GetByKey(r.RoleId).Name != "Admin"))
+                {
+                    AlertManager.CustomerCreated(this.UnitOfWork, newUser.Entity);
+                }
+            }
+
             var saveResult = base.SaveChanges();
+
             foreach (var entity in ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged))
             {
                 entity.State = EntityState.Unchanged;
-            }
-
-            foreach (DbEntityEntry<BookingRequestDO> newBookingRequest in ChangeTracker.Entries<BookingRequestDO>())
-            {
-                AlertManager.BookingRequestCreated(newBookingRequest.Entity);
             }
 
             return saveResult;

@@ -115,6 +115,7 @@ namespace KwasantTest.Workflow
                 edo.Description = "test event description";
                 _uow.EventRepository.Add(edo);
                 e.Process(_uow, edo);
+                _uow.SaveChanges();
 
                 requestToEmailDuration.Start();
 
