@@ -36,6 +36,7 @@ namespace Data.Migrations
             DropForeignKey("dbo.Events", "CreateTypeID", "dbo.EventCreateTypes");
             DropIndex("dbo.Events", new[] { "CreateTypeID" });
             DropIndex("dbo.Events", new[] { "BookingRequestID" });
+            Sql(@"DELETE dbo.Events WHERE BookingRequestID IS NULL");
             AlterColumn("dbo.Events", "BookingRequestID", c => c.Int(nullable: false));
             DropColumn("dbo.Events", "CreateTypeID");
             DropTable("dbo.EventCreateTypes");
