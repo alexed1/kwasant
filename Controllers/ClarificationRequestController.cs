@@ -56,6 +56,7 @@ namespace KwasantWeb.Controllers
                     var responseUrlFormat = string.Concat(Url.Action("", RouteConfig.ShowClarificationResponseUrl, new { }, this.Request.Url.Scheme), "?{0}");
                     var responseUrl = cr.GenerateResponseURL(curClarificationRequestDO, responseUrlFormat);
                     cr.Send(uow, curClarificationRequestDO, responseUrl); 
+                    uow.SaveChanges();
                     return Json(new { success = true });
                 }
                 catch (EntityNotFoundException ex)

@@ -59,10 +59,11 @@ namespace KwasantTest.Services
             // EXECUTE
             var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO);
             _cr.Send(_uow, curClarificationRequestDO, responseUrl);
-            var curCrEnvelopeDO =
-                _uow.EnvelopeRepository.GetQuery().FirstOrDefault(e => e.Email == curClarificationRequestDO);
+            _uow.SaveChanges();
 
             // VERIFY
+            var curCrEnvelopeDO =
+                _uow.EnvelopeRepository.GetQuery().FirstOrDefault(e => e.Email == curClarificationRequestDO);
             Assert.NotNull(curCrEnvelopeDO, "Envelope was not created.");
             Assert.AreEqual(curCrEnvelopeDO.TemplateName, "clarification_request_v1", "Invalid template name.");
             Assert.AreEqual(curCrEnvelopeDO.MergeData["RESP_URL"], responseUrl, "Invalid response URL.");
@@ -109,6 +110,7 @@ namespace KwasantTest.Services
                              Text = "question"
                          });
             _cr.Send(_uow, curClarificationRequestDO, responseUrl);
+            _uow.SaveChanges();
 
             var submittedClarificationRequestDO = curClarificationRequestDO;
             submittedClarificationRequestDO.Questions[0].Status = QuestionStatus.Answered;

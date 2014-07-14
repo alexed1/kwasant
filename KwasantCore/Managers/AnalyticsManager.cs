@@ -21,7 +21,7 @@ namespace KwasantCore.Managers
               AlertManager.AlertBookingRequestCreated += ProcessBookingRequestCreated;
         }
 
-        public void ProcessBookingRequestCreated(BookingRequestDO curBR)
+        public void ProcessBookingRequestCreated(IUnitOfWork uow, BookingRequestDO curBR)
         {
             KactDO curAction = new KactDO()
             {
@@ -36,10 +36,7 @@ namespace KwasantCore.Managers
             curAction.Data = curAction.Name + ": ID= " + curAction.ObjectId;
             if (CloudConfigurationManager.GetSetting("LogLevel") == "Verbose")
                 Logger.GetLogger().Info(curAction.Data);
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
             uow.KactRepository.Add(curAction);
-                uow.SaveChanges();
-
         }
     }
 }
