@@ -17,13 +17,19 @@ namespace KwasantCore.Services
             {
                 case "usage":
                     return GenerateUsageReport(uow, dateRange);
-                //case "incident":
+                case "incident":
+                    return GenerateIncidentReport(uow, dateRange);
             }
             return this;
         }
         private List<FactDO> GenerateUsageReport(IUnitOfWork uow, DateRange dateRange)
         {
             return uow.FactRepository.GetAll().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime).ToList();
+        }
+
+        private List<IncidentDO> GenerateIncidentReport(IUnitOfWork uow, DateRange dateRange)
+        {
+            return uow.IncidentRepository.GetAll().Where(e => e.CreateTime > dateRange.StartTime && e.CreateTime < dateRange.EndTime).ToList();
         }
     }
 }

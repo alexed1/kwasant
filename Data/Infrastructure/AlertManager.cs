@@ -25,6 +25,9 @@ namespace Data.Infrastructure
         public delegate void EmailSentHandler(int emailId, string customerId);
         public static event EmailSentHandler AlertEmailSent;
 
+        public delegate void IncidentCreatedHandler(string dateReceived, string errorMessage);
+        public static event IncidentCreatedHandler AlertEmailProcessingFailure;
+
         #region Method
         
         /// <summary>
@@ -56,6 +59,12 @@ namespace Data.Infrastructure
         {
             if (AlertEmailSent != null)
                 AlertEmailSent(emailId, customerId);
+        }
+
+        public static void EmailProcessingFailure(string dateReceived, string errorMessage)
+        {
+            if (AlertEmailProcessingFailure != null)
+                AlertEmailProcessingFailure(dateReceived, errorMessage);
         }
    
         #endregion

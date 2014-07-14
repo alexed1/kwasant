@@ -226,6 +226,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private IncidentRepository _incidentRepository;
+
+        public IncidentRepository IncidentRepository
+        {
+            get
+            {
+                return _incidentRepository ?? (_incidentRepository = new IncidentRepository(this));
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();

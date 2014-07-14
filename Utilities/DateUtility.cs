@@ -13,7 +13,7 @@ namespace Utilities
             DateRange dateRange = new DateRange();
             switch (queryPeriod.ToLower())
             {
-                case "lastminutes":
+                case "last5minutes":
                     dateRange.StartTime = DateTimeOffset.UtcNow.AddMinutes(-5);
                     break;
                 case "lasthour":

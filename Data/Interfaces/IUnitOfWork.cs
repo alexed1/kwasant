@@ -27,6 +27,7 @@ namespace Data.Interfaces
         UserRepository UserRepository { get; }
         AspNetUserRolesRepository AspNetUserRolesRepository { get; }
         AspNetRolesRepository AspNetRolesRepository { get; }
+        IncidentRepository IncidentRepository { get; } 
 
         FactRepository FactRepository { get; }
 

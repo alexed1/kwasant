@@ -174,6 +174,9 @@ namespace KwasantTest.Workflow
         [Category("Workflow")]
         public void Workflow_CanAddBcctoOutbound()
         {
+            var requestToEmailTimeout = TimeSpan.FromSeconds(60);
+            Stopwatch requestToEmailDuration = new Stopwatch();
+
             var subject = string.Format("Bcc Test {0}", Guid.NewGuid());
             var now = DateTimeOffset.Now;
             // iCal truncates time up to seconds so we need to truncate as well to be able to compare time
@@ -222,10 +225,24 @@ namespace KwasantTest.Workflow
             DaemonTests.RunDaemonOnce(outboundDaemon);
             ImapClient client = new ImapClient("imap.gmail.com", 993, _archivePollEmail, _archivePollPassword, AuthMethod.Login, true);
             _uow.SaveChanges();
-            
-            var requestMessages = client.Search(SearchCondition.Subject(subject)).ToList();
-            client.DeleteMessages(requestMessages);
-            Assert.AreEqual(1, requestMessages.Count());
+
+            requestToEmailDuration.Start();
+
+            int mailcount = 0;
+            do
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+                var requestMessages = client.Search(SearchCondition.Subject(subject)).ToList();
+                if (requestMessages.Count() > 0)
+                {
+                    client.DeleteMessages(requestMessages);
+                    mailcount = requestMessages.Count();
+                    break;
+                }
+            } while (requestToEmailDuration.Elapsed < requestToEmailTimeout);
+            requestToEmailDuration.Stop();
+
+            Assert.AreEqual(1, mailcount);
         }
     }
 }

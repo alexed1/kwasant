@@ -104,6 +104,7 @@
     <Compile Include="Entities\BookingRequestStatusDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\EventStatusDO.cs" />
+    <Compile Include="Entities\IncidentDO.cs" />
     <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingType.cs" />
+    <Compile Include="Infrastructure\IncidentReporter.cs" />
     <Compile Include="Infrastructure\JSONDataStore.cs" />
     <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
@@ -284,6 +286,10 @@
     <Compile Include="Migrations\201407110934086_change_datetime_to_offset_Fact.Designer.cs">
       <DependentUpon>201407110934086_change_datetime_to_offset_Fact.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407141107371_AddIncidentDO.cs" />
+    <Compile Include="Migrations\201407141107371_AddIncidentDO.Designer.cs">
+      <DependentUpon>201407141107371_AddIncidentDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -293,7 +299,8 @@
     <Compile Include="Repositories\CalendarRepository.cs" />
     <Compile Include="Repositories\BookingRequestStatusRepository.cs" />
     <Compile Include="Repositories\EventStatusRepository.cs" />
-    <Compile Include="Repositories\KactRepository.cs" />
+    <Compile Include="Repositories\IncidentRepository.cs" />
+    <Compile Include="Repositories\FactRepository.cs" />
     <Compile Include="Repositories\ClarificationRequestRepository.cs" />
     <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
     <Compile Include="Repositories\CommunicationRepository.cs" />
@@ -452,6 +459,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407110934086_change_datetime_to_offset_Fact.resx">
       <DependentUpon>201407110934086_change_datetime_to_offset_Fact.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407141107371_AddIncidentDO.resx">
+      <DependentUpon>201407141107371_AddIncidentDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
