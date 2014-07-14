@@ -218,6 +218,7 @@ namespace KwasantTest.Workflow
             _uow.SaveChanges();
 
             requestToEmailDuration.Start();
+
             int mailcount = 0;
             do
             {
