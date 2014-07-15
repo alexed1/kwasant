@@ -54,8 +54,14 @@ namespace KwasantWeb
             curCommManager.SubscribeToAlerts();
 
             
-            AnalyticsManager curAnalyticsManager = new AnalyticsManager();
-            curAnalyticsManager.SubscribeToAlerts();
+            //AnalyticsManager curAnalyticsManager = new AnalyticsManager();
+            //curAnalyticsManager.SubscribeToAlerts();
+
+            AlertReporter curReporter = new AlertReporter();
+            curReporter.SubscribeToAlerts();
+
+            IncidentReporter incidentReporter = new IncidentReporter();
+            incidentReporter.SubscribeToAlerts();
 
 //            ModelBinders.Binders.Add(typeof(EventViewModel), new KwasantDateBinder());
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());

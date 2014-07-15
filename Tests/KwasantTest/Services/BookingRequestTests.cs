@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Mail;
 using Data.Constants;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers;
@@ -35,14 +36,14 @@ namespace KwasantTest.Services
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+            (new BookingRequest()).Process(_uow, bookingRequest);
         }
 
         [Test]
         [Category("BRM")]
         public void NewCustomerCreated()
         {
-            AnalyticsManager curAnalyticsManager = new AnalyticsManager();
+            AlertReporter curAnalyticsManager = new AlertReporter();
             curAnalyticsManager.SubscribeToAlerts();
 
             List<UserDO> customersNow = _uow.UserRepository.GetAll().ToList();
@@ -54,7 +55,7 @@ namespace KwasantTest.Services
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+            (new BookingRequest()).Process(_uow, bookingRequest);
 
             _uow.SaveChanges();
 
@@ -65,7 +66,7 @@ namespace KwasantTest.Services
             Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
             //test analytics system
 
-            KactDO curAction = _uow.KactRepository.FindOne(k => k.ObjectId == bookingRequest.Id);
+            FactDO curAction = _uow.FactRepository.FindOne(k => k.ObjectId == bookingRequest.Id);
             Assert.NotNull(curAction);
         }
 
@@ -89,7 +90,7 @@ namespace KwasantTest.Services
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+            (new BookingRequest()).Process(_uow, bookingRequest);
 
             customersNow = _uow.UserRepository.GetAll().ToList();
             Assert.AreEqual(1, customersNow.Count);
@@ -109,7 +110,7 @@ namespace KwasantTest.Services
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+            (new BookingRequest()).Process(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
@@ -128,7 +129,7 @@ namespace KwasantTest.Services
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+            (new BookingRequest()).Process(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
@@ -147,7 +148,7 @@ namespace KwasantTest.Services
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+            (new BookingRequest()).Process(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
@@ -166,7 +167,7 @@ namespace KwasantTest.Services
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+            (new BookingRequest()).Process(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
@@ -185,7 +186,7 @@ namespace KwasantTest.Services
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+            (new BookingRequest()).Process(_uow, bookingRequest);
 
             bookingRequest = bookingRequestRepo.GetAll().ToList().First();
             Assert.AreEqual(1, bookingRequest.Instructions.Count);
@@ -210,7 +211,7 @@ namespace KwasantTest.Services
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).ProcessBookingRequest(_uow, bookingRequest);
+            (new BookingRequest()).Process(_uow, bookingRequest);
             bookingRequest.BRState = BRState.Invalid;
             _uow.SaveChanges();
 

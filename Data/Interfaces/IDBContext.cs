@@ -8,6 +8,8 @@ namespace Data.Interfaces
 {
     public interface IDBContext : IDisposable
     {
+        IUnitOfWork UnitOfWork { get; set; }
+
         int SaveChanges();
 
         List<KwasantDbContext.PropertyChangeInformation> GetEntityModifications<T>(T entity)

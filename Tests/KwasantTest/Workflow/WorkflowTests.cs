@@ -120,6 +120,7 @@ namespace KwasantTest.Workflow
                 edo.Description = "test event description";
                 _uow.EventRepository.Add(edo);
                 e.Process(_uow, edo);
+                _uow.SaveChanges();
 
                 requestToEmailDuration.Start();
 
@@ -212,12 +213,22 @@ namespace KwasantTest.Workflow
             };
             _uow.EnvelopeRepository.Add(envelope);
 
+            //adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
+            var role = new Role();
+            role.Add(_uow, new KwasantTest.Fixtures.FixtureData().TestRole());
+            var u = new UserDO();
+            var user = new User();
+            UserDO currUserDO = new UserDO();
+            currUserDO.EmailAddress = emailDO.From;
+            _uow.UserRepository.Add(currUserDO);
+
             OutboundEmail outboundDaemon = new OutboundEmail();
             DaemonTests.RunDaemonOnce(outboundDaemon);
             ImapClient client = new ImapClient("imap.gmail.com", 993, _archivePollEmail, _archivePollPassword, AuthMethod.Login, true);
             _uow.SaveChanges();
 
             requestToEmailDuration.Start();
+
             int mailcount = 0;
             do
             {

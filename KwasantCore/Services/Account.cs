@@ -43,21 +43,28 @@ namespace KwasantCore.Services
                             curRegStatus = RegistrationStatus.UserMustLogIn;
                         }
                     }
+                    else
+                    {
+                        var userDO = Register(uow, email, password, "Customer");
+                        curRegStatus = RegistrationStatus.Successful;
+                    }
                 }
                 else
                 {
-                    var user = new User();
-                    var userDO = user.Register(uow, email, password, "Customer");
+                    var userDO = Register(uow, email, password, "Customer");
                     curRegStatus = RegistrationStatus.Successful;
-
-                    if (curRegStatus == RegistrationStatus.Successful)
-                        AlertManager.CustomerCreated(userDO);
                 }
 
                 uow.SaveChanges();
 
                 return curRegStatus;
             }
+        }
+
+        private UserDO Register(IUnitOfWork uow, string email, string password, string role)
+        {
+            var user = new User();
+            return user.Register(uow, email, password, role);
         }
 
         public async Task<LoginStatus> Login(string username, string password, bool isPersistent)

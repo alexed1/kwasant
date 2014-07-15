@@ -39,7 +39,7 @@ namespace Data.Infrastructure.StructureMap
             AssertConstraints();
             
             foreach (var newBookingRequestDO in addedRows.OfType<BookingRequestDO>())
-                AlertManager.BookingRequestCreated(newBookingRequestDO);
+                AlertManager.BookingRequestCreated(this.UnitOfWork, newBookingRequestDO);
             
             return 1;
         }

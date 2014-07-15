@@ -45,6 +45,7 @@ namespace KwasantTest.Services
             //EXECUTE
             Email curEmail = new Email(_uow, _curEmailDO);
             curEmail.Send();
+            _uow.SaveChanges();
 
             //VERIFY
             var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Id == _curEmailDO.Id);
@@ -86,7 +87,7 @@ namespace KwasantTest.Services
             var email = new Email(_uow);
 
             // VERIFY
-            Assert.Throws<ValidationException>(() => email.Send(curEmailDO), "Email should fail to be sent as it is invalid.");
+            Assert.Throws<ValidationException>(() => { email.Send(curEmailDO); _uow.SaveChanges(); }, "Email should fail to be sent as it is invalid.");
         }
 
         [Test]

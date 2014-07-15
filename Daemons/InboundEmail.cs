@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
 using S22.Imap;
-
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
@@ -77,6 +77,8 @@ namespace Daemons
 
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
             IEnumerable<uint> uids = client.Search(SearchCondition.Unseen()).ToList();
+            //IEnumerable<uint> uids = client.Search(SearchCondition.SentSince(DateTime.Now.AddMinutes(-30))).ToList();
+
 
             string logString;
 
@@ -98,17 +100,15 @@ namespace Daemons
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
                     //assign the owner of the booking request to be the owner of the From address
-                    bookingRequest.User = unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address); 
-                    (new BookingRequest()).ProcessBookingRequest(unitOfWork, bookingRequest);
+                    bookingRequest.User = unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address);
+                   (new BookingRequest()).Process(unitOfWork, bookingRequest);
                     unitOfWork.SaveChanges();
+                    AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
                 }
                 catch (Exception e)
                 {
-                    Logger.GetLogger().Error("Failed to process inbound message.", e);
-                    client.RemoveMessageFlags(uid, null, MessageFlag.Seen);
-                    Logger.GetLogger().Info("Message marked as unread.");
-
-                    throw e;
+                    AlertManager.EmailProcessingFailure(message.Headers["Date"], e.Message);
+                    Logger.GetLogger().Error("EmailProcessingFailure Reported. ObjectID =" + uid);
                 }
             }
 

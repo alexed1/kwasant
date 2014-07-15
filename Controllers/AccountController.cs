@@ -45,6 +45,7 @@ namespace KwasantWeb.Controllers
 
                 Email userEmail = new Email(uow, emailDO);
                 userEmail.Send();
+                uow.SaveChanges();
             }
         }
     }
