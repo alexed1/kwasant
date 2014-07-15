@@ -142,7 +142,6 @@
     <Compile Include="Managers\APIManager\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />
     <Compile Include="Helper\UsersAdminData.cs" />
-    <Compile Include="Managers\AnalyticsManager.cs" />
     <Compile Include="Managers\APIManager\Packagers\GmailPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\IEmailPackager.cs" />
     <Compile Include="Managers\APIManager\Packagers\Mandrill\MandrillPackager.cs" />

@@ -54,8 +54,8 @@ namespace KwasantWeb
             curCommManager.SubscribeToAlerts();
 
             
-            AnalyticsManager curAnalyticsManager = new AnalyticsManager();
-            curAnalyticsManager.SubscribeToAlerts();
+            //AnalyticsManager curAnalyticsManager = new AnalyticsManager();
+            //curAnalyticsManager.SubscribeToAlerts();
 
             AlertReporter curReporter = new AlertReporter();
             curReporter.SubscribeToAlerts();

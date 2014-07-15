@@ -4,10 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Kwasant</title>
-	<link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
-    @Styles.Render("~/bundles/css/bootstrap30")    
-    @Styles.Render("~/bundles/css/default")
+	<link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />    
+	@Styles.Render("~/bundles/css/bootstrap30")    
+    @Styles.Render("~/bundles/css/backendcss")
 	@Styles.Render("~/bundles/css/colorbox")
+	
+	@Styles.Render("~/bundles/css/temp")
     @RenderSection("styles", required: false)     
     @Scripts.Render("~/bundles/js/jquery")
     @RenderSection("immediateScripts", required:false)	

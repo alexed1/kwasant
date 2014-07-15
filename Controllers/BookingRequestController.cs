@@ -122,7 +122,7 @@ namespace KwasantWeb.Controllers
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
                     bookingRequest.DateReceived = DateTime.Now;
                     bookingRequest.PlainText = meetingInfo;
-                    _br.ProcessBookingRequest(uow, bookingRequest);
+                    _br.Process(uow, bookingRequest);
                     uow.SaveChanges();
                     result = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be";
                 }

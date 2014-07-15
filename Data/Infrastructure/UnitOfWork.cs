@@ -16,6 +16,7 @@ namespace Data.Infrastructure
         internal UnitOfWork(IDBContext context)
         {
             _context = context;
+            _context.UnitOfWork = this;
         }
 
         private AttachmentRepository _attachmentRepository;

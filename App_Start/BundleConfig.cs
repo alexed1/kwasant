@@ -81,6 +81,14 @@ namespace KwasantWeb.App_Start
                 "~/Content/js/moment.js"
                 ));
 
+			bundles.Add(new ScriptBundle("~/bundles/js/bootstraptransition").Include(
+				"~/Content/js/bootstrap-transition.js"
+				));
+
+			bundles.Add(new ScriptBundle("~/bundles/js/collapse").Include(
+				"~/Content/js/collapse.js"
+				));
+
             //Styles
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap23").Include(
 				"~/Content/css/additionalcss/bootstrap23/css/bootstrap2.3.css", new CssRewriteUrlTransform()
@@ -104,10 +112,6 @@ namespace KwasantWeb.App_Start
 
             bundles.Add(new StyleBundle("~/bundles/css/frontpage").Include(
 				"~/Content/css/frontcss/main.css", new CssRewriteUrlTransform()
-                ));
-
-            bundles.Add(new StyleBundle("~/bundles/css/default").Include(
-				"~/Content/css/generalcss/default.css", new CssRewriteUrlTransform()
                 ));
 
 			bundles.Add(new StyleBundle("~/bundles/css/backendcss").Include(
