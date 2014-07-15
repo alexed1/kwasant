@@ -1,0 +1,96 @@
+﻿<h2>@ViewBag.Title</h2>
+<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+<style>
+    .filters_btn input
+    {
+        padding: 10px;
+        background: #D85E17;
+        border: 1px solid #3E3E3E !important;
+        width: 100px;
+        border-radius: 4px;
+        border: none;
+        color: #fff;
+        font-size: inherit;
+        margin-bottom: 10px;
+    }
+</style>
+<table class="filters_btn">
+    <tr>
+        <td>
+            <input type="button" value="Last 5 minutes" id="last5minutes" /></td>
+        <td>
+            <input type="button" value="Last Hour" id="lasthour" /></td>
+        <td>
+            <input type="button" value="Last Day" id="lastday" /></td>
+        <td>
+            <input type="button" value="Last Week" id="lastweek" /></td>
+        <td>
+            <input type="button" value="All" id="all" /></td>
+    </tr>
+</table>
+<table id="tblreport" class="table">
+    <thead>
+        <tr>
+            <th style="width: 15%">Date</th>
+            <th style="width: 15%">Primary Category</th>
+            <th style="width: 15%">Secondary Category</th>
+            <th style="width: 10%">Activity</th>
+            <th style="width: 45%">Notes</th>
+        </tr>
+    </thead>
+</table>
+
+<script type="text/javascript">
+    //Document ready function, will run after page is ready and all elements are loaded.
+    $(document).ready(function () {
+        var queryPeriod = "all";
+        var table;
+        var columns;
+
+        //Initializing columns defination for DataTable widget according to report type.
+        switch ("@ViewBag.type") {
+            case "incident":
+                columns = [
+                    { data: 'create_time' },
+                    { data: 'primary_category' },
+                    { data: 'secondary_category' },
+                    { data: 'activity' },
+                    { data: 'notes' }
+                ];
+                break;
+            case "usage":
+                columns = [
+                    { data: 'create_date' },
+                    { data: 'primary_category' },
+                    { data: 'secondary_category' },
+                    { data: 'activity' },
+                    { data: 'data' }
+                ];
+                break;
+        }
+
+        loadReport();
+
+        //Inserts retrieved json records into DataTable Widget
+        function showRequests(response) {
+            table = $('#tblreport').DataTable({
+                data: JSON.parse(response),
+                order: [0, 'desc'],
+                columns: columns,
+            });
+        }
+
+        function loadReport() {
+            //Ajax call to get report records from server.
+            $.getJSON("/Report/ShowReport", { queryPeriod: queryPeriod, type: "@ViewBag.type" }, showRequests);
+        }
+
+        //Initializing click for all filter buttons.
+        $('.filters_btn input').click(function () {
+            queryPeriod = $(this).attr("id");
+            table.destroy();
+            loadReport();
+        });
+    });
+</script>

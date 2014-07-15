@@ -281,6 +281,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\KController.cs" />
     <Compile Include="Controllers\MonthController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="ViewModels\MyAccountModel.cs" />
@@ -726,6 +727,7 @@
     <Content Include="Views\ClarificationResponse\ProcessSubmittedClarificationData.cshtml" />
     <Content Include="Views\ClarificationResponse\AllAnswered.cshtml" />
     <Content Include="Views\User\MyAccount.cshtml" />
+    <Content Include="Views\Report\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

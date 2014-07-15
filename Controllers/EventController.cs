@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using AutoMapper;
 using Data.Constants;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Managers.IdentityManager;
@@ -114,11 +115,10 @@ namespace KwasantWeb.Controllers
 
                 _event.Process(uow, existingEvent);
                 uow.SaveChanges();
-
-            return JavaScript(SimpleJsonSerializer.Serialize(true));
+                AlertManager.EventBooked(existingEvent.Id, existingEvent.BookingRequest.User.Id);
+                return JavaScript(SimpleJsonSerializer.Serialize(true));
+            }
         }
-        }
-
 
         public ActionResult DeleteEvent(int eventID)
         {

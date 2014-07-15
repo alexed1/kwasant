@@ -27,8 +27,9 @@ namespace Data.Interfaces
         UserRepository UserRepository { get; }
         AspNetUserRolesRepository AspNetUserRolesRepository { get; }
         AspNetRolesRepository AspNetRolesRepository { get; }
+        IncidentRepository IncidentRepository { get; } 
 
-        KactRepository KactRepository { get; }
+        FactRepository FactRepository { get; }
 
         /// <summary>
         /// Call this to commit the unit of work

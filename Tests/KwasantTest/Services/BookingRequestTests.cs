@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Mail;
 using Data.Constants;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers;
@@ -42,7 +43,7 @@ namespace KwasantTest.Services
         [Category("BRM")]
         public void NewCustomerCreated()
         {
-            AnalyticsManager curAnalyticsManager = new AnalyticsManager();
+            AlertReporter curAnalyticsManager = new AlertReporter();
             curAnalyticsManager.SubscribeToAlerts();
 
             List<UserDO> customersNow = _uow.UserRepository.GetAll().ToList();
@@ -65,7 +66,7 @@ namespace KwasantTest.Services
             Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
             //test analytics system
 
-            KactDO curAction = _uow.KactRepository.FindOne(k => k.ObjectId == bookingRequest.Id);
+            FactDO curAction = _uow.FactRepository.FindOne(k => k.ObjectId == bookingRequest.Id);
             Assert.NotNull(curAction);
         }
 

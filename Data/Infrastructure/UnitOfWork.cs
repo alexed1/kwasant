@@ -178,13 +178,13 @@ namespace Data.Infrastructure
                 return _trackingStatusRepository ?? (_trackingStatusRepository = new TrackingStatusRepository(this));
             }
         }
-        private KactRepository _KactRepository;
+        private FactRepository _FactRepository;
 
-        public KactRepository KactRepository
+        public FactRepository FactRepository
         {
             get
             {
-                return _KactRepository ?? (_KactRepository = new KactRepository(this));
+                return _FactRepository ?? (_FactRepository = new FactRepository(this));
             }
         }
         private UserRepository _userRepository;
@@ -224,6 +224,16 @@ namespace Data.Infrastructure
             get
             {
                 return _aspNetRolesRepository ?? (_aspNetRolesRepository = new AspNetRolesRepository(this));
+            }
+        }
+
+        private IncidentRepository _incidentRepository;
+
+        public IncidentRepository IncidentRepository
+        {
+            get
+            {
+                return _incidentRepository ?? (_incidentRepository = new IncidentRepository(this));
             }
         }
 
