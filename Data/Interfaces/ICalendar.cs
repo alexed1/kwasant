@@ -11,8 +11,6 @@ namespace Data.Interfaces
 
         String Name { get; set; }
 
-        int PersonId { get; set; }
-
         UserDO Owner { get; set; }        
         
     }

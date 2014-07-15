@@ -278,6 +278,10 @@
     <Compile Include="Migrations\201407020904132_Sync-02.07.2014.Designer.cs">
       <DependentUpon>201407020904132_Sync-02.07.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407032120396_AddCalendars.cs" />
+    <Compile Include="Migrations\201407032120396_AddCalendars.Designer.cs">
+      <DependentUpon>201407032120396_AddCalendars.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201407100603524_rename_Kacts_to_Facts.cs" />
     <Compile Include="Migrations\201407100603524_rename_Kacts_to_Facts.Designer.cs">
       <DependentUpon>201407100603524_rename_Kacts_to_Facts.cs</DependentUpon>
@@ -453,6 +457,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407020904132_Sync-02.07.2014.resx">
       <DependentUpon>201407020904132_Sync-02.07.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407032120396_AddCalendars.resx">
+      <DependentUpon>201407032120396_AddCalendars.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407100603524_rename_Kacts_to_Facts.resx">
       <DependentUpon>201407100603524_rename_Kacts_to_Facts.cs</DependentUpon>
