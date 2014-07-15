@@ -294,6 +294,10 @@
     <Compile Include="Migrations\201407141107371_AddIncidentDO.Designer.cs">
       <DependentUpon>201407141107371_AddIncidentDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407151914079_Sync-15.07.2014.cs" />
+    <Compile Include="Migrations\201407151914079_Sync-15.07.2014.Designer.cs">
+      <DependentUpon>201407151914079_Sync-15.07.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -469,6 +473,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407141107371_AddIncidentDO.resx">
       <DependentUpon>201407141107371_AddIncidentDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407151914079_Sync-15.07.2014.resx">
+      <DependentUpon>201407151914079_Sync-15.07.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
