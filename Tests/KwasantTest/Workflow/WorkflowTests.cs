@@ -78,6 +78,10 @@ namespace KwasantTest.Workflow
             };
 
             _uow.EmailRepository.Add(emailDO);
+
+            //adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
+            AddNewTestCustomer(emailDO.From);
+
             var emailService = new Email(_uow, emailDO);
 
             Stopwatch totalOperationDuration = new Stopwatch();
@@ -214,13 +218,7 @@ namespace KwasantTest.Workflow
             _uow.EnvelopeRepository.Add(envelope);
 
             //adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
-            var role = new Role();
-            role.Add(_uow, new KwasantTest.Fixtures.FixtureData().TestRole());
-            var u = new UserDO();
-            var user = new User();
-            UserDO currUserDO = new UserDO();
-            currUserDO.EmailAddress = emailDO.From;
-            _uow.UserRepository.Add(currUserDO);
+            AddNewTestCustomer(emailDO.From);
 
             OutboundEmail outboundDaemon = new OutboundEmail();
             DaemonTests.RunDaemonOnce(outboundDaemon);
@@ -244,6 +242,17 @@ namespace KwasantTest.Workflow
             requestToEmailDuration.Stop();
 
             Assert.AreEqual(1, mailcount);
+        }
+
+        private void AddNewTestCustomer(EmailAddressDO emailAddress) 
+        {
+            var role = new Role();
+            role.Add(_uow, new KwasantTest.Fixtures.FixtureData().TestRole());
+            var u = new UserDO();
+            var user = new User();
+            UserDO currUserDO = new UserDO();
+            currUserDO.EmailAddress = emailAddress;
+            _uow.UserRepository.Add(currUserDO);
         }
     }
 }
