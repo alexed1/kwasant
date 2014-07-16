@@ -1,4 +1,6 @@
-﻿using Data.Interfaces;
+﻿using System;
+using System.Linq;
+using Data.Interfaces;
 using Data.Entities;
 using Data.Validators;
 using FluentValidation;
@@ -18,6 +20,24 @@ namespace Data.Repositories
         {
             _curValidator.ValidateAndThrow(entity);
             base.Add(entity);
+        }
+
+        public void CheckUserHasCalendar(UserDO curUser)
+        {
+            if (curUser == null)
+                throw new ArgumentNullException("curUser");
+
+            if (curUser.Calendars.Count() == 0)
+            {
+                var curCalendar = new CalendarDO
+                {
+                    Name = "Default Calendar",
+                    Owner = curUser,
+                    OwnerID = curUser.Id
+                };
+                curUser.Calendars.Add(curCalendar);
+                Add(curCalendar);
+            }
         }
     }
 

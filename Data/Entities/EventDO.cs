@@ -37,6 +37,10 @@ namespace Data.Entities
         public string CreatedByID { get; set; }
         public virtual UserDO CreatedBy { get; set; }
 
+        [ForeignKey("Calendar"), Required]
+        public int CalendarID { get; set; }
+        public virtual CalendarDO Calendar { get; set; }
+
         public bool IsAllDay { get; set; }
 
         [InverseProperty("Event")]
