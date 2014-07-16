@@ -30,10 +30,10 @@
 	<div class="row">
         @*width: 420px;*@
 
-
-		<nav class="navbar navbar-default" role="navigation">
+	
+		<nav class="navbar navbar-default top-toolbar-section" role="navigation">
 			<div class="container-fluid">
-				<!-- Brand and toggle get grouped for better mobile display -->
+
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
 						<span class="sr-only">Toggle navigation</span>
@@ -41,27 +41,17 @@
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="#">Brand</a>
 				</div>
 
-				<!-- Collect the nav links, forms, and other content for toggling -->
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
-						<li>
-							<a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">
-								<button>Mark Processed</button>
-							</a>
-						</li>
-						<li>
-							<a id="btnRequestClarification" class="btnRequestClarification" href="#">
-								<button>Request Clarification</button>
-							</a>
-						</li>
+						<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li>
+						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
 						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
 						<li>@Html.ActionLink("Show Users", "Index", "User")</li>
 					</ul>
-				</div><!-- /.navbar-collapse -->
-			</div><!-- /.container-fluid -->
+				</div>
+			</div>
 		</nav>
 
 		<div id="emailInfoBox" class="col-md-5 container_box emailInfoBox">
@@ -188,10 +178,8 @@
 						TimeRangeSelectedJavaScript = "eventNew(start, end)",
 					})
 				</div>
-
 			</div>
 		</div>
-
 		<div class="col-lg-2 container_box calendar-area">
 			@Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
 			{
@@ -200,14 +188,7 @@
 				ShowMonths = 1
 			})
 		</div>
-
 	</div>
-</div>
-<div class="row">
-	
-</div>
-<div class="row">
-	
 </div>
 <input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid" />
 
