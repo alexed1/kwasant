@@ -10,6 +10,12 @@ namespace Data.Entities
 {
     public class UserDO : IdentityUser, IUser
     {
+        public UserDO()
+        {
+            BookingRequests = new List<BookingRequestDO>();
+            Calendars = new List<CalendarDO>();
+        }
+
         public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
 
         public String FirstName { get; set; }
@@ -21,6 +27,9 @@ namespace Data.Entities
         public virtual EmailAddressDO EmailAddress { get; set; }
 
         public string GoogleAuthData { get; set; }
+
+        [InverseProperty("Owner")]
+        public virtual IList<CalendarDO> Calendars { get; set; } 
     }
 }
 

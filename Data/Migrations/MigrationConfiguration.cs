@@ -175,33 +175,34 @@ namespace Data.Migrations
             try
             {
                 var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasantDbContext));
-                var existingUser = um.FindByName(curUserName);
-                if (existingUser == null)
+                UserDO curUser = um.FindByName(curUserName);
+                if (curUser == null)
                 {
-                    var user = new UserDO()
-                                   {
-                                       UserName = curUserName,
-                                       EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
-                                       FirstName = curUserName,
-                                       EmailConfirmed = true
-                                   };
+                    curUser = new UserDO()
+                                  {
+                                      UserName = curUserName,
+                                      EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
+                                      FirstName = curUserName,
+                                      EmailConfirmed = true
+                                  };
 
-                    IdentityResult ir = um.Create(user, curPassword);
+                    IdentityResult ir = um.Create(curUser, curPassword);
 
                     if (!ir.Succeeded)
                         return;
 
-                    um.AddToRole(user.Id, role);
+                    um.AddToRole(curUser.Id, role);
                 }
                 else
                 {
                     //This line forces EF to load the EmailAddress, since it's done lazily. For whatever reason, seeding admins breaks since it thinks the EmailAddress is null...
-                    var forceEmail = existingUser.EmailAddress;
+                    var forceEmail = curUser.EmailAddress;
                     //This line forces the above not to be optimised out. In production, it does nothing.
                     Console.WriteLine(forceEmail);
-                    if (!um.IsInRole(existingUser.Id, role))
-                        um.AddToRole(existingUser.Id, role);
+                    if (!um.IsInRole(curUser.Id, role))
+                        um.AddToRole(curUser.Id, role);
                 }
+                unitOfWork.CalendarRepository.CheckUserHasCalendar(curUser);
             }
             catch (DbEntityValidationException e)
             {

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
+using KwasantCore.Exceptions;
 using KwasantCore.Managers.CommunicationManager;
 using IEvent = Data.Interfaces.IEvent;
 
@@ -19,6 +21,11 @@ namespace KwasantCore.Services
 
             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
             curEventDO.CreatedBy = bookingRequestDO.User;
+            var curCalendar = bookingRequestDO.User.Calendars.FirstOrDefault();
+            if (curCalendar == null)
+                throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");
+            curEventDO.Calendar = curCalendar;
+            curEventDO.CalendarID = curCalendar.Id;
             curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
             curEventDO.StateID = EventState.Booking;
 
