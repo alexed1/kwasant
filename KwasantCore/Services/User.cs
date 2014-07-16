@@ -35,6 +35,7 @@ namespace KwasantCore.Services
             userDO.UserName = userName;
             userDO.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
             uow.UserRepository.Add(userDO);
+            uow.CalendarRepository.CheckUserHasCalendar(userDO);
 
             UserValidator curUserValidator = new UserValidator();
             curUserValidator.ValidateAndThrow(userDO);

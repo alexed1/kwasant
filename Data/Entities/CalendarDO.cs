@@ -12,8 +12,6 @@ namespace Data.Entities
         
         public String Name { get; set; }
 
-        public int PersonId { get; set; }
-
         [ForeignKey("Owner")]
         public string OwnerID { get; set; }
 

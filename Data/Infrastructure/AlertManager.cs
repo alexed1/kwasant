@@ -10,7 +10,7 @@ namespace Data.Infrastructure
 {
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
-    {
+    {       
         public delegate void CustomerCreatedHandler(IUnitOfWork uow, DateTime createdDate, UserDO userDO);
         public static event CustomerCreatedHandler AlertCustomerCreated;
 
@@ -30,7 +30,7 @@ namespace Data.Infrastructure
         public static event IncidentCreatedHandler AlertEmailProcessingFailure;
 
         #region Method
-
+        
         /// <summary>
         /// Publish Customer Created event
         /// </summary>
@@ -45,7 +45,7 @@ namespace Data.Infrastructure
             if (AlertBookingRequestCreated != null)
                 AlertBookingRequestCreated(uow, curBR);
         }
-
+            
         public static void EmailReceived(int emailId, string customerId)
         {
             if (AlertEmailReceived != null)
@@ -61,13 +61,13 @@ namespace Data.Infrastructure
             if (AlertEmailSent != null)
                 AlertEmailSent(emailId, customerId);
         }
-
+                
         public static void EmailProcessingFailure(string dateReceived, string errorMessage)
         {
             if (AlertEmailProcessingFailure != null)
                 AlertEmailProcessingFailure(dateReceived, errorMessage);
         }
-
+   
         #endregion
     }
 

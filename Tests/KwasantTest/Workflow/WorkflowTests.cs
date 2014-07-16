@@ -244,7 +244,7 @@ namespace KwasantTest.Workflow
             Assert.AreEqual(1, mailcount);
         }
 
-        private void AddNewTestCustomer(EmailAddressDO emailAddress) 
+        private void AddNewTestCustomer(EmailAddressDO emailAddress)
         {
             var role = new Role();
             role.Add(_uow, new KwasantTest.Fixtures.FixtureData().TestRole());
@@ -252,6 +252,15 @@ namespace KwasantTest.Workflow
             var user = new User();
             UserDO currUserDO = new UserDO();
             currUserDO.EmailAddress = emailAddress;
+            currUserDO.Calendars = new List<CalendarDO>() { 
+                new CalendarDO()    {
+                        Id=1,
+                        Name="test"
+                }
+            };
+            CalendarDO t = new CalendarDO();
+            t.Name = "test";
+            t.Id = 1;
             _uow.UserRepository.Add(currUserDO);
         }
     }
