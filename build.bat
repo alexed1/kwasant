@@ -49,7 +49,7 @@ set APPDATA=%USERPROFILE%\AppData\
 :: ----------
 
 :: 1. Clean workspace
-echo Cleaning workspace...
+echo Cleaning workspace..
 call :ExecuteCmd "git" clean -fdx
 
 :: 2. NuGet Restore
