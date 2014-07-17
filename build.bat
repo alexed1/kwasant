@@ -37,6 +37,9 @@ IF NOT DEFINED NUGET_EXE (
 	SET NUGET_EXE=.nuget/nuget.exe
 )
 
+set USERPROFILE=C:\Users\%USERNAME%
+set APPDATA=%USERPROFILE%\AppData\
+
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Building
 :: ----------
