@@ -43,7 +43,7 @@ namespace KwasantTest.Workflow
 
 
 
-        [Test]
+        [Test, Ignore]
         [Category("Workflow")]
         public void Workflow_CanReceiveInvitationOnEmailInTime()
         {
