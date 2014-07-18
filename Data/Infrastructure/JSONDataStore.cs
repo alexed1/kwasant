@@ -7,7 +7,7 @@ using StructureMap;
 
 namespace Data.Infrastructure
 {
-    /// <summary>
+    /// <summary> 
     /// Entity Framework implementation for storing Google tokens in the database.
     /// </summary>
     /// <remarks>
