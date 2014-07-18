@@ -37,12 +37,19 @@ IF NOT DEFINED NUGET_EXE (
 	SET NUGET_EXE=.nuget/nuget.exe
 )
 
+IF NOT DEFINED IN_PLACE_DEPLOYMENT (
+	SET IN_PLACE_DEPLOYMENT=1
+) 
+
+set USERPROFILE=C:\Users\%USERNAME%
+set APPDATA=%USERPROFILE%\AppData\
+
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Building
 :: ----------
 
 :: 1. Clean workspace
-echo Cleaning workspace...
+echo Cleaning workspace..
 call :ExecuteCmd "git" clean -fdx
 
 :: 2. NuGet Restore
