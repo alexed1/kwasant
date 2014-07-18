@@ -53,7 +53,7 @@ echo Cleaning workspace..
 call :ExecuteCmd "git" clean -fdx
 
 :: 2. NuGet Restore
-echo Restoring nuget packages...
+echo Restoring nuget packages..
 call :ExecuteCmd "%NUGET_EXE%" restore Kwasant.sln
 
 :: 3. Build to the temporary path
