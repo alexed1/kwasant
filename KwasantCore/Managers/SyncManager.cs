@@ -57,53 +57,65 @@ namespace KwasantCore.Managers
             to = from + TimeSpan.FromDays(365);
         }
 
-        public async Task SyncNowAsync(IUnitOfWork uow, ICalendar calendar)
+        public async Task SyncNowAsync(IUnitOfWork uow, IUser user)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
-            if (calendar == null)
-                throw new ArgumentNullException("calendar");
-            if (calendar.Owner == null)
-                throw new ArgumentException("Calendar owner is null", "calendar");
-
-            // in the future there might be some tables in the database with data for calendar providers and authorization.
-            // + provider's endpoint data
-            // + user's oauth tokens
-            // + lastSynchronized for each provider
-            var providers = new List<string>();
-            if (calendar.Owner.GrantedAccessToGoogleCalendar)
-            {
-                providers.Add("Google");
-            }
-
-            DateTimeOffset now = DateTimeOffset.UtcNow;
+            if (user == null)
+                throw new ArgumentNullException("user");
 
             DateTimeOffset from, to;
             GetPeriod(out from, out to);
 
-            foreach (var provider in providers)
+            foreach (var authData in user.RemoteCalendarAuthData)
             {
-                var client = _clientFactory.Create(calendar.Owner, provider);
                 try
                 {
-                    await SyncNowWithClientAsync(uow, calendar, client, @from, to);
+                    await SyncProviderAsync(uow, authData, @from, to);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    Logger.GetLogger().ErrorFormat("Error occurred on calendar synchronization with '{0}' for calendar: {1}.", provider, calendar.Id);
+                    Logger.GetLogger().Error(string.Format("Error occurred on calendar synchronization with '{0}'.", authData.Provider.Name), ex);
                 }
             }
-
-            calendar.LastSynchronized = now;
-
         }
 
-        private async Task SyncNowWithClientAsync(IUnitOfWork uow, ICalendar calendar, ICalDAVClient client, DateTimeOffset @from,
+        private async Task SyncProviderAsync(IUnitOfWork uow, IRemoteCalendarAuthData authData, DateTimeOffset @from,
                                             DateTimeOffset to)
         {
+            var client = _clientFactory.Create(authData);
+            // TODO: obtain a real list from remote calendar provider
+            var remoteCalendars = new[] {authData.User.EmailAddress.Address};
+            foreach (var remoteName in remoteCalendars)
+            {
+                var calendarLink = uow.RemoteCalendarLinkRepository.GetOrCreate(authData, remoteName);
+                try
+                {
+                    calendarLink.DateSynchronizationAttempted = DateTimeOffset.UtcNow;
+                    await SyncCalendarAsync(uow, @from, to, client, calendarLink);
+
+                    calendarLink.LastSynchronizationResult = "Success";
+                    calendarLink.DateSynchronized = calendarLink.DateSynchronizationAttempted;
+                }
+                catch (Exception ex)
+                {
+                    calendarLink.LastSynchronizationResult = string.Concat("Error: ", ex.Message);
+                    Logger.GetLogger().Error(
+                        string.Format("Error occurred on calendar '{0}' synchronization with '{1} @ {2}'.",
+                                      calendarLink.LocalCalendar.Name,
+                                      calendarLink.RemoteCalendarName,
+                                      calendarLink.Provider.Name),
+                        ex);
+                }
+            }
+        }
+
+        private async Task SyncCalendarAsync(IUnitOfWork uow, DateTimeOffset @from, DateTimeOffset to, ICalDAVClient client, IRemoteCalendarLink calendarLink)
+        {
             Func<EventDO, bool> eventPredictor = e => e.StartDate <= to && e.EndDate >= @from;
-            var remoteEvents = await client.GetEventsAsync(calendar, @from, to);
+            var remoteEvents = await client.GetEventsAsync(calendarLink, @from, to);
             var incomingEvents = remoteEvents.Select(Event.CreateEventFromICSCalendar).Where(eventPredictor).ToArray();
+            var calendar = calendarLink.LocalCalendar;
             var existingEvents = calendar.Events.Where(eventPredictor).ToList();
 
             foreach (var incomingEvent in incomingEvents)
@@ -156,7 +168,7 @@ namespace KwasantCore.Managers
                 {
                     // created by remote
                     incomingEvent.StateID = EventState.DispatchCompleted;
-                    incomingEvent.CreateTypeID = EventCreateType.GoogleCalendar;
+                    incomingEvent.CreateTypeID = EventCreateType.RemoteCalendar;
                     incomingEvent.Calendar = (CalendarDO) calendar;
                     incomingEvent.CalendarID = calendar.Id;
                     incomingEvent.CreatedBy = calendar.Owner;
@@ -165,14 +177,14 @@ namespace KwasantCore.Managers
                 }
             }
 
-            var createdByKwasant = existingEvents.Where(e => e.DateCreated >= calendar.LastSynchronized).ToList();
+            var createdByKwasant = existingEvents.Where(e => e.DateCreated >= calendarLink.DateSynchronized).ToList();
             foreach (var created in createdByKwasant)
             {
                 var iCalendarEvent = Event.GenerateICSCalendarStructure(created);
-                await client.CreateEventAsync(calendar, iCalendarEvent);
+                await client.CreateEventAsync(calendarLink, iCalendarEvent);
             }
 
-            var deletedByRemote = existingEvents.Where(e => e.DateCreated < calendar.LastSynchronized).ToList();
+            var deletedByRemote = existingEvents.Where(e => e.DateCreated < calendarLink.DateSynchronized).ToList();
             foreach (var deleted in deletedByRemote)
             {
                 calendar.Events.Remove(deleted);

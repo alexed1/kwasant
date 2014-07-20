@@ -7,6 +7,7 @@ using System.Net;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using KwasantCore.Managers.APIManager.Authorizers;
 using KwasantCore.Managers.APIManager.Authorizers.Google;
 using KwasantCore.Managers.IdentityManager;
 using KwasantWeb.ViewModels;
@@ -48,18 +49,19 @@ namespace KwasantWeb.Controllers
             return View(currUsersAdminViewModel);
         }
 
-        public async Task<ActionResult> GrantGoogleCalendarAccess()
+        public async Task<ActionResult> GrantRemoteCalendarAccess(string providerName)
         {
-            var authorizer = new GoogleCalendarAuthorizer(this.GetUserId(),
-                                                          this.User.Identity.GetUserName());
-            var result = await authorizer.AuthorizeAsync(
-                Url.Action("IndexAsync", "AuthCallback", null, this.Request.Url.Scheme),
-                Request.RawUrl,
-                CancellationToken.None);
+            var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
+            var result = await authorizer.AuthorizeAsync(this.GetUserId(),
+                                                         this.User.Identity.GetUserName(),
+                                                         Url.Action("IndexAsync", "AuthCallback", null,
+                                                                    this.Request.Url.Scheme),
+                                                         Request.RawUrl,
+                                                         CancellationToken.None);
 
             if (result.Credential != null)
             {
-                return RedirectToAction("MyAccount", new { googleCalendarAccessGranted = true });
+                return RedirectToAction("MyAccount", new { remoteCalendarAccessGranted = providerName });
             }
             else
             {
@@ -67,27 +69,30 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public async Task<ActionResult> RevokeGoogleCalendarAccess()
+        public async Task<ActionResult> RevokeRemoteCalendarAccess(string providerName)
         {
-            var authorizer = new GoogleCalendarAuthorizer(this.GetUserId());
-            await authorizer.RevokeAccessTokenAsync(CancellationToken.None);
-            return RedirectToAction("MyAccount", new { googleCalendarAccessForbidden = true });
+            var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
+            await authorizer.RevokeAccessTokenAsync(this.GetUserId(), CancellationToken.None);
+            return RedirectToAction("MyAccount", new { remoteCalendarAccessForbidden = providerName });
         }
 
-        public ActionResult MyAccount(bool googleCalendarAccessGranted = false, bool googleCalendarAccessForbidden = false)
+        public ActionResult MyAccount(string remoteCalendarAccessGranted = null, string remoteCalendarAccessForbidden = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curUserDO = uow.UserRepository.GetByKey(this.GetUserId());
-                var curManageUserViewModel = AutoMapper.Mapper.Map<UserDO, ManageUserViewModel>(curUserDO);
+                var remoteCalendarProviders = uow.RemoteCalendarProviderRepository.GetAll();
+                var tuple = new Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>(curUserDO, remoteCalendarProviders);
+                
+                var curManageUserViewModel = AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserViewModel>(tuple);
 
-                if (googleCalendarAccessGranted)
+                if (!string.IsNullOrEmpty(remoteCalendarAccessGranted))
                 {
-                    ViewBag.StatusMessage = "Google Calendar hooked up successfully.";
+                    ViewBag.StatusMessage = string.Format("{0} Calendar hooked up successfully.", remoteCalendarAccessGranted);
                 }
-                else if (googleCalendarAccessForbidden)
+                else if (!string.IsNullOrEmpty(remoteCalendarAccessForbidden))
                 {
-                    ViewBag.StatusMessage = "Google Calendar access revoked.";
+                    ViewBag.StatusMessage = string.Format("{0} Calendar access revoked.", remoteCalendarAccessForbidden);
                 }
                 return View(curManageUserViewModel);
             }

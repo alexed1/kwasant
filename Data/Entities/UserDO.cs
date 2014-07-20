@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 
@@ -14,6 +15,7 @@ namespace Data.Entities
         {
             BookingRequests = new List<BookingRequestDO>();
             Calendars = new List<CalendarDO>();
+            RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
         }
 
         public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
@@ -32,13 +34,21 @@ namespace Data.Entities
             get { return EmailAddress; }
         }
 
-        public string GoogleAuthData { get; set; }
-
-        [NotMapped]
-        public bool GrantedAccessToGoogleCalendar { get { return !string.IsNullOrEmpty(GoogleAuthData) && GoogleAuthData.Contains("access_token"); } }
-
         [InverseProperty("Owner")]
-        public virtual IList<CalendarDO> Calendars { get; set; } 
+        public virtual IList<CalendarDO> Calendars { get; set; }
+
+        [InverseProperty("User")]
+        public virtual IList<RemoteCalendarAuthDataDO> RemoteCalendarAuthData { get; set; }
+
+        public bool IsRemoteCalendarAccessGranted(string providerName)
+        {
+            return RemoteCalendarAuthData
+                .Any(r =>
+                     r.Provider != null &&
+                     r.Provider.Name == providerName &&
+                     !string.IsNullOrEmpty(r.AuthData) &&
+                     r.AuthData.Contains("access_token"));
+        }
     }
 }
 

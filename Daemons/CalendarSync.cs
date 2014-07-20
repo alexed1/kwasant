@@ -26,17 +26,17 @@ namespace Daemons
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    foreach (var curCalendar in uow.CalendarRepository.GetAll().Where(c => c.Owner != null))
+                    foreach (var curUser in uow.UserRepository.GetAll())
                     {
                         try
                         {
                             SyncManager syncManager = new SyncManager(new CalDAVClientFactory());
-                            await syncManager.SyncNowAsync(uow, curCalendar);
+                            await syncManager.SyncNowAsync(uow, curUser);
                             uow.SaveChanges();
                         }
                         catch (Exception ex)
                         {
-                            Logger.GetLogger().Error(string.Format("Error occured on synchronization for calendar: {0}.", curCalendar.Id), ex);
+                            Logger.GetLogger().Error(string.Format("Error occured on calendar synchronization for user: {0}.", curUser.Id), ex);
                         }
                     }
                 }

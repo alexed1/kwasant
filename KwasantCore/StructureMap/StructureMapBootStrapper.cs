@@ -2,6 +2,8 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using KwasantCore.Managers.APIManager.Authorizers;
+using KwasantCore.Managers.APIManager.Authorizers.Google;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
@@ -50,6 +52,8 @@ namespace KwasantCore.StructureMap
                 For<ISMSPackager>().Use(new TwilioPackager());
                 For<IEmailPackager>().Use(new GmailPackager()).Named(EnvelopeDO.GmailHander);
                 For<IEmailPackager>().Use(new MandrillPackager()).Named(EnvelopeDO.MandrillHander);
+
+                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
                 For<IKwasantRoleStore>().Use(new KwasantRoleStore());
                 For<IKwasantUserStore>().Use(new KwasantUserStore());

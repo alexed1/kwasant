@@ -16,7 +16,5 @@ namespace Data.Interfaces
         UserDO Owner { get; set; }
 
         IList<EventDO> Events { get; set; }
-
-        DateTimeOffset LastSynchronized { get; set; }
     }
 }

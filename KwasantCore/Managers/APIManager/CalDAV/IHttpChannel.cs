@@ -6,6 +6,6 @@ namespace KwasantCore.Managers.APIManager.CalDAV
 {
     public interface IHttpChannel
     {
-        Task<HttpResponseMessage> SendRequestAsync(Func<HttpRequestMessage> requestFactoryMethod);
+        Task<HttpResponseMessage> SendRequestAsync(Func<HttpRequestMessage> requestFactoryMethod, string userId);
     }
 }

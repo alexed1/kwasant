@@ -6,9 +6,9 @@ namespace KwasantCore.Managers.APIManager.Authorizers
 {
     public interface IOAuthAuthorizer
     {
-        Task<AuthorizationCodeWebApp.AuthResult> AuthorizeAsync(string callbackUrl, string currentUrl, CancellationToken cancellationToken);
-        Task RevokeAccessTokenAsync(CancellationToken cancellationToken);
-        Task RefreshTokenAsync(CancellationToken cancellationToken);
-        Task<string> GetAccessTokenAsync(CancellationToken cancellationToken);
+        Task<AuthorizationCodeWebApp.AuthResult> AuthorizeAsync(string userId, string email, string callbackUrl, string currentUrl, CancellationToken cancellationToken);
+        Task RevokeAccessTokenAsync(string userId, CancellationToken cancellationToken);
+        Task RefreshTokenAsync(string userId, CancellationToken cancellationToken);
+        Task<string> GetAccessTokenAsync(string userId, CancellationToken cancellationToken);
     }
 }

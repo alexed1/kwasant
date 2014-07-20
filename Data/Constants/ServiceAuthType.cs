@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Data.Constants
 {
-    public class EventCreateType
+    public class ServiceAuthType
     {
-        public const int KwasantBR = 1;
-        public const int RemoteCalendar = 2;
+        public const int OAuth2 = 1;
     }
 }

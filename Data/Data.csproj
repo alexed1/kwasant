@@ -99,14 +99,23 @@
     <Compile Include="Constants\BRState.cs" />
     <Compile Include="Constants\EventCreateType.cs" />
     <Compile Include="Constants\EventState.cs" />
+    <Compile Include="Constants\EventSyncStatus.cs" />
     <Compile Include="Constants\InstructionConstants.cs" />
+    <Compile Include="Constants\ServiceAuthType.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\BookingRequestStatusDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
+    <Compile Include="Entities\EventSyncStatusDO.cs" />
     <Compile Include="Entities\EventCreateTypeDO.cs" />
     <Compile Include="Entities\EventStatusDO.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
+    <Compile Include="Interfaces\IRemoteCalendarLink.cs" />
+    <Compile Include="Interfaces\IRemoteCalendarAuthData.cs" />
+    <Compile Include="Entities\RemoteCalendarAuthDataDO.cs" />
+    <Compile Include="Entities\RemoteCalendarLinkDO.cs" />
+    <Compile Include="Entities\ServiceAuthorizationTypeDO.cs" />
+    <Compile Include="Interfaces\IRemoteCalendarProvider.cs" />
     <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
@@ -119,6 +128,7 @@
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingType.cs" />
+    <Compile Include="Entities\RemoteCalendarProviderDO.cs" />
     <Compile Include="Infrastructure\IncidentReporter.cs" />
     <Compile Include="Infrastructure\JSONDataStore.cs" />
     <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
@@ -316,6 +326,10 @@
     <Compile Include="Migrations\201407151902060_Sync-15.07.2014.Designer.cs">
       <DependentUpon>201407151902060_Sync-15.07.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407181411172_RemoteCalendar.cs" />
+    <Compile Include="Migrations\201407181411172_RemoteCalendar.Designer.cs">
+      <DependentUpon>201407181411172_RemoteCalendar.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -324,6 +338,9 @@
     <Compile Include="Repositories\BookingRequestRepository.cs" />
     <Compile Include="Repositories\CalendarRepository.cs" />
     <Compile Include="Repositories\BookingRequestStatusRepository.cs" />
+    <Compile Include="Repositories\RemoteCalendarLinkRepository.cs" />
+    <Compile Include="Repositories\RemoteCalendarAuthDataRepository.cs" />
+    <Compile Include="Repositories\RemoteCalendarProviderRepository.cs" />
     <Compile Include="Repositories\EventStatusRepository.cs" />
     <Compile Include="Repositories\IncidentRepository.cs" />
     <Compile Include="Repositories\FactRepository.cs" />
@@ -506,6 +523,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407151902060_Sync-15.07.2014.resx">
       <DependentUpon>201407151902060_Sync-15.07.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407181411172_RemoteCalendar.resx">
+      <DependentUpon>201407181411172_RemoteCalendar.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -25,7 +25,5 @@ namespace Data.Entities
         
         [InverseProperty("Calendar")]
         public virtual IList<EventDO> Events { get; set; }
-
-        public DateTimeOffset LastSynchronized { get; set; }
     }
 }

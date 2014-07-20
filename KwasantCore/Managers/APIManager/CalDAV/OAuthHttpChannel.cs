@@ -8,25 +8,32 @@ using KwasantCore.Managers.APIManager.Authorizers;
 
 namespace KwasantCore.Managers.APIManager.CalDAV
 {
-    public abstract class OAuthHttpChannelBase : IHttpChannel
+    public class OAuthHttpChannel : IHttpChannel
     {
-        public async Task<HttpResponseMessage> SendRequestAsync(Func<HttpRequestMessage> requestFactoryMethod)
+        private readonly IOAuthAuthorizer _authorizer;
+
+        public OAuthHttpChannel(IOAuthAuthorizer authorizer)
+        {
+            _authorizer = authorizer;
+        }
+
+        public async Task<HttpResponseMessage> SendRequestAsync(Func<HttpRequestMessage> requestFactoryMethod, string userId)
         {
             HttpResponseMessage response;
-            using (HttpClient client = new HttpClient())
+            using (var client = new HttpClient())
             {
                 do
                 {
                     using (var request = requestFactoryMethod())
                     {
-                        var accessToken = await Authorizer.GetAccessTokenAsync(CancellationToken.None);
+                        var accessToken = await _authorizer.GetAccessTokenAsync(userId, CancellationToken.None);
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                         response = await client.SendAsync(request);
                         if (!response.IsSuccessStatusCode)
                         {
                             if (response.StatusCode == HttpStatusCode.Unauthorized)
                             {
-                                await Authorizer.RefreshTokenAsync(CancellationToken.None);
+                                await _authorizer.RefreshTokenAsync(userId, CancellationToken.None);
                                 response.Dispose();
                             }
                             else
@@ -39,7 +46,5 @@ namespace KwasantCore.Managers.APIManager.CalDAV
             }
             return response;
         }
-
-        public abstract IOAuthAuthorizer Authorizer { get; }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Interfaces;
@@ -18,77 +19,160 @@ namespace Data.Infrastructure
     /// </remarks>
     public class JSONDataStore : IDataStore
     {
-        private readonly string _userId;
+        private readonly Func<string> _getAccessor;
+        private readonly Action<string> _setAccessor;
 
-        public JSONDataStore(string userId)
+        public JSONDataStore(Func<string> getAccessor, Action<string> setAccessor)
         {
-            _userId = userId;
+            if (getAccessor == null)
+                throw new ArgumentNullException("getAccessor");
+            if (setAccessor == null)
+                throw new ArgumentNullException("setAccessor");
+            _getAccessor = getAccessor;
+            _setAccessor = setAccessor;
         }
 
-        private Dictionary<string, string> GetStore(string authData)
+        class StoreDictionary : IDictionary<string, string>
         {
-            return string.IsNullOrEmpty(authData)
-                       ? new Dictionary<string, string>()
-                       : JsonConvert.DeserializeObject<Dictionary<string, string>>(authData);
+            private readonly JSONDataStore _store;
+            private IDictionary<string, string> _dictionary;
+
+            private StoreDictionary(JSONDataStore store)
+            {
+                _store = store;
+            }
+
+            private void LoadDictionary()
+            {
+                var json = _store._getAccessor();
+                _dictionary = string.IsNullOrEmpty(json)
+                           ? new Dictionary<string, string>()
+                           : JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            }
+
+            public static StoreDictionary GetStoreDictionary(JSONDataStore store)
+            {
+                var storeDictionary = new StoreDictionary(store);
+                storeDictionary.LoadDictionary();
+                return storeDictionary;
+            }
+
+            #region Implementation of IEnumerable
+
+            public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+            {
+                return _dictionary.GetEnumerator();
+            }
+
+            IEnumerator IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+
+            #endregion
+
+            #region Implementation of ICollection<KeyValuePair<string,string>>
+
+            public void Add(KeyValuePair<string, string> item)
+            {
+                _dictionary.Add(item);
+            }
+
+            public void Clear()
+            {
+                _dictionary.Clear();
+            }
+
+            public bool Contains(KeyValuePair<string, string> item)
+            {
+                return _dictionary.Contains(item);
+            }
+
+            public void CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
+            {
+                _dictionary.CopyTo(array, arrayIndex);
+            }
+
+            public bool Remove(KeyValuePair<string, string> item)
+            {
+                return _dictionary.Remove(item);
+            }
+
+            public int Count { get { return _dictionary.Count; } }
+            public bool IsReadOnly { get { return _dictionary.IsReadOnly; } }
+
+            #endregion
+
+            #region Implementation of IDictionary<string,string>
+
+            public bool ContainsKey(string key)
+            {
+                return _dictionary.ContainsKey(key);
+            }
+
+            public void Add(string key, string value)
+            {
+                _dictionary.Add(key, value);
+            }
+
+            public bool Remove(string key)
+            {
+                return _dictionary.Remove(key);
+            }
+
+            public bool TryGetValue(string key, out string value)
+            {
+                return _dictionary.TryGetValue(key, out value);
+            }
+
+            public string this[string key]
+            {
+                get { return _dictionary[key]; }
+                set { _dictionary[key] = value; }
+            }
+
+            public ICollection<string> Keys { get { return _dictionary.Keys; } }
+            public ICollection<string> Values { get { return _dictionary.Values; } }
+
+            #endregion
+
+            public void Save()
+            {
+                var json = JsonConvert.SerializeObject(_dictionary);
+                _store._setAccessor(json);
+            }
         }
 
         #region Implementation of IDataStore
 
         public async Task StoreAsync<T>(string key, T value)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curUserDO = uow.UserRepository.GetByKey(_userId);
-                if (curUserDO == null)
-                    throw new NullReferenceException(string.Format("No user found with id: {0}", _userId));
-                var store = GetStore(curUserDO.GoogleAuthData);
-                store[key] = JsonConvert.SerializeObject(value);
-                curUserDO.GoogleAuthData = JsonConvert.SerializeObject(store);
-                uow.SaveChanges();
-            }
+            var store = StoreDictionary.GetStoreDictionary(this);
+            store[key] = JsonConvert.SerializeObject(value);
+            store.Save();
         }
 
         public async Task DeleteAsync<T>(string key)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curUserDO = uow.UserRepository.GetByKey(_userId);
-                if (curUserDO == null)
-                    throw new NullReferenceException(string.Format("No user found with id: {0}", _userId));
-                var store = GetStore(curUserDO.GoogleAuthData);
-                store.Remove(key);
-                curUserDO.GoogleAuthData = JsonConvert.SerializeObject(store);
-                uow.SaveChanges();
-            }
+            var store = StoreDictionary.GetStoreDictionary(this);
+            store.Remove(key);
+            store.Save();
         }
 
         public async Task<T> GetAsync<T>(string key)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curUserDO = uow.UserRepository.GetByKey(_userId);
-                if (curUserDO == null)
-                    throw new NullReferenceException(string.Format("No user found with id: {0}", _userId));
-                var store = GetStore(curUserDO.GoogleAuthData);
-                string value;
-                return store.TryGetValue(key, out value)
-                           ? JsonConvert.DeserializeObject<T>(value)
-                           : default(T);
-            }
+            var store = StoreDictionary.GetStoreDictionary(this);
+            string value;
+            return store.TryGetValue(key, out value)
+                       ? JsonConvert.DeserializeObject<T>(value)
+                       : default(T);
         }
 
         public async Task ClearAsync()
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curUserDO = uow.UserRepository.GetByKey(_userId);
-                if (curUserDO == null)
-                    throw new NullReferenceException(string.Format("No user found with id: {0}", _userId));
-                var store = GetStore(curUserDO.GoogleAuthData);
-                store.Clear();
-                curUserDO.GoogleAuthData = JsonConvert.SerializeObject(store);
-                uow.SaveChanges();
-            }
+            var store = StoreDictionary.GetStoreDictionary(this);
+            store.Clear();
+            store.Save();
         }
 
         #endregion

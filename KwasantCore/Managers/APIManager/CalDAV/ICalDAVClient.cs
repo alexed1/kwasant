@@ -8,7 +8,7 @@ namespace KwasantCore.Managers.APIManager.CalDAV
 {
     public interface ICalDAVClient
     {
-        Task<IEnumerable<iCalendar>> GetEventsAsync(ICalendar calendarInfo, DateTimeOffset from, DateTimeOffset to);
-        Task CreateEventAsync(ICalendar calendarInfo, iCalendar calendarEvent);
+        Task<IEnumerable<iCalendar>> GetEventsAsync(IRemoteCalendarLink calendarLink, DateTimeOffset @from, DateTimeOffset to);
+        Task CreateEventAsync(IRemoteCalendarLink calendarLink, iCalendar calendarEvent);
     }
 }

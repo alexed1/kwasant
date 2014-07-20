@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Data.Constants
 {
-    public class EventCreateType
+    public class EventSyncStatus
     {
-        public const int KwasantBR = 1;
-        public const int RemoteCalendar = 2;
+        public const int DoNotSync = 1;
+        public const int SyncWithExternal = 2;
     }
 }

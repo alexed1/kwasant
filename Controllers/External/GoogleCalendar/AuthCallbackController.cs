@@ -9,7 +9,7 @@ namespace KwasantWeb.Controllers.External.GoogleCalendar
     {
         protected override FlowMetadata FlowData
         {
-            get { return new GoogleCalendarAuthorizer(this.GetUserId()).FlowMetadata; }
+            get { return new GoogleCalendarAuthorizer().CreateFlowMetadata(this.GetUserId()); }
         }
     }
 }

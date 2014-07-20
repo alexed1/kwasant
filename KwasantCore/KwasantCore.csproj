@@ -146,13 +146,10 @@
     <Compile Include="Managers\APIManager\CalDAV\CalDAVModels.cs" />
     <Compile Include="Managers\APIManager\CalDAV\CalDAVClientFactory.cs" />
     <Compile Include="Managers\APIManager\CalDAV\CalDAVClient.cs" />
-    <Compile Include="Managers\APIManager\CalDAV\Google\GoogleOAuthHttpChannel.cs" />
-    <Compile Include="Managers\APIManager\CalDAV\Google\GoogleCalDAVEndPoint.cs" />
     <Compile Include="Managers\APIManager\CalDAV\ICalDAVClient.cs" />
     <Compile Include="Managers\APIManager\CalDAV\ICalDAVClientFactory.cs" />
-    <Compile Include="Managers\APIManager\CalDAV\ICalDAVEndPoint.cs" />
     <Compile Include="Managers\APIManager\CalDAV\IHttpChannel.cs" />
-    <Compile Include="Managers\APIManager\CalDAV\OAuthHttpChannelBase.cs" />
+    <Compile Include="Managers\APIManager\CalDAV\OAuthHttpChannel.cs" />
     <Compile Include="Managers\APIManager\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />
     <Compile Include="Helper\UsersAdminData.cs" />

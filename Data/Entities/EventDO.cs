@@ -61,9 +61,15 @@ namespace Data.Entities
 
         public virtual EventCreateTypeDO CreateType { get; set; }
 
+        [ForeignKey("SyncStatus"), Required]
+        public int SyncStatusID { get; set; }
+
+        public virtual EventSyncStatusDO SyncStatus { get; set; }
+
         public EventDO()
         {
             CreateTypeID = EventCreateType.KwasantBR;
+            SyncStatusID = EventSyncStatus.DoNotSync;
             Attendees = new List<AttendeeDO>();
             Emails = new List<EmailDO>();
         }

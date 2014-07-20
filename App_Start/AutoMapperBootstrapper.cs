@@ -66,9 +66,14 @@ namespace KwasantWeb.App_Start
                                                                        }
                                                                }));
 
-            Mapper.CreateMap<UserDO, ManageUserViewModel>()
-                .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(u => !string.IsNullOrEmpty(u.PasswordHash)))
-                .ForMember(mu => mu.GoogleCalendarAccessGranted, opts => opts.ResolveUsing(u => u.GrantedAccessToGoogleCalendar));
+            Mapper.CreateMap<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserViewModel>()
+                .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(tuple => !string.IsNullOrEmpty(tuple.Item1.PasswordHash)))
+                .ForMember(mu => mu.RemoteCalendars, opts => opts.ResolveUsing(tuple => tuple.Item2
+                    .Select(p => new RemoteCalendarViewModel()
+                                     {
+                                         Provider = p.Name,
+                                         AccessGranted = tuple.Item1.IsRemoteCalendarAccessGranted(p.Name)
+                                     })));
         }
     }
 }
