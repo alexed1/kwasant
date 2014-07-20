@@ -13,6 +13,21 @@ namespace Daemons
 {
     class CalendarSync : Daemon
     {
+        private readonly ICalDAVClientFactory _calDAVClientFactory;
+
+        public CalendarSync()
+            : this(ObjectFactory.GetInstance<ICalDAVClientFactory>())
+        {
+            
+        }
+
+        public CalendarSync(ICalDAVClientFactory calDAVClientFactory)
+        {
+            if (calDAVClientFactory == null)
+                throw new ArgumentNullException("calDAVClientFactory");
+            _calDAVClientFactory = calDAVClientFactory;
+        }
+
         #region Overrides of Daemon
 
         public override int WaitTimeBetweenExecution
@@ -30,7 +45,7 @@ namespace Daemons
                     {
                         try
                         {
-                            SyncManager syncManager = new SyncManager(new CalDAVClientFactory());
+                            SyncManager syncManager = new SyncManager(_calDAVClientFactory);
                             await syncManager.SyncNowAsync(uow, curUser);
                             uow.SaveChanges();
                         }

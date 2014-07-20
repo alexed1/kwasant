@@ -116,7 +116,9 @@ namespace KwasantCore.Managers
             var remoteEvents = await client.GetEventsAsync(calendarLink, @from, to);
             var incomingEvents = remoteEvents.Select(Event.CreateEventFromICSCalendar).Where(eventPredictor).ToArray();
             var calendar = calendarLink.LocalCalendar;
-            var existingEvents = calendar.Events.Where(eventPredictor).ToList();
+            Func<EventDO, bool> existingEventPredictor =
+                e => eventPredictor(e) && e.SyncStatusID == EventSyncStatus.SyncWithExternal;
+            var existingEvents = calendar.Events.Where(existingEventPredictor).ToList();
 
             foreach (var incomingEvent in incomingEvents)
             {
@@ -169,6 +171,7 @@ namespace KwasantCore.Managers
                     // created by remote
                     incomingEvent.StateID = EventState.DispatchCompleted;
                     incomingEvent.CreateTypeID = EventCreateType.RemoteCalendar;
+                    incomingEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;
                     incomingEvent.Calendar = (CalendarDO) calendar;
                     incomingEvent.CalendarID = calendar.Id;
                     incomingEvent.CreatedBy = calendar.Owner;

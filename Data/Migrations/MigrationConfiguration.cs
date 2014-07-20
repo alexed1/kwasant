@@ -45,6 +45,8 @@ namespace Data.Migrations
             AddRoles(unitOfWork);
             AddAdmins(unitOfWork);
             AddCustomers(unitOfWork);
+
+            SeedRemoteCalendarProviders(unitOfWork);
         }
 
         //Method to let us seed into memory as well
@@ -56,7 +58,6 @@ namespace Data.Migrations
             SeedConstants<EventSyncStatus, EventSyncStatusDO>(context, (id, name) => new EventSyncStatusDO { Id = id, Name = name });
             SeedConstants<ServiceAuthType, ServiceAuthorizationTypeDO>(context, (id, name) => new ServiceAuthorizationTypeDO() { Id = id, Name = name });
             SeedInstructions(context);
-            SeedRemoteCalendarProviders(context);
         }
 
         private static void SeedRemoteCalendarProviders(IUnitOfWork uow)
