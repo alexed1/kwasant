@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class AddCalendars : DbMigration
     {
         public override void Up()
@@ -28,7 +28,7 @@ INNER JOIN [dbo].[Calendars] AS [c] ON [br].[User_Id] = [c].[OwnerID]");
             CreateIndex("dbo.Events", "CalendarID");
             AddForeignKey("dbo.Events", "CalendarID", "dbo.Calendars", "Id", cascadeDelete: true);
         }
-        
+
         public override void Down()
         {
             AddColumn("dbo.Calendars", "PersonId", c => c.Int(nullable: false));

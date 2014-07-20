@@ -278,15 +278,12 @@ ga('send', 'pageview');
         <div class="light-bg">
             <div class="container">
                 <div class="row-fluid">
-                    <div class="span4">
+                    <div class="span6">
                         <h4>Get in touch</h4>
                         <div class="info-block">
                             <article class="clearfix">
                                 <i class="fa fa-globe"></i>
-                                <address>
-                                    3741 Buchanan Street<br />
-                                    San Francisco, CA 94123
-                                </address>
+                                <address>3741 Buchanan Street, San Francisco, CA 94123</address>
                             </article>
                             <article class="clearfix">
                                 <i class="fa fa-phone"></i>
@@ -298,7 +295,7 @@ ga('send', 'pageview');
                             </article>
                         </div>
                     </div>
-                    <div class="span4">
+                    <!--<div class="span4">
                         <h4>Follow us</h4>
                         <div class="social">
                             <ul class="unstyled clearfix">
@@ -324,8 +321,8 @@ ga('send', 'pageview');
                                 </li>
                             </ul>
                         </div>
-                    </div>
-                    <div class="span4">
+                    </div>-->
+                    <div class="span6">
                         <h4>Recent posts</h4>
                         <!-- <ul>
                                 <li><a href="#">Lorem ipsum dolor sit amet</a></li>

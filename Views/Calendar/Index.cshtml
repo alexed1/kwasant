@@ -10,7 +10,6 @@
 }
 @section styles{
     @Styles.Render("~/bundles/css/daypilot")
-    @Styles.Render("~/bundles/css/bootstrap30")
 }
 @section immediateScripts
 {
@@ -30,25 +29,43 @@
 <div class="jumbotron calendar-section jumbotron_new">
 	<div class="row">
         @*width: 420px;*@
+
+	
+		<nav class="navbar navbar-default top-toolbar-section" role="navigation">
+			<div class="container-fluid">
+
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li>
+						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
+						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
+						<li>@Html.ActionLink("Show Users", "Index", "User")</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
 		<div id="emailInfoBox" class="col-md-5 container_box emailInfoBox">
-            		<a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">
-				<button>Mark Processed</button>
-			</a><br />
-			<br />
 			<iframe id="frminfo" class="frminfo" onload="iframeLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style=""></iframe>
-            			<table id="tbluserrequests" class="email-info-tabele">
+            	<table id="tbluserrequests" class="email-info-tabele">
 					<thead>
-                    			<tr>
-						<th>Date Received</th>
-						<th>Subject</th>
-					</tr>
+                    	<tr>
+							<th>Date Received</th>
+							<th>Subject</th>
+						</tr>
 					</thead>
 				</table>
 			<br />
-			<br />
-			<a id="btnRequestClarification" class="btnRequestClarification" href="#">
-				<button>Request Clarification</button>
-			</a>
+			<br />			
 		</div>
 
 		<div id="divCalender" class="col-md-6 container_box divCalender">
@@ -161,10 +178,8 @@
 						TimeRangeSelectedJavaScript = "eventNew(start, end)",
 					})
 				</div>
-
 			</div>
 		</div>
-
 		<div class="col-lg-2 container_box calendar-area">
 			@Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
 			{
@@ -173,14 +188,7 @@
 				ShowMonths = 1
 			})
 		</div>
-
 	</div>
-</div>
-<div class="row">
-	@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")
-</div>
-<div class="row">
-	@Html.ActionLink("Show Users", "Index", "User")
 </div>
 <input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid" />
 
