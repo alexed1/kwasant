@@ -64,6 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CalendarSync.cs" />
     <Compile Include="Daemon.cs" />
     <Compile Include="EventExposers\GmailPackagerEventHandler.cs" />
     <Compile Include="EventExposers\ExposedEvent.cs" />

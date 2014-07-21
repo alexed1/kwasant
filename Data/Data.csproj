@@ -97,14 +97,25 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants\BRState.cs" />
+    <Compile Include="Constants\EventCreateType.cs" />
     <Compile Include="Constants\EventState.cs" />
+    <Compile Include="Constants\EventSyncStatus.cs" />
     <Compile Include="Constants\InstructionConstants.cs" />
+    <Compile Include="Constants\ServiceAuthType.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\BookingRequestStatusDO.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
+    <Compile Include="Entities\EventSyncStatusDO.cs" />
+    <Compile Include="Entities\EventCreateTypeDO.cs" />
     <Compile Include="Entities\EventStatusDO.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
+    <Compile Include="Interfaces\IRemoteCalendarLink.cs" />
+    <Compile Include="Interfaces\IRemoteCalendarAuthData.cs" />
+    <Compile Include="Entities\RemoteCalendarAuthDataDO.cs" />
+    <Compile Include="Entities\RemoteCalendarLinkDO.cs" />
+    <Compile Include="Entities\ServiceAuthorizationTypeDO.cs" />
+    <Compile Include="Interfaces\IRemoteCalendarProvider.cs" />
     <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
@@ -117,6 +128,7 @@
     <Compile Include="Entities\Enumerations\EmailStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingStatus.cs" />
     <Compile Include="Entities\Enumerations\TrackingType.cs" />
+    <Compile Include="Entities\RemoteCalendarProviderDO.cs" />
     <Compile Include="Infrastructure\IncidentReporter.cs" />
     <Compile Include="Infrastructure\JSONDataStore.cs" />
     <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
@@ -286,17 +298,37 @@
     <Compile Include="Migrations\201407100603524_rename_Kacts_to_Facts.Designer.cs">
       <DependentUpon>201407100603524_rename_Kacts_to_Facts.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407062022003_AddEventDateCreated.cs" />
+    <Compile Include="Migrations\201407062022003_AddEventDateCreated.Designer.cs">
+      <DependentUpon>201407062022003_AddEventDateCreated.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201407110934086_change_datetime_to_offset_Fact.cs" />
     <Compile Include="Migrations\201407110934086_change_datetime_to_offset_Fact.Designer.cs">
       <DependentUpon>201407110934086_change_datetime_to_offset_Fact.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407101853377_AddEventCreateType.cs" />
+    <Compile Include="Migrations\201407101853377_AddEventCreateType.Designer.cs">
+      <DependentUpon>201407101853377_AddEventCreateType.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201407141107371_AddIncidentDO.cs" />
     <Compile Include="Migrations\201407141107371_AddIncidentDO.Designer.cs">
       <DependentUpon>201407141107371_AddIncidentDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201407151914079_Sync-15.07.2014.cs" />
-    <Compile Include="Migrations\201407151914079_Sync-15.07.2014.Designer.cs">
-      <DependentUpon>201407151914079_Sync-15.07.2014.cs</DependentUpon>
+    <Compile Include="Migrations\201407111624232_AddCalendarLastSynchronized.cs" />
+    <Compile Include="Migrations\201407111624232_AddCalendarLastSynchronized.Designer.cs">
+      <DependentUpon>201407111624232_AddCalendarLastSynchronized.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407112156274_ChangeAttendeesPK.cs" />
+    <Compile Include="Migrations\201407112156274_ChangeAttendeesPK.Designer.cs">
+      <DependentUpon>201407112156274_ChangeAttendeesPK.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407151902060_Sync-15.07.2014.cs" />
+    <Compile Include="Migrations\201407151902060_Sync-15.07.2014.Designer.cs">
+      <DependentUpon>201407151902060_Sync-15.07.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407181411172_RemoteCalendar.cs" />
+    <Compile Include="Migrations\201407181411172_RemoteCalendar.Designer.cs">
+      <DependentUpon>201407181411172_RemoteCalendar.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -306,6 +338,9 @@
     <Compile Include="Repositories\BookingRequestRepository.cs" />
     <Compile Include="Repositories\CalendarRepository.cs" />
     <Compile Include="Repositories\BookingRequestStatusRepository.cs" />
+    <Compile Include="Repositories\RemoteCalendarLinkRepository.cs" />
+    <Compile Include="Repositories\RemoteCalendarAuthDataRepository.cs" />
+    <Compile Include="Repositories\RemoteCalendarProviderRepository.cs" />
     <Compile Include="Repositories\EventStatusRepository.cs" />
     <Compile Include="Repositories\IncidentRepository.cs" />
     <Compile Include="Repositories\FactRepository.cs" />
@@ -462,20 +497,35 @@
     <EmbeddedResource Include="Migrations\201407020904132_Sync-02.07.2014.resx">
       <DependentUpon>201407020904132_Sync-02.07.2014.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407100603524_rename_Kacts_to_Facts.resx">
+      <DependentUpon>201407100603524_rename_Kacts_to_Facts.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407032120396_AddCalendars.resx">
       <DependentUpon>201407032120396_AddCalendars.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201407100603524_rename_Kacts_to_Facts.resx">
-      <DependentUpon>201407100603524_rename_Kacts_to_Facts.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201407062022003_AddEventDateCreated.resx">
+      <DependentUpon>201407062022003_AddEventDateCreated.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407110934086_change_datetime_to_offset_Fact.resx">
       <DependentUpon>201407110934086_change_datetime_to_offset_Fact.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407101853377_AddEventCreateType.resx">
+      <DependentUpon>201407101853377_AddEventCreateType.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407141107371_AddIncidentDO.resx">
       <DependentUpon>201407141107371_AddIncidentDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201407151914079_Sync-15.07.2014.resx">
-      <DependentUpon>201407151914079_Sync-15.07.2014.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201407111624232_AddCalendarLastSynchronized.resx">
+      <DependentUpon>201407111624232_AddCalendarLastSynchronized.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407112156274_ChangeAttendeesPK.resx">
+      <DependentUpon>201407112156274_ChangeAttendeesPK.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407151902060_Sync-15.07.2014.resx">
+      <DependentUpon>201407151902060_Sync-15.07.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407181411172_RemoteCalendar.resx">
+      <DependentUpon>201407181411172_RemoteCalendar.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

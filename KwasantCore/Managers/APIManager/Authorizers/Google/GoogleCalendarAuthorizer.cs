@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
@@ -9,63 +10,49 @@ using Utilities;
 
 namespace KwasantCore.Managers.APIManager.Authorizers.Google
 {
-    public class GoogleCalendarAuthorizer
+    public class GoogleCalendarAuthorizer : IOAuthAuthorizer
     {
-        class AuthorizationCodeFlow : GoogleAuthorizationCodeFlow
+        public FlowMetadata CreateFlowMetadata(string userId, string email = null, string callbackUrl = null)
         {
-            private readonly string _email;
-
-            public AuthorizationCodeFlow(Initializer initializer, string email)
-                : base(initializer)
-            {
-                _email = email;
-            }
-
-            public override AuthorizationCodeRequestUrl CreateAuthorizationCodeRequest(string redirectUri)
-            {
-                var url = base.CreateAuthorizationCodeRequest(redirectUri);
-                var googleUrl = url as GoogleAuthorizationCodeRequestUrl;
-                if (googleUrl != null)
-                {
-                    googleUrl.AccessType = "offline";
-                    googleUrl.ApprovalPrompt = "force";
-                    googleUrl.LoginHint = _email;
-                }
-                return url;
-            }
+            return new AppFlowMetadata(userId, email, callbackUrl);
         }
 
-        private readonly AppFlowMetadata _flowMetadata;
-
-        public GoogleCalendarAuthorizer(string userId, string email = null)
+        private IAuthorizationCodeFlow CreateFlow(string userId)
         {
-            UserId = userId;
-
-            _flowMetadata = new AppFlowMetadata(userId, email);
+            return CreateFlowMetadata(userId).Flow;
         }
 
-        public string UserId { get; private set; }
-        public FlowMetadata FlowMetadata { get { return _flowMetadata; } }
-        public IAuthorizationCodeFlow Flow { get { return _flowMetadata.Flow; } }
-
-        public async Task<AuthorizationCodeWebApp.AuthResult> AuthorizeAsync(string callbackUrl, string currentUrl, CancellationToken cancellationToken)
+        public async Task<AuthorizationCodeWebApp.AuthResult> AuthorizeAsync(string userId, string email, string callbackUrl, string currentUrl, CancellationToken cancellationToken)
         {
-            _flowMetadata.SetCallbackUrl(callbackUrl);
-            return await new AuthorizationCodeWebApp(Flow, _flowMetadata.AuthCallback, currentUrl)
-                             .AuthorizeAsync(UserId, CancellationToken.None);
+            var flowMetadata = CreateFlowMetadata(userId, email, callbackUrl);
+            return await new AuthorizationCodeWebApp(flowMetadata.Flow, flowMetadata.AuthCallback, currentUrl)
+                             .AuthorizeAsync(userId, CancellationToken.None);
         }
 
-        public async Task RevokeAccessTokenAsync(CancellationToken cancellationToken)
+        public async Task RevokeAccessTokenAsync(string userId, CancellationToken cancellationToken)
         {
-            var tokenResponse = await Flow.LoadTokenAsync(UserId, cancellationToken);
-            await Flow.RevokeTokenAsync(UserId, tokenResponse.AccessToken, cancellationToken);
-            await Flow.DeleteTokenAsync(UserId, cancellationToken);
+            var flow = CreateFlow(userId);
+            var tokenResponse = await flow.LoadTokenAsync(userId, cancellationToken);
+            await flow.RevokeTokenAsync(userId, tokenResponse.AccessToken, cancellationToken);
+            await flow.DeleteTokenAsync(userId, cancellationToken);
         }
 
-        public async Task RefreshTokenAsync(CancellationToken cancellationToken)
+        public async Task RefreshTokenAsync(string userId, CancellationToken cancellationToken)
         {
-            var tokenResponse = await Flow.LoadTokenAsync(UserId, cancellationToken);
-            await Flow.RefreshTokenAsync(UserId, tokenResponse.RefreshToken, cancellationToken);
+            var flow = CreateFlow(userId);
+            var tokenResponse = await flow.LoadTokenAsync(userId, cancellationToken);
+            if (tokenResponse == null)
+                throw new UnauthorizedAccessException(string.Format("No refresh token found for user '{0}'.", userId));
+            await flow.RefreshTokenAsync(userId, tokenResponse.RefreshToken, cancellationToken);
+        }
+
+        public async Task<string> GetAccessTokenAsync(string userId, CancellationToken cancellationToken)
+        {
+            var flow = CreateFlow(userId);
+            var tokenResponse = await flow.LoadTokenAsync(userId, cancellationToken);
+            if (tokenResponse == null)
+                throw new UnauthorizedAccessException(string.Format("No access token found for user '{0}'.", userId));
+            return tokenResponse.AccessToken;
         }
     }
 }

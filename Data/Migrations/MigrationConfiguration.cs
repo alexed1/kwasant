@@ -12,6 +12,7 @@ using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Newtonsoft.Json;
 using Utilities;
 
 namespace Data.Migrations
@@ -44,6 +45,8 @@ namespace Data.Migrations
             AddRoles(unitOfWork);
             AddAdmins(unitOfWork);
             AddCustomers(unitOfWork);
+
+            SeedRemoteCalendarProviders(unitOfWork);
         }
 
         //Method to let us seed into memory as well
@@ -51,7 +54,35 @@ namespace Data.Migrations
         {
             SeedConstants<EventState, EventStatusDO>(context, (id, name) => new EventStatusDO { Id = id, Name = name });
             SeedConstants<BRState, BookingRequestStatusDO>(context, (id, name) => new BookingRequestStatusDO { Id = id, Name = name });
+            SeedConstants<EventCreateType, EventCreateTypeDO>(context, (id, name) => new EventCreateTypeDO { Id = id, Name = name });
+            SeedConstants<EventSyncStatus, EventSyncStatusDO>(context, (id, name) => new EventSyncStatusDO { Id = id, Name = name });
+            SeedConstants<ServiceAuthType, ServiceAuthorizationTypeDO>(context, (id, name) => new ServiceAuthorizationTypeDO() { Id = id, Name = name });
             SeedInstructions(context);
+        }
+
+        private static void SeedRemoteCalendarProviders(IUnitOfWork uow)
+        {
+            var providers = new []
+                                {
+                                    new RemoteCalendarProviderDO()
+                                        {
+                                            Name = "Google",
+                                            AuthTypeID = ServiceAuthType.OAuth2,
+                                            AppCreds = JsonConvert.SerializeObject(
+                                                new
+                                                    {
+                                                        ClientId = ConfigRepository.Get("GoogleCalendarClientId"),
+                                                        ClientSecret = ConfigRepository.Get("GoogleCalendarClientSecret"),
+                                                        Scopes = "https://www.googleapis.com/auth/calendar"
+                                                    }),
+                                            CalDAVEndPoint = "https://apidata.googleusercontent.com/caldav/v2"
+                                        },
+                                };
+            foreach (var provider in providers)
+            {
+                if (uow.RemoteCalendarProviderRepository.GetByName(provider.Name) == null)
+                    uow.RemoteCalendarProviderRepository.Add(provider);
+            }
         }
 
         private static void SeedConstants<TConstantsType, TConstantDO>(IUnitOfWork uow, Func<int, string, TConstantDO> creatorFunc)

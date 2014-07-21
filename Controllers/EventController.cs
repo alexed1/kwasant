@@ -111,6 +111,7 @@ namespace KwasantWeb.Controllers
                     throw new ApplicationException("should not be able to call this Update method with an ID that doesn't match an existing event");
 
                 Mapper.Map(eventVM, existingEvent);
+                existingEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;
                 _attendee.ManageAttendeeList(uow, existingEvent, eventVM.Attendees);
 
                 _event.Process(uow, existingEvent);

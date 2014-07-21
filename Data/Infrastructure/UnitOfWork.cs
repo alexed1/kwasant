@@ -88,6 +88,36 @@ namespace Data.Infrastructure
             }
         }
 
+        private RemoteCalendarProviderRepository _remoteCalendarProviderRepository;
+
+        public RemoteCalendarProviderRepository RemoteCalendarProviderRepository
+        {
+            get
+            {
+                return _remoteCalendarProviderRepository ?? (_remoteCalendarProviderRepository = new RemoteCalendarProviderRepository(this));
+            }
+        }
+
+        private RemoteCalendarAuthDataRepository _remoteCalendarAuthDataRepository;
+
+        public RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository
+        {
+            get
+            {
+                return _remoteCalendarAuthDataRepository ?? (_remoteCalendarAuthDataRepository = new RemoteCalendarAuthDataRepository(this));
+            }
+        }
+
+        private RemoteCalendarLinkRepository _remoteCalendarLinkRepository;
+
+        public RemoteCalendarLinkRepository RemoteCalendarLinkRepository
+        {
+            get
+            {
+                return _remoteCalendarLinkRepository ?? (_remoteCalendarLinkRepository = new RemoteCalendarLinkRepository(this));
+            }
+        }
+
         private ClarificationRequestRepository _clarificationRequestRepository;
 
         public ClarificationRequestRepository ClarificationRequestRepository

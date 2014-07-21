@@ -9,13 +9,25 @@
 <p class="text-success">@ViewBag.StatusMessage</p>
 <div class="row">
     <div class="col-md-12">
-        @if (!Model.GoogleCalendarAccessGranted)
+        @foreach (var remoteCalendar in Model.RemoteCalendars)
         {
-            @Html.ActionLink("Grant Access to Google Calendar", "GrantGoogleCalendarAccess", null, new { @class = "btn btn-default" })
-        }
-        else
-        {
-            @Html.ActionLink("Revoke Access to Google Calendar", "RevokeGoogleCalendarAccess", null, new { @class = "btn btn-default" })
+            if (!remoteCalendar.AccessGranted)
+            {
+                @Html.ActionLink(
+                    string.Format("Grant Access to {0} Calendar", remoteCalendar.Provider), 
+                    "GrantRemoteCalendarAccess", 
+                    new { providerName = remoteCalendar.Provider }, 
+                    new { @class = "btn btn-default" })
+            }
+            else
+            {
+                @Html.ActionLink(
+                    string.Format("Revoke Access to {0} Calendar", remoteCalendar.Provider),
+                    "RevokeRemoteCalendarAccess",
+                    new {providerName = remoteCalendar.Provider},
+                    new {@class = "btn btn-default"})
+            }
+            <br/>
         }
     </div>
 </div>

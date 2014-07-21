@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
+using Data.Constants;
 
 namespace Data.Entities
 {
@@ -50,12 +51,25 @@ namespace Data.Entities
         public virtual List<EmailDO> Emails { get; set; }
 
         [ForeignKey("BookingRequest")]
-        public int BookingRequestID { get; set; }
+        public int? BookingRequestID { get; set; }
         public virtual BookingRequestDO BookingRequest { get; set; }
 
+        public DateTimeOffset DateCreated { get; set; }
+
+        [ForeignKey("CreateType"), Required]
+        public int CreateTypeID { get; set; }
+
+        public virtual EventCreateTypeDO CreateType { get; set; }
+
+        [ForeignKey("SyncStatus"), Required]
+        public int SyncStatusID { get; set; }
+
+        public virtual EventSyncStatusDO SyncStatus { get; set; }
 
         public EventDO()
         {
+            CreateTypeID = EventCreateType.KwasantBR;
+            SyncStatusID = EventSyncStatus.DoNotSync;
             Attendees = new List<AttendeeDO>();
             Emails = new List<EmailDO>();
         }
