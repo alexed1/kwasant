@@ -104,6 +104,7 @@ namespace Daemons
                    (new BookingRequest()).Process(unitOfWork, bookingRequest);
                     unitOfWork.SaveChanges();
                     AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+                  //AlertManager.BookingRequestStateChange(bookingRequest.Id, bookingRequest.User.Id, 1);
                 }
                 catch (Exception e)
                 {

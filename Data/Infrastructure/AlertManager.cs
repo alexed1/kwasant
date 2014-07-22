@@ -29,6 +29,9 @@ namespace Data.Infrastructure
         public delegate void IncidentCreatedHandler(string dateReceived, string errorMessage);
         public static event IncidentCreatedHandler AlertEmailProcessingFailure;
 
+        public delegate void BookingRequestStateChangeHandler( BookingRequestDO bookingRequestDO, string status);
+        public static event BookingRequestStateChangeHandler AlertBookingRequestStateChange;
+
         #region Method
         
         /// <summary>
@@ -67,7 +70,12 @@ namespace Data.Infrastructure
             if (AlertEmailProcessingFailure != null)
                 AlertEmailProcessingFailure(dateReceived, errorMessage);
         }
-   
+
+        public static void BookingRequestStateChange(BookingRequestDO bookingRequestDO, string status)
+        {
+            if (AlertBookingRequestStateChange != null)
+                AlertBookingRequestStateChange(bookingRequestDO, status);
+        }
         #endregion
     }
 
@@ -81,6 +89,7 @@ namespace Data.Infrastructure
             AlertManager.AlertEventBooked += NewEventBooked;
             AlertManager.AlertEmailSent += EmailDispatched;
             AlertManager.AlertBookingRequestCreated += ProcessBookingRequestCreated;
+            AlertManager.AlertBookingRequestStateChange += ProcessBookingRequestStateChange;
         }
         public void NewEmailReceived(int emailId, string customerId)
         {
@@ -140,6 +149,26 @@ namespace Data.Infrastructure
             if (CloudConfigurationManager.GetSetting("LogLevel") == "Verbose")
                 Logger.GetLogger().Info(curAction.Data);
             uow.FactRepository.Add(curAction);
+        }
+        public void ProcessBookingRequestStateChange(BookingRequestDO bookingRequestDO, string status)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                FactDO curAction = new FactDO()
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "None",
+                    Activity = "StateChange",
+                    CustomerId = bookingRequestDO.User.Id,
+                    ObjectId = bookingRequestDO.Id,
+                    Status = status,
+                    CreateDate = DateTimeOffset.Now,
+                };
+                curAction.Data = "BookingRequestStateChange : BookRequestID= " + bookingRequestDO.Id;
+                Logger.GetLogger().Info(curAction.Data);
+                uow.FactRepository.Add(curAction);
+                uow.SaveChanges();
+            }
         }
         private void SaveFact(FactDO curAction)
         {
