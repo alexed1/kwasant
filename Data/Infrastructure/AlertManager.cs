@@ -164,10 +164,11 @@ namespace Data.Infrastructure
                     Status = status,
                     CreateDate = DateTimeOffset.Now,
                 };
-                curAction.Data = "BookingRequestStateChange : BookRequestID= " + bookingRequestDO.Id;
+                curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
                 Logger.GetLogger().Info(curAction.Data);
                 uow.FactRepository.Add(curAction);
                 uow.SaveChanges();
+                
             }
         }
         private void SaveFact(FactDO curAction)

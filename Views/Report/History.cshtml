@@ -1,4 +1,4 @@
-﻿<h2> History Report</h2>
+﻿<h2>History Report</h2>
 <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 <style>
@@ -33,7 +33,11 @@
     <table>
         <tr>
             <td>
-                <select id="ddlPrimaryCategory" style="width:200px;">
+               Object Type:
+            </td>
+            <td>
+
+                <select id="ddlPrimaryCategory" style="width: 200px;">
                     <option value="BookingRequest">BookingRequest</option>
                     <option value="Event">Event</option>
                     <option value="Email">Email</option>
@@ -42,12 +46,16 @@
         </tr>
         <tr>
             <td>
-               <input type="text" id="txtBookingRequestId" name="txtBookingRequestId" style="width:200px;" />
+               Object Id:
+            </td>
+            <td>
+                <input type="text" id="txtBookingRequestId" name="txtBookingRequestId" style="width: 200px;" />
             </td>
         </tr>
         <tr>
+           <td></td>
             <td>
-               <input type="button" value="Update" id="bntUpdate" name="bntUpdate"/>
+                <input type="button" value="Update" id="bntUpdate" name="bntUpdate" />
             </td>
         </tr>
     </table>
@@ -70,7 +78,7 @@
 </table>
 
 <script type="text/javascript">
- 
+
     var queryPeriod = "all";
     $('#tblHistoryReport').hide();
     $("#ddlPrimaryCategory").change(function () {
@@ -80,8 +88,7 @@
     $('#bntUpdate').click(function () {
         showHistoryReport();
     });
-    function showHistoryReport()
-    {
+    function showHistoryReport() {
         $.getJSON("/Report/ShowHistoryReport", { primaryCategory: $('#ddlPrimaryCategory').val(), bookingRequestId: $('#txtBookingRequestId').val(), queryPeriod: queryPeriod }, showHistoryReport);
         function showHistoryReport(response) {
             $('#tblHistoryReport').show();
