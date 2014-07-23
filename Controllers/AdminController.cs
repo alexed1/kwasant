@@ -22,5 +22,10 @@ namespace KwasantWeb.Controllers
         //    //foreach Booking, process it
         //}
 
+        public ActionResult Dashboard()
+        {
+            return View("Index");
+        } 
+
     }
 }
