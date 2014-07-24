@@ -1,9 +1,23 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";}
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-    <h2>Kwasant Admin Console</h2>
-    @Html.ActionLink("Show Booking Requests", "Index", "BookingRequest", null, new { @class = "" }) 
-    @Html.ActionLink("Show Incident Report", "Index", "Report", new { type = "incident" }, new { @class = "" })
-    @Html.ActionLink("Show Usage Report", "Index", "Report", new { type = "usage" }, new { @class = "" })
-    <a href="/Website/index.aspx">Go to kwasant.com</a>
+<html>
+<body>
+    <h1>Kwasant Admin Console</h1>
 
+    @Html.ActionLink("Show Booking Requests", "Index", "BookingRequest", null, new { @class = "btn-link" })
+    <p></p>
+
+    @Html.ActionLink("Show Incident Report", "Index", "Report", new { type = "incident" }, new { @class = "btn-link" })
+    <p></p>
+
+    @Html.ActionLink("Show Usage Report", "Index", "Report", new { type = "usage" }, new { @class = "btn-link" })
+    <p></p>
+
+    @Html.ActionLink("View History ", "History", "Report", new{area=""}, new { @class = "btn-link" })
+    <p></p>
+
+    <a href="/Website/index.aspx">Go to kwasant.com</a>.
+</body>
+</html>

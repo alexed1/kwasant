@@ -58,18 +58,33 @@ namespace KwasantTest.Controllers
 
         }
 
+       
+
         [Test]
         [Category("BRM")]
-        public void SetStatusTest()
+        public void MarkAsProcessedTest()
         {
             AddTestRequestData();
 
             BookingRequestController controller = new BookingRequestController();
             int id = _uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
-            JsonResult jsonResultActual = controller.SetStatus(id, BRState.Invalid) as JsonResult;
+            JsonResult jsonResultActual = controller.MarkAsProcessed(id) as JsonResult;
             Assert.AreEqual("Success", ((KwasantPackagedMessage)jsonResultActual.Data).Name);
-
         }
+
+        [Test]
+        [Category("BRM")]
+        public void InvalidateTest()
+        {
+            AddTestRequestData();
+
+            BookingRequestController controller = new BookingRequestController();
+            int id = _uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
+            JsonResult jsonResultActual = controller.Invalidate(id) as JsonResult;
+            Assert.AreEqual("Success", ((KwasantPackagedMessage)jsonResultActual.Data).Name);
+        }
+
+
 
         [Test]
         [Category("BRM")]

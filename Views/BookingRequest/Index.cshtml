@@ -44,9 +44,9 @@
 
             //This function will bind a click function on every button in table "tblbookingrequest"
             $('#tblbookingrequest tbody').on('click', 'button', function () {
+              
                 var data = table.row($(this).parents('tr')).data();
                 var parentcontrol = this;
-
                 //checking clicked button value for appropriate action this will be either "detail" or "invalid"
                 switch ($(this).val()) {
                     case "detail":
@@ -56,11 +56,11 @@
                     case "invalid":
                         //setting status of booking request to "INVALID" and removing the row
                         $.ajax({
-                            url: "/BookingRequest/SetStatus",
+                            url: "/BookingRequest/Invalidate",
                             dataType: "json",
                             contentType: "application/json",
                             type: "GET",
-                            data: { id: data.id, status: "@BRState.Invalid" },
+                            data: { id: data.id },
                             success: function (response) {
                                 if (response.Name == "Success") {
                                     //removing the current row
