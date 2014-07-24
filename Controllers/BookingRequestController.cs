@@ -79,6 +79,9 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                bookingRequestDO.BRState = Data.Constants.BRState.Processed;
+                bookingRequestDO.User = bookingRequestDO.User;
+                uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO, "Processed");
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
@@ -90,6 +93,9 @@ namespace KwasantWeb.Controllers
              using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
              {
                  BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                 bookingRequestDO.BRState = Data.Constants.BRState.Invalid;
+                 bookingRequestDO.User = bookingRequestDO.User;
+                 uow.SaveChanges();
                  AlertManager.BookingRequestStateChange(bookingRequestDO, "Invalid");
                  return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
              }
