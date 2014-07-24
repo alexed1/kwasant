@@ -4,6 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using Data.Constants;
+using Data.Entities.Enumerations;
+using EventCreateType = Data.Entities.Enumerations.EventCreateType;
+using EventSyncStatus = Data.Entities.Enumerations.EventSyncStatus;
 
 namespace Data.Entities
 {
@@ -24,7 +27,7 @@ namespace Data.Entities
 
         [ForeignKey("State")]
         public int StateID { get; set; }
-        public EventStatusDO State { get; set; }
+        public EventStatus State { get; set; }
 
         public string Transparency { get; set; }
         public string Class { get; set; }
@@ -59,17 +62,17 @@ namespace Data.Entities
         [ForeignKey("CreateType"), Required]
         public int CreateTypeID { get; set; }
 
-        public virtual EventCreateTypeDO CreateType { get; set; }
+        public virtual EventCreateType CreateType { get; set; }
 
         [ForeignKey("SyncStatus"), Required]
         public int SyncStatusID { get; set; }
 
-        public virtual EventSyncStatusDO SyncStatus { get; set; }
+        public virtual EventSyncStatus SyncStatus { get; set; }
 
         public EventDO()
         {
-            CreateTypeID = EventCreateType.KwasantBR;
-            SyncStatusID = EventSyncStatus.DoNotSync;
+            CreateTypeID = Constants.EventCreateType.KwasantBR;
+            SyncStatusID = Constants.EventSyncStatus.DoNotSync;
             Attendees = new List<AttendeeDO>();
             Emails = new List<EmailDO>();
         }

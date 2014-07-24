@@ -4,6 +4,10 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
+    /// <summary>
+    /// This entity contains information about access to remote calendar providers granted by customer.
+    /// The key field is AuthData that is JSON-string field with authorization data such as OAuth access and refresh token.
+    /// </summary>
     public class RemoteCalendarAuthDataDO : IRemoteCalendarAuthData
     {
         [Key]

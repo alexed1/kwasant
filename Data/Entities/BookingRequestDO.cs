@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 
 namespace Data.Entities
@@ -19,6 +20,6 @@ namespace Data.Entities
         [ForeignKey("BookingRequestStatus")]
         [Required]
         public int? BRState { get; set; }
-        public virtual BookingRequestStatusDO BookingRequestStatus { get; set; }
+        public virtual BookingRequestStatus BookingRequestStatus { get; set; }
     }
 }

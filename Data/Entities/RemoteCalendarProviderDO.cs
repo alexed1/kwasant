@@ -5,10 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 
 namespace Data.Entities
 {
+    /// <summary>
+    /// Presents a remote calendar provider such as Google, Yahoo, etc.
+    /// </summary>
     public class RemoteCalendarProviderDO : IRemoteCalendarProvider
     {
         [Key]
@@ -18,10 +22,16 @@ namespace Data.Entities
 
         [ForeignKey("AuthType"), Required]
         public int AuthTypeID { get; set; }
-        public virtual ServiceAuthorizationTypeDO AuthType { get; set; }
+        public virtual ServiceAuthorizationType AuthType { get; set; }
         
+        /// <summary>
+        /// JSON string for storing Kwasant application credentials for operating with provider (for instance: ClientId, ClientSecret and Scopes for OAuth authorization)
+        /// </summary>
         public string AppCreds { get; set; }
 
+        /// <summary>
+        /// Base url for accessing CalDAV API.
+        /// </summary>
         public string CalDAVEndPoint { get; set; }
     }
 }

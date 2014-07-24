@@ -4,7 +4,7 @@ using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Exceptions;
-using KwasantCore.Managers.CommunicationManager;
+using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using Utilities;
@@ -117,21 +117,21 @@ namespace KwasantCore.Services
         {
             if (iCalendar.Events.Count == 0)
                 throw new ArgumentException("iCalendar has no events.");
-            var remoteEvent = iCalendar.Events[0];
+            var icsEvent = iCalendar.Events[0];
             return new EventDO()
             {
-                Category = remoteEvent.Categories != null ? remoteEvent.Categories.FirstOrDefault() : null,
-                Class = remoteEvent.Class,
-                Description = remoteEvent.Description,
-                IsAllDay = remoteEvent.IsAllDay,
-                StartDate = remoteEvent.Start.UTC,
-                EndDate = remoteEvent.End.UTC,
-                Location = remoteEvent.Location,
-                Sequence = remoteEvent.Sequence,
-                Summary = remoteEvent.Summary,
-                Transparency = remoteEvent.Transparency.ToString(),
-                DateCreated = remoteEvent.Created.UTC,
-                Attendees = remoteEvent.Attendees
+                Category = icsEvent.Categories != null ? icsEvent.Categories.FirstOrDefault() : null,
+                Class = icsEvent.Class,
+                Description = icsEvent.Description,
+                IsAllDay = icsEvent.IsAllDay,
+                StartDate = icsEvent.Start.UTC,
+                EndDate = icsEvent.End.UTC,
+                Location = icsEvent.Location,
+                Sequence = icsEvent.Sequence,
+                Summary = icsEvent.Summary,
+                Transparency = icsEvent.Transparency.ToString(),
+                DateCreated = icsEvent.Created.UTC,
+                Attendees = icsEvent.Attendees
                     .Select(a => new AttendeeDO()
                     {
                         EmailAddress = new EmailAddressDO(a.Value.OriginalString.Remove(0, a.Value.Scheme.Length + 1)),

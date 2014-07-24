@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Managers;
-using KwasantCore.Managers.APIManager.CalDAV;
+using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantICS.DDay.iCal;
@@ -22,7 +20,7 @@ namespace KwasantTest.Managers
     {
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;
-        private SyncManager _syncManager;
+        private CalendarSyncManager _calendarSyncManager;
         private UserDO _curUser;
         private readonly List<iCalendar> _remoteCalendarEvents = new List<iCalendar>();
         private RemoteCalendarProviderDO _curProvider;
@@ -56,7 +54,7 @@ namespace KwasantTest.Managers
             _curAuthData = _fixtureData.TestRemoteCalendarAuthData(_curProvider, _curUser);
             _curUser.RemoteCalendarAuthData.Add(_curAuthData);
 
-            _syncManager = new SyncManager(clientFactoryMock.Object);
+            _calendarSyncManager = new CalendarSyncManager(clientFactoryMock.Object);
         }
 
         private void AssertEventsAreEqual(EventDO expectedEvent, EventDO actualEvent)
@@ -80,7 +78,7 @@ namespace KwasantTest.Managers
             // EXECUTE
             Assert.AreEqual(1, _remoteCalendarEvents.Count, "One event must be in the remote storage before synchronization.");
             Assert.AreEqual(0, _uow.EventRepository.GetAll().Count(), "No events must be in the repository before synchronization.");
-            await _syncManager.SyncNowAsync(_uow, _curUser);
+            await _calendarSyncManager.SyncNowAsync(_uow, _curUser);
 
             // VERIFY
             var events = _uow.EventRepository.GetAll().ToArray();
@@ -100,7 +98,7 @@ namespace KwasantTest.Managers
             // EXECUTE
             Assert.AreEqual(1, _uow.EventRepository.GetAll().Count(), "One event must be in the repository before synchronization.");
             Assert.AreEqual(0, _remoteCalendarEvents.Count, "No events must be in the remote storage before synchronization.");
-            await _syncManager.SyncNowAsync(_uow, _curUser);
+            await _calendarSyncManager.SyncNowAsync(_uow, _curUser);
 
             // VERIFY
             Assert.AreEqual(1, _remoteCalendarEvents.Count, "One event must be in the remote storage after synchronization.");
@@ -123,7 +121,7 @@ namespace KwasantTest.Managers
             // EXECUTE
             Assert.AreEqual(1, _uow.EventRepository.GetAll().Count(), "One event must be in the repository before synchronization.");
             Assert.AreEqual(0, _remoteCalendarEvents.Count, "No events must be in the remote storage before synchronization.");
-            await _syncManager.SyncNowAsync(_uow, _curUser);
+            await _calendarSyncManager.SyncNowAsync(_uow, _curUser);
 
             // VERIFY
             Assert.AreEqual(0, _uow.EventRepository.GetAll().Count(), "No events must be in the repository after synchronization.");
@@ -146,7 +144,7 @@ namespace KwasantTest.Managers
             // EXECUTE
             Assert.AreEqual(1, _uow.EventRepository.GetAll().Count(), "One event must be in the repository before synchronization.");
             Assert.AreEqual(1, _remoteCalendarEvents.Count, "One event must be in the remote storage before synchronization.");
-            await _syncManager.SyncNowAsync(_uow, _curUser);
+            await _calendarSyncManager.SyncNowAsync(_uow, _curUser);
 
             // VERIFY
             var localEvents = _uow.EventRepository.GetAll().ToArray();

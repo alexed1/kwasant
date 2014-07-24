@@ -1,9 +1,9 @@
 ﻿using System.Web.Mvc;
-using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Managers;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorizeAttribute(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         //

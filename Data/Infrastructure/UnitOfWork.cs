@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity.Validation;
 using System.Linq;
@@ -267,11 +268,6 @@ namespace Data.Infrastructure
             }
         }
 
-        public void Save()
-        {
-            _context.SaveChanges();
-        }
-
         protected virtual void Dispose(bool disposing)
         {
             if (_transaction != null)
@@ -292,13 +288,18 @@ namespace Data.Infrastructure
 
         public void Commit()
         {
-            _context.SaveChanges();
+            SaveChanges();
             _transaction.Complete();
             _transaction.Dispose();
         }
 
         public void SaveChanges()
         {
+            _context.DetectChanges();
+            var addedEntities = _context.AddedEntities;
+            var modifiedEntities = _context.ModifiedEntities;
+            var deletedEntities = _context.DeletedEntities;
+
             try
             {
                 _context.SaveChanges();
@@ -315,13 +316,67 @@ namespace Data.Infrastructure
                 }
                 throw new Exception(String.Join(Environment.NewLine + Environment.NewLine, errorList) + Environment.NewLine, e);
             }
+
+            OnEntitiesAdded(new EntitiesStateEventArgs(this, addedEntities));
+            OnEntitiesModified(new EntitiesStateEventArgs(this, modifiedEntities));
+            OnEntitiesDeleted(new EntitiesStateEventArgs(this, deletedEntities));
         }
-
-
 
         public IDBContext Db
         {
             get { return _context; }
+        }
+
+        /// <summary>
+        /// Occurs for entities added after they saved to db.
+        /// </summary>
+        public static event EntitiesStateHandler EntitiesAdded;
+        /// <summary>
+        /// Occurs for entities modified after they saved to db.
+        /// </summary>
+        public static event EntitiesStateHandler EntitiesModified;
+        /// <summary>
+        /// Occurs for entities deleted after they removed from db.
+        /// </summary>
+        public static event EntitiesStateHandler EntitiesDeleted;
+
+        private static void OnEntitiesAdded(EntitiesStateEventArgs args)
+        {
+            if (args.Entities == null || args.Entities.Length == 0)
+                return;
+            EntitiesStateHandler handler = EntitiesAdded;
+            if (handler != null) handler(null, args);
+        }
+
+        private static void OnEntitiesModified(EntitiesStateEventArgs args)
+        {
+            if (args.Entities == null || args.Entities.Length == 0)
+                return;
+            EntitiesStateHandler handler = EntitiesModified;
+            if (handler != null) handler(null, args);
+        }
+
+        private static void OnEntitiesDeleted(EntitiesStateEventArgs args)
+        {
+            if (args.Entities == null || args.Entities.Length == 0)
+                return;
+            EntitiesStateHandler handler = EntitiesDeleted;
+            if (handler != null) handler(null, args);
+        }
+
+    }
+
+    public delegate void EntitiesStateHandler(object sender, EntitiesStateEventArgs args);
+
+    public class EntitiesStateEventArgs : EventArgs
+    {
+        public IUnitOfWork UnitOfWork { get; private set; }
+        public object[] Entities { get; private set; }
+
+        public EntitiesStateEventArgs(IUnitOfWork unitOfWork, object[] entities)
+        {
+            UnitOfWork = unitOfWork;
+            Entities = entities;
         }
     }
 }

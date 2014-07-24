@@ -8,10 +8,11 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using DayPilot.Web.Mvc.Json;
-using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
+using EventSyncStatus = Data.Constants.EventSyncStatus;
 
 
 namespace KwasantWeb.Controllers

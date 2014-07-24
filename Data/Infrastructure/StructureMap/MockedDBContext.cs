@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
+using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
@@ -21,6 +22,7 @@ namespace Data.Infrastructure.StructureMap
         }
 
         private readonly Dictionary<Type, IEnumerable<object>> _cachedSets = new Dictionary<Type, IEnumerable<object>>();
+        private object[] _addedEntities;
         public int SaveChanges()
         {
             //When we save in memory, we need to make sure foreign entities are saved. An example:
@@ -32,16 +34,44 @@ namespace Data.Infrastructure.StructureMap
             //Looping causes us to pickup each foreign link and be sure everything is persisted in memory
             while (AddForeignValues() > 0) ;
 
-            var addedRows = GetAdds().ToList();
+            DetectChanges();
 
             AssignIDs();
 
             AssertConstraints();
             
-            foreach (var newBookingRequestDO in addedRows.OfType<BookingRequestDO>())
+            foreach (var newBookingRequestDO in _addedEntities.OfType<BookingRequestDO>())
                 AlertManager.BookingRequestCreated(this.UnitOfWork, newBookingRequestDO);
             
             return 1;
+        }
+
+        public void DetectChanges()
+        {
+            _addedEntities = GetAdds().ToArray();
+        }
+
+        public object[] AddedEntities
+        {
+            get { return _addedEntities; }
+        }
+
+        public object[] ModifiedEntities
+        {
+            get
+            {
+                // TODO: not supported currenty. May be implemented via hashcodes.
+                return new object[0];
+            }
+        }
+
+        public object[] DeletedEntities
+        {
+            get
+            {
+                // TODO: not supported currenty.
+                return new object[0];
+            }
         }
 
         private void AssertConstraints()
@@ -82,6 +112,7 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
+/*
         public List<KwasantDbContext.PropertyChangeInformation> GetEntityModifications<T>(T entity) where T : class
         {
             throw new NotImplementedException();
@@ -92,6 +123,7 @@ namespace Data.Infrastructure.StructureMap
             throw new NotImplementedException();
         }
 
+*/
         private void AssignIDs()
         {
             foreach (var set in _cachedSets)
@@ -200,7 +232,7 @@ namespace Data.Infrastructure.StructureMap
 
         private bool IsEntity(Type type)
         {
-            return type.Namespace == "Data.Entities";
+            return !string.IsNullOrEmpty(type.Namespace) && type.Namespace.StartsWith("Data.Entities");
         }
 
         public PropertyInfo EntityPrimaryKeyPropertyInfo(object entity)

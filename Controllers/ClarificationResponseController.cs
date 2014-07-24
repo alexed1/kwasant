@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Exceptions;
-using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;

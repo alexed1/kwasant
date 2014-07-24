@@ -6,10 +6,8 @@ using System.Web.Mvc;
 using System.Net;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Repositories;
-using KwasantCore.Managers.APIManager.Authorizers;
-using KwasantCore.Managers.APIManager.Authorizers.Google;
-using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Managers;
+using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -61,6 +59,8 @@ namespace KwasantWeb.Controllers
 
             if (result.Credential != null)
             {
+                // don't wait for this, run it async and return response to the user.
+                ObjectFactory.GetInstance<CalendarSyncManager>().SyncNowAsync(this.GetUserId());
                 return RedirectToAction("MyAccount", new { remoteCalendarAccessGranted = providerName });
             }
             else

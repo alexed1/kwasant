@@ -10,18 +10,21 @@ using StructureMap;
 namespace Data.Infrastructure
 {
     /// <summary>
-    /// Entity Framework implementation for storing Google tokens in the database.
+    /// Entity Framework implementation for storing dictionary form data in the database.
     /// </summary>
     /// <remarks>
-    /// JSONDataStore stores Google tokens at user's GoogleAuthData field in JSON format. 
-    /// As the data is generic the approach is to serialize a value to JSON first and then serialize entire pair.
-    /// In the same way at the first step of value retrieval GoogleAuthData string is deserialized into a string dictionary and at the second step string value under needed key deserialized into needed type instance.
+    /// Two-step JSON serialization. Firstly, every value from pair (key-value) is serialized to string. Secondly, all pairs (key-serialized_value) are serialized to JSON.
     /// </remarks>
     public class JSONDataStore : IDataStore
     {
         private readonly Func<string> _getAccessor;
         private readonly Action<string> _setAccessor;
 
+        /// <summary>
+        /// Constructs JSONDataStore
+        /// </summary>
+        /// <param name="getAccessor">Function to get JSON string value.</param>
+        /// <param name="setAccessor">Function to set JSON string value.</param>
         public JSONDataStore(Func<string> getAccessor, Action<string> setAccessor)
         {
             if (getAccessor == null)
@@ -143,8 +146,6 @@ namespace Data.Infrastructure
             }
         }
 
-        #region Implementation of IDataStore
-
         public async Task StoreAsync<T>(string key, T value)
         {
             var store = StoreDictionary.GetStoreDictionary(this);
@@ -174,7 +175,5 @@ namespace Data.Infrastructure
             store.Clear();
             store.Save();
         }
-
-        #endregion
     }
 }

@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Data.Entities;
 using Data.Interfaces;
+using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using KwasantCore.Services;
@@ -13,12 +14,11 @@ using System.Net.Mail;
 using Data.Infrastructure.StructureMap;
 using System;
 using Data.Repositories;
-using KwasantCore.Managers.IdentityManager;
 
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorizeAttribute(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Admin")]
     public class BookingRequestController : Controller
     {
         private DataTablesPackager _datatables;

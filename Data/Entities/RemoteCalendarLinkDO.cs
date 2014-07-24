@@ -5,6 +5,10 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
+    /// <summary>
+    /// A link between local Kwasant user's calendar and his calendar on a remote calendar provider.
+    /// Also it is a tracking record for synchronization progress.
+    /// </summary>
     public class RemoteCalendarLinkDO : IRemoteCalendarLink
     {
         [Key]
