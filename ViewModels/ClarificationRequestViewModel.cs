@@ -16,4 +16,11 @@ namespace KwasantWeb.ViewModels
         public string Question { get; set; }
         public int QuestionsCount { get; set; }
     }
+
+    public class NegotiationResponseViewModel
+    {
+        public int Id { get; set; }
+        public int Name { get; set; }
+        public List<NegotiationQuestionViewModel> Questions { get; set; }
+    }
 }

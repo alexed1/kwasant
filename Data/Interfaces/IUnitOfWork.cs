@@ -30,6 +30,8 @@ namespace Data.Interfaces
         IncidentRepository IncidentRepository { get; } 
 
         FactRepository FactRepository { get; }
+        QuestionRepository QuestionRepository { get; }
+        AnswerRepository AnswerRepository { get; }
 
         /// <summary>
         /// Call this to commit the unit of work
