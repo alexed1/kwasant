@@ -729,6 +729,8 @@
     <Content Include="Views\ClarificationResponse\AllAnswered.cshtml" />
     <Content Include="Views\User\MyAccount.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\Report\History.cshtml" />
+    <Content Include="Views\Report\_History.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

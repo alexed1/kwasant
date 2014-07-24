@@ -21,5 +21,11 @@ namespace KwasantWeb.Controllers
         //    //get all Bookings with status = "unprocessed"
         //    //foreach Booking, process it
         //}
+
+        public ActionResult Dashboard()
+        {
+            return View("Index");
+        } 
+
     }
 }
