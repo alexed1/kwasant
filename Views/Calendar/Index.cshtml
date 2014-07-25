@@ -1,9 +1,4 @@
-﻿@using DayPilot.Web.Mvc
-@using DayPilot.Web.Mvc.Enums
-@using DayPilot.Web.Mvc.Enums.Calendar
-@using DayPilot.Web.Mvc.Events.Calendar
-@using ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType
-@model Data.Entities.EmailDO
+﻿@model Data.Entities.EmailDO
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @{
 	ViewBag.Title = "Event ";
@@ -15,9 +10,11 @@
 {
 	@Scripts.Render("~/bundles/js/jquery")
 	@Scripts.Render("~/bundles/js/daypilot")
+    @Scripts.Render("~/bundles/js/kwasantcalendar")
+    @Scripts.Render("~/bundles/js/kwasantpopup")
+
     <script src="/Content/js/Kwasant/Popup.js"></script>
-    
-    <script src="~/Content/js/KwasantCalendar.js"></script>
+    <script src="/Content/js/KwasantCalendar.js"></script>
 
     <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
     <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
@@ -88,7 +85,7 @@
                     return '@Url.Content("~/Calendar/Day?bookingRequestID=" + Model.Id)';
                 },
                 onEventClick: function(id) {
-                    if (checkactivewindow()) { return; }
+                    if (Kwasant.IFrame.PopupsActive()) { return; }
                     Kwasant.IFrame.Display('/Event/Edit/?eventID=' + id,
                         {
                             horizontalAlign: 'right',
@@ -96,7 +93,7 @@
                         });
                 },
                 onEventNew: function(start, end) {
-                    if (checkactivewindow()) { return; }
+                    if (Kwasant.IFrame.PopupsActive()) { return; }
                     var id = $("#hdnrequestid").val();
                     Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&start=' + start + 'z&end=' + end + 'z',
                         {
@@ -105,7 +102,7 @@
                         });
                 },
                 onEventMove: function(id, newStart, newEnd) {
-                    if (checkactivewindow()) { return;  }
+                    if (Kwasant.IFrame.PopupsActive()) { return; }
                     Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z',
                         {
                             modal: true,
@@ -122,19 +119,7 @@
             }
         );
     });
-
-    function checkactivewindow() {
-        var isanyactivewindow = false;
-        $(document).find("iframe").each(function () {
-            if ($(this).attr("style").indexOf("z-index") > 0) {
-                if ($(this).attr("style").indexOf("display: none") < 0) {
-                    isanyactivewindow = true;
-                }
-            }
-        });
-        return isanyactivewindow;
-    }
-
+    
     //funtion to load booking request info in iframe "frminfo" on "tbluserrequests" request row click.
     //called by : rows in tbluserrequests on click
     function loadrequest(id, ele) {

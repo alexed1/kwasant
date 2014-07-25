@@ -83,10 +83,15 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                if (!newStart.EndsWith("z"))
+                    newStart = newStart + "z";
+                if (!newEnd.EndsWith("z"))
+                    newEnd = newEnd + "z";
+
                 var eventDO = uow.EventRepository.GetByKey(eventID);
                 var evm = Mapper.Map<EventDO, EventViewModel>(eventDO);
-                evm.StartDate = DateTime.Parse(newStart);
-                evm.EndDate = DateTime.Parse(newEnd);
+                evm.StartDate = DateTime.Parse(newStart, CultureInfo.InvariantCulture, 0).ToUniversalTime();
+                evm.EndDate = DateTime.Parse(newEnd, CultureInfo.InvariantCulture, 0).ToUniversalTime();
 
                 return View("~/Views/Event/ConfirmChanges.cshtml", evm);
             }

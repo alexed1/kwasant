@@ -201,16 +201,17 @@
         dp.timeRangeSelectedHandling = 'JavaScript';
         dp.onEventDoubleClick = function (e) {; };
         dp.onEventSelect = function (e, change) {; };
-        dp.onEventResize = function (e, newStart, newEnd) { settings.onEventMove(e, newStart, newEnd); };
+        dp.onEventResize = function (e, newStart, newEnd) { settings.onEventMove(e.id(), newStart, newEnd); };
         dp.onEventRightClick = function (e) {; };
         dp.onHeaderClick = function (e) { var day = e.day;; };
         dp.onTimeRangeDoubleClick = function (start, end) {; };
         DayPilot.Locale.register(new DayPilot.Locale('en-us', { 'dayNames': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], 'dayNamesShort': ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'], 'monthNames': ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', ''], 'monthNamesShort': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', ''], 'timePattern': 'h:mm tt', 'datePattern': 'M/d/yyyy', 'dateTimePattern': 'M/d/yyyy h:mm tt', 'timeFormat': 'Clock12Hours', 'weekStarts': 0 }));
 
-        dp.onEventClick = settings.onEventClick;
-        dp.onTimeRangeSelected = settings.onEventNew;
-        dp.onEventDelete = settings.onEventDelete;
-        dp.onEventMove = settings.onEventMove;
+
+        dp.onEventClick = function (e) { settings.onEventClick(e.id()); };
+        dp.onTimeRangeSelected = function (e, start, end) { settings.onEventNew(e.id(), start, end); };
+        dp.onEventDelete = function (e) { settings.onEventDelete(e.id()); };;
+        dp.onEventMove = function (e, newStart, newEnd) { settings.onEventMove(e.id(), newStart, newEnd); };;
         
         dp.contextMenu = new DayPilot.Menu([
             { text: "Delete", onclick: function () { settings.onEventDelete(this.source.value()); } }
@@ -353,7 +354,7 @@
         dp.onEventSelect = function (e, change) {; };
         dp.onEventDoubleClick = function (e) {; };
         dp.onEventEdit = function (e, newText) {; };
-        dp.onEventResize = function (e, newStart, newEnd) { settings.onEventMove(e, newStart, newEnd); };
+        dp.onEventResize = function (e, newStart, newEnd) { settings.onEventMove(e.id(), newStart, newEnd); };
         dp.onEventRightClick = function (e) {; };
         dp.onHeaderClick = function (c) {; };
         dp.onTimeRangeDoubleClick = function (start, end, resource) {; };
