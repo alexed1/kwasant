@@ -76,6 +76,19 @@ namespace KwasantWeb.Controllers
             return RedirectToAction("MyAccount", new { remoteCalendarAccessForbidden = providerName });
         }
 
+        public async Task<ActionResult> SyncCalendarsNow()
+        {
+            try
+            {
+                await ObjectFactory.GetInstance<CalendarSyncManager>().SyncNowAsync(this.GetUserId());
+                return Json(new {success = true});
+            }
+            catch (Exception ex)
+            {
+                return Json(new {success = false, error = ex.Message});
+            }
+        }
+
         public ActionResult MyAccount(string remoteCalendarAccessGranted = null, string remoteCalendarAccessForbidden = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

@@ -31,5 +31,39 @@
         }
     </div>
 </div>
+<br/>
+<div class="row">
+    <div class="col-md-12">
+        <a href="#" class="btn btn-default" id="syncNowBtn">Synchronize Now!</a>
+        <div id="success" style="display: none">Calendars synchronized successfully.</div>
+        <div id="sendError" style="display: none"></div>
+    </div>
+</div>
 
-
+@section scripts
+{
+	<script type="text/javascript">
+	    $(document).ready(function () {
+	        var syncing = false;
+		    $('#syncNowBtn').click(function () {
+		        if (syncing)
+		            return false;
+		        syncing = true;
+		        $('#syncNowBtn').addClass('disabled');
+				$.post('@Url.Action("SyncCalendarsNow", "User")',
+					function (result) {
+						if (result.success) {
+							$('#sendError').text('').hide();
+							$('#success').show();
+						} else {
+							$('#sendError').text(result.error).show();
+						}
+					    syncing = false;
+					    $('#syncNowBtn').removeClass('disabled');
+					},
+					'json');
+				return false;
+			});
+		});
+	</script>
+}
