@@ -31,6 +31,11 @@ a {
     color: #d85e17;
 }
 
+a:hover {
+    text-decoration: none;
+	color: #0e0e0e;
+}
+
 /*Titles Styles*/
 
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
@@ -92,7 +97,7 @@ input[type="checkbox"].input-validation-error {
 }
 
 .light-bg .form input, .light-bg .form textarea {
-	background: #fff;
+	background: #f8f8f8;
 	border: 1px solid #3e3e3e;
 	border-radius: 0;
 }
@@ -392,6 +397,7 @@ html.ifarme-body body {
     margin: 0;
     padding: 10px 0;
     float: left;
+	text-transform: none;
 }
 
 .site-header h3 a {
@@ -428,10 +434,6 @@ nav.top-toolbar-section ul.navbar-nav li a {
 nav.top-toolbar-section ul.navbar-nav li a:hover, nav.top-toolbar-section ul.navbar-nav li a.current {
 	background: #d85e17;
 	color: #fff;
-}
-
-.dataTables_wrapper label {
-	font-weight: 300;
 }
 
 /* Forms Styles*/
@@ -531,6 +533,29 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
 }
 
 /*Styles for table*/
+/* Data Tables Customize*/
+
+.dataTables_wrapper {
+	padding-bottom: 20px;
+}
+
+.dataTables_wrapper label {
+	font-weight: 300;
+}
+
+.dataTables_wrapper input[type=search],  .dataTables_wrapper select {
+	background: #f8f8f8;
+	border: 1px solid #d2d2d2;
+	border-radius: 0;
+	transition: all ease-in-out .3s;
+}
+
+.dataTables_wrapper input[type=search]:focus, .dataTables_wrapper select:focus {
+	border: 1px solid #d2d2d2;
+	background: #fff;
+	box-shadow: none;
+	outline: none;
+}
 
 .table-with-action .action-cell {
 	width: 15%;	
@@ -544,8 +569,70 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
 	padding: 8px 10px;	
 }
 
+.body-content table.dataTable thead .sorting {
+	background: url(/Content/img/icons/sort_both.png) no-repeat center right;
+}
+
+.body-content table.dataTable thead .sorting_asc {
+	background: url(/Content/img/icons/sort_asc.png) no-repeat center right;
+}
+
+.body-content table.dataTable thead .sorting_desc {
+	background: url(/Content/img/icons/sort_desc.png) no-repeat center right;
+}
+
 .body-content table.data-table tr.even {
 	background: #f8f8f8
+}
+
+.body-content .dataTables_wrapper .dataTables_paginate .paginate_button {
+	transition: all ease-in-out .3s;	
+}
+
+.body-content .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+	background: #0e0e0e;
+	color: #fff!important;	
+}
+
+.body-content .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+	background: #d85e17!important;
+	border-color: #ff6207!important;
+	color: #fff!important;
+}
+
+/*History Customize*/
+
+.history-filter {
+	padding-bottom: 20px;	
+}
+
+.history-filter label {
+	font-weight: 300;
+	line-height: 32px;
+	padding: 0;	
+}
+
+.history-filter input[type=text], .history-filter select {
+	width: 100%;
+	background: #f8f8f8;
+	border: 1px solid #d2d2d2;
+	border-radius: 0;
+	transition: all ease-in-out .3s;
+}
+
+.history-filter .full-width-input {
+	padding-right: 0;
+}
+
+.history-filter input[type=text]:focus, .history-filter select:focus {
+	border: 1px solid #d2d2d2;
+	background: #fff;
+	box-shadow: none;
+	outline: none;
+}
+
+.history-filter input[type="button"].btn {
+	padding: 3px 25px;
 }
 
 /*Calendar Index*/

@@ -18,6 +18,7 @@
 				<li><a id="lasthour" href="#">Last Hour</a></li>
 				<li><a id="lastday" href="#">Last Day</a></li>
 				<li><a id="lastweek" href="#">Last Week</a></li>
+				<li><a id="all" href="#">All</a></li>
 			</ul>
 		</div>
 	</div>
@@ -41,7 +42,7 @@
         var queryPeriod = "all";
         var table;
         var columns;
-
+        $('a#all').addClass('current');
         //Initializing columns defination for DataTable widget according to report type.
         switch ("@ViewBag.type") {
             case "incident":
