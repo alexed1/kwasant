@@ -498,6 +498,7 @@
     <Content Include="Content\js\bootstrap-transition.js" />
     <Content Include="Content\js\bootstrap.3.1.1.min.js" />
     <Content Include="Content\js\bootstrap.js" />
+    <Content Include="Content\js\KwasantCalendar.js" />
     <Content Include="Content\js\collapse.js" />
     <Content Include="Content\js\common.js" />
     <Content Include="Content\js\custom.js" />

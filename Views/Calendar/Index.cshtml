@@ -15,7 +15,10 @@
 {
 	@Scripts.Render("~/bundles/js/jquery")
 	@Scripts.Render("~/bundles/js/daypilot")
-	<script src="/Content/js/Kwasant/Popup.js"></script>
+    <script src="/Content/js/Kwasant/Popup.js"></script>
+    
+    <script src="~/Content/js/KwasantCalendar.js"></script>
+
     <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
     <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 }
@@ -194,6 +197,10 @@
 
 <script type="text/javascript">
 
+    $(function() {
+        $('#emailInfoBox').KCalendar();
+    });
+
     $("#toolbar_day").click(function () {
         $("#divCalender").css("padding-bottom", "79px");
     });
@@ -258,9 +265,9 @@
 
     function refresh(result) {
         var daypilotControls = [
-                        dp_day,
-                        dp_week,
-                        dp_month
+            dp_day,
+            dp_week,
+            dp_month
         ];
         if (result) {
             $.each(daypilotControls, function (i, ele) {
