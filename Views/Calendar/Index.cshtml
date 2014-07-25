@@ -57,140 +57,22 @@
 			</div>
 		</nav>
 
-		<div id="emailInfoBox" class="col-md-5 container_box emailInfoBox">
-			<iframe id="frminfo" class="frminfo" onload="iframeLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style=""></iframe>
-            	<table id="tbluserrequests" class="email-info-tabele">
-					<thead>
-                    	<tr>
-							<th>Date Received</th>
-							<th>Subject</th>
-						</tr>
-					</thead>
-				</table>
-			<br />
-			<br />			
-		</div>
+	    <div id="emailInfoBox" class="col-md-5 container_box emailInfoBox">
+	        <iframe id="frminfo" class="frminfo" onload="iframeLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style=""></iframe>
+	        <table id="tbluserrequests" class="email-info-tabele">
+	            <thead>
+	                <tr>
+	                    <th>Date Received</th>
+	                    <th>Subject</th>
+	                </tr>
+	            </thead>
+	        </table>
+	        <br />
+	        <br />			
+	    </div>
+        
+	    <div id="CalendarDiv" ></div>
 
-		<div id="divCalender" class="col-md-6 container_box divCalender">
-			<div class="row">
-				<div id="toolbar" class="toolbar">
-					<a href="#" id="toolbar_day">Day</a>
-					<a href="#" id="toolbar_week">Week</a>
-					<a href="#" id="toolbar_month">Month</a>
-				</div>
-			</div>
-			<div class="row">
-				<div class="divCalender-inner">
-					@Html.DayPilotMenu("menu1", new DayPilotMenuConfig
-					{
-						Items = new MenuItemCollection
-                        {
-                            new MenuItem {Text = "Delete", Action = MenuItemAction.JavaScript, JavaScript = "eventDelete(e)"}
-                        }
-					})
-
-					@Html.DayPilotMenu("menu2", new DayPilotMenuConfig
-					{
-						Items = new MenuItemCollection
-                        {
-                            new MenuItem {Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "alert(e.value());"}
-                        }
-					})
-
-					@Html.DayPilotBubble("bubble")
-
-					@Html.DayPilotCalendar("dp_day", new DayPilotCalendarConfig
-					{
-						BackendUrl = Url.Content("~/Calendar/Day?bookingRequestID=" + Model.Id),
-						EventMoveHandling = EventMoveHandlingType.JavaScript,
-						EventResizeHandling = EventResizeHandlingType.JavaScript,
-						TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
-						EventClickHandling = EventClickHandlingType.JavaScript,
-						HeaderClickHandling = HeaderClickHandlingType.JavaScript,
-						EventDeleteHandling = EventDeleteHandlingType.JavaScript,
-						EventBackColor = "#638EDE",
-						DurationBarVisible = false,
-						EventHeaderVisible = false,
-						Height = 550,
-						HeaderHeight = 50,
-						CellHeight = 25,
-						CssOnly = false,
-						ContextMenu = "menu1",
-						Theme = "calendar_white",
-						ViewType = ViewType.Day,
-						EventClickJavaScript = "eventClick(e)",
-						EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
-						EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
-						TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
-						EventDeleteJavaScript = "eventDelete(e)",
-					})
-
-					@Html.DayPilotCalendar("dp_week", new DayPilotCalendarConfig
-					{
-
-						ViewType = ViewType.Week,
-						BackendUrl = Url.Content("~/Calendar/Backend?bookingRequestID=" + Model.Id),
-
-						EventMoveHandling = EventMoveHandlingType.JavaScript,
-						EventResizeHandling = EventResizeHandlingType.JavaScript,
-						TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
-						EventClickHandling = EventClickHandlingType.JavaScript,
-						HeaderClickHandling = HeaderClickHandlingType.JavaScript,
-						EventDeleteHandling = EventDeleteHandlingType.JavaScript,
-						EventBackColor = "#638EDE",
-						DurationBarVisible = false,
-						EventHeaderVisible = false,
-						ShowAllDayEvents = true,
-						AllowMultiSelect = true,
-						Height = 550,
-						HeaderHeight = 30,
-						HeaderFontSize = "12px",
-						CssOnly = false,
-						Theme = "calendar_white",
-						HeightSpec = HeightSpec.BusinessHours,
-						EventBubble = "bubble",
-						EventClickJavaScript = "eventClick(e)",
-						EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
-						EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
-						TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
-						EventDeleteJavaScript = "eventDelete(e)",
-						ContextMenu = "menu1",
-						HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"
-					})
-
-					@Html.DayPilotMonth("dp_month", new DayPilotMonthConfig
-					{
-						BackendUrl = Url.Content("~/Calendar/Month?bookingRequestID=" + Model.Id),
-						EventMoveHandling = DayPilot.Web.Mvc.Events.Month.EventMoveHandlingType.JavaScript,
-						EventResizeHandling = DayPilot.Web.Mvc.Events.Month.EventResizeHandlingType.JavaScript,
-						TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedHandlingType.JavaScript,
-						EventClickHandling = DayPilot.Web.Mvc.Events.Month.EventClickHandlingType.JavaScript,
-						HeaderClickHandling = DayPilot.Web.Mvc.Events.Month.HeaderClickHandlingType.JavaScript,
-						EventFontSize = "10px",
-						HeaderFontSize = "12px",
-						CellHeight = 90,
-						HeaderHeight = 50,
-						EventHeight = 50,
-						Height = "550",
-						CssOnly = false,
-						ContextMenu = "menu1",
-						Theme = "calendar_white",
-						EventClickJavaScript = "eventClick(e)",
-						EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
-						EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
-						TimeRangeSelectedJavaScript = "eventNew(start, end)",
-					})
-				</div>
-			</div>
-		</div>
-		<div class="col-lg-2 container_box calendar-area">
-			@Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
-			{
-				CssOnly = true,
-				Theme = "navigator_white",
-				ShowMonths = 1
-			})
-		</div>
 	</div>
 </div>
 <input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid" />
@@ -198,86 +80,45 @@
 <script type="text/javascript">
 
     $(function() {
-        $('#emailInfoBox').KCalendar();
+        var calendar = $('#CalendarDiv').KCalendar({
+                getBackendURL: function() {
+                    return '@Url.Content("~/Calendar/Day?bookingRequestID=" + Model.Id)';
+                },
+                onEventClick: function(id) {
+                    if (checkactivewindow()) { return; }
+                    Kwasant.IFrame.Display('/Event/Edit/?eventID=' + id,
+                        {
+                            horizontalAlign: 'right',
+                            callback: calendar.refreshCalendars
+                        });
+                },
+                onEventNew: function(start, end) {
+                    if (checkactivewindow()) { return; }
+                    var id = $("#hdnrequestid").val();
+                    Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&start=' + start + 'z&end=' + end + 'z',
+                        {
+                            horizontalAlign: 'right',
+                            callback: calendar.refreshCalendars
+                        });
+                },
+                onEventMove: function(id, newStart, newEnd) {
+                    if (checkactivewindow()) { return;  }
+                    Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z',
+                        {
+                            modal: true,
+                            callback: calendar.refreshCalendars
+                        });
+                },
+                onEventDelete: function(id) {
+                    Kwasant.IFrame.Display('/Event/DeleteEvent/?eventID=' +id,
+                    {
+                        modal: true,
+                        callback: calendar.refreshCalendars
+                    });
+                }
+            }
+        );
     });
-
-    $("#toolbar_day").click(function () {
-        $("#divCalender").css("padding-bottom", "79px");
-    });
-
-    $("#toolbar_week").click(function () {
-        $("#divCalender").css("padding-bottom", "170px");
-    });
-
-    $("#toolbar_month").click(function () {
-        $("#divCalender").css("padding-bottom", "79px");
-    });
-
-    var switcher = new DayPilot.Switcher();
-
-    switcher.addView(dp_day);
-    switcher.addView(dp_week);
-    switcher.addView(dp_month);
-
-    switcher.addButton("toolbar_day", dp_day);
-    switcher.addButton("toolbar_week", dp_week);
-    switcher.addButton("toolbar_month", dp_month);
-
-    switcher.addNavigator(dp_navigator);
-
-    switcher.show(dp_day);
-
-    function eventClick(e) {
-        if (checkactivewindow()) { return false; }
-        Kwasant.IFrame.Display('/Event/Edit/?eventID=' + e.id(),
-            {
-                horizontalAlign: 'right',
-                callback: refresh
-            });
-    }
-
-    function eventNew(start, end) {
-        if (checkactivewindow()) { return false; }
-        var id = $("#hdnrequestid").val();
-        Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&start=' + start + 'z&end=' + end + 'z',
-            {
-                horizontalAlign: 'right',
-                callback: refresh
-            });
-    }
-
-    function eventMove(e, newStart, newEnd) {
-        if (checkactivewindow()) { return false; }
-        Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z',
-            {
-                modal: true,
-                callback: refresh
-            });
-    }
-
-    function eventDelete(e) {
-        Kwasant.IFrame.Display('/Event/DeleteEvent/?eventID=' + e.id(),
-            {
-                modal: true,
-                callback: refresh
-            });
-    }
-
-    function refresh(result) {
-        var daypilotControls = [
-            dp_day,
-            dp_week,
-            dp_month
-        ];
-        if (result) {
-            $.each(daypilotControls, function (i, ele) {
-                ele.commandCallBack('refresh');
-            });
-        }
-        $.each(daypilotControls, function (i, ele) {
-            ele.clearSelection('refresh');
-        });
-    }
 
     function checkactivewindow() {
         var isanyactivewindow = false;
