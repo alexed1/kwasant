@@ -52,8 +52,6 @@ set APPDATA=%USERPROFILE%\AppData\
 echo Cleaning workspace..
 call :ExecuteCmd "git" clean -fdx
 
-call :ExecuteCmd "git" reset --hard
-
 :: 2. NuGet Restore
 echo Restoring nuget packages..
 call :ExecuteCmd "%NUGET_EXE%" restore Kwasant.sln
