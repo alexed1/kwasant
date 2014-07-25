@@ -1,6 +1,7 @@
 (function ($) {
     var settings;
     var storedCalendars = [];
+    var calendar;
 
 
     $.fn.KCalendar = function (options) {
@@ -17,7 +18,9 @@
 
             requireConfirmation: true,
 
-            getBackendURL: function() { alert('getBackendURL must be set in the options.'); },
+            getCalendarBackendURL: function () { alert('getBackendURL must be set in the options.'); },
+            getMonthBackendURL: function () { alert('getBackendURL must be set in the options.'); },
+            
             getEditURL: function (id) { alert('getEditURL function must be set in the options, unless providing an onEdit function override.'); },
             getNewURL: function (start, end) { alert('getNewURL function must be set in the options, unless providing an onEdit function override.'); },
             getDeleteURL: function (id) { alert('getDeleteURL function must be set in the options, unless providing an onEdit function override.'); },
@@ -38,6 +41,7 @@
                 ele.commandCallBack('refresh');
             });
         };
+        calendar = this;
 
         return this;
     };
@@ -212,6 +216,7 @@
         dp.onTimeRangeSelected = function (e, start, end) { settings.onEventNew(e.id(), start, end); };
         dp.onEventDelete = function (e) { settings.onEventDelete(e.id()); };;
         dp.onEventMove = function (e, newStart, newEnd) { settings.onEventMove(e.id(), newStart, newEnd); };;
+        dp.backendUrl = settings.getMonthBackendURL();
         
         dp.contextMenu = new DayPilot.Menu([
             { text: "Delete", onclick: function () { settings.onEventDelete(this.source.value()); } }
@@ -361,11 +366,11 @@
         dp.columns = [{ "toolTip": null, "start": "2014-07-25T00:00:00", "html": "25\/07\/2014", "id": null, "backColor": "#F3F3F9", "name": "25\/07\/2014" }];
         DayPilot.Locale.register(new DayPilot.Locale('en-us', { 'dayNames': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], 'dayNamesShort': ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'], 'monthNames': ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', ''], 'monthNamesShort': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', ''], 'timePattern': 'h:mm tt', 'datePattern': 'M/d/yyyy', 'dateTimePattern': 'M/d/yyyy h:mm tt', 'timeFormat': 'Clock12Hours', 'weekStarts': 0 }));
 
-        dp.backendUrl = settings.getBackendURL();
+        dp.backendUrl = settings.getCalendarBackendURL();
 
         dp.onEventClick = function(e) { settings.onEventClick(e.id()); };
         dp.onTimeRangeSelected = function(e, start, end) { settings.onEventNew(e.id(), start, end); };
-        dp.onEventDelete = function (e) { settings.onEventDelete(e.id()); };;
+        dp.onEventDelete = function (e) { settings.onEventDelete(e.id()); };
         dp.onEventMove = function (e, newStart, newEnd) { settings.onEventMove(e.id(), newStart, newEnd); };;
 
         dp.contextMenu = new DayPilot.Menu([
@@ -418,16 +423,44 @@
         return { dp: dp_navigator, div: divHolder };
     };
 
-    var onEventClick = function(e) {
-
+    var onEventClick = function(id) {
+        if (Kwasant.IFrame.PopupsActive()) {
+            return;
+        }
+        
+        Kwasant.IFrame.Display(settings.getEditURL(id),
+            {
+                horizontalAlign: 'right',
+                callback: calendar.refreshCalendars
+            });
     };
-    var onEventNew = function (e) {
-
+    var onEventNew = function(id, start, end) {
+        if (Kwasant.IFrame.PopupsActive()) {
+            return;
+        }
+        
+        Kwasant.IFrame.Display(settings.getNewURL(id, start, end),
+            {
+                horizontalAlign: 'right',
+                callback: calendar.refreshCalendars
+            });
     };
-    var onEventDelete = function (e) {
-
+    var onEventMove = function(id, newStart, newEnd) {
+        if (Kwasant.IFrame.PopupsActive()) {
+            return;
+        }
+        
+        Kwasant.IFrame.Display(settings.getMoveURL(id, newStart, newEnd),
+            {
+                modal: true,
+                callback: calendar.refreshCalendars
+            });
     };
-    var onEventMove = function (e) {
-
+    var onEventDelete = function(id) {
+        Kwasant.IFrame.Display(settings.getDeleteURL(id),
+            {
+                modal: true,
+                callback: calendar.refreshCalendars
+            });
     };
 }(jQuery));
