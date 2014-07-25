@@ -14,6 +14,7 @@ using System.Net.Mail;
 using Data.Infrastructure.StructureMap;
 using System;
 using Data.Repositories;
+using Data.Infrastructure;
 
 
 namespace KwasantWeb.Controllers
@@ -73,18 +74,32 @@ namespace KwasantWeb.Controllers
 
 
         [HttpGet]
-        public ActionResult SetStatus(int id, int status)
+        public ActionResult MarkAsProcessed(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.BRState = status;
+                bookingRequestDO.BRState = Data.Constants.BRState.Processed;
                 bookingRequestDO.User = bookingRequestDO.User;
-                bookingRequestDO.BookingRequestStatus = bookingRequestDO.BookingRequestStatus; //this line makes no sense.
                 uow.SaveChanges();
+                AlertManager.BookingRequestStateChange(bookingRequestDO, "Processed");
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
         }
+
+         [HttpGet]
+         public ActionResult Invalidate(int id)
+         {
+             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+             {
+                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                 bookingRequestDO.BRState = Data.Constants.BRState.Invalid;
+                 bookingRequestDO.User = bookingRequestDO.User;
+                 uow.SaveChanges();
+                 AlertManager.BookingRequestStateChange(bookingRequestDO, "Invalid");
+                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
+             }
+         }
 
         [HttpGet]
         public ActionResult GetBookingRequests(int? bookingRequestId, int draw, int start, int length)

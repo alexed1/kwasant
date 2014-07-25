@@ -232,7 +232,7 @@ namespace Data.Infrastructure.StructureMap
 
         private bool IsEntity(Type type)
         {
-            return !string.IsNullOrEmpty(type.Namespace) && type.Namespace.StartsWith("Data.Entities");
+            return type.IsClass && !string.IsNullOrEmpty(type.Namespace) && type.Namespace.StartsWith("Data.Entities");
         }
 
         public PropertyInfo EntityPrimaryKeyPropertyInfo(object entity)
