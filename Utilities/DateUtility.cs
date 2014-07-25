@@ -13,20 +13,21 @@ namespace Utilities
             DateRange dateRange = new DateRange();
             switch (queryPeriod.ToLower())
             {
+                 
                 case "last5minutes":
-                    dateRange.StartTime = DateTimeOffset.UtcNow.AddMinutes(-5);
+                    dateRange.StartTime = DateTimeOffset.Now.AddMinutes(-5);
                     break;
                 case "lasthour":
-                    dateRange.StartTime = DateTimeOffset.UtcNow.AddHours(-1);
+                    dateRange.StartTime = DateTimeOffset.Now.AddHours(-1);
                     break;
                 case "lastday":
-                    dateRange.StartTime = DateTimeOffset.UtcNow.AddDays(-1);
+                    dateRange.StartTime = DateTimeOffset.Now.AddDays(-1);
                     break;
                 case "lastweek":
-                    dateRange.StartTime = DateTimeOffset.UtcNow.AddDays(-7);
+                    dateRange.StartTime = DateTimeOffset.Now.AddDays(-7);
                     break;
             }
-            dateRange.EndTime = DateTimeOffset.UtcNow;
+            dateRange.EndTime = DateTimeOffset.Now;
             return dateRange;
         }
     }

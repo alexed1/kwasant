@@ -48,10 +48,14 @@
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
-						<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li>
+					<!--	<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li> -->
+
+                        <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.Id })');" href="#">Mark Processed</a></li>
 						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
 						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
 						<li>@Html.ActionLink("Show Users", "Index", "User")</li>
+                     
+                     <li> <a id="btnHistory" onclick="HistoryClick(@Model.Id);" class="btnHistory" href="#">History</a></li>
 					</ul>
 				</div>
 			</div>
@@ -78,7 +82,6 @@
 <input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid" />
 
 <script type="text/javascript">
-
     $(function() {
         var calendar = $('#CalendarDiv').KCalendar({
                 getBackendURL: function() {
@@ -138,7 +141,7 @@
         $("#tbluserrequests tr").attr("style", "");
         $(ele).attr("style", "background-color: #aaa;");
         $("#hdnrequestid").val(id);
-        $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("SetStatus", "BookingRequest", new { id = "requestid", status = Data.Constants.BRState.Processed })".replace("requestid", id) + "')");
+        $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("Invalidate", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
         $("#frminfo")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
         dp_day.backendUrl = "@Url.Content("~/Calendar/Day?bookingRequestID=")" + id;
         dp_week.backendUrl = "@Url.Content("~/Calendar/Backend?bookingRequestID=")" + id;
@@ -223,5 +226,16 @@
         $.getJSON(path, function () {
             window.location.href = "@Url.Action("Index", "BookingRequest")";
         });
+    }
+
+    function HistoryClick(id) {
+        if (checkactivewindow()) { return false; }
+        iframeLoaded();
+        Kwasant.IFrame.Display('/Report/HistoryByBookingRequestId?bookingRequestID=' + id,
+            {
+                horizontalAlign: 'left',
+                callback: refresh
+            });
+        
     }
 </script>
