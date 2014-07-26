@@ -96,6 +96,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Authentication\Account.cs" />
     <Compile Include="Constants\BRState.cs" />
     <Compile Include="Constants\EventCreateType.cs" />
     <Compile Include="Constants\EventState.cs" />

@@ -4,6 +4,8 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Web.UI.WebControls;
+using Data.Authentication;
 using Data.Entities.Enumerations;
 using Data.Repositories;
 using Microsoft.AspNet.Identity;
@@ -14,14 +16,17 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Newtonsoft.Json;
+using StructureMap;
 using Utilities;
 using EventCreateType = Data.Entities.Enumerations.EventCreateType;
 using EventSyncStatus = Data.Entities.Enumerations.EventSyncStatus;
 
 namespace Data.Migrations
 {
+    
     public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasantDbContext>
     {
+        private Account _account;
         public MigrationConfiguration()
         {
             //Do not ever turn this on! It will break database upgrades
@@ -29,7 +34,9 @@ namespace Data.Migrations
 
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.KwasantDbContext";
-        }
+            _account = new Account();
+
+            }
         
         protected override void Seed(KwasantDbContext context)
         {
@@ -187,9 +194,12 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="unitOfWork"></param>
         /// <returns></returns>
-        private void CreateAdmin(string curUserName, string curPassword, IUnitOfWork unitOfWork)
+        private void CreateAdmin(string curUserName, string curPassword, IUnitOfWork uow)
         {
-            CreateUser(curUserName, curPassword, "Admin", unitOfWork);
+            
+            string userId = _account.Create(curUserName, curPassword, uow);
+            _account.AddRole("Admin", userId, uow);
+            _account.AddRole("Customer", userId, uow);
         }
 
         /// <summary>
@@ -199,49 +209,16 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="unitOfWork"></param>
         /// <returns></returns>
-        private void CreateCustomer(string curUserName, string curPassword, IUnitOfWork unitOfWork)
+        private void CreateCustomer(string curUserName, string curPassword, IUnitOfWork uow)
         {
-            CreateUser(curUserName, curPassword, "Customer", unitOfWork);
+            string userId = _account.Create(curUserName, curPassword, uow);
+            _account.AddRole("Customer", userId, uow);
         }
 
-        private void CreateUser(string curUserName, string curPassword, string role, IUnitOfWork unitOfWork)
-        {
-            try
-            {
-                var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasantDbContext));
-                UserDO curUser = um.FindByName(curUserName);
-                if (curUser == null)
-                {
-                    curUser = new UserDO()
-                                  {
-                                      UserName = curUserName,
-                                      EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
-                                      FirstName = curUserName,
-                                      EmailConfirmed = true
-                                  };
 
-                    IdentityResult ir = um.Create(curUser, curPassword);
 
-                    if (!ir.Succeeded)
-                        return;
-
-                    um.AddToRole(curUser.Id, role);
-                }
-                else
-                {
-                    //This line forces EF to load the EmailAddress, since it's done lazily. For whatever reason, seeding admins breaks since it thinks the EmailAddress is null...
-                    var forceEmail = curUser.EmailAddress;
-                    //This line forces the above not to be optimised out. In production, it does nothing.
-                    Console.WriteLine(forceEmail);
-                    if (!um.IsInRole(curUser.Id, role))
-                        um.AddToRole(curUser.Id, role);
-                }
-                unitOfWork.CalendarRepository.CheckUserHasCalendar(curUser);
-            }
-            catch (DbEntityValidationException e)
-            {
-                ExceptionHandling.DisplayValidationErrors(e);
-            }
+   
+            
         }
     }
-}
+
