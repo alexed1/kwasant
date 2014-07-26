@@ -23,6 +23,9 @@ namespace Data.Entities
 
         public virtual UserDO Owner { get; set; }
 
+        [InverseProperty("Calendars")]
+        public virtual List<BookingRequestDO> BookingRequests { get; set; }
+
         [InverseProperty("Calendar")]
         public virtual List<EventDO> Events { get; set; }
     }

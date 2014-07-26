@@ -103,6 +103,7 @@ namespace Daemons
                     bookingRequest.User = unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address);
                    (new BookingRequest()).Process(unitOfWork, bookingRequest);
                     unitOfWork.SaveChanges();
+                    
                     AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
                 }
                 catch (Exception e)

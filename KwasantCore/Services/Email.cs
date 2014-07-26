@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Entities.Enumerations;
+using Data.Infrastructure.JoinTables;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;
@@ -98,6 +99,16 @@ namespace KwasantCore.Services
         public static EmailDO ConvertMailMessageToEmail(IEmailRepository emailRepository, MailMessage mailMessage)
         {
             return ConvertMailMessageToEmail<EmailDO>(emailRepository, mailMessage);            
+        }
+
+        public static BookingRequestDO ConvertMailMessageToEmail(IBookingRequestRepository bookingRequestRepository, MailMessage mailMessage)
+        {
+            var bookingRequestDO = ConvertMailMessageToEmail<BookingRequestDO>(bookingRequestRepository, mailMessage);
+
+            foreach (var calendar in bookingRequestDO.User.Calendars)
+                bookingRequestDO.Calendars.Add(calendar);
+            
+            return bookingRequestDO;
         }
 
         public static TEmailType ConvertMailMessageToEmail<TEmailType>(IGenericRepository<TEmailType> emailRepository, MailMessage mailMessage)

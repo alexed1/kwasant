@@ -8,6 +8,7 @@ using KwasantCore.Services;
 using KwasantWeb.Controllers.DayPilot;
 using KwasantWeb.Controllers.External.DayPilot;
 using KwasantWeb.Controllers.External.DayPilot.Providers;
+using KwasantWeb.ViewModels;
 using StructureMap;
 
 namespace KwasantWeb.Controllers
@@ -32,31 +33,50 @@ namespace KwasantWeb.Controllers
                 if (bookingRequestDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                return View(bookingRequestDO);
+                return View(new CalendarViewModel
+                {
+                    BookingRequestID = bookingRequestDO.Id,
+                    LinkedCalendarIDs = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).ToList(),
+
+                    //In the future, we won't need this - the 'main' calendar will be picked by the booker
+                    MainCalendarID = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
+                });
+            }
+        }
+
+        public ActionResult SelectEventWindows(int calendarID)
+        {
+            if (calendarID <= 0)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var calendarRepository = uow.CalendarRepository;
+                var calendarDO = calendarRepository.GetByKey(calendarID);
+                if (calendarDO == null)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                return View("~/Views/Calendar/SelectEventWindows.cshtml", new EventWindowViewModel
+                {
+                    LinkedCalendarIDs = calendarDO.BookingRequests.SelectMany(br => br.Calendars.Select(c => c.Id)).Union(new[] { calendarID }).Distinct().ToList(),
+                    MainCalendarID = calendarID
+                });
             }
         }
 
         #endregion "Action"
 
         #region "DayPilot-Related Methods"
-        public ActionResult Day(int bookingRequestID)
+        public ActionResult Day(string calendarIDs)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var userID = uow.BookingRequestRepository.GetQuery().FirstOrDefault(br => br.Id == bookingRequestID).User.Id;
-                var calendarIDs = uow.CalendarRepository.GetQuery().Where(c => c.OwnerID == userID).Select(c => c.Id).ToArray();
-                return new KwasantCalendarController(new EventCalendarProvider(true, calendarIDs)).CallBack(this);
-            }
+            var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+            return new KwasantCalendarController(new EventCalendarProvider(true, ids)).CallBack(this);
         }
 
-        public ActionResult Month(int bookingRequestID)
+        public ActionResult Month(string calendarIDs)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var userID = uow.BookingRequestRepository.GetQuery().FirstOrDefault(br => br.Id == bookingRequestID).User.Id;
-                var calendarIDs = uow.CalendarRepository.GetQuery().Where(c => c.OwnerID == userID).Select(c => c.Id).ToArray();
-                return new KwasantMonthController(new EventCalendarProvider(true, calendarIDs)).CallBack(this);
-            }
+            var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+            return new KwasantMonthController(new EventCalendarProvider(true, ids)).CallBack(this);
         }
 
         public ActionResult Rtl()

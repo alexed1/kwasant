@@ -1,4 +1,4 @@
-﻿@model Data.Entities.EmailDO
+﻿@model KwasantWeb.ViewModels.CalendarViewModel
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @{
 	ViewBag.Title = "Event ";
@@ -12,9 +12,6 @@
 	@Scripts.Render("~/bundles/js/daypilot")
     @Scripts.Render("~/bundles/js/kwasantcalendar")
     @Scripts.Render("~/bundles/js/kwasantpopup")
-
-    <script src="/Content/js/Kwasant/Popup.js"></script>
-    <script src="/Content/js/KwasantCalendar.js"></script>
 
     <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
     <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
@@ -45,21 +42,21 @@
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
-					<!--	<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li> -->
+					<!--	<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.BookingRequestID, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li> -->
 
-                        <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.Id })');" href="#">Mark Processed</a></li>
+                        <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
 						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
 						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
 						<li>@Html.ActionLink("Show Users", "Index", "User")</li>
                      
-                     <li> <a id="btnHistory" onclick="HistoryClick(@Model.Id);" class="btnHistory" href="#">History</a></li>
+                     <li> <a id="btnHistory" onclick="HistoryClick(@Model.BookingRequestID);" class="btnHistory" href="#">History</a></li>
 					</ul>
 				</div>
 			</div>
 		</nav>
 
         <div id="emailInfoBox" class="col-md-5 container_box emailInfoBox">
-            <iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style=""></iframe>
+            <iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.BookingRequestID" style=""></iframe>
             <table id="tbluserrequests" class="email-info-tabele">
                 <thead>
                     <tr>
@@ -76,17 +73,17 @@
 
 	</div>
 </div>
-<input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid" />
+<input type="hidden" value="@Model.BookingRequestID" id="hdnrequestid" name="requestid" />
 
 <script type="text/javascript">
     var calendar;
     $(function() {
         calendar = $('#CalendarDiv').KCalendar({
                 getCalendarBackendURL: function() {
-                    return '@Url.Content("~/Calendar/Day?bookingRequestID=" + Model.Id)';
+                    return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
                 },
                 getMonthBackendURL: function () {
-                    return '@Url.Content("~/Calendar/Month?bookingRequestID=" + Model.Id)';
+                    return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
                 },
                 getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
                 getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
@@ -96,7 +93,7 @@
                         return;
                     }
                     var id = $("#hdnrequestid").val();
-                    Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&start=' + start + 'z&end=' + end + 'z',
+                    Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&calendarID=' + @Model.MainCalendarID + '&start=' + start + 'z&end=' + end + 'z',
                         {
                             horizontalAlign: 'right',
                             callback: calendar.refreshCalendars
@@ -108,7 +105,7 @@
      
     //funtion to load booking request info in iframe "emailInfoFrame" on "tbluserrequests" request row click.
     //called by : rows in tbluserrequests on click
-    function loadrequest(id, ele) {
+    function loadrequest(id, linkedCalendarIDs, ele) {
         $("#tbluserrequests tr").attr("style", "");
         $(ele).attr("style", "background-color: #aaa;");
         $("#hdnrequestid").val(id);
@@ -116,7 +113,7 @@
         $("#emailInfoFrame")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
         
         if (calendar !== undefined) {
-            calendar.updateBackendURLs("@Url.Content("~/Calendar/Day?bookingRequestID=")" + id, "@Url.Content("~/Calendar/Month?bookingRequestID=")" + id);
+            calendar.updateBackendURLs("@Url.Content("~/Calendar/Day?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Month?calendarIDs=")" + linkedCalendarIDs);
         }
     }
 
@@ -134,7 +131,7 @@
             ajax:
             {
                 //Ajax call to get all unprocessed booking request from server according to user.
-                "url": "@Url.Action("GetBookingRequests", "BookingRequest")" + "?bookingRequestId=" + "@Model.Id",
+                "url": "@Url.Action("GetBookingRequests", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestID",
                 "dataSrc": function (json) {
                     var orgdata = JSON.parse(json.data);
                     return orgdata;
@@ -163,12 +160,12 @@
         //This function will bind a click function on every button in table "tblbookingrequest"
         $('#tbluserrequests').on('click', 'tr', function () {
             var data = table.row($(this)).data();
-            loadrequest(data.id, this);
+            loadrequest(data.id, data.linkedcalendarids, this);
         });
 
         $('#btnRequestClarification').click(function () {
             if (Kwasant.IFrame.PopupsActive()) { return false; }
-            Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.Id })',
+            Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.BookingRequestID })',
                 {
                     horizontalAlign: 'left',
                 });
