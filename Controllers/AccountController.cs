@@ -56,7 +56,7 @@ namespace KwasantWeb.Controllers
         public ActionResult Index(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
-            return View();
+            return RedirectToAction("MyAccount","User");
         }
 
         [AllowAnonymous]
