@@ -18,6 +18,9 @@ namespace KwasantCore.Services
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
+
+            foreach (var calendar in bookingRequest.User.Calendars)
+                bookingRequest.Calendars.Add(calendar);
         }
 
         public List<object> GetAllByUserId(IBookingRequestRepository curBookingRequestRepository, int start, int length, string userid)

@@ -101,16 +101,6 @@ namespace KwasantCore.Services
             return ConvertMailMessageToEmail<EmailDO>(emailRepository, mailMessage);            
         }
 
-        public static BookingRequestDO ConvertMailMessageToEmail(IBookingRequestRepository bookingRequestRepository, MailMessage mailMessage)
-        {
-            var bookingRequestDO = ConvertMailMessageToEmail<BookingRequestDO>(bookingRequestRepository, mailMessage);
-
-            foreach (var calendar in bookingRequestDO.User.Calendars)
-                bookingRequestDO.Calendars.Add(calendar);
-            
-            return bookingRequestDO;
-        }
-
         public static TEmailType ConvertMailMessageToEmail<TEmailType>(IGenericRepository<TEmailType> emailRepository, MailMessage mailMessage)
             where TEmailType : EmailDO, new()
         {

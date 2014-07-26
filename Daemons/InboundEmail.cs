@@ -100,8 +100,9 @@ namespace Daemons
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
                     //assign the owner of the booking request to be the owner of the From address
-                    bookingRequest.User = unitOfWork.UserRepository.FindOne(u => u.EmailAddress.Address == bookingRequest.From.Address);
-                   (new BookingRequest()).Process(unitOfWork, bookingRequest);
+
+                    (new BookingRequest()).Process(unitOfWork, bookingRequest);
+
                     unitOfWork.SaveChanges();
                     
                     AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
