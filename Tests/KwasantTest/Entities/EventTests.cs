@@ -4,7 +4,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using FluentValidation;
-using KwasantCore.Managers.CommunicationManager;
+using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;

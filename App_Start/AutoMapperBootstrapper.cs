@@ -16,7 +16,7 @@ namespace KwasantWeb.App_Start
             Mapper.CreateMap<EventDO, EventViewModel>()
                 .ForMember(ev => ev.Attendees, opts => opts.ResolveUsing(ev => String.Join(",", ev.Attendees.Select(eea => eea.EmailAddress.Address).Distinct())))
                 .ForMember(ev => ev.CreatedByAddress, opts => opts.ResolveUsing(evdo => evdo.CreatedBy.EmailAddress.Address))
-                .ForMember(ev => ev.BookingRequestTimezoneOffsetInMinutes, opts => opts.ResolveUsing(evdo => evdo.BookingRequest.DateCreated.Offset.TotalMinutes * - 1));
+                .ForMember(ev => ev.BookingRequestTimezoneOffsetInMinutes, opts => opts.ResolveUsing(evdo => evdo.DateCreated.Offset.TotalMinutes * - 1));
 
             Mapper.CreateMap<EventViewModel, EventDO>()
                 .ForMember(eventDO => eventDO.Attendees, opts => opts.Ignore())
@@ -66,9 +66,14 @@ namespace KwasantWeb.App_Start
                                                                        }
                                                                }));
 
-            Mapper.CreateMap<UserDO, ManageUserViewModel>()
-                .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(u => !string.IsNullOrEmpty(u.PasswordHash)))
-                .ForMember(mu => mu.GoogleCalendarAccessGranted, opts => opts.ResolveUsing(u => !string.IsNullOrEmpty(u.GoogleAuthData) && u.GoogleAuthData.Contains("access_token")));
+            Mapper.CreateMap<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserViewModel>()
+                .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(tuple => !string.IsNullOrEmpty(tuple.Item1.PasswordHash)))
+                .ForMember(mu => mu.RemoteCalendars, opts => opts.ResolveUsing(tuple => tuple.Item2
+                    .Select(p => new RemoteCalendarViewModel()
+                                     {
+                                         Provider = p.Name,
+                                         AccessGranted = tuple.Item1.IsRemoteCalendarAccessGranted(p.Name)
+                                     })));
         }
     }
 }

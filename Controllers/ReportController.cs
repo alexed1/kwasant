@@ -4,15 +4,15 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Data.Interfaces;
+using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
-using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
 using StructureMap;
 using Utilities;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorizeAttribute(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Admin")]
     public class ReportController : Controller
     {
         private DataTablesPackager _datatables;
