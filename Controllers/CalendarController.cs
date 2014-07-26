@@ -3,9 +3,7 @@ using System.Net;
 using System.Web.Mvc;
 using Data.Interfaces;
 using Data.Repositories;
-using DayPilot.Web.Mvc.Json;
 using KwasantCore.Managers;
-using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.DayPilot;
 using KwasantWeb.Controllers.External.DayPilot;
@@ -30,6 +28,7 @@ namespace KwasantWeb.Controllers
             {
                 IBookingRequestRepository bookingRequestRepository = uow.BookingRequestRepository;
                 var bookingRequestDO = bookingRequestRepository.GetByKey(id);
+
                 if (bookingRequestDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 

@@ -57,6 +57,34 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        public ActionResult NewOnCalendar(int calendarID, string start, string end)
+        {
+            using (var uow = GetUnitOfWork())
+            {
+                if (!start.EndsWith("z"))
+                    throw new ApplicationException("Invalid date time");
+                if (!end.EndsWith("z"))
+                    throw new ApplicationException("Invalid date time");
+
+                //unpack the form data into an EventDO 
+                EventDO submittedEventData = new EventDO();
+                
+                submittedEventData.StartDate = DateTime.Parse(start, CultureInfo.InvariantCulture, 0).ToUniversalTime();
+                submittedEventData.EndDate = DateTime.Parse(end, CultureInfo.InvariantCulture, 0).ToUniversalTime();
+                EventDO createdEvent = _event.Create(submittedEventData, uow);
+                createdEvent.CalendarID = calendarID;
+
+                uow.EventRepository.Add(createdEvent);
+                uow.SaveChanges();
+
+                //put it in a view model to hand to the view
+                var curEventVM = Mapper.Map<EventDO, EventViewModel>(createdEvent);
+
+                //construct a Calendar view model for this Calendar View 
+                return View("~/Views/Event/Edit.cshtml", curEventVM);
+            }
+        }
+
 
         public ActionResult Edit(int eventID)
         {
