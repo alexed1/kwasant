@@ -7,12 +7,13 @@ using Data.Entities;
 using Data.Interfaces;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Json;
-using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.External.DayPilot;
 using KwasantWeb.Controllers.External.DayPilot.Providers;
 using KwasantWeb.ViewModels;
 using StructureMap;
+using EventSyncStatus = Data.Constants.EventSyncStatus;
 
 
 namespace KwasantWeb.Controllers
@@ -122,6 +123,7 @@ namespace KwasantWeb.Controllers
                         "should not be able to call this Update method with an ID that doesn't match an existing event");
 
                 Mapper.Map(eventVM, existingEvent);
+                existingEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;
                 _attendee.ManageAttendeeList(uow, existingEvent, eventVM.Attendees);
 
                 _event.Process(uow, existingEvent);

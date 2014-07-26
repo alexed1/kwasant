@@ -12,7 +12,6 @@ using Data.Validators;
 using FluentValidation;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
-using KwasantCore.Managers.CommunicationManager;
 using Microsoft.WindowsAzure;
 using StructureMap;
 

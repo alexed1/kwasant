@@ -134,17 +134,17 @@
     };
 
     var createDayCalendar = function () {
-        var calendar = createDefaultCalendar();
-        calendar.dp.viewType = 'Day';
+        var cal = createDefaultCalendar();
+        cal.dp.viewType = 'Day';
         
-        return calendar;
+        return cal;
     };
     var createWeekCalendar = function () {
-        var calendar = createDefaultCalendar();
-        calendar.dp.viewType = 'Week';
-        calendar.dp.headerHeight = 30;
+        var cal = createDefaultCalendar();
+        cal.dp.viewType = 'Week';
+        cal.dp.headerHeight = 30;
         
-        return calendar;
+        return cal;
     };
     var createMonthCalendar = function () {
         var id = getRandomID();
@@ -235,24 +235,6 @@
         return { dp: dp, div: divHolder };
     };
     
-
-   
-    //EventBackColor = "#638EDE",
-    //DurationBarVisible = false,
-    //EventHeaderVisible = false,
-    //Height = 550,
-    //HeaderHeight = 50,
-    //CellHeight = 25,
-    //CssOnly = false,
-    //ContextMenu = "menu1",
-    //Theme = "calendar_white",
-    //ViewType = ViewType.Day,
-    //EventClickJavaScript = "eventClick(e)",
-    //EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
-    //EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
-    //TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
-    //EventDeleteJavaScript = "eventDelete(e)",
-
     var createDefaultCalendar = function() {
         var id = getRandomID();
         var divHolder = $("<div id='" + id + "'></div>");

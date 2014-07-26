@@ -5,6 +5,9 @@ using Data.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
+using KwasantCore.Managers.APIManagers.Authorizers;
+using KwasantCore.Managers.APIManagers.Authorizers.Google;
+using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
 using KwasantCore.Services;
 using StructureMap;
 using StructureMap.Configuration.DSL;
@@ -50,6 +53,10 @@ namespace KwasantCore.StructureMap
                 For<ISMSPackager>().Use(new TwilioPackager());
                 For<IEmailPackager>().Use(new GmailPackager()).Named(EnvelopeDO.GmailHander);
                 For<IEmailPackager>().Use(new MandrillPackager()).Named(EnvelopeDO.MandrillHander);
+
+                For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
+
+                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
                 For<IKwasantRoleStore>().Use(new KwasantRoleStore());
                 For<IKwasantUserStore>().Use(new KwasantUserStore());

@@ -1,0 +1,279 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Data.Constants;
+using Data.Entities;
+using Data.Infrastructure;
+using Data.Interfaces;
+using KwasantCore.Exceptions;
+using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
+using KwasantCore.Services;
+using Utilities.Logging;
+using StructureMap;
+using EventCreateType = Data.Constants.EventCreateType;
+using EventSyncStatus = Data.Constants.EventSyncStatus;
+
+namespace KwasantCore.Managers
+{
+    public class CalendarSyncManager
+    {
+        class EventComparer : IEqualityComparer<EventDO>
+        {
+            public bool Equals(EventDO x, EventDO y)
+            {
+                return x.StartDate == y.StartDate
+                    && x.EndDate == y.EndDate
+                    && string.Equals(x.Summary, y.Summary);
+            }
+
+            public int GetHashCode(EventDO obj)
+            {
+                unchecked
+                {
+                    var hashCode = obj.StartDate.GetHashCode();
+                    hashCode = (hashCode * 397) ^ obj.EndDate.GetHashCode();
+                    hashCode = (hashCode * 397) ^ (obj.Summary != null ? obj.Summary.GetHashCode() : 0);
+                    return hashCode;
+                }
+            }
+        }
+
+        static CalendarSyncManager()
+        {
+            UnitOfWork.EntitiesAdded += UnitOfWork_OnEntitiesAddedOrModified;
+            UnitOfWork.EntitiesModified += UnitOfWork_OnEntitiesAddedOrModified;
+        }
+
+        private static void UnitOfWork_OnEntitiesAddedOrModified(object sender, EntitiesStateEventArgs args)
+        {
+            var calendars = args.Entities
+                .OfType<EventDO>()
+                .Where(e => e.SyncStatusID == EventSyncStatus.SyncWithExternal)
+                .GroupBy(e => e.CalendarID)
+                .ToArray();
+            CalendarSyncManager calendarSyncManager = null;
+            foreach (var curCalendarGroup in calendars)
+            {
+                if (calendarSyncManager == null)
+                    calendarSyncManager = ObjectFactory.GetInstance<CalendarSyncManager>();
+                // should be run async-ly to prevent user interface blocking.
+                calendarSyncManager.SyncByLocalCalendarAsync(
+                    curCalendarGroup.Key,
+                    curCalendarGroup.Min(e => e.StartDate),
+                    curCalendarGroup.Max(e => e.EndDate));
+            }
+        }
+
+        private readonly ICalDAVClientFactory _clientFactory;
+        private readonly EventComparer _eventComparer = new EventComparer();
+
+        public CalendarSyncManager(ICalDAVClientFactory clientFactory)
+        {
+            if (clientFactory == null)
+                throw new ArgumentNullException("clientFactory");
+            _clientFactory = clientFactory;
+        }
+
+        private void GetPeriod(out DateTimeOffset from, out DateTimeOffset to)
+        {
+            from = DateTimeOffset.UtcNow;
+            to = from + TimeSpan.FromDays(365);
+        }
+
+        /// <summary>
+        /// Creates IUnitOfWork and performs synchronization in its scope for user with ID=userId
+        /// </summary>
+        /// <param name="userId">User ID</param>
+        /// <returns></returns>
+        public async Task SyncNowAsync(string userId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUser = uow.UserRepository.GetByKey(userId);
+                if (curUser == null)
+                    throw new EntityNotFoundException<UserDO>();
+                await SyncNowAsync(uow, curUser);
+            }
+        }
+
+        public async Task SyncNowAsync(IUnitOfWork uow, IUser user)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (user == null)
+                throw new ArgumentNullException("user");
+
+            DateTimeOffset from, to;
+            GetPeriod(out from, out to);
+
+            foreach (var authData in user.RemoteCalendarAuthData)
+            {
+                try
+                {
+                    await SyncByProviderAsync(uow, authData, @from, to);
+                    Logger.GetLogger().InfoFormat("User's (id:{0}) calendars synchronized with '{1}' successfully.", user.Id, authData.Provider.Name);
+                }
+                catch (Exception ex)
+                {
+                    Logger.GetLogger().Error(string.Format("Error occurred on user's (id:{0}) calendars synchronization with '{1}'.", user.Id, authData.Provider.Name), ex);
+                }
+            }
+        }
+
+        private async Task SyncByLocalCalendarAsync(int localCalendarId, DateTimeOffset from, DateTimeOffset to)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var calendarLinks = uow.RemoteCalendarLinkRepository
+                    .GetQuery()
+                    .Where(rcl => rcl.LocalCalendarID == localCalendarId)
+                    .ToList();
+                foreach (var remoteCalendarLink in calendarLinks)
+                {
+                    var authDatas = uow.RemoteCalendarAuthDataRepository
+                        .GetQuery()
+                        .Where(ad => ad.ProviderID == remoteCalendarLink.ProviderID)
+                        .ToList();
+                    foreach (var authData in authDatas)
+                    {
+                        var client = _clientFactory.Create(authData);
+                        await SyncCalendarAsync(uow, from, to, client, remoteCalendarLink);
+                    }
+                }
+                
+            }
+        }
+
+        /// <summary>
+        /// Performs synchronization for particular provider and user
+        /// </summary>
+        /// <param name="uow"></param>
+        /// <param name="authData">Describes user's authorization to provider</param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <returns></returns>
+        private async Task SyncByProviderAsync(IUnitOfWork uow, IRemoteCalendarAuthData authData, DateTimeOffset @from,
+                                            DateTimeOffset to)
+        {
+            var client = _clientFactory.Create(authData);
+            // TODO: obtain a real list from remote calendar provider
+            var remoteCalendars = new[] {authData.User.EmailAddress.Address};
+            foreach (var remoteName in remoteCalendars)
+            {
+                var calendarLink = uow.RemoteCalendarLinkRepository.GetOrCreate(authData, remoteName);
+                try
+                {
+                    calendarLink.DateSynchronizationAttempted = DateTimeOffset.UtcNow;
+                    await SyncCalendarAsync(uow, @from, to, client, calendarLink);
+
+                    calendarLink.LastSynchronizationResult = "Success";
+                    calendarLink.DateSynchronized = calendarLink.DateSynchronizationAttempted;
+                }
+                catch (Exception ex)
+                {
+                    calendarLink.LastSynchronizationResult = string.Concat("Error: ", ex.Message);
+                    Logger.GetLogger().Error(
+                        string.Format("Error occurred on calendar '{0}' synchronization with '{1} @ {2}'.",
+                                      calendarLink.LocalCalendar.Name,
+                                      calendarLink.RemoteCalendarName,
+                                      calendarLink.Provider.Name),
+                        ex);
+                }
+            }
+        }
+
+        private async Task SyncCalendarAsync(IUnitOfWork uow, DateTimeOffset @from, DateTimeOffset to, ICalDAVClient client, IRemoteCalendarLink calendarLink)
+        {
+            // just a filter by date/time, added to avoid duplicate code.
+            Func<EventDO, bool> eventPredictor = e => e.StartDate <= to && e.EndDate >= @from;
+            var remoteEvents = await client.GetEventsAsync(calendarLink, @from, to);
+            // filter out reccurring events
+            var incomingEvents = remoteEvents.Select(Event.CreateEventFromICSCalendar).Where(eventPredictor).ToArray();
+            var calendar = calendarLink.LocalCalendar;
+            // add filter by SyncStatus for local events.
+            Func<EventDO, bool> existingEventPredictor =
+                e => eventPredictor(e) && e.SyncStatusID == EventSyncStatus.SyncWithExternal;
+            var existingEvents = calendar.Events.Where(existingEventPredictor).ToList();
+
+            foreach (var incomingEvent in incomingEvents)
+            {
+                if (
+                    !incomingEvent.Attendees.Any(a => string.Equals(a.EmailAddress.Address, calendar.Owner.EmailAddress.Address)))
+                {
+                    incomingEvent.Attendees.Add(new AttendeeDO()
+                                                    {
+                                                        EmailAddress = calendar.Owner.EmailAddress,
+                                                        EmailAddressID = calendar.Owner.EmailAddressID,
+                                                        Event = incomingEvent,
+                                                        Name = calendar.Owner.UserName
+                                                    });
+                }
+
+                var existingEvent = existingEvents.FirstOrDefault(e => _eventComparer.Equals(incomingEvent, e));
+                if (existingEvent != null)
+                {
+                    var provedAttendees = new List<AttendeeDO>(existingEvent.Attendees.Count);
+                    foreach (var incomingAttendee in incomingEvent.Attendees)
+                    {
+                        var attendee =
+                            existingEvent.Attendees.FirstOrDefault(
+                                a => a.EmailAddress.Address == incomingAttendee.EmailAddress.Address);
+                        if (attendee == null)
+                        {
+                            var existingEmailAddress =
+                                uow.EmailAddressRepository.GetOrCreateEmailAddress(incomingAttendee.EmailAddress.Address);
+                            attendee = incomingAttendee;
+                            attendee.EmailAddress = existingEmailAddress;
+                            attendee.EmailAddressID = existingEmailAddress.Id;
+                            attendee.Event = existingEvent;
+                            attendee.EventID = existingEvent.Id;
+                            existingEvent.Attendees.Add(attendee);
+                        }
+                        provedAttendees.Add(attendee);
+                    }
+                    existingEvent.Attendees.RemoveAll(a => !provedAttendees.Contains(a));
+
+                    existingEvent.Category = incomingEvent.Category;
+                    existingEvent.Class = incomingEvent.Class;
+                    existingEvent.Description = incomingEvent.Description;
+                    existingEvent.Location = incomingEvent.Location;
+                    existingEvent.Sequence = incomingEvent.Sequence;
+
+                    existingEvents.Remove(existingEvent);
+                }
+                else
+                {
+                    // created by remote
+                    incomingEvent.StateID = EventState.DispatchCompleted;
+                    incomingEvent.CreateTypeID = EventCreateType.RemoteCalendar;
+                    incomingEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;
+                    incomingEvent.Calendar = (CalendarDO) calendar;
+                    incomingEvent.CalendarID = calendar.Id;
+                    incomingEvent.CreatedBy = calendar.Owner;
+                    incomingEvent.CreatedByID = calendar.Owner.Id;
+                    calendar.Events.Add(incomingEvent);
+                }
+            }
+
+            var createdByKwasant = existingEvents.Where(e => e.DateCreated >= calendarLink.DateSynchronized).ToList();
+            foreach (var created in createdByKwasant)
+            {
+                await PushEventAsync(client, calendarLink, created);
+            }
+
+            var deletedByRemote = existingEvents.Where(e => e.DateCreated < calendarLink.DateSynchronized).ToList();
+            foreach (var deleted in deletedByRemote)
+            {
+                deleted.StateID = EventState.Deleted;
+                deleted.SyncStatusID = EventSyncStatus.DoNotSync;
+            }
+        }
+
+        private async Task PushEventAsync(ICalDAVClient client, IRemoteCalendarLink calendarLink, EventDO eventDO)
+        {
+            var iCalendarEvent = Event.GenerateICSCalendarStructure(eventDO);
+            await client.CreateEventAsync(calendarLink, iCalendarEvent);
+        }
+    }
+}

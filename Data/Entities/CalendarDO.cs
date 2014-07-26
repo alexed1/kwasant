@@ -8,6 +8,11 @@ namespace Data.Entities
 {    
     public class CalendarDO : ICalendar
     {
+        public CalendarDO()
+        {
+            Events = new List<EventDO>();
+        }
+
         [Key]
         public int Id { get; set; }
         
