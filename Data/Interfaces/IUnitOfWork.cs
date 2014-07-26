@@ -41,6 +41,10 @@ namespace Data.Interfaces
         /// </summary>
         IDBContext Db { get; }
 
+        RemoteCalendarProviderRepository RemoteCalendarProviderRepository { get; }
+        RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository { get; }
+        RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
+
         /// <summary>
         /// Starts a transaction on this unit of work
         /// </summary>

@@ -10,7 +10,7 @@ using Data.Entities.Enumerations;
 using Data.Interfaces;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Exceptions;
-using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.App_Start;
 using KwasantWeb.Filters;

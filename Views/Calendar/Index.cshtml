@@ -45,10 +45,14 @@
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
-						<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li>
+					<!--	<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li> -->
+
+                        <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.Id })');" href="#">Mark Processed</a></li>
 						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
 						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
 						<li>@Html.ActionLink("Show Users", "Index", "User")</li>
+                     
+                     <li> <a id="btnHistory" onclick="HistoryClick(@Model.Id);" class="btnHistory" href="#">History</a></li>
 					</ul>
 				</div>
 			</div>
@@ -193,7 +197,6 @@
 <input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid" />
 
 <script type="text/javascript">
-
     $("#toolbar_day").click(function () {
         $("#divCalender").css("padding-bottom", "79px");
     });
@@ -290,7 +293,7 @@
         $("#tbluserrequests tr").attr("style", "");
         $(ele).attr("style", "background-color: #aaa;");
         $("#hdnrequestid").val(id);
-        $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("SetStatus", "BookingRequest", new { id = "requestid", status = Data.Constants.BRState.Processed })".replace("requestid", id) + "')");
+        $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("Invalidate", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
         $("#frminfo")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
         dp_day.backendUrl = "@Url.Content("~/Calendar/Day?bookingRequestID=")" + id;
         dp_week.backendUrl = "@Url.Content("~/Calendar/Backend?bookingRequestID=")" + id;
@@ -313,11 +316,11 @@
             {
                 //Ajax call to get all unprocessed booking request from server according to user.
                 "url": "@Url.Action("GetBookingRequests", "BookingRequest")" + "?bookingRequestId=" + "@Model.Id",
-                "dataSrc": function (json) {
-                    var orgdata = JSON.parse(json.data);
-                    return orgdata;
-                }
-            },
+            "dataSrc": function (json) {
+                var orgdata = JSON.parse(json.data);
+                return orgdata;
+            }
+        },
             //Callback function for row created.
             createdRow: function (row, data, index) {
                 if (data.id == $("#hdnrequestid").val()) {
@@ -327,30 +330,30 @@
                     $(row).attr("style", "cursor:pointer;");
                 }
             },
-            columns: [
-                {
-                    data: function (data) {
-                        return ConvertTODateString(data.date_received);
-                    }
-                },
-                { data: 'subject' }
-            ]
-        });
+        columns: [
+            {
+                data: function (data) {
+                    return ConvertTODateString(data.date_received);
+                }
+            },
+            { data: 'subject' }
+        ]
+    });
 
 
-        //This function will bind a click function on every button in table "tblbookingrequest"
-        $('#tbluserrequests').on('click', 'tr', function () {
-            var data = table.row($(this)).data();
-            loadrequest(data.id, this);
-        });
+    //This function will bind a click function on every button in table "tblbookingrequest"
+    $('#tbluserrequests').on('click', 'tr', function () {
+        var data = table.row($(this)).data();
+        loadrequest(data.id, this);
+    });
 
-        $('#btnRequestClarification').click(function () {
-            if (checkactivewindow()) { return false; }
-            Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.Id })',
-                {
-                    horizontalAlign: 'left',
-                });
-        });
+    $('#btnRequestClarification').click(function () {
+        if (checkactivewindow()) { return false; }
+        Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.Id })',
+            {
+                horizontalAlign: 'left',
+            });
+    });
     });
 
     //this function will adjust the height of Booking Request info iframe according to content in iframe.
@@ -375,5 +378,16 @@
         $.getJSON(path, function () {
             window.location.href = "@Url.Action("Index", "BookingRequest")";
         });
+    }
+
+    function HistoryClick(id) {
+        if (checkactivewindow()) { return false; }
+        iframeLoaded();
+        Kwasant.IFrame.Display('/Report/HistoryByBookingRequestId?bookingRequestID=' + id,
+            {
+                horizontalAlign: 'left',
+                callback: refresh
+            });
+        
     }
 </script>

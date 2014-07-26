@@ -20,7 +20,7 @@ namespace KwasantWeb.ViewModels
         [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        public bool GoogleCalendarAccessGranted { get; set; }
+        public RemoteCalendarViewModel[] RemoteCalendars { get; set; }
         public bool HasLocalPassword { get; set; }
     }
 }
