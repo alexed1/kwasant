@@ -18,8 +18,8 @@
 
             requireConfirmation: true,
 
-            getCalendarBackendURL: function () { alert('getBackendURL must be set in the options.'); },
-            getMonthBackendURL: function () { alert('getBackendURL must be set in the options.'); },
+            getCalendarBackendURL: function () { alert('getCalendarBackendURL must be set in the options.'); },
+            getMonthBackendURL: function () { alert('getMonthBackendURL must be set in the options.'); },
             
             getEditURL: function (id) { alert('getEditURL function must be set in the options, unless providing an onEdit function override.'); },
             getNewURL: function (start, end) { alert('getNewURL function must be set in the options, unless providing an onEdit function override.'); },
@@ -126,6 +126,7 @@
     var createDayCalendar = function () {
         var calendar = createDefaultCalendar();
         calendar.dp.viewType = 'Day';
+        
         return calendar;
     };
     var createWeekCalendar = function () {
@@ -192,7 +193,6 @@
         dp.viewType = 'Month';
         dp.weekStarts = 0;
         dp.width = '100%';
-        dp.startDate = '2014-07-25T00:00:00';
         dp.weeks = 1;
         dp.eventClickHandling = 'JavaScript';
         dp.eventDoubleClickHandling = 'JavaScript';
@@ -213,7 +213,7 @@
 
 
         dp.onEventClick = function (e) { settings.onEventClick(e.id()); };
-        dp.onTimeRangeSelected = function (e, start, end) { settings.onEventNew(e.id(), start, end); };
+        dp.onTimeRangeSelected = function (start, end) { settings.onEventNew(start, end); };
         dp.onEventDelete = function (e) { settings.onEventDelete(e.id()); };;
         dp.onEventMove = function (e, newStart, newEnd) { settings.onEventMove(e.id(), newStart, newEnd); };;
         dp.backendUrl = settings.getMonthBackendURL();
@@ -265,7 +265,7 @@
         dp.borderColor = '#CED2CE';
         dp.businessBeginsHour = 9;
         dp.businessEndsHour = 18;
-        dp.cellBackColor = '#ffffff';
+        dp.cellBackColor = '#FFFFFF';
         dp.cellBackColorNonBusiness = '#FFF4BC';
         dp.cellBorderColor = '#DEDFDE';
         dp.cellHeight = 25;
@@ -363,13 +363,13 @@
         dp.onEventRightClick = function (e) {; };
         dp.onHeaderClick = function (c) {; };
         dp.onTimeRangeDoubleClick = function (start, end, resource) {; };
-        dp.columns = [{ "toolTip": null, "start": "2014-07-25T00:00:00", "html": "25\/07\/2014", "id": null, "backColor": "#F3F3F9", "name": "25\/07\/2014" }];
+        
         DayPilot.Locale.register(new DayPilot.Locale('en-us', { 'dayNames': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], 'dayNamesShort': ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'], 'monthNames': ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', ''], 'monthNamesShort': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', ''], 'timePattern': 'h:mm tt', 'datePattern': 'M/d/yyyy', 'dateTimePattern': 'M/d/yyyy h:mm tt', 'timeFormat': 'Clock12Hours', 'weekStarts': 0 }));
 
         dp.backendUrl = settings.getCalendarBackendURL();
 
         dp.onEventClick = function(e) { settings.onEventClick(e.id()); };
-        dp.onTimeRangeSelected = function(e, start, end) { settings.onEventNew(e.id(), start, end); };
+        dp.onTimeRangeSelected = function(start, end) { settings.onEventNew(start, end); };
         dp.onEventDelete = function (e) { settings.onEventDelete(e.id()); };
         dp.onEventMove = function (e, newStart, newEnd) { settings.onEventMove(e.id(), newStart, newEnd); };;
 
@@ -434,12 +434,12 @@
                 callback: calendar.refreshCalendars
             });
     };
-    var onEventNew = function(id, start, end) {
+    var onEventNew = function(start, end) {
         if (Kwasant.IFrame.PopupsActive()) {
             return;
         }
         
-        Kwasant.IFrame.Display(settings.getNewURL(id, start, end),
+        Kwasant.IFrame.Display(settings.getNewURL(-1, start, end),
             {
                 horizontalAlign: 'right',
                 callback: calendar.refreshCalendars

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Data.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -16,6 +17,8 @@ namespace Data.Entities
         public string OwnerID { get; set; }
 
         public virtual UserDO Owner { get; set; }
-        
+
+        [InverseProperty("Calendar")]
+        public virtual List<EventDO> Events { get; set; }
     }
 }

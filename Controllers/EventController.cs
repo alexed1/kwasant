@@ -3,13 +3,14 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using AutoMapper;
-using Data.Constants;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
+using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
+using KwasantWeb.Controllers.External.DayPilot;
+using KwasantWeb.Controllers.External.DayPilot.Providers;
 using KwasantWeb.ViewModels;
 using StructureMap;
 
@@ -34,9 +35,10 @@ namespace KwasantWeb.Controllers
             using (var uow = GetUnitOfWork())
             {
                 if (!start.EndsWith("z"))
-                    start = start + "z";
+                    throw new ApplicationException("Invalid date time");
                 if (!end.EndsWith("z"))
-                    end = end + "z";
+                    throw new ApplicationException("Invalid date time");
+
                 //unpack the form data into an EventDO 
                 EventDO submittedEventData = new EventDO();
                 submittedEventData.BookingRequestID = bookingRequestID;
@@ -46,12 +48,12 @@ namespace KwasantWeb.Controllers
                 uow.EventRepository.Add(createdEvent);
                 uow.SaveChanges();
 
-            //put it in a view model to hand to the view
+                //put it in a view model to hand to the view
                 var curEventVM = Mapper.Map<EventDO, EventViewModel>(createdEvent);
 
-            //construct a Calendar view model for this Calendar View 
-            return View("~/Views/Event/Edit.cshtml", curEventVM);
-        }
+                //construct a Calendar view model for this Calendar View 
+                return View("~/Views/Event/Edit.cshtml", curEventVM);
+            }
         }
 
 
@@ -84,12 +86,14 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 if (!newStart.EndsWith("z"))
-                    newStart = newStart + "z";
+                    throw new ApplicationException("Invalid date time");
                 if (!newEnd.EndsWith("z"))
-                    newEnd = newEnd + "z";
+                    throw new ApplicationException("Invalid date time");
+
 
                 var eventDO = uow.EventRepository.GetByKey(eventID);
                 var evm = Mapper.Map<EventDO, EventViewModel>(eventDO);
+
                 evm.StartDate = DateTime.Parse(newStart, CultureInfo.InvariantCulture, 0).ToUniversalTime();
                 evm.EndDate = DateTime.Parse(newEnd, CultureInfo.InvariantCulture, 0).ToUniversalTime();
 
@@ -108,22 +112,25 @@ namespace KwasantWeb.Controllers
             using (var uow = GetUnitOfWork())
             {
                 if (eventVM.Id == 0)
-                    throw new ApplicationException("event should have been created and saved in #new, so Id should not be zero");
+                    throw new ApplicationException(
+                        "event should have been created and saved in #new, so Id should not be zero");
 
                 var existingEvent = uow.EventRepository.GetByKey(eventVM.Id);
 
                 if (existingEvent == null)
-                    throw new ApplicationException("should not be able to call this Update method with an ID that doesn't match an existing event");
+                    throw new ApplicationException(
+                        "should not be able to call this Update method with an ID that doesn't match an existing event");
 
                 Mapper.Map(eventVM, existingEvent);
                 _attendee.ManageAttendeeList(uow, existingEvent, eventVM.Attendees);
 
                 _event.Process(uow, existingEvent);
                 uow.SaveChanges();
-                AlertManager.EventBooked(existingEvent.Id, existingEvent.BookingRequest.User.Id);
+
                 return JavaScript(SimpleJsonSerializer.Serialize(true));
             }
         }
+
 
         public ActionResult DeleteEvent(int eventID)
         {

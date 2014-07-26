@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using System.Web.Mvc;
 using Data.Interfaces;
 using Data.Repositories;
@@ -7,6 +8,8 @@ using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.DayPilot;
+using KwasantWeb.Controllers.External.DayPilot;
+using KwasantWeb.Controllers.External.DayPilot.Providers;
 using StructureMap;
 
 namespace KwasantWeb.Controllers
@@ -34,21 +37,27 @@ namespace KwasantWeb.Controllers
             }
         }
 
-
-
-
-
         #endregion "Action"
 
         #region "DayPilot-Related Methods"
         public ActionResult Day(int bookingRequestID)
         {
-            return new DayPilotCalendarControl(bookingRequestID).CallBack(this);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var userID = uow.BookingRequestRepository.GetQuery().FirstOrDefault(br => br.Id == bookingRequestID).User.Id;
+                var calendarIDs = uow.CalendarRepository.GetQuery().Where(c => c.OwnerID == userID).Select(c => c.Id).ToArray();
+                return new KwasantCalendarController(new EventCalendarProvider(true, calendarIDs)).CallBack(this);
+            }
         }
 
         public ActionResult Month(int bookingRequestID)
         {
-            return new DayPilotMonthControl(bookingRequestID).CallBack(this);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var userID = uow.BookingRequestRepository.GetQuery().FirstOrDefault(br => br.Id == bookingRequestID).User.Id;
+                var calendarIDs = uow.CalendarRepository.GetQuery().Where(c => c.OwnerID == userID).Select(c => c.Id).ToArray();
+                return new KwasantMonthController(new EventCalendarProvider(true, calendarIDs)).CallBack(this);
+            }
         }
 
         public ActionResult Rtl()
@@ -199,14 +208,9 @@ namespace KwasantWeb.Controllers
             return RedirectToAction("ThemeTraditional");
         }
 
-        public ActionResult Backend(int bookingRequestID)
-        {
-            return new DayPilotCalendarControl(bookingRequestID).CallBack(this);
-        }
-
         public ActionResult NavigatorBackend()
         {
-            return new DayPilotNavigatorControl().CallBack(this);
+            return new KwasantNavigatorControl().CallBack(this);
         }
         #endregion "DayPilot-Related Methods"
 

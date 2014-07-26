@@ -81,8 +81,11 @@
 <script type="text/javascript">
     $(function() {
         var calendar = $('#CalendarDiv').KCalendar({
-                getBackendURL: function() {
+                getCalendarBackendURL: function() {
                     return '@Url.Content("~/Calendar/Day?bookingRequestID=" + Model.Id)';
+                },
+                getMonthBackendURL: function () {
+                    return '@Url.Content("~/Calendar/Month?bookingRequestID=" + Model.Id)';
                 },
                 getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
                 getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
@@ -163,7 +166,7 @@
         });
 
         $('#btnRequestClarification').click(function () {
-            if (checkactivewindow()) { return false; }
+            if (Kwasant.IFrame.PopupsActive()) { return false; }
             Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.Id })',
                 {
                     horizontalAlign: 'left',
@@ -196,7 +199,7 @@
     }
 
     function HistoryClick(id) {
-        if (checkactivewindow()) { return false; }
+        if (Kwasant.IFrame.PopupsActive()) { return false; }
         iframeLoaded();
         Kwasant.IFrame.Display('/Report/HistoryByBookingRequestId?bookingRequestID=' + id,
             {
