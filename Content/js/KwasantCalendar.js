@@ -25,6 +25,11 @@
             getNewURL: function (start, end) { alert('getNewURL function must be set in the options, unless providing an onEdit function override.'); },
             getDeleteURL: function (id) { alert('getDeleteURL function must be set in the options, unless providing an onEdit function override.'); },
             getMoveURL: function (id, newstart, newend) { alert('getMoveURL function must be set in the options, unless providing an onEdit function override.'); },
+            
+            editRequiresConfirmation: true,
+            newRequiresConfirmation: true,
+            deleteRequiresConfirmation: true,
+            moveRequiresConfirmation: true,
 
             onEventClick: onEventClick,
             onEventNew: onEventNew,
@@ -419,40 +424,56 @@
         if (Kwasant.IFrame.PopupsActive()) {
             return;
         }
-        
-        Kwasant.IFrame.Display(settings.getEditURL(id),
-            {
-                horizontalAlign: 'right',
-                callback: calendar.refreshCalendars
-            });
+
+        if (settings.editRequiresConfirmation) {
+            Kwasant.IFrame.Display(settings.getEditURL(id),
+                {
+                    horizontalAlign: 'right',
+                    callback: calendar.refreshCalendars
+                });
+        } else {
+            Kwasant.IFrame.DispatchUrlRequest(settings.getEditURL(id));
+        }
     };
     var onEventNew = function(start, end) {
         if (Kwasant.IFrame.PopupsActive()) {
             return;
         }
-        
-        Kwasant.IFrame.Display(settings.getNewURL(-1, start, end),
-            {
-                horizontalAlign: 'right',
-                callback: calendar.refreshCalendars
-            });
+
+        if (settings.newRequiresConfirmation) {
+            Kwasant.IFrame.Display(settings.getNewURL(start, end),
+                {
+                    horizontalAlign: 'right',
+                    callback: calendar.refreshCalendars
+                });
+        } else {
+            Kwasant.IFrame.DispatchUrlRequest(settings.getNewURL(start, end));
+        }
     };
     var onEventMove = function(id, newStart, newEnd) {
         if (Kwasant.IFrame.PopupsActive()) {
             return;
         }
-        
-        Kwasant.IFrame.Display(settings.getMoveURL(id, newStart, newEnd),
-            {
-                modal: true,
-                callback: calendar.refreshCalendars
-            });
+
+        if (settings.moveRequiresConfirmation) {
+            Kwasant.IFrame.Display(settings.getMoveURL(id, newStart, newEnd),
+                {
+                    modal: true,
+                    callback: calendar.refreshCalendars
+                });
+        } else {
+            Kwasant.IFrame.DispatchUrlRequest(settings.getMoveURL(id, newStart, newEnd));
+        }
     };
-    var onEventDelete = function(id) {
-        Kwasant.IFrame.Display(settings.getDeleteURL(id),
-            {
-                modal: true,
-                callback: calendar.refreshCalendars
-            });
+    var onEventDelete = function (id) {
+        if (settings.deleteRequiresConfirmation) {
+            Kwasant.IFrame.Display(settings.getDeleteURL(id),
+                {
+                    modal: true,
+                    callback: calendar.refreshCalendars
+                });
+        } else {
+            Kwasant.IFrame.DispatchUrlRequest(settings.getDeleteURL(id));
+        }
     };
 }(jQuery));

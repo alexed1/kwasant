@@ -17,7 +17,7 @@ namespace KwasantWeb.ViewModels
         public int Sequence { get; set; }
         public String Summary { get; set; }
         public String Category { get; set; }
-        public int BookingRequestID { get; set; }
+        public int? BookingRequestID { get; set; }
         public String Attendees { get; set; }
         public String CreatedByAddress { get; set; }
         public String CreatedByID { get; set; }

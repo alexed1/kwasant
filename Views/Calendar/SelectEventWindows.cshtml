@@ -44,27 +44,21 @@
             getMonthBackendURL: function () {
                 return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
             },
-            getEditURL: function (id) { return '/Event/Edit/?eventID=' + id; },
-            getMoveURL: function (id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
-            getDeleteURL: function (id) { return '/Event/DeleteEvent/?eventID=' + id; },
-            onEventNew: function (start, end) {
-                if (Kwasant.IFrame.PopupsActive()) {
-                    return;
-                }
-                dispatchServerCall('/Event/NewTimeSlot/?calendarID=' + @Model.MainCalendarID + '&start=' + start + 'z&end=' + end + 'z');
+
+            editRequiresConfirmation: false,
+            newRequiresConfirmation: false,
+            deleteRequiresConfirmation: false,
+            moveRequiresConfirmation: false,
+
+            getMoveURL: function (id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z&requiresConfirmation=false&mergeEvents=true'; },
+            getDeleteURL: function (id) { return '/Event/DeleteEvent/?eventID=' + id + '&requiresConfirmation=false'; },
+            getNewURL: function (start, end) { return '/Event/NewTimeSlot/?calendarID=' + @Model.MainCalendarID + '&start=' + start + 'z&end=' + end + 'z'; },
+            
+            //Disable clicking on them
+            onEventClick: function (id) {
+                
             },
         }
         );
     });
-
-    function dispatchServerCall(url) {
-        var spinner = Kwasant.IFrame.DisplaySpinner();
-        $.get(url)
-            .fail(function () {
-                alert('Error connecting to server. Your changes were not saved.');
-            }).always(function () {
-                calendar.refreshCalendars();
-                spinner.hide();
-            });
-    }
 </script>

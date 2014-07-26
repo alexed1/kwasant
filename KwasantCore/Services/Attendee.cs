@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
@@ -38,6 +39,9 @@ namespace KwasantCore.Services
         //we want to convert that string into objects as quickly as possible once the data is on the server.
         public void ManageAttendeeList(IUnitOfWork uow, EventDO eventDO, string curAttendees)
         {
+            if (String.IsNullOrEmpty(curAttendees))
+                curAttendees = String.Empty;
+
             var attendees = curAttendees.Split(',').ToList();
 
             var eventAttendees = eventDO.Attendees ?? new List<AttendeeDO>();

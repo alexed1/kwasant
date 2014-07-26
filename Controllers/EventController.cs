@@ -186,7 +186,7 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public ActionResult MoveEvent(int eventID, String newStart, String newEnd)
+        public ActionResult MoveEvent(int eventID, String newStart, String newEnd, bool requiresConfirmation = true, bool mergeEvents = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -195,14 +195,17 @@ namespace KwasantWeb.Controllers
                 if (!newEnd.EndsWith("z"))
                     throw new ApplicationException("Invalid date time");
 
-
                 var eventDO = uow.EventRepository.GetByKey(eventID);
+
                 var evm = Mapper.Map<EventDO, EventViewModel>(eventDO);
 
                 evm.StartDate = DateTime.Parse(newStart, CultureInfo.InvariantCulture, 0).ToUniversalTime();
                 evm.EndDate = DateTime.Parse(newEnd, CultureInfo.InvariantCulture, 0).ToUniversalTime();
 
-                return View("~/Views/Event/ConfirmChanges.cshtml", evm);
+                if(requiresConfirmation)
+                    return View("~/Views/Event/ConfirmChanges.cshtml", evm);
+                
+                return ProcessConfirmedEvent(evm, mergeEvents);
             }
         }
 
@@ -212,7 +215,7 @@ namespace KwasantWeb.Controllers
         }
 
         //processes events that have been entered into the form and confirmed
-        public ActionResult ProcessConfirmedEvent(EventViewModel eventVM)
+        public ActionResult ProcessConfirmedEvent(EventViewModel eventVM, bool mergeEvents = false)
         {
             using (var uow = GetUnitOfWork())
             {
@@ -231,6 +234,10 @@ namespace KwasantWeb.Controllers
                 _attendee.ManageAttendeeList(uow, existingEvent, eventVM.Attendees);
 
                 _event.Process(uow, existingEvent);
+
+                if (mergeEvents)
+                    MergeTimeSlots(uow, existingEvent);
+                
                 uow.SaveChanges();
 
                 return JavaScript(SimpleJsonSerializer.Serialize(true));
@@ -238,13 +245,18 @@ namespace KwasantWeb.Controllers
         }
 
 
-        public ActionResult DeleteEvent(int eventID)
+        public ActionResult DeleteEvent(int eventID, bool requiresConfirmation = true)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            if (requiresConfirmation)
             {
-                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                return View(Mapper.Map<EventDO, EventViewModel>(eventDO));
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
+                    return View(Mapper.Map<EventDO, EventViewModel>(eventDO));
+                }
             }
+
+            return ConfirmDelete(eventID);
         }
     }
 }
