@@ -41,6 +41,16 @@
                 ele.commandCallBack('refresh');
             });
         };
+
+        this.updateBackendURLs = function(calendarBackend, monthBackend) {
+            $.each(storedCalendars, function (i, ele) {
+                if (ele instanceof DayPilot.Calendar)
+                    ele.backendUrl = calendarBackend;
+                else if (ele instanceof DayPilot.Month)
+                    ele.backendUrl = monthBackend;
+            });
+            this.refreshCalendars();
+        };
         calendar = this;
 
         return this;
