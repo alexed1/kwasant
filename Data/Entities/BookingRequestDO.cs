@@ -8,6 +8,11 @@ namespace Data.Entities
 {
     public class BookingRequestDO : EmailDO, IBookingRequest
     {
+        public BookingRequestDO()
+        {
+            Calendars = new List<CalendarDO>();
+        }
+
         [Required]
         public virtual UserDO User { get; set; }
 

@@ -156,7 +156,6 @@
         var divHolder = $("<div id='" + id + "'></div>");
 
         var dp = new DayPilot.Month(id);
-        dp.backendUrl = '/Calendar/Month?bookingRequestID=17';
         dp.onAjaxError = function (args) { var request = args.request; if (DayPilot.Modal) { new DayPilot.Modal().showHtml(args.request.responseText); } else { alert('AJAX callback error (500)'); }; };
         dp.allowMultiSelect = true;
         dp.afterEventRender = function (e, div) {; };
@@ -380,7 +379,7 @@
     var createNavigator = function() {
         var id = getRandomID();
         var divHolder = $("<div id='" + id + "'></div>");
-
+        var date = new Date();
         var dp_navigator = new DayPilot.Navigator(id);
         dp_navigator.api = 1;
         dp_navigator.cellHeight = 20;
@@ -390,7 +389,7 @@
         dp_navigator.cssOnly = true;
         dp_navigator.dayHeaderHeight = 20;
         dp_navigator.locale = 'en-us';
-        dp_navigator.month = 7;
+        dp_navigator.month = date.getMonth() + 1; // Plus 1 because daypilot is 1-based index
         dp_navigator.orientation = 'Vertical';
         dp_navigator.rowsPerMonth = 'Six';
         dp_navigator.selectMode = 'day';
@@ -400,7 +399,7 @@
         dp_navigator.titleHeight = 20;
         dp_navigator.weekStarts = 0;
         dp_navigator.weekNumberAlgorithm = 'Auto';
-        dp_navigator.year = 2014;
+        dp_navigator.year = date.getFullYear();
         dp_navigator.onAjaxError = function(args) {
             var request = args.request;
             if (DayPilot.Modal) {

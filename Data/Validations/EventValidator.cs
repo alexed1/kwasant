@@ -26,7 +26,7 @@ namespace Data.Validators
 
             RuleFor(eventDO => eventDO.CreatedByID)
                 .NotNull()
-                .WithMessage("CreatedBy is Required");
+                .WithMessage("CreatedByID is Required");
 
         }
 
