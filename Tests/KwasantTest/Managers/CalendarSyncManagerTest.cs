@@ -16,7 +16,8 @@ using StructureMap;
 namespace KwasantTest.Managers
 {
     [TestFixture]
-    public class SyncManagerTest
+    [Ignore]
+    public class CalendarSyncManagerTest
     {
         private IUnitOfWork _uow;
         private FixtureData _fixtureData;

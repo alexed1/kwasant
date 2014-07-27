@@ -102,21 +102,22 @@ namespace KwasantCore.Services
             new User().LogOff();
         }
 
-        public void UpdateUser(UserDO userDO, IdentityUserRole identityUserRole)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                EmailAddressDO currEmailAddressDO = uow.EmailAddressRepository.GetByKey(userDO.EmailAddressID);
-                currEmailAddressDO.Address = userDO.EmailAddress.Address;
+        //this doesn't seem to get called. let's watch for a while and then delete it
+        //public void UpdateUser(UserDO userDO, IdentityUserRole identityUserRole)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        EmailAddressDO currEmailAddressDO = uow.EmailAddressRepository.GetByKey(userDO.EmailAddressID);
+        //        currEmailAddressDO.Address = userDO.EmailAddress.Address;
 
-                //Change user's role in DB using Identity Framework if only role is changed on the fone-end.
-                if (identityUserRole != null)
-                {
-                    User user = new User();
-                    user.ChangeUserRole(uow, identityUserRole);
-                }
-                uow.SaveChanges();
-            }
-        }
+        //        //Change user's role in DB using Identity Framework if only role is changed on the fone-end.
+        //        if (identityUserRole != null)
+        //        {
+        //            User user = new User();
+        //            user.ChangeUserRole(uow, identityUserRole);
+        //        }
+        //        uow.SaveChanges();
+        //    }
+        //}
     }
 }
