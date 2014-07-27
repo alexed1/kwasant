@@ -5,8 +5,9 @@ using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.Managers.CommunicationManager;
+using KwasantCore.Managers;
 using StructureMap;
+using TrackingStatus = Data.Entities.Enumerations.TrackingStatus;
 
 namespace Daemons
 {

@@ -5,7 +5,6 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using Data.Infrastructure;
-using KwasantCore.Managers.CommunicationManager;
 using KwasantCore.ModelBinders;
 using KwasantCore.Services;
 using KwasantCore.Managers;

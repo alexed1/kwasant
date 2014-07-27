@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
@@ -6,6 +7,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.SqlServer;
 using System.Linq;
+using Data.Entities.Enumerations;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity.ModelConfiguration;
 
@@ -60,6 +62,7 @@ namespace Data.Infrastructure
             return GetEntityModifications((DbEntityEntry) entity);
         }
 
+/*
         private List<PropertyChangeInformation> GetEntityModifications(DbEntityEntry entity)
         {
             List<PropertyChangeInformation> changedValues = new List<PropertyChangeInformation>();
@@ -76,7 +79,29 @@ namespace Data.Infrastructure
 
             return changedValues;
         }
+*/
 
+        public void DetectChanges()
+        {
+            ChangeTracker.DetectChanges();
+        }
+
+        public object[] AddedEntities
+        {
+            get { return ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToArray(); }
+        }
+
+        public object[] ModifiedEntities
+        {
+            get { return ChangeTracker.Entries().Where(e => e.State == EntityState.Modified).Select(e => e.Entity).ToArray(); }
+        }
+
+        public object[] DeletedEntities
+        {
+            get { return ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToArray(); }
+        }
+
+/*
         public List<EntityChangeInformation> GetModifiedEntities()
         {
             var res = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified)
@@ -98,6 +123,7 @@ namespace Data.Infrastructure
 
             return res;
         }
+*/
 
         public override int SaveChanges()
         {
@@ -149,7 +175,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
-            modelBuilder.Entity<BookingRequestStatusDO>().ToTable("BookingRequestStatuses");
+            modelBuilder.Entity<BookingRequestStatus>().ToTable("BookingRequestStatuses");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<ClarificationRequestDO>().ToTable("ClarificationRequests");
             modelBuilder.Entity<QuestionDO>().ToTable("Questions");
@@ -159,7 +185,9 @@ namespace Data.Infrastructure
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<EventDO>().ToTable("Events");
-            modelBuilder.Entity<EventStatusDO>().ToTable("EventStatuses");
+            modelBuilder.Entity<EventStatus>().ToTable("EventStatuses");
+            modelBuilder.Entity<EventSyncStatus>().ToTable("EventSyncStatus");
+            modelBuilder.Entity<EventCreateType>().ToTable("EventCreateTypes");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
@@ -168,6 +196,11 @@ namespace Data.Infrastructure
             modelBuilder.Entity<UserDO>().ToTable("Users");
             modelBuilder.Entity<FactDO>().ToTable("Facts");
             modelBuilder.Entity<IncidentDO>().ToTable("Incidents");
+            modelBuilder.Entity<ServiceAuthorizationType>().ToTable("ServiceAuthorizationTypes");
+            modelBuilder.Entity<RemoteCalendarProviderDO>().ToTable("RemoteCalendarProviders");
+            modelBuilder.Entity<RemoteCalendarAuthDataDO>().ToTable("RemoteCalendarAuthData");
+            modelBuilder.Entity<RemoteCalendarLinkDO>().ToTable("RemoteCalendarLinks");
+
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

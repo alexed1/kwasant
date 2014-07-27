@@ -5,7 +5,7 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.Managers.CommunicationManager;
+using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers;
 using StructureMap;
 using Utilities.Logging;
