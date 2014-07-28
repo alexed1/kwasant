@@ -187,6 +187,8 @@
 		<div class="col-lg-2 container_box calendar-area">
 			@Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
 			{
+                BackendUrl = Url.Content("~/Calendar/NavigatorBackend?bookingRequestID=" + Model.Id),
+                VisibleRangeChangedHandling = DayPilot.Web.Mvc.Events.Navigator.VisibleRangeChangedHandlingType.CallBack,
 				CssOnly = true,
 				Theme = "navigator_white",
 				ShowMonths = 1
