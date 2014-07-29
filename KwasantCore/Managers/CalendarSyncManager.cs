@@ -93,7 +93,16 @@ namespace KwasantCore.Managers
                 var curUser = uow.UserRepository.GetByKey(userId);
                 if (curUser == null)
                     throw new EntityNotFoundException<UserDO>();
-                await SyncNowAsync(uow, curUser);
+                try
+                {
+                    await SyncNowAsync(uow, curUser);
+                    uow.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Logger.GetLogger().Error(string.Format("Error occurred on user's (id:{0}) calendars synchronization.", userId), ex);
+                    throw;
+                }
             }
         }
 
@@ -107,7 +116,7 @@ namespace KwasantCore.Managers
             DateTimeOffset from, to;
             GetPeriod(out from, out to);
 
-            foreach (var authData in user.RemoteCalendarAuthData)
+            foreach (var authData in user.RemoteCalendarAuthData.Where(ad => ad.HasAccessToken()))
             {
                 try
                 {

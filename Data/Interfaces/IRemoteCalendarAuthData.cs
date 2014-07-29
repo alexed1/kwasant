@@ -15,5 +15,6 @@ namespace Data.Interfaces
         IUser User { get; set; }
         
         string AuthData { get; set; }
+        bool HasAccessToken();
     }
 }
