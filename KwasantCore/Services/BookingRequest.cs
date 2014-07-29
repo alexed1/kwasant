@@ -11,7 +11,7 @@ namespace KwasantCore.Services
 {
     public class BookingRequest
     {
-        public void ProcessBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequest)
+        public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
             bookingRequest.BRState = BRState.Unprocessed;
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);

@@ -12,8 +12,7 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Google.Apis.Auth.OAuth2.Mvc;
-using KwasantCore.Managers.APIManager.Authorizers.Google;
-using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
 using KwasantWeb.ViewModels;
@@ -45,6 +44,7 @@ namespace KwasantWeb.Controllers
 
                 Email userEmail = new Email(uow, emailDO);
                 userEmail.Send();
+                uow.SaveChanges();
             }
         }
     }
@@ -56,7 +56,14 @@ namespace KwasantWeb.Controllers
         public ActionResult Index(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
-            return View();
+            if (this.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("MyAccount", "User");
+            }
+            else
+            {
+                return View();
+            }
         }
 
         [AllowAnonymous]

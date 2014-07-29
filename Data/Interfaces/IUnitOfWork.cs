@@ -27,8 +27,9 @@ namespace Data.Interfaces
         UserRepository UserRepository { get; }
         AspNetUserRolesRepository AspNetUserRolesRepository { get; }
         AspNetRolesRepository AspNetRolesRepository { get; }
+        IncidentRepository IncidentRepository { get; } 
 
-        KactRepository KactRepository { get; }
+        FactRepository FactRepository { get; }
 
         /// <summary>
         /// Call this to commit the unit of work
@@ -39,6 +40,10 @@ namespace Data.Interfaces
         /// Return the database reference for this UOW
         /// </summary>
         IDBContext Db { get; }
+
+        RemoteCalendarProviderRepository RemoteCalendarProviderRepository { get; }
+        RemoteCalendarAuthDataRepository RemoteCalendarAuthDataRepository { get; }
+        RemoteCalendarLinkRepository RemoteCalendarLinkRepository { get; }
 
         /// <summary>
         /// Starts a transaction on this unit of work

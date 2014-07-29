@@ -3,8 +3,8 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
-using KwasantCore.Managers.IdentityManager;
 using StructureMap;
 using Utilities;
 

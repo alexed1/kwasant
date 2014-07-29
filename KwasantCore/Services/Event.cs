@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Linq;
 using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.Managers.CommunicationManager;
+using KwasantCore.Exceptions;
+using KwasantCore.Managers;
+using KwasantICS.DDay.iCal;
+using KwasantICS.DDay.iCal.DataTypes;
+using Utilities;
 using IEvent = Data.Interfaces.IEvent;
 
 namespace KwasantCore.Services
@@ -19,11 +24,15 @@ namespace KwasantCore.Services
 
             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
             curEventDO.CreatedBy = bookingRequestDO.User;
-
-            curEventDO.BookingRequest = bookingRequestDO;
-
-            var attendee = new Attendee();
-            
+            curEventDO.DateCreated = DateTimeOffset.UtcNow.ToOffset(bookingRequestDO.DateCreated.Offset);
+            var curCalendar = bookingRequestDO.User.Calendars.FirstOrDefault();
+            if (curCalendar == null)
+                throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");
+            curEventDO.Calendar = curCalendar;
+            curEventDO.CalendarID = curCalendar.Id;
+            curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
+			
+			var attendee = new Attendee();
             attendee.DetectEmailsFromBookingRequest(curEventDO);
 
             curEventDO.StateID = EventState.Booking;
@@ -56,5 +65,85 @@ namespace KwasantCore.Services
             curEvent.Attendees.Add(curAttendeeDO);
             return curEvent;
         }
+
+        public static iCalendar GenerateICSCalendarStructure(EventDO eventDO)
+        {
+            if (eventDO == null)
+                throw new ArgumentNullException("eventDO");
+            string fromEmail = ConfigRepository.Get("fromEmail");
+            string fromName = ConfigRepository.Get("fromName");
+
+            iCalendar ddayCalendar = new iCalendar();
+            DDayEvent dDayEvent = new DDayEvent();
+
+            //configure start and end time
+            if (eventDO.IsAllDay)
+            {
+                dDayEvent.IsAllDay = true;
+    }
+            else
+            {
+                dDayEvent.DTStart = new iCalDateTime(DateTime.SpecifyKind(eventDO.StartDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
+                dDayEvent.DTEnd = new iCalDateTime(DateTime.SpecifyKind(eventDO.EndDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
+            }
+            dDayEvent.DTStamp = new iCalDateTime(DateTime.UtcNow);
+            dDayEvent.LastModified = new iCalDateTime(DateTime.UtcNow);
+
+            //configure text fields
+            dDayEvent.Location = eventDO.Location;
+            dDayEvent.Description = eventDO.Description;
+            dDayEvent.Summary = eventDO.Summary;
+
+            //more attendee configuration
+            foreach (AttendeeDO attendee in eventDO.Attendees)
+            {
+                dDayEvent.Attendees.Add(new KwasantICS.DDay.iCal.DataTypes.Attendee()
+                {
+                    CommonName = attendee.Name,
+                    Type = "INDIVIDUAL",
+                    Role = "REQ-PARTICIPANT",
+                    ParticipationStatus = ParticipationStatus.NeedsAction,
+                    RSVP = true,
+                    Value = new Uri("mailto:" + attendee.EmailAddress),
+                });
+                attendee.Event = eventDO;
+            }
+
+            //final assembly of event
+            dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
+            ddayCalendar.Events.Add(dDayEvent);
+            ddayCalendar.Method = CalendarMethods.Request;
+
+            return ddayCalendar;
+        }
+
+        public static EventDO CreateEventFromICSCalendar(iCalendar iCalendar)
+        {
+            if (iCalendar.Events.Count == 0)
+                throw new ArgumentException("iCalendar has no events.");
+            var icsEvent = iCalendar.Events[0];
+            return new EventDO()
+            {
+                Category = icsEvent.Categories != null ? icsEvent.Categories.FirstOrDefault() : null,
+                Class = icsEvent.Class,
+                Description = icsEvent.Description,
+                IsAllDay = icsEvent.IsAllDay,
+                StartDate = icsEvent.Start.UTC,
+                EndDate = icsEvent.End.UTC,
+                Location = icsEvent.Location,
+                Sequence = icsEvent.Sequence,
+                Summary = icsEvent.Summary,
+                Transparency = icsEvent.Transparency.ToString(),
+                DateCreated = icsEvent.Created.UTC,
+                Attendees = icsEvent.Attendees
+                    .Select(a => new AttendeeDO()
+                    {
+                        EmailAddress = new EmailAddressDO(a.Value.OriginalString.Remove(0, a.Value.Scheme.Length + 1)),
+                        Name = a.CommonName
+                    })
+                    .ToList(),
+            };
+        }
+
     }
 }

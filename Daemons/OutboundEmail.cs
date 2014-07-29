@@ -5,11 +5,12 @@ using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.Managers.CommunicationManager;
+using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers;
 using StructureMap;
 using Utilities.Logging;
 using Microsoft.WindowsAzure;
+using Data.Infrastructure;
 
 namespace Daemons
 {
@@ -174,6 +175,8 @@ namespace Daemons
                             var email = subUow.EmailRepository.GetQuery().First(e => e.Id == envelope.Email.Id); // probably "= envelope.Email" will work now...
                             email.EmailStatus = EmailStatus.DISPATCHED;
                             subUow.SaveChanges();
+                            string customerId = subUow.UserRepository.GetAll().Where(e => e.EmailAddress.Address == email.Recipients.First(c => c.Type == EmailParticipantType.TO).EmailAddress.Address).First().Id;
+                            AlertManager.EmailSent(email.Id, customerId);
                         }
                         catch (StructureMapConfigurationException ex)
                         {

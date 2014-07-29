@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net.Mail;
 using Daemons;
 using Data.Entities;
+using Data.Entities.Enumerations;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Services;
@@ -45,6 +48,9 @@ namespace KwasantTest.Daemons
 
                 uow.SaveChanges();
 
+                //adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
+                AddNewTestCustomer(email.From);
+
                 var mockEmailer = new Mock<IEmailPackager>();
                 mockEmailer.Setup(a => a.Send(envelope)).Verifiable();
                 ObjectFactory.Configure(
@@ -69,6 +75,9 @@ namespace KwasantTest.Daemons
                 var emailService = new Email(_uow, email);
                 var envelope = emailService.SendTemplate("template", email, null);
                 uow.SaveChanges();
+
+                //adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
+                AddNewTestCustomer(email.From);
                 
                 var mockEmailer = new Mock<IEmailPackager>();
                 mockEmailer.Setup(a => a.Send(envelope)).Verifiable();
@@ -95,6 +104,9 @@ namespace KwasantTest.Daemons
             envelope.Handler = "INVALID EMAIL PACKAGER";
             _uow.SaveChanges();
 
+            //adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
+            AddNewTestCustomer(email.From);
+
             var mockMandrillEmailer = new Mock<IEmailPackager>();
             mockMandrillEmailer.Setup(a => a.Send(envelope)).Throws<ApplicationException>(); // shouldn't be invoked
             ObjectFactory.Configure(a => a.For<IEmailPackager>().Use(mockMandrillEmailer.Object).Named(EnvelopeDO.MandrillHander));
@@ -106,6 +118,26 @@ namespace KwasantTest.Daemons
             Assert.Throws<UnknownEmailPackagerException>(
                 () => DaemonTests.RunDaemonOnce(_outboundEmailDaemon),
                 "OutboundEmail daemon didn't throw an exception for invalid EnvelopeDO.");
+        }
+
+        private void AddNewTestCustomer(EmailAddressDO emailAddress)
+        {
+            emailAddress.Recipients = new List<RecipientDO>()
+                {
+                    new RecipientDO()
+                    {
+                        EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("joetest2@edelstein.org")),
+                        Type = EmailParticipantType.TO
+                    }
+                };
+            emailAddress.Address = "joetest2@edelstein.org";
+            var role = new Role();
+            role.Add(_uow, _fixtureData.TestRole());
+            var u = new UserDO();
+            var user = new User();
+            UserDO currUserDO = new UserDO();
+            currUserDO.EmailAddress = emailAddress;
+            _uow.UserRepository.Add(currUserDO);
         }
     }
 }

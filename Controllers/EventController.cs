@@ -5,12 +5,14 @@ using System.Web.Mvc;
 using AutoMapper;
 using Data.Constants;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using DayPilot.Web.Mvc.Json;
-using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
+using EventSyncStatus = Data.Constants.EventSyncStatus;
 
 
 namespace KwasantWeb.Controllers
@@ -110,15 +112,15 @@ namespace KwasantWeb.Controllers
                     throw new ApplicationException("should not be able to call this Update method with an ID that doesn't match an existing event");
 
                 Mapper.Map(eventVM, existingEvent);
+                existingEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;
                 _attendee.ManageAttendeeList(uow, existingEvent, eventVM.Attendees);
 
                 _event.Process(uow, existingEvent);
                 uow.SaveChanges();
-
-            return JavaScript(SimpleJsonSerializer.Serialize(true));
+                AlertManager.EventBooked(existingEvent.Id, existingEvent.BookingRequest.User.Id);
+                return JavaScript(SimpleJsonSerializer.Serialize(true));
+            }
         }
-        }
-
 
         public ActionResult DeleteEvent(int eventID)
         {

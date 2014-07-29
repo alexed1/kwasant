@@ -120,7 +120,7 @@ namespace KwasantWeb.Controllers.DayPilot
             DataIdField = GetPropertyName(ev => ev.Id);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Events = uow.EventRepository.GetQuery().Where(e => e.BookingRequest.Id == _bookingRequestID).ToList();
+                Events = uow.EventRepository.GetQuery().Where(e => e.BookingRequestID == _bookingRequestID).ToList();
             }
         }
 

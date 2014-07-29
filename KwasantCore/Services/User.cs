@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Validators;
@@ -19,6 +20,10 @@ namespace KwasantCore.Services
 {
     public class User
     {
+
+
+      
+
         private static IAuthenticationManager AuthenticationManager
         {
             get
@@ -35,6 +40,7 @@ namespace KwasantCore.Services
             userDO.UserName = userName;
             userDO.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
             uow.UserRepository.Add(userDO);
+            uow.CalendarRepository.CheckUserHasCalendar(userDO);
 
             UserValidator curUserValidator = new UserValidator();
             curUserValidator.ValidateAndThrow(userDO);
@@ -101,6 +107,8 @@ namespace KwasantCore.Services
             AuthenticationManager.SignOut();
         }
         
+        //problem: this assumes a single role but we need support for multiple roles on one account
+        //problem: the line between account and user is really murky. do we need both?
         public bool ChangeUserRole(IUnitOfWork uow, IdentityUserRole identityUserRole)
         {
             UserManager<UserDO> userManager = GetUserManager(uow);

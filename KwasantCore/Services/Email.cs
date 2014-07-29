@@ -12,7 +12,6 @@ using Data.Validators;
 using FluentValidation;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
-using KwasantCore.Managers.CommunicationManager;
 using Microsoft.WindowsAzure;
 using StructureMap;
 
@@ -60,7 +59,6 @@ namespace KwasantCore.Services
             var envelope = _uow.EnvelopeRepository.CreateMandrillEnvelope(message, templateName, mergeFields);
             message.EmailStatus = EmailStatus.QUEUED;
             _uow.EnvelopeRepository.Add(envelope);
-            _uow.SaveChanges();
             return envelope;
         }
 
@@ -69,7 +67,6 @@ namespace KwasantCore.Services
             var envelope = _uow.EnvelopeRepository.CreateGmailEnvelope(_curEmailDO);
             _curEmailDO.EmailStatus = EmailStatus.QUEUED;
             _uow.EnvelopeRepository.Add(envelope);
-            _uow.SaveChanges();
             return envelope;
         }
 

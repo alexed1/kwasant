@@ -396,6 +396,39 @@ html.ifarme-body body {
     font-size: 20px;
 }	
 
+/* Toolbar Styles */
+
+nav.top-toolbar-section {
+	margin-bottom: 30px;
+	border-radius: 0;
+}
+
+nav.top-toolbar-section .navbar-collapse {
+	padding: 0;
+}
+
+nav.top-toolbar-section ul.navbar-nav {
+	width: 100%;
+}
+
+nav.top-toolbar-section ul.navbar-nav li {
+	font-size: 16px;
+	font-weight: 300;
+}
+
+nav.top-toolbar-section ul.navbar-nav li a {
+	font-size: 16px;
+	font-weight: 300;
+	color: #333;
+	transition: all ease-in-out .2s;
+}
+
+nav.top-toolbar-section ul.navbar-nav li a:hover, nav.top-toolbar-section ul.navbar-nav li.active a {
+	background: #d85e17;
+	color: #fff;
+}
+
+
 /* Forms Styles*/
 
 .custom-form {
@@ -603,7 +636,7 @@ input[type="checkbox"].input-validation-error {
 }
 
 .jumbotron.calendar-section {
-	padding: 48px 20px;	
+	padding: 10px 20px;	
 }
 
 .calendar-section .emailInfoBox {

@@ -10,7 +10,7 @@ using Data.Entities.Enumerations;
 using Data.Interfaces;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Exceptions;
-using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.App_Start;
 using KwasantWeb.Filters;
@@ -56,6 +56,7 @@ namespace KwasantWeb.Controllers
                     var responseUrlFormat = string.Concat(Url.Action("", RouteConfig.ShowClarificationResponseUrl, new { }, this.Request.Url.Scheme), "?{0}");
                     var responseUrl = cr.GenerateResponseURL(curClarificationRequestDO, responseUrlFormat);
                     cr.Send(uow, curClarificationRequestDO, responseUrl); 
+                    uow.SaveChanges();
                     return Json(new { success = true });
                 }
                 catch (EntityNotFoundException ex)

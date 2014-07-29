@@ -1,9 +1,9 @@
 ﻿using System.Web.Mvc;
-using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Managers;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorizeAttribute(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         //
@@ -21,5 +21,11 @@ namespace KwasantWeb.Controllers
         //    //get all Bookings with status = "unprocessed"
         //    //foreach Booking, process it
         //}
+
+        public ActionResult Dashboard()
+        {
+            return View("Index");
+        } 
+
     }
 }
