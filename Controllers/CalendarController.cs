@@ -204,9 +204,9 @@ namespace KwasantWeb.Controllers
             return new DayPilotCalendarControl(bookingRequestID).CallBack(this);
         }
 
-        public ActionResult NavigatorBackend()
+        public ActionResult NavigatorBackend(int bookingRequestID)
         {
-            return new DayPilotNavigatorControl().CallBack(this);
+            return new DayPilotNavigatorControl(bookingRequestID).CallBack(this);
         }
         #endregion "DayPilot-Related Methods"
 
