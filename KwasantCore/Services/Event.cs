@@ -31,6 +31,10 @@ namespace KwasantCore.Services
             curEventDO.Calendar = curCalendar;
             curEventDO.CalendarID = curCalendar.Id;
             curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
+			
+			var attendee = new Attendee();
+            attendee.DetectEmailsFromBookingRequest(curEventDO);
+
             curEventDO.StateID = EventState.Booking;
 
             return curEventDO;
@@ -76,7 +80,7 @@ namespace KwasantCore.Services
             if (eventDO.IsAllDay)
             {
                 dDayEvent.IsAllDay = true;
-            }
+    }
             else
             {
                 dDayEvent.DTStart = new iCalDateTime(DateTime.SpecifyKind(eventDO.StartDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
