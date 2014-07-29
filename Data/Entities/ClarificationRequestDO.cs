@@ -27,7 +27,10 @@ namespace Data.Entities
             set { BookingRequest = (BookingRequestDO) value; }
         }
         public virtual BookingRequestDO BookingRequest { get; set; }
-        public ClarificationStatus ClarificationStatus { get; set; }
+        [ForeignKey("ClarificationRequestState")]
+        [Required]
+        public int CRState { get; set; }
+        public virtual BookingRequestState ClarificationRequestState { get; set; }
         public virtual IList<QuestionDO> Questions
         {
             get { return _questions; }

@@ -4,7 +4,7 @@ using Data.Interfaces;
 
 namespace Data.Repositories
 {
-    public class BookingRequestStatusRepository : GenericRepository<BookingRequestStatus>, IBookingRequestStatusRepository
+    public class BookingRequestStatusRepository : GenericRepository<BookingRequestState>, IBookingRequestStatusRepository
     {
         public BookingRequestStatusRepository(IUnitOfWork uow)
             : base(uow)
@@ -14,7 +14,7 @@ namespace Data.Repositories
     }
 
 
-    public interface IBookingRequestStatusRepository : IGenericRepository<BookingRequestStatus>
+    public interface IBookingRequestStatusRepository : IGenericRepository<BookingRequestState>
     {
 
     }

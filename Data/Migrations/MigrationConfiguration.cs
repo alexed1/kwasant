@@ -63,7 +63,8 @@ namespace Data.Migrations
         public static void Seed(IUnitOfWork context)
         {
             SeedConstants<EventState, EventStatus>(context, (id, name) => new EventStatus { Id = id, Name = name });
-            SeedConstants<BRState, BookingRequestStatus>(context, (id, name) => new BookingRequestStatus { Id = id, Name = name });
+            SeedConstants<BRState, BookingRequestState>(context, (id, name) => new BookingRequestState { Id = id, Name = name });
+            SeedConstants<CRState, ClarificationRequestState>(context, (id, name) => new ClarificationRequestState() { Id = id, Name = name });
             SeedConstants<Constants.EventCreateType, EventCreateType>(context, (id, name) => new EventCreateType { Id = id, Name = name });
             SeedConstants<Constants.EventSyncStatus, EventSyncStatus>(context, (id, name) => new EventSyncStatus { Id = id, Name = name });
             SeedConstants<ServiceAuthType, ServiceAuthorizationType>(context, (id, name) => new ServiceAuthorizationType() { Id = id, Name = name });

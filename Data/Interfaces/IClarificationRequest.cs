@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +14,8 @@ namespace Data.Interfaces
     {
         int BookingRequestId { get; set; }
         IBookingRequest BookingRequest { get; set; }
-        ClarificationStatus ClarificationStatus { get; set; }
-        IList<QuestionDO> Questions { get; } 
+        int CRState { get; set; }
+        BookingRequestState ClarificationRequestState { get; set; }
+        IList<QuestionDO> Questions { get; }
     }
 }

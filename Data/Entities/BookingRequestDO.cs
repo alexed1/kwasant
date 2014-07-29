@@ -17,9 +17,9 @@ namespace Data.Entities
         public virtual ClarificationRequestDO ClarificationRequest { get; set; }
 */
 
-        [ForeignKey("BookingRequestStatus")]
+        [ForeignKey("BookingRequestState")]
         [Required]
         public int? BRState { get; set; }
-        public virtual BookingRequestStatus BookingRequestStatus { get; set; }
+        public virtual BookingRequestState BookingRequestState { get; set; }
     }
 }

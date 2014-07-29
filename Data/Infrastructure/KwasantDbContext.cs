@@ -175,9 +175,10 @@ namespace Data.Infrastructure
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
-            modelBuilder.Entity<BookingRequestStatus>().ToTable("BookingRequestStatuses");
+            modelBuilder.Entity<BookingRequestState>().ToTable("BookingRequestStates");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<ClarificationRequestDO>().ToTable("ClarificationRequests");
+            modelBuilder.Entity<ClarificationRequestState>().ToTable("ClarificationRequestStates");
             modelBuilder.Entity<QuestionDO>().ToTable("Questions");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");

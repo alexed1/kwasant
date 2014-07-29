@@ -120,7 +120,7 @@ namespace KwasantCore.Services
                     questionDO.Response = answeredQuestion.Response;
                     questionDO.Status = QuestionStatus.Answered;
                 }
-                curClarificationRequestDO.ClarificationStatus = ClarificationStatus.Resolved;
+                curClarificationRequestDO.CRState = CRState.Resolved;
                 curBookingRequestDO.BRState = BRState.Pending;
                 uow.SaveChanges();
             }
