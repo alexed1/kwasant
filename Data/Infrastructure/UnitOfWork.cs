@@ -237,6 +237,36 @@ namespace Data.Infrastructure
             }
         }
 
+
+        private NegotiationsRepository _negotiationsRepository;
+
+        public NegotiationsRepository NegotiationsRepository
+        {
+            get
+            {
+                return _negotiationsRepository ?? (_negotiationsRepository = new NegotiationsRepository(this));
+            }
+        }
+
+        private QuestionsRepository _questionsRepository;
+
+        public QuestionsRepository QuestionsRepository
+        {
+            get
+            {
+                return _questionsRepository ?? (_questionsRepository = new QuestionsRepository(this));
+            }
+        }
+
+        private AnswersRepository _answersRepository;
+
+        public AnswersRepository AnswersRepository
+        {
+            get
+            {
+                return _answersRepository ?? (_answersRepository = new AnswersRepository(this));
+            }
+        }
         public void Save()
         {
             _context.SaveChanges();

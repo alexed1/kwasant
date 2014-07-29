@@ -34,6 +34,10 @@ namespace Data.Entities
             set { _questions = value; }
         }
 
+        public int NegotiationId { get; set; }
+        [ForeignKey("NegotiationId")]
+        public virtual NegotiationDO Negotiation { get; set; }
+
         #endregion
     }
 }

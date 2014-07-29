@@ -30,12 +30,10 @@ namespace KwasantWeb.Controllers
                 if (bookingRequestDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
+                ViewBag.negotiationlbl = new Negotiations().getNegotiation(uow, id);
                 return View(bookingRequestDO);
             }
         }
-
-
-
 
 
         #endregion "Action"
@@ -212,7 +210,7 @@ namespace KwasantWeb.Controllers
 
         #region "Quick Copy Methods"
         [HttpGet]
-        public ActionResult ProcessQuickCopy(string copyType,string selectedText)
+        public ActionResult ProcessQuickCopy(string copyType, string selectedText)
         {
             string value = (new Calendar()).ProcessQuickCopy(copyType, selectedText);
             string status = "valid";

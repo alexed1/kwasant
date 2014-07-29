@@ -12,5 +12,7 @@ namespace KwasantWeb.ViewModels
         public int Id { get; set; }
         public string Text { get; set; }
         public QuestionStatus Status { get; set; }
+        public int NegotiationId { get; set; }
+        public List<AnswerViewModel> Answers { get; set; }
     }
 }

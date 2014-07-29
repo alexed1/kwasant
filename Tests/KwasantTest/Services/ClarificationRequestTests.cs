@@ -39,9 +39,10 @@ namespace KwasantTest.Services
         {
             // SETUP
             var curBookingRequestDO = _fixture.TestBookingRequest1();
+            var curNegotiationDO = _fixture.TestNegotiation();
 
             // EXECUTE
-            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO);
+            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO, curNegotiationDO.Id);
 
             // VERIFY
             Assert.AreEqual(curBookingRequestDO.Id, curClarificationRequestDO.BookingRequestId, "CR must have BR assigned to passed one.");
@@ -55,9 +56,10 @@ namespace KwasantTest.Services
             // SETUP
             var curBookingRequestDO = _fixture.TestBookingRequest1();
             const string responseUrl = "kwasant.com/crr?test";
+            var curNegotiationDO = _fixture.TestNegotiation();
 
             // EXECUTE
-            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO);
+            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO, curNegotiationDO.Id);
             _cr.Send(_uow, curClarificationRequestDO, responseUrl);
             _uow.SaveChanges();
 
@@ -77,9 +79,10 @@ namespace KwasantTest.Services
             var curBookingRequestDO = _fixture.TestBookingRequest1();
             const string responseUrlPath = "kwasant.com/crr";
             const string responseUrlFormat = responseUrlPath + "?{0}";
+            var curNegotiationDO = _fixture.TestNegotiation();
 
             // EXECUTE
-            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO);
+            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO, curNegotiationDO.Id);
             var responseUrl = _cr.GenerateResponseURL(curClarificationRequestDO, responseUrlFormat);
             var responseUrlParts = responseUrl.Split('?');
             var encryptedParams = WebUtility.UrlDecode(responseUrlParts[1]);
@@ -97,9 +100,10 @@ namespace KwasantTest.Services
             // SETUP
             var curBookingRequestDO = _fixture.TestBookingRequest1();
             const string responseUrl = "kwasant.com/crr?test";
+            var curNegotiationDO = _fixture.TestNegotiation();
 
             // EXECUTE
-            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO);
+            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO, curNegotiationDO.Id);
             curClarificationRequestDO.Questions
                 .Add(new QuestionDO()
                          {
