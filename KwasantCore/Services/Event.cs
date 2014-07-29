@@ -134,7 +134,7 @@ namespace KwasantCore.Services
                 Sequence = icsEvent.Sequence,
                 Summary = icsEvent.Summary,
                 Transparency = icsEvent.Transparency.ToString(),
-                DateCreated = icsEvent.Created.UTC,
+                DateCreated = icsEvent.Created != null ? icsEvent.Created.UTC : DateTimeOffset.UtcNow,
                 Attendees = icsEvent.Attendees
                     .Select(a => new AttendeeDO()
                     {
