@@ -124,6 +124,7 @@
 						EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
 						TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
 						EventDeleteJavaScript = "eventDelete(e)",
+                        AfterRenderJavaScript = "afterRender()"
 					})
 
 					@Html.DayPilotCalendar("dp_week", new DayPilotCalendarConfig
@@ -156,7 +157,8 @@
 						TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
 						EventDeleteJavaScript = "eventDelete(e)",
 						ContextMenu = "menu1",
-						HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"
+						HeaderClickJavaScript = "alert('Day clicked: ' + c.date);",
+                        AfterRenderJavaScript = "afterRender()"
 					})
 
 					@Html.DayPilotMonth("dp_month", new DayPilotMonthConfig
@@ -180,6 +182,7 @@
 						EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
 						EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
 						TimeRangeSelectedJavaScript = "eventNew(start, end)",
+                        AfterRenderJavaScript = "afterRender()"
 					})
 				</div>
 			</div>
@@ -301,6 +304,10 @@
         dp_week.backendUrl = "@Url.Content("~/Calendar/Backend?bookingRequestID=")" + id;
         dp_month.backendUrl = "@Url.Content("~/Calendar/Month?bookingRequestID=")" + id;
         refresh(true);
+    }
+
+    function afterRender() {
+            dp_navigator.visibleRangeChangedCallBack();
     }
 
     //Document ready function, will run after page is ready and all elements are loaded.
