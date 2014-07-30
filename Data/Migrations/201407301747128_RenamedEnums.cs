@@ -18,9 +18,9 @@ namespace Data.Migrations
                 .PrimaryKey(t => t.Id);
             
             AddColumn("dbo.ClarificationRequests", "CRState", c => c.Int(nullable: false));
+            Sql("UPDATE dbo.ClarificationRequests SET CRState = ClarificationStatus");
             CreateIndex("dbo.ClarificationRequests", "CRState");
             AddForeignKey("dbo.ClarificationRequests", "CRState", "dbo.BookingRequestStates", "Id", cascadeDelete: true);
-            Sql("UPDATE dbo.ClarificationRequests SET CRState = ClarificationStatus");
             DropColumn("dbo.ClarificationRequests", "ClarificationStatus");
         }
         

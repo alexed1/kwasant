@@ -9,7 +9,7 @@ using StructureMap;
 
 namespace Data.Infrastructure
 {
-    /// <summary>
+    /// <summary> 
     /// Entity Framework implementation for storing dictionary form data in the database.
     /// </summary>
     /// <remarks>
@@ -49,9 +49,9 @@ namespace Data.Infrastructure
             {
                 var json = _store._getAccessor();
                 _dictionary = string.IsNullOrEmpty(json)
-                           ? new Dictionary<string, string>()
+                       ? new Dictionary<string, string>()
                            : JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            }
+        }
 
             public static StoreDictionary GetStoreDictionary(JSONDataStore store)
             {
@@ -63,7 +63,7 @@ namespace Data.Infrastructure
             #region Implementation of IEnumerable
 
             public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
-            {
+        {
                 return _dictionary.GetEnumerator();
             }
 
@@ -79,10 +79,10 @@ namespace Data.Infrastructure
             public void Add(KeyValuePair<string, string> item)
             {
                 _dictionary.Add(item);
-            }
+        }
 
             public void Clear()
-            {
+        {
                 _dictionary.Clear();
             }
 
@@ -94,7 +94,7 @@ namespace Data.Infrastructure
             public void CopyTo(KeyValuePair<string, string>[] array, int arrayIndex)
             {
                 _dictionary.CopyTo(array, arrayIndex);
-            }
+        }
 
             public bool Remove(KeyValuePair<string, string> item)
             {
@@ -163,17 +163,17 @@ namespace Data.Infrastructure
         public async Task<T> GetAsync<T>(string key)
         {
             var store = StoreDictionary.GetStoreDictionary(this);
-            string value;
-            return store.TryGetValue(key, out value)
-                       ? JsonConvert.DeserializeObject<T>(value)
-                       : default(T);
-        }
+                string value;
+                return store.TryGetValue(key, out value)
+                           ? JsonConvert.DeserializeObject<T>(value)
+                           : default(T);
+            }
 
         public async Task ClearAsync()
         {
             var store = StoreDictionary.GetStoreDictionary(this);
-            store.Clear();
+                store.Clear();
             store.Save();
+            }
         }
-    }
 }

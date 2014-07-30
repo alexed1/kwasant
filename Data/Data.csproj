@@ -336,9 +336,17 @@
     <Compile Include="Migrations\201407240008420_Sync-23.07.2014.Designer.cs">
       <DependentUpon>201407240008420_Sync-23.07.2014.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201407291357327_RenamedEnums.cs" />
-    <Compile Include="Migrations\201407291357327_RenamedEnums.Designer.cs">
-      <DependentUpon>201407291357327_RenamedEnums.cs</DependentUpon>
+    <Compile Include="Migrations\201407261845581_LinkBookingRequestsToCalendars.cs" />
+    <Compile Include="Migrations\201407261845581_LinkBookingRequestsToCalendars.Designer.cs">
+      <DependentUpon>201407261845581_LinkBookingRequestsToCalendars.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407300545349_LinkCalendarToNegotiation.cs" />
+    <Compile Include="Migrations\201407300545349_LinkCalendarToNegotiation.Designer.cs">
+      <DependentUpon>201407300545349_LinkCalendarToNegotiation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407301747128_RenamedEnums.cs" />
+    <Compile Include="Migrations\201407301747128_RenamedEnums.Designer.cs">
+      <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -540,8 +548,14 @@
     <EmbeddedResource Include="Migrations\201407240008420_Sync-23.07.2014.resx">
       <DependentUpon>201407240008420_Sync-23.07.2014.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201407291357327_RenamedEnums.resx">
-      <DependentUpon>201407291357327_RenamedEnums.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201407261845581_LinkBookingRequestsToCalendars.resx">
+      <DependentUpon>201407261845581_LinkBookingRequestsToCalendars.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407300545349_LinkCalendarToNegotiation.resx">
+      <DependentUpon>201407300545349_LinkCalendarToNegotiation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407301747128_RenamedEnums.resx">
+      <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -17,27 +17,27 @@ namespace KwasantCore.Services
 
         //this is called when a booker clicks on the calendar to create a new event. The form has not yet been filled out, so only 
         //some info about the event is known.
-        public EventDO Create(EventDO curEventDO, IUnitOfWork uow)
+        public void Create(EventDO curEventDO, IUnitOfWork uow)
         {
             curEventDO.IsAllDay = curEventDO.StartDate.Equals(curEventDO.StartDate.Date) &&
                                   curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate);
 
             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
+            curEventDO.BookingRequest = bookingRequestDO;            
             curEventDO.CreatedBy = bookingRequestDO.User;
+            curEventDO.CreatedByID = bookingRequestDO.User.Id;
             curEventDO.DateCreated = DateTimeOffset.UtcNow.ToOffset(bookingRequestDO.DateCreated.Offset);
+            
             var curCalendar = bookingRequestDO.User.Calendars.FirstOrDefault();
             if (curCalendar == null)
                 throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");
-            curEventDO.Calendar = curCalendar;
-            curEventDO.CalendarID = curCalendar.Id;
+            
             curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
 			
 			var attendee = new Attendee();
             attendee.DetectEmailsFromBookingRequest(curEventDO);
 
             curEventDO.StateID = EventState.Booking;
-
-            return curEventDO;
         }
 
         public EventDO Create(IUnitOfWork uow, int bookingRequestID, string startDate, string endDate)
@@ -46,7 +46,8 @@ namespace KwasantCore.Services
             curEventDO.StartDate = DateTime.Parse(startDate);
             curEventDO.EndDate = DateTime.Parse(endDate);
             curEventDO.BookingRequestID = bookingRequestID;
-            return Create(curEventDO, uow);
+            Create(curEventDO, uow);
+            return curEventDO;
         }
 
 

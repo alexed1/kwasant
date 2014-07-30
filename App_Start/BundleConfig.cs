@@ -53,6 +53,14 @@ namespace KwasantWeb.App_Start
 				"~/Content/js/custom.js"
 				));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/kwasantpopup").Include(
+                "~/Content/js/Kwasant/Popup.js"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/js/kwasantcalendar").Include(
+                "~/Content/js/KwasantCalendar.js"
+                ));
+
             bundles.Add(new ScriptBundle("~/bundles/js/daypilot").Include(
                 "~/Content/js/Daypilot/daypilot-common.src.js",
                 "~/Content/js/Daypilot/daypilot-bubble.src.js",

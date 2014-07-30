@@ -22,10 +22,14 @@ namespace Data.Entities
         public virtual ClarificationRequestDO ClarificationRequest { get; set; }
 */
 
+<<<<<<< HEAD
+        [ForeignKey("BookingRequestState")]
+=======
         [InverseProperty("BookingRequests")]
         public virtual List<CalendarDO> Calendars { get; set; }
 
-        [ForeignKey("BookingRequestState")]
+        [ForeignKey("BookingRequestStatus")]
+>>>>>>> dev
         [Required]
         public int? BRState { get; set; }
         public virtual BookingRequestState BookingRequestState { get; set; }

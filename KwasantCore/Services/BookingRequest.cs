@@ -18,11 +18,21 @@ namespace KwasantCore.Services
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
+
+            foreach (var calendar in bookingRequest.User.Calendars)
+                bookingRequest.Calendars.Add(calendar);
         }
 
-        public List<BookingRequestDO> GetAllByUserId(IBookingRequestRepository curBookingRequestRepository, int start, int length, string userid)
+        public List<object> GetAllByUserId(IBookingRequestRepository curBookingRequestRepository, int start, int length, string userid)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Skip(start).Take(length).ToList();
+            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Skip(start).Take(length).Select(e =>
+                            (object)new
+                            {
+                                id = e.Id,
+                                subject = e.Subject,
+                                dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                                linkedcalendarids = String.Join(",", e.User.Calendars.Select(c => c.Id))
+                            }).ToList();
         }
 
         public int GetBookingRequestsCount(IBookingRequestRepository curBookingRequestRepository, string userid)

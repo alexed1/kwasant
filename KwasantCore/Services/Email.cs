@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Entities.Enumerations;
+using Data.Infrastructure.JoinTables;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Validators;

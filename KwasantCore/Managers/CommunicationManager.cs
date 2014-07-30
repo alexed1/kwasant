@@ -95,6 +95,10 @@ namespace KwasantCore.Managers
                         //If the event hasn't changed - we don't need a new email..?
                     }
                     break;
+
+                case EventState.ProposedTimeSlot:
+                    //Do nothing
+                    break;
                 default:
                     throw new Exception("Invalid event status");
             }

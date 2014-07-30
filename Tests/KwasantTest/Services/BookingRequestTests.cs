@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
@@ -224,7 +225,7 @@ namespace KwasantTest.Services
         public void GetBookingRequestsTest()
         {
             AddTestRequestData();
-            List<BookingRequestDO> requests = (new BookingRequest()).GetAllByUserId(_uow.BookingRequestRepository, 0, 10, _uow.BookingRequestRepository.GetAll().FirstOrDefault().User.Id);
+            List<Object> requests = (new BookingRequest()).GetAllByUserId(_uow.BookingRequestRepository, 0, 10, _uow.BookingRequestRepository.GetAll().FirstOrDefault().User.Id);
             Assert.AreEqual(1, requests.Count);
         }
     }
