@@ -105,6 +105,7 @@ namespace KwasantCore.Services
             where TEmailType : EmailDO, new()
         {
             String body = String.Empty;
+            String plainBody = mailMessage.Body;
             if (!mailMessage.IsBodyHtml)
             {
                 foreach (var av in mailMessage.AlternateViews)
@@ -112,6 +113,14 @@ namespace KwasantCore.Services
                     if (av.ContentType.MediaType == "text/html")
                     {
                         body = new StreamReader(av.ContentStream).ReadToEnd();
+                        break;
+                    }
+                }
+                foreach (var av in mailMessage.AlternateViews)
+                {
+                    if (av.ContentType.MediaType == "text/plain")
+                    {
+                        plainBody = new StreamReader(av.ContentStream).ReadToEnd();
                         break;
                     }
                 }
@@ -137,6 +146,7 @@ namespace KwasantCore.Services
             {                
                 Subject = mailMessage.Subject,
                 HTMLText = body,
+                PlainText = plainBody,
                 DateReceived = dateRecieved,
                 DateCreated = dateCreated,
                 Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),

@@ -5,7 +5,6 @@ using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers;
 using KwasantCore.Services;
-using KwasantWeb.Controllers.DayPilot;
 using KwasantWeb.Controllers.External.DayPilot;
 using KwasantWeb.Controllers.External.DayPilot.Providers;
 using KwasantWeb.ViewModels;
@@ -228,9 +227,9 @@ namespace KwasantWeb.Controllers
             return RedirectToAction("ThemeTraditional");
         }
 
-        public ActionResult NavigatorBackend()
+        public ActionResult NavigatorBackend(int bookingRequestID)
         {
-            return new KwasantNavigatorControl().CallBack(this);
+            return new KwasantNavigatorControl(bookingRequestID).CallBack(this);
         }
         #endregion "DayPilot-Related Methods"
 

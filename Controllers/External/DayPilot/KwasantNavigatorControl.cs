@@ -1,26 +1,41 @@
-﻿using DayPilot.Web.Mvc;
+﻿using System.Linq;
+using Data.Interfaces;
+using DayPilot.Web.Mvc;
+using DayPilot.Web.Mvc.Events.Navigator;
+using KwasantCore.Services;
+using StructureMap;
 
-namespace KwasantWeb.Controllers.DayPilot
-{ 
+namespace KwasantWeb.Controllers.External.DayPilot
+{
     public class KwasantNavigatorControl : DayPilotNavigator
     {
-        //protected override void OnVisibleRangeChanged(VisibleRangeChangedArgs visibleRangeChangedArgs)
-        //{
-        //    // this select is a really bad example, no where clause
-        //    if (Id == "dpn_recurring")
-        //    {
-        //        Events = new EventManager(Controller, "recurring").Data.AsEnumerable();
-        //        DataRecurrenceField = "recurrence";
-        //    }
-        //    else
-        //    {
-        //        Events = new EventManager(Controller).Data.AsEnumerable();
-        //    }
+        private readonly int _bookingRequestID;
 
-        //    DataStartField = "start";
-        //    DataEndField = "end";
-        //    DataIdField = "id";
-        //}
+        public KwasantNavigatorControl(int bookingRequestID)
+        {
+            _bookingRequestID = bookingRequestID;
+        }
+
+        protected override void OnVisibleRangeChanged(VisibleRangeChangedArgs a)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                string userId = new BookingRequest().GetUserId(uow.BookingRequestRepository, _bookingRequestID);
+                var events = uow.EventRepository.GetAll().Where(s => s.BookingRequest.User.Id == userId).ToList();
+                Events = events.Select(e =>
+                    new
+                    {
+                        start = e.StartDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff"),
+                        end = e.EndDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff"),
+                        text = e.Summary,
+                        id = e.Id,
+                        allday = e.IsAllDay
+                    });
+
+                DataStartField = "start";
+                DataEndField = "end";
+                DataIdField = "id";
+            }
+        }
     }
-
 }

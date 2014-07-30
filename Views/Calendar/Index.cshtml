@@ -117,6 +117,10 @@
         }
     }
 
+    function afterRender() {
+            dp_navigator.visibleRangeChangedCallBack();
+    }
+
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
 
