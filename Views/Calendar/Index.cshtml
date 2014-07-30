@@ -85,6 +85,9 @@
                 getMonthBackendURL: function () {
                     return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
                 },
+                getNavigatorBackendURL: function() {
+                    return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                },  
                 getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
                 getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
                 getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
@@ -113,7 +116,7 @@
         $("#emailInfoFrame")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
         
         if (calendar !== undefined) {
-            calendar.updateBackendURLs("@Url.Content("~/Calendar/Day?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Month?calendarIDs=")" + linkedCalendarIDs);
+            calendar.updateBackendURLs("@Url.Content("~/Calendar/Day?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Month?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Navigator?calendarIDs=")" + linkedCalendarIDs);
         }
     }
 

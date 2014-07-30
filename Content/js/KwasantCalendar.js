@@ -2,6 +2,7 @@
     var settings;
     var storedCalendars = [];
     var calendar;
+    var nav;
 
 
     $.fn.KCalendar = function (options) {
@@ -13,13 +14,14 @@
             showDay: true,
             showWeek: true,
             showMonth: true,
-            
+
             showNavigator: true,
 
             requireConfirmation: true,
 
-            getCalendarBackendURL: function () { alert('getCalendarBackendURL must be set in the options.'); },
-            getMonthBackendURL: function () { alert('getMonthBackendURL must be set in the options.'); },
+            getCalendarBackendURL: function() { alert('getCalendarBackendURL must be set in the options.'); },
+            getMonthBackendURL: function() { alert('getMonthBackendURL must be set in the options.'); },
+            getNavigatorBackendURL: function() { alert('getNavigatorBackendURL must be set in the options.'); },
             
             getEditURL: function (id) { alert('getEditURL function must be set in the options, unless providing an onEdit function override.'); },
             getNewURL: function (start, end) { alert('getNewURL function must be set in the options, unless providing an onEdit function override.'); },
@@ -41,19 +43,27 @@
         createCalendars();
 
 
+        //This causes all the widgets (all three month controls and the navigator) to reload data from the server
         this.refreshCalendars = function () {
             $.each(storedCalendars, function (i, ele) {
                 ele.commandCallBack('refresh');
             });
+
+            if (nav !== null && nav !== undefined)
+                nav.visibleRangeChangedCallBack(); // This actually causes the navigator to reload events from the server, despite the weird name.
         };
 
-        this.updateBackendURLs = function(calendarBackend, monthBackend) {
+        //This allows us to update the backend urls of our widgets. This is used for our booking request switcher
+        this.updateBackendURLs = function(calendarBackend, monthBackend, navigatorBackend) {
             $.each(storedCalendars, function (i, ele) {
-                if (ele instanceof DayPilot.Calendar)
+                if (calendarBackend !== undefined && calendarBackend !== null && ele instanceof DayPilot.Calendar)
                     ele.backendUrl = calendarBackend;
-                else if (ele instanceof DayPilot.Month)
+                else if (monthBackend !== undefined && monthBackend !== null && ele instanceof DayPilot.Month)
                     ele.backendUrl = monthBackend;
             });
+            if (navigatorBackend !== undefined && navigatorBackend !== null && nav !== undefined && nav !== null)
+                nav.backendUrl = navigatorBackend;
+                
             this.refreshCalendars();
         };
         calendar = this;
@@ -120,12 +130,14 @@
         }
         
         if (settings.showNavigator) {
-            var nav = createNavigator();
+            var navi = createNavigator();
             var wrapper = $('<div class="col-lg-2 container_box calendar-area">');
-            wrapper.append(nav.div);
+            wrapper.append(navi.div);
             settings.topElement.append(wrapper);
-            nav.dp.init();
-            switcher.addNavigator(nav.dp);
+            navi.dp.init();
+            switcher.addNavigator(navi.dp);
+
+            nav = navi.dp;
         }
 
         if (firstToDisplay !== null)
@@ -381,6 +393,7 @@
         var divHolder = $("<div id='" + id + "'></div>");
         var date = new Date();
         var dp_navigator = new DayPilot.Navigator(id);
+        dp_navigator.backendUrl = settings.getNavigatorBackendURL();
         dp_navigator.api = 1;
         dp_navigator.cellHeight = 20;
         dp_navigator.cellWidth = 20;
@@ -407,12 +420,9 @@
             } else {
                 alert('AJAX callback error (500)');
             }
-            ;
         };
-        dp_navigator.timeRangeSelectedHandling = 'Bind';
-        dp_navigator.onTimeRangeSelected = function(start, end) { ; };
-        dp_navigator.visibleRangeChangedHandling = 'JavaScript';
-        dp_navigator.onVisibleRangeChanged = function(start, end) { ; };
+
+        dp_navigator.visibleRangeChangedHandling = "CallBack";
         DayPilot.Locale.register(new DayPilot.Locale('en-us', { 'dayNames': ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'], 'dayNamesShort': ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'], 'monthNames': ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', ''], 'monthNamesShort': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', ''], 'timePattern': 'h:mm tt', 'datePattern': 'M/d/yyyy', 'dateTimePattern': 'M/d/yyyy h:mm tt', 'timeFormat': 'Clock12Hours', 'weekStarts': 0 }));
 
 

@@ -23,8 +23,9 @@ namespace Data.Entities
             set { BookingRequest = (BookingRequestDO) value; }
         }
 
-        [InverseProperty("ClarficationRequest")]
+        [InverseProperty("ClarificationRequest")]
         public virtual IList<CalendarDO> Calendars { get; set; } 
+
         public virtual BookingRequestDO BookingRequest { get; set; }
         public ClarificationStatus ClarificationStatus { get; set; }
         public virtual IList<QuestionDO> Questions

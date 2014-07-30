@@ -339,6 +339,10 @@
     <Compile Include="Migrations\201407261845581_LinkBookingRequestsToCalendars.Designer.cs">
       <DependentUpon>201407261845581_LinkBookingRequestsToCalendars.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407300545349_LinkCalendarToNegotiation.cs" />
+    <Compile Include="Migrations\201407300545349_LinkCalendarToNegotiation.Designer.cs">
+      <DependentUpon>201407300545349_LinkCalendarToNegotiation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
@@ -541,6 +545,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407261845581_LinkBookingRequestsToCalendars.resx">
       <DependentUpon>201407261845581_LinkBookingRequestsToCalendars.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407300545349_LinkCalendarToNegotiation.resx">
+      <DependentUpon>201407300545349_LinkCalendarToNegotiation.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

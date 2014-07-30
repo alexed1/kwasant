@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace KwasantWeb.Controllers.External.DayPilot.Providers
 {
-    public interface ICalendarDataProvider
+    public interface IEventDataProvider
     {
         List<DayPilotTimeslotInfo> LoadData();
         String GetTimeslotBubbleText(int id);

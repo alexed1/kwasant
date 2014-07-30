@@ -79,6 +79,12 @@ namespace KwasantWeb.Controllers
             return new KwasantMonthController(new EventDataProvider(true, ids)).CallBack(this);
         }
 
+        public ActionResult Navigator(string calendarIDs)
+        {
+            var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+            return new KwasantNavigatorControl(new EventDataProvider(true, ids)).CallBack(this);
+        }
+
         public ActionResult Rtl()
         {
             return View();
@@ -227,10 +233,6 @@ namespace KwasantWeb.Controllers
             return RedirectToAction("ThemeTraditional");
         }
 
-        public ActionResult NavigatorBackend(int bookingRequestID)
-        {
-            return new KwasantNavigatorControl(bookingRequestID).CallBack(this);
-        }
         #endregion "DayPilot-Related Methods"
 
         #region "Quick Copy Methods"

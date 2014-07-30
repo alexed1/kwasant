@@ -1,41 +1,39 @@
-﻿using System.Linq;
-using Data.Interfaces;
+﻿using System;
+using System.Linq.Expressions;
 using DayPilot.Web.Mvc;
+using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Navigator;
-using KwasantCore.Services;
-using StructureMap;
+using KwasantWeb.Controllers.External.DayPilot.Providers;
 
 namespace KwasantWeb.Controllers.External.DayPilot
 {
     public class KwasantNavigatorControl : DayPilotNavigator
-    {
-        private readonly int _bookingRequestID;
+    {        
+        private readonly IEventDataProvider _provider;
 
-        public KwasantNavigatorControl(int bookingRequestID)
+        public KwasantNavigatorControl(IEventDataProvider provider)
         {
-            _bookingRequestID = bookingRequestID;
+            _provider = provider;
         }
 
         protected override void OnVisibleRangeChanged(VisibleRangeChangedArgs a)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                string userId = new BookingRequest().GetUserId(uow.BookingRequestRepository, _bookingRequestID);
-                var events = uow.EventRepository.GetAll().Where(s => s.BookingRequest.User.Id == userId).ToList();
-                Events = events.Select(e =>
-                    new
-                    {
-                        start = e.StartDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff"),
-                        end = e.EndDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff"),
-                        text = e.Summary,
-                        id = e.Id,
-                        allday = e.IsAllDay
-                    });
+        {            
+            DataStartField = GetPropertyName(ev => ev.StartDate);
+            DataEndField = GetPropertyName(ev => ev.EndDate);
+            DataIdField = GetPropertyName(ev => ev.Id);
 
-                DataStartField = "start";
-                DataEndField = "end";
-                DataIdField = "id";
-            }
+            Events = _provider.LoadData();
         }
+
+        //This creates a statically typed reference to our supplied property. If we change it in the future, it won't compile (so it won't break at runtime).
+        //Changing the property with tools like resharper will automatically update here.
+        private string GetPropertyName<T>(Expression<Func<DayPilotTimeslotInfo, T>> expression)
+        {
+            if (expression.Body.NodeType == ExpressionType.MemberAccess)
+                return (expression.Body as dynamic).Member.Name;
+
+            throw new Exception("Cannot contain complex expressions. An example of a supported expression is 'ev => ev.Id'");
+        }
+
     }
 }

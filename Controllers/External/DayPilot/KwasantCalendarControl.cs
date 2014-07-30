@@ -10,8 +10,8 @@ namespace KwasantWeb.Controllers.External.DayPilot
 {
     public class KwasantCalendarController : DayPilotCalendar
     {
-        private readonly ICalendarDataProvider _provider;
-        public KwasantCalendarController(ICalendarDataProvider provider)
+        private readonly IEventDataProvider _provider;
+        public KwasantCalendarController(IEventDataProvider provider)
         {
             _provider = provider;
         }

@@ -23,7 +23,7 @@ namespace Data.Entities
         public virtual UserDO Owner { get; set; }
 
         [ForeignKey("ClarificationRequest")]
-        public int ClarificationRequestID { get; set; }
+        public int? ClarificationRequestID { get; set; }
         public virtual ClarificationRequestDO ClarificationRequest { get; set; }
 
         [InverseProperty("Calendars")]

@@ -23,7 +23,9 @@ namespace KwasantCore.Services
                                   curEventDO.StartDate.AddDays(1).Equals(curEventDO.EndDate);
 
             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(curEventDO.BookingRequestID);
+            curEventDO.BookingRequest = bookingRequestDO;            
             curEventDO.CreatedBy = bookingRequestDO.User;
+            curEventDO.CreatedByID = bookingRequestDO.User.Id;
             curEventDO.DateCreated = DateTimeOffset.UtcNow.ToOffset(bookingRequestDO.DateCreated.Offset);
             
             var curCalendar = bookingRequestDO.User.Calendars.FirstOrDefault();
