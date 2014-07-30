@@ -44,7 +44,7 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public ActionResult SelectEventWindows(int calendarID)
+        public ActionResult GetNegotiationCalendars(int calendarID)
         {
             if (calendarID <= 0)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -56,9 +56,10 @@ namespace KwasantWeb.Controllers
                 if (calendarDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
+
                 return View("~/Views/Calendar/SelectEventWindows.cshtml", new EventWindowViewModel
                 {
-                    LinkedCalendarIDs = calendarDO.BookingRequests.SelectMany(br => br.Calendars.Select(c => c.Id)).Union(new[] { calendarID }).Distinct().ToList(),
+                    LinkedCalendarIDs = calendarDO.ClarificationRequest.Calendars.Select(c=> c.Id).Union(new[] { calendarID }).Distinct().ToList(),
                     MainCalendarID = calendarID
                 });
             }
@@ -70,13 +71,13 @@ namespace KwasantWeb.Controllers
         public ActionResult Day(string calendarIDs)
         {
             var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
-            return new KwasantCalendarController(new EventCalendarProvider(true, ids)).CallBack(this);
+            return new KwasantCalendarController(new EventDataProvider(true, ids)).CallBack(this);
         }
 
         public ActionResult Month(string calendarIDs)
         {
             var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
-            return new KwasantMonthController(new EventCalendarProvider(true, ids)).CallBack(this);
+            return new KwasantMonthController(new EventDataProvider(true, ids)).CallBack(this);
         }
 
         public ActionResult Rtl()

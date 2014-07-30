@@ -5,8 +5,6 @@ namespace KwasantWeb.Controllers.External.DayPilot.Providers
 {
     public interface ICalendarDataProvider
     {
-        void MoveTimeslot(int id, DateTime newStart, DateTime newEnd);
-        void DeleteTimeslot(int id);
         List<DayPilotTimeslotInfo> LoadData();
         String GetTimeslotBubbleText(int id);
 

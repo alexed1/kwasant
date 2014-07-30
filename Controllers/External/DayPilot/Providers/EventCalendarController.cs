@@ -8,7 +8,7 @@ using StructureMap;
 
 namespace KwasantWeb.Controllers.External.DayPilot.Providers
 {
-    public class EventCalendarProvider : ICalendarDataProvider
+    public class EventDataProvider : ICalendarDataProvider
     {
         //This code randomly generates a colour for each key. This colour is persisted for the entire lifetime of the web application.
         //The key currently used is 'EV' + ev.Id for events, and 'EW' + ew.EventWindowGroupID
@@ -38,31 +38,10 @@ namespace KwasantWeb.Controllers.External.DayPilot.Providers
 
         private readonly bool _includeLinkedCalendars;
         private readonly int[] _calendarIDs;
-        public EventCalendarProvider(bool includeLinkedCalendars, params int[] calendarIDs)
+        public EventDataProvider(bool includeLinkedCalendars, params int[] calendarIDs)
         {
             _includeLinkedCalendars = includeLinkedCalendars;
             _calendarIDs = calendarIDs;
-        }
-
-        public void MoveTimeslot(int id, DateTime newStart, DateTime newEnd)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetByKey(id);
-                eventDO.StartDate = newStart;
-                eventDO.EndDate = newEnd;
-                uow.SaveChanges();
-            }
-        }
-
-        public void DeleteTimeslot(int id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetByKey(id);
-                uow.EventRepository.Remove(eventDO);
-                uow.SaveChanges();
-            }
         }
 
         public List<DayPilotTimeslotInfo> LoadData()

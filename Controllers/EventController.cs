@@ -33,6 +33,9 @@ namespace KwasantWeb.Controllers
             using (var uow = GetUnitOfWork())
             {
                 var createdEvent = CreateNewEvent(uow, bookingRequestID, calendarID, start, end);
+                _event.Create(createdEvent, uow);
+
+                uow.EventRepository.Add(createdEvent);
                 uow.SaveChanges();
 
                 //put it in a view model to hand to the view
@@ -47,23 +50,11 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = GetUnitOfWork())
             {
-                if (!start.EndsWith("z"))
-                    throw new ApplicationException("Invalid date time");
-                if (!end.EndsWith("z"))
-                    throw new ApplicationException("Invalid date time");
-
-                //unpack the form data into an EventDO 
-                EventDO createdEvent = new EventDO
-                {
-                    CalendarID = calendarID,
-                    StartDate = DateTime.Parse(start, CultureInfo.InvariantCulture, 0).ToUniversalTime(),
-                    EndDate = DateTime.Parse(end, CultureInfo.InvariantCulture, 0).ToUniversalTime()
-                };
-                createdEvent.IsAllDay = createdEvent.StartDate.Equals(createdEvent.StartDate.Date) &&
-                                  createdEvent.StartDate.AddDays(1).Equals(createdEvent.EndDate);
+                var createdEvent = CreateNewEvent(uow, null, calendarID, start, end);
 
                 createdEvent.CreatedByID = uow.CalendarRepository.GetByKey(calendarID).OwnerID;
                 createdEvent.StateID = EventState.ProposedTimeSlot;
+                
                 uow.EventRepository.Add(createdEvent);
                 //And now we merge changes
                 MergeTimeSlots(uow, createdEvent);
@@ -153,12 +144,11 @@ namespace KwasantWeb.Controllers
             //unpack the form data into an EventDO 
             EventDO createdEvent = new EventDO();
             createdEvent.BookingRequestID = bookingRequestID;
-            createdEvent.CalendarID = calendarID;
+            createdEvent.CalendarID = calendarID;            
             createdEvent.StartDate = DateTime.Parse(start, CultureInfo.InvariantCulture, 0).ToUniversalTime();
             createdEvent.EndDate = DateTime.Parse(end, CultureInfo.InvariantCulture, 0).ToUniversalTime();
 
-            _event.Create(createdEvent, uow);
-            uow.EventRepository.Add(createdEvent);
+            createdEvent.IsAllDay = createdEvent.StartDate.Equals(createdEvent.StartDate.Date) && createdEvent.StartDate.AddDays(1).Equals(createdEvent.EndDate);
 
             return createdEvent;
         }
@@ -220,14 +210,12 @@ namespace KwasantWeb.Controllers
             using (var uow = GetUnitOfWork())
             {
                 if (eventVM.Id == 0)
-                    throw new ApplicationException(
-                        "event should have been created and saved in #new, so Id should not be zero");
+                    throw new ApplicationException("event should have been created and saved in #new, so Id should not be zero");
 
                 var existingEvent = uow.EventRepository.GetByKey(eventVM.Id);
 
                 if (existingEvent == null)
-                    throw new ApplicationException(
-                        "should not be able to call this Update method with an ID that doesn't match an existing event");
+                    throw new ApplicationException("should not be able to call this Update method with an ID that doesn't match an existing event");
 
                 Mapper.Map(eventVM, existingEvent);
                 existingEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;

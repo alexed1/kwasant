@@ -16,38 +16,9 @@ namespace KwasantWeb.Controllers.External.DayPilot
             _provider = provider;
         }
 
-        protected override void OnEventMove(EventMoveArgs e)
-        {
-            _provider.MoveTimeslot(int.Parse(e.Id), e.NewStart, e.NewEnd);
-            Update();
-        }
-
-        protected override void OnEventDelete(EventDeleteArgs e)
-        {
-            _provider.DeleteTimeslot(int.Parse(e.Id));
-            Update();
-        }
-
-        protected override void OnEventResize(EventResizeArgs e)
-        {
-            _provider.MoveTimeslot(int.Parse(e.Id), e.NewStart, e.NewEnd);
-            Update();
-        }
-
         protected override void OnEventBubble(EventBubbleArgs e)
         {
             e.BubbleHtml = _provider.GetTimeslotBubbleText(int.Parse(e.Id));
-        }
-
-        protected override void OnEventMenuClick(EventMenuClickArgs e)
-        {
-            switch (e.Command)
-            {
-                case "Delete":
-                    _provider.DeleteTimeslot(int.Parse(e.Id));
-                    Update();
-                    break;
-            }
         }
 
         protected override void OnCommand(CommandArgs e)
@@ -75,13 +46,6 @@ namespace KwasantWeb.Controllers.External.DayPilot
                     }
 
                     break;
-
-                case "delete":
-                    string id = (string)e.Data["id"];
-                    _provider.DeleteTimeslot(int.Parse(id));
-                    Update(CallBackUpdateType.EventsOnly);
-                    break;
-
             }
         }
 

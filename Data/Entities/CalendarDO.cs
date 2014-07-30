@@ -20,8 +20,11 @@ namespace Data.Entities
 
         [ForeignKey("Owner")]
         public string OwnerID { get; set; }
-
         public virtual UserDO Owner { get; set; }
+
+        [ForeignKey("ClarificationRequest")]
+        public int ClarificationRequestID { get; set; }
+        public virtual ClarificationRequestDO ClarificationRequest { get; set; }
 
         [InverseProperty("Calendars")]
         public virtual List<BookingRequestDO> BookingRequests { get; set; }
