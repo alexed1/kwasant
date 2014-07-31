@@ -57,6 +57,17 @@ namespace Data.Migrations
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork context)
         {
+            SeedConstants(context);
+
+            SeedInstructions(context);
+        }
+
+        //This method will automatically seed any constants file
+        //It looks for rows which implement IConstantRow<>
+        //For example, BookingRequestStateRow implements IConstantRow<BookingRequestState>
+        //The below method will then generate a new row for each constant found in BookingRequestState.
+        private static void SeedConstants(IUnitOfWork context)
+        {
             var constantsToSeed =
                 typeof (MigrationConfiguration).Assembly.GetTypes()
                     .Select(t => new
@@ -68,41 +79,57 @@ namespace Data.Migrations
                                 .FirstOrDefault(i => i.GetGenericTypeDefinition() == typeof (IConstantRow<>))
                     })
                     .Where(t => t.ConstantsType != null).ToList();
-                
-            foreach(var constantToSeed in constantsToSeed)
+
+            foreach (var constantToSeed in constantsToSeed)
             {
                 var rowType = constantToSeed.RowType;
                 var constantType = constantToSeed.ConstantsType.GenericTypeArguments.First();
 
                 var idParam = Expression.Parameter(typeof (int));
                 var nameParam = Expression.Parameter(typeof (String));
-                
+
                 //The below uses the .NET Expression builder to construct this:
                 // (id, name) => new [rowType] { Id = id, Name = name };
                 //We need to build it with the expression builder, as we don't know what type to construct yet, and the method requires type arguments.
 
+                //We can't build constructor intialization with Expressions, so this is the logic for it:
+                // 1, we create a variable called 'constructedRowType'. This variable is used within the expressions
+                // Note that there are _two_ variables. The first one being a usual C# variable, pointing to an expression.
+                // The second one is what's actually used within the block. Examining the expression block will show it as '$constructedRowType'
+
+                //The code generated looks like this:
+                // rowType generatedFunction(int id, string name) [for example, BookingRequestStateRow generatedFunction(int id, string name)
+                // {
+                //     rowType $constructedRowType; [for example, BookingRequestStateRow $constructedRowType]
+                //     $constructedRowType = new rowType() [for example, $constructedRowType = new BookingRequestStateRow()]
+                //     $constructedRowType.Id = id;
+                //     $constructedRowType.Name = name;
+                //} //Note that there is no return call. Whatever is last on the expression list will be kept at the top of the stack, acting like a 'return' 
+                // (if you've worked with bytecode, it's the same idea).
+                //We have 'constructedRowType' as the last expression, which tells us it will be returned
+
                 var constructedRowType = Expression.Variable(rowType, "constructedRowType");
-                var fullMethod = Expression.Block(
-                    new[] { constructedRowType },
+                    var fullMethod = Expression.Block(
+                    new[] {constructedRowType},
                     Expression.Assign(constructedRowType, Expression.New(rowType)),
                     Expression.Assign(Expression.Property(constructedRowType, "Id"), idParam),
                     Expression.Assign(Expression.Property(constructedRowType, "Name"), nameParam),
                     constructedRowType);
 
-                var compiledExpression = Expression.Lambda(fullMethod, new[] {idParam, nameParam}).Compile();
+                    //Now we take that expression and compile it. It's still typed as a 'Delegate', but it is now castable to Func<int, string, TConstantDO>
+                    //For example, it could be Func<int, string, BookingRequestStateRow>
                 
+                var compiledExpression = Expression.Lambda(fullMethod, new[] {idParam, nameParam}).Compile();
+
                 //Now we have our expression, we need to call something similar to this:
                 //SeedConstants<constantType, rowType>(context, compiledExpression)
 
-                var seedMethod = typeof(MigrationConfiguration).GetMethod(
+                var seedMethod = typeof (MigrationConfiguration).GetMethod(
                     "SeedConstants",
                     BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(constantType, rowType);
 
-                seedMethod.Invoke(null, new object [] { context, compiledExpression });
-               
+                seedMethod.Invoke(null, new object[] {context, compiledExpression});
             }
-            
-            SeedInstructions(context);
         }
 
         private static void SeedRemoteCalendarProviders(IUnitOfWork uow)
@@ -130,6 +157,7 @@ namespace Data.Migrations
             }
         }
 
+        //Do not remove. Resharper says it's not in use, but it's being used via reflection
         private static void SeedConstants<TConstantsType, TConstantDO>(IUnitOfWork uow, Func<int, string, TConstantDO> creatorFunc)
             where TConstantDO : class
         {
