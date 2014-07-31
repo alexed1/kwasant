@@ -1,16 +1,11 @@
 ﻿using Data.Entities;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 
 namespace KwasantTest.Fixtures
 {
     partial class FixtureData
     {
 
-
-
-
-   
         public EmailDO TestEmail1()
         {
 

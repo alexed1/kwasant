@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 
 namespace Data.Entities

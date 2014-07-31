@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
@@ -108,21 +107,21 @@ namespace KwasantTest.Services
                              Id = 1,
                              ClarificationRequest = curClarificationRequestDO,
                              ClarificationRequestId = curClarificationRequestDO.Id,
-                             Status = QuestionStatus.Unanswered,
+                             QuestionStatusID = QuestionStatus.Unanswered,
                              Text = "question"
                          });
             _cr.Send(_uow, curClarificationRequestDO, responseUrl);
             _uow.SaveChanges();
 
             var submittedClarificationRequestDO = curClarificationRequestDO;
-            submittedClarificationRequestDO.Questions[0].Status = QuestionStatus.Answered;
+            submittedClarificationRequestDO.Questions[0].QuestionStatusID = QuestionStatus.Answered;
             submittedClarificationRequestDO.Questions[0].Response = "response";
             _cr.ProcessResponse(submittedClarificationRequestDO);
             
             var respondedCr = _uow.ClarificationRequestRepository.GetByKey(curClarificationRequestDO.Id);
 
             // VERIFY
-            Assert.AreEqual(respondedCr.Questions[0].Status, QuestionStatus.Answered);
+            Assert.AreEqual(respondedCr.Questions[0].QuestionStatusID, QuestionStatus.Answered);
             Assert.AreEqual(respondedCr.Questions[0].Response, "response");
             Assert.AreEqual(respondedCr.ClarificationRequestStateID, ClarificationRequestState.Resolved);
             Assert.AreEqual(respondedCr.BookingRequest.BRState, BookingRequestState.Pending);

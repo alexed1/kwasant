@@ -6,7 +6,6 @@ using System.Net.Mime;
 using Data.Constants;
 using Data.Entities;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
@@ -55,11 +54,11 @@ namespace KwasantCore.Managers
             //eventDO.EndDate = eventDO.EndDate.ToOffset(createdDate.Offset);
 
             var t = Utilities.Server.ServerUrl;
-            switch (eventDO.StateID)
+            switch (eventDO.EventStatusID)
             {
                 case EventState.Booking:
                     {
-                        eventDO.StateID = EventState.DispatchCompleted;
+                        eventDO.EventStatusID = EventState.DispatchCompleted;
 
                         var calendar = Event.GenerateICSCalendarStructure(eventDO);
                         foreach (var attendeeDO in eventDO.Attendees)
@@ -77,7 +76,7 @@ namespace KwasantCore.Managers
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
                     if (EventHasChanged(uow, eventDO))
                     {
-                        eventDO.StateID = EventState.DispatchCompleted;
+                        eventDO.EventStatusID = EventState.DispatchCompleted;
                         var calendar = Event.GenerateICSCalendarStructure(eventDO);
 
                         var newAttendees = eventDO.Attendees.Where(a => a.Id == 0).ToList();

@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Google.Apis.Auth.OAuth2.Mvc;
 using KwasantCore.Managers;

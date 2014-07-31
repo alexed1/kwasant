@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 
 namespace Data.Entities

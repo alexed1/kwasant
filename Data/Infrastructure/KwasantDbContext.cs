@@ -8,7 +8,6 @@ using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.SqlServer;
 using System.Linq;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 using Data.Infrastructure.JoinTables;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity.ModelConfiguration;
@@ -188,7 +187,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<EventDO>().ToTable("Events");
-            modelBuilder.Entity<EventStatus>().ToTable("EventStatuses");
+            modelBuilder.Entity<EventStatusRow>().ToTable("EventStatuses");
             modelBuilder.Entity<EventSyncStatusRow>().ToTable("EventSyncStatus");
             modelBuilder.Entity<EventCreateTypeRow>().ToTable("EventCreateTypes");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");

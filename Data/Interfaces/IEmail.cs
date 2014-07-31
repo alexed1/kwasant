@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Data.Entities;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 
 namespace Data.Interfaces
 {

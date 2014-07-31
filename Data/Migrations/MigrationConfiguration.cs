@@ -6,7 +6,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Data.Authentication;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 using Data.Repositories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -58,7 +57,7 @@ namespace Data.Migrations
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork context)
         {
-            SeedConstants<EventState, EventStatus>(context, (id, name) => new EventStatus { Id = id, Name = name });
+            SeedConstants<EventState, EventStatusRow>(context, (id, name) => new EventStatusRow { Id = id, Name = name });
             SeedConstants<BookingRequestState, BookingRequestStateRow>(context, (id, name) => new BookingRequestStateRow { Id = id, Name = name });
             SeedConstants<ClarificationRequestState, ClarificationRequestStateRow>(context, (id, name) => new ClarificationRequestStateRow { Id = id, Name = name });
             SeedConstants<EventCreateType, EventCreateTypeRow>(context, (id, name) => new EventCreateTypeRow { Id = id, Name = name });

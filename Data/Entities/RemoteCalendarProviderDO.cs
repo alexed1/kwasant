@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 
 namespace Data.Entities

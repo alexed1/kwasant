@@ -4,9 +4,9 @@ using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using Data.Constants;
 using Data.Entities;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 using KwasantCore.Exceptions;
 using Utilities;
@@ -101,7 +101,7 @@ namespace KwasantCore.Services
             if (clarificationRequest == null)
                 throw new ArgumentNullException("clarificationRequest");
             
-            var answeredQuestions = clarificationRequest.Questions.Where(q => q.Status == QuestionStatus.Answered).ToArray();
+            var answeredQuestions = clarificationRequest.Questions.Where(q => q.QuestionStatusID == QuestionStatus.Answered).ToArray();
             if (answeredQuestions.Length == 0)
                 throw new ArgumentException("Clarification Request must have at least one answered question");
             
@@ -119,7 +119,7 @@ namespace KwasantCore.Services
                     if (questionDO == null)
                         throw new EntityNotFoundException<QuestionDO>();
                     questionDO.Response = answeredQuestion.Response;
-                    questionDO.Status = QuestionStatus.Answered;
+                    questionDO.QuestionStatusID = QuestionStatus.Answered;
                 }
                 curClarificationRequestDO.ClarificationRequestStateID = ClarificationRequestState.Resolved;
                 curBookingRequestDO.BRState = BookingRequestState.Pending;

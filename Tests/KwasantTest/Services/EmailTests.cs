@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Data.Constants;
 using Data.Entities;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using FluentValidation;

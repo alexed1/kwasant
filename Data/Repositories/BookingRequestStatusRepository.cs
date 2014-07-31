@@ -1,6 +1,5 @@
 ﻿using Data.Entities;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 
 namespace Data.Repositories

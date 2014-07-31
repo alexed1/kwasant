@@ -4,7 +4,6 @@ using System.Net.Mail;
 using Daemons;
 using Data.Entities;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Services;

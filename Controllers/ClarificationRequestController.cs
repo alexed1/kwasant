@@ -5,8 +5,8 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
+using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Exceptions;
@@ -80,7 +80,7 @@ namespace KwasantWeb.Controllers
                     return HttpNotFound("Clarification request not found.");
                 if (curClarificationRequestDO.BookingRequest == null)
                     return HttpNotFound("Booking request not found.");
-                if (curClarificationRequestDO.Questions.Count(q => q.Status == QuestionStatus.Unanswered) == 0)
+                if (curClarificationRequestDO.Questions.Count(q => q.QuestionStatusID == QuestionStatus.Unanswered) == 0)
                     return View("~/Views/ClarificationResponse/AllAnswered.cshtml");
                 var curClarificationResponseViewModel = Mapper.Map<ClarificationRequestDO, ClarificationResponseViewModel>(curClarificationRequestDO);
                 return View("~/Views/ClarificationResponse/New.cshtml", curClarificationResponseViewModel);

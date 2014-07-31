@@ -1,4 +1,4 @@
-﻿namespace Data.Entities.Constants
+﻿namespace Data.Constants
 {
 
     //DO NOT USE THIS for anything other than Emails. Don't use it for things that inherit from email. 

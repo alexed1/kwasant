@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
 using KwasantWeb.ViewModels;
 
 namespace KwasantWeb.App_Start
@@ -23,7 +23,7 @@ namespace KwasantWeb.App_Start
                 .ForMember(eventDO => eventDO.ActivityStatus, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.CreatedBy, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.CreatedByID, opts => opts.Ignore())
-                .ForMember(eventDO => eventDO.StateID, opts => opts.Ignore());
+                .ForMember(eventDO => eventDO.EventStatusID, opts => opts.Ignore());
 
             Mapper.CreateMap<EventDO, EventDO>()
                 .ForMember(eventDO => eventDO.Attendees, opts => opts.Ignore())
@@ -40,16 +40,16 @@ namespace KwasantWeb.App_Start
                                                                    new QuestionDO()
                                                                        {
                                                                            ClarificationRequestId = cr.Id,
-                                                                           Status = QuestionStatus.Unanswered,
+                                                                           QuestionStatusID = QuestionStatus.Unanswered,
                                                                            Text = cr.Question
                                                                        }
                                                                }))
                 .ForMember(cr => cr.Recipients, opts => opts.Ignore());
 
             Mapper.CreateMap<ClarificationRequestDO, ClarificationResponseViewModel>()
-                .ForMember(cr => cr.QuestionId, opts => opts.ResolveUsing(cr => cr.Questions.First(q => q.Status == QuestionStatus.Unanswered).Id))
-                .ForMember(cr => cr.Question, opts => opts.ResolveUsing(cr => cr.Questions.First(q => q.Status == QuestionStatus.Unanswered).Text))
-                .ForMember(cr => cr.Response, opts => opts.ResolveUsing(cr => cr.Questions.First(q => q.Status == QuestionStatus.Unanswered).Response))
+                .ForMember(cr => cr.QuestionId, opts => opts.ResolveUsing(cr => cr.Questions.First(q => q.QuestionStatusID == QuestionStatus.Unanswered).Id))
+                .ForMember(cr => cr.Question, opts => opts.ResolveUsing(cr => cr.Questions.First(q => q.QuestionStatusID == QuestionStatus.Unanswered).Text))
+                .ForMember(cr => cr.Response, opts => opts.ResolveUsing(cr => cr.Questions.First(q => q.QuestionStatusID == QuestionStatus.Unanswered).Response))
                 .ForMember(cr => cr.Subject, opts => opts.ResolveUsing(cr => cr.BookingRequest.Subject))
                 .ForMember(cr => cr.Body, opts => opts.ResolveUsing(cr => cr.BookingRequest.HTMLText));
             Mapper.CreateMap<ClarificationResponseViewModel, ClarificationRequestDO>()
@@ -62,7 +62,7 @@ namespace KwasantWeb.App_Start
                                                                            Id = cr.QuestionId,
                                                                            Text = cr.Question,
                                                                            Response = cr.Response,
-                                                                           Status = QuestionStatus.Answered
+                                                                           QuestionStatusID = QuestionStatus.Answered
                                                                        }
                                                                }));
 

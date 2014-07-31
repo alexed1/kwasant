@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Data.Constants;
 using Data.Entities;
 using Data.Entities.Constants;
-using Data.Entities.Enumerations;
 using BookingRequestState = Data.Constants.BookingRequestState;
 
 namespace KwasantTest.Fixtures

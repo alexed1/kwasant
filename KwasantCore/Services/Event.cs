@@ -37,7 +37,7 @@ namespace KwasantCore.Services
 			var attendee = new Attendee();
             attendee.DetectEmailsFromBookingRequest(curEventDO);
 
-            curEventDO.StateID = EventState.Booking;
+            curEventDO.EventStatusID = EventState.Booking;
         }
 
         public EventDO Create(IUnitOfWork uow, int bookingRequestID, string startDate, string endDate)

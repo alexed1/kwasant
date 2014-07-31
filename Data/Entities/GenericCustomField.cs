@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Data.Constants;
 using Data.Interfaces;
 
 namespace Data.Entities
