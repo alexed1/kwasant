@@ -6,11 +6,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title><%=GetEmailSubject()%></title>    
+	<%=System.Web.Optimization.Styles.Render("~/bundles/css/bootstrap30")%>
+	<%=System.Web.Optimization.Styles.Render("~/bundles/css/backendcss")%>
+	<%=System.Web.Optimization.Styles.Render("~/bundles/css/colorbox")%>
+	<%=System.Web.Optimization.Styles.Render("~/bundles/css/temp")%>
+	<%=System.Web.Optimization.Scripts.Render("~/bundles/js/jquery")%>
+    <%=System.Web.Optimization.Scripts.Render("~/bundles/js/select2")%>
+    <script src="../Scripts/ContextMenu/jquery.contextMenu.js"></script>
+    <link href="../Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
+
     <style type="text/css">
-        body
-{
-    font-family:Verdana;
-}
 .displayLabel
 {
     color: #6d6e70;
@@ -46,16 +51,6 @@
     background-color:#F3F3F3;
 }
             
-.info
-{            
-    /* outline radius for mozilla/firefox only */
-    -moz-box-shadow:0 0 10px #000;
-    -webkit-box-shadow:0 0 10px #000;
-	
-    box-shadow: #000 0px 0px 10px;
-    padding:7px;
-}
-
 .navigation
 {
     margin-left:4px;
@@ -92,53 +87,48 @@ img
 .css-title :first-child {
     margin-top: 20px;
 }
-/**************************Context Menu CSS**************/
     </style>
+	    
 </head>
-<body>
-    <%=System.Web.Optimization.Scripts.Render("~/bundles/js/jquery")%>
-    <%=System.Web.Optimization.Scripts.Render("~/bundles/js/select2")%>
-    <script src="../Scripts/ContextMenu/jquery.contextMenu.js"></script>
-    <link href="../Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
-
+<body class="email-info-section">
     <%--style="width: 400px;"--%>
     <form id="form1" runat="server">
-    <div class="info" style="height:100%;">
-        <div id="emailSubject" class="subHeading">
-            <%=GetEmailSubject()%>
-        </div>
-        <hr />
-        <div>
-            <table width="100%">
-                <tr>
-                    <td class="displayLabel">Email:</td>
-                    <td><%=GetEmail()%></td>
-                </tr>
-                <tr>
-                    <td class="displayLabel">CC:</td>
-                    <td><%=GetCC()%></td>
-                </tr>
-                <tr>
-                    <td class="displayLabel">BCC:</td>
-                    <td><%=GetBCC()%></td>
-                </tr>
+		<div class="info" style="height:100%;">
+			<div id="emailSubject" class="subHeading">
+				<%=GetEmailSubject()%>
+			</div>
+			<hr />
+			<div>
+				<table width="100%">
+					<tr>
+						<td class="displayLabel">Email:</td>
+						<td><%=GetEmail()%></td>
+					</tr>
+					<tr>
+						<td class="displayLabel">CC:</td>
+						<td><%=GetCC()%></td>
+					</tr>
+					<tr>
+						<td class="displayLabel">BCC:</td>
+						<td><%=GetBCC()%></td>
+					</tr>
 
-                <tr>
-                    <td class="displayLabel">From:</td>
-                    <td><%=GetFromPerson()%></td>
-                </tr>
-                <tr>
-                    <td class="displayLabel">Attachments:</td>
-                    <td><%=GetAttachments()%></td>
-                </tr>
-            </table>
-        </div>
-        <hr />
-        <div id="emailContent">
-            <%=GetContent()%>
-        </div>
-        <br />
-    </div>
+					<tr>
+						<td class="displayLabel">From:</td>
+						<td><%=GetFromPerson()%></td>
+					</tr>
+					<tr>
+						<td class="displayLabel">Attachments:</td>
+						<td><%=GetAttachments()%></td>
+					</tr>
+				</table>
+			</div>
+			<hr />
+			<div id="emailContent">
+				<%=GetContent()%>
+			</div>
+			<br />
+		</div>
         <div class="context-menu box menu-1"></div>
     </form>
     <script type="text/javascript">

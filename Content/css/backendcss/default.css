@@ -739,46 +739,16 @@ input[type="checkbox"].input-validation-error {
     background-color: #aaa;
 }
 
+/* styles for calendar view */
+
+/* general calendar view styles */
+
 .jumbotron.calendar-section {
 	padding: 10px 20px;	
 }
 
-.calendar-section .emailInfoBox {
-	border: none; 
-	height: 100%; 
-	padding: 0;
-}
-
-.calendar-section .emailInfoBox button {
-	width: 120px; 
-	font-size: 14px; 
-	height: 40px;
-}
-
-.calendar-section .emailInfoBox iframe.frminfo {
-	width: 100%;
-	border: none; 
-	margin-top: -7px;	
-}
-
-.calendar-section .emailInfoBox table.email-info-tabele {
-	width: 95%;	
-	box-shadow: #000 0 0 10px; 
-	margin: 10px; 	
-}
-
-.calendar-section .emailInfoBox table.email-info-tabele tr th {
-	width: 70%;	
-	text-align: center;	
-	font-size: 14px;	
-}
-
-.calendar-section .emailInfoBox table.email-info-tabele tr th:first-child {
-	width: 30%;		
-}
-
-.calendar-section .emailInfoBox table.email-info-tabele tbody {
-	border-top: 1px solid #808080;
+.calendar-section {
+	
 }
 
 .calendar-section a.btnRequestClarification button {
@@ -801,11 +771,62 @@ input[type="checkbox"].input-validation-error {
 }
 
 .calendar-section .calendar-area {
-	float: left; 
+/*	float: left; 
 	padding-bottom: 101px; 
 	padding-top: 53px; 
-	position: relative;
+	position: relative;*/
 }
+
+/*styles for email-info section*/
+
+.calendar-section .emailInfoBox {
+	
+	height: 100%; 
+	
+	margin-left: -15px;	
+	
+}
+
+.calendar-section .emailInfoBox button {
+	width: 120px; 
+	font-size: 14px; 
+	height: 40px;
+}
+
+.calendar-section .emailInfoBox iframe.frminfo {
+	width: 100%;
+	border: none; 
+}
+
+.calendar-section .emailInfoBox table.email-info-tabele {
+	width: 95%;	
+	box-shadow: #000 0 0 10px; 
+	margin: 10px; 	
+}
+
+.calendar-section .emailInfoBox table.email-info-tabele tr th {
+	width: 70%;	
+	text-align: center;	
+	font-size: 14px;	
+}
+
+.calendar-section .emailInfoBox table.email-info-tabele tr th:first-child {
+	width: 30%;		
+}
+
+.calendar-section .emailInfoBox table.email-info-tabele tbody {
+	border-top: 1px solid #808080;
+}
+
+/*styles for email-info-section iframe*/
+
+body.email-info-section {
+	background: #f8f8f8!important;	
+	border: 1px solid #e7e7e7;	
+	padding: 15px;
+	overflow-y: auto;	
+}
+
 
 /*Calendar ThemeBlue*/
 

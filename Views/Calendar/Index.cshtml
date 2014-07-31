@@ -19,17 +19,10 @@
     <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
     <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 }
-@section scripts
-{
-	@*Scripts.Render("~/bundles/js/modernizr")
-	@Scripts.Render("~/bundles/js/bootstrap")
-	@Scripts.Render("~/bundles/js/common")*@
-}
+
 @*width: 1270px;*@
-<div class="jumbotron calendar-section jumbotron_new">
+<div class="jumbotron calendar-section jumbotron_new">	
 	<div class="row">
-        @*width: 420px;*@
-			
 		<nav class="navbar navbar-default top-toolbar-section" role="navigation">
 			<div class="container-fluid">
 				<div class="navbar-header">
@@ -43,40 +36,46 @@
 
 				<div class="collapse navbar-collapse" id="navbar-collapse">
 					<ul class="nav navbar-nav">
-					<!--	<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li> -->
-
-                        <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.Id })');" href="#">Mark Processed</a></li>
+						<!--<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li> -->
+						<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.Id })');" href="#">Mark Processed</a></li>
 						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
-						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
 						<li>@Html.ActionLink("Show Users", "Index", "User")</li>
-                     
-                     <li> <a id="btnHistory" onclick="HistoryClick(@Model.Id);" class="btnHistory" href="#">History</a></li>
+						<li><a id="btnHistory" onclick="HistoryClick(@Model.Id);" class="btnHistory" href="#">History</a></li>
+						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
 					</ul>
 				</div>
 			</div>
 		</nav>
-
-		<div id="emailInfoBox" class="col-md-5 container_box emailInfoBox">
-			<iframe id="frminfo" class="frminfo" onload="iframeLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style=""></iframe>
-            	<table id="tbluserrequests" class="email-info-tabele">
+        @*width: 420px;*@
+		<div id="emailInfoBox" class="col-md-7">
+			<div class="emailInfoBox">
+				<iframe id="frminfo" class="frminfo" onload="iframeLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style=""></iframe>
+				<table id="tbluserrequests" class="email-info-tabele">
 					<thead>
-                    	<tr>
+						<tr>
 							<th>Date Received</th>
 							<th>Subject</th>
 						</tr>
 					</thead>
 				</table>
-			<br />
-			<br />			
+			</div>
 		</div>
 
-		<div id="divCalender" class="col-md-6 container_box divCalender">
+		<div id="divCalender" class="col-md-5 divCalender">
 			<div class="row">
 				<div id="toolbar" class="toolbar">
 					<a href="#" id="toolbar_day">Day</a>
 					<a href="#" id="toolbar_week">Week</a>
 					<a href="#" id="toolbar_month">Month</a>
 				</div>
+			</div>
+			<div class="calendar-area">
+				@Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
+				{
+					CssOnly = true,
+					Theme = "navigator_white",
+					ShowMonths = 1
+				})
 			</div>
 			<div class="row">
 				<div class="divCalender-inner">
@@ -181,15 +180,7 @@
 					})
 				</div>
 			</div>
-		</div>
-		<div class="col-lg-2 container_box calendar-area">
-			@Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
-			{
-				CssOnly = true,
-				Theme = "navigator_white",
-				ShowMonths = 1
-			})
-		</div>
+		</div>		
 	</div>
 </div>
 <input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid" />
