@@ -176,9 +176,12 @@ namespace KwasantCore.Managers
             var client = _clientFactory.Create(authData);
             // TODO: obtain a real list from remote calendar provider
             var remoteCalendars = new[] {authData.User.EmailAddress.Address};
+            // if localDefaultCalendar is null then each new calendar link will get a new local calendar.
+            var localDefaultCalendar =
+                uow.CalendarRepository.GetQuery().FirstOrDefault(c => c.OwnerID == authData.UserID);
             foreach (var remoteName in remoteCalendars)
             {
-                var calendarLink = uow.RemoteCalendarLinkRepository.GetOrCreate(authData, remoteName);
+                var calendarLink = uow.RemoteCalendarLinkRepository.GetOrCreate(authData, remoteName, localDefaultCalendar);
                 try
                 {
                     calendarLink.DateSynchronizationAttempted = DateTimeOffset.UtcNow;
