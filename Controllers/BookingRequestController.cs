@@ -148,5 +148,23 @@ namespace KwasantWeb.Controllers
             }
             return Content(result);
         }
+
+        [HttpGet]
+        public ActionResult ShowRelatedItems(int bookingRequestId, int draw, int start, int length)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var jsonResult = Json(new
+                {
+                    draw = draw,
+                    data = _datatables.Pack(_br.GetRelatedItems(uow, bookingRequestId, start, length)),
+                    recordsTotal = _br.recordcount,
+                    recordsFiltered = _br.recordcount
+                }, JsonRequestBehavior.AllowGet);
+                
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
 	}
 }

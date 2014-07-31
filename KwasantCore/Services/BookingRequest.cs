@@ -6,11 +6,13 @@ using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using KwasantCore.Helper;
 
 namespace KwasantCore.Services
 {
     public class BookingRequest
     {
+        public int recordcount;
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
             bookingRequest.BRState = BRState.Unprocessed;
@@ -122,5 +124,25 @@ namespace KwasantCore.Services
             }
             return null;
         }
+
+        
+
+        public List<BrRelatedItems> GetRelatedItems(IUnitOfWork uow, int bookingRequestId, int start, int length)
+        {
+            List<BrRelatedItems> brRelatedItems = new List<BrRelatedItems>();
+            var events = uow.EventRepository.GetAll().Where(e => e.BookingRequestID == bookingRequestId).Select(e => new BrRelatedItems { id = e.Id, Type = "Event", 
+                         Date = e.StartDate.ToString("M-d-yyyy hh:mm") }).ToList();
+
+            var clarificationRequests = uow.ClarificationRequestRepository.GetAll().Where(e => e.BookingRequestId == bookingRequestId).Select(e => new BrRelatedItems { id = e.Id, Type = "Clarification",                                         Date = e.DateCreated.ToString("M-d-yyyy hh:mm") }).ToList();
+
+            if (events.Count > 0)
+                brRelatedItems.AddRange(events);
+            if (clarificationRequests.Count() > 0)
+                brRelatedItems.AddRange(clarificationRequests);
+
+            recordcount = brRelatedItems.Count();
+            return brRelatedItems.Skip(start).Take(length).ToList();
+        }
+
     }
 }

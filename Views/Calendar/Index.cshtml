@@ -57,6 +57,16 @@
 
         <div id="emailInfoBox" class="col-md-5 container_box emailInfoBox">
             <iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.BookingRequestID" style=""></iframe>
+               <input type="radio" id="rdnshowOtherBRs" name="group1" value="ShowOtherBRs" /> Show Other BR's  &nbsp;&nbsp; 
+                <input type="radio"  id="rdnShowRelatedItems" name="group1" value="ShowRelatedItems" checked="checked" />Show Related Items
+                 <table id="tblRelatedItems" class="email-info-tabele">
+					<thead>
+                    	<tr>
+							<th>Date</th>
+							<th>type</th>
+						</tr>
+					</thead>
+				</table>
             <table id="tbluserrequests" class="email-info-tabele">
                 <thead>
                     <tr>
@@ -77,42 +87,43 @@
 
 <script type="text/javascript">
     var calendar;
+    var dp_navigator,storedCalendar;
     $(function() {
         calendar = $('#CalendarDiv').KCalendar({
-                getCalendarBackendURL: function() {
-                    return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
-                },
-                getMonthBackendURL: function () {
-                    return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
-                },
-                getNavigatorBackendURL: function() {
-                    return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
-                },  
-                getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
-                getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
-                getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
-                onEventNew: function(start, end) {
-                    if (Kwasant.IFrame.PopupsActive()) {
-                        return;
-                    }
-                    var id = $("#hdnrequestid").val();
-                    Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&calendarID=' + @Model.MainCalendarID + '&start=' + start + 'z&end=' + end + 'z',
-                        {
-                            horizontalAlign: 'right',
-                            callback: calendar.refreshCalendars
-                        });
-                },
-            }
+            getCalendarBackendURL: function() {
+                return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+            },
+            getMonthBackendURL: function () {
+                return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+            },
+            getNavigatorBackendURL: function() {
+                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+            },  
+            getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
+            getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
+            getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
+            onEventNew: function(start, end) {
+                if (Kwasant.IFrame.PopupsActive()) {
+                    return;
+                }
+                var id = $("#hdnrequestid").val();
+                Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&calendarID=' + @Model.MainCalendarID + '&start=' + start + 'z&end=' + end + 'z',
+                    {
+                        horizontalAlign: 'right',
+                        callback: calendar.refreshCalendars
+                    });
+            },
+        }
         );
     });
-     
+   
     //funtion to load booking request info in iframe "emailInfoFrame" on "tbluserrequests" request row click.
     //called by : rows in tbluserrequests on click
     function loadrequest(id, linkedCalendarIDs, ele) {
         $("#tbluserrequests tr").attr("style", "");
         $(ele).attr("style", "background-color: #aaa;");
         $("#hdnrequestid").val(id);
-        $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("Invalidate", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
+        $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("MarkAsProcessed", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
         $("#emailInfoFrame")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
         
         if (calendar !== undefined) {
@@ -120,64 +131,32 @@
         }
     }
 
-    function afterRender() {
-            dp_navigator.visibleRangeChangedCallBack();
-    }
+    
 
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
+        showRelatedItems();
+        $('#tbluserrequests').hide();
 
-        //Parsing and binding the booking requests viewer
-        var table = $('#tbluserrequests').DataTable({
-            order: [0, 'desc'],
-            searching: false,
-            ordering: false,
-            bLengthChange: false,
-            processing: true,
-            serverSide: true, //Enabling server side processing
-            ajax:
-            {
-                //Ajax call to get all unprocessed booking request from server according to user.
-                "url": "@Url.Action("GetBookingRequests", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestID",
-                "dataSrc": function (json) {
-                    var orgdata = JSON.parse(json.data);
-                    return orgdata;
-                }
-            },
-            //Callback function for row created.
-            createdRow: function (row, data, index) {
-                if (data.id == $("#hdnrequestid").val()) {
-                    $(row).attr("style", "cursor:pointer;background-color: #aaa;");
-                }
-                else {
-                    $(row).attr("style", "cursor:pointer;");
-                }
-            },
-            columns: [
-                {
-                    data: function (data) {
-                        return ConvertTODateString(data.date_received);
-                    }
-                },
-                { data: 'subject' }
-            ]
-        });
+        storedCalendar = calendar.getStoredCalendar();
+        dp_navigator = calendar.getNavigator();
 
-
-        //This function will bind a click function on every button in table "tblbookingrequest"
-        $('#tbluserrequests').on('click', 'tr', function () {
-            var data = table.row($(this)).data();
-            loadrequest(data.id, data.linkedcalendarids, this);
-        });
-
-        $('#btnRequestClarification').click(function () {
-            if (Kwasant.IFrame.PopupsActive()) { return false; }
-            Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.BookingRequestID })',
-                {
-                    horizontalAlign: 'left',
-                });
-        });
     });
+
+    //This function will bind a click function on every button in table "tblbookingrequest"
+    $('#tbluserrequests').on('click', 'tr', function () {
+        var data = table.row($(this)).data();
+        loadrequest(data.id, data.linkedcalendarids, this);
+    });
+
+    $('#btnRequestClarification').click(function () {
+        if (Kwasant.IFrame.PopupsActive()) { return false; }
+        Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.BookingRequestID })',
+            {
+                horizontalAlign: 'left',
+            });
+    });
+   
 
     function emailFrameLoaded() {
         var iframe = $("#emailInfoFrame").get(0);
@@ -209,6 +188,125 @@
                 horizontalAlign: 'left',
                 callback: calendar.refreshCalendars
             });
+    }
+
+    
+    $("#rdnShowRelatedItems").click(function () {
+        showRelatedItems();
+    });
+  
+    $("#rdnshowOtherBRs").click(function () {
+        showOtherBRs();
+    });
+
+    var table;
+    function showOtherBRs()
+    {
+        $('#tbluserrequests').show();
+        $('#tblRelatedItems_wrapper').hide();
+
+        //Parsing and binding the booking requests viewer
+        table = $('#tbluserrequests').DataTable({
+            destroy: true,
+            order: [0, 'desc'],
+            searching: false,
+            ordering: false,
+            bLengthChange: false,
+            processing: true,
+            serverSide: true, //Enabling server side processing
+            ajax:
+            {
+                //Ajax call to get all unprocessed booking request from server according to user.
+                "url": "@Url.Action("GetBookingRequests", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestID",
+            "dataSrc": function (json) {
+                var orgdata = JSON.parse(json.data);
+                return orgdata;
+                 }
+             },
+            //Callback function for row created.
+            createdRow: function (row, data, index) {
+                if (data.id == $("#hdnrequestid").val()) {
+                    $(row).attr("style", "cursor:pointer;background-color: #aaa;");
+                }
+                else {
+                    $(row).attr("style", "cursor:pointer;");
+                }
+            },
+            columns: [
+                {
+                    data: function (data) {
+                        return ConvertTODateString(data.date_received);
+                    }
+                },
+                { data: 'subject' }
+            ]
+       });
+
+      var datenow = new Date();
+      var dp_day = storedCalendar[0];
+      dp_day.startDate = datenow;
+      calendar.refreshCalendars();
+      dp_navigator.select(new DayPilot.Date(datenow));
+    }
+
+
+    var table1;
+    function showRelatedItems()
+    {
+       
+        $('#tbluserrequests_wrapper').hide();
+        table1 = $('#tblRelatedItems').DataTable({
+            destroy: true,
+            order: [0, 'desc'],
+            searching: false,
+            ordering: false,
+            bLengthChange: false,
+            processing: true,
+            serverSide: true, 
+            ajax:
+            {
+                "url": "@Url.Action("ShowRelatedItems", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestID",
+            "dataSrc": function (json) {
+                var orgdata = JSON.parse(json.data);
+                return orgdata;
+            }
+        },
+            
+            createdRow: function (row, data, index) {
+                $(row).attr("style", "cursor:pointer;");
+            },
+        columns: [
+                    { data: 'date' },
+                   { data: 'type' }
+        ]
+     });
+       
+    }
+
+
+   
+    $('#tblRelatedItems').on('click', 'tr', function () {
+       
+        var data = table1.row($(this)).data();
+        var dp_day = storedCalendar[0];
+        dp_day.startDate = data.date;
+        calendar.refreshCalendars();
+
+        var datevalue = new Date(data.date);
+        dp_navigator.select(new DayPilot.Date(datevalue));
+        if(data.type=="Clarification")
+            clarificationPopUpWindow(data.id);
         
+    });
+
+    function clarificationPopUpWindow(id)
+    {
+        if (Kwasant.IFrame.PopupsActive()) { return false; }
+        var bookingrequest="@Model.BookingRequestID";
+        var path = '/ClarificationRequest/Edit/?bookingRequestId=' + bookingrequest + '&clarificationRequestId=' + id;
+        Kwasant.IFrame.Display(path,
+            {
+                horizontalAlign: 'left',
+            });
     }
 </script>
