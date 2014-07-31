@@ -19,6 +19,7 @@ using Microsoft.WindowsAzure;
 using KwasantCore.Services;
 using Utilities;
 using Encoding = System.Text.Encoding;
+using EventStatus = Data.Constants.EventStatus;
 
 namespace KwasantCore.Managers
 {
@@ -56,9 +57,9 @@ namespace KwasantCore.Managers
             var t = Utilities.Server.ServerUrl;
             switch (eventDO.EventStatusID)
             {
-                case EventState.Booking:
+                case EventStatus.Booking:
                     {
-                        eventDO.EventStatusID = EventState.DispatchCompleted;
+                        eventDO.EventStatusID = EventStatus.DispatchCompleted;
 
                         var calendar = Event.GenerateICSCalendarStructure(eventDO);
                         foreach (var attendeeDO in eventDO.Attendees)
@@ -71,12 +72,12 @@ namespace KwasantCore.Managers
 
                         break;
                     }
-                case EventState.ReadyForDispatch:
-                case EventState.DispatchCompleted:
+                case EventStatus.ReadyForDispatch:
+                case EventStatus.DispatchCompleted:
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
                     if (EventHasChanged(uow, eventDO))
                     {
-                        eventDO.EventStatusID = EventState.DispatchCompleted;
+                        eventDO.EventStatusID = EventStatus.DispatchCompleted;
                         var calendar = Event.GenerateICSCalendarStructure(eventDO);
 
                         var newAttendees = eventDO.Attendees.Where(a => a.Id == 0).ToList();
@@ -96,7 +97,7 @@ namespace KwasantCore.Managers
                     }
                     break;
 
-                case EventState.ProposedTimeSlot:
+                case EventStatus.ProposedTimeSlot:
                     //Do nothing
                     break;
                 default:

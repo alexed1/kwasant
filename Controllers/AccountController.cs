@@ -8,6 +8,7 @@ using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Data.Constants;
 using Data.Entities;
 using Data.Entities.Constants;
 using Data.Interfaces;

@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using Data.Constants;
+using Data.Entities;
 using Data.Entities.Constants;
 
 namespace KwasantTest.Fixtures

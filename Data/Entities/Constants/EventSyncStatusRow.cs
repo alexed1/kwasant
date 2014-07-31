@@ -1,9 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Data.Constants;
 
 namespace Data.Entities.Constants
 {
-    public class EventSyncStatusRow
+    public class EventSyncStatusRow : IConstantRow<EventSyncStatus>
     {
         [Key]
         public int Id { get; set; }

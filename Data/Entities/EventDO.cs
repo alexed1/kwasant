@@ -59,13 +59,11 @@ namespace Data.Entities
 
         [ForeignKey("CreateType"), Required]
         public int CreateTypeID { get; set; }
-
-        public virtual EventCreateType CreateType { get; set; }
+        public virtual EventCreateTypeRow CreateType { get; set; }
 
         [ForeignKey("SyncStatus"), Required]
         public int SyncStatusID { get; set; }
-
-        public virtual EventSyncStatus SyncStatus { get; set; }
+        public virtual EventSyncStatusRow SyncStatus { get; set; }
 
         public EventDO()
         {

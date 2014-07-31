@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Entities.Constants;
 
@@ -20,6 +19,6 @@ namespace Data.Entities
 
         [ForeignKey("EmailParticipantType")]
         public int EmailParticipantTypeID { get; set; }
-        public EmailParticipantType EmailParticipantType { get; set; }
+        public EmailParticipantTypeRow EmailParticipantType { get; set; }
     }
 }

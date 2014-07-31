@@ -25,9 +25,8 @@ namespace Data.Entities
         [InverseProperty("BookingRequests")]
         public virtual List<CalendarDO> Calendars { get; set; }
 
-        [ForeignKey("BookingRequestState")]
-        [Required]
-        public int? BRState { get; set; }
+        [Required, ForeignKey("BookingRequestStateRow")]
+        public int BookingRequestState { get; set; }
         public virtual BookingRequestStateRow BookingRequestStateRow { get; set; }
     }
 }

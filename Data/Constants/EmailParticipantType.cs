@@ -1,4 +1,4 @@
-﻿namespace Data.Entities.Constants
+﻿namespace Data.Constants
 {
     public class EmailParticipantType
     {

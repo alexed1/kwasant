@@ -57,12 +57,14 @@ namespace Data.Migrations
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork context)
         {
-            SeedConstants<EventState, EventStatusRow>(context, (id, name) => new EventStatusRow { Id = id, Name = name });
+            var constantsToSeed = typeof(MigrationConfiguration).Assembly.GetTypes().Where(t => t.GetInterfaces().Contains(typeof(IConstantRow<>))).ToList();
+
+            SeedConstants<EventStatus, EventStatusRow>(context, (id, name) => new EventStatusRow { Id = id, Name = name });
             SeedConstants<BookingRequestState, BookingRequestStateRow>(context, (id, name) => new BookingRequestStateRow { Id = id, Name = name });
             SeedConstants<ClarificationRequestState, ClarificationRequestStateRow>(context, (id, name) => new ClarificationRequestStateRow { Id = id, Name = name });
             SeedConstants<EventCreateType, EventCreateTypeRow>(context, (id, name) => new EventCreateTypeRow { Id = id, Name = name });
             SeedConstants<EventSyncStatus, EventSyncStatusRow>(context, (id, name) => new EventSyncStatusRow { Id = id, Name = name });
-            SeedConstants<ServiceAuthType, ServiceAuthorizationTypeRow>(context, (id, name) => new ServiceAuthorizationTypeRow { Id = id, Name = name });
+            SeedConstants<ServiceAuthorizationType, ServiceAuthorizationTypeRow>(context, (id, name) => new ServiceAuthorizationTypeRow { Id = id, Name = name });
 
 
             SeedInstructions(context);
@@ -75,7 +77,7 @@ namespace Data.Migrations
                                     new RemoteCalendarProviderDO()
                                         {
                                             Name = "Google",
-                                            AuthTypeID = ServiceAuthType.OAuth2,
+                                            AuthTypeID = ServiceAuthorizationType.OAuth2,
                                             AppCreds = JsonConvert.SerializeObject(
                                                 new
                                                     {

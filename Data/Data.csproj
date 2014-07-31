@@ -100,10 +100,11 @@
     <Compile Include="Constants\BookingRequestState.cs" />
     <Compile Include="Constants\ClarificationRequestState.cs" />
     <Compile Include="Constants\EventCreateType.cs" />
-    <Compile Include="Constants\EventState.cs" />
+    <Compile Include="Constants\EventStatus.cs" />
     <Compile Include="Constants\EventSyncStatus.cs" />
+    <Compile Include="Entities\Constants\IConstantRow.cs" />
     <Compile Include="Constants\InstructionConstants.cs" />
-    <Compile Include="Constants\ServiceAuthType.cs" />
+    <Compile Include="Constants\ServiceAuthorizationType.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\Constants\BookingRequestStateRow.cs" />
@@ -133,7 +134,7 @@
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
     <Compile Include="Constants\CommunicationType.cs" />
-    <Compile Include="Entities\Constants\EmailParticipantType.cs" />
+    <Compile Include="Constants\EmailParticipantType.cs" />
     <Compile Include="Constants\EmailStatus.cs" />
     <Compile Include="Constants\TrackingStatus.cs" />
     <Compile Include="Constants\TrackingType.cs" />
@@ -564,9 +565,7 @@
       <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Entities\Enumerations\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

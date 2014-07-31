@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Data.Constants;
 
 namespace Data.Entities.Constants
 {
-    public class ServiceAuthorizationTypeRow
+    public class ServiceAuthorizationTypeRow : IConstantRow<ServiceAuthorizationType>
     {
         [Key]
         public int Id { get; set; }

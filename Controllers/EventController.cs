@@ -53,7 +53,7 @@ namespace KwasantWeb.Controllers
                 var createdEvent = CreateNewEvent(uow, null, calendarID, start, end);
 
                 createdEvent.CreatedByID = uow.CalendarRepository.GetByKey(calendarID).OwnerID;
-                createdEvent.EventStatusID = EventState.ProposedTimeSlot;
+                createdEvent.EventStatusID = EventStatus.ProposedTimeSlot;
                 
                 uow.EventRepository.Add(createdEvent);
                 //And now we merge changes

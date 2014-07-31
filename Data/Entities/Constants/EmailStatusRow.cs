@@ -1,9 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Data.Constants;
 
 namespace Data.Entities.Constants
 {
-    public class EmailStatusRow
+    public class EmailStatusRow : IConstantRow<EmailStatus>
     {
         [Key]
         public int Id { get; set; }
