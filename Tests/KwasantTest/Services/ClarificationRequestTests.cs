@@ -124,7 +124,7 @@ namespace KwasantTest.Services
             Assert.AreEqual(respondedCr.Questions[0].QuestionStatusID, QuestionStatus.Answered);
             Assert.AreEqual(respondedCr.Questions[0].Response, "response");
             Assert.AreEqual(respondedCr.ClarificationRequestStateID, ClarificationRequestState.Resolved);
-            Assert.AreEqual(respondedCr.BookingRequest.BookingRequestState, BookingRequestState.Pending);
+            Assert.AreEqual(respondedCr.BookingRequest.BookingRequestStateID, BookingRequestState.Pending);
         }
     }
 }

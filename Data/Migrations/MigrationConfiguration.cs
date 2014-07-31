@@ -57,16 +57,51 @@ namespace Data.Migrations
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork context)
         {
-            var constantsToSeed = typeof(MigrationConfiguration).Assembly.GetTypes().Where(t => t.GetInterfaces().Contains(typeof(IConstantRow<>))).ToList();
+            var constantsToSeed =
+                typeof (MigrationConfiguration).Assembly.GetTypes()
+                    .Select(t => new
+                    {
+                        RowType = t,
+                        ConstantsType =
+                            t.GetInterfaces()
+                                .Where(i => i.IsGenericType)
+                                .FirstOrDefault(i => i.GetGenericTypeDefinition() == typeof (IConstantRow<>))
+                    })
+                    .Where(t => t.ConstantsType != null).ToList();
+                
+            foreach(var constantToSeed in constantsToSeed)
+            {
+                var rowType = constantToSeed.RowType;
+                var constantType = constantToSeed.ConstantsType.GenericTypeArguments.First();
 
-            SeedConstants<EventStatus, EventStatusRow>(context, (id, name) => new EventStatusRow { Id = id, Name = name });
-            SeedConstants<BookingRequestState, BookingRequestStateRow>(context, (id, name) => new BookingRequestStateRow { Id = id, Name = name });
-            SeedConstants<ClarificationRequestState, ClarificationRequestStateRow>(context, (id, name) => new ClarificationRequestStateRow { Id = id, Name = name });
-            SeedConstants<EventCreateType, EventCreateTypeRow>(context, (id, name) => new EventCreateTypeRow { Id = id, Name = name });
-            SeedConstants<EventSyncStatus, EventSyncStatusRow>(context, (id, name) => new EventSyncStatusRow { Id = id, Name = name });
-            SeedConstants<ServiceAuthorizationType, ServiceAuthorizationTypeRow>(context, (id, name) => new ServiceAuthorizationTypeRow { Id = id, Name = name });
+                var idParam = Expression.Parameter(typeof (int));
+                var nameParam = Expression.Parameter(typeof (String));
+                
+                //The below uses the .NET Expression builder to construct this:
+                // (id, name) => new [rowType] { Id = id, Name = name };
+                //We need to build it with the expression builder, as we don't know what type to construct yet, and the method requires type arguments.
 
+                var constructedRowType = Expression.Variable(rowType, "constructedRowType");
+                var fullMethod = Expression.Block(
+                    new[] { constructedRowType },
+                    Expression.Assign(constructedRowType, Expression.New(rowType)),
+                    Expression.Assign(Expression.Property(constructedRowType, "Id"), idParam),
+                    Expression.Assign(Expression.Property(constructedRowType, "Name"), nameParam),
+                    constructedRowType);
 
+                var compiledExpression = Expression.Lambda(fullMethod, new[] {idParam, nameParam}).Compile();
+                
+                //Now we have our expression, we need to call something similar to this:
+                //SeedConstants<constantType, rowType>(context, compiledExpression)
+
+                var seedMethod = typeof(MigrationConfiguration).GetMethod(
+                    "SeedConstants",
+                    BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(constantType, rowType);
+
+                seedMethod.Invoke(null, new object [] { context, compiledExpression });
+               
+            }
+            
             SeedInstructions(context);
         }
 

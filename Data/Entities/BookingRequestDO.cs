@@ -26,7 +26,7 @@ namespace Data.Entities
         public virtual List<CalendarDO> Calendars { get; set; }
 
         [Required, ForeignKey("BookingRequestStateRow")]
-        public int BookingRequestState { get; set; }
+        public int BookingRequestStateID { get; set; }
         public virtual BookingRequestStateRow BookingRequestStateRow { get; set; }
     }
 }
