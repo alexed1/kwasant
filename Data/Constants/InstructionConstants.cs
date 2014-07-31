@@ -1,10 +1,4 @@
-﻿using System;
-using System.Reflection;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Repositories;
-
-namespace Data.Constants
+﻿namespace Data.Constants
 {
     public class InstructionConstants
     {

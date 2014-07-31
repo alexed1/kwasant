@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Data.Entities;
+using Data.Entities.Constants;
 using Data.Entities.Enumerations;
 
 namespace Data.Interfaces
@@ -22,6 +23,6 @@ namespace Data.Interfaces
         //IEnumerable<Attachment> Attachments { get; set; }
         List<EventDO> Events { get; set; }
         DateTimeOffset DateCreated { get; set; }
-        EmailStatus EmailStatus { get; set; }
+        int EmailStatusID { get; set; }
     }
 }

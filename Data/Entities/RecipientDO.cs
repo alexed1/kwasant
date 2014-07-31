@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Entities.Constants;
 using Data.Entities.Enumerations;
 
 namespace Data.Entities
@@ -17,6 +19,8 @@ namespace Data.Entities
         public int EmailAddressID { get; set; }
         public virtual EmailAddressDO EmailAddress { get; set; }
 
-        public EmailParticipantType Type { get; set; }
+        [ForeignKey("EmailParticipantType")]
+        public int EmailParticipantTypeID { get; set; }
+        public EmailParticipantType EmailParticipantType { get; set; }
     }
 }

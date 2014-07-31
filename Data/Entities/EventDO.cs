@@ -5,8 +5,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using Data.Constants;
 using Data.Entities.Enumerations;
-using EventCreateType = Data.Entities.Enumerations.EventCreateType;
-using EventSyncStatus = Data.Entities.Enumerations.EventSyncStatus;
 
 namespace Data.Entities
 {
@@ -71,8 +69,8 @@ namespace Data.Entities
 
         public EventDO()
         {
-            CreateTypeID = Constants.EventCreateType.KwasantBR;
-            SyncStatusID = Constants.EventSyncStatus.DoNotSync;
+            CreateTypeID = EventCreateType.KwasantBR;
+            SyncStatusID = EventSyncStatus.DoNotSync;
             Attendees = new List<AttendeeDO>();
             Emails = new List<EmailDO>();
         }

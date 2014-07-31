@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
+using Data.Entities.Constants;
 using Data.Entities.Enumerations;
 using Data.Infrastructure.JoinTables;
 using Data.Interfaces;
@@ -58,7 +59,7 @@ namespace KwasantCore.Services
         public EnvelopeDO SendTemplate(string templateName, IEmail message, Dictionary<string, string> mergeFields)
         {
             var envelope = _uow.EnvelopeRepository.CreateMandrillEnvelope(message, templateName, mergeFields);
-            message.EmailStatus = EmailStatus.QUEUED;
+            message.EmailStatusID = EmailStatus.Queued;
             _uow.EnvelopeRepository.Add(envelope);
             return envelope;
         }
@@ -66,7 +67,7 @@ namespace KwasantCore.Services
         public EnvelopeDO Send()
         {
             var envelope = _uow.EnvelopeRepository.CreateGmailEnvelope(_curEmailDO);
-            _curEmailDO.EmailStatus = EmailStatus.QUEUED;
+            _curEmailDO.EmailStatusID = EmailStatus.Queued;
             _uow.EnvelopeRepository.Add(envelope);
             return envelope;
         }
@@ -157,20 +158,20 @@ namespace KwasantCore.Services
             emailDO.From = GenerateEmailAddress(uow, mailMessage.From);
             foreach (var addr in mailMessage.To.Select(a => GenerateEmailAddress(uow, a)))
             {
-                emailDO.AddEmailRecipient(EmailParticipantType.TO, addr);    
+                emailDO.AddEmailRecipient(EmailParticipantType.To, addr);    
             }
             foreach (var addr in mailMessage.Bcc.Select(a => GenerateEmailAddress(uow, a)))
             {
-                emailDO.AddEmailRecipient(EmailParticipantType.BCC, addr);
+                emailDO.AddEmailRecipient(EmailParticipantType.Bcc, addr);
             }
             foreach (var addr in mailMessage.CC.Select(a => GenerateEmailAddress(uow, a)))
             {
-                emailDO.AddEmailRecipient(EmailParticipantType.CC, addr);
+                emailDO.AddEmailRecipient(EmailParticipantType.Cc, addr);
             }
 
             emailDO.Attachments.ForEach(a => a.Email = emailDO);
             //emailDO.EmailStatus = EmailStatus.QUEUED; we no longer want to set this here. not all Emails are outbound emails. This should only be set in functions like Event#Dispatch
-            emailDO.EmailStatus = EmailStatus.UNSTARTED; //we'll use this new state so that every email has a valid status.
+            emailDO.EmailStatusID = EmailStatus.Unstarted; //we'll use this new state so that every email has a valid status.
             emailRepository.Add(emailDO);
             return emailDO;
         }
@@ -222,7 +223,7 @@ namespace KwasantCore.Services
                                               new RecipientDO()
                                                  {
                                                        EmailAddress = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress("info@kwasant.com")),
-                                                       Type = EmailParticipantType.TO
+                                                       EmailParticipantTypeID = EmailParticipantType.To
                                                  }
                                          },
                 Subject = "",

@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Data.Entities.Enumerations
+namespace Data.Entities.Constants
 {
-    public class BookingRequestState
+    public class EventSyncStatusRow
     {
         [Key]
         public int Id { get; set; }

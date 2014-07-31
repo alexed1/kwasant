@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Data.Entities;
+using Data.Entities.Constants;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Google.Apis.Auth.OAuth2.Mvc;
@@ -36,7 +37,7 @@ namespace KwasantWeb.Controllers
                 String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
 
                 EmailDO emailDO = new EmailDO();
-                emailDO.AddEmailRecipient(EmailParticipantType.TO, Email.GenerateEmailAddress(uow, new MailAddress(message.Destination)));
+                emailDO.AddEmailRecipient(EmailParticipantType.To, Email.GenerateEmailAddress(uow, new MailAddress(message.Destination)));
                 emailDO.From = Email.GenerateEmailAddress(uow, new MailAddress(senderMailAddress));
 
                 emailDO.Subject = message.Subject;

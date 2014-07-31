@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Data.Entities;
+using Data.Entities.Constants;
 using Data.Entities.Enumerations;
 
 namespace Data.Interfaces
@@ -8,7 +9,7 @@ namespace Data.Interfaces
     {
         int Id { get; set; }
         string Name { get; set; }
-        ServiceAuthorizationType AuthType { get; set; }
+        ServiceAuthorizationTypeRow AuthType { get; set; }
         string AppCreds { get; set; }
         string CalDAVEndPoint { get; set; }
     }

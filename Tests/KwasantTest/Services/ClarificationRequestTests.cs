@@ -14,6 +14,8 @@ using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
 using Utilities;
+using BookingRequestState = Data.Constants.BookingRequestState;
+using ClarificationRequestState = Data.Constants.ClarificationRequestState;
 
 namespace KwasantTest.Services
 {
@@ -122,8 +124,8 @@ namespace KwasantTest.Services
             // VERIFY
             Assert.AreEqual(respondedCr.Questions[0].Status, QuestionStatus.Answered);
             Assert.AreEqual(respondedCr.Questions[0].Response, "response");
-            Assert.AreEqual(respondedCr.CRState, CRState.Resolved);
-            Assert.AreEqual(respondedCr.BookingRequest.BRState, BRState.Pending);
+            Assert.AreEqual(respondedCr.ClarificationRequestStateID, ClarificationRequestState.Resolved);
+            Assert.AreEqual(respondedCr.BookingRequest.BRState, BookingRequestState.Pending);
         }
     }
 }

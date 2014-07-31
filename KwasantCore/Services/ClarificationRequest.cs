@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using Data.Constants;
 using Data.Entities;
+using Data.Entities.Constants;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
 using KwasantCore.Exceptions;
 using Utilities;
 using StructureMap;
+using BookingRequestState = Data.Constants.BookingRequestState;
+using ClarificationRequestState = Data.Constants.ClarificationRequestState;
 
 namespace KwasantCore.Services
 {
@@ -35,7 +36,7 @@ namespace KwasantCore.Services
             ((IClarificationRequest) newClarificationRequestDo).BookingRequest = bookingRequest;
             String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
             newClarificationRequestDo.From = Email.GenerateEmailAddress(uow, new MailAddress(senderMailAddress));
-            newClarificationRequestDo.AddEmailRecipient(EmailParticipantType.TO, bookingRequest.User.EmailAddress);
+            newClarificationRequestDo.AddEmailRecipient(EmailParticipantType.To, bookingRequest.User.EmailAddress);
             return newClarificationRequestDo;
         }
 
@@ -120,8 +121,8 @@ namespace KwasantCore.Services
                     questionDO.Response = answeredQuestion.Response;
                     questionDO.Status = QuestionStatus.Answered;
                 }
-                curClarificationRequestDO.CRState = CRState.Resolved;
-                curBookingRequestDO.BRState = BRState.Pending;
+                curClarificationRequestDO.ClarificationRequestStateID = ClarificationRequestState.Resolved;
+                curBookingRequestDO.BRState = BookingRequestState.Pending;
                 uow.SaveChanges();
             }
         }

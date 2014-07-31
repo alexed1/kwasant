@@ -4,22 +4,18 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Web.UI.WebControls;
 using Data.Authentication;
+using Data.Entities.Constants;
 using Data.Entities.Enumerations;
 using Data.Repositories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using System.Data.Entity.Validation;
 using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Newtonsoft.Json;
-using StructureMap;
 using Utilities;
-using EventCreateType = Data.Entities.Enumerations.EventCreateType;
-using EventSyncStatus = Data.Entities.Enumerations.EventSyncStatus;
 
 namespace Data.Migrations
 {
@@ -63,11 +59,13 @@ namespace Data.Migrations
         public static void Seed(IUnitOfWork context)
         {
             SeedConstants<EventState, EventStatus>(context, (id, name) => new EventStatus { Id = id, Name = name });
-            SeedConstants<BRState, BookingRequestState>(context, (id, name) => new BookingRequestState { Id = id, Name = name });
-            SeedConstants<CRState, ClarificationRequestState>(context, (id, name) => new ClarificationRequestState() { Id = id, Name = name });
-            SeedConstants<Constants.EventCreateType, EventCreateType>(context, (id, name) => new EventCreateType { Id = id, Name = name });
-            SeedConstants<Constants.EventSyncStatus, EventSyncStatus>(context, (id, name) => new EventSyncStatus { Id = id, Name = name });
-            SeedConstants<ServiceAuthType, ServiceAuthorizationType>(context, (id, name) => new ServiceAuthorizationType() { Id = id, Name = name });
+            SeedConstants<BookingRequestState, BookingRequestStateRow>(context, (id, name) => new BookingRequestStateRow { Id = id, Name = name });
+            SeedConstants<ClarificationRequestState, ClarificationRequestStateRow>(context, (id, name) => new ClarificationRequestStateRow { Id = id, Name = name });
+            SeedConstants<EventCreateType, EventCreateTypeRow>(context, (id, name) => new EventCreateTypeRow { Id = id, Name = name });
+            SeedConstants<EventSyncStatus, EventSyncStatusRow>(context, (id, name) => new EventSyncStatusRow { Id = id, Name = name });
+            SeedConstants<ServiceAuthType, ServiceAuthorizationTypeRow>(context, (id, name) => new ServiceAuthorizationTypeRow { Id = id, Name = name });
+
+
             SeedInstructions(context);
         }
 

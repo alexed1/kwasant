@@ -42,7 +42,7 @@
 
 				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 					<ul class="nav navbar-nav">
-					<!--	<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.BookingRequestID, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li> -->
+					<!--	<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.BookingRequestID, status = Data.Constants.BookingRequestState.Processed })');" href="#">Mark Processed</a></li> -->
 
                         <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
 						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
