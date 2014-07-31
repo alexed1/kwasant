@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Data.Entities.Enumerations
 {
-    public class BookingRequestStatus
+    public class BookingRequestState
     {
         [Key]
         public int Id { get; set; }

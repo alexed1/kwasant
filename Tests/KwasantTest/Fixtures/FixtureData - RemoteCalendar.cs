@@ -25,7 +25,7 @@ namespace KwasantTest.Fixtures
         {
             return new RemoteCalendarAuthDataDO()
                        {
-                           AuthData = "",
+                           AuthData = "{access_token:test}",
                            ProviderID = provider.Id,
                            Provider = provider,
                            User = user,

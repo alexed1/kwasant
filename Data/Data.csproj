@@ -98,6 +98,7 @@
   <ItemGroup>
     <Compile Include="Authentication\Account.cs" />
     <Compile Include="Constants\BRState.cs" />
+    <Compile Include="Constants\CRState.cs" />
     <Compile Include="Constants\EventCreateType.cs" />
     <Compile Include="Constants\EventState.cs" />
     <Compile Include="Constants\EventSyncStatus.cs" />
@@ -105,8 +106,9 @@
     <Compile Include="Constants\ServiceAuthType.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
-    <Compile Include="Entities\Enumerations\BookingRequestStatus.cs" />
+    <Compile Include="Entities\Enumerations\BookingRequestState.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
+    <Compile Include="Entities\Enumerations\ClarificationRequestState.cs" />
     <Compile Include="Entities\Enumerations\EventSyncStatus.cs" />
     <Compile Include="Entities\Enumerations\EventCreateType.cs" />
     <Compile Include="Entities\Enumerations\EventStatus.cs" />
@@ -146,7 +148,6 @@
     <Compile Include="Infrastructure\StructureMap\MockedRoleStore.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedUserStore.cs" />
     <Compile Include="Infrastructure\TrackingStatus.cs" />
-    <Compile Include="Entities\Enumerations\ClarificationStatus.cs" />
     <Compile Include="Interfaces\IAspNetRoles.cs" />
     <Compile Include="Interfaces\IAspNetUserRoles.cs" />
     <Compile Include="Interfaces\ICalendar.cs" />
@@ -334,6 +335,18 @@
     <Compile Include="Migrations\201407240008420_Sync-23.07.2014.cs" />
     <Compile Include="Migrations\201407240008420_Sync-23.07.2014.Designer.cs">
       <DependentUpon>201407240008420_Sync-23.07.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407261845581_LinkBookingRequestsToCalendars.cs" />
+    <Compile Include="Migrations\201407261845581_LinkBookingRequestsToCalendars.Designer.cs">
+      <DependentUpon>201407261845581_LinkBookingRequestsToCalendars.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407300545349_LinkCalendarToNegotiation.cs" />
+    <Compile Include="Migrations\201407300545349_LinkCalendarToNegotiation.Designer.cs">
+      <DependentUpon>201407300545349_LinkCalendarToNegotiation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407301747128_RenamedEnums.cs" />
+    <Compile Include="Migrations\201407301747128_RenamedEnums.Designer.cs">
+      <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -534,6 +547,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407240008420_Sync-23.07.2014.resx">
       <DependentUpon>201407240008420_Sync-23.07.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407261845581_LinkBookingRequestsToCalendars.resx">
+      <DependentUpon>201407261845581_LinkBookingRequestsToCalendars.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407300545349_LinkCalendarToNegotiation.resx">
+      <DependentUpon>201407300545349_LinkCalendarToNegotiation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407301747128_RenamedEnums.resx">
+      <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

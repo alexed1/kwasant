@@ -8,6 +8,11 @@ namespace Data.Entities
 {
     public class BookingRequestDO : EmailDO, IBookingRequest
     {
+        public BookingRequestDO()
+        {
+            Calendars = new List<CalendarDO>();
+        }
+
         [Required]
         public virtual UserDO User { get; set; }
 
@@ -17,9 +22,12 @@ namespace Data.Entities
         public virtual ClarificationRequestDO ClarificationRequest { get; set; }
 */
 
-        [ForeignKey("BookingRequestStatus")]
+        [InverseProperty("BookingRequests")]
+        public virtual List<CalendarDO> Calendars { get; set; }
+
+        [ForeignKey("BookingRequestState")]
         [Required]
         public int? BRState { get; set; }
-        public virtual BookingRequestStatus BookingRequestStatus { get; set; }
+        public virtual BookingRequestState BookingRequestState { get; set; }
     }
 }

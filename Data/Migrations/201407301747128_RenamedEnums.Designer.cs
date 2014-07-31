@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class Sync15072014 : IMigrationMetadata
+    public sealed partial class RenamedEnums : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Sync15072014));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(RenamedEnums));
         
         string IMigrationMetadata.Id
         {
-            get { return "201407151914079_Sync-15.07.2014"; }
+            get { return "201407301747128_RenamedEnums"; }
         }
         
         string IMigrationMetadata.Source

@@ -30,7 +30,7 @@ namespace Data.Entities
 
         /// <summary>
         /// Get all entities without a custom field
-        /// </summary>
+        /// </summary>09
         /// <returns>IQueryable of entities without any custom field</returns>
         protected IQueryable<TForeignEntity> GetEntitiesWithoutCustomFields(Expression<Func<TCustomFieldType, bool>> customFieldPredicate = null)
         {

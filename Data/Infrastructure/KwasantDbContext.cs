@@ -8,6 +8,7 @@ using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.SqlServer;
 using System.Linq;
 using Data.Entities.Enumerations;
+using Data.Infrastructure.JoinTables;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity.ModelConfiguration;
 
@@ -175,9 +176,10 @@ namespace Data.Infrastructure
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
-            modelBuilder.Entity<BookingRequestStatus>().ToTable("BookingRequestStatuses");
+            modelBuilder.Entity<BookingRequestState>().ToTable("BookingRequestStates");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
             modelBuilder.Entity<ClarificationRequestDO>().ToTable("ClarificationRequests");
+            modelBuilder.Entity<ClarificationRequestState>().ToTable("ClarificationRequestStates");
             modelBuilder.Entity<QuestionDO>().ToTable("Questions");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
@@ -200,8 +202,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<RemoteCalendarProviderDO>().ToTable("RemoteCalendarProviders");
             modelBuilder.Entity<RemoteCalendarAuthDataDO>().ToTable("RemoteCalendarAuthData");
             modelBuilder.Entity<RemoteCalendarLinkDO>().ToTable("RemoteCalendarLinks");
-
-
+            
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)
                 .WithMany()
@@ -235,6 +236,12 @@ namespace Data.Infrastructure
                     mapping => mapping.MapLeftKey("EventID").MapRightKey("EmailID").ToTable("EventEmail")
                 );
 
+            modelBuilder.Entity<CalendarDO>()
+                .HasMany(ev => ev.BookingRequests)
+                .WithMany(e => e.Calendars)
+                .Map(
+                    mapping => mapping.MapLeftKey("CalendarID").MapRightKey("BookingRequestID").ToTable("BookingRequestCalendar")
+                );
 
             modelBuilder.Entity<BookingRequestDO>()
                 .HasMany(ev => ev.Instructions)

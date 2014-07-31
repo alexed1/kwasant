@@ -78,6 +78,10 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
             close(args.document, args.args);
         });
     };
+    
+    Kwasant.IFrame.PopupsActive = function () {
+        return activePopups.length > 0;
+    };
 
     Kwasant.IFrame.CloseMe = function (args, doc) {
         if (doc == null)
@@ -107,7 +111,22 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
             }
         }
     };
+
+    Kwasant.IFrame.DispatchUrlRequest = function(url) {
+        var spinner = Kwasant.IFrame.DisplaySpinner();
+        $.get(url)
+            .fail(function() {
+                alert('Error connecting to server. Your changes were not saved.');
+            }).always(function() {
+                calendar.refreshCalendars();
+                spinner.hide();
+            });
+    };
     
+    Kwasant.IFrame.DisplaySpinner = function () {
+        return displayLoadingSpinner();
+    };
+
     function displayLoadingSpinner() {
         var mask = $('<div></div>');
         mask.css({ 'position': 'absolute', 'z-index': 9999, 'background-color': '#FFF', 'display': 'none' });

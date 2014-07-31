@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
@@ -45,8 +46,15 @@ namespace KwasantCore.Managers
             UnitOfWork.EntitiesModified += UnitOfWork_OnEntitiesAddedOrModified;
         }
 
+        /// <summary>
+        /// Gets or sets whether to disable auto-synchronization of newly added events.
+        /// </summary>
+        public static bool DisableAutoSynchronization { get; set; }
+
         private static void UnitOfWork_OnEntitiesAddedOrModified(object sender, EntitiesStateEventArgs args)
         {
+            if (DisableAutoSynchronization)
+                return;
             var calendars = args.Entities
                 .OfType<EventDO>()
                 .Where(e => e.SyncStatusID == EventSyncStatus.SyncWithExternal)
@@ -93,7 +101,16 @@ namespace KwasantCore.Managers
                 var curUser = uow.UserRepository.GetByKey(userId);
                 if (curUser == null)
                     throw new EntityNotFoundException<UserDO>();
-                await SyncNowAsync(uow, curUser);
+                try
+                {
+                    await SyncNowAsync(uow, curUser);
+                    uow.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    Logger.GetLogger().Error(string.Format("Error occurred on user's (id:{0}) calendars synchronization.", userId), ex);
+                    throw;
+                }
             }
         }
 
@@ -107,7 +124,7 @@ namespace KwasantCore.Managers
             DateTimeOffset from, to;
             GetPeriod(out from, out to);
 
-            foreach (var authData in user.RemoteCalendarAuthData)
+            foreach (var authData in user.RemoteCalendarAuthData.Where(ad => ad.HasAccessToken()))
             {
                 try
                 {
@@ -191,22 +208,26 @@ namespace KwasantCore.Managers
             // filter out reccurring events
             var incomingEvents = remoteEvents.Select(Event.CreateEventFromICSCalendar).Where(eventPredictor).ToArray();
             var calendar = calendarLink.LocalCalendar;
+            Debug.Assert(calendar != null, "No local calendar associated with this calendar link.");
+            var owner = calendar.Owner;
+            Debug.Assert(owner != null, "Local calendar associated with this calendar link has no owner.");
             // add filter by SyncStatus for local events.
-            Func<EventDO, bool> existingEventPredictor =
-                e => eventPredictor(e) && e.SyncStatusID == EventSyncStatus.SyncWithExternal;
+            Func<EventDO, bool> existingEventPredictor = e => eventPredictor(e) 
+                && e.SyncStatusID == EventSyncStatus.SyncWithExternal
+                && e.StateID != EventState.Deleted;
             var existingEvents = calendar.Events.Where(existingEventPredictor).ToList();
 
             foreach (var incomingEvent in incomingEvents)
             {
                 if (
-                    !incomingEvent.Attendees.Any(a => string.Equals(a.EmailAddress.Address, calendar.Owner.EmailAddress.Address)))
+                    !incomingEvent.Attendees.Any(a => string.Equals(a.EmailAddress.Address, owner.EmailAddress.Address)))
                 {
                     incomingEvent.Attendees.Add(new AttendeeDO()
                                                     {
-                                                        EmailAddress = calendar.Owner.EmailAddress,
-                                                        EmailAddressID = calendar.Owner.EmailAddressID,
+                                                        EmailAddress = owner.EmailAddress,
+                                                        EmailAddressID = owner.EmailAddressID,
                                                         Event = incomingEvent,
-                                                        Name = calendar.Owner.UserName
+                                                        Name = owner.UserName
                                                     });
                 }
 
@@ -250,8 +271,8 @@ namespace KwasantCore.Managers
                     incomingEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;
                     incomingEvent.Calendar = (CalendarDO) calendar;
                     incomingEvent.CalendarID = calendar.Id;
-                    incomingEvent.CreatedBy = calendar.Owner;
-                    incomingEvent.CreatedByID = calendar.Owner.Id;
+                    incomingEvent.CreatedBy = owner;
+                    incomingEvent.CreatedByID = owner.Id;
                     calendar.Events.Add(incomingEvent);
                 }
             }

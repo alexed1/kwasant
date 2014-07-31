@@ -37,6 +37,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DayPilot.Web.Mvc, Version=7.7.5664.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\DayPilot.Web.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -111,6 +115,7 @@
     <Compile Include="Fixtures\FixtureData - RemoteCalendar.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
+    <Compile Include="Services\AttendeeTests.cs" />
     <Compile Include="Managers\CalendarSyncManagerTest.cs" />
     <Compile Include="Services\BookingRequestTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
@@ -123,6 +128,7 @@
     <Compile Include="Services\EmailTests.cs" />
     <Compile Include="Services\EventServiceTests.cs" />
     <Compile Include="Services\SMSTests.cs" />
+    <Compile Include="Timeslots\TimeslotMergeTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
     <Compile Include="Workflow\WorkflowTests.cs" />
   </ItemGroup>

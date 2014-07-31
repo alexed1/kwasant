@@ -38,5 +38,11 @@ namespace Data.Entities
             get { return User; }
             set { User = (UserDO) value; }
         }
+
+        public bool HasAccessToken()
+        {
+            return !string.IsNullOrEmpty(AuthData) &&
+                   AuthData.Contains("access_token");
+        }
     }
 }

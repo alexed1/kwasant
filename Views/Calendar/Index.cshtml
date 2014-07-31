@@ -1,9 +1,4 @@
-﻿@using DayPilot.Web.Mvc
-@using DayPilot.Web.Mvc.Enums
-@using DayPilot.Web.Mvc.Enums.Calendar
-@using DayPilot.Web.Mvc.Events.Calendar
-@using ViewType = DayPilot.Web.Mvc.Enums.Calendar.ViewType
-@model Data.Entities.EmailDO
+﻿@model KwasantWeb.ViewModels.CalendarViewModel
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @{
 	ViewBag.Title = "Event ";
@@ -13,18 +8,29 @@
 }
 @section immediateScripts
 {
-	@*Scripts.Render("~/bundles/js/jquery")*@
+	@Scripts.Render("~/bundles/js/jquery")
 	@Scripts.Render("~/bundles/js/daypilot")
-	<script src="/Content/js/Kwasant/Popup.js"></script>
+    @Scripts.Render("~/bundles/js/kwasantcalendar")
+    @Scripts.Render("~/bundles/js/kwasantpopup")
+
     <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
     <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 }
-
+@section scripts
+{
+	@Scripts.Render("~/bundles/js/modernizr")
+	@Scripts.Render("~/bundles/js/bootstrap")
+	@Scripts.Render("~/bundles/js/common")
+}
 @*width: 1270px;*@
-<div class="jumbotron calendar-section jumbotron_new">	
+<div class="jumbotron calendar-section jumbotron_new">
 	<div class="row">
+        @*width: 420px;*@
+
+	
 		<nav class="navbar navbar-default top-toolbar-section" role="navigation">
 			<div class="container-fluid">
+
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
 						<span class="sr-only">Toggle navigation</span>
@@ -36,258 +42,86 @@
 
 				<div class="collapse navbar-collapse" id="navbar-collapse">
 					<ul class="nav navbar-nav">
-						<!--<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.Id, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li> -->
-						<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.Id })');" href="#">Mark Processed</a></li>
+					<!--	<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.BookingRequestID, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li> -->
+
+                        <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
 						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
-						<li>@Html.ActionLink("Show Users", "Index", "User")</li>
-						<li><a id="btnHistory" onclick="HistoryClick(@Model.Id);" class="btnHistory" href="#">History</a></li>
 						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
+						<li>@Html.ActionLink("Show Users", "Index", "User")</li>
+                     
+                     <li> <a id="btnHistory" onclick="HistoryClick(@Model.BookingRequestID);" class="btnHistory" href="#">History</a></li>
 					</ul>
 				</div>
 			</div>
 		</nav>
-        @*width: 420px;*@
+
 		<div id="emailInfoBox" class="col-md-7">
 			<div class="emailInfoBox">
-				<iframe id="frminfo" class="frminfo" onload="iframeLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.Id" style=""></iframe>
-				<table id="tbluserrequests" class="email-info-tabele">
-					<thead>
-						<tr>
-							<th>Date Received</th>
-							<th>Subject</th>
-						</tr>
-					</thead>
-				</table>
+            <iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.BookingRequestID" style=""></iframe>
+            <table id="tbluserrequests" class="email-info-tabele">
+                <thead>
+                    <tr>
+                        <th>Date Received</th>
+                        <th>Subject</th>
+                    </tr>
+                </thead>
+            </table>
 			</div>
-		</div>
+        </div>
+        
+	    <div id="CalendarDiv" ></div>
 
-		<div id="divCalender" class="col-md-5 divCalender">
-			<div class="row">
-				<div id="toolbar" class="toolbar">
-					<a href="#" id="toolbar_day">Day</a>
-					<a href="#" id="toolbar_week">Week</a>
-					<a href="#" id="toolbar_month">Month</a>
-				</div>
-			</div>
-			<div class="calendar-area">
-				@Html.DayPilotNavigator("dp_navigator", new DayPilotNavigatorConfig
-				{
-					CssOnly = true,
-					Theme = "navigator_white",
-					ShowMonths = 1
-				})
-			</div>
-			<div class="row">
-				<div class="divCalender-inner">
-					@Html.DayPilotMenu("menu1", new DayPilotMenuConfig
-					{
-						Items = new MenuItemCollection
-                        {
-                            new MenuItem {Text = "Delete", Action = MenuItemAction.JavaScript, JavaScript = "eventDelete(e)"}
-                        }
-					})
-
-					@Html.DayPilotMenu("menu2", new DayPilotMenuConfig
-					{
-						Items = new MenuItemCollection
-                        {
-                            new MenuItem {Text = "Open", Action = MenuItemAction.JavaScript, JavaScript = "alert(e.value());"}
-                        }
-					})
-
-					@Html.DayPilotBubble("bubble")
-
-					@Html.DayPilotCalendar("dp_day", new DayPilotCalendarConfig
-					{
-						BackendUrl = Url.Content("~/Calendar/Day?bookingRequestID=" + Model.Id),
-						EventMoveHandling = EventMoveHandlingType.JavaScript,
-						EventResizeHandling = EventResizeHandlingType.JavaScript,
-						TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
-						EventClickHandling = EventClickHandlingType.JavaScript,
-						HeaderClickHandling = HeaderClickHandlingType.JavaScript,
-						EventDeleteHandling = EventDeleteHandlingType.JavaScript,
-						EventBackColor = "#638EDE",
-						DurationBarVisible = false,
-						EventHeaderVisible = false,
-						Height = 550,
-						HeaderHeight = 50,
-						CellHeight = 25,
-						CssOnly = false,
-						ContextMenu = "menu1",
-						Theme = "calendar_white",
-						ViewType = ViewType.Day,
-						EventClickJavaScript = "eventClick(e)",
-						EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
-						EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
-						TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
-						EventDeleteJavaScript = "eventDelete(e)",
-					})
-
-					@Html.DayPilotCalendar("dp_week", new DayPilotCalendarConfig
-					{
-
-						ViewType = ViewType.Week,
-						BackendUrl = Url.Content("~/Calendar/Backend?bookingRequestID=" + Model.Id),
-
-						EventMoveHandling = EventMoveHandlingType.JavaScript,
-						EventResizeHandling = EventResizeHandlingType.JavaScript,
-						TimeRangeSelectedHandling = TimeRangeSelectedHandlingType.JavaScript,
-						EventClickHandling = EventClickHandlingType.JavaScript,
-						HeaderClickHandling = HeaderClickHandlingType.JavaScript,
-						EventDeleteHandling = EventDeleteHandlingType.JavaScript,
-						EventBackColor = "#638EDE",
-						DurationBarVisible = false,
-						EventHeaderVisible = false,
-						ShowAllDayEvents = true,
-						AllowMultiSelect = true,
-						Height = 550,
-						HeaderHeight = 30,
-						HeaderFontSize = "12px",
-						CssOnly = false,
-						Theme = "calendar_white",
-						HeightSpec = HeightSpec.BusinessHours,
-						EventBubble = "bubble",
-						EventClickJavaScript = "eventClick(e)",
-						EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
-						EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
-						TimeRangeSelectedJavaScript = "eventNew(start, end, resource)",
-						EventDeleteJavaScript = "eventDelete(e)",
-						ContextMenu = "menu1",
-						HeaderClickJavaScript = "alert('Day clicked: ' + c.date);"
-					})
-
-					@Html.DayPilotMonth("dp_month", new DayPilotMonthConfig
-					{
-						BackendUrl = Url.Content("~/Calendar/Month?bookingRequestID=" + Model.Id),
-						EventMoveHandling = DayPilot.Web.Mvc.Events.Month.EventMoveHandlingType.JavaScript,
-						EventResizeHandling = DayPilot.Web.Mvc.Events.Month.EventResizeHandlingType.JavaScript,
-						TimeRangeSelectedHandling = DayPilot.Web.Mvc.Events.Month.TimeRangeSelectedHandlingType.JavaScript,
-						EventClickHandling = DayPilot.Web.Mvc.Events.Month.EventClickHandlingType.JavaScript,
-						HeaderClickHandling = DayPilot.Web.Mvc.Events.Month.HeaderClickHandlingType.JavaScript,
-						EventFontSize = "10px",
-						HeaderFontSize = "12px",
-						CellHeight = 90,
-						HeaderHeight = 50,
-						EventHeight = 50,
-						Height = "550",
-						CssOnly = false,
-						ContextMenu = "menu1",
-						Theme = "calendar_white",
-						EventClickJavaScript = "eventClick(e)",
-						EventMoveJavaScript = "eventMove(e, newStart, newEnd)",
-						EventResizeJavaScript = "eventMove(e, newStart, newEnd)",
-						TimeRangeSelectedJavaScript = "eventNew(start, end)",
-					})
-				</div>
-			</div>
-		</div>		
 	</div>
 </div>
-<input type="hidden" value="@Model.Id" id="hdnrequestid" name="requestid" />
+<input type="hidden" value="@Model.BookingRequestID" id="hdnrequestid" name="requestid" />
 
 <script type="text/javascript">
-    $("#toolbar_day").click(function () {
-        $("#divCalender").css("padding-bottom", "79px");
-    });
-
-    $("#toolbar_week").click(function () {
-        $("#divCalender").css("padding-bottom", "170px");
-    });
-
-    $("#toolbar_month").click(function () {
-        $("#divCalender").css("padding-bottom", "79px");
-    });
-
-    var switcher = new DayPilot.Switcher();
-
-    switcher.addView(dp_day);
-    switcher.addView(dp_week);
-    switcher.addView(dp_month);
-
-    switcher.addButton("toolbar_day", dp_day);
-    switcher.addButton("toolbar_week", dp_week);
-    switcher.addButton("toolbar_month", dp_month);
-
-    switcher.addNavigator(dp_navigator);
-
-    switcher.show(dp_day);
-
-    function eventClick(e) {
-        if (checkactivewindow()) { return false; }
-        Kwasant.IFrame.Display('/Event/Edit/?eventID=' + e.id(),
-            {
-                horizontalAlign: 'right',
-                callback: refresh
-            });
-    }
-
-    function eventNew(start, end) {
-        if (checkactivewindow()) { return false; }
-        var id = $("#hdnrequestid").val();
-        Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&start=' + start + 'z&end=' + end + 'z',
-            {
-                horizontalAlign: 'right',
-                callback: refresh
-            });
-    }
-
-    function eventMove(e, newStart, newEnd) {
-        if (checkactivewindow()) { return false; }
-        Kwasant.IFrame.Display('/Event/MoveEvent/?eventID=' + e.id() + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z',
-            {
-                modal: true,
-                callback: refresh
-            });
-    }
-
-    function eventDelete(e) {
-        Kwasant.IFrame.Display('/Event/DeleteEvent/?eventID=' + e.id(),
-            {
-                modal: true,
-                callback: refresh
-            });
-    }
-
-    function refresh(result) {
-        var daypilotControls = [
-                        dp_day,
-                        dp_week,
-                        dp_month
-        ];
-        if (result) {
-            $.each(daypilotControls, function (i, ele) {
-                ele.commandCallBack('refresh');
-            });
-        }
-        $.each(daypilotControls, function (i, ele) {
-            ele.clearSelection('refresh');
-        });
-    }
-
-    function checkactivewindow() {
-        var isanyactivewindow = false;
-        $(document).find("iframe").each(function () {
-            if ($(this).attr("style").indexOf("z-index") > 0) {
-                if ($(this).attr("style").indexOf("display: none") < 0) {
-                    isanyactivewindow = true;
-                }
+    var calendar;
+    $(function() {
+        calendar = $('#CalendarDiv').KCalendar({
+                getCalendarBackendURL: function() {
+                    return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                },
+                getMonthBackendURL: function () {
+                    return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                },
+                getNavigatorBackendURL: function() {
+                    return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                },  
+                getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
+                getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
+                getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
+                onEventNew: function(start, end) {
+                    if (Kwasant.IFrame.PopupsActive()) {
+                        return;
+                    }
+                    var id = $("#hdnrequestid").val();
+                    Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&calendarID=' + @Model.MainCalendarID + '&start=' + start + 'z&end=' + end + 'z',
+                        {
+                            horizontalAlign: 'right',
+                            callback: calendar.refreshCalendars
+                        });
+                },
             }
-        });
-        return isanyactivewindow;
-    }
-
-    //funtion to load booking request info in iframe "frminfo" on "tbluserrequests" request row click.
+        );
+    });
+     
+    //funtion to load booking request info in iframe "emailInfoFrame" on "tbluserrequests" request row click.
     //called by : rows in tbluserrequests on click
-    function loadrequest(id, ele) {
+    function loadrequest(id, linkedCalendarIDs, ele) {
         $("#tbluserrequests tr").attr("style", "");
         $(ele).attr("style", "background-color: #aaa;");
         $("#hdnrequestid").val(id);
         $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("Invalidate", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
-        $("#frminfo")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
-        dp_day.backendUrl = "@Url.Content("~/Calendar/Day?bookingRequestID=")" + id;
-        dp_week.backendUrl = "@Url.Content("~/Calendar/Backend?bookingRequestID=")" + id;
-        dp_month.backendUrl = "@Url.Content("~/Calendar/Month?bookingRequestID=")" + id;
-        refresh(true);
+        $("#emailInfoFrame")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
+        
+        if (calendar !== undefined) {
+            calendar.updateBackendURLs("@Url.Content("~/Calendar/Day?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Month?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Navigator?calendarIDs=")" + linkedCalendarIDs);
+        }
+    }
+
+    function afterRender() {
+            dp_navigator.visibleRangeChangedCallBack();
     }
 
     //Document ready function, will run after page is ready and all elements are loaded.
@@ -304,12 +138,12 @@
             ajax:
             {
                 //Ajax call to get all unprocessed booking request from server according to user.
-                "url": "@Url.Action("GetBookingRequests", "BookingRequest")" + "?bookingRequestId=" + "@Model.Id",
-            "dataSrc": function (json) {
-                var orgdata = JSON.parse(json.data);
-                return orgdata;
-            }
-        },
+                "url": "@Url.Action("GetBookingRequests", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestID",
+                "dataSrc": function (json) {
+                    var orgdata = JSON.parse(json.data);
+                    return orgdata;
+                }
+            },
             //Callback function for row created.
             createdRow: function (row, data, index) {
                 if (data.id == $("#hdnrequestid").val()) {
@@ -319,47 +153,46 @@
                     $(row).attr("style", "cursor:pointer;");
                 }
             },
-        columns: [
-            {
-                data: function (data) {
-                    return ConvertTODateString(data.date_received);
-                }
-            },
-            { data: 'subject' }
-        ]
-    });
+            columns: [
+                {
+                    data: function (data) {
+                        return ConvertTODateString(data.date_received);
+                    }
+                },
+                { data: 'subject' }
+            ]
+        });
 
 
-    //This function will bind a click function on every button in table "tblbookingrequest"
-    $('#tbluserrequests').on('click', 'tr', function () {
-        var data = table.row($(this)).data();
-        loadrequest(data.id, this);
+        //This function will bind a click function on every button in table "tblbookingrequest"
+        $('#tbluserrequests').on('click', 'tr', function () {
+            var data = table.row($(this)).data();
+            loadrequest(data.id, data.linkedcalendarids, this);
+        });
+
+        $('#btnRequestClarification').click(function () {
+            if (Kwasant.IFrame.PopupsActive()) { return false; }
+            Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.BookingRequestID })',
+                {
+                    horizontalAlign: 'left',
+                });
+        });
     });
 
-    $('#btnRequestClarification').click(function () {
-        if (checkactivewindow()) { return false; }
-        Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.Id })',
-            {
-                horizontalAlign: 'left',
-            });
-    });
-    });
-
-    //this function will adjust the height of Booking Request info iframe according to content in iframe.
-    function iframeLoaded() {
-        var iFrameID = document.getElementById('frminfo');
-        if (iFrameID) {
+    function emailFrameLoaded() {
+        var iframe = $("#emailInfoFrame").get(0);
+        if (iframe) {
             // here you can make the height, I delete it first, then I make it again
-            iFrameID.height = "";
-            iFrameID.height = (iFrameID.contentWindow.document.body.scrollHeight + 30) + "px";
+            iframe.height = "";
+            iframe.height = (iframe.contentWindow.document.body.scrollHeight + 30) + "px";
         }
     }
 
     //function to format datetime of Request viewer widget
-    function ConvertTODateString(DateToFormat) {
-        var datevalue = new Date(DateToFormat);
-        DateToFormat = datevalue.getMonth() + 1 + "/" + datevalue.getDate() + "/" + datevalue.getFullYear() + " " + datevalue.getHours() + ":" + datevalue.getMinutes();
-        return DateToFormat;
+    function ConvertTODateString(dateFormat) {
+        var datevalue = new Date(dateFormat);
+        dateFormat = datevalue.getMonth() + 1 + "/" + datevalue.getDate() + "/" + datevalue.getFullYear() + " " + datevalue.getHours() + ":" + datevalue.getMinutes();
+        return dateFormat;
     }
 
     //Mark processed function will execute on click to update the Request status to "Processed".
@@ -370,12 +203,11 @@
     }
 
     function HistoryClick(id) {
-        if (checkactivewindow()) { return false; }
-        iframeLoaded();
+        if (Kwasant.IFrame.PopupsActive()) { return; }
         Kwasant.IFrame.Display('/Report/HistoryByBookingRequestId?bookingRequestID=' + id,
             {
                 horizontalAlign: 'left',
-                callback: refresh
+                callback: calendar.refreshCalendars
             });
         
     }

@@ -46,8 +46,7 @@ namespace Data.Entities
                 .Any(r =>
                      r.Provider != null &&
                      r.Provider.Name == providerName &&
-                     !string.IsNullOrEmpty(r.AuthData) &&
-                     r.AuthData.Contains("access_token"));
+                     r.HasAccessToken());
         }
     }
 }
