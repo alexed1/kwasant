@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Data.Entities.Enumerations;
 
 namespace KwasantWeb.ViewModels
 {
@@ -7,7 +6,8 @@ namespace KwasantWeb.ViewModels
     {
         public int Id { get; set; }        
         public int RequestId { get; set; }
-        public NegotiationState State { get; set; }
+
+        public int NegotiationStateID { get; set; }
         public string Name { get; set; }
 
         public List<QuestionViewModel> Questions { get; set; }                  

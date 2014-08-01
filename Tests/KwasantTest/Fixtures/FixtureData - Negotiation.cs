@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Constants;
+﻿using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
 
 namespace KwasantTest.Fixtures
 {
@@ -17,7 +11,7 @@ namespace KwasantTest.Fixtures
             {
                 Id = 1,
                 RequestId = TestBookingRequest1().Id,
-                State = NegotiationState.InProcess,
+                NegotiationStateID = NegotiationState.InProcess,
                 Name = "Negotiation 1"
             };
             return curNegotiationDO;

@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
+using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 using KwasantWeb.ViewModels;
 using StructureMap;
@@ -29,12 +29,12 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
 
-                NegotiationViewModel NegotiationQuestions = uow.NegotiationsRepository.GetAll().Where(e => e.RequestId == id && e.State != NegotiationState.Resolved).Select(s => new NegotiationViewModel
+                NegotiationViewModel NegotiationQuestions = uow.NegotiationsRepository.GetAll().Where(e => e.RequestId == id && e.NegotiationStateID != NegotiationState.Resolved).Select(s => new NegotiationViewModel
                 {
                     Id = s.Id,
                     Name = s.Name,
                     RequestId = BookingRequestID,
-                    State = s.State,
+                    NegotiationStateID = s.NegotiationStateID,
 
                     Questions = uow.QuestionsRepository.GetAll().Where(que => que.NegotiationId == s.Id).Select(quel => new QuestionViewModel
                     {
@@ -46,7 +46,7 @@ namespace KwasantWeb.Controllers
                         {
                             Id = ansl.Id,
                             QuestionID = ansl.QuestionID,
-                            Status = ansl.Status,
+                            AnswerStatusID = ansl.AnswerStatusID,
                             ObjectsType = ansl.ObjectsType,
                         }).ToList()
                     }).ToList()
@@ -69,7 +69,7 @@ namespace KwasantWeb.Controllers
                 EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestID);
                 UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
 
-                int negotiationId = uow.NegotiationsRepository.FindOne(n => n.RequestId == BookingRequestID && n.State != NegotiationState.Resolved).Id;
+                int negotiationId = uow.NegotiationsRepository.FindOne(n => n.RequestId == BookingRequestID && n.NegotiationStateID != NegotiationState.Resolved).Id;
 
                 if (negotiationId == null)
                 {
@@ -78,7 +78,7 @@ namespace KwasantWeb.Controllers
                     {
                         Name = viewModel.Name,
                         RequestId = BookingRequestID,
-                        State = NegotiationState.InProcess,
+                        NegotiationStateID = NegotiationState.InProcess,
                         //State = "InProcess",
                         Email = emailDO
                     };
@@ -105,7 +105,7 @@ namespace KwasantWeb.Controllers
                             AnswerDO answerDO = new AnswerDO
                             {
                                 QuestionID = questionDO.Id,
-                                Status = AnswerStatus.Proposed,
+                                AnswerStatusID = AnswerStatus.Proposed,
                                 ObjectsType = answers.Text,
                                 User = userDO,
                             };
@@ -122,7 +122,7 @@ namespace KwasantWeb.Controllers
                     //Update Negotiation
                     NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.Id == viewModel.Id);
                     negotiationDO.Name = viewModel.Name;
-                    negotiationDO.State = (NegotiationState)viewModel.State;
+                    negotiationDO.NegotiationStateID = viewModel.NegotiationStateID;
                     uow.SaveChanges();
 
                     foreach (var question in viewModel.Questions)
@@ -137,7 +137,7 @@ namespace KwasantWeb.Controllers
                         foreach (var answers in question.Answers)
                         {
                             AnswerDO answerDO = uow.AnswersRepository.FindOne(a => a.Id == answers.Id);
-                            answerDO.Status = (AnswerStatus)answers.Status;
+                            answerDO.AnswerStatusID = answers.AnswerStatusID;
                             answerDO.ObjectsType = answers.Text;
                             uow.SaveChanges();
                         }

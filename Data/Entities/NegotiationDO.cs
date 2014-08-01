@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Entities.Enumerations;
-using Data.Interfaces;
+using Data.Entities.Constants;
 
 namespace Data.Entities
 {
@@ -16,7 +10,11 @@ namespace Data.Entities
 
         [Key]
         public int Id { get; set; }
-        public NegotiationState State { get; set; }
+
+        [ForeignKey("NegotiationState")]
+        public int NegotiationStateID { get; set; }
+        public NegotiationStateRow NegotiationState { get; set; }
+       
         public string Name { get; set; }
 
         //[ForeignKey("RequestId")]

@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
+using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 using StructureMap;
 
@@ -16,7 +16,7 @@ namespace KwasantWeb.Controllers
             {
                 int clarificationRequestId = 0;
                 ClarificationRequestDO clarificationRequestDO;
-                NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.RequestId == BookingRequestID && n.Id == NegotiationId && n.State != NegotiationState.Resolved);
+                NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.RequestId == BookingRequestID && n.Id == NegotiationId && n.NegotiationStateID != NegotiationState.Resolved);
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.FindOne(br => br.Id == BookingRequestID);
                 if (negotiationDO == null)
                 {

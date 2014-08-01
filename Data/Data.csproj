@@ -102,6 +102,7 @@
     <Compile Include="Constants\EventCreateType.cs" />
     <Compile Include="Constants\EventStatus.cs" />
     <Compile Include="Constants\EventSyncStatus.cs" />
+    <Compile Include="Entities\Constants\AnswerStatusRow.cs" />
     <Compile Include="Entities\Constants\IConstantRow.cs" />
     <Compile Include="Constants\InstructionConstants.cs" />
     <Compile Include="Constants\ServiceAuthorizationType.cs" />
@@ -116,12 +117,13 @@
     <Compile Include="Entities\Constants\EmailStatusRow.cs" />
     <Compile Include="Entities\Constants\EventSyncStatusRow.cs" />
     <Compile Include="Entities\Constants\EventCreateTypeRow.cs" />
+    <Compile Include="Entities\Constants\NegotiationStateRow.cs" />
     <Compile Include="Entities\Constants\QuestionStatusRow.cs" />
     <Compile Include="Entities\Constants\TrackingStatusRow.cs" />
     <Compile Include="Entities\Constants\EventStatusRow.cs" />
     <Compile Include="Entities\Constants\TrackingTypeRow.cs" />
-    <Compile Include="Entities\Enumerations\AnswerStatus.cs" />
-    <Compile Include="Entities\Enumerations\NegotiationState.cs" />
+    <Compile Include="Constants\AnswerStatus.cs" />
+    <Compile Include="Constants\NegotiationState.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
     <Compile Include="Interfaces\IRemoteCalendarLink.cs" />
     <Compile Include="Interfaces\IRemoteCalendarAuthData.cs" />
@@ -586,7 +588,9 @@
       <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Entities\Enumerations\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

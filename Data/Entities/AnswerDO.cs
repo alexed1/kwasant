@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Entities.Enumerations;
+using Data.Constants;
+using Data.Entities.Constants;
 
 namespace Data.Entities
 {
@@ -18,7 +14,11 @@ namespace Data.Entities
         [ForeignKey("Question")]
         public int QuestionID { get; set; }
         public virtual QuestionDO Question { get; set; }
-        public AnswerStatus Status { get; set; }
+
+        [ForeignKey("AnswerStatus")]
+        public int AnswerStatusID { get; set; }
+        public AnswerStatusRow AnswerStatus { get; set; }
+        
         [Required]
         public virtual UserDO User { get; set; }
         public string ObjectsType { get; set; }
