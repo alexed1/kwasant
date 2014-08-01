@@ -34,7 +34,7 @@ namespace KwasantWeb.Controllers.External.DayPilot
                     break;
 
                 case "refresh":
-                    Update();
+                    Update(CallBackUpdateType.Full);
                     break;
 
                 case "selected":

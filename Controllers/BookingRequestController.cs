@@ -108,7 +108,6 @@ namespace KwasantWeb.Controllers
             {
                 string userId = _br.GetUserId(uow.BookingRequestRepository, bookingRequestId.Value);
                 int recordcount = _br.GetBookingRequestsCount(uow.BookingRequestRepository, userId);
-                
                 var jsonResult = Json(new
                 {
                     draw = draw,
@@ -147,6 +146,24 @@ namespace KwasantWeb.Controllers
                 result = "Sorry! Something went wrong. Alpha software...";
             }
             return Content(result);
+        }
+
+        [HttpGet]
+        public ActionResult ShowRelatedItems(int bookingRequestId, int draw, int start, int length)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var jsonResult = Json(new
+                {
+                    draw = draw,
+                    data = _datatables.Pack(_br.BuildRelatedEventsJSON(uow, bookingRequestId, start, length)),
+                    recordsTotal = _br.recordcount,
+                    recordsFiltered = _br.recordcount
+                }, JsonRequestBehavior.AllowGet);
+                
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
         }
 	}
 }

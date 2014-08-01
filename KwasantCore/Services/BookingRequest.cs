@@ -11,6 +11,7 @@ namespace KwasantCore.Services
 {
     public class BookingRequest
     {
+        public int recordcount;
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
             bookingRequest.BookingRequestStateID = BookingRequestState.Unprocessed;
@@ -122,5 +123,56 @@ namespace KwasantCore.Services
             }
             return null;
         }
+
+
+        protected List<BR_RelatedItems> GetRelatedEvents(IUnitOfWork uow, int bookingRequestId)
+        {
+          return uow.EventRepository.GetAll().Where(e => e.BookingRequestID == bookingRequestId).Select(e => new BR_RelatedItems
+                {
+                    id = e.Id,
+                    Type = "Event",
+                    Date = e.StartDate.ToString("M-d-yy hh:mm tt")
+                }).ToList();
+
+        }
+
+        protected List<BR_RelatedItems> GetRelatedClarificationRequests(IUnitOfWork uow, int bookingRequestId)
+        {
+            return uow.ClarificationRequestRepository.GetAll().Where(e => e.BookingRequestId == bookingRequestId).Select(e => new BR_RelatedItems
+            {
+                id = e.Id,
+                Type = "Clarification",
+                Date = e.DateCreated.ToString("M-d-yy hh:mm tt")
+            }).ToList();
+           
+        }
+
+
+        public List<BR_RelatedItems> BuildRelatedEventsJSON(IUnitOfWork uow, int bookingRequestId, int start, int length)
+        {
+            List<BR_RelatedItems> bR_RelatedItems = new List<BR_RelatedItems>();
+            var events = GetRelatedEvents(uow, bookingRequestId);
+            var clarificationRequests = GetRelatedClarificationRequests(uow, bookingRequestId);
+
+            if(events.Count()>0)
+                bR_RelatedItems.AddRange(events);
+
+            if (clarificationRequests.Count()>0)
+                bR_RelatedItems.AddRange(clarificationRequests);
+
+            recordcount = bR_RelatedItems.Count();
+            return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();
+        }
+
+
     }
+
+    public struct BR_RelatedItems
+    {
+        public int id { get; set; }
+        public string Date { get; set; }
+        public string Type { get; set; }
+    }
+
+   
 }
