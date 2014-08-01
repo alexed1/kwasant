@@ -108,7 +108,6 @@ namespace KwasantWeb.Controllers
             {
                 string userId = _br.GetUserId(uow.BookingRequestRepository, bookingRequestId.Value);
                 int recordcount = _br.GetBookingRequestsCount(uow.BookingRequestRepository, userId);
-                
                 var jsonResult = Json(new
                 {
                     draw = draw,
@@ -157,7 +156,7 @@ namespace KwasantWeb.Controllers
                 var jsonResult = Json(new
                 {
                     draw = draw,
-                    data = _datatables.Pack(_br.GetRelatedItems(uow, bookingRequestId, start, length)),
+                    data = _datatables.Pack(_br.BuildRelatedEventsJSON(uow, bookingRequestId, start, length)),
                     recordsTotal = _br.recordcount,
                     recordsFiltered = _br.recordcount
                 }, JsonRequestBehavior.AllowGet);

@@ -242,11 +242,11 @@
             ]
        });
 
-      var datenow = new Date();
-      var dp_day = storedCalendar[0];
-      dp_day.startDate = datenow;
-      calendar.refreshCalendars();
-      dp_navigator.select(new DayPilot.Date(datenow));
+       var datenow = new Date();
+       var dp_day = storedCalendar[0];
+       dp_day.startDate = datenow;
+       calendar.refreshCalendars();
+       dp_navigator.select(new DayPilot.Date(datenow));
     }
 
 
@@ -276,7 +276,11 @@
                 $(row).attr("style", "cursor:pointer;");
             },
         columns: [
-                    { data: 'date' },
+                    {
+                        data: function (data) {
+                            return ConvertTODateString(data.date);
+                        }
+                    },
                    { data: 'type' }
         ]
      });
@@ -285,18 +289,18 @@
 
 
    
-    $('#tblRelatedItems').on('click', 'tr', function () {
-       
+     $('#tblRelatedItems').on('click', 'tr', function () {
+         $("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
+         $(this).attr("style", "background-color: #aaa;");
+
         var data = table1.row($(this)).data();
         var dp_day = storedCalendar[0];
         dp_day.startDate = data.date;
         calendar.refreshCalendars();
-
         var datevalue = new Date(data.date);
         dp_navigator.select(new DayPilot.Date(datevalue));
         if(data.type=="Clarification")
             clarificationPopUpWindow(data.id);
-        
     });
 
     function clarificationPopUpWindow(id)
