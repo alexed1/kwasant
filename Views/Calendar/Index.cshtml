@@ -48,7 +48,7 @@
 						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
 						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
 						<li>@Html.ActionLink("Show Users", "Index", "User")</li>
-                     
+                        <li><a id="btnNegotiation" onclick="window.parent.getNegotiationwindo();" data-value="@ViewBag.negotiationlbl" href="#">@ViewBag.negotiationlbl</a></li>
                      <li> <a id="btnHistory" onclick="HistoryClick(@Model.BookingRequestID);" class="btnHistory" href="#">History</a></li>
 					</ul>
 				</div>
@@ -211,4 +211,22 @@
             });
         
     }
+
+    //this function will open the new iframe for negotiation window and close the iframe for Edit Event window.
+    function getNegotiationwindo() {
+        if (checkactivewindow()) 
+        { 
+            $(document).find("iframe").each(function () {
+                eventId = this; 
+                window.parent.jQuery(this).hide();
+            });
+        }
+        var id = $("#hdnrequestid").val();
+        Kwasant.IFrame.Display('/Negotiation/Edit?bookingRequestID=' + id ,
+            {
+                horizontalAlign: 'right',
+                callback: refresh
+            });
+    }
+  
 </script>

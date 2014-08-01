@@ -198,6 +198,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<UserDO>().ToTable("Users");
             modelBuilder.Entity<FactDO>().ToTable("Facts");
             modelBuilder.Entity<IncidentDO>().ToTable("Incidents");
+            modelBuilder.Entity<NegotiationDO>().ToTable("Negotiations");
+            modelBuilder.Entity<AnswerDO>().ToTable("Answers");
             modelBuilder.Entity<ServiceAuthorizationTypeRow>().ToTable("ServiceAuthorizationTypes");
             modelBuilder.Entity<RemoteCalendarProviderDO>().ToTable("RemoteCalendarProviders");
             modelBuilder.Entity<RemoteCalendarAuthDataDO>().ToTable("RemoteCalendarAuthData");

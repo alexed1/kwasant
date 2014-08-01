@@ -1,0 +1,181 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using AutoMapper;
+using Data.Entities;
+using Data.Entities.Enumerations;
+using Data.Interfaces;
+using DayPilot.Web.Mvc.Json;
+using KwasantCore.Exceptions;
+using KwasantCore.Managers.IdentityManager;
+using KwasantCore.Services;
+using KwasantWeb.App_Start;
+using KwasantWeb.Filters;
+using KwasantWeb.ViewModels;
+using StructureMap;
+using System.Web.Script.Serialization;
+
+
+namespace KwasantWeb.Controllers
+{
+    //[KwasantAuthorize(Roles = "Admin")]
+    public class NegotiationController : Controller
+    {
+        private static int BookingRequestID { get; set; }
+
+        #region "Negotiation"
+
+        public ActionResult Edit(int bookingRequestID)
+        {
+            BookingRequestID = bookingRequestID;
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult ShowNegotiation(long id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+
+                NegotiationViewModel NegotiationQuestions = uow.NegotiationsRepository.GetAll().Where(e => e.RequestId == id && e.State != NegotiationState.Resolved).Select(s => new NegotiationViewModel
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    RequestId = BookingRequestID,
+                    State = (NegotiationState)s.State,
+
+                    Questions = uow.QuestionsRepository.GetAll().Where(que => que.NegotiationId == s.Id).Select(quel => new QuestionViewModel
+                    {
+                        Id = quel.Id,
+                        Text = quel.Text,
+                        Status = (QuestionStatus)quel.Status,
+                        NegotiationId = quel.NegotiationId,
+                        Answers = uow.AnswersRepository.GetAll().Where(ans => ans.QuestionID == quel.Id).Select(ansl => new AnswerViewModel
+                        {
+                            Id = ansl.Id,
+                            QuestionID = ansl.QuestionID,
+                            Status = (AnswerStatus)ansl.Status,
+                            ObjectsType = ansl.ObjectsType,
+                        }).ToList()
+                    }).ToList()
+                }).FirstOrDefault();
+
+                //return View(NegotiationQuestions);
+                return Json(NegotiationQuestions, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+
+        [HttpPost]
+        public JsonResult ProcessSubmittedForm(string negotiation)
+        {
+            JavaScriptSerializer json_serializer = new JavaScriptSerializer();
+            NegotiationViewModel viewModel = json_serializer.Deserialize<NegotiationViewModel>(negotiation);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestID);
+                UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
+
+                int negotiationId = uow.NegotiationsRepository.FindOne(n => n.RequestId == BookingRequestID && n.State != NegotiationState.Resolved).Id;
+
+                if (negotiationId == null)
+                {
+                    //Add New Negotiation
+                    NegotiationDO negotiationDO = new NegotiationDO
+                    {
+                        Name = viewModel.Name,
+                        RequestId = BookingRequestID,
+                        State = NegotiationState.InProcess,
+                        //State = "InProcess",
+                        Email = emailDO
+                    };
+
+                    uow.NegotiationsRepository.Add(negotiationDO);
+                    uow.SaveChanges();
+
+                    foreach (var question in viewModel.Questions)
+                    {
+
+                        QuestionDO questionDO = new QuestionDO
+                        {
+                            Negotiation = negotiationDO,
+                            Status = (QuestionStatus)question.Status,
+                            Text = question.Text,
+                            AnswerType = "Text",
+                        };
+
+                        uow.QuestionsRepository.Add(questionDO);
+                        uow.SaveChanges();
+
+                        foreach (var answers in question.Answers)
+                        {
+                            AnswerDO answerDO = new AnswerDO
+                            {
+                                QuestionID = questionDO.Id,
+                                Status = AnswerStatus.Proposed,
+                                ObjectsType = answers.Text,
+                                User = userDO,
+                            };
+
+                            uow.AnswersRepository.Add(answerDO);
+                            uow.SaveChanges();
+                        }
+                    }
+                    var result = new { Success = "True", BookingRequestID = emailDO.Id, NegotiationId = negotiationDO.Id };
+                    return Json(result, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    //Update Negotiation
+                    NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.Id == viewModel.Id);
+                    negotiationDO.Name = viewModel.Name;
+                    negotiationDO.State = (NegotiationState)viewModel.State;
+                    uow.SaveChanges();
+
+                    foreach (var question in viewModel.Questions)
+                    {
+                        QuestionDO questionDO = uow.QuestionsRepository.FindOne(q => q.Id == question.Id);
+
+                        questionDO.Status = (QuestionStatus)question.Status;
+                        questionDO.Text = question.Text;
+                        questionDO.AnswerType = "Text";
+                        uow.SaveChanges();
+
+                        foreach (var answers in question.Answers)
+                        {
+                            AnswerDO answerDO = uow.AnswersRepository.FindOne(a => a.Id == answers.Id);
+                            answerDO.Status = (AnswerStatus)answers.Status;
+                            answerDO.ObjectsType = answers.Text;
+                            uow.SaveChanges();
+                        }
+                    }
+
+                    var result = new { Success = "True", BookingRequestID = emailDO.Id, NegotiationId = negotiationDO.Id };
+                    return Json(result, JsonRequestBehavior.AllowGet);
+                }
+            }
+        }
+
+        public PartialViewResult Addquestion(int questionID)
+        {
+            return PartialView("_Question", questionID);
+        }
+
+        public PartialViewResult AddtextAnswer(int answerID)
+        {
+            return PartialView("_TextAnswer", answerID);
+        }
+
+        public PartialViewResult AddTimeslotAnswer(int answerID)
+        {
+            return PartialView("_TimeslotAnswer", answerID);
+        }
+
+        #endregion "Negotiation"
+
+    }
+}

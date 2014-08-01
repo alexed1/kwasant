@@ -18,7 +18,7 @@ namespace KwasantCore.Services
 {
     public class ClarificationRequest
     {
-        public ClarificationRequestDO Create(IUnitOfWork uow, IBookingRequest bookingRequest)
+        public ClarificationRequestDO Create(IUnitOfWork uow, IBookingRequest bookingRequest, int negotiationId)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -29,6 +29,7 @@ namespace KwasantCore.Services
                                                  DateCreated = DateTime.UtcNow,
                                                  DateReceived = DateTime.UtcNow,
                                                  BookingRequestId = bookingRequest.Id,
+                                                 NegotiationId = negotiationId,
                                                  Subject = "We need a little more information from you",
                                                  HTMLText = "*** This should be replaced with template body ***",
                                                  PlainText = "*** This should be replaced with template body ***",
@@ -61,7 +62,7 @@ namespace KwasantCore.Services
             return string.Format(responseUrlFormat, encryptedParams);
         }
 
-        public IClarificationRequest GetOrCreateClarificationRequest(IUnitOfWork uow, int bookingRequestId, int clarificationRequestId = 0)
+        public IClarificationRequest GetOrCreateClarificationRequest(IUnitOfWork uow, int bookingRequestId, int clarificationRequestId = 0, int NegotiationId=0)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -73,26 +74,37 @@ namespace KwasantCore.Services
             if (clarificationRequest == null)
             {
                 var bookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                int negotiation = uow.NegotiationsRepository.GetByKey(NegotiationId).Id;
                 if (bookingRequest == null)
                     throw new EntityNotFoundException<IBookingRequest>();
-                clarificationRequest = Create(uow, bookingRequest);
+                clarificationRequest = Create(uow, bookingRequest, negotiation);
             }
             return clarificationRequest;
         }
 
-        public void UpdateClarificationRequest(IUnitOfWork uow, IClarificationRequest originalClarificationRequest, IClarificationRequest updatedClarificationRequest)
+        //public void UpdateClarificationRequest(IUnitOfWork uow, IClarificationRequest originalClarificationRequest, IClarificationRequest updatedClarificationRequest)
+        //{
+        //    if (uow == null)
+        //        throw new ArgumentNullException("uow");
+        //    if (originalClarificationRequest == null)
+        //        throw new ArgumentNullException("originalClarificationRequest");
+        //    if (updatedClarificationRequest == null)
+        //        throw new ArgumentNullException("updatedClarificationRequest");
+
+        //    //foreach (var question in updatedClarificationRequest.Questions)
+        //    //{
+        //    //    originalClarificationRequest.Questions.Add(question);
+        //    //}
+        //    uow.SaveChanges();
+        //}
+
+        public void UpdateClarificationRequest(IUnitOfWork uow, IClarificationRequest originalClarificationRequest)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
             if (originalClarificationRequest == null)
                 throw new ArgumentNullException("originalClarificationRequest");
-            if (updatedClarificationRequest == null)
-                throw new ArgumentNullException("updatedClarificationRequest");
-
-            foreach (var question in updatedClarificationRequest.Questions)
-            {
-                originalClarificationRequest.Questions.Add(question);
-            }
+            
             uow.SaveChanges();
         }
 

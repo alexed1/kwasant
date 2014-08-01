@@ -105,6 +105,7 @@
     <Compile Include="Entities\Constants\IConstantRow.cs" />
     <Compile Include="Constants\InstructionConstants.cs" />
     <Compile Include="Constants\ServiceAuthorizationType.cs" />
+    <Compile Include="Entities\AnswerDO.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="Entities\Constants\BookingRequestStateRow.cs" />
@@ -119,6 +120,9 @@
     <Compile Include="Entities\Constants\TrackingStatusRow.cs" />
     <Compile Include="Entities\Constants\EventStatusRow.cs" />
     <Compile Include="Entities\Constants\TrackingTypeRow.cs" />
+    <Compile Include="Entities\Enumerations\AnswerStatus.cs" />
+    <Compile Include="Entities\Enumerations\NegotiationState.cs" />
+    <Compile Include="Entities\EventStatusDO.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
     <Compile Include="Interfaces\IRemoteCalendarLink.cs" />
     <Compile Include="Interfaces\IRemoteCalendarAuthData.cs" />
@@ -126,6 +130,7 @@
     <Compile Include="Entities\RemoteCalendarLinkDO.cs" />
     <Compile Include="Entities\Constants\ServiceAuthorizationTypeRow.cs" />
     <Compile Include="Interfaces\IRemoteCalendarProvider.cs" />
+    <Compile Include="Entities\NegotiationDO.cs" />
     <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
@@ -327,6 +332,9 @@
     <Compile Include="Migrations\201407111624232_AddCalendarLastSynchronized.Designer.cs">
       <DependentUpon>201407111624232_AddCalendarLastSynchronized.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407230807013_AddNegotiations.cs" />
+    <Compile Include="Migrations\201407230807013_AddNegotiations.Designer.cs">
+      <DependentUpon>201407230807013_AddNegotiations.cs</DependentUpon>
     <Compile Include="Migrations\201407112156274_ChangeAttendeesPK.cs" />
     <Compile Include="Migrations\201407112156274_ChangeAttendeesPK.Designer.cs">
       <DependentUpon>201407112156274_ChangeAttendeesPK.cs</DependentUpon>
@@ -360,6 +368,7 @@
       <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
+    <Compile Include="Repositories\AnswersRepository.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
@@ -383,6 +392,8 @@
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />
     <Compile Include="Repositories\EventRepository.cs" />
+    <Compile Include="Repositories\NegotiationsRepository.cs" />
+    <Compile Include="Repositories\QuestionsRepository.cs" />
     <Compile Include="Repositories\StoredFileRepository.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />
@@ -546,6 +557,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407111624232_AddCalendarLastSynchronized.resx">
       <DependentUpon>201407111624232_AddCalendarLastSynchronized.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407230807013_AddNegotiations.resx">
+      <DependentUpon>201407230807013_AddNegotiations.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407112156274_ChangeAttendeesPK.resx">
       <DependentUpon>201407112156274_ChangeAttendeesPK.cs</DependentUpon>
