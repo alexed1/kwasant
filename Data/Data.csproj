@@ -365,9 +365,9 @@
     <Compile Include="Migrations\201407301747128_RenamedEnums.Designer.cs">
       <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201407310710406_UpdateStateHandling.cs" />
-    <Compile Include="Migrations\201407310710406_UpdateStateHandling.Designer.cs">
-      <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
+    <Compile Include="Migrations\201408011152379_UpdateStateHandling.cs" />
+    <Compile Include="Migrations\201408011152379_UpdateStateHandling.Designer.cs">
+      <DependentUpon>201408011152379_UpdateStateHandling.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AnswersRepository.cs" />
@@ -584,8 +584,8 @@
     <EmbeddedResource Include="Migrations\201407301747128_RenamedEnums.resx">
       <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201407310710406_UpdateStateHandling.resx">
-      <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201408011152379_UpdateStateHandling.resx">
+      <DependentUpon>201408011152379_UpdateStateHandling.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
