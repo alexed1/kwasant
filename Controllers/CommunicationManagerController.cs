@@ -1,22 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Mvc;
-using AutoMapper;
+﻿using System.Web.Mvc;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
-using DayPilot.Web.Mvc.Json;
-using KwasantCore.Exceptions;
-using KwasantCore.Managers.IdentityManager;
-using KwasantCore.Services;
-using KwasantWeb.App_Start;
-using KwasantWeb.Filters;
-using KwasantWeb.ViewModels;
 using StructureMap;
-using System.Web.Script.Serialization;
 
 namespace KwasantWeb.Controllers
 {

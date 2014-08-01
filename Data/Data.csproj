@@ -122,7 +122,6 @@
     <Compile Include="Entities\Constants\TrackingTypeRow.cs" />
     <Compile Include="Entities\Enumerations\AnswerStatus.cs" />
     <Compile Include="Entities\Enumerations\NegotiationState.cs" />
-    <Compile Include="Entities\EventStatusDO.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
     <Compile Include="Interfaces\IRemoteCalendarLink.cs" />
     <Compile Include="Interfaces\IRemoteCalendarAuthData.cs" />
@@ -335,6 +334,7 @@
     <Compile Include="Migrations\201407230807013_AddNegotiations.cs" />
     <Compile Include="Migrations\201407230807013_AddNegotiations.Designer.cs">
       <DependentUpon>201407230807013_AddNegotiations.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201407112156274_ChangeAttendeesPK.cs" />
     <Compile Include="Migrations\201407112156274_ChangeAttendeesPK.Designer.cs">
       <DependentUpon>201407112156274_ChangeAttendeesPK.cs</DependentUpon>

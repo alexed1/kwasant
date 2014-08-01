@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Data.Entities.Enumerations;
+﻿using Data.Entities.Enumerations;
 
 namespace KwasantWeb.ViewModels
 {   

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Data.Constants;
-using Data.Interfaces;
+﻿using System.Collections.Generic;
 
 namespace KwasantWeb.ViewModels
 {
@@ -11,7 +6,7 @@ namespace KwasantWeb.ViewModels
     {
         public int Id { get; set; }
         public string Text { get; set; }
-        public QuestionStatus Status { get; set; }
+        public int Status { get; set; }
         public int NegotiationId { get; set; }
         public List<AnswerViewModel> Answers { get; set; }
     }

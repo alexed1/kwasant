@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Web;
+﻿using System.Linq;
 using System.Web.Mvc;
-using AutoMapper;
 using Data.Entities;
 using Data.Entities.Enumerations;
 using Data.Interfaces;
-using DayPilot.Web.Mvc.Json;
-using KwasantCore.Exceptions;
-using KwasantCore.Managers.IdentityManager;
-using KwasantCore.Services;
-using KwasantWeb.App_Start;
-using KwasantWeb.Filters;
 using KwasantWeb.ViewModels;
 using StructureMap;
 using System.Web.Script.Serialization;
@@ -45,19 +34,19 @@ namespace KwasantWeb.Controllers
                     Id = s.Id,
                     Name = s.Name,
                     RequestId = BookingRequestID,
-                    State = (NegotiationState)s.State,
+                    State = s.State,
 
                     Questions = uow.QuestionsRepository.GetAll().Where(que => que.NegotiationId == s.Id).Select(quel => new QuestionViewModel
                     {
                         Id = quel.Id,
                         Text = quel.Text,
-                        Status = (QuestionStatus)quel.Status,
+                        Status = quel.QuestionStatusID,
                         NegotiationId = quel.NegotiationId,
                         Answers = uow.AnswersRepository.GetAll().Where(ans => ans.QuestionID == quel.Id).Select(ansl => new AnswerViewModel
                         {
                             Id = ansl.Id,
                             QuestionID = ansl.QuestionID,
-                            Status = (AnswerStatus)ansl.Status,
+                            Status = ansl.Status,
                             ObjectsType = ansl.ObjectsType,
                         }).ToList()
                     }).ToList()
@@ -103,7 +92,7 @@ namespace KwasantWeb.Controllers
                         QuestionDO questionDO = new QuestionDO
                         {
                             Negotiation = negotiationDO,
-                            Status = (QuestionStatus)question.Status,
+                            QuestionStatusID = question.Status,
                             Text = question.Text,
                             AnswerType = "Text",
                         };
@@ -140,7 +129,7 @@ namespace KwasantWeb.Controllers
                     {
                         QuestionDO questionDO = uow.QuestionsRepository.FindOne(q => q.Id == question.Id);
 
-                        questionDO.Status = (QuestionStatus)question.Status;
+                        questionDO.QuestionStatusID = question.Status;
                         questionDO.Text = question.Text;
                         questionDO.AnswerType = "Text";
                         uow.SaveChanges();
