@@ -96,7 +96,7 @@
                         return;
                     }
                     var id = $("#hdnrequestid").val();
-                    Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&calendarID=' + @Model.MainCalendarID + '&start=' + start + 'z&end=' + end + 'z',
+                    Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z',
                         {
                             horizontalAlign: 'right',
                             callback: calendar.refreshCalendars

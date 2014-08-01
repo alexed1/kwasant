@@ -40,7 +40,7 @@ namespace KwasantWeb.Controllers
                     LinkedCalendarIDs = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).ToList(),
 
                     //In the future, we won't need this - the 'main' calendar will be picked by the booker
-                    MainCalendarID = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
+                    ActiveCalendarID = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
                 });
             }
         }
@@ -57,11 +57,13 @@ namespace KwasantWeb.Controllers
                 if (calendarDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
+                var calendarsViaNegotiationRequest = calendarDO.Negotiation.Calendars;
+                var calendarsViaBookingRequest = calendarDO.Negotiation.BookingRequest.Calendars;
 
                 return View("~/Views/Calendar/SelectEventWindows.cshtml", new EventWindowViewModel
                 {
-                    LinkedCalendarIDs = calendarDO.ClarificationRequest.Calendars.Select(c=> c.Id).Union(new[] { calendarID }).Distinct().ToList(),
-                    MainCalendarID = calendarID
+                    LinkedCalendarIDs = calendarsViaNegotiationRequest.Union(calendarsViaBookingRequest).Select(c => c.Id).Union(new[] { calendarID }).Distinct().ToList(),
+                    ActiveCalendarID = calendarID
                 });
             }
         }

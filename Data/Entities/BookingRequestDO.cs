@@ -18,9 +18,9 @@ namespace Data.Entities
 
         public List<InstructionDO> Instructions { get; set; }
 
-/*
-        public virtual ClarificationRequestDO ClarificationRequest { get; set; }
-*/
+        [ForeignKey("Negotiation")]
+        public int NegotiationID { get; set; }
+        public NegotiationDO Negotiation { get; set; }
 
         [InverseProperty("BookingRequests")]
         public virtual List<CalendarDO> Calendars { get; set; }

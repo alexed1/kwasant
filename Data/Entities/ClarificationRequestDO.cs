@@ -13,7 +13,6 @@ namespace Data.Entities
         public ClarificationRequestDO()
         {
             _questions = new List<QuestionDO>();
-            Calendars = new List<CalendarDO>();
         }
 
         #region Implementation of IClarificationRequest
@@ -23,9 +22,6 @@ namespace Data.Entities
             get { return BookingRequest; }
             set { BookingRequest = (BookingRequestDO) value; }
         }
-
-        [InverseProperty("ClarificationRequest")]
-        public virtual IList<CalendarDO> Calendars { get; set; } 
 
         public virtual BookingRequestDO BookingRequest { get; set; }
         

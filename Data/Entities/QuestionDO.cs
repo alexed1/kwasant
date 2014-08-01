@@ -11,7 +11,6 @@ namespace Data.Entities
 
         [Key]
         public int Id { get; set; }
-        //public int RequestId { get; set; }
         
         [ForeignKey("QuestionStatus")]
         public int QuestionStatusID { get; set; }
@@ -26,9 +25,6 @@ namespace Data.Entities
 
         [ForeignKey("ClarificationRequestId")]
         public virtual ClarificationRequestDO ClarificationRequest { get; set; }
-
-        //[ForeignKey("RequestId")]
-        //public virtual EmailDO Email { get; set; }
 
         [ForeignKey("NegotiationId")]
         public virtual NegotiationDO Negotiation { get; set; }

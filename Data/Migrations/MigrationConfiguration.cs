@@ -128,7 +128,7 @@ namespace Data.Migrations
                     .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
                     .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod)
                     .MakeGenericMethod(constantType, rowType);
-
+                
                 seedMethod.Invoke(null, new object[] {context, compiledExpression});
             }
         }
