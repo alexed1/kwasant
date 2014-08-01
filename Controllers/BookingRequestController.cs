@@ -79,7 +79,7 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.BRState = Data.Constants.BRState.Processed;
+                bookingRequestDO.BookingRequestStateID = Data.Constants.BookingRequestState.Processed;
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO, "Processed");
@@ -93,7 +93,7 @@ namespace KwasantWeb.Controllers
              using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
              {
                  BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                 bookingRequestDO.BRState = Data.Constants.BRState.Invalid;
+                 bookingRequestDO.BookingRequestStateID = Data.Constants.BookingRequestState.Invalid;
                  bookingRequestDO.User = bookingRequestDO.User;
                  uow.SaveChanges();
                  AlertManager.BookingRequestStateChange(bookingRequestDO, "Invalid");
@@ -108,7 +108,6 @@ namespace KwasantWeb.Controllers
             {
                 string userId = _br.GetUserId(uow.BookingRequestRepository, bookingRequestId.Value);
                 int recordcount = _br.GetBookingRequestsCount(uow.BookingRequestRepository, userId);
-                
                 var jsonResult = Json(new
                 {
                     draw = draw,
@@ -147,6 +146,24 @@ namespace KwasantWeb.Controllers
                 result = "Sorry! Something went wrong. Alpha software...";
             }
             return Content(result);
+        }
+
+        [HttpGet]
+        public ActionResult ShowRelatedItems(int bookingRequestId, int draw, int start, int length)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var jsonResult = Json(new
+                {
+                    draw = draw,
+                    data = _datatables.Pack(_br.BuildRelatedEventsJSON(uow, bookingRequestId, start, length)),
+                    recordsTotal = _br.recordcount,
+                    recordsFiltered = _br.recordcount
+                }, JsonRequestBehavior.AllowGet);
+                
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
         }
 	}
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Mime;
 using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
+using Data.Entities.Constants;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
@@ -19,6 +19,7 @@ using Microsoft.WindowsAzure;
 using KwasantCore.Services;
 using Utilities;
 using Encoding = System.Text.Encoding;
+using EventStatus = Data.Constants.EventStatus;
 
 namespace KwasantCore.Managers
 {
@@ -40,7 +41,7 @@ namespace KwasantCore.Managers
         {
             EmailDO curEmail = new EmailDO();
             curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
-            curEmail.AddEmailRecipient(EmailParticipantType.TO, curUser.EmailAddress);
+            curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
             curEmail.Subject = "Welcome to Kwasant";
             Email _email = new Email(uow);
             _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null);
@@ -54,11 +55,11 @@ namespace KwasantCore.Managers
             //eventDO.EndDate = eventDO.EndDate.ToOffset(createdDate.Offset);
 
             var t = Utilities.Server.ServerUrl;
-            switch (eventDO.StateID)
+            switch (eventDO.EventStatusID)
             {
-                case EventState.Booking:
+                case EventStatus.Booking:
                     {
-                        eventDO.StateID = EventState.DispatchCompleted;
+                        eventDO.EventStatusID = EventStatus.DispatchCompleted;
 
                         var calendar = Event.GenerateICSCalendarStructure(eventDO);
                         foreach (var attendeeDO in eventDO.Attendees)
@@ -71,12 +72,12 @@ namespace KwasantCore.Managers
 
                         break;
                     }
-                case EventState.ReadyForDispatch:
-                case EventState.DispatchCompleted:
+                case EventStatus.ReadyForDispatch:
+                case EventStatus.DispatchCompleted:
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
                     if (EventHasChanged(uow, eventDO))
                     {
-                        eventDO.StateID = EventState.DispatchCompleted;
+                        eventDO.EventStatusID = EventStatus.DispatchCompleted;
                         var calendar = Event.GenerateICSCalendarStructure(eventDO);
 
                         var newAttendees = eventDO.Attendees.Where(a => a.Id == 0).ToList();
@@ -94,6 +95,10 @@ namespace KwasantCore.Managers
                     {
                         //If the event hasn't changed - we don't need a new email..?
                     }
+                    break;
+
+                case EventStatus.ProposedTimeSlot:
+                    //Do nothing
                     break;
                 default:
                     throw new Exception("Invalid event status");
@@ -138,7 +143,7 @@ namespace KwasantCore.Managers
 
             var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress.Address);
             toEmailAddress.Name = attendeeDO.Name;
-            outboundEmail.AddEmailRecipient(EmailParticipantType.TO, toEmailAddress);
+            outboundEmail.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
 
             var userID = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress).Id;
             
@@ -157,7 +162,7 @@ namespace KwasantCore.Managers
             }
 
             //prepare the outbound email
-            outboundEmail.EmailStatus = EmailStatus.QUEUED;
+            outboundEmail.EmailStatusID = EmailStatus.Queued;
             if (eventDO.Emails == null)
                 eventDO.Emails = new List<EmailDO>();
 
@@ -228,16 +233,16 @@ namespace KwasantCore.Managers
             CommunicationConfigurationRepository communicationConfigurationRepo = uow.CommunicationConfigurationRepository;
             foreach (CommunicationConfigurationDO communicationConfig in communicationConfigurationRepo.GetAll().ToList())
             {
-                if (communicationConfig.Type == CommunicationType.SMS)
+                if (communicationConfig.CommunicationTypeID == CommunicationType.Sms)
                 {
                     SendBRSMSes(bookingRequests);
-                } else if (communicationConfig.Type == CommunicationType.EMAIL)
+                } else if (communicationConfig.CommunicationTypeID == CommunicationType.Email)
                 {
                     SendBREmails(communicationConfig.ToAddress, bookingRequests, uow);
                 }
                 else
                 {
-                    throw new Exception(String.Format("Invalid communication type '{0}'", communicationConfig.Type));
+                    throw new Exception(String.Format("Invalid communication type '{0}'", communicationConfig.CommunicationTypeID));
                 }
             }
             uow.SaveChanges();
@@ -263,12 +268,12 @@ namespace KwasantCore.Managers
                 {
                     Subject = "New booking request!",
                     HTMLText = String.Format(message, bookingRequest.From.Address),
-                    EmailStatus = EmailStatus.QUEUED
+                    EmailStatusID = EmailStatus.Queued
                 };
 
                 outboundEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress("scheduling@kwasant.com", "Kwasant Scheduling Services");
 
-                outboundEmail.AddEmailRecipient(EmailParticipantType.TO, uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress));
+                outboundEmail.AddEmailRecipient(EmailParticipantType.To, uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress));
 
                 emailRepo.Add(outboundEmail);
             }

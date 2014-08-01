@@ -175,7 +175,7 @@ namespace Data.Infrastructure.StructureMap
                             if (AddValueToForeignSet(value))
                                 numAdded++;
                         }
-                        else if (prop.PropertyType.IsGenericType && prop.PropertyType.CanBeCastTo(typeof(IEnumerable<>)) &&
+                        else if (prop.PropertyType.IsGenericType && typeof(IEnumerable).IsAssignableFrom(prop.PropertyType) &&
                                  IsEntity(prop.PropertyType.GetGenericArguments()[0]))
                         {
                             //It's a collection!

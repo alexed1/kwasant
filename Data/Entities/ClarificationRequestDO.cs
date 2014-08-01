@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Entities.Enumerations;
+using Data.Entities.Constants;
 using Data.Interfaces;
 
 namespace Data.Entities
@@ -17,6 +13,7 @@ namespace Data.Entities
         public ClarificationRequestDO()
         {
             _questions = new List<QuestionDO>();
+            Calendars = new List<CalendarDO>();
         }
 
         #region Implementation of IClarificationRequest
@@ -26,13 +23,25 @@ namespace Data.Entities
             get { return BookingRequest; }
             set { BookingRequest = (BookingRequestDO) value; }
         }
+
+        [InverseProperty("ClarificationRequest")]
+        public virtual IList<CalendarDO> Calendars { get; set; } 
+
         public virtual BookingRequestDO BookingRequest { get; set; }
-        public ClarificationStatus ClarificationStatus { get; set; }
+        
+        [Required, ForeignKey("ClarificationRequestState")]
+        public int ClarificationRequestStateID { get; set; }
+        public ClarificationRequestStateRow ClarificationRequestState { get; set; }
+
         public virtual IList<QuestionDO> Questions
         {
             get { return _questions; }
             set { _questions = value; }
         }
+
+        public int NegotiationId { get; set; }
+        [ForeignKey("NegotiationId")]
+        public virtual NegotiationDO Negotiation { get; set; }
 
         #endregion
     }

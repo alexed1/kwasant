@@ -11,18 +11,29 @@ namespace KwasantCore.Services
 {
     public class BookingRequest
     {
+        public int recordcount;
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-            bookingRequest.BRState = BRState.Unprocessed;
+            bookingRequest.BookingRequestStateID = BookingRequestState.Unprocessed;
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
             
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
+
+            foreach (var calendar in bookingRequest.User.Calendars)
+                bookingRequest.Calendars.Add(calendar);
         }
 
-        public List<BookingRequestDO> GetAllByUserId(IBookingRequestRepository curBookingRequestRepository, int start, int length, string userid)
+        public List<object> GetAllByUserId(IBookingRequestRepository curBookingRequestRepository, int start, int length, string userid)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Skip(start).Take(length).ToList();
+            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Skip(start).Take(length).Select(e =>
+                            (object)new
+                            {
+                                id = e.Id,
+                                subject = e.Subject,
+                                dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                                linkedcalendarids = String.Join(",", e.User.Calendars.Select(c => c.Id))
+                            }).ToList();
         }
 
         public int GetBookingRequestsCount(IBookingRequestRepository curBookingRequestRepository, string userid)
@@ -41,7 +52,7 @@ namespace KwasantCore.Services
         {
             return
                 uow.BookingRequestRepository.GetAll()
-                    .Where(e => e.BRState == BRState.Unprocessed)
+                    .Where(e => e.BookingRequestStateID == BookingRequestState.Unprocessed)
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
@@ -112,5 +123,56 @@ namespace KwasantCore.Services
             }
             return null;
         }
+
+
+        protected List<BR_RelatedItems> GetRelatedEvents(IUnitOfWork uow, int bookingRequestId)
+        {
+          return uow.EventRepository.GetAll().Where(e => e.BookingRequestID == bookingRequestId).Select(e => new BR_RelatedItems
+                {
+                    id = e.Id,
+                    Type = "Event",
+                    Date = e.StartDate.ToString("M-d-yy hh:mm tt")
+                }).ToList();
+
+        }
+
+        protected List<BR_RelatedItems> GetRelatedClarificationRequests(IUnitOfWork uow, int bookingRequestId)
+        {
+            return uow.ClarificationRequestRepository.GetAll().Where(e => e.BookingRequestId == bookingRequestId).Select(e => new BR_RelatedItems
+            {
+                id = e.Id,
+                Type = "Clarification",
+                Date = e.DateCreated.ToString("M-d-yy hh:mm tt")
+            }).ToList();
+           
+        }
+
+
+        public List<BR_RelatedItems> BuildRelatedEventsJSON(IUnitOfWork uow, int bookingRequestId, int start, int length)
+        {
+            List<BR_RelatedItems> bR_RelatedItems = new List<BR_RelatedItems>();
+            var events = GetRelatedEvents(uow, bookingRequestId);
+            var clarificationRequests = GetRelatedClarificationRequests(uow, bookingRequestId);
+
+            if(events.Count()>0)
+                bR_RelatedItems.AddRange(events);
+
+            if (clarificationRequests.Count()>0)
+                bR_RelatedItems.AddRange(clarificationRequests);
+
+            recordcount = bR_RelatedItems.Count();
+            return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();
+        }
+
+
     }
+
+    public struct BR_RelatedItems
+    {
+        public int id { get; set; }
+        public string Date { get; set; }
+        public string Type { get; set; }
+    }
+
+   
 }

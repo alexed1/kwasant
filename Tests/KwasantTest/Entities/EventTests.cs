@@ -194,7 +194,7 @@ namespace KwasantTest.Entities
             //SETUP      
             EventDO curOriginalEventDO = _fixture.TestEvent1();
             curOriginalEventDO.Attendees = new List<AttendeeDO> { _fixture.TestAttendee1() };
-            curOriginalEventDO.CreatedBy = null;
+            curOriginalEventDO.CreatedByID = null;
 
             //EXECUTE
             Assert.Throws<ValidationException>(() =>

@@ -8,8 +8,9 @@ using System.Net.Mail;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
+using Data.Entities.Constants;
 using Data.Interfaces;
 using Google.Apis.Auth.OAuth2.Mvc;
 using KwasantCore.Managers;
@@ -36,7 +37,7 @@ namespace KwasantWeb.Controllers
                 String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
 
                 EmailDO emailDO = new EmailDO();
-                emailDO.AddEmailRecipient(EmailParticipantType.TO, Email.GenerateEmailAddress(uow, new MailAddress(message.Destination)));
+                emailDO.AddEmailRecipient(EmailParticipantType.To, Email.GenerateEmailAddress(uow, new MailAddress(message.Destination)));
                 emailDO.From = Email.GenerateEmailAddress(uow, new MailAddress(senderMailAddress));
 
                 emailDO.Subject = message.Subject;
@@ -56,7 +57,14 @@ namespace KwasantWeb.Controllers
         public ActionResult Index(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
-            return View();
+            if (this.User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("MyAccount", "User");
+            }
+            else
+            {
+                return View();
+            }
         }
 
         [AllowAnonymous]

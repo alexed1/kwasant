@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Data.Constants;
 using Data.Interfaces;
 
 namespace Data.Entities
@@ -30,7 +31,7 @@ namespace Data.Entities
 
         /// <summary>
         /// Get all entities without a custom field
-        /// </summary>
+        /// </summary>09
         /// <returns>IQueryable of entities without any custom field</returns>
         protected IQueryable<TForeignEntity> GetEntitiesWithoutCustomFields(Expression<Func<TCustomFieldType, bool>> customFieldPredicate = null)
         {

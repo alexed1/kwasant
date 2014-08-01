@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Net;
 using Data.Entities;
 using Data.Interfaces;
+using KwasantCore.Exceptions;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantWeb.ViewModels;
@@ -93,7 +94,13 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curUserDO = uow.UserRepository.GetByKey(this.GetUserId());
+                var curUserId = this.GetUserId();
+                var curUserDO = uow.UserRepository.GetByKey(curUserId);
+                if (curUserDO == null)
+                {
+                    // if we found no user then assume that this user doesn't exists any more and force log off action.
+                    return RedirectToAction("LogOff", "Account");
+                }
                 var remoteCalendarProviders = uow.RemoteCalendarProviderRepository.GetAll();
                 var tuple = new Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>(curUserDO, remoteCalendarProviders);
                 

@@ -21,12 +21,12 @@ namespace Data.Validators
             //initial event creation has no description, so a general purpose rule here won't suit. need to either split into two different event validators or do something else
 
 
-            RuleFor(eventDO => eventDO.Attendees).SetValidator(new ListMustContainAtLeastOneItem<AttendeeDO>())
-                .WithMessage("Event must have at least one attendee");
+            //RuleFor(eventDO => eventDO.Attendees).SetValidator(new ListMustContainAtLeastOneItem<AttendeeDO>())
+            //    .WithMessage("Event must have at least one attendee");
 
-            RuleFor(eventDO => eventDO.CreatedBy)
+            RuleFor(eventDO => eventDO.CreatedByID)
                 .NotNull()
-                .WithMessage("CreatedBy is Required");
+                .WithMessage("CreatedByID is Required");
 
         }
 

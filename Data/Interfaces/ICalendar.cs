@@ -15,6 +15,6 @@ namespace Data.Interfaces
 
         UserDO Owner { get; set; }
 
-        IList<EventDO> Events { get; set; }
+        List<EventDO> Events { get; set; }
     }
 }

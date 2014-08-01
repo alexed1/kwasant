@@ -4,24 +4,24 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Data.Entities.Enumerations;
+using Data.Authentication;
+using Data.Entities.Constants;
 using Data.Repositories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using System.Data.Entity.Validation;
 using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Newtonsoft.Json;
 using Utilities;
-using EventCreateType = Data.Entities.Enumerations.EventCreateType;
-using EventSyncStatus = Data.Entities.Enumerations.EventSyncStatus;
 
 namespace Data.Migrations
 {
+    
     public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasantDbContext>
     {
+        private Account _account;
         public MigrationConfiguration()
         {
             //Do not ever turn this on! It will break database upgrades
@@ -29,7 +29,9 @@ namespace Data.Migrations
 
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.KwasantDbContext";
-        }
+            _account = new Account();
+
+            }
         
         protected override void Seed(KwasantDbContext context)
         {
@@ -55,12 +57,80 @@ namespace Data.Migrations
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork context)
         {
-            SeedConstants<EventState, EventStatus>(context, (id, name) => new EventStatus { Id = id, Name = name });
-            SeedConstants<BRState, BookingRequestStatus>(context, (id, name) => new BookingRequestStatus { Id = id, Name = name });
-            SeedConstants<Constants.EventCreateType, EventCreateType>(context, (id, name) => new EventCreateType { Id = id, Name = name });
-            SeedConstants<Constants.EventSyncStatus, EventSyncStatus>(context, (id, name) => new EventSyncStatus { Id = id, Name = name });
-            SeedConstants<ServiceAuthType, ServiceAuthorizationType>(context, (id, name) => new ServiceAuthorizationType() { Id = id, Name = name });
+            SeedConstants(context);
+
             SeedInstructions(context);
+        }
+
+        //This method will automatically seed any constants file
+        //It looks for rows which implement IConstantRow<>
+        //For example, BookingRequestStateRow implements IConstantRow<BookingRequestState>
+        //The below method will then generate a new row for each constant found in BookingRequestState.
+        private static void SeedConstants(IUnitOfWork context)
+        {
+            var constantsToSeed =
+                typeof (MigrationConfiguration).Assembly.GetTypes()
+                    .Select(t => new
+                    {
+                        RowType = t,
+                        ConstantsType =
+                            t.GetInterfaces()
+                                .Where(i => i.IsGenericType)
+                                .FirstOrDefault(i => i.GetGenericTypeDefinition() == typeof (IConstantRow<>))
+                    })
+                    .Where(t => t.ConstantsType != null).ToList();
+
+            foreach (var constantToSeed in constantsToSeed)
+            {
+                var rowType = constantToSeed.RowType;
+                var constantType = constantToSeed.ConstantsType.GenericTypeArguments.First();
+
+                var idParam = Expression.Parameter(typeof (int));
+                var nameParam = Expression.Parameter(typeof (String));
+
+                //The below uses the .NET Expression builder to construct this:
+                // (id, name) => new [rowType] { Id = id, Name = name };
+                //We need to build it with the expression builder, as we don't know what type to construct yet, and the method requires type arguments.
+
+                //We can't build constructor intialization with Expressions, so this is the logic for it:
+                // 1, we create a variable called 'constructedRowType'. This variable is used within the expressions
+                // Note that there are _two_ variables. The first one being a usual C# variable, pointing to an expression.
+                // The second one is what's actually used within the block. Examining the expression block will show it as '$constructedRowType'
+
+                //The code generated looks like this:
+                // rowType generatedFunction(int id, string name) [for example, BookingRequestStateRow generatedFunction(int id, string name)
+                // {
+                //     rowType $constructedRowType; [for example, BookingRequestStateRow $constructedRowType]
+                //     $constructedRowType = new rowType() [for example, $constructedRowType = new BookingRequestStateRow()]
+                //     $constructedRowType.Id = id;
+                //     $constructedRowType.Name = name;
+                //} //Note that there is no return call. Whatever is last on the expression list will be kept at the top of the stack, acting like a 'return' 
+                // (if you've worked with bytecode, it's the same idea).
+                //We have 'constructedRowType' as the last expression, which tells us it will be returned
+
+                var constructedRowType = Expression.Variable(rowType, "constructedRowType");
+                    var fullMethod = Expression.Block(
+                    new[] {constructedRowType},
+                    Expression.Assign(constructedRowType, Expression.New(rowType)),
+                    Expression.Assign(Expression.Property(constructedRowType, "Id"), idParam),
+                    Expression.Assign(Expression.Property(constructedRowType, "Name"), nameParam),
+                    constructedRowType);
+
+                    //Now we take that expression and compile it. It's still typed as a 'Delegate', but it is now castable to Func<int, string, TConstantDO>
+                    //For example, it could be Func<int, string, BookingRequestStateRow>
+                
+                var compiledExpression = Expression.Lambda(fullMethod, new[] {idParam, nameParam}).Compile();
+
+                //Now we have our expression, we need to call something similar to this:
+                //SeedConstants<constantType, rowType>(context, compiledExpression)
+
+                var seedMethod = typeof (MigrationConfiguration)
+                    .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
+                    .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod)
+                    .MakeGenericMethod(constantType, rowType);
+
+                seedMethod.Invoke(null, new object[] {context, compiledExpression});
+            }
         }
 
         private static void SeedRemoteCalendarProviders(IUnitOfWork uow)
@@ -70,7 +140,7 @@ namespace Data.Migrations
                                     new RemoteCalendarProviderDO()
                                         {
                                             Name = "Google",
-                                            AuthTypeID = ServiceAuthType.OAuth2,
+                                            AuthTypeID = ServiceAuthorizationType.OAuth2,
                                             AppCreds = JsonConvert.SerializeObject(
                                                 new
                                                     {
@@ -88,6 +158,7 @@ namespace Data.Migrations
             }
         }
 
+        //Do not remove. Resharper says it's not in use, but it's being used via reflection
         private static void SeedConstants<TConstantsType, TConstantDO>(IUnitOfWork uow, Func<int, string, TConstantDO> creatorFunc)
             where TConstantDO : class
         {
@@ -187,9 +258,12 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="unitOfWork"></param>
         /// <returns></returns>
-        private void CreateAdmin(string curUserName, string curPassword, IUnitOfWork unitOfWork)
+        private void CreateAdmin(string curUserName, string curPassword, IUnitOfWork uow)
         {
-            CreateUser(curUserName, curPassword, "Admin", unitOfWork);
+            
+            string userId = _account.Create(curUserName, curPassword, uow);
+            _account.AddRole("Admin", userId, uow);
+            _account.AddRole("Customer", userId, uow);
         }
 
         /// <summary>
@@ -199,49 +273,16 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="unitOfWork"></param>
         /// <returns></returns>
-        private void CreateCustomer(string curUserName, string curPassword, IUnitOfWork unitOfWork)
+        private void CreateCustomer(string curUserName, string curPassword, IUnitOfWork uow)
         {
-            CreateUser(curUserName, curPassword, "Customer", unitOfWork);
+            string userId = _account.Create(curUserName, curPassword, uow);
+            _account.AddRole("Customer", userId, uow);
         }
 
-        private void CreateUser(string curUserName, string curPassword, string role, IUnitOfWork unitOfWork)
-        {
-            try
-            {
-                var um = new UserManager<UserDO>(new UserStore<UserDO>(unitOfWork.Db as KwasantDbContext));
-                UserDO curUser = um.FindByName(curUserName);
-                if (curUser == null)
-                {
-                    curUser = new UserDO()
-                                  {
-                                      UserName = curUserName,
-                                      EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
-                                      FirstName = curUserName,
-                                      EmailConfirmed = true
-                                  };
 
-                    IdentityResult ir = um.Create(curUser, curPassword);
 
-                    if (!ir.Succeeded)
-                        return;
-
-                    um.AddToRole(curUser.Id, role);
-                }
-                else
-                {
-                    //This line forces EF to load the EmailAddress, since it's done lazily. For whatever reason, seeding admins breaks since it thinks the EmailAddress is null...
-                    var forceEmail = curUser.EmailAddress;
-                    //This line forces the above not to be optimised out. In production, it does nothing.
-                    Console.WriteLine(forceEmail);
-                    if (!um.IsInRole(curUser.Id, role))
-                        um.AddToRole(curUser.Id, role);
-                }
-                unitOfWork.CalendarRepository.CheckUserHasCalendar(curUser);
-            }
-            catch (DbEntityValidationException e)
-            {
-                ExceptionHandling.DisplayValidationErrors(e);
-            }
+   
+            
         }
     }
-}
+

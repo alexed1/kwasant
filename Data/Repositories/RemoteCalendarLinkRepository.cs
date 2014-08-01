@@ -29,6 +29,7 @@ namespace Data.Repositories
                                                    {
                                                        Name =
                                                            string.Format("{0}:{1}", authData.Provider.Name, remoteName),
+                                                       Owner = (UserDO)authData.User,
                                                        OwnerID = authData.User.Id
                                                    },
                                Provider = (RemoteCalendarProviderDO) authData.Provider,
