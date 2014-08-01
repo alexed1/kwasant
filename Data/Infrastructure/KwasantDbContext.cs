@@ -204,6 +204,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<RemoteCalendarProviderDO>().ToTable("RemoteCalendarProviders");
             modelBuilder.Entity<RemoteCalendarAuthDataDO>().ToTable("RemoteCalendarAuthData");
             modelBuilder.Entity<RemoteCalendarLinkDO>().ToTable("RemoteCalendarLinks");
+
             
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)
