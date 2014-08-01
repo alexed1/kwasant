@@ -124,9 +124,10 @@ namespace Data.Migrations
                 //Now we have our expression, we need to call something similar to this:
                 //SeedConstants<constantType, rowType>(context, compiledExpression)
 
-                var seedMethod = typeof (MigrationConfiguration).GetMethod(
-                    "SeedConstants",
-                    BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(constantType, rowType);
+                var seedMethod = typeof (MigrationConfiguration)
+                    .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
+                    .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod)
+                    .MakeGenericMethod(constantType, rowType);
 
                 seedMethod.Invoke(null, new object[] {context, compiledExpression});
             }
