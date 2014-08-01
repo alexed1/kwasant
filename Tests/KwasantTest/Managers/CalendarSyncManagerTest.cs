@@ -25,13 +25,14 @@ namespace KwasantTest.Managers
         private FixtureData _fixtureData;
         private CalendarSyncManager _calendarSyncManager;
         private UserDO _curUser;
-        private readonly List<iCalendar> _remoteCalendarEvents = new List<iCalendar>();
+        private  List<iCalendar> _remoteCalendarEvents;
         private RemoteCalendarProviderDO _curProvider;
         private RemoteCalendarAuthDataDO _curAuthData;
 
         [SetUp]
         public void SetUp()
         {
+            _remoteCalendarEvents = new List<iCalendar>();
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             CalendarSyncManager.DisableAutoSynchronization = true;
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
