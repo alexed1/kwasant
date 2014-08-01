@@ -158,7 +158,7 @@ namespace KwasantCore.Managers
                         await SyncCalendarAsync(uow, from, to, client, remoteCalendarLink);
                     }
                 }
-                
+                uow.SaveChanges();
             }
         }
 
