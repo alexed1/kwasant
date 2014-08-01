@@ -4,8 +4,8 @@ using System.Configuration;
 using System.Linq;
 using Configuration;
 using Daemons;
+using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.Repositories;
 using Microsoft.Owin;
@@ -46,7 +46,7 @@ namespace KwasantWeb
                 // it is not true that there is at least one commConfig that has the Main alert number
                 {
                     CommunicationConfigurationDO curCommConfig = new CommunicationConfigurationDO();
-                    curCommConfig.Type = CommunicationType.SMS;
+                    curCommConfig.CommunicationTypeID = CommunicationType.Sms;
                     curCommConfig.ToAddress = CloudConfigurationManager.GetSetting("MainSMSAlertNumber");
                         communicationConfigurationRepo.Add(curCommConfig);
                         uow.SaveChanges();

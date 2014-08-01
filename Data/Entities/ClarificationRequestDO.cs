@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.Entities.Enumerations;
+using Data.Entities.Constants;
 using Data.Interfaces;
 
 namespace Data.Entities
@@ -28,15 +28,20 @@ namespace Data.Entities
         public virtual IList<CalendarDO> Calendars { get; set; } 
 
         public virtual BookingRequestDO BookingRequest { get; set; }
-        [ForeignKey("ClarificationRequestState")]
-        [Required]
-        public int CRState { get; set; }
-        public virtual BookingRequestState ClarificationRequestState { get; set; }
+        
+        [Required, ForeignKey("ClarificationRequestState")]
+        public int ClarificationRequestStateID { get; set; }
+        public ClarificationRequestStateRow ClarificationRequestState { get; set; }
+
         public virtual IList<QuestionDO> Questions
         {
             get { return _questions; }
             set { _questions = value; }
         }
+
+        public int NegotiationId { get; set; }
+        [ForeignKey("NegotiationId")]
+        public virtual NegotiationDO Negotiation { get; set; }
 
         #endregion
     }

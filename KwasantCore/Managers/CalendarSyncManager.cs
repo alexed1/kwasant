@@ -217,7 +217,7 @@ namespace KwasantCore.Managers
             // add filter by SyncStatus for local events.
             Func<EventDO, bool> existingEventPredictor = e => eventPredictor(e) 
                 && e.SyncStatusID == EventSyncStatus.SyncWithExternal
-                && e.StateID != EventState.Deleted;
+                && e.EventStatusID != EventStatus.Deleted;
             var existingEvents = calendar.Events.Where(existingEventPredictor).ToList();
 
             foreach (var incomingEvent in incomingEvents)
@@ -269,7 +269,7 @@ namespace KwasantCore.Managers
                 else
                 {
                     // created by remote
-                    incomingEvent.StateID = EventState.DispatchCompleted;
+                    incomingEvent.EventStatusID = EventStatus.DispatchCompleted;
                     incomingEvent.CreateTypeID = EventCreateType.RemoteCalendar;
                     incomingEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;
                     incomingEvent.Calendar = (CalendarDO) calendar;
@@ -289,7 +289,7 @@ namespace KwasantCore.Managers
             var deletedByRemote = existingEvents.Where(e => e.DateCreated < calendarLink.DateSynchronized).ToList();
             foreach (var deleted in deletedByRemote)
             {
-                deleted.StateID = EventState.Deleted;
+                deleted.EventStatusID = EventStatus.Deleted;
                 deleted.SyncStatusID = EventSyncStatus.DoNotSync;
             }
         }

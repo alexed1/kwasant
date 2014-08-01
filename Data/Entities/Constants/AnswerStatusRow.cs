@@ -1,9 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using Data.Constants;
 
-namespace Data.Entities.Enumerations
+namespace Data.Entities.Constants
 {
-    public class BookingRequestState
+    public class AnswerStatusRow : IConstantRow<AnswerStatus>
     {
         [Key]
         public int Id { get; set; }

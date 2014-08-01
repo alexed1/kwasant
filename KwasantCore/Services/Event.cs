@@ -8,6 +8,7 @@ using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using Utilities;
+using EventStatus = Data.Constants.EventStatus;
 using IEvent = Data.Interfaces.IEvent;
 
 namespace KwasantCore.Services
@@ -37,7 +38,7 @@ namespace KwasantCore.Services
 			var attendee = new Attendee();
             attendee.DetectEmailsFromBookingRequest(curEventDO);
 
-            curEventDO.StateID = EventState.Booking;
+            curEventDO.EventStatusID = EventStatus.Booking;
         }
 
         public EventDO Create(IUnitOfWork uow, int bookingRequestID, string startDate, string endDate)

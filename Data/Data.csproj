@@ -97,40 +97,53 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authentication\Account.cs" />
-    <Compile Include="Constants\BRState.cs" />
-    <Compile Include="Constants\CRState.cs" />
+    <Compile Include="Constants\BookingRequestState.cs" />
+    <Compile Include="Constants\ClarificationRequestState.cs" />
     <Compile Include="Constants\EventCreateType.cs" />
-    <Compile Include="Constants\EventState.cs" />
+    <Compile Include="Constants\EventStatus.cs" />
     <Compile Include="Constants\EventSyncStatus.cs" />
+    <Compile Include="Entities\Constants\AnswerStatusRow.cs" />
+    <Compile Include="Entities\Constants\IConstantRow.cs" />
     <Compile Include="Constants\InstructionConstants.cs" />
-    <Compile Include="Constants\ServiceAuthType.cs" />
+    <Compile Include="Constants\ServiceAuthorizationType.cs" />
+    <Compile Include="Entities\AnswerDO.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
-    <Compile Include="Entities\Enumerations\BookingRequestState.cs" />
+    <Compile Include="Entities\Constants\BookingRequestStateRow.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
-    <Compile Include="Entities\Enumerations\ClarificationRequestState.cs" />
-    <Compile Include="Entities\Enumerations\EventSyncStatus.cs" />
-    <Compile Include="Entities\Enumerations\EventCreateType.cs" />
-    <Compile Include="Entities\Enumerations\EventStatus.cs" />
+    <Compile Include="Entities\Constants\ClarificationRequestStateRow.cs" />
+    <Compile Include="Constants\CommunicationTypeRow.cs" />
+    <Compile Include="Entities\Constants\EmailParticipantTypeRow.cs" />
+    <Compile Include="Entities\Constants\EmailStatusRow.cs" />
+    <Compile Include="Entities\Constants\EventSyncStatusRow.cs" />
+    <Compile Include="Entities\Constants\EventCreateTypeRow.cs" />
+    <Compile Include="Entities\Constants\NegotiationStateRow.cs" />
+    <Compile Include="Entities\Constants\QuestionStatusRow.cs" />
+    <Compile Include="Entities\Constants\TrackingStatusRow.cs" />
+    <Compile Include="Entities\Constants\EventStatusRow.cs" />
+    <Compile Include="Entities\Constants\TrackingTypeRow.cs" />
+    <Compile Include="Constants\AnswerStatus.cs" />
+    <Compile Include="Constants\NegotiationState.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
     <Compile Include="Interfaces\IRemoteCalendarLink.cs" />
     <Compile Include="Interfaces\IRemoteCalendarAuthData.cs" />
     <Compile Include="Entities\RemoteCalendarAuthDataDO.cs" />
     <Compile Include="Entities\RemoteCalendarLinkDO.cs" />
-    <Compile Include="Entities\Enumerations\ServiceAuthorizationType.cs" />
+    <Compile Include="Entities\Constants\ServiceAuthorizationTypeRow.cs" />
     <Compile Include="Interfaces\IRemoteCalendarProvider.cs" />
+    <Compile Include="Entities\NegotiationDO.cs" />
     <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\FactDO.cs" />
-    <Compile Include="Entities\Enumerations\QuestionStatus.cs" />
+    <Compile Include="Constants\QuestionStatus.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
-    <Compile Include="Entities\Enumerations\CommunicationType.cs" />
-    <Compile Include="Entities\Enumerations\EmailParticipantType.cs" />
-    <Compile Include="Entities\Enumerations\EmailStatus.cs" />
-    <Compile Include="Entities\Enumerations\TrackingStatus.cs" />
-    <Compile Include="Entities\Enumerations\TrackingType.cs" />
+    <Compile Include="Constants\CommunicationType.cs" />
+    <Compile Include="Constants\EmailParticipantType.cs" />
+    <Compile Include="Constants\EmailStatus.cs" />
+    <Compile Include="Constants\TrackingStatus.cs" />
+    <Compile Include="Constants\TrackingType.cs" />
     <Compile Include="Entities\RemoteCalendarProviderDO.cs" />
     <Compile Include="Infrastructure\IncidentReporter.cs" />
     <Compile Include="Infrastructure\JSONDataStore.cs" />
@@ -320,6 +333,10 @@
     <Compile Include="Migrations\201407111624232_AddCalendarLastSynchronized.Designer.cs">
       <DependentUpon>201407111624232_AddCalendarLastSynchronized.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407230807013_AddNegotiations.cs" />
+    <Compile Include="Migrations\201407230807013_AddNegotiations.Designer.cs">
+      <DependentUpon>201407230807013_AddNegotiations.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201407112156274_ChangeAttendeesPK.cs" />
     <Compile Include="Migrations\201407112156274_ChangeAttendeesPK.Designer.cs">
       <DependentUpon>201407112156274_ChangeAttendeesPK.cs</DependentUpon>
@@ -348,7 +365,12 @@
     <Compile Include="Migrations\201407301747128_RenamedEnums.Designer.cs">
       <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407310710406_UpdateStateHandling.cs" />
+    <Compile Include="Migrations\201407310710406_UpdateStateHandling.Designer.cs">
+      <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
+    <Compile Include="Repositories\AnswersRepository.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
@@ -372,6 +394,8 @@
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />
     <Compile Include="Repositories\EventRepository.cs" />
+    <Compile Include="Repositories\NegotiationsRepository.cs" />
+    <Compile Include="Repositories\QuestionsRepository.cs" />
     <Compile Include="Repositories\StoredFileRepository.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />
@@ -536,6 +560,9 @@
     <EmbeddedResource Include="Migrations\201407111624232_AddCalendarLastSynchronized.resx">
       <DependentUpon>201407111624232_AddCalendarLastSynchronized.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407230807013_AddNegotiations.resx">
+      <DependentUpon>201407230807013_AddNegotiations.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407112156274_ChangeAttendeesPK.resx">
       <DependentUpon>201407112156274_ChangeAttendeesPK.cs</DependentUpon>
     </EmbeddedResource>
@@ -557,6 +584,12 @@
     <EmbeddedResource Include="Migrations\201407301747128_RenamedEnums.resx">
       <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407310710406_UpdateStateHandling.resx">
+      <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Entities\Enumerations\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

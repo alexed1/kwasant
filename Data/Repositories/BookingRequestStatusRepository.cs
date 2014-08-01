@@ -1,10 +1,10 @@
 ﻿using Data.Entities;
-using Data.Entities.Enumerations;
+using Data.Entities.Constants;
 using Data.Interfaces;
 
 namespace Data.Repositories
 {
-    public class BookingRequestStatusRepository : GenericRepository<BookingRequestState>, IBookingRequestStatusRepository
+    public class BookingRequestStatusRepository : GenericRepository<BookingRequestStateRow>, IBookingRequestStatusRepository
     {
         public BookingRequestStatusRepository(IUnitOfWork uow)
             : base(uow)
@@ -14,7 +14,7 @@ namespace Data.Repositories
     }
 
 
-    public interface IBookingRequestStatusRepository : IGenericRepository<BookingRequestState>
+    public interface IBookingRequestStatusRepository : IGenericRepository<BookingRequestStateRow>
     {
 
     }

@@ -1,0 +1,53 @@
+﻿@model int
+@{
+    Layout = null;
+    string questionID = Model.ToString();
+ }
+
+@using (Html.BeginForm())
+{
+   <div id="questionContainer" data-questionid="@questionID" data-questiontbleId="0">
+       <table>
+           <tr>
+               <td>
+                   <label id="questionlbl">Question : @questionID</label>
+               </td>
+               <td>
+                   <input type="text" id="questionText" name="Question" />
+               </td>
+               <td>
+                   <img src="~/Content/img/Cross.png" onclick="removetable(this)" />
+               </td>
+           </tr>
+           <tr>
+               <td>&nbsp;
+               </td>
+               <td>Type: &nbsp;
+                   <input type="radio" id="QuetypeText" value="Text" name="type" checked="checked" onclick="removerchkClass(this);" class="tester" />
+                   &nbsp; Text
+                   &nbsp;                 
+                   <input type="radio" id="QuetypeTimeSlot" value="Timeslot" name="type" onclick="removerchkClass(this);" class="tester" />&nbsp; Timeslot
+               </td>
+               <td>&nbsp;
+               </td>
+           </tr>
+           <td>&nbsp;
+           </td>
+           <td>
+               <div id="appendanswerId">
+               </div>
+           </td>
+           <tr>
+               <td>&nbsp;
+               </td>
+               <td>@*<span class="form-group" id="divAddAnswer" onclick="getCalltextanswer(this, '@questionID')">*@
+                    <span class="form-group" id="divAddAnswer" onclick="callAppendQuestion(this)">
+                        <img src="~/Content/img/plus.png" />
+                        <label>Add Answer</label>
+                    </span></td>
+               <td>&nbsp;
+               </td>
+           </tr>
+       </table>
+   </div>
+}
