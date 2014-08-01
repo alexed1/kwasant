@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
 using Data.Interfaces;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
@@ -14,6 +13,8 @@ using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
 using Utilities;
+using BookingRequestState = Data.Constants.BookingRequestState;
+using ClarificationRequestState = Data.Constants.ClarificationRequestState;
 
 namespace KwasantTest.Services
 {
@@ -39,9 +40,10 @@ namespace KwasantTest.Services
         {
             // SETUP
             var curBookingRequestDO = _fixture.TestBookingRequest1();
+            var curNegotiationDO = _fixture.TestNegotiation();
 
             // EXECUTE
-            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO);
+            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO, curNegotiationDO.Id);
 
             // VERIFY
             Assert.AreEqual(curBookingRequestDO.Id, curClarificationRequestDO.BookingRequestId, "CR must have BR assigned to passed one.");
@@ -55,9 +57,10 @@ namespace KwasantTest.Services
             // SETUP
             var curBookingRequestDO = _fixture.TestBookingRequest1();
             const string responseUrl = "kwasant.com/crr?test";
+            var curNegotiationDO = _fixture.TestNegotiation();
 
             // EXECUTE
-            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO);
+            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO, curNegotiationDO.Id);
             _cr.Send(_uow, curClarificationRequestDO, responseUrl);
             _uow.SaveChanges();
 
@@ -77,9 +80,10 @@ namespace KwasantTest.Services
             var curBookingRequestDO = _fixture.TestBookingRequest1();
             const string responseUrlPath = "kwasant.com/crr";
             const string responseUrlFormat = responseUrlPath + "?{0}";
+            var curNegotiationDO = _fixture.TestNegotiation();
 
             // EXECUTE
-            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO);
+            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO, curNegotiationDO.Id);
             var responseUrl = _cr.GenerateResponseURL(curClarificationRequestDO, responseUrlFormat);
             var responseUrlParts = responseUrl.Split('?');
             var encryptedParams = WebUtility.UrlDecode(responseUrlParts[1]);
@@ -97,33 +101,34 @@ namespace KwasantTest.Services
             // SETUP
             var curBookingRequestDO = _fixture.TestBookingRequest1();
             const string responseUrl = "kwasant.com/crr?test";
+            var curNegotiationDO = _fixture.TestNegotiation();
 
             // EXECUTE
-            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO);
+            var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO, curNegotiationDO.Id);
             curClarificationRequestDO.Questions
                 .Add(new QuestionDO()
                          {
                              Id = 1,
                              ClarificationRequest = curClarificationRequestDO,
                              ClarificationRequestId = curClarificationRequestDO.Id,
-                             Status = QuestionStatus.Unanswered,
+                             QuestionStatusID = QuestionStatus.Unanswered,
                              Text = "question"
                          });
             _cr.Send(_uow, curClarificationRequestDO, responseUrl);
             _uow.SaveChanges();
 
             var submittedClarificationRequestDO = curClarificationRequestDO;
-            submittedClarificationRequestDO.Questions[0].Status = QuestionStatus.Answered;
+            submittedClarificationRequestDO.Questions[0].QuestionStatusID = QuestionStatus.Answered;
             submittedClarificationRequestDO.Questions[0].Response = "response";
             _cr.ProcessResponse(submittedClarificationRequestDO);
             
             var respondedCr = _uow.ClarificationRequestRepository.GetByKey(curClarificationRequestDO.Id);
 
             // VERIFY
-            Assert.AreEqual(respondedCr.Questions[0].Status, QuestionStatus.Answered);
+            Assert.AreEqual(respondedCr.Questions[0].QuestionStatusID, QuestionStatus.Answered);
             Assert.AreEqual(respondedCr.Questions[0].Response, "response");
-            Assert.AreEqual(respondedCr.ClarificationStatus, ClarificationStatus.Resolved);
-            Assert.AreEqual(respondedCr.BookingRequest.BRState, BRState.Pending);
+            Assert.AreEqual(respondedCr.ClarificationRequestStateID, ClarificationRequestState.Resolved);
+            Assert.AreEqual(respondedCr.BookingRequest.BookingRequestStateID, BookingRequestState.Pending);
         }
     }
 }

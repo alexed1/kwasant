@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.Entities.Enumerations;
+using Data.Entities.Constants;
 using Data.Interfaces;
 
 namespace Data.Entities
@@ -11,15 +11,27 @@ namespace Data.Entities
 
         [Key]
         public int Id { get; set; }
-        public int? ClarificationRequestId { get; set; }
-        public QuestionStatus Status { get; set; }
+        //public int RequestId { get; set; }
+        
+        [ForeignKey("QuestionStatus")]
+        public int QuestionStatusID { get; set; }
+        public QuestionStatusRow QuestionStatus { get; set; }
+
         [Required]
         public string Text { get; set; }
+        public string AnswerType { get; set; }
+        public int NegotiationId { get; set; }
+        public int? ClarificationRequestId { get; set; }
         public string Response { get; set; }
 
         [ForeignKey("ClarificationRequestId")]
         public virtual ClarificationRequestDO ClarificationRequest { get; set; }
 
+        //[ForeignKey("RequestId")]
+        //public virtual EmailDO Email { get; set; }
+
+        [ForeignKey("NegotiationId")]
+        public virtual NegotiationDO Negotiation { get; set; }
         #endregion
     }
 }

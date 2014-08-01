@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.Entities.Enumerations;
+using Data.Entities.Constants;
 using Data.Interfaces;
 
 namespace Data.Entities
@@ -25,9 +25,8 @@ namespace Data.Entities
         [InverseProperty("BookingRequests")]
         public virtual List<CalendarDO> Calendars { get; set; }
 
-        [ForeignKey("BookingRequestStatus")]
-        [Required]
-        public int? BRState { get; set; }
-        public virtual BookingRequestStatus BookingRequestStatus { get; set; }
+        [Required, ForeignKey("BookingRequestStateRow")]
+        public int BookingRequestStateID { get; set; }
+        public virtual BookingRequestStateRow BookingRequestStateRow { get; set; }
     }
 }

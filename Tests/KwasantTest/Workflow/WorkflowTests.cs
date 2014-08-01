@@ -5,8 +5,9 @@ using System.Linq;
 using System.Net.Mail;
 using System.Threading;
 using Daemons;
+using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
+using Data.Entities.Constants;
 using Data.Interfaces;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
@@ -69,7 +70,7 @@ namespace KwasantTest.Workflow
                     new RecipientDO()
                     {
                         EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintegration@gmail.com")),
-                        Type = EmailParticipantType.TO
+                        EmailParticipantTypeID = EmailParticipantType.To
                     }
                 },
                 Subject = subject,
@@ -199,13 +200,13 @@ namespace KwasantTest.Workflow
                     new RecipientDO()
                     {
                         EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintegration@gmail.com")),
-                        Type = EmailParticipantType.TO
+                        EmailParticipantTypeID = EmailParticipantType.To
                     }
                 },
                 Subject = subject,
                 PlainText = body,
                 HTMLText = body,
-                EmailStatus = EmailStatus.QUEUED
+                EmailStatusID = EmailStatus.Queued
             };
 
             _uow.EmailRepository.Add(emailDO);
