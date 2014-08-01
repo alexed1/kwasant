@@ -14,7 +14,7 @@ namespace Data.Infrastructure
         public delegate void CustomerCreatedHandler(IUnitOfWork uow, DateTime createdDate, UserDO userDO);
         public static event CustomerCreatedHandler AlertCustomerCreated;
 
-        public delegate void BookingRequestCreatedHandler(IUnitOfWork uow, BookingRequestDO curBR);
+        public delegate void BookingRequestCreatedHandler(int bookingRequestId);
         public static event BookingRequestCreatedHandler AlertBookingRequestCreated;
 
         public delegate void EmailReceivedHandler(int emailId, string customerId);
@@ -29,7 +29,7 @@ namespace Data.Infrastructure
         public delegate void IncidentCreatedHandler(string dateReceived, string errorMessage);
         public static event IncidentCreatedHandler AlertEmailProcessingFailure;
 
-        public delegate void BookingRequestStateChangeHandler( BookingRequestDO bookingRequestDO, string status);
+        public delegate void BookingRequestStateChangeHandler(int bookingRequestId);
         public static event BookingRequestStateChangeHandler AlertBookingRequestStateChange;
 
         #region Method
@@ -43,10 +43,10 @@ namespace Data.Infrastructure
                 AlertCustomerCreated(uow, DateTime.Now, curUser);
         }
 
-        public static void BookingRequestCreated(IUnitOfWork uow, BookingRequestDO curBR)
+        public static void BookingRequestCreated(int bookingRequestId)
         {
             if (AlertBookingRequestCreated != null)
-                AlertBookingRequestCreated(uow, curBR);
+                AlertBookingRequestCreated(bookingRequestId);
         }
             
         public static void EmailReceived(int emailId, string customerId)
@@ -71,10 +71,10 @@ namespace Data.Infrastructure
                 AlertEmailProcessingFailure(dateReceived, errorMessage);
         }
 
-        public static void BookingRequestStateChange(BookingRequestDO bookingRequestDO, string status)
+        public static void BookingRequestStateChange(int bookingRequestId)
         {
             if (AlertBookingRequestStateChange != null)
-                AlertBookingRequestStateChange(bookingRequestDO, status);
+                AlertBookingRequestStateChange(bookingRequestId);
         }
         #endregion
     }
@@ -133,27 +133,36 @@ namespace Data.Infrastructure
             };
             SaveFact(curAction);
         }
-        public void ProcessBookingRequestCreated(IUnitOfWork uow, BookingRequestDO curBR)
-        {
-            FactDO curAction = new FactDO()
-            {
-                Name = "BookingRequest Created",
-                PrimaryCategory = "Email",
-                SecondaryCategory = "BookingRequest",
-                Activity = "Created",
-                CustomerId = curBR.User.Id,
-                CreateDate = DateTimeOffset.Now,
-                ObjectId = curBR.Id
-            };
-            curAction.Data = curAction.Name + ": ID= " + curAction.ObjectId;
-            if (CloudConfigurationManager.GetSetting("LogLevel") == "Verbose")
-                Logger.GetLogger().Info(curAction.Data);
-            uow.FactRepository.Add(curAction);
-        }
-        public void ProcessBookingRequestStateChange(BookingRequestDO bookingRequestDO, string status)
+        public void ProcessBookingRequestCreated(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var curBR = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (curBR == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                FactDO curAction = new FactDO()
+                                       {
+                                           Name = "BookingRequest Created",
+                                           PrimaryCategory = "Email",
+                                           SecondaryCategory = "BookingRequest",
+                                           Activity = "Created",
+                                           CustomerId = curBR.User.Id,
+                                           CreateDate = DateTimeOffset.Now,
+                                           ObjectId = curBR.Id
+                                       };
+                curAction.Data = curAction.Name + ": ID= " + curAction.ObjectId;
+                AddFact(uow, curAction);
+                uow.SaveChanges();
+            }
+        }
+        public void ProcessBookingRequestStateChange(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                string status = bookingRequestDO.BookingRequestStateRow.Name;
                 FactDO curAction = new FactDO()
                 {
                     PrimaryCategory = "BookingRequest",
@@ -165,19 +174,30 @@ namespace Data.Infrastructure
                     CreateDate = DateTimeOffset.Now,
                 };
                 curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
-                Logger.GetLogger().Info(curAction.Data);
-                uow.FactRepository.Add(curAction);
+                AddFact(uow, curAction);
                 uow.SaveChanges();
                 
             }
         }
         private void SaveFact(FactDO curAction)
         {
-            curAction.Data = curAction.PrimaryCategory + " " + curAction.SecondaryCategory + " " + curAction.Activity + ":" + " ObjectId: " + curAction.ObjectId + " CustomerId: " + curAction.CustomerId;
-            Logger.GetLogger().Info(curAction.Data);
-            IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            curAction.Data = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}", 
+                curAction.PrimaryCategory, 
+                curAction.SecondaryCategory, 
+                curAction.Activity, 
+                curAction.ObjectId, 
+                curAction.CustomerId);
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                AddFact(uow, curAction);
+                uow.SaveChanges();
+            }
+        }
+        private void AddFact(IUnitOfWork uow, FactDO curAction)
+        {
+            if (CloudConfigurationManager.GetSetting("LogLevel") == "Verbose")
+                Logger.GetLogger().Info(curAction.Data);
             uow.FactRepository.Add(curAction);
-            uow.SaveChanges();
         }
     }
 }

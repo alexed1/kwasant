@@ -82,7 +82,7 @@ namespace KwasantWeb.Controllers
                 bookingRequestDO.BookingRequestStateID = Data.Constants.BookingRequestState.Processed;
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
-                AlertManager.BookingRequestStateChange(bookingRequestDO, "Processed");
+                AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -96,7 +96,7 @@ namespace KwasantWeb.Controllers
                  bookingRequestDO.BookingRequestStateID = Data.Constants.BookingRequestState.Invalid;
                  bookingRequestDO.User = bookingRequestDO.User;
                  uow.SaveChanges();
-                 AlertManager.BookingRequestStateChange(bookingRequestDO, "Invalid");
+                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
                  return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
              }
          }

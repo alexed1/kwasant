@@ -17,6 +17,13 @@ namespace Data.Repositories
         {
             //_curValidator.ValidateAndThrow(entity); //fix this
             base.Add(entity);
+            // check default calendar
+            UnitOfWork.CalendarRepository.CheckUserHasCalendar(entity);
+            // do not send to Admins
+            if (entity.Roles.All(r => UnitOfWork.AspNetRolesRepository.GetByKey(r.RoleId).Name != "Admin"))
+            {
+                AlertManager.CustomerCreated(this.UnitOfWork, entity);
+            }
         }
         public UserDO GetOrCreateUser(EmailAddressDO emailAddressDO)
         {
@@ -33,7 +40,6 @@ namespace Data.Repositories
                 curUser.FirstName = emailAddressDO.Name;
                 curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 userRepo.Add(curUser);
-                UnitOfWork.CalendarRepository.CheckUserHasCalendar(curUser);
             }
             return curUser;
         }
@@ -56,7 +62,6 @@ namespace Data.Repositories
                 curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 curMessage.User = curUser;
                 userRepo.Add(curUser);
-                UnitOfWork.CalendarRepository.CheckUserHasCalendar(curUser);
             }
             return curUser;
         }
