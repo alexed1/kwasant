@@ -42,10 +42,10 @@ namespace Data.Migrations
         public override void Down()
         {
             AddColumn("dbo.Events", "State", c => c.String());
-            DropForeignKey("dbo.Events", "StateID", "dbo.EventStatusDOes");
+            DropForeignKey("dbo.Events", "StateID", "dbo.EventStatuses");
             DropIndex("dbo.Events", new[] { "StateID" });
             DropColumn("dbo.Events", "StateID");
-            DropTable("dbo.EventStatusDOes");
+            DropTable("dbo.EventStatuses");
         }
     }
 }

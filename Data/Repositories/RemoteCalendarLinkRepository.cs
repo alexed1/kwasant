@@ -13,7 +13,7 @@ namespace Data.Repositories
 
         }
 
-        public RemoteCalendarLinkDO GetOrCreate(IRemoteCalendarAuthData authData, string remoteName)
+        public RemoteCalendarLinkDO GetOrCreate(IRemoteCalendarAuthData authData, string remoteName, CalendarDO localCalendarToCreateLinkOn = null)
         {
             if (authData == null)
                 throw new ArgumentNullException("authData");
@@ -23,15 +23,17 @@ namespace Data.Repositories
                                                  l.LocalCalendar.OwnerID == authData.User.Id);
             if (link == null)
             {
-                link = new RemoteCalendarLinkDO()
+                var localCalendar = localCalendarToCreateLinkOn ??
+                                    new CalendarDO()
+                                        {
+                                            Name = string.Format("{0}:{1}", authData.Provider.Name, remoteName),
+                                            Owner = (UserDO) authData.User,
+                                            OwnerID = authData.User.Id
+                                        }; 
+
+                link = new RemoteCalendarLinkDO
                            {
-                               LocalCalendar = new CalendarDO()
-                                                   {
-                                                       Name =
-                                                           string.Format("{0}:{1}", authData.Provider.Name, remoteName),
-                                                       Owner = (UserDO)authData.User,
-                                                       OwnerID = authData.User.Id
-                                                   },
+                               LocalCalendar = localCalendar,
                                Provider = (RemoteCalendarProviderDO) authData.Provider,
                                RemoteCalendarName = remoteName
                            };

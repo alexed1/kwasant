@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers;
 using StructureMap;
-using TrackingStatus = Data.Entities.Enumerations.TrackingStatus;
+using TrackingStatus = Data.Constants.TrackingStatus;
 
 namespace Daemons
 {
@@ -28,13 +28,13 @@ namespace Daemons
             BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
             TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(bookingRequestRepo);
-            List<BookingRequestDO> unprocessedBookingRequests = ts.GetUnprocessedEntities(TrackingType.BOOKING_STATE).ToList();
+            List<BookingRequestDO> unprocessedBookingRequests = ts.GetUnprocessedEntities(TrackingType.BookingState).ToList();
             if (!unprocessedBookingRequests.Any()) 
                 return;
 
             CommunicationManager cm = new CommunicationManager();
             cm.ProcessBRNotifications(unprocessedBookingRequests);
-            unprocessedBookingRequests.ForEach(br => ts.SetStatus(TrackingType.BOOKING_STATE, br, TrackingStatus.PROCESSED));
+            unprocessedBookingRequests.ForEach(br => ts.SetStatus(TrackingType.BookingState, br, TrackingStatus.Processed));
 
             uow.SaveChanges();
         }
