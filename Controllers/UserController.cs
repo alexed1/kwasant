@@ -61,7 +61,6 @@ namespace KwasantWeb.Controllers
             if (result.Credential != null)
             {
                 // don't wait for this, run it async and return response to the user.
-                ObjectFactory.GetInstance<CalendarSyncManager>().SyncNowAsync(this.GetUserId());
                 return RedirectToAction("MyAccount", new { remoteCalendarAccessGranted = providerName });
             }
             else
@@ -105,15 +104,6 @@ namespace KwasantWeb.Controllers
                 var tuple = new Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>(curUserDO, remoteCalendarProviders);
                 
                 var curManageUserViewModel = AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserViewModel>(tuple);
-
-                if (!string.IsNullOrEmpty(remoteCalendarAccessGranted))
-                {
-                    ViewBag.StatusMessage = string.Format("{0} Calendar hooked up successfully.", remoteCalendarAccessGranted);
-                }
-                else if (!string.IsNullOrEmpty(remoteCalendarAccessForbidden))
-                {
-                    ViewBag.StatusMessage = string.Format("{0} Calendar access revoked.", remoteCalendarAccessForbidden);
-                }
                 return View(curManageUserViewModel);
             }
         }

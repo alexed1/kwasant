@@ -159,9 +159,10 @@ namespace Data.Migrations
         }
 
         //Do not remove. Resharper says it's not in use, but it's being used via reflection
+// ReSharper disable UnusedMember.Local
         private static void SeedConstants<TConstantsType, TConstantDO>(IUnitOfWork uow, Func<int, string, TConstantDO> creatorFunc)
-            where TConstantDO : class, IConstantRow<TConstantsType>
-        {
+// ReSharper restore UnusedMember.Local
+			where TConstantDO : class, IConstantRow<TConstantsType>        {
             var instructionsToAdd = new List<TConstantDO>();
 
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
