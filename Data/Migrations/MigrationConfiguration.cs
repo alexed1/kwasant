@@ -4,22 +4,17 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Web.UI.WebControls;
 using Data.Authentication;
-using Data.Entities.Enumerations;
+using Data.Entities.Constants;
 using Data.Repositories;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using System.Data.Entity.Validation;
 using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Newtonsoft.Json;
-using StructureMap;
 using Utilities;
-using EventCreateType = Data.Entities.Enumerations.EventCreateType;
-using EventSyncStatus = Data.Entities.Enumerations.EventSyncStatus;
 
 namespace Data.Migrations
 {
@@ -62,13 +57,80 @@ namespace Data.Migrations
         //Method to let us seed into memory as well
         public static void Seed(IUnitOfWork context)
         {
-            SeedConstants<EventState, EventStatus>(context, (id, name) => new EventStatus { Id = id, Name = name });
-            SeedConstants<BRState, BookingRequestState>(context, (id, name) => new BookingRequestState { Id = id, Name = name });
-            SeedConstants<CRState, ClarificationRequestState>(context, (id, name) => new ClarificationRequestState() { Id = id, Name = name });
-            SeedConstants<Constants.EventCreateType, EventCreateType>(context, (id, name) => new EventCreateType { Id = id, Name = name });
-            SeedConstants<Constants.EventSyncStatus, EventSyncStatus>(context, (id, name) => new EventSyncStatus { Id = id, Name = name });
-            SeedConstants<ServiceAuthType, ServiceAuthorizationType>(context, (id, name) => new ServiceAuthorizationType() { Id = id, Name = name });
+            SeedConstants(context);
+
             SeedInstructions(context);
+        }
+
+        //This method will automatically seed any constants file
+        //It looks for rows which implement IConstantRow<>
+        //For example, BookingRequestStateRow implements IConstantRow<BookingRequestState>
+        //The below method will then generate a new row for each constant found in BookingRequestState.
+        private static void SeedConstants(IUnitOfWork context)
+        {
+            var constantsToSeed =
+                typeof (MigrationConfiguration).Assembly.GetTypes()
+                    .Select(t => new
+                    {
+                        RowType = t,
+                        ConstantsType =
+                            t.GetInterfaces()
+                                .Where(i => i.IsGenericType)
+                                .FirstOrDefault(i => i.GetGenericTypeDefinition() == typeof (IConstantRow<>))
+                    })
+                    .Where(t => t.ConstantsType != null).ToList();
+
+            foreach (var constantToSeed in constantsToSeed)
+            {
+                var rowType = constantToSeed.RowType;
+                var constantType = constantToSeed.ConstantsType.GenericTypeArguments.First();
+
+                var idParam = Expression.Parameter(typeof (int));
+                var nameParam = Expression.Parameter(typeof (String));
+
+                //The below uses the .NET Expression builder to construct this:
+                // (id, name) => new [rowType] { Id = id, Name = name };
+                //We need to build it with the expression builder, as we don't know what type to construct yet, and the method requires type arguments.
+
+                //We can't build constructor intialization with Expressions, so this is the logic for it:
+                // 1, we create a variable called 'constructedRowType'. This variable is used within the expressions
+                // Note that there are _two_ variables. The first one being a usual C# variable, pointing to an expression.
+                // The second one is what's actually used within the block. Examining the expression block will show it as '$constructedRowType'
+
+                //The code generated looks like this:
+                // rowType generatedFunction(int id, string name) [for example, BookingRequestStateRow generatedFunction(int id, string name)
+                // {
+                //     rowType $constructedRowType; [for example, BookingRequestStateRow $constructedRowType]
+                //     $constructedRowType = new rowType() [for example, $constructedRowType = new BookingRequestStateRow()]
+                //     $constructedRowType.Id = id;
+                //     $constructedRowType.Name = name;
+                //} //Note that there is no return call. Whatever is last on the expression list will be kept at the top of the stack, acting like a 'return' 
+                // (if you've worked with bytecode, it's the same idea).
+                //We have 'constructedRowType' as the last expression, which tells us it will be returned
+
+                var constructedRowType = Expression.Variable(rowType, "constructedRowType");
+                    var fullMethod = Expression.Block(
+                    new[] {constructedRowType},
+                    Expression.Assign(constructedRowType, Expression.New(rowType)),
+                    Expression.Assign(Expression.Property(constructedRowType, "Id"), idParam),
+                    Expression.Assign(Expression.Property(constructedRowType, "Name"), nameParam),
+                    constructedRowType);
+
+                    //Now we take that expression and compile it. It's still typed as a 'Delegate', but it is now castable to Func<int, string, TConstantDO>
+                    //For example, it could be Func<int, string, BookingRequestStateRow>
+                
+                var compiledExpression = Expression.Lambda(fullMethod, new[] {idParam, nameParam}).Compile();
+
+                //Now we have our expression, we need to call something similar to this:
+                //SeedConstants<constantType, rowType>(context, compiledExpression)
+
+                var seedMethod = typeof (MigrationConfiguration)
+                    .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
+                    .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod)
+                    .MakeGenericMethod(constantType, rowType);
+                
+                seedMethod.Invoke(null, new object[] {context, compiledExpression});
+            }
         }
 
         private static void SeedRemoteCalendarProviders(IUnitOfWork uow)
@@ -78,7 +140,7 @@ namespace Data.Migrations
                                     new RemoteCalendarProviderDO()
                                         {
                                             Name = "Google",
-                                            AuthTypeID = ServiceAuthType.OAuth2,
+                                            AuthTypeID = ServiceAuthorizationType.OAuth2,
                                             AppCreds = JsonConvert.SerializeObject(
                                                 new
                                                     {
@@ -96,9 +158,11 @@ namespace Data.Migrations
             }
         }
 
+        //Do not remove. Resharper says it's not in use, but it's being used via reflection
+// ReSharper disable UnusedMember.Local
         private static void SeedConstants<TConstantsType, TConstantDO>(IUnitOfWork uow, Func<int, string, TConstantDO> creatorFunc)
-            where TConstantDO : class
-        {
+// ReSharper restore UnusedMember.Local
+			where TConstantDO : class, IConstantRow<TConstantsType>        {
             var instructionsToAdd = new List<TConstantDO>();
 
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
@@ -108,14 +172,29 @@ namespace Data.Migrations
                 object value = constant.GetValue(null);
                 instructionsToAdd.Add(creatorFunc((int)value, name));
             }
-            var param = Expression.Parameter(typeof (TConstantDO));
-            var exp = Expression.Lambda(Expression.Convert(Expression.Property(param, "Id"), typeof(object)), param) as Expression<Func<TConstantDO, object>>;
+            //First, we find rows in the DB that don't exist in our seeding. We delete those.
+            //Then, we find rows in our seeding that don't exist in the DB. We create those ones (or update the name).
 
             var repo = new GenericRepository<TConstantDO>(uow);
-            repo.DBSet.AddOrUpdate(
-                    exp,
-                    instructionsToAdd.ToArray()
-            );
+            var allRows = new GenericRepository<TConstantDO>(uow).GetAll().ToList();
+            foreach (var row in allRows)
+            {
+                if (!instructionsToAdd.Select(i => i.Id).Contains(row.Id))
+                {
+                    repo.Remove(row);
+                }
+            }
+            foreach (var row in instructionsToAdd)
+            {
+                var matchingRow = allRows.FirstOrDefault(r => r.Id == row.Id);
+                if (matchingRow == null)
+                {
+                    matchingRow = row;
+                    repo.Add(matchingRow);
+                }
+                matchingRow.Id = row.Id;
+                matchingRow.Name = row.Name;
+            }
         }
 
         private static void SeedInstructions(IUnitOfWork unitOfWork)

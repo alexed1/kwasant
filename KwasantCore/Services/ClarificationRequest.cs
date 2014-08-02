@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
+using Data.Entities.Constants;
 using Data.Interfaces;
 using KwasantCore.Exceptions;
 using Utilities;
 using StructureMap;
+using BookingRequestState = Data.Constants.BookingRequestState;
+using ClarificationRequestState = Data.Constants.ClarificationRequestState;
 
 namespace KwasantCore.Services
 {
     public class ClarificationRequest
     {
-        public ClarificationRequestDO Create(IUnitOfWork uow, IBookingRequest bookingRequest)
+        public ClarificationRequestDO Create(IUnitOfWork uow, IBookingRequest bookingRequest, int negotiationId)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -28,6 +29,7 @@ namespace KwasantCore.Services
                                                  DateCreated = DateTime.UtcNow,
                                                  DateReceived = DateTime.UtcNow,
                                                  BookingRequestId = bookingRequest.Id,
+                                                 NegotiationId = negotiationId,
                                                  Subject = "We need a little more information from you",
                                                  HTMLText = "*** This should be replaced with template body ***",
                                                  PlainText = "*** This should be replaced with template body ***",
@@ -35,7 +37,7 @@ namespace KwasantCore.Services
             ((IClarificationRequest) newClarificationRequestDo).BookingRequest = bookingRequest;
             String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
             newClarificationRequestDo.From = Email.GenerateEmailAddress(uow, new MailAddress(senderMailAddress));
-            newClarificationRequestDo.AddEmailRecipient(EmailParticipantType.TO, bookingRequest.User.EmailAddress);
+            newClarificationRequestDo.AddEmailRecipient(EmailParticipantType.To, bookingRequest.User.EmailAddress);
             return newClarificationRequestDo;
         }
 
@@ -60,7 +62,7 @@ namespace KwasantCore.Services
             return string.Format(responseUrlFormat, encryptedParams);
         }
 
-        public IClarificationRequest GetOrCreateClarificationRequest(IUnitOfWork uow, int bookingRequestId, int clarificationRequestId = 0)
+        public IClarificationRequest GetOrCreateClarificationRequest(IUnitOfWork uow, int bookingRequestId, int clarificationRequestId = 0, int NegotiationId=0)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -72,26 +74,37 @@ namespace KwasantCore.Services
             if (clarificationRequest == null)
             {
                 var bookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                int negotiation = uow.NegotiationsRepository.GetByKey(NegotiationId).Id;
                 if (bookingRequest == null)
                     throw new EntityNotFoundException<IBookingRequest>();
-                clarificationRequest = Create(uow, bookingRequest);
+                clarificationRequest = Create(uow, bookingRequest, negotiation);
             }
             return clarificationRequest;
         }
 
-        public void UpdateClarificationRequest(IUnitOfWork uow, IClarificationRequest originalClarificationRequest, IClarificationRequest updatedClarificationRequest)
+        //public void UpdateClarificationRequest(IUnitOfWork uow, IClarificationRequest originalClarificationRequest, IClarificationRequest updatedClarificationRequest)
+        //{
+        //    if (uow == null)
+        //        throw new ArgumentNullException("uow");
+        //    if (originalClarificationRequest == null)
+        //        throw new ArgumentNullException("originalClarificationRequest");
+        //    if (updatedClarificationRequest == null)
+        //        throw new ArgumentNullException("updatedClarificationRequest");
+
+        //    //foreach (var question in updatedClarificationRequest.Questions)
+        //    //{
+        //    //    originalClarificationRequest.Questions.Add(question);
+        //    //}
+        //    uow.SaveChanges();
+        //}
+
+        public void UpdateClarificationRequest(IUnitOfWork uow, IClarificationRequest originalClarificationRequest)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
             if (originalClarificationRequest == null)
                 throw new ArgumentNullException("originalClarificationRequest");
-            if (updatedClarificationRequest == null)
-                throw new ArgumentNullException("updatedClarificationRequest");
-
-            foreach (var question in updatedClarificationRequest.Questions)
-            {
-                originalClarificationRequest.Questions.Add(question);
-            }
+            
             uow.SaveChanges();
         }
 
@@ -100,7 +113,7 @@ namespace KwasantCore.Services
             if (clarificationRequest == null)
                 throw new ArgumentNullException("clarificationRequest");
             
-            var answeredQuestions = clarificationRequest.Questions.Where(q => q.Status == QuestionStatus.Answered).ToArray();
+            var answeredQuestions = clarificationRequest.Questions.Where(q => q.QuestionStatusID == QuestionStatus.Answered).ToArray();
             if (answeredQuestions.Length == 0)
                 throw new ArgumentException("Clarification Request must have at least one answered question");
             
@@ -118,10 +131,10 @@ namespace KwasantCore.Services
                     if (questionDO == null)
                         throw new EntityNotFoundException<QuestionDO>();
                     questionDO.Response = answeredQuestion.Response;
-                    questionDO.Status = QuestionStatus.Answered;
+                    questionDO.QuestionStatusID = QuestionStatus.Answered;
                 }
-                curClarificationRequestDO.CRState = CRState.Resolved;
-                curBookingRequestDO.BRState = BRState.Pending;
+                curClarificationRequestDO.ClarificationRequestStateID = ClarificationRequestState.Resolved;
+                curBookingRequestDO.BookingRequestStateID = BookingRequestState.Pending;
                 uow.SaveChanges();
             }
         }

@@ -167,6 +167,7 @@
       <HintPath>packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -266,6 +267,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\CommunicationManagerController.cs" />
     <Compile Include="Controllers\External\DayPilot\KwasantCalendarControl.cs" />
     <Compile Include="Controllers\External\DayPilot\Providers\ICalendarController.cs" />
     <Compile Include="Controllers\External\GoogleCalendar\AuthCallbackController.cs" />
@@ -283,10 +285,12 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\KController.cs" />
     <Compile Include="Controllers\MonthController.cs" />
+    <Compile Include="Controllers\NegotiationController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="ViewModels\CalendarViewModel.cs" />
+    <Compile Include="ViewModels\AnswerViewModel.cs" />
     <Compile Include="ViewModels\MyAccountModel.cs" />
     <Compile Include="Filters\RequestParamsEncryptedFilter.cs" />
     <Compile Include="Global.asax.cs">
@@ -305,6 +309,7 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ManageUserViewModel.cs" />
+    <Compile Include="ViewModels\NegotiationViewModel.cs" />
     <Compile Include="ViewModels\QuestionViewModel.cs" />
     <Compile Include="ViewModels\ClarificationRequestViewModel.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
@@ -420,6 +425,7 @@
     <Content Include="Content\img\backgrounds\homepagesecond.jpg" />
     <Content Include="Content\img\backgrounds\ie-black-bg.png" />
     <Content Include="Content\img\Croissant\croissant_nolic.jpg" />
+    <Content Include="Content\img\Cross.png" />
     <Content Include="Content\img\EmailLogo.png" />
     <Content Include="Content\img\favicon.ico" />
     <Content Include="Content\img\icons\sort_asc.png" />
@@ -428,6 +434,8 @@
     <Content Include="Content\img\icons\sort_desc.png" />
     <Content Include="Content\img\icons\sort_desc_disabled.png" />
     <Content Include="Content\img\Management\alexhead.png" />
+    <Content Include="Content\img\minus.png" />
+    <Content Include="Content\img\plus.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
     <Content Include="Content\img\site\email-header.png" />
     <Content Include="Content\img\site\example_using_kwasant_email.png" />
@@ -742,6 +750,10 @@
     <Content Include="Views\ClarificationResponse\AllAnswered.cshtml" />
     <Content Include="Views\User\MyAccount.cshtml" />
     <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\Negotiation\Edit.cshtml" />
+    <Content Include="Views\Negotiation\_Question.cshtml" />
+    <Content Include="Views\Negotiation\_TextAnswer.cshtml" />
+    <Content Include="Views\Negotiation\_TimeslotAnswer.cshtml" />
     <Content Include="Views\Calendar\GetNegotiationCalendars.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -749,6 +761,8 @@
     <Folder Include="archive\" />
     <Folder Include="Content\fonts\" />
     <Folder Include="Content\img\forms\" />
+    <Folder Include="Content\img\icons\" />
+    <Folder Include="Views\CommunicationManager\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Configuration\Configuration.csproj">
@@ -783,7 +797,7 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">

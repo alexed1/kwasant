@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Linq;
 using Daemons.EventExposers;
+using Data.Constants;
 using Data.Entities;
-using Data.Entities.Enumerations;
+using Data.Entities.Constants;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers;
@@ -34,7 +35,7 @@ namespace Daemons
                     return;
                 }
 
-                emailToUpdate.EmailStatus = EmailStatus.SENT;
+                emailToUpdate.EmailStatusID = EmailStatus.Sent;
                 unitOfWork.SaveChanges();
             });
 
@@ -54,7 +55,7 @@ namespace Daemons
                 Logger.GetLogger()
                     .Error(String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason));
 
-                emailToUpdate.EmailStatus = EmailStatus.SEND_REJECTED;
+                emailToUpdate.EmailStatusID = EmailStatus.SendRejected;
                 unitOfWork.SaveChanges();
             });
 
@@ -76,7 +77,7 @@ namespace Daemons
                         .Error(String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}",
                             errorCode, name, message, emailID));
 
-                    emailToUpdate.EmailStatus = EmailStatus.SEND_CRITICAL_ERROR;
+                    emailToUpdate.EmailStatusID = EmailStatus.SendCriticalError;
                     unitOfWork.SaveChanges();
                 });
 
@@ -93,7 +94,7 @@ namespace Daemons
                     return;
                 }
 
-                emailToUpdate.EmailStatus = EmailStatus.SENT;
+                emailToUpdate.EmailStatusID = EmailStatus.Sent;
                 unitOfWork.SaveChanges();
             });
 
@@ -113,7 +114,7 @@ namespace Daemons
                 Logger.GetLogger()
                     .Error(String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason));
 
-                emailToUpdate.EmailStatus = EmailStatus.SEND_REJECTED;
+                emailToUpdate.EmailStatusID = EmailStatus.SendRejected;
                 unitOfWork.SaveChanges();
             });
 
@@ -135,7 +136,7 @@ namespace Daemons
                         .Error(String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}",
                             errorCode, name, message, emailID));
 
-                    emailToUpdate.EmailStatus = EmailStatus.SEND_CRITICAL_ERROR;
+                    emailToUpdate.EmailStatusID = EmailStatus.SendCriticalError;
                     unitOfWork.SaveChanges();
                 });
         }
@@ -157,7 +158,7 @@ namespace Daemons
                 EventRepository eventRepository = unitOfWork.EventRepository;
                 CommunicationManager _comm = new CommunicationManager();
                 var numSent = 0;
-                foreach (EnvelopeDO envelope in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailStatus.QUEUED))
+                foreach (EnvelopeDO envelope in envelopeRepository.FindList(e => e.Email.EmailStatusID == EmailStatus.Queued))
                 {
                     using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
@@ -167,15 +168,15 @@ namespace Daemons
                             if (CloudConfigurationManager.GetSetting("ArchiveOutboundEmail") == "true")
                             {
                                 EmailAddressDO outboundemailaddress = new EmailAddressDO(CloudConfigurationManager.GetSetting("ArchiveEmailAddress"));
-                                envelope.Email.AddEmailRecipient(EmailParticipantType.BCC, outboundemailaddress);
+                                envelope.Email.AddEmailRecipient(EmailParticipantType.Bcc, outboundemailaddress);
                             }
                             packager.Send(envelope);
                             numSent++;
 
                             var email = subUow.EmailRepository.GetQuery().First(e => e.Id == envelope.Email.Id); // probably "= envelope.Email" will work now...
-                            email.EmailStatus = EmailStatus.DISPATCHED;
+                            email.EmailStatusID = EmailStatus.Dispatched;
                             subUow.SaveChanges();
-                            string customerId = subUow.UserRepository.GetAll().Where(e => e.EmailAddress.Address == email.Recipients.First(c => c.Type == EmailParticipantType.TO).EmailAddress.Address).First().Id;
+                            string customerId = subUow.UserRepository.GetAll().Where(e => e.EmailAddress.Address == email.Recipients.First(c => c.EmailParticipantTypeID == EmailParticipantType.To).EmailAddress.Address).First().Id;
                             AlertManager.EmailSent(email.Id, customerId);
                         }
                         catch (StructureMapConfigurationException ex)

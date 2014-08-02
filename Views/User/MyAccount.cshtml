@@ -6,7 +6,7 @@
 
 <h2>@ViewBag.Title.</h2>
 
-<p class="text-success">@ViewBag.StatusMessage</p>
+<div id="permission-status" class="text-success"></div>
 <div class="row">
     <div class="col-md-12">
         @foreach (var remoteCalendar in Model.RemoteCalendars)
@@ -37,8 +37,8 @@
 <div class="row">
     <div class="col-md-12">
         <a href="#" class="btn btn-default" id="syncNowBtn">Synchronize Now!</a>
-        <div id="success" style="display: none">Calendars synchronized successfully.</div>
-        <div id="sendError" style="display: none"></div>
+        <div id="success" style="display: none" class="text-success">Calendars synchronized successfully.</div>
+        <div id="sendError" style="display: none" class="text-error"></div>
     </div>
 </div>
 }
@@ -47,10 +47,12 @@
 {
     @if (Model.RemoteCalendars.Any(c => c.AccessGranted))
     {
+        //@Scripts.Render("~/bundles/js/common")
+
         <script type="text/javascript">
-            $(document).ready(function() {
+            $(document).ready(function () {
                 var syncing = false;
-                $('#syncNowBtn').click(function() {
+                var syncNow = function() {
                     if (syncing)
                         return false;
                     syncing = true;
@@ -68,7 +70,21 @@
                         },
                         'json');
                     return false;
-                });
+                };
+
+                $('#syncNowBtn').click(syncNow);
+
+                var provider = getURLParameter("remoteCalendarAccessGranted");
+                if (provider)
+                {
+                    $('#permission-status').text(provider + ' Calendar hooked up successfully.');
+                    syncNow();
+                } else {
+                    provider = getURLParameter("remoteCalendarAccessForbidden");
+                    if (provider) {
+                        $('#permission-status').text(provider + ' Calendar access revoked.');
+                    }
+                }
             });
         </script>
     }

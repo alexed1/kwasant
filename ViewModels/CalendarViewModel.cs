@@ -6,6 +6,6 @@ namespace KwasantWeb.ViewModels
     {
         public int BookingRequestID { get; set; }
         public List<int> LinkedCalendarIDs { get; set; }
-        public int MainCalendarID { get; set; }
+        public int ActiveCalendarID { get; set; }
     }
 }

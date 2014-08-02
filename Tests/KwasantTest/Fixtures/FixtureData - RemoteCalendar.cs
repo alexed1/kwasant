@@ -15,7 +15,7 @@ namespace KwasantTest.Fixtures
             return new RemoteCalendarProviderDO()
             {
                 AppCreds = "",
-                AuthTypeID = ServiceAuthType.OAuth2,
+                AuthTypeID = ServiceAuthorizationType.OAuth2,
                 CalDAVEndPoint = "https://test_caldav_endpoint",
                 Name = "Test CalDAV provider"
             };

@@ -1,0 +1,272 @@
+﻿@*@model Data.Entities.NegotiationDO
+@model KwasantWeb.ViewModels.NegotiationViewModel*@
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/select2")    
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+
+<script src="/Content/js/Kwasant/Popup.js"></script>
+<script>
+    var url = "";
+    var questionTemp = "";
+    var textAnsTemp = "";
+    var timesloteAnsTemp = "";
+    var jsonResult = "";
+    var id = parent.$("#hdnrequestid").val();
+
+    $(document).ready(function () {
+        var negAValue = parent.$("#btnNegotiation").attr("data-value");
+        if (negAValue == "Edit Negotiation")
+            deserializeForm();
+    });
+
+    function callAppendQuestion(ele) {
+        var findquestionId = $(ele).closest("div").attr("data-questionid");
+        getCalltextanswer(ele, findquestionId);
+    };
+
+    var getCallquestion = function (callfrom, countValue) {
+
+        var questionPresent;
+        if (callfrom == "editneg")
+            questionPresent = countValue;
+        else
+            questionPresent = $("#appendquestinoId #questionContainer").length;
+
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("Addquestion", "Negotiation")',
+            data: { questionID: (questionPresent + 1) },
+            success: function (data) {
+                $("#appendquestinoId").append(data);
+                //alert(countValue);
+            }
+        });
+    };
+
+    var getCalltextanswer = function (ele, questionID) {
+        var radiotype = $(ele).closest("table").find("input[checked='checked']").val();
+        if (radiotype == 'Timeslot')
+            url = '@Url.Action("AddTimeslotAnswer", "Negotiation")';
+        else
+            url = '@Url.Action("AddtextAnswer", "Negotiation")';
+
+        var answerPresent = $("#appendquestinoId #questionContainer[data-questionID=" + questionID + "] #appendanswerId #answerContainer").length;
+        //alert(questionID);
+        $.ajax({
+            type: 'Get',
+            url: url,
+            data: { answerID: (answerPresent + 1) },
+            success: function (data) {
+                $(ele).closest("table").find("#appendanswerId").append(data);
+            }
+        });
+    };
+
+    var removetable = function (ele) {
+        $(ele).closest("table").remove();
+    }
+
+    var removerchkClass = function (ele) {
+        $(ele).closest("td").find('.tester').removeAttr("checked");
+        $(ele).attr('checked', 'checked');
+    }
+
+    var handleNegotiationCancel = function (ele) {
+        cancelNegotiation();
+    }
+
+
+    var serializeForm = function () {
+
+        var negotiationtblid = $("#divNegotiation").attr("data-negotiationid");
+        var Negotiation = { Id: negotiationtblid, Name: null, Questions: [] };
+
+        $.each($("#appendquestinoId #questionContainer"), function () {
+            //item = per question container with id = questionContainer.
+            var qText = $(this).find('#questionText').val();
+            var answersArray = [];
+
+            var answerContainer = $(this).find('#appendanswerId #answerContainer')
+
+            $.each(answerContainer, function () {
+
+                var aText = $(this).find('#answerText').val();
+                var aStatus = $(this).find('#answerStatus').val();
+
+                var answertbleid = $(this).attr("data-answertbleid")
+                answersArray.push({Id:answertbleid, Text: aText, Status: aStatus });
+            });
+
+            var questiontbleid = $(this).attr("data-questiontbleid")
+            Negotiation.Questions.push({Id:questiontbleid, Text: qText, Answers: answersArray });
+        });
+
+        Negotiation.Name = $("#NegName").val();
+
+        return Negotiation;
+    };
+
+    var processSubmit = function () {
+        var negotiation = serializeForm();
+        console.log(negotiation);
+        $.ajax({
+            type: 'post',
+            url: '@Url.Action("ProcessSubmittedForm", "Negotiation")',
+            data: { negotiation: JSON.stringify(negotiation) },
+            success: function (data) {
+                var Success = data.Success;
+                var bookingrequestid = data.BookingRequestID;
+                var negotiationId = data.NegotiationId;
+                //Call CommunicationManager
+                var data1 = { BookingRequestID: bookingrequestid, NegotiationId: negotiationId };
+                $.post('/CommunicationManager/DispatchNegotiationEmail/', { BookingRequestID: bookingrequestid, NegotiationId: negotiationId }, function (data) {
+                    var clarificationRequestId = data.ClarificationRequestId;
+                    $.post('/ClarificationRequest/Send/', { bookingRequestId: bookingrequestid, clarificationRequestId: clarificationRequestId, negotiationId: negotiationId }, function (data) {
+                        alert("Done");
+                    });
+                });
+            }
+        });
+    };
+
+    var deserializeForm = function () {
+
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("Addquestion", "Negotiation")',
+            data: { questionID: (1) },
+            success: function (data) {
+                questionTemp = data;
+            }
+        });
+
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("AddtextAnswer", "Negotiation")',
+            data: { answerID: (1) },
+            success: function (data) {
+                textAnsTemp = data;
+            }
+        });
+
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("AddTimeslotAnswer", "Negotiation")',
+            data: { answerID: (1) },
+            success: function (data) {
+                timesloteAnsTemp = data;
+            }
+        });
+
+        var countQueVal = 0;
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("ShowNegotiation", "Negotiation")',
+            data: { id: (id) },
+            success: function (data) {
+                jsonResult = JSON.stringify(data);
+                var objJSON = eval("(function(){return " + jsonResult + ";})()");
+                $("#NegName").val(objJSON.Name);
+                $('#divNegotiation').attr("data-negotiationId", objJSON.Id);
+                //alert(objJSON.Id);
+                $.each(objJSON.Questions, function () {
+                    //alert("Question: " + this.Id);
+                    countQueVal = countQueVal + 1;
+                    var temphtml = questionTemp;
+                    //Assign Data-QuestionId
+                    temphtml = $(temphtml).find("#questionContainer").attr("data-questionid", countQueVal);
+                    //Append New Question on List
+                    $("#appendquestinoId").append(temphtml);
+                    //Assigning Question Attributes
+                    $(temphtml).attr("data-questiontbleid", this.Id);
+                    var answerPresent = $("#appendquestinoId #questionContainer[data-questionID=" + countQueVal + "]");
+                    $(answerPresent).find('#questionlbl').text("Question :" + countQueVal);
+                    $(answerPresent).find("#questionText").val(this.Text);
+
+                    var countAnsVal = 0;
+                    //Assigning Answers According to Questions
+                    $.each(this.Answers, function () {
+                        //alert("Answer: " + this.Id);
+                        countAnsVal = countAnsVal + 1;
+                        var tempanshtml = textAnsTemp;
+                        tempanshtml = $(tempanshtml).find("#answerContainer").attr("data-answerid", countAnsVal);
+                        $(tempanshtml).attr("data-answertbleid", this.Id);
+                        $(answerPresent).find("#appendanswerId").append(tempanshtml);
+                        $(tempanshtml).find("#answerText").val(this.ObjectsType);
+                        $(tempanshtml).find("#answerlbl").text("A-" + countAnsVal);
+                    });
+                });
+            }
+        });
+
+    };
+
+    function closethis() {
+        $(window.parent.document).find("iframe").each(function () {
+            if ($(this).attr("style").indexOf("z-index") > 0) {
+                if ($(this).attr("style").indexOf("display: none") < 0) {
+                    $(this).remove();
+                }
+            }
+        });
+    };
+</script>
+}
+@section scripts
+{
+	@Scripts.Render("~/bundles/js/moment")
+	@Scripts.Render("~/bundles/js/bootstraptransition")
+	@Scripts.Render("~/bundles/js/collapse")	
+	@Scripts.Render("~/bundles/js/bootstrap")
+	@Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
+    @Scripts.Render("~/bundles/js/modernizr")	
+    @Scripts.Render("~/bundles/js/common")
+}
+@section styles
+{
+    @Styles.Render("~/bundles/css/bootstrap30")
+    @Styles.Render("~/bundles/css/backendcss")
+    @Styles.Render("~/bundles/css/select2")
+    @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
+	@Styles.Render("~/bundles/css/temp")
+	<link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
+}
+
+<form id="f">
+    <div class="form-horizontal" data-negotiationId="0" id="divNegotiation">
+        <h4>Negotiation</h4>
+        <hr />
+        <div class="form-group">
+            <table>
+                <tr>
+                    <td>&nbsp; 
+                        <label>Name:</label>
+                    </td>
+                    <td>
+                        <input type="text" id="NegName" name="NegNameId" value="" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="appendquestinoId">
+
+        </div>
+      <span class="form-group" id="divAddQuestion" onclick="getCallquestion()">
+  @*<span class="form-group" id="divAddQuestion" onclick="deserializeForm()">*@
+&nbsp; &nbsp;
+            <img src="~/Content/img/plus.png" />
+            <label>Add Question</label>
+        </span>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" value="Ok" class="btn btn-default" onclick="processSubmit()" />
+                &nbsp; &nbsp;
+                <a href="#" onclick="closethis();">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>

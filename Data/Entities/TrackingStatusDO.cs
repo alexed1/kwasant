@@ -1,4 +1,5 @@
-﻿using Data.Entities.Enumerations;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Data.Entities.Constants;
 using Data.Interfaces;
 
 namespace Data.Entities
@@ -8,9 +9,12 @@ namespace Data.Entities
         public int Id { get; set; }
         public string ForeignTableName { get; set; }
 
-        public TrackingType Type { get; set; }
-        public TrackingStatus Status { get; set; }
+        [ForeignKey("TrackingType")]
+        public int TrackingTypeID { get; set; }
+        public TrackingTypeRow TrackingType { get; set; }
 
-
+        [ForeignKey("TrackingStatus")]
+        public int TrackingStatusID { get; set; }
+        public TrackingStatusRow TrackingStatus { get; set; }
     }
 }
