@@ -97,7 +97,7 @@ namespace KwasantWeb.Controllers
                         {
                             Id = ansl.Id,
                             QuestionID = ansl.QuestionID,
-                            Status = ansl.AnswerStatus,
+                            AnswerStatusId = ansl.AnswerStatusID,
                             ObjectsType = ansl.ObjectsType,
                         }).ToList()
                     }).ToList()
@@ -141,7 +141,7 @@ namespace KwasantWeb.Controllers
                         foreach (var answers in question.Answers)
                         {
                             AnswerDO answerDO = uow.AnswersRepository.FindOne(a => a.Id == answers.Id);
-                            answerDO.AnswerStatus = answers.Status;
+                            answerDO.AnswerStatusID = answers.AnswerStatusId;
                             answerDO.ObjectsType = answers.Text;
                             uow.SaveChanges();
                         }
