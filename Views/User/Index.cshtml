@@ -1,56 +1,38 @@
 ﻿@model IEnumerable<ViewModel.Models.UsersAdminViewModel>
-
 @{
     ViewBag.Title = "Users";
 }
+<h2>Users</h2>
+<p>@Html.ActionLink("Create New", "Create")</p>
+<table class="data-table dataTable">
+	<thead>
+		<tr>
+			<th>First Name</th>
+			<th>Last Name</th>
+			<th>Email Address</th>
+			<th>Role</th>
+			<th></th>
+		</tr>
+	</thead>
+		@{
+			if (Model != null)
+			{
 
-<h3>Users</h3>
-<hr />
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            First Name
-        </th>
-        <th>
-            Last Name
-        </th>
-        <th>
-            Email Address
-        </th>
-        <th>
-            Role
-        </th>
-        <th></th>
-    </tr>
-
-    @{
-        if (Model != null)
-        {
-
-            foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.FirstName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.LastName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EmailAddress)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Role)
-                    </td>
-                    <td>
-                        @Html.ActionLink("Details", "Details", new { userId = item.UserId, roleId = item.RoleId })
-                    </td>
-                </tr>
-            }
-        }
-    }
-
+				foreach (var item in Model)
+				{
+					<tr>
+						<td>@Html.DisplayFor(modelItem => item.FirstName)</td>
+						<td>@Html.DisplayFor(modelItem => item.LastName)</td>
+						<td>@Html.DisplayFor(modelItem => item.EmailAddress)</td>
+						<td>@Html.DisplayFor(modelItem => item.Role)</td>
+						<td>@Html.ActionLink("Details", "Details", new { userId = item.UserId, roleId = item.RoleId })</td>
+					</tr>
+				}
+			}
+		}
 </table>
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('.body-content table.data-table tbody tr:odd').addClass('even');
+	})
+</script>

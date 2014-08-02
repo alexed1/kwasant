@@ -533,7 +533,7 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
 }
 
 /*Styles for table*/
-/* Data Tables Customize*/
+/* Data Tables customize general styles */
 
 .dataTables_wrapper {
 	padding-bottom: 20px;
@@ -563,27 +563,45 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
 
 .body-content table.data-table {
 	margin: 15px auto;	
+	border-bottom: 1px solid #0e0e0e;
+	width: 100%;
 }
 
-.body-content table.data-table thead th, .body-content table.data-table thead td {
+.body-content table.data-table tbody tr {
+	transition: all ease-in-out .3s;	
+	background: #fff;
+}
+
+.body-content table.data-table thead th, .body-content table.data-table thead td, .body-content table.data-table td {
 	padding: 8px 10px;	
 }
 
-.body-content table.dataTable thead .sorting {
+.body-content table.data-table thead th {
+	border-bottom: 1px solid #0e0e0e;
+	font-weight: 600;
+}
+
+.body-content table.data-table thead .sorting {
 	background: url(/Content/img/icons/sort_both.png) no-repeat center right;
 }
 
-.body-content table.dataTable thead .sorting_asc {
+.body-content table.data-table thead .sorting_asc {
 	background: url(/Content/img/icons/sort_asc.png) no-repeat center right;
 }
 
-.body-content table.dataTable thead .sorting_desc {
+.body-content table.data-table thead .sorting_desc {
 	background: url(/Content/img/icons/sort_desc.png) no-repeat center right;
+}
+
+.body-content table.data-table tbody tr:hover {
+	background: #e7e7e7;	
 }
 
 .body-content table.data-table tr.even {
 	background: #f8f8f8
 }
+
+/* Data Tables customize pagination styles */
 
 .body-content .dataTables_wrapper .dataTables_paginate .paginate_button {
 	transition: all ease-in-out .3s;	
@@ -716,7 +734,7 @@ input[type="checkbox"].input-validation-error {
     border: none;
     margin: 10px 0px 20px 0px;
     position: relative;
-    width: 174px;
+    /*width: 174px;*/
 }
 
 #toolbar a {
@@ -740,25 +758,10 @@ input[type="checkbox"].input-validation-error {
 }
 
 /* styles for calendar view */
-
 /* general calendar view styles */
 
 .jumbotron.calendar-section {
 	padding: 10px 20px;	
-}
-
-.calendar-section {
-	
-}
-
-.calendar-section a.btnRequestClarification button {
-	width: 160px; 
-	font-size: 14px; 
-	height: 40px;	
-}
-
-.calendar-section .divCalender {
-	padding-bottom: 79px;	
 }
 
 .calendar-section .toolbar {
@@ -771,20 +774,14 @@ input[type="checkbox"].input-validation-error {
 }
 
 .calendar-section .calendar-area {
-/*	float: left; 
-	padding-bottom: 101px; 
-	padding-top: 53px; 
-	position: relative;*/
+
 }
 
 /*styles for email-info section*/
 
-.calendar-section .emailInfoBox {
-	
-	height: 100%; 
-	
-	margin-left: -15px;	
-	
+.calendar-section .emailInfoBox {	
+	height: 100%; 	
+	margin-left: -15px;		
 }
 
 .calendar-section .emailInfoBox button {
@@ -798,26 +795,6 @@ input[type="checkbox"].input-validation-error {
 	border: none; 
 }
 
-.calendar-section .emailInfoBox table.email-info-tabele {
-	width: 95%;	
-	box-shadow: #000 0 0 10px; 
-	margin: 10px; 	
-}
-
-.calendar-section .emailInfoBox table.email-info-tabele tr th {
-	width: 70%;	
-	text-align: center;	
-	font-size: 14px;	
-}
-
-.calendar-section .emailInfoBox table.email-info-tabele tr th:first-child {
-	width: 30%;		
-}
-
-.calendar-section .emailInfoBox table.email-info-tabele tbody {
-	border-top: 1px solid #808080;
-}
-
 /*styles for email-info-section iframe*/
 
 body.email-info-section {
@@ -827,6 +804,138 @@ body.email-info-section {
 	overflow-y: auto;	
 }
 
+body.email-info-section .email-subject h4 {
+	margin: 0;
+	color: #0e0e0e;
+	font-weight: bold;		
+	font-size: 16px;	
+}
+
+body.email-info-section .email-subject {
+	padding-bottom: 15px;	
+}
+
+body.email-info-section .email-details {
+	font-size: 14px;
+	padding-bottom: 15px;
+	margin-bottom: 15px;	
+}
+
+body.email-info-section .email-content {
+	font-size: 14px;
+}
+
+/*styles for email-info-table section*/
+
+.calendar-section table.email-info-table {
+	width: 100%!important;	
+	margin: 0 auto 15px; 
+} 
+
+.calendar-section table.email-info-table tr th {
+	width: 70%;	
+	text-align: left;	
+	font-size: 14px;	
+}
+
+.calendar-section table.email-info-table tr th:first-child {
+	width: 30%;		
+}
+
+.calendar-section table.email-info-table tbody {
+	border-top: 1px solid #808080;	
+}
+
+.calendar-section table.email-info-table tbody tr:hover {
+	cursor: pointer;
+}
+
+.calendar-section table.email-info-table tbody tr.current-row {
+	background: #d85e17;
+	color: #fff;
+}
+
+.calendar-section table.email-info-table tbody td {
+	text-align: left;
+}
+
+.calendar-section .dataTables_wrapper {
+	font-size: 14px;
+	line-height: 1.428;
+}
+
+/*styles for calendar section*/
+
+.calendar-inner .toolbar-section {
+	background: #f8f8f8!important;
+	border: 1px solid #e7e7e7;
+	padding: 15px;
+	margin-bottom: 20px;
+	overflow: hidden;
+}
+
+.calendar-inner .toolbar-section .toolbar {
+	float: left;
+	width: 40%;
+	text-align: left;
+	padding-right: 2%;	
+}
+
+.calendar-inner .toolbar-section .toolbar > a {
+	display: block;
+	border-top: 1px solid #d85e17;
+	line-height: 52px;
+	font-size: 14px;
+	color: #333;
+	padding: 0 15px;
+	transition: all ease-in-out .3s;
+}
+
+.calendar-inner .toolbar-section .toolbar > a:first-child {
+	border-top: 0 none;
+}
+
+.calendar-inner .toolbar-section .toolbar > a:hover, .calendar-inner .toolbar-section .toolbar > a.current {
+	color: #fff;
+	background: #d85e17;
+}
+
+/*customize navigator*/
+.calendar-inner .toolbar-section .navigator_green_main {
+	box-sizing: content-box;	
+}
+
+.calendar-inner .toolbar-section .navigator_green_title, .calendar-inner .toolbar-section .navigator_green_titleleft, .calendar-inner .toolbar-section .navigator_green_titleright {
+	background: #0e0e0e;	
+}
+
+.calendar-inner .toolbar-section .navigator_green_select {
+	background: #d85e17;
+	color: #fff;	
+}
+
+.calendar-inner .toolbar-section .navigator_green_dayother {
+	color: #e7e7e7;
+}
+
+.calendar-inner .navigator_green_todaybox {
+	border: 1px solid #0e0e0e;
+	width: 100%!important;
+	height: 100%!important;
+}
+
+.calendar-inner .toolbar-section .navigator_green_day, .calendar-inner .toolbar-section .navigator_green_select, .calendar-inner .toolbar-section .navigator_green_dayother {
+	text-align: center!important;
+}
+
+.calendar-inner .toolbar-section .calendar-area {
+	float: left;
+	width: 57%;
+}
+
+.calendar-inner .toolbar-section .navigator_white_main {
+
+}
 
 /*Calendar ThemeBlue*/
 

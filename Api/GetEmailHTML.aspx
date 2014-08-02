@@ -14,26 +14,13 @@
     <%=System.Web.Optimization.Scripts.Render("~/bundles/js/select2")%>
     <script src="../Scripts/ContextMenu/jquery.contextMenu.js"></script>
     <link href="../Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
-
-    <style type="text/css">
+<style type="text/css">
 .displayLabel
 {
     color: #6d6e70;
     width: 25%;
 }
-.heading
-{
-    color: #003c6a;
-    font-size: 16px;
-    font-weight: bold;
-}
-.subHeading
-{
-    color: #6d6e70;
-    font-size: 16px;
-    margin-left: 3px;
-    margin-bottom: 4px;
-}
+
 .searchInput
 {
     margin-top:2px; 
@@ -45,12 +32,6 @@
     padding-bottom:1px;
 }
         
-#emailContent
-{
-    padding:10px;
-    background-color:#F3F3F3;
-}
-            
 .navigation
 {
     margin-left:4px;
@@ -93,12 +74,11 @@ img
 <body class="email-info-section">
     <%--style="width: 400px;"--%>
     <form id="form1" runat="server">
-		<div class="info" style="height:100%;">
-			<div id="emailSubject" class="subHeading">
-				<%=GetEmailSubject()%>
+		<div class="info">
+			<div id="emailSubject" class="subHeading email-subject">
+				<h4 class="with-border"><%=GetEmailSubject()%></h4>
 			</div>
-			<hr />
-			<div>
+			<div class="email-details with-border">
 				<table width="100%">
 					<tr>
 						<td class="displayLabel">Email:</td>
@@ -112,7 +92,6 @@ img
 						<td class="displayLabel">BCC:</td>
 						<td><%=GetBCC()%></td>
 					</tr>
-
 					<tr>
 						<td class="displayLabel">From:</td>
 						<td><%=GetFromPerson()%></td>
@@ -123,11 +102,9 @@ img
 					</tr>
 				</table>
 			</div>
-			<hr />
-			<div id="emailContent">
+			<div id="emailContent" class="email-content">
 				<%=GetContent()%>
 			</div>
-			<br />
 		</div>
         <div class="context-menu box menu-1"></div>
     </form>

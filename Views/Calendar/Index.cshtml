@@ -16,21 +16,13 @@
     <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
     <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 }
-@section scripts
-{
-	@Scripts.Render("~/bundles/js/modernizr")
-	@Scripts.Render("~/bundles/js/bootstrap")
-	@Scripts.Render("~/bundles/js/common")
-}
+
 @*width: 1270px;*@
 <div class="jumbotron calendar-section jumbotron_new">
 	<div class="row">
-        @*width: 420px;*@
-
-	
+        @*width: 420px;*@	
 		<nav class="navbar navbar-default top-toolbar-section" role="navigation">
 			<div class="container-fluid">
-
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
 						<span class="sr-only">Toggle navigation</span>
@@ -39,38 +31,32 @@
 						<span class="icon-bar"></span>
 					</button>
 				</div>
-
 				<div class="collapse navbar-collapse" id="navbar-collapse">
 					<ul class="nav navbar-nav">
-					<!--	<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.BookingRequestID, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li> -->
-
+						<!--<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.BookingRequestID, status = Data.Constants.BRState.Processed })');" href="#">Mark Processed</a></li> -->
                         <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
-						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
+						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>						
+						<li>@Html.ActionLink("Show Users", "Index", "User")</li>                     
+						<li><a id="btnHistory" onclick="HistoryClick(@Model.BookingRequestID);" class="btnHistory" href="#">History</a></li>
 						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
-						<li>@Html.ActionLink("Show Users", "Index", "User")</li>
-                     
-                     <li> <a id="btnHistory" onclick="HistoryClick(@Model.BookingRequestID);" class="btnHistory" href="#">History</a></li>
 					</ul>
 				</div>
 			</div>
 		</nav>
-
 		<div id="emailInfoBox" class="col-md-7">
 			<div class="emailInfoBox">
-            <iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.BookingRequestID" style=""></iframe>
-            <table id="tbluserrequests" class="email-info-tabele">
-                <thead>
-                    <tr>
-                        <th>Date Received</th>
-                        <th>Subject</th>
-                    </tr>
-                </thead>
-            </table>
+				<iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.BookingRequestID"></iframe>
+				<table id="tbluserrequests" class="email-info-table data-table">
+					<thead>
+						<tr>
+							<th>Date Received</th>
+							<th>Subject</th>
+						</tr>
+					</thead>
+				</table>
 			</div>
-        </div>
-        
-	    <div id="CalendarDiv" ></div>
-
+        </div>        
+		<div id="CalendarDiv" class="col-md-5"></div>
 	</div>
 </div>
 <input type="hidden" value="@Model.BookingRequestID" id="hdnrequestid" name="requestid" />
@@ -97,10 +83,10 @@
                     }
                     var id = $("#hdnrequestid").val();
                     Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&calendarID=' + @Model.MainCalendarID + '&start=' + start + 'z&end=' + end + 'z',
-                        {
-                            horizontalAlign: 'right',
-                            callback: calendar.refreshCalendars
-                        });
+                    {
+                        horizontalAlign: 'right',
+                        callback: calendar.refreshCalendars
+                    });
                 },
             }
         );
@@ -109,8 +95,8 @@
     //funtion to load booking request info in iframe "emailInfoFrame" on "tbluserrequests" request row click.
     //called by : rows in tbluserrequests on click
     function loadrequest(id, linkedCalendarIDs, ele) {
-        $("#tbluserrequests tr").attr("style", "");
-        $(ele).attr("style", "background-color: #aaa;");
+    	$("#tbluserrequests tr").removeClass('current-row');
+        $(ele).addClass('current-row');        
         $("#hdnrequestid").val(id);
         $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("Invalidate", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
         $("#emailInfoFrame")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
@@ -147,10 +133,10 @@
             //Callback function for row created.
             createdRow: function (row, data, index) {
                 if (data.id == $("#hdnrequestid").val()) {
-                    $(row).attr("style", "cursor:pointer;background-color: #aaa;");
+                	$(row).addClass('current-row');
                 }
                 else {
-                    $(row).attr("style", "cursor:pointer;");
+                	$(row).removeClass('current-row');
                 }
             },
             columns: [
@@ -173,9 +159,9 @@
         $('#btnRequestClarification').click(function () {
             if (Kwasant.IFrame.PopupsActive()) { return false; }
             Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.BookingRequestID })',
-                {
-                    horizontalAlign: 'left',
-                });
+            {
+                horizontalAlign: 'left',
+            });
         });
     });
 
@@ -205,10 +191,10 @@
     function HistoryClick(id) {
         if (Kwasant.IFrame.PopupsActive()) { return; }
         Kwasant.IFrame.Display('/Report/HistoryByBookingRequestId?bookingRequestID=' + id,
-            {
-                horizontalAlign: 'left',
-                callback: calendar.refreshCalendars
-            });
+        {
+            horizontalAlign: 'left',
+            callback: calendar.refreshCalendars
+        });
         
     }
 </script>
