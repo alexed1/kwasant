@@ -20,11 +20,25 @@
         var negAValue = parent.$("#btnNegotiation").attr("data-value");
         if (negAValue == "Edit Negotiation")
             deserializeForm();
+        else {
+            var negotiation = serializeForm();
+            $.ajax({
+                type: 'post',
+                url: '@Url.Action("Create", "Negotiation")',
+                data: { negotiation: JSON.stringify(negotiation) },
+                success: function (data) {
+                    var Success = data.Success;
+                    var negotiationId = data.NegotiationId;
+                    $('#divNegotiation').attr("data-negotiationId", negotiationId);
+                }
+            });
+        }
     });
 
     function callAppendQuestion(ele) {
         var findquestionId = $(ele).closest("div").attr("data-questionid");
-        getCalltextanswer(ele, findquestionId);
+        var findquestiontblId = $(ele).closest("div").attr("data-questiontbleid");
+        getCalltextanswer(ele, findquestionId, findquestiontblId);
     };
 
     var getCallquestion = function (callfrom, countValue) {
@@ -34,31 +48,47 @@
             questionPresent = countValue;
         else
             questionPresent = $("#appendquestinoId #questionContainer").length;
+        var negotiationtblid = $("#divNegotiation").attr("data-negotiationid");
 
         $.ajax({
             type: 'Get',
             url: '@Url.Action("Addquestion", "Negotiation")',
-            data: { questionID: (questionPresent + 1) },
+            data: { questionID: (questionPresent + 1), negotiationId: negotiationtblid },
             success: function (data) {
+                //alert(data.questionID);
                 $("#appendquestinoId").append(data);
                 //alert(countValue);
             }
         });
     };
 
-    var getCalltextanswer = function (ele, questionID) {
+    var getCalltextanswer = function (ele, questionID, questiontblId) {
         var radiotype = $(ele).closest("table").find("input[checked='checked']").val();
-        if (radiotype == 'Timeslot')
-            url = '@Url.Action("AddTimeslotAnswer", "Negotiation")';
-        else
+
+        if (radiotype == 'Timeslot') {
+            $.ajax({
+                type: 'Get',
+                url: '@Url.Action("EditTimeslots", "Question")',
+                data: { Id: questiontblId, BookingRequestID: id },
+                success: function (data) {
+                    //$(ele).closest("table").find("#appendanswerId").append(data);
+                    Kwasant.IFrame.Display('/Negotiation/EventWindows/?id=' + data,
+                    {
+                        horizontalAlign: 'right',
+                        //callback: calendar.refreshCalendars
+                    });
+                }
+            });
+        }
+        else {
             url = '@Url.Action("AddtextAnswer", "Negotiation")';
+        }
 
         var answerPresent = $("#appendquestinoId #questionContainer[data-questionID=" + questionID + "] #appendanswerId #answerContainer").length;
-        //alert(questionID);
         $.ajax({
             type: 'Get',
             url: url,
-            data: { answerID: (answerPresent + 1) },
+            data: { answerID: (answerPresent + 1), questiontblID: questiontblId },
             success: function (data) {
                 $(ele).closest("table").find("#appendanswerId").append(data);
             }
@@ -74,21 +104,32 @@
         $(ele).attr('checked', 'checked');
     }
 
+    var removeQuestion = function (ele) {
+        var findquestiontblId = $(ele).closest("div").attr("data-questiontbleid");
+        var url = "/Negotiation/DeleteQuestion/?questionId=" + findquestiontblId;
+        $.get(url, null, function (data) {
+            if (data == "Success")
+            { removetable(ele); }
+            else
+                alert("Exception Error!");
+        });
+    }
+
     var handleNegotiationCancel = function (ele) {
         cancelNegotiation();
     }
 
-
     var serializeForm = function () {
 
         var negotiationtblid = $("#divNegotiation").attr("data-negotiationid");
+        //var Negotiation = { Id: negotiationtblid, Name: null, Questions: [], State: 2 };
         var Negotiation = { Id: negotiationtblid, Name: null, Questions: [] };
 
         $.each($("#appendquestinoId #questionContainer"), function () {
             //item = per question container with id = questionContainer.
             var qText = $(this).find('#questionText').val();
             var answersArray = [];
-
+            var radiotype = $(this).find("input[checked='checked']").val();
             var answerContainer = $(this).find('#appendanswerId #answerContainer')
 
             $.each(answerContainer, function () {
@@ -97,11 +138,12 @@
                 var aStatus = $(this).find('#answerStatus').val();
 
                 var answertbleid = $(this).attr("data-answertbleid")
-                answersArray.push({Id:answertbleid, Text: aText, Status: aStatus });
+                answersArray.push({ Id: answertbleid, Text: aText, Status: aStatus });
             });
 
             var questiontbleid = $(this).attr("data-questiontbleid")
-            Negotiation.Questions.push({Id:questiontbleid, Text: qText, Answers: answersArray });
+            //Negotiation.Questions.push({ Id: questiontbleid, Text: qText, Answers: answersArray, AnswerType: radiotype, Status: "Unanswered" });
+            Negotiation.Questions.push({ Id: questiontbleid, Text: qText, Answers: answersArray, AnswerType: radiotype });
         });
 
         Negotiation.Name = $("#NegName").val();
@@ -125,6 +167,7 @@
                 $.post('/CommunicationManager/DispatchNegotiationEmail/', { BookingRequestID: bookingrequestid, NegotiationId: negotiationId }, function (data) {
                     var clarificationRequestId = data.ClarificationRequestId;
                     $.post('/ClarificationRequest/Send/', { bookingRequestId: bookingrequestid, clarificationRequestId: clarificationRequestId, negotiationId: negotiationId }, function (data) {
+                        closethis();
                         alert("Done");
                     });
                 });
@@ -171,9 +214,9 @@
                 var objJSON = eval("(function(){return " + jsonResult + ";})()");
                 $("#NegName").val(objJSON.Name);
                 $('#divNegotiation').attr("data-negotiationId", objJSON.Id);
-                //alert(objJSON.Id);
+
                 $.each(objJSON.Questions, function () {
-                    //alert("Question: " + this.Id);
+
                     countQueVal = countQueVal + 1;
                     var temphtml = questionTemp;
                     //Assign Data-QuestionId
@@ -246,7 +289,7 @@
                         <label>Name:</label>
                     </td>
                     <td>
-                        <input type="text" id="NegName" name="NegNameId" value="" />
+                        <input type="text" id="NegName" name="NegNameId" value="Negotiation 1" />
                     </td>
                 </tr>
             </table>
@@ -255,8 +298,8 @@
 
         </div>
       <span class="form-group" id="divAddQuestion" onclick="getCallquestion()">
-  @*<span class="form-group" id="divAddQuestion" onclick="deserializeForm()">*@
-&nbsp; &nbsp;
+      @*<span class="form-group" id="divAddQuestion" onclick="deserializeForm()">*@
+      &nbsp; &nbsp;
             <img src="~/Content/img/plus.png" />
             <label>Add Question</label>
         </span>

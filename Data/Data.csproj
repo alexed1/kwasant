@@ -369,6 +369,10 @@
     <Compile Include="Migrations\201407310710406_UpdateStateHandling.Designer.cs">
       <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408021638472_AddQuestion_to_Calendar.cs" />
+    <Compile Include="Migrations\201408021638472_AddQuestion_to_Calendar.Designer.cs">
+      <DependentUpon>201408021638472_AddQuestion_to_Calendar.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AnswersRepository.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -586,6 +590,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407310710406_UpdateStateHandling.resx">
       <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408021638472_AddQuestion_to_Calendar.resx">
+      <DependentUpon>201408021638472_AddQuestion_to_Calendar.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
