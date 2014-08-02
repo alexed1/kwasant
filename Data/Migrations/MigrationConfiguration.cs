@@ -160,7 +160,7 @@ namespace Data.Migrations
 
         //Do not remove. Resharper says it's not in use, but it's being used via reflection
         private static void SeedConstants<TConstantsType, TConstantDO>(IUnitOfWork uow, Func<int, string, TConstantDO> creatorFunc)
-            where TConstantDO : class
+            where TConstantDO : class, IConstantRow<TConstantsType>
         {
             var instructionsToAdd = new List<TConstantDO>();
 
@@ -171,14 +171,29 @@ namespace Data.Migrations
                 object value = constant.GetValue(null);
                 instructionsToAdd.Add(creatorFunc((int)value, name));
             }
-            var param = Expression.Parameter(typeof (TConstantDO));
-            var exp = Expression.Lambda(Expression.Convert(Expression.Property(param, "Id"), typeof(object)), param) as Expression<Func<TConstantDO, object>>;
+            //First, we find rows in the DB that don't exist in our seeding. We delete those.
+            //Then, we find rows in our seeding that don't exist in the DB. We create those ones (or update the name).
 
             var repo = new GenericRepository<TConstantDO>(uow);
-            repo.DBSet.AddOrUpdate(
-                    exp,
-                    instructionsToAdd.ToArray()
-            );
+            var allRows = new GenericRepository<TConstantDO>(uow).GetAll().ToList();
+            foreach (var row in allRows)
+            {
+                if (!instructionsToAdd.Select(i => i.Id).Contains(row.Id))
+                {
+                    repo.Remove(row);
+                }
+            }
+            foreach (var row in instructionsToAdd)
+            {
+                var matchingRow = allRows.FirstOrDefault(r => r.Id == row.Id);
+                if (matchingRow == null)
+                {
+                    matchingRow = row;
+                    repo.Add(matchingRow);
+                }
+                matchingRow.Id = row.Id;
+                matchingRow.Name = row.Name;
+            }
         }
 
         private static void SeedInstructions(IUnitOfWork unitOfWork)

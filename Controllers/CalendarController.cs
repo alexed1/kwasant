@@ -57,12 +57,13 @@ namespace KwasantWeb.Controllers
                 if (calendarDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                var calendarsViaNegotiationRequest = calendarDO.Negotiation.Calendars;
-                var calendarsViaBookingRequest = calendarDO.Negotiation.BookingRequest.Calendars;
+                var calendarsViaNegotiationRequest = calendarDO.Negotiation.Calendars; //get calendars linked to negotiation
+                var recipientAddresses = calendarDO.Negotiation.BookingRequest.Recipients.Select(r => r.EmailAddress) //Get email addresses for each recipient
+                        .SelectMany(a => uow.UserRepository.GetOrCreateUser(a).Calendars).ToList(); //Grab the user from the email and find their calendars
 
                 return View("~/Views/Calendar/SelectEventWindows.cshtml", new EventWindowViewModel
                 {
-                    LinkedCalendarIDs = calendarsViaNegotiationRequest.Union(calendarsViaBookingRequest).Select(c => c.Id).Union(new[] { calendarID }).Distinct().ToList(),
+                    LinkedCalendarIDs = calendarsViaNegotiationRequest.Union(recipientAddresses).Select(c => c.Id).Union(new[] { calendarID }).Distinct().ToList(),
                     ActiveCalendarID = calendarID
                 });
             }

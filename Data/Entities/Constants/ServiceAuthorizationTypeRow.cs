@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Data.Constants;
 
 namespace Data.Entities.Constants
 {
     public class ServiceAuthorizationTypeRow : IConstantRow<ServiceAuthorizationType>
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }
 
         [MaxLength(16)]

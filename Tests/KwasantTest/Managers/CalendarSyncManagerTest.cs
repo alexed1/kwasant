@@ -32,6 +32,7 @@ namespace KwasantTest.Managers
         [SetUp]
         public void SetUp()
         {
+            _remoteCalendarEvents.Clear();
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             CalendarSyncManager.DisableAutoSynchronization = true;
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();

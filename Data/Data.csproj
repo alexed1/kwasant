@@ -369,6 +369,14 @@
     <Compile Include="Migrations\201407310710406_UpdateStateHandling.Designer.cs">
       <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408010906358_LinkBRToNegotiation.cs" />
+    <Compile Include="Migrations\201408010906358_LinkBRToNegotiation.Designer.cs">
+      <DependentUpon>201408010906358_LinkBRToNegotiation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408021102577_TurnOffIdentityInsert.cs" />
+    <Compile Include="Migrations\201408021102577_TurnOffIdentityInsert.Designer.cs">
+      <DependentUpon>201408021102577_TurnOffIdentityInsert.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AnswersRepository.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -586,6 +594,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201407310710406_UpdateStateHandling.resx">
       <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408010906358_LinkBRToNegotiation.resx">
+      <DependentUpon>201408010906358_LinkBRToNegotiation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408021102577_TurnOffIdentityInsert.resx">
+      <DependentUpon>201408021102577_TurnOffIdentityInsert.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
