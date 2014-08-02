@@ -35,6 +35,10 @@ namespace Data.Migrations
                 .ForeignKey("dbo.Users", t => t.User_Id)
                 .Index(t => t.QuestionID)
                 .Index(t => t.User_Id);
+
+            //The schema says Questions and ClarificationRequests MUST have a negotiation, so the existing rows are invalid; delete them.
+            Sql(@"DELETE FROM dbo.Questions");
+            Sql(@"DELETE FROM dbo.ClarificationRequests");
             
             AddColumn("dbo.ClarificationRequests", "NegotiationId", c => c.Int(nullable: false));
             AddColumn("dbo.Questions", "AnswerType", c => c.String());

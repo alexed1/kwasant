@@ -35,15 +35,6 @@ namespace Data.Migrations
                 .PrimaryKey(t => t.Id);
 
             CreateTable(
-                "dbo.NegotiationStateRows",
-                c => new
-                {
-                    Id = c.Int(nullable: false, identity: true),
-                    Name = c.String(),
-                })
-                .PrimaryKey(t => t.Id);
-                                                
-            CreateTable(
                 "dbo.QuestionStatusRows",
                 c => new
                     {
@@ -79,14 +70,6 @@ namespace Data.Migrations
                     })
                 .PrimaryKey(t => t.Id);
             
-            CreateTable(
-                "dbo.AnswerStatusRows",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        Name = c.String(),
-                    })
-                .PrimaryKey(t => t.Id);
             
             AddColumn("dbo.Emails", "EmailStatusID", c => c.Int(nullable: false));
             AddColumn("dbo.Events", "EventStatusID", c => c.Int(nullable: false));
@@ -106,7 +89,7 @@ namespace Data.Migrations
 
             Sql(@"Update dbo.Emails SET EmailStatusID = EmailStatus");
             Sql(@"Update dbo.Events SET EventStatusID = StateID");
-            Sql(@"Update dbo.Recipients SET EmailParticipantTypeID = (Type - 1)"); // -1, because we moved from 2-3-4 to 1-2-3
+            Sql(@"Update dbo.Recipients SET EmailParticipantTypeID = (Type)");
             Sql(@"Update dbo.Questions SET QuestionStatusID = (Status + 1)"); // +1, because it was originally 0indexed
             Sql(@"Update dbo.CommunicationConfigurations SET CommunicationTypeID = (Type + 1)"); // +1, because it was originally 0indexed
             Sql(@"Update dbo.TrackingStatuses SET TrackingTypeID = Type");

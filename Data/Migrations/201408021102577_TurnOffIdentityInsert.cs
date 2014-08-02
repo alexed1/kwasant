@@ -1,3 +1,5 @@
+using System;
+
 namespace Data.Migrations
 {
     using System.Data.Entity.Migrations;
@@ -6,15 +8,9 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.Negotiations", "NegotiationStateID", c => c.Int());
-            CreateIndex("dbo.Negotiations", "NegotiationStateID");
-
             AddColumn("dbo.Negotiations", "BookingRequestID", c => c.Int());
             CreateIndex("dbo.Negotiations", "BookingRequestID");
-            AddForeignKey("dbo.Negotiations", "BookingRequestID", "dbo.BookingRequests", "Id");
-
-            AddColumn("dbo.Answers", "AnswerStatusID", c => c.Int());
-            CreateIndex("dbo.Answers", "AnswerStatusID");            
+            AddForeignKey("dbo.Negotiations", "BookingRequestID", "dbo.BookingRequests", "Id");       
 
             DropForeignKey("dbo.Emails", "EmailStatusID", "dbo.EmailStatusRows");
             DropForeignKey("dbo.Recipients", "EmailParticipantTypeID", "dbo.EmailParticipantTypeRows");
@@ -29,119 +25,26 @@ namespace Data.Migrations
             DropForeignKey("dbo.TrackingStatuses", "TrackingStatusID", "dbo.TrackingStatusRows");
             DropForeignKey("dbo.TrackingStatuses", "TrackingTypeID", "dbo.TrackingTypeRows");
             DropForeignKey("dbo.Answers", "AnswerStatusID", "dbo.AnswerStatusRows");
-            DropPrimaryKey("dbo.EmailStatusRows");
-            DropPrimaryKey("dbo.EmailParticipantTypeRows");
-            DropPrimaryKey("dbo.EventCreateTypes");
-            DropPrimaryKey("dbo.EventStatuses");
-            DropPrimaryKey("dbo.EventSyncStatus");
-            DropPrimaryKey("dbo.ClarificationRequestStates");
-            DropPrimaryKey("dbo.NegotiationStateRows");
-            DropPrimaryKey("dbo.QuestionStatusRows");
-            DropPrimaryKey("dbo.BookingRequestStates");
-            DropPrimaryKey("dbo.ServiceAuthorizationTypes");
-            DropPrimaryKey("dbo.TrackingStatusRows");
-            DropPrimaryKey("dbo.TrackingTypeRows");
-            DropPrimaryKey("dbo.AnswerStatusRows");
+            Sql(@"ALTER TABLE [dbo].[ClarificationRequests] DROP CONSTRAINT [FK_dbo.ClarificationRequests_dbo.BookingRequestStates_CRState]");
+            Sql(@"ALTER TABLE [dbo].[BookingRequests] DROP CONSTRAINT [FK_dbo.BookingRequests_dbo.BookingRequestStatuses_BookingRequestStatusID]");
 
             //Ridiculous that EF makes us do this, but it doesn't handle turning off identity insert on columns properly. We need to do it manually
 
-            AddColumn("dbo.EmailStatusRows", "TempID", c => c.Int(nullable: false));
-            AddColumn("dbo.EmailParticipantTypeRows", "TempID", c => c.Int(nullable: false));
-            AddColumn("dbo.EventCreateTypes", "TempID", c => c.Int(nullable: false));
-            AddColumn("dbo.EventStatuses", "TempID", c => c.Int(nullable: false));
-            AddColumn("dbo.EventSyncStatus", "TempID", c => c.Int(nullable: false));
-            AddColumn("dbo.ClarificationRequestStates", "TempID", c => c.Int(nullable: false));
-            AddColumn("dbo.NegotiationStateRows", "TempID", c => c.Int(nullable: false));
-            AddColumn("dbo.QuestionStatusRows", "TempID", c => c.Int(nullable: false));
-            AddColumn("dbo.BookingRequestStates", "TempID", c => c.Int(nullable: false));
-            AddColumn("dbo.ServiceAuthorizationTypes", "TempID", c => c.Int(nullable: false));
-            AddColumn("dbo.TrackingStatusRows", "TempID", c => c.Int(nullable: false));
-            AddColumn("dbo.TrackingTypeRows", "TempID", c => c.Int(nullable: false));
-            AddColumn("dbo.AnswerStatusRows", "TempID", c => c.Int(nullable: false));
+            ChangeTableToNonIdentity("EmailStatusRows");
+            ChangeTableToNonIdentity("EmailStatusRows");
+            ChangeTableToNonIdentity("EmailParticipantTypeRows");
+            ChangeTableToNonIdentity("EventCreateTypes");
+            ChangeTableToNonIdentity("EventStatuses");
+            ChangeTableToNonIdentity("EventSyncStatus");
+            ChangeTableToNonIdentity("ClarificationRequestStates");
+            ChangeTableToNonIdentity("NegotiationStateRows");
+            ChangeTableToNonIdentity("QuestionStatusRows");
+            ChangeTableToNonIdentity("BookingRequestStates");
+            ChangeTableToNonIdentity("ServiceAuthorizationTypes");
+            ChangeTableToNonIdentity("TrackingStatusRows");
+            ChangeTableToNonIdentity("TrackingTypeRows");
+            ChangeTableToNonIdentity("AnswerStatusRows");
 
-            Sql(@"Update dbo.EmailStatusRows SET TempID = Id");
-            Sql(@"Update dbo.EmailParticipantTypeRows SET TempID = Id");
-            Sql(@"Update dbo.EventCreateTypes SET TempID = Id");
-            Sql(@"Update dbo.EventStatuses SET TempID = Id");
-            Sql(@"Update dbo.EventSyncStatus SET TempID = Id");
-            Sql(@"Update dbo.ClarificationRequestStates SET TempID = Id");
-            Sql(@"Update dbo.NegotiationStateRows SET TempID = Id");
-            Sql(@"Update dbo.QuestionStatusRows SET TempID = Id");
-            Sql(@"Update dbo.BookingRequestStates SET TempID = Id");
-            Sql(@"Update dbo.ServiceAuthorizationTypes SET TempID = Id");
-            Sql(@"Update dbo.TrackingStatusRows SET TempID = Id");
-            Sql(@"Update dbo.TrackingTypeRows SET TempID = Id");
-            Sql(@"Update dbo.AnswerStatusRows SET TempID = Id");
-
-            DropColumn("dbo.EmailStatusRows", "Id");
-            DropColumn("dbo.EmailParticipantTypeRows", "Id");
-            DropColumn("dbo.EventCreateTypes", "Id");
-            DropColumn("dbo.EventStatuses", "Id");
-            DropColumn("dbo.EventSyncStatus", "Id");
-            DropColumn("dbo.ClarificationRequestStates", "Id");
-            DropColumn("dbo.NegotiationStateRows", "Id");
-            DropColumn("dbo.QuestionStatusRows", "Id");
-            DropColumn("dbo.BookingRequestStates", "Id");
-            DropColumn("dbo.ServiceAuthorizationTypes", "Id");
-            DropColumn("dbo.TrackingStatusRows", "Id");
-            DropColumn("dbo.TrackingTypeRows", "Id");
-            DropColumn("dbo.AnswerStatusRows", "Id");
-            
-            AddColumn("dbo.EmailStatusRows", "Id", c => c.Int(nullable: false));
-            AddColumn("dbo.EmailParticipantTypeRows", "Id", c => c.Int(nullable: false));
-            AddColumn("dbo.EventCreateTypes", "Id", c => c.Int(nullable: false));
-            AddColumn("dbo.EventStatuses", "Id", c => c.Int(nullable: false));
-            AddColumn("dbo.EventSyncStatus", "Id", c => c.Int(nullable: false));
-            AddColumn("dbo.ClarificationRequestStates", "Id", c => c.Int(nullable: false));
-            AddColumn("dbo.NegotiationStateRows", "Id", c => c.Int(nullable: false));
-            AddColumn("dbo.QuestionStatusRows", "Id", c => c.Int(nullable: false));
-            AddColumn("dbo.BookingRequestStates", "Id", c => c.Int(nullable: false));
-            AddColumn("dbo.ServiceAuthorizationTypes", "Id", c => c.Int(nullable: false));
-            AddColumn("dbo.TrackingStatusRows", "Id", c => c.Int(nullable: false));
-            AddColumn("dbo.TrackingTypeRows", "Id", c => c.Int(nullable: false));
-            AddColumn("dbo.AnswerStatusRows", "Id", c => c.Int(nullable: false));
-
-            Sql(@"Update dbo.EmailStatusRows SET Id = TempID");
-            Sql(@"Update dbo.EmailParticipantTypeRows SET Id = TempID");
-            Sql(@"Update dbo.EventCreateTypes SET Id = TempID");
-            Sql(@"Update dbo.EventStatuses SET Id = TempID");
-            Sql(@"Update dbo.EventSyncStatus SET Id = TempID");
-            Sql(@"Update dbo.ClarificationRequestStates SET Id = TempID");
-            Sql(@"Update dbo.NegotiationStateRows SET Id = TempID");
-            Sql(@"Update dbo.QuestionStatusRows SET Id = TempID");
-            Sql(@"Update dbo.BookingRequestStates SET Id = TempID");
-            Sql(@"Update dbo.ServiceAuthorizationTypes SET Id = TempID");
-            Sql(@"Update dbo.TrackingStatusRows SET Id = TempID");
-            Sql(@"Update dbo.TrackingTypeRows SET Id = TempID");
-            Sql(@"Update dbo.AnswerStatusRows SET Id = TempID");
-            
-            DropColumn("dbo.EmailStatusRows", "TempID");
-            DropColumn("dbo.EmailParticipantTypeRows", "TempID");
-            DropColumn("dbo.EventCreateTypes", "TempID");
-            DropColumn("dbo.EventStatuses", "TempID");
-            DropColumn("dbo.EventSyncStatus", "TempID");
-            DropColumn("dbo.ClarificationRequestStates", "TempID");
-            DropColumn("dbo.NegotiationStateRows", "TempID");
-            DropColumn("dbo.QuestionStatusRows", "TempID");
-            DropColumn("dbo.BookingRequestStates", "TempID");
-            DropColumn("dbo.ServiceAuthorizationTypes", "TempID");
-            DropColumn("dbo.TrackingStatusRows", "TempID");
-            DropColumn("dbo.TrackingTypeRows", "TempID");
-            DropColumn("dbo.AnswerStatusRows", "TempID");
-            
-            AddPrimaryKey("dbo.EmailStatusRows", "Id");
-            AddPrimaryKey("dbo.EmailParticipantTypeRows", "Id");
-            AddPrimaryKey("dbo.EventCreateTypes", "Id");
-            AddPrimaryKey("dbo.EventStatuses", "Id");
-            AddPrimaryKey("dbo.EventSyncStatus", "Id");
-            AddPrimaryKey("dbo.ClarificationRequestStates", "Id");
-            AddPrimaryKey("dbo.NegotiationStateRows", "Id");
-            AddPrimaryKey("dbo.QuestionStatusRows", "Id");
-            AddPrimaryKey("dbo.BookingRequestStates", "Id");
-            AddPrimaryKey("dbo.ServiceAuthorizationTypes", "Id");
-            AddPrimaryKey("dbo.TrackingStatusRows", "Id");
-            AddPrimaryKey("dbo.TrackingTypeRows", "Id");
-            AddPrimaryKey("dbo.AnswerStatusRows", "Id");
             AddForeignKey("dbo.Emails", "EmailStatusID", "dbo.EmailStatusRows", "Id", cascadeDelete: true);
             AddForeignKey("dbo.Recipients", "EmailParticipantTypeID", "dbo.EmailParticipantTypeRows", "Id", cascadeDelete: true);
             AddForeignKey("dbo.Events", "CreateTypeID", "dbo.EventCreateTypes", "Id", cascadeDelete: true);
@@ -155,6 +58,35 @@ namespace Data.Migrations
             AddForeignKey("dbo.TrackingStatuses", "TrackingStatusID", "dbo.TrackingStatusRows", "Id", cascadeDelete: true);
             AddForeignKey("dbo.TrackingStatuses", "TrackingTypeID", "dbo.TrackingTypeRows", "Id", cascadeDelete: true);
             AddForeignKey("dbo.Answers", "AnswerStatusID", "dbo.AnswerStatusRows", "Id", cascadeDelete: true);
+        }
+
+        private void ChangeTableToNonIdentity(String tableName)
+        {
+            var tempName = tableName + "_temp";
+            var sql = String.Format(@"
+
+BEGIN TRANSACTION
+
+EXECUTE sp_rename N'[PK_dbo.{0}]', N'[PK_{0}_old]', 'OBJECT'
+
+CREATE TABLE [dbo].[{1}]
+(
+[Id] [int] NOT NULL,
+[Name] VARCHAR(MAX) NOT NULL
+) ON [PRIMARY] 
+
+ALTER TABLE [dbo].[{1}] ADD CONSTRAINT [PK_dbo.{0}] PRIMARY KEY CLUSTERED  ([Id])
+
+INSERT INTO [dbo].[{1}] (Id, Name)
+SELECT Id, Name FROM dbo.{0}
+
+DROP TABLE dbo.{0}
+
+EXEC sp_rename N'[dbo].[{1}]', N'{0}';
+
+COMMIT TRANSACTION
+", tableName, tempName);
+            Sql(sql);
         }
         
         public override void Down()
