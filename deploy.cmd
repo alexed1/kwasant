@@ -38,6 +38,11 @@ IF NOT DEFINED NEXT_MANIFEST_PATH (
   )
 )
 
+IF NOT DEFINED IN_PLACE_DEPLOYMENT (
+  SET IN_PLACE_DEPLOYMENT=0
+) 
+
+
 IF NOT DEFINED KUDU_SYNC_CMD (
   :: Install kudu sync
   echo Installing Kudu Sync
