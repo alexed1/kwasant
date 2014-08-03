@@ -10,6 +10,7 @@ using Data.Entities;
 using Data.Entities.Constants;
 using Data.Infrastructure;
 using Data.Interfaces;
+using FluentValidation.Validators;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantICS.DDay.iCal;
@@ -39,9 +40,9 @@ namespace KwasantTest.Workflow
         private FixtureData _fixture;
 
         public Stopwatch totalOperationDuration = new Stopwatch();
-        public Stopwatch emailToRequestDuration = new Stopwatch();
+        public Stopwatch pollingDuration = new Stopwatch();
         public Stopwatch requestToEmailDuration = new Stopwatch();
-        public TimeSpan emailToRequestTimeout = TimeSpan.FromSeconds(60);
+        public TimeSpan maxPollingTime = TimeSpan.FromSeconds(60);
         public TimeSpan requestToEmailTimeout = TimeSpan.FromSeconds(60);
         public TimeSpan totalOperationTimeout = TimeSpan.FromSeconds(120);
 
@@ -93,12 +94,21 @@ namespace KwasantTest.Workflow
 
             //VERIFY
             //check timeouts
-            Assert.Less(emailToRequestDuration.Elapsed, emailToRequestTimeout, "Email to BookingRequest conversion timed out.");
+            Assert.Less(pollingDuration.Elapsed, maxPollingTime, "Email to BookingRequest conversion timed out.");
             Assert.Less(requestToEmailDuration.Elapsed, requestToEmailTimeout, "BookingRequest to Invitation conversion timed out.");
             Assert.Less(totalOperationDuration.Elapsed, totalOperationTimeout, "Workflow timed out.");
         
         }
-
+        public BookingRequestDO PollForBookingRequest(string subject)
+        {
+            EmailDO targetCriteria = new EmailDO();
+            targetCriteria.Subject = subject;
+            targetCriteria.From.Address = _testUserEmail;
+            InjectedEmailQuery injectedQuery = InjectedQuery_FindBookingRequest;
+            List<EmailDO> queryResults = PollForEmail(injectedQuery, targetCriteria);
+            BookingRequestDO foundBookingRequest = (BookingRequestDO)queryResults.First();
+            return foundBookingRequest;
+        }
 
         //This method takes a NegotiationId as input that must resolve to a Negotiation with status "Unresolved".
         //Build a list of Users based on the Attendee lists of the associated Events.
@@ -113,7 +123,7 @@ namespace KwasantTest.Workflow
             //Create a BookingRequest and two test Attendees
             //Create a Negotiation with a Question and an Answer
             //Save the Negotiation as if running ProcessSubmittedNegotiation
-            //Verify that Clarification Request was sent to Attendee
+            //Verify that Clarification Request was received by Attendee
             //Verify that executing link in clarification request produces appropriate view
 
             BookingRequestDO testBR = _fixture.TestBookingRequest1();
@@ -123,11 +133,38 @@ namespace KwasantTest.Workflow
             _uow.NegotiationsRepository.Add(testNegotiation);
             _uow.SaveChanges();
 
+            //Verify that Clarification Request was sent to Attendee
+            //we will poll the test account for a ClarificationRequest that meets the criteria
+            pollingDuration.Start();
+            ClarificationRequestDO foundCR = PollForClarificationRequest(testAttendee1);
 
+            //VERIFY
+            //check timeouts
+            Assert.Less(pollingDuration.Elapsed, maxPollingTime, "Email to BookingRequest conversion timed out."); //generalize
+            Assert.Less(requestToEmailDuration.Elapsed, requestToEmailTimeout, "BookingRequest to Invitation conversion timed out.");
+            Assert.Less(totalOperationDuration.Elapsed, totalOperationTimeout, "Workflow timed out.");
         }
 
-        //the actual test should be handled as a delegate
-        public List<EmailDO> PollForEmail(EmailQueryHandler handler, EmailDO targetCriteria )
+
+        public ClarificationRequestDO PollForClarificationRequest(AttendeeDO testAttendee)
+        {
+            EmailDO targetCriteria = new EmailDO();
+            targetCriteria.Subject = "We need a little more information from you"; //this is the current subject for clarification requests.
+            targetCriteria.From = testAttendee.EmailAddress; //misleading. We really are going to test whether the To address on the received CR matches the address of this testAttendee. but can't currently set the To value directly. So hijacking the From field. Should be improved.
+            InjectedEmailQuery injectedQuery = InjectedQuery_FindClarificationRequest;
+            List<EmailDO> queryResults = PollForEmail(injectedQuery, targetCriteria);
+            ClarificationRequestDO foundCR = (ClarificationRequestDO)queryResults.FirstOrDefault();
+            return foundCR;
+        }
+        //Check the specified account until some non-null query results are returned, or until timeout. 
+        //The actual query is passed in as a delegate method called injectedQuery, which is of type InjectedEmailQuery, which is a delegate.
+        //targetCriteria is passed through this method into the injectedQuery
+        //this allows this method's machinery to be reused for many different kinds of email queries.
+
+        #region Polling Machinery
+        //POLLING MACHINERY
+        
+        public List<EmailDO> PollForEmail(InjectedEmailQuery injectedQuery, EmailDO targetCriteria)
         {
             List<EmailDO> queryResults;
             //run inbound daemon, checking for a generated BookingRequest, until success or timeout
@@ -136,32 +173,46 @@ namespace KwasantTest.Workflow
             do
             {
                 DaemonTests.RunDaemonOnce(inboundDaemon);
-                queryResults = handler(targetCriteria);
-            } while (queryResults == null && emailToRequestDuration.Elapsed < emailToRequestTimeout);
-            emailToRequestDuration.Stop();
+                queryResults = injectedQuery(targetCriteria);
+            } while (queryResults.Count == 0 && pollingDuration.Elapsed < maxPollingTime);
+            pollingDuration.Stop();
             return queryResults;
         }
 
-        public delegate List<EmailDO> EmailQueryHandler(EmailDO targetCriteria);
+        //this delegate allows queries to be passed into the polling mechanism
+        public delegate List<EmailDO> InjectedEmailQuery (EmailDO targetCriteria);
 
-       // EmailQueryHandler handler = FindClarificationRequests;
-       
-         //handler = FindBookingRequest;
-        public static List<ClarificationRequestDO> FindClarificationRequests(EmailDO targetCriteria)
+        //====================================
+        #endregion Polling Machinery
+
+        #region Injected Queries
+        //Injected Queries
+      
+        public static List<EmailDO> InjectedQuery_FindClarificationRequest(EmailDO targetCriteria)
         {
             var UOW = ObjectFactory.GetInstance<IUnitOfWork>();
-            List<ClarificationRequestDO> foundCRs = UOW.ClarificationRequestRepository.GetAll().ToList();
-            return foundCRs;
+            ClarificationRequestDO foundCR = UOW.ClarificationRequestRepository.FindOne(cr => cr.To.First().Address == targetCriteria.From.Address && cr.Subject == targetCriteria.Subject); //note that we're using the From field to hold the criteria, but we're really checking To
+            return ConvertToEmailList(foundCR);
         }
 
-       
-        public static List<EmailDO> FindBookingRequest(EmailDO targetCriteria)
+        //This query looks for a single email of type booking request that meets provided From address and Subject criteria
+        public static List<EmailDO> InjectedQuery_FindBookingRequest(EmailDO targetCriteria)
         {
             var UOW = ObjectFactory.GetInstance<IUnitOfWork>();
             BookingRequestDO foundBR = UOW.BookingRequestRepository.FindOne( br => br.From.Address == targetCriteria.From.Address && br.Subject == targetCriteria.Subject);
-            List<EmailDO> queryResults = new List<EmailDO>();
-            queryResults.Add(foundBR);
-            return queryResults;
+            return ConvertToEmailList(foundBR);
+        }
+
+        //================================================
+        #endregion
+
+        //to maximize reuse, all injected queries are converted to a List of EmailDO.
+        public static List<EmailDO> ConvertToEmailList(object queryResults)
+        {
+             List<EmailDO> normalizedList= new List<EmailDO>();
+             if (queryResults != null)
+                 normalizedList.Add((EmailDO)queryResults);
+             return normalizedList;
         }
 
         public void PollInboxForEvent(DateTimeOffset start, DateTimeOffset end, string subject)
@@ -231,16 +282,7 @@ namespace KwasantTest.Workflow
             }
             return null;
         }
-        public BookingRequestDO PollForBookingRequest(string subject)
-        {
-           EmailDO targetCriteria = new EmailDO();
-           targetCriteria.Subject = subject;
-           targetCriteria.From.Address = _testUserEmail;
-           EmailQueryHandler handler = FindBookingRequest;
-           List<EmailDO> queryResults = PollForEmail(handler, targetCriteria);
-           BookingRequestDO foundBookingRequest = (BookingRequestDO) queryResults.First();
-           return foundBookingRequest;
-        }
+     
 
         public void SendEmailAndStartTimer(EmailDO testEmail)
         {
@@ -251,7 +293,7 @@ namespace KwasantTest.Workflow
             _uow.SaveChanges();
             DaemonTests.RunDaemonOnce(_outboundDaemon);
             totalOperationDuration.Start();
-            emailToRequestDuration.Start();
+            pollingDuration.Start();
 
         }
 

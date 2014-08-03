@@ -19,7 +19,6 @@ namespace Data.Entities
         public int AnswerStatusID { get; set; }
         public AnswerStatusRow AnswerStatus { get; set; }
         
-        [Required]
         public virtual UserDO User { get; set; }
         public string ObjectsType { get; set; }
         public string Text { get; set; }

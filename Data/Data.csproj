@@ -389,6 +389,10 @@
     <Compile Include="Migrations\201408031644084_AddTextToAnswer2.Designer.cs">
       <DependentUpon>201408031644084_AddTextToAnswer2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408032035430_AddTextToAnswer3.cs" />
+    <Compile Include="Migrations\201408032035430_AddTextToAnswer3.Designer.cs">
+      <DependentUpon>201408032035430_AddTextToAnswer3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AnswersRepository.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -621,6 +625,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408031644084_AddTextToAnswer2.resx">
       <DependentUpon>201408031644084_AddTextToAnswer2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408032035430_AddTextToAnswer3.resx">
+      <DependentUpon>201408032035430_AddTextToAnswer3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
