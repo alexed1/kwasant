@@ -32,7 +32,7 @@ namespace KwasantWeb.Controllers
                 if (bookingRequestDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                ViewBag.negotiationlbl = new Negotiations().getNegotiation(uow, id);
+                ViewBag.negotiationlbl = new Negotiations().getNegotiationTask(uow, id);
 
                 return View(new CalendarViewModel
                 {

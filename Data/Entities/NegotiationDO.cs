@@ -29,6 +29,19 @@ namespace Data.Entities
         public int RequestId { get; set; }
         public virtual EmailDO Email { get; set; }
 
+        [InverseProperty("Negotiation")]
+        public virtual List<AttendeeDO> Attendees { get; set; }
+
+        [InverseProperty("Negotiation")]
+        public virtual List<QuestionDO> Questions { get; set; }
+
+
+        public NegotiationDO ()
+        {
+            Questions = new List<QuestionDO>();
+        }
+
+
         #endregion
     }
 }

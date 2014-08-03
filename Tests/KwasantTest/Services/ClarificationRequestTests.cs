@@ -40,7 +40,7 @@ namespace KwasantTest.Services
         {
             // SETUP
             var curBookingRequestDO = _fixture.TestBookingRequest1();
-            var curNegotiationDO = _fixture.TestNegotiation();
+            var curNegotiationDO = _fixture.TestNegotiation1();
 
             // EXECUTE
             var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO, curNegotiationDO.Id);
@@ -57,7 +57,7 @@ namespace KwasantTest.Services
             // SETUP
             var curBookingRequestDO = _fixture.TestBookingRequest1();
             const string responseUrl = "kwasant.com/crr?test";
-            var curNegotiationDO = _fixture.TestNegotiation();
+            var curNegotiationDO = _fixture.TestNegotiation1();
 
             // EXECUTE
             var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO, curNegotiationDO.Id);
@@ -80,7 +80,7 @@ namespace KwasantTest.Services
             var curBookingRequestDO = _fixture.TestBookingRequest1();
             const string responseUrlPath = "kwasant.com/crr";
             const string responseUrlFormat = responseUrlPath + "?{0}";
-            var curNegotiationDO = _fixture.TestNegotiation();
+            var curNegotiationDO = _fixture.TestNegotiation1();
 
             // EXECUTE
             var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO, curNegotiationDO.Id);
@@ -101,7 +101,7 @@ namespace KwasantTest.Services
             // SETUP
             var curBookingRequestDO = _fixture.TestBookingRequest1();
             const string responseUrl = "kwasant.com/crr?test";
-            var curNegotiationDO = _fixture.TestNegotiation();
+            var curNegotiationDO = _fixture.TestNegotiation1();
 
             // EXECUTE
             var curClarificationRequestDO = _cr.Create(_uow, curBookingRequestDO, curNegotiationDO.Id);

@@ -58,7 +58,7 @@ namespace KwasantTest.Managers
             clientFactoryMock.Setup(f => f.Create(It.IsAny<IRemoteCalendarAuthData>())).Returns(clientMock.Object);
             ObjectFactory.Configure(expression => expression.For<ICalDAVClientFactory>().Use(clientFactoryMock.Object));
 
-            _curUser = _fixtureData.TestUser();
+            _curUser = _fixtureData.TestUser1();
             _curProvider = _fixtureData.TestRemoteCalendarProvider();
             _curAuthData = _fixtureData.TestRemoteCalendarAuthData(_curProvider, _curUser);
             _curUser.RemoteCalendarAuthData.Add(_curAuthData);

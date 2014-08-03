@@ -273,13 +273,26 @@ namespace Data.Infrastructure
                 .WithRequired(a => a.Event)
                 .WillCascadeOnDelete(true);
 
+            modelBuilder.Entity<NegotiationDO>()
+                .HasMany(e => e.Attendees)
+                .WithRequired(a => a.Negotiation);
+                //  .WillCascadeOnDelete(true); when alexed tried to make this migration, this line caused errors
+
+            modelBuilder.Entity<NegotiationDO>()
+                .HasMany(e => e.Questions)
+                .WithRequired(a => a.Negotiation);
+              //.WillCascadeOnDelete(true);
+
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
                 {
                     ts.Id,
                     ts.ForeignTableName
                 });
-
+            modelBuilder.Entity<QuestionDO>()
+                .HasMany(e => e.Answers)
+                .WithRequired(a => a.Question)
+                .WillCascadeOnDelete(true);
 
             base.OnModelCreating(modelBuilder);
         }

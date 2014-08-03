@@ -286,6 +286,7 @@
     <Compile Include="Controllers\KController.cs" />
     <Compile Include="Controllers\MonthController.cs" />
     <Compile Include="Controllers\NegotiationController.cs" />
+    <Compile Include="Controllers\QuestionController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
@@ -748,6 +749,7 @@
     <Content Include="Views\Negotiation\_TextAnswer.cshtml" />
     <Content Include="Views\Negotiation\_TimeslotAnswer.cshtml" />
     <Content Include="Views\Calendar\GetNegotiationCalendars.cshtml" />
+    <Content Include="Views\Negotiation\EventWindows.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

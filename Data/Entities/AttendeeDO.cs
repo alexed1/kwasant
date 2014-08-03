@@ -19,5 +19,6 @@ namespace Data.Entities
         public virtual EmailAddressDO EmailAddress { get; set; }
 
         public virtual EventDO Event { get; set; }
+        public virtual NegotiationDO Negotiation { get; set; }
     }
 }

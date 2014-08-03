@@ -1,0 +1,74 @@
+﻿@model KwasantWeb.ViewModels.CalendarViewModel
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@{
+	ViewBag.Title = "Event ";
+}
+@section styles{
+    @Styles.Render("~/bundles/css/daypilot")
+}
+@section immediateScripts
+{
+	@Scripts.Render("~/bundles/js/jquery")
+	@Scripts.Render("~/bundles/js/daypilot")
+    @Scripts.Render("~/bundles/js/kwasantcalendar")
+    @Scripts.Render("~/bundles/js/kwasantpopup")
+
+}
+@section scripts
+{
+	@Scripts.Render("~/bundles/js/modernizr")
+	@Scripts.Render("~/bundles/js/bootstrap")
+	@Scripts.Render("~/bundles/js/common")
+}
+     
+
+<div id="CalendarDiv1">
+    <input type="button" value="Ok" class="btn btn-default" onclick="processSubmit()" />
+    &nbsp; &nbsp;
+    <a href="#" onclick="closethis();">Cancel</a>
+</div>
+
+<input type="hidden" value="21" id="hdnrequestid" name="requestid" />
+
+<script type="text/javascript">
+    var calendar;
+    $(function() {
+     
+        calendar = $('#CalendarDiv1').KCalendar({
+            getCalendarBackendURL: function() {
+                return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+            },
+            getMonthBackendURL: function () {
+                return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+            },
+            getNavigatorBackendURL: function() {
+                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+            },  
+            getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
+            getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
+            getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
+            onEventNew: function(start, end) {
+                if (Kwasant.IFrame.PopupsActive()) {
+                    return;
+                }
+                var id = $("#hdnrequestid").val();
+                Kwasant.IFrame.Display('/Event/NewTimeSlot/?calendarID=' + @Model.LinkedCalendarIDs[1] + '&start=' + start + 'z&end=' + end + 'z',
+                {
+                    horizontalAlign: 'right',
+                    callback: calendar.refreshCalendars
+                });
+            },
+        }
+        );
+    });
+
+    function closethis() {
+        $(window.parent.document).find("iframe").each(function () {
+            if ($(this).attr("style").indexOf("z-index") > 0) {
+                if ($(this).attr("style").indexOf("display: none") < 0) {
+                    $(this).remove();
+                }
+            }
+        });
+    };
+</script>
