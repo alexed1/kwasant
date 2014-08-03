@@ -8,6 +8,7 @@ using Daemons;
 using Data.Constants;
 using Data.Entities;
 using Data.Entities.Constants;
+using Data.Infrastructure;
 using Data.Interfaces;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
@@ -125,8 +126,43 @@ namespace KwasantTest.Workflow
 
         }
 
+        //the actual test should be handled as a delegate
+        public List<EmailDO> PollForEmail(EmailQueryHandler handler, EmailDO targetCriteria )
+        {
+            List<EmailDO> queryResults;
+            //run inbound daemon, checking for a generated BookingRequest, until success or timeout
+            InboundEmail inboundDaemon = new InboundEmail();
+            BookingRequestDO request;
+            do
+            {
+                DaemonTests.RunDaemonOnce(inboundDaemon);
+                queryResults = handler(targetCriteria);
+            } while (queryResults == null && emailToRequestDuration.Elapsed < emailToRequestTimeout);
+            emailToRequestDuration.Stop();
+            return queryResults;
+        }
 
+        public delegate List<EmailDO> EmailQueryHandler(EmailDO targetCriteria);
 
+       // EmailQueryHandler handler = FindClarificationRequests;
+       
+         //handler = FindBookingRequest;
+        public static List<ClarificationRequestDO> FindClarificationRequests(EmailDO targetCriteria)
+        {
+            var UOW = ObjectFactory.GetInstance<IUnitOfWork>();
+            List<ClarificationRequestDO> foundCRs = UOW.ClarificationRequestRepository.GetAll().ToList();
+            return foundCRs;
+        }
+
+       
+        public static List<EmailDO> FindBookingRequest(EmailDO targetCriteria)
+        {
+            var UOW = ObjectFactory.GetInstance<IUnitOfWork>();
+            BookingRequestDO foundBR = UOW.BookingRequestRepository.FindOne( br => br.From.Address == targetCriteria.From.Address && br.Subject == targetCriteria.Subject);
+            List<EmailDO> queryResults = new List<EmailDO>();
+            queryResults.Add(foundBR);
+            return queryResults;
+        }
 
         public void PollInboxForEvent(DateTimeOffset start, DateTimeOffset end, string subject)
         {
@@ -197,18 +233,13 @@ namespace KwasantTest.Workflow
         }
         public BookingRequestDO PollForBookingRequest(string subject)
         {
-            BookingRequestDO foundBookingRequest;
-            //run inbound daemon, checking for a generated BookingRequest, until success or timeout
-            InboundEmail inboundDaemon = new InboundEmail();
-            BookingRequestDO request;
-            do
-                {
-                   DaemonTests.RunDaemonOnce(inboundDaemon);
-                    foundBookingRequest = _uow.BookingRequestRepository.FindOne(
-                           br => br.From.Address == _testUserEmail && br.Subject == subject);
-                } while (foundBookingRequest == null && emailToRequestDuration.Elapsed < emailToRequestTimeout);
-            emailToRequestDuration.Stop();
-            return foundBookingRequest;
+           EmailDO targetCriteria = new EmailDO();
+           targetCriteria.Subject = subject;
+           targetCriteria.From.Address = _testUserEmail;
+           EmailQueryHandler handler = FindBookingRequest;
+           List<EmailDO> queryResults = PollForEmail(handler, targetCriteria);
+           BookingRequestDO foundBookingRequest = (BookingRequestDO) queryResults.First();
+           return foundBookingRequest;
         }
 
         public void SendEmailAndStartTimer(EmailDO testEmail)
