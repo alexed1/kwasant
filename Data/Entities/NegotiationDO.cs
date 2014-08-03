@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Entities.Constants;
 
@@ -23,6 +24,12 @@ namespace Data.Entities
         [ForeignKey("Email"), Required]
         public int RequestId { get; set; }
         public virtual EmailDO Email { get; set; }
+
+        [InverseProperty("Negotiation")]
+        public virtual List<AttendeeDO> Attendees { get; set; }
+
+        [InverseProperty("Negotiation")]
+        public virtual List<QuestionDO> Questions { get; set; }
 
         #endregion
     }

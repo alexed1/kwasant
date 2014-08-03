@@ -5,7 +5,7 @@ namespace KwasantTest.Fixtures
 {
     public partial class FixtureData
     {
-        public NegotiationDO TestNegotiation()
+        public NegotiationDO TestNegotiation1()
         {
             var curNegotiationDO = new NegotiationDO
             {
@@ -14,6 +14,7 @@ namespace KwasantTest.Fixtures
                 NegotiationStateID = NegotiationState.InProcess,
                 Name = "Negotiation 1"
             };
+            curNegotiationDO.Questions.Add(TestQuestion1());
             return curNegotiationDO;
         }
     }

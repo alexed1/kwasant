@@ -37,7 +37,7 @@ namespace KwasantTest.Daemons
             
             var bookingRequestDO = new BookingRequestDO();
             bookingRequestDO.BookingRequestStateID = BookingRequestState.Unprocessed;
-            bookingRequestDO.User = new FixtureData().TestUser();
+            bookingRequestDO.User = new FixtureData().TestUser1();
             bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 1, 0, 0));
             bookingRequestRepo.Add(bookingRequestDO);
 
@@ -64,7 +64,7 @@ namespace KwasantTest.Daemons
 
             var bookingRequestDO = new BookingRequestDO();
             bookingRequestDO.BookingRequestStateID = BookingRequestState.Unprocessed;
-            bookingRequestDO.User = new FixtureData().TestUser();
+            bookingRequestDO.User = new FixtureData().TestUser1();
             bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
             bookingRequestRepo.Add(bookingRequestDO);
 
@@ -89,7 +89,7 @@ namespace KwasantTest.Daemons
 
             var bookingRequestDO = new BookingRequestDO();
             bookingRequestDO.BookingRequestStateID = BookingRequestState.Unprocessed;
-            bookingRequestDO.User = new FixtureData().TestUser();
+            bookingRequestDO.User = new FixtureData().TestUser1();
             bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
             bookingRequestRepo.Add(bookingRequestDO);
 

@@ -78,7 +78,7 @@ namespace KwasantTest.Services
             List<UserDO> customersNow = _uow.UserRepository.GetAll().ToList();
             Assert.AreEqual(0, customersNow.Count);
 
-            UserDO user = _fixture.TestUser();
+            UserDO user = _fixture.TestUser1();
             _uow.UserRepository.Add(user);
             _uow.SaveChanges();
 

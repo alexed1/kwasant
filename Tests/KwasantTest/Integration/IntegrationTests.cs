@@ -13,6 +13,7 @@ using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantICS.DDay.iCal;
 using KwasantTest.Daemons;
+using KwasantTest.Fixtures;
 using Moq;
 using NUnit.Framework;
 using S22.Imap;
@@ -34,6 +35,7 @@ namespace KwasantTest.Workflow
         private string _startPrefix;
         private string _endPrefix;
         private ImapClient _client;
+        private FixtureData _fixture;
 
         public Stopwatch totalOperationDuration = new Stopwatch();
         public Stopwatch emailToRequestDuration = new Stopwatch();
@@ -58,7 +60,7 @@ namespace KwasantTest.Workflow
            _startPrefix = "Start:";
            _endPrefix = "End:";
            _client = new ImapClient("imap.gmail.com", 993, _testUserEmail.Split('@')[0], _testUserEmailPassword, AuthMethod.Login, true);
-
+           _fixture = new FixtureData();
         }
 
      
@@ -96,6 +98,27 @@ namespace KwasantTest.Workflow
         
         }
 
+
+        //This method takes a NegotiationId as input that must resolve to a Negotiation with status "Unresolved".
+        //Build a list of Users based on the Attendee lists of the associated Events.
+        //For each user, if there is not already a ClarificationRequestDO that has this UserId and this NeogtiationId, call ClarificationRequest#Create, get back a ClarificationRequestDO, and associate it with the Negotiation (You will need to add a property of type NegotiationDO to ClarificationRequestDO).
+        //call ClarificationRequest#GenerateResponseURL
+        //call ClarificationRequest#Send
+        //This will generate an email with a link that takes the recipient to a response view. 
+        public void ITest_CanDispatchNegotiationEmail()
+        {
+            //Create a BookingRequest and two test Attendees
+            //Create a Negotiation with a Question and an Answer
+            //Save the Negotiation as if running ProcessSubmittedNegotiation
+            //Verify that Clarification Request was sent to Attendee
+            //Verify that executing link in clarification request produces appropriate view
+
+            BookingRequestDO testBR = _fixture.TestBookingRequest1();
+            AttendeeDO testAttendee1 = _fixture.TestAttendee1();
+            AttendeeDO testAttendee2 = _fixture.TestAttendee2();
+            NegotiationDO testNegotiation = _fixture.TestNegotiation1();
+            
+        }
 
         public void PollInboxForEvent(DateTimeOffset start, DateTimeOffset end, string subject)
         {
