@@ -22,7 +22,9 @@ namespace Data.Entities
         [Required]
         public virtual UserDO User { get; set; }
         public string ObjectsType { get; set; }
+        public string Text { get; set; }
 
+        
         #endregion
     }
 }

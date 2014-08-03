@@ -14,6 +14,7 @@ namespace KwasantTest.Fixtures
                 Text = "Where should the meeting take place?",
                 AnswerType = "text"
             };
+            curQuestionDO.Answers.Add(TestAnswer1());
             return curQuestionDO;
         }
     }

@@ -31,6 +31,13 @@ namespace Data.Entities
         [InverseProperty("Negotiation")]
         public virtual List<QuestionDO> Questions { get; set; }
 
+
+        public NegotiationDO ()
+        {
+            Questions = new List<QuestionDO>();
+        }
+
+
         #endregion
     }
 }

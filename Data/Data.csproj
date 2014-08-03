@@ -381,6 +381,14 @@
     <Compile Include="Migrations\201408030444387_Question-NegotiationRelationship.Designer.cs">
       <DependentUpon>201408030444387_Question-NegotiationRelationship.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408031640497_AddTextToAnswer.cs" />
+    <Compile Include="Migrations\201408031640497_AddTextToAnswer.Designer.cs">
+      <DependentUpon>201408031640497_AddTextToAnswer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408031644084_AddTextToAnswer2.cs" />
+    <Compile Include="Migrations\201408031644084_AddTextToAnswer2.Designer.cs">
+      <DependentUpon>201408031644084_AddTextToAnswer2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AnswersRepository.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -607,6 +615,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408030444387_Question-NegotiationRelationship.resx">
       <DependentUpon>201408030444387_Question-NegotiationRelationship.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408031640497_AddTextToAnswer.resx">
+      <DependentUpon>201408031640497_AddTextToAnswer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408031644084_AddTextToAnswer2.resx">
+      <DependentUpon>201408031644084_AddTextToAnswer2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

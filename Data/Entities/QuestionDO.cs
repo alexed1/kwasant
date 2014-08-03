@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Entities.Constants;
 using Data.Interfaces;
@@ -32,6 +33,15 @@ namespace Data.Entities
 
         [ForeignKey("NegotiationId")]
         public virtual NegotiationDO Negotiation { get; set; }
+
+        [InverseProperty("Question")]
+        public virtual List<AnswerDO> Answers { get; set; }
         #endregion
+
+
+        public QuestionDO()
+        {
+            Answers = new List<AnswerDO>();
+        }
     }
 }

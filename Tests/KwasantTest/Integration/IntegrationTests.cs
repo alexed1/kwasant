@@ -105,6 +105,8 @@ namespace KwasantTest.Workflow
         //call ClarificationRequest#GenerateResponseURL
         //call ClarificationRequest#Send
         //This will generate an email with a link that takes the recipient to a response view. 
+        [Test]
+        [Category("IntegrationTests")]
         public void ITest_CanDispatchNegotiationEmail()
         {
             //Create a BookingRequest and two test Attendees
@@ -117,8 +119,14 @@ namespace KwasantTest.Workflow
             AttendeeDO testAttendee1 = _fixture.TestAttendee1();
             AttendeeDO testAttendee2 = _fixture.TestAttendee2();
             NegotiationDO testNegotiation = _fixture.TestNegotiation1();
-            
+            _uow.NegotiationsRepository.Add(testNegotiation);
+            _uow.SaveChanges();
+
+
         }
+
+
+
 
         public void PollInboxForEvent(DateTimeOffset start, DateTimeOffset end, string subject)
         {

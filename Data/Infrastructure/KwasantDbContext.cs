@@ -288,7 +288,10 @@ namespace Data.Infrastructure
                     ts.Id,
                     ts.ForeignTableName
                 });
-
+            modelBuilder.Entity<QuestionDO>()
+                .HasMany(e => e.Answers)
+                .WithRequired(a => a.Question)
+                .WillCascadeOnDelete(true);
 
             base.OnModelCreating(modelBuilder);
         }
