@@ -16,11 +16,13 @@ using KwasantCore.StructureMap;
 using KwasantICS.DDay.iCal;
 using KwasantTest.Daemons;
 using KwasantTest.Fixtures;
+using KwasantTest.Utilities;
 using Moq;
 using NUnit.Framework;
 using S22.Imap;
 using StructureMap;
 using Utilities;
+
 
 namespace KwasantTest.Workflow
 {
@@ -38,13 +40,8 @@ namespace KwasantTest.Workflow
         private string _endPrefix;
         private ImapClient _client;
         private FixtureData _fixture;
-
-        public Stopwatch totalOperationDuration = new Stopwatch();
-        public Stopwatch pollingDuration = new Stopwatch();
-        public Stopwatch requestToEmailDuration = new Stopwatch();
-        public TimeSpan maxPollingTime = TimeSpan.FromSeconds(60);
-        public TimeSpan requestToEmailTimeout = TimeSpan.FromSeconds(60);
-        public TimeSpan totalOperationTimeout = TimeSpan.FromSeconds(120);
+        private PollingEngine _polling;
+       
 
         [SetUp]
         public void Setup()
@@ -63,6 +60,7 @@ namespace KwasantTest.Workflow
            _endPrefix = "End:";
            _client = new ImapClient("imap.gmail.com", 993, _testUserEmail.Split('@')[0], _testUserEmailPassword, AuthMethod.Login, true);
            _fixture = new FixtureData();
+            _polling = new PollingEngine();
         }
 
      
@@ -87,16 +85,14 @@ namespace KwasantTest.Workflow
             BookingRequestDO foundBookingRequest = PollForBookingRequest(testEmail.Subject);
             EventDO testEvent = CreateTestEvent(foundBookingRequest);
             //start the stopwatch measuring time from email send
-            requestToEmailDuration.Start();
+            _polling.requestToEmailDuration.Start();
             //run the outbound daemon to send any outgoing invite(s)
             DaemonTests.RunDaemonOnce(_outboundDaemon);
             PollInboxForEvent(start, end, testEmail.Subject);
 
             //VERIFY
             //check timeouts
-            Assert.Less(pollingDuration.Elapsed, maxPollingTime, "Email to BookingRequest conversion timed out.");
-            Assert.Less(requestToEmailDuration.Elapsed, requestToEmailTimeout, "BookingRequest to Invitation conversion timed out.");
-            Assert.Less(totalOperationDuration.Elapsed, totalOperationTimeout, "Workflow timed out.");
+            _polling.CheckTimeouts();
         
         }
         public BookingRequestDO PollForBookingRequest(string subject)
@@ -104,8 +100,8 @@ namespace KwasantTest.Workflow
             EmailDO targetCriteria = new EmailDO();
             targetCriteria.Subject = subject;
             targetCriteria.From.Address = _testUserEmail;
-            InjectedEmailQuery injectedQuery = InjectedQuery_FindBookingRequest;
-            List<EmailDO> queryResults = PollForEmail(injectedQuery, targetCriteria);
+            PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindBookingRequest;
+            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria);
             BookingRequestDO foundBookingRequest = (BookingRequestDO)queryResults.First();
             return foundBookingRequest;
         }
@@ -135,14 +131,13 @@ namespace KwasantTest.Workflow
 
             //Verify that Clarification Request was sent to Attendee
             //we will poll the test account for a ClarificationRequest that meets the criteria
-            pollingDuration.Start();
+            _polling.pollingDuration.Start();
             ClarificationRequestDO foundCR = PollForClarificationRequest(testAttendee1);
 
             //VERIFY
             //check timeouts
-            Assert.Less(pollingDuration.Elapsed, maxPollingTime, "Email to BookingRequest conversion timed out."); //generalize
-            Assert.Less(requestToEmailDuration.Elapsed, requestToEmailTimeout, "BookingRequest to Invitation conversion timed out.");
-            Assert.Less(totalOperationDuration.Elapsed, totalOperationTimeout, "Workflow timed out.");
+            _polling.CheckTimeouts();
+
         }
 
 
@@ -151,8 +146,8 @@ namespace KwasantTest.Workflow
             EmailDO targetCriteria = new EmailDO();
             targetCriteria.Subject = "We need a little more information from you"; //this is the current subject for clarification requests.
             targetCriteria.From = testAttendee.EmailAddress; //misleading. We really are going to test whether the To address on the received CR matches the address of this testAttendee. but can't currently set the To value directly. So hijacking the From field. Should be improved.
-            InjectedEmailQuery injectedQuery = InjectedQuery_FindClarificationRequest;
-            List<EmailDO> queryResults = PollForEmail(injectedQuery, targetCriteria);
+            PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindClarificationRequest;
+            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria);
             ClarificationRequestDO foundCR = (ClarificationRequestDO)queryResults.FirstOrDefault();
             return foundCR;
         }
@@ -161,29 +156,7 @@ namespace KwasantTest.Workflow
         //targetCriteria is passed through this method into the injectedQuery
         //this allows this method's machinery to be reused for many different kinds of email queries.
 
-        #region Polling Machinery
-        //POLLING MACHINERY
-        
-        public List<EmailDO> PollForEmail(InjectedEmailQuery injectedQuery, EmailDO targetCriteria)
-        {
-            List<EmailDO> queryResults;
-            //run inbound daemon, checking for a generated BookingRequest, until success or timeout
-            InboundEmail inboundDaemon = new InboundEmail();
-            BookingRequestDO request;
-            do
-            {
-                DaemonTests.RunDaemonOnce(inboundDaemon);
-                queryResults = injectedQuery(targetCriteria);
-            } while (queryResults.Count == 0 && pollingDuration.Elapsed < maxPollingTime);
-            pollingDuration.Stop();
-            return queryResults;
-        }
-
-        //this delegate allows queries to be passed into the polling mechanism
-        public delegate List<EmailDO> InjectedEmailQuery (EmailDO targetCriteria);
-
-        //====================================
-        #endregion Polling Machinery
+      
 
         #region Injected Queries
         //Injected Queries
@@ -250,8 +223,8 @@ namespace KwasantTest.Workflow
                         }
                     }
                 }
-            } while (inviteMessage == null && requestToEmailDuration.Elapsed < requestToEmailTimeout);
-            requestToEmailDuration.Stop();
+            } while (inviteMessage == null && _polling.requestToEmailDuration.Elapsed < _polling.requestToEmailTimeout);
+            _polling.requestToEmailDuration.Stop();
             //cleanup the inbox by deleting the messages
             var requestMessages = _client.Search(SearchCondition.Subject(subject)).ToList();
             _client.DeleteMessages(requestMessages);
@@ -259,7 +232,7 @@ namespace KwasantTest.Workflow
             {
                 _client.DeleteMessage(inviteMessageId);
             }
-            totalOperationDuration.Stop();
+            _polling.totalOperationDuration.Stop();
         }
 
         public EventDO CreateTestEvent(BookingRequestDO testBR)
@@ -292,8 +265,8 @@ namespace KwasantTest.Workflow
             _emailService.Send(testEmail);
             _uow.SaveChanges();
             DaemonTests.RunDaemonOnce(_outboundDaemon);
-            totalOperationDuration.Start();
-            pollingDuration.Start();
+            _polling.totalOperationDuration.Start();
+            _polling.pollingDuration.Start();
 
         }
 
@@ -330,8 +303,8 @@ namespace KwasantTest.Workflow
         [Category("Workflow")]
         public void Workflow_CanAddBcctoOutbound()
         {
-            var requestToEmailTimeout = TimeSpan.FromSeconds(60);
-            Stopwatch requestToEmailDuration = new Stopwatch();
+           // var _polling.requestToEmailTimeout = TimeSpan.FromSeconds(60);
+           // Stopwatch _polling.requestToEmailDuration = new Stopwatch();
 
             var subject = string.Format("Bcc Test {0}", Guid.NewGuid());
             var now = DateTimeOffset.Now;
@@ -374,7 +347,7 @@ namespace KwasantTest.Workflow
             ImapClient client = new ImapClient("imap.gmail.com", 993, _archivePollEmail, _archivePollPassword, AuthMethod.Login, true);
             _uow.SaveChanges();
             
-            requestToEmailDuration.Start();
+            _polling.requestToEmailDuration.Start();
 
             int mailcount = 0;
             do
@@ -387,8 +360,8 @@ namespace KwasantTest.Workflow
                     mailcount = requestMessages.Count();
                     break;
                 }
-            } while (requestToEmailDuration.Elapsed < requestToEmailTimeout);
-            requestToEmailDuration.Stop();
+            } while (_polling.requestToEmailDuration.Elapsed < _polling.requestToEmailTimeout);
+            _polling.requestToEmailDuration.Stop();
 
             Assert.AreEqual(1, mailcount);
         }
