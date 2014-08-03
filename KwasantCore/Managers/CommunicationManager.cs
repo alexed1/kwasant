@@ -175,7 +175,7 @@ namespace KwasantCore.Managers
 
         //
         //This method takes a NegotiationId as input that must resolve to a Negotiation with status "Unresolved".
-        //Build a list of Users based on the Attendee lists of the associated Events.
+        //Build a list of Users based on the Attendees associated with the Negotiation.
         //For each user, if there is not already a ClarificationRequestDO that has this UserId and this NeogtiationId, call ClarificationRequest#Create, get back a ClarificationRequestDO, and associate it with the Negotiation (You will need to add a property of type NegotiationDO to ClarificationRequestDO).
         //call ClarificationRequest#GenerateResponseURL
         //call ClarificationRequest#Send
