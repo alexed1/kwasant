@@ -153,7 +153,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpGet]
-        public PartialViewResult Addquestion(int questionID, int negotiationId = 0)
+        public PartialViewResult AddQuestion(int questionID, int negotiationId = 0)
         {
             List<int> questionVal = new List<int>();
             questionVal.Add(questionID);

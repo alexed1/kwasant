@@ -41,22 +41,20 @@
         getCalltextanswer(ele, findquestionId, findquestiontblId);
     };
 
-    var getCallquestion = function (callfrom, countValue) {
-
+    var getAddQuestion = function (callfrom, countValue) {
         var questionCount;
         if (callfrom == "editneg")
             questionCount = countValue;
         else
-            questionCount = $("#appendquestinoId #questionContainer").length;
-        var negotiationtblid = $("#divNegotiation").attr("data-negotiationid");
+            questionCount = $("#questionSet #question").length;
 
         $.ajax({
             type: 'Get',
-            url: '@Url.Action("Addquestion", "Negotiation")',
-            data: { questionID: (questionCount + 1), negotiationId: negotiationtblid },
+            url: '@Url.Action("AddQuestion", "Negotiation")',
+            data: { questionID: (questionCount + 1), negotiationId: $("#divNegotiation").attr("data-negotiationid") },
             success: function (data) {
                 //alert(data.questionID);
-                $("#appendquestinoId").append(data);
+                $("#questionSet").append(data);
                 //alert(countValue);
             }
         });
@@ -84,7 +82,7 @@
             url = '@Url.Action("AddtextAnswer", "Negotiation")';
         }
 
-        var answerPresent = $("#appendquestinoId #questionContainer[data-questionID=" + questionID + "] #appendanswerId #answerContainer").length;
+        var answerPresent = $("#questionSet #question[data-questionID=" + questionID + "] #appendanswerId #answerContainer").length;
         $.ajax({
             type: 'Get',
             url: url,
@@ -121,11 +119,11 @@
 
     var serializeForm = function () {
 
-        var negotiationtblid = $("#divNegotiation").attr("data-negotiationid");
-        //var Negotiation = { Id: negotiationtblid, Name: null, Questions: [], State: 2 };
-        var Negotiation = { Id: negotiationtblid, Name: null, Questions: [] };
+        var negotiationTableId = $("#divNegotiation").attr("data-negotiationid");
+        //var Negotiation = { Id: negotiationTableId, Name: null, Questions: [], State: 2 };
+        var Negotiation = { Id: negotiationTableId, Name: null, Questions: [] };
 
-        $.each($("#appendquestinoId #questionContainer"), function () {
+        $.each($("#questionSet #question"), function () {
             //item = per question container with id = questionContainer.
             var qText = $(this).find('#questionText').val();
             var answersArray = [];
@@ -179,7 +177,7 @@
 
         $.ajax({
             type: 'Get',
-            url: '@Url.Action("Addquestion", "Negotiation")',
+            url: '@Url.Action("AddQuestion", "Negotiation")',
             data: { questionID: (1) },
             success: function (data) {
                 questionTemp = data;
@@ -220,12 +218,12 @@
                     countQueVal = countQueVal + 1;
                     var temphtml = questionTemp;
                     //Assign Data-QuestionId
-                    temphtml = $(temphtml).find("#questionContainer").attr("data-questionid", countQueVal);
+                    temphtml = $(temphtml).find("#question").attr("data-questionid", countQueVal);
                     //Append New Question on List
-                    $("#appendquestinoId").append(temphtml);
+                    $("#questionSet").append(temphtml);
                     //Assigning Question Attributes
                     $(temphtml).attr("data-questiontbleid", this.Id);
-                    var answerPresent = $("#appendquestinoId #questionContainer[data-questionID=" + countQueVal + "]");
+                    var answerPresent = $("#questionSet #question[data-questionID=" + countQueVal + "]");
                     $(answerPresent).find('#questionlbl').text("Question :" + countQueVal);
                     $(answerPresent).find("#questionText").val(this.Text);
 
@@ -294,10 +292,12 @@
                 </tr>
             </table>
         </div>
-        <div id="appendquestinoId">
+        <div id="questionSet">
 
         </div>
-      <span class="form-group" id="divAddQuestion" onclick="getCallquestion()">
+        
+
+        <span class="form-group" id="divAddQuestion" onclick="getAddQuestion()">
       @*<span class="form-group" id="divAddQuestion" onclick="deserializeForm()">*@
       &nbsp; &nbsp;
             <img src="~/Content/img/plus.png" />

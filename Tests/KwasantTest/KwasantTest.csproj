@@ -131,7 +131,7 @@
     <Compile Include="Services\SMSTests.cs" />
     <Compile Include="Timeslots\TimeslotMergeTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
-    <Compile Include="Workflow\WorkflowTests.cs" />
+    <Compile Include="Integration\IntegrationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
