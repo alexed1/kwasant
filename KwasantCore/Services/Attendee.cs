@@ -19,20 +19,19 @@ namespace KwasantCore.Services
             return curAttendeeDO;
         }
 
-        public AttendeeDO Create(string emailAddressString, EventDO curEventDO, String name = null)
+        public AttendeeDO Create(IUnitOfWork uow, string emailAddressString, EventDO curEventDO, String name = null)
         {
             //create a new AttendeeDO
             //get or create the email address and associate it.
             AttendeeDO curAttendee = new AttendeeDO();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {        
-                var emailAddressRepository = uow.EmailAddressRepository;
-                EmailAddressDO emailAddress = emailAddressRepository.GetOrCreateEmailAddress(emailAddressString, name);
-                curAttendee.EmailAddress = emailAddress;
-                curAttendee.Event = curEventDO;  //do we have to also manually set the EventId? Seems unDRY
-                //uow.AttendeeRepository.Add(curAttendee); //is this line necessary?
+               
+            var emailAddressRepository = uow.EmailAddressRepository;
+            EmailAddressDO emailAddress = emailAddressRepository.GetOrCreateEmailAddress(emailAddressString, name);
+            curAttendee.EmailAddressID = emailAddress.Id;
+            curAttendee.EmailAddress = emailAddress;
+            curAttendee.Event = curEventDO;  //do we have to also manually set the EventId? Seems unDRY
+            //uow.AttendeeRepository.Add(curAttendee); //is this line necessary?
             
-            }
             return curAttendee;
         }
 
@@ -87,7 +86,7 @@ namespace KwasantCore.Services
             return newAttendees;
         }
 
-        public void DetectEmailsFromBookingRequest(EventDO eventDO)
+        public void DetectEmailsFromBookingRequest(IUnitOfWork uow, EventDO eventDO)
         {
             //Add the booking request user
             var curAttendeeDO = Create(eventDO.BookingRequest.User);
@@ -140,7 +139,7 @@ namespace KwasantCore.Services
             });
 
             foreach(var email in uniqueEmails)
-                eventDO.Attendees.Add(Create(email.Email, eventDO, email.Name));
+                eventDO.Attendees.Add(Create(uow, email.Email, eventDO, email.Name));
         }
 
         public List<ParsedEmailAddress> GetEmailAddresses(String textToSearch)

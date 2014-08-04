@@ -5,7 +5,7 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public sealed class EmailAddressDO : IEmailAddress
+    public class EmailAddressDO : IEmailAddress
     {
         [Key]
         public int Id { get; set; }
@@ -14,7 +14,7 @@ namespace Data.Entities
         [MaxLength(30)]
         public String Address { get; set; }
 
-        public List<RecipientDO> Recipients { get; set; }
+        public virtual List<RecipientDO> Recipients { get; set; }
 
         public EmailAddressDO()
         {
