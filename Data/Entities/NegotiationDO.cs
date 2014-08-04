@@ -32,7 +32,7 @@ namespace Data.Entities
         [InverseProperty("Negotiation")]
         public virtual List<AttendeeDO> Attendees { get; set; }
 
-        [InverseProperty("Negotiation")]
+        [ForeignKey("NegotiationId")]
         public virtual List<QuestionDO> Questions { get; set; }
 
 

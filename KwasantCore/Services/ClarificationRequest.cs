@@ -34,13 +34,12 @@ namespace KwasantCore.Services
                                              {
                                                  DateCreated = DateTime.UtcNow,
                                                  DateReceived = DateTime.UtcNow,
-                                                 BookingRequestId = bookingRequest.Id,
                                                  NegotiationId = curNegotiation.Id,
                                                  Subject = "We need a little more information from you",
                                                  HTMLText = "*** This should be replaced with template body ***",
                                                  PlainText = "*** This should be replaced with template body ***",
                                              };
-            ((IClarificationRequest) newClarificationRequestDo).BookingRequest = bookingRequest;
+        
             String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
             newClarificationRequestDo.From = Email.GenerateEmailAddress(uow, new MailAddress(senderMailAddress));
             newClarificationRequestDo.AddEmailRecipient(EmailParticipantType.To, bookingRequest.User.EmailAddress);
@@ -139,33 +138,44 @@ namespace KwasantCore.Services
 
         public void ProcessResponse(IClarificationRequest clarificationRequest)
         {
-            if (clarificationRequest == null)
-                throw new ArgumentNullException("clarificationRequest");
+
+
+            //PROCESS Negotiation response
+             //see https://maginot.atlassian.net/wiki/display/SH/Processing+Negotiation+Responses
+            //Change the state of the ClarificationRequest to RepliedTo
+            //Check to see if this response is the final response that this negotiation has been "waiting for". Do this by querying for all clarification requests that are associated with this clarification request's negotiation, and checking their state. If all states are now set to RepliedTo, the BookingRequest state, which should be AwaitingClient, should be changed to NeedsProcessing, so this BR goes back to a booker. 
+            //Finally, render a simple confirmation view for the customer that thanks them and says that we'll notify them we've got the event resolved. 
+
+
+
+            // the code below is obsolete and assumes a direct link with bookingrequest, which no longer is the case
+
+            //if (clarificationRequest == null)
+            //    throw new ArgumentNullException("clarificationRequest");
             
-            var answeredQuestions = clarificationRequest.Questions.Where(q => q.QuestionStatusID == QuestionStatus.Answered).ToArray();
-            if (answeredQuestions.Length == 0)
-                throw new ArgumentException("Clarification Request must have at least one answered question");
+            //var answeredQuestions = clarificationRequest.Questions.Where(q => q.QuestionStatusID == QuestionStatus.Answered).ToArray();
+            //if (answeredQuestions.Length == 0)
+            //    throw new ArgumentException("Clarification Request must have at least one answered question");
             
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curClarificationRequestDO = uow.ClarificationRequestRepository.GetByKey(clarificationRequest.Id);
-                if (curClarificationRequestDO == null)
-                    throw new EntityNotFoundException<ClarificationRequestDO>();
-                var curBookingRequestDO = uow.BookingRequestRepository.GetByKey(clarificationRequest.BookingRequestId);
-                if (curBookingRequestDO == null)
-                    throw new EntityNotFoundException<BookingRequestDO>();
-                foreach (var answeredQuestion in answeredQuestions)
-                {
-                    var questionDO = curClarificationRequestDO.Questions.FirstOrDefault(q => q.Id == answeredQuestion.Id);
-                    if (questionDO == null)
-                        throw new EntityNotFoundException<QuestionDO>();
-                    questionDO.Response = answeredQuestion.Response;
-                    questionDO.QuestionStatusID = QuestionStatus.Answered;
-                }
-                curClarificationRequestDO.ClarificationRequestStateID = ClarificationRequestState.Resolved;
-                curBookingRequestDO.BookingRequestStateID = BookingRequestState.Pending;
-                uow.SaveChanges();
+            //using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //{
+            //    var curClarificationRequestDO = uow.ClarificationRequestRepository.GetByKey(clarificationRequest.Id);
+            //    if (curClarificationRequestDO == null)
+            //        throw new EntityNotFoundException<ClarificationRequestDO>();
+            //    var curBookingRequestDO = uow.BookingRequestRepository.GetByKey(clarificationRequest.BookingRequestId);
+            //    if (curBookingRequestDO == null)
+            //        throw new EntityNotFoundException<BookingRequestDO>();
+            //    foreach (var answeredQuestion in answeredQuestions)
+            //    {
+            //        var questionDO = curClarificationRequestDO.Questions.FirstOrDefault(q => q.Id == answeredQuestion.Id);
+            //        if (questionDO == null)
+            //            throw new EntityNotFoundException<QuestionDO>();
+            //        questionDO.Response = answeredQuestion.Response;
+            //        questionDO.QuestionStatusID = QuestionStatus.Answered;
+            //    }
+            //    curClarificationRequestDO.ClarificationRequestStateID = ClarificationRequestState.Resolved;
+            //    curBookingRequestDO.BookingRequestStateID = BookingRequestState.Pending;
+            //    uow.SaveChanges();
             }
         }
     }
-}

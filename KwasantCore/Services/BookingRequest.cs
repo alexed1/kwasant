@@ -135,15 +135,7 @@ namespace KwasantCore.Services
                   }).ToList();
         }
 
-        public List<BR_RelatedItems> GetRelatedClarificationRequests(IUnitOfWork uow, int bookingRequestId)
-        {
-            return uow.ClarificationRequestRepository.GetAll().Where(e => e.BookingRequestId == bookingRequestId).Select(e => new BR_RelatedItems
-            {
-                id = e.Id,
-                Type = "Clarification",
-                Date = e.DateCreated.ToString("M-d-yy hh:mm tt")
-            }).ToList();
-        }
+       
     }
     public struct BR_RelatedItems
     {

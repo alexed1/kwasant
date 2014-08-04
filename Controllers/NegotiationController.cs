@@ -54,11 +54,11 @@ namespace KwasantWeb.Controllers
                 UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
 
                 //NEED TO CHECK HERE TO SEE IF THERE ALREADY IS ONE. SOMETHING LIKE:
-                NegotiationDO negotiationsDO = uow.NegotiationsRepository.FindOne(n => n.RequestId == BookingRequestID && n.NegotiationStateID != NegotiationState.Resolved);
+                NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.RequestId == BookingRequestID && n.NegotiationStateID != NegotiationState.Resolved);
                 if (negotiationDO != null)
                     throw new ApplicationException("tried to create a negotiation when one already existed");
 
-                NegotiationDO negotiationDO = new NegotiationDO
+                 negotiationDO = new NegotiationDO
                 {
                     Name = viewModel.Name,
                     RequestId = BookingRequestID,
@@ -129,7 +129,7 @@ namespace KwasantWeb.Controllers
             string attendeeList = curVM.attendeeList;
 
             object result;
-
+            NegotiationDO updatedNegotiationDO = new NegotiationDO();
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -141,7 +141,7 @@ namespace KwasantWeb.Controllers
 
                     //Update Negotiation
                     NegotiationDO existingNegotiationDO = uow.NegotiationsRepository.FindOne(n => n.Id == newNegotiationData.Id);
-                    NegotiationDO updatedNegotiationDO = _negotiation.Update(newNegotiationData, existingNegotiationDO);
+                    updatedNegotiationDO = _negotiation.Update(newNegotiationData, existingNegotiationDO);
 
                     //this takes the form data and processes it similarly to how its done in the Edit Event form
                     //IMPORTANT: the code in Attendee.cs was refactored and needs testing.
@@ -175,14 +175,14 @@ namespace KwasantWeb.Controllers
                     //Process Negotiation
                     _negotiation.Process(updatedNegotiationDO);
                     //set result to a success message
-                    result = new { Success = "True", BookingRequestID = emailDO.Id, NegotiationId = negotiationDO.Id };
+                    result = new { Success = "True", BookingRequestID = updatedNegotiationDO.BookingRequest.Id, NegotiationId = updatedNegotiationDO.Id };
 
                 }
             }
             catch (Exception)
             {
                 //set result to an error message
-                result = new { Success = "False", BookingRequestID = emailDO.Id, NegotiationId = negotiationDO.Id };
+                result = new { Success = "False", BookingRequestID = updatedNegotiationDO.BookingRequest.Id, NegotiationId = updatedNegotiationDO.Id };
             }
 
             

@@ -267,7 +267,6 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
-    <Compile Include="Controllers\CommunicationManagerController.cs" />
     <Compile Include="Controllers\External\DayPilot\KwasantCalendarControl.cs" />
     <Compile Include="Controllers\External\DayPilot\Providers\ICalendarController.cs" />
     <Compile Include="Controllers\External\GoogleCalendar\AuthCallbackController.cs" />

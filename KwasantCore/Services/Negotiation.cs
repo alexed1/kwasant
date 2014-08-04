@@ -77,7 +77,8 @@ namespace KwasantCore.Services
 
                 //Build a list of Users based on the Attendees associated with the Negotiation.
                 //This should work once the fixes to NegotiationDO are done in kw-324
-                List<UserDO> Recipients = curNegotiation.Attendees;//FINISH: for each AttendeeDO associated with this Negotiation, find their corresponding UserDO
+                List<UserDO> Recipients = new List<UserDO>(); //this is a placeholder. see the line below this.
+                    //curNegotiation.Attendees;//FINISH: for each AttendeeDO associated with this Negotiation, find their corresponding UserDO
 
                //For each user, if there is not already a ClarificationRequestDO that has this UserId and this NeogtiationId... 
                 foreach (var user in Recipients)

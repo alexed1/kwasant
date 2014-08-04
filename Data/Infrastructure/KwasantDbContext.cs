@@ -253,16 +253,7 @@ namespace Data.Infrastructure
                     mapping => mapping.MapLeftKey("BookingRequestID").MapRightKey("InstructionID").ToTable("BookingRequestInstruction")
                 );
 
-            modelBuilder.Entity<ClarificationRequestDO>()
-                .HasRequired(cr => cr.BookingRequest)
-                .WithMany()
-                .HasForeignKey(cr => cr.BookingRequestId);
-
-            modelBuilder.Entity<QuestionDO>()
-                .HasOptional(cq => cq.ClarificationRequest)
-                .WithMany(cr => cr.Questions)
-                .HasForeignKey(cq => cq.ClarificationRequestId);
-            
+         
             modelBuilder.Entity<AttachmentDO>()
                 .HasRequired(a => a.Email)
                 .WithMany(e => e.Attachments)

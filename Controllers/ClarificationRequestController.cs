@@ -100,10 +100,7 @@ namespace KwasantWeb.Controllers
                 var curClarificationRequestDO = uow.ClarificationRequestRepository.GetByKey(id);
                 if (curClarificationRequestDO == null)
                     return HttpNotFound("Clarification request not found.");
-                if (curClarificationRequestDO.BookingRequest == null)
-                    return HttpNotFound("Booking request not found.");
-                if (curClarificationRequestDO.Questions.Count(q => q.QuestionStatusID == QuestionStatus.Unanswered) == 0)
-                    return View("~/Views/ClarificationResponse/AllAnswered.cshtml");
+               
                 var curClarificationResponseViewModel = Mapper.Map<ClarificationRequestDO, ClarificationResponseViewModel>(curClarificationRequestDO);
                 return View("~/Views/ClarificationResponse/New.cshtml", curClarificationResponseViewModel);
             }

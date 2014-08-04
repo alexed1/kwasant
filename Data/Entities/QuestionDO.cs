@@ -21,12 +21,10 @@ namespace Data.Entities
         public string Text { get; set; }
         public string AnswerType { get; set; }
         public int NegotiationId { get; set; }
-        public int? ClarificationRequestId { get; set; }
+       
         public string Response { get; set; }
 
-        [ForeignKey("ClarificationRequestId")]
-        public virtual ClarificationRequestDO ClarificationRequest { get; set; }
-
+      
         [ForeignKey("NegotiationId")]
         public virtual NegotiationDO Negotiation { get; set; }
 
