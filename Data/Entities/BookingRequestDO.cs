@@ -18,9 +18,8 @@ namespace Data.Entities
 
         public List<InstructionDO> Instructions { get; set; }
 
-/*
-        public virtual ClarificationRequestDO ClarificationRequest { get; set; }
-*/
+        [InverseProperty("BookingRequest")]
+        public IList<NegotiationDO> Negotiations { get; set; }
 
         [InverseProperty("BookingRequests")]
         public virtual List<CalendarDO> Calendars { get; set; }

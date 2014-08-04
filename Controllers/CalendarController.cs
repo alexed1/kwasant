@@ -32,7 +32,7 @@ namespace KwasantWeb.Controllers
                 if (bookingRequestDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                ViewBag.negotiationlbl = new Negotiations().getNegotiationTask(uow, id);
+                ViewBag.negotiationlbl = new Negotiation().getNegotiationTask(uow, id);
 
                 return View(new CalendarViewModel
                 {
@@ -40,7 +40,7 @@ namespace KwasantWeb.Controllers
                     LinkedCalendarIDs = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).ToList(),
 
                     //In the future, we won't need this - the 'main' calendar will be picked by the booker
-                    MainCalendarID = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
+                    ActiveCalendarID = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
                 });
             }
         }
@@ -57,11 +57,14 @@ namespace KwasantWeb.Controllers
                 if (calendarDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
+                var calendarsViaNegotiationRequest = calendarDO.Negotiation.Calendars; //get calendars linked to negotiation
+                var recipientAddresses = calendarDO.Negotiation.BookingRequest.Recipients.Select(r => r.EmailAddress) //Get email addresses for each recipient
+                        .SelectMany(a => uow.UserRepository.GetOrCreateUser(a).Calendars).ToList(); //Grab the user from the email and find their calendars
 
                 return View("~/Views/Calendar/SelectEventWindows.cshtml", new EventWindowViewModel
                 {
-                    LinkedCalendarIDs = calendarDO.ClarificationRequest.Calendars.Select(c=> c.Id).Union(new[] { calendarID }).Distinct().ToList(),
-                    MainCalendarID = calendarID
+                    LinkedCalendarIDs = calendarsViaNegotiationRequest.Union(recipientAddresses).Select(c => c.Id).Union(new[] { calendarID }).Distinct().ToList(),
+                    ActiveCalendarID = calendarID
                 });
             }
         }

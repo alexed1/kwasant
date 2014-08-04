@@ -25,7 +25,7 @@ namespace Data.Entities
 
         [ForeignKey("EventStatus")]
         public int EventStatusID { get; set; }
-        public EventStatusRow EventStatus { get; set; }
+        public virtual EventStatusRow EventStatus { get; set; }
 
         public string Transparency { get; set; }
         public string Class { get; set; }

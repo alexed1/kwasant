@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
@@ -19,6 +20,7 @@ using KwasantWeb.ViewModels;
 using StructureMap;
 using System.Web.Script.Serialization;
 using Data.Repositories;
+using ViewModel.Models;
 
 
 namespace KwasantWeb.Controllers
@@ -27,8 +29,14 @@ namespace KwasantWeb.Controllers
     public class NegotiationController : Controller
     {
         private static int BookingRequestID { get; set; }
+        private Negotiation _negotiation ;
+        private Attendee _attendee;
 
-        #region "Negotiation"
+        public NegotiationController()
+        {
+            _negotiation = new Negotiation();
+            _attendee = new Attendee();
+        }
 
         public ActionResult Edit(int bookingRequestID)
         {
@@ -42,14 +50,20 @@ namespace KwasantWeb.Controllers
             NegotiationViewModel viewModel = json_serializer.Deserialize<NegotiationViewModel>(negotiation);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestID);
+                BookingRequestDO emailDO = uow.BookingRequestRepository.FindOne(el => el.Id == BookingRequestID);
                 UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
-                NegotiationDO negotiationDO = new NegotiationDO
+
+                //NEED TO CHECK HERE TO SEE IF THERE ALREADY IS ONE. SOMETHING LIKE:
+                NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.BookingRequestID == BookingRequestID && n.NegotiationStateID != NegotiationState.Resolved);
+                if (negotiationDO != null)
+                    throw new ApplicationException("tried to create a negotiation when one already existed");
+
+                 negotiationDO = new NegotiationDO
                 {
                     Name = viewModel.Name,
-                    RequestId = BookingRequestID,
+                    BookingRequestID = BookingRequestID,
                     NegotiationStateID = NegotiationState.InProcess,
-                    Email = emailDO
+                    BookingRequest = emailDO
                 };
                 uow.NegotiationsRepository.Add(negotiationDO);
                 uow.SaveChanges();
@@ -93,7 +107,7 @@ namespace KwasantWeb.Controllers
             {
                 //NegotiationViewModel NegotiationQuestions = new Negotiations().getNegotiation(uow, id);
 
-                NegotiationViewModel NegotiationQuestions = uow.NegotiationsRepository.GetAll().Where(e => e.RequestId == id && e.NegotiationStateID != NegotiationState.Resolved).Select(s => new NegotiationViewModel
+                NegotiationViewModel NegotiationQuestions = uow.NegotiationsRepository.GetAll().Where(e => e.BookingRequestID == id && e.NegotiationStateID != NegotiationState.Resolved).Select(s => new NegotiationViewModel
                 {
                     Id = s.Id,
                     Name = s.Name,
@@ -124,34 +138,59 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public JsonResult ProcessSubmittedForm(string negotiation)
+        public JsonResult ProcessSubmittedForm(EditNegotiationVM curVM )
         {
-            JavaScriptSerializer json_serializer = new JavaScriptSerializer();
-            NegotiationViewModel viewModel = json_serializer.Deserialize<NegotiationViewModel>(negotiation);
+            NegotiationDO newNegotiationData = curVM.curNegotiation;
+            string attendeeList = curVM.attendeeList;
 
+            object result;
+            NegotiationDO updatedNegotiationDO = new NegotiationDO();
+            try
+            {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestID);
-                UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
 
-                NegotiationDO negotiationsDO = uow.NegotiationsRepository.FindOne(n => n.RequestId == BookingRequestID && n.NegotiationStateID != NegotiationState.Resolved);
+                    //the data passed up from the form should include a valid negotiationId.
+                    NegotiationDO curNegotiationDO =
+                        uow.NegotiationsRepository.FindOne(n => n.Id == newNegotiationData.Id);
 
                 //Update Negotiation
-                NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.Id == viewModel.Id);
-                negotiationDO.Name = viewModel.Name;
-                negotiationDO.NegotiationState = viewModel.State;
-                uow.SaveChanges();
+                    NegotiationDO existingNegotiationDO = uow.NegotiationsRepository.FindOne(n => n.Id == newNegotiationData.Id);
+                    updatedNegotiationDO = _negotiation.Update(newNegotiationData, existingNegotiationDO);
 
-                foreach (var question in viewModel.Questions)
-                {
-                    QuestionDO questionDO = uow.QuestionsRepository.FindOne(q => q.Id == question.Id);
+                    //this takes the form data and processes it similarly to how its done in the Edit Event form
+                    //IMPORTANT: the code in Attendee.cs was refactored and needs testing.
+                    //_attendee.ManageNegotiationAttendeeList(uow, updatedNegotiationDO, attendeeList); //see
 
-                    if (questionDO != null)
-                    {
-                        questionDO.QuestionStatus = question.Status;
-                        questionDO.Text = question.Text;
-                        questionDO.AnswerType = question.AnswerType;
-                        uow.SaveChanges();
+                    //negotiationDO.Name = newNegotiationData.Name;
+                    //negotiationDO.NegotiationState = newNegotiationData.State;
+                    //uow.SaveChanges();
+
+                    //foreach (var question in newNegotiationData.Questions)
+                    //{
+                    //    QuestionDO questionDO = uow.QuestionsRepository.FindOne(q => q.Id == question.Id);
+
+                    //    if (questionDO != null)
+                    //    {
+                    //        questionDO.QuestionStatus = question.Status;
+                    //        questionDO.Text = question.Text;
+                    //        questionDO.AnswerType = question.AnswerType;
+                    //        uow.SaveChanges();
+
+                    //        foreach (var answers in question.Answers)
+                    //        {
+                    //            AnswerDO answerDO = uow.AnswersRepository.FindOne(a => a.Id == answers.Id);
+                    //            answerDO.AnswerStatusID = answers.AnswerStatusId;
+                    //            answerDO.ObjectsType = answers.Text;
+                    //            uow.SaveChanges();
+                    //        }
+                    //    }
+                    //}
+
+                    //Process Negotiation
+                    _negotiation.Process(updatedNegotiationDO);
+                    //set result to a success message
+                    result = new { Success = "True", BookingRequestID = updatedNegotiationDO.BookingRequest.Id, NegotiationId = updatedNegotiationDO.Id };
 
                         foreach (var answers in question.Answers)
                         {
@@ -161,14 +200,19 @@ namespace KwasantWeb.Controllers
                             uow.SaveChanges();
                         }
                     }
+            catch (Exception)
+            {
+                //set result to an error message
+                result = new { Success = "False", BookingRequestID = updatedNegotiationDO.BookingRequest.Id, NegotiationId = updatedNegotiationDO.Id };
                 }
-                var result = new { Success = "True", BookingRequestID = emailDO.Id, NegotiationId = negotiationDO.Id };
+
+            
                 return Json(result, JsonRequestBehavior.AllowGet);
             }
-        }
+
 
         [HttpGet]
-        public PartialViewResult Addquestion(int questionID, int negotiationId = 0)
+        public PartialViewResult AddQuestion(int questionID, int negotiationId = 0)
         {
             List<int> questionVal = new List<int>();
             questionVal.Add(questionID);
@@ -249,12 +293,11 @@ namespace KwasantWeb.Controllers
                     LinkedCalendarIDs = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).ToList(),
 
                     //In the future, we won't need this - the 'main' calendar will be picked by the booker
-                    MainCalendarID = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
+                    ActiveCalendarID = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
                 });
             }
         }
 
-        #endregion "Negotiation"
 
     }
 }

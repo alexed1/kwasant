@@ -28,7 +28,7 @@ namespace KwasantTest.Daemons
             TrackingStatusRepository trackingStatusRepository = uow.TrackingStatusRepository;
             var bookingRequestDO = new BookingRequestDO();
             bookingRequestDO.BookingRequestStateID = BookingRequestState.Unprocessed;
-            bookingRequestDO.User = new FixtureData().TestUser();
+            bookingRequestDO.User = new FixtureData().TestUser1();
             bookingRequestRepo.Add(bookingRequestDO);
 
             uow.SaveChanges();

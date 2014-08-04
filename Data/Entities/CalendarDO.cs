@@ -22,9 +22,9 @@ namespace Data.Entities
         public string OwnerID { get; set; }
         public virtual UserDO Owner { get; set; }
 
-        [ForeignKey("ClarificationRequest")]
-        public int? ClarificationRequestID { get; set; }
-        public virtual ClarificationRequestDO ClarificationRequest { get; set; }
+        [ForeignKey("Negotiation")]
+        public int? NegotiationID { get; set; }
+        public virtual NegotiationDO Negotiation { get; set; }
 
         [InverseProperty("Calendars")]
         public virtual List<BookingRequestDO> BookingRequests { get; set; }

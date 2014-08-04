@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class UpdateStateHandling : IMigrationMetadata
+    public sealed partial class ChangeAttendeesPKV2 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdateStateHandling));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(ChangeAttendeesPKV2));
         
         string IMigrationMetadata.Id
         {
-            get { return "201407310710406_UpdateStateHandling"; }
+            get { return "201408041612031_ChangeAttendeesPKV2"; }
         }
         
         string IMigrationMetadata.Source

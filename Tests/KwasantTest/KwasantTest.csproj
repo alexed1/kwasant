@@ -112,6 +112,8 @@
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />
+    <Compile Include="Fixtures\FixtureData - Answer.cs" />
+    <Compile Include="Fixtures\FixtureData - Question.cs" />
     <Compile Include="Fixtures\FixtureData - RemoteCalendar.cs" />
     <Compile Include="Fixtures\FixtureData - Negotiation.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
@@ -131,7 +133,8 @@
     <Compile Include="Services\SMSTests.cs" />
     <Compile Include="Timeslots\TimeslotMergeTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
-    <Compile Include="Workflow\WorkflowTests.cs" />
+    <Compile Include="Integration\IntegrationTests.cs" />
+    <Compile Include="Utilities\PollingEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

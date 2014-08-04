@@ -365,13 +365,57 @@
     <Compile Include="Migrations\201407301747128_RenamedEnums.Designer.cs">
       <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201407310710406_UpdateStateHandling.cs" />
-    <Compile Include="Migrations\201407310710406_UpdateStateHandling.Designer.cs">
-      <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
+    <Compile Include="Migrations\201408011152379_UpdateStateHandling.cs" />
+    <Compile Include="Migrations\201408011152379_UpdateStateHandling.Designer.cs">
+      <DependentUpon>201408011152379_UpdateStateHandling.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201408021638472_AddQuestion_to_Calendar.cs" />
-    <Compile Include="Migrations\201408021638472_AddQuestion_to_Calendar.Designer.cs">
-      <DependentUpon>201408021638472_AddQuestion_to_Calendar.cs</DependentUpon>
+    <Compile Include="Migrations\201408010906358_LinkBRToNegotiation.cs" />
+    <Compile Include="Migrations\201408010906358_LinkBRToNegotiation.Designer.cs">
+      <DependentUpon>201408010906358_LinkBRToNegotiation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408021102577_TurnOffIdentityInsert.cs" />
+    <Compile Include="Migrations\201408021102577_TurnOffIdentityInsert.Designer.cs">
+      <DependentUpon>201408021102577_TurnOffIdentityInsert.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408030427292_Attendee-NegotiationRelationship.cs" />
+    <Compile Include="Migrations\201408030427292_Attendee-NegotiationRelationship.Designer.cs">
+      <DependentUpon>201408030427292_Attendee-NegotiationRelationship.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408030444387_Question-NegotiationRelationship.cs" />
+    <Compile Include="Migrations\201408030444387_Question-NegotiationRelationship.Designer.cs">
+      <DependentUpon>201408030444387_Question-NegotiationRelationship.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408031640497_AddTextToAnswer.cs" />
+    <Compile Include="Migrations\201408031640497_AddTextToAnswer.Designer.cs">
+      <DependentUpon>201408031640497_AddTextToAnswer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408031644084_AddTextToAnswer2.cs" />
+    <Compile Include="Migrations\201408031644084_AddTextToAnswer2.Designer.cs">
+      <DependentUpon>201408031644084_AddTextToAnswer2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408032035430_AddTextToAnswer3.cs" />
+    <Compile Include="Migrations\201408032035430_AddTextToAnswer3.Designer.cs">
+      <DependentUpon>201408032035430_AddTextToAnswer3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041322379_Sync.04.08.2014.cs" />
+    <Compile Include="Migrations\201408041322379_Sync.04.08.2014.Designer.cs">
+      <DependentUpon>201408041322379_Sync.04.08.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041325113_RemoveRequestIDFromNegotiationDO.cs" />
+    <Compile Include="Migrations\201408041325113_RemoveRequestIDFromNegotiationDO.Designer.cs">
+      <DependentUpon>201408041325113_RemoveRequestIDFromNegotiationDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041612031_ChangeAttendeesPKV2.cs" />
+    <Compile Include="Migrations\201408041612031_ChangeAttendeesPKV2.Designer.cs">
+      <DependentUpon>201408041612031_ChangeAttendeesPKV2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041638073_FixPKs.cs" />
+    <Compile Include="Migrations\201408041638073_FixPKs.Designer.cs">
+      <DependentUpon>201408041638073_FixPKs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041658023_RemoveAttendeeToNegotiationTemp.cs" />
+    <Compile Include="Migrations\201408041658023_RemoveAttendeeToNegotiationTemp.Designer.cs">
+      <DependentUpon>201408041658023_RemoveAttendeeToNegotiationTemp.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AnswersRepository.cs" />
@@ -588,11 +632,44 @@
     <EmbeddedResource Include="Migrations\201407301747128_RenamedEnums.resx">
       <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201407310710406_UpdateStateHandling.resx">
-      <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201408011152379_UpdateStateHandling.resx">
+      <DependentUpon>201408011152379_UpdateStateHandling.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408021638472_AddQuestion_to_Calendar.resx">
-      <DependentUpon>201408021638472_AddQuestion_to_Calendar.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201408010906358_LinkBRToNegotiation.resx">
+      <DependentUpon>201408010906358_LinkBRToNegotiation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408021102577_TurnOffIdentityInsert.resx">
+      <DependentUpon>201408021102577_TurnOffIdentityInsert.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408030427292_Attendee-NegotiationRelationship.resx">
+      <DependentUpon>201408030427292_Attendee-NegotiationRelationship.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408030444387_Question-NegotiationRelationship.resx">
+      <DependentUpon>201408030444387_Question-NegotiationRelationship.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408031640497_AddTextToAnswer.resx">
+      <DependentUpon>201408031640497_AddTextToAnswer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408031644084_AddTextToAnswer2.resx">
+      <DependentUpon>201408031644084_AddTextToAnswer2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408032035430_AddTextToAnswer3.resx">
+      <DependentUpon>201408032035430_AddTextToAnswer3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041322379_Sync.04.08.2014.resx">
+      <DependentUpon>201408041322379_Sync.04.08.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041325113_RemoveRequestIDFromNegotiationDO.resx">
+      <DependentUpon>201408041325113_RemoveRequestIDFromNegotiationDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041612031_ChangeAttendeesPKV2.resx">
+      <DependentUpon>201408041612031_ChangeAttendeesPKV2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041638073_FixPKs.resx">
+      <DependentUpon>201408041638073_FixPKs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041658023_RemoveAttendeeToNegotiationTemp.resx">
+      <DependentUpon>201408041658023_RemoveAttendeeToNegotiationTemp.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
