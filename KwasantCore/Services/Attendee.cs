@@ -53,13 +53,13 @@ namespace KwasantCore.Services
 
         public void ManageNegotiationAttendeeList(IUnitOfWork uow, NegotiationDO curNegDO, string curAttendees)
         {
-            List<AttendeeDO> existingAttendeeSet = curNegDO.Attendees ?? new List<AttendeeDO>();
-            List<AttendeeDO> newAttendees = ManageAttendeeList(uow, existingAttendeeSet, curAttendees);
-            foreach (var attendee in newAttendees)
-            {
-                attendee.Negotiation = curNegDO;
-                uow.AttendeeRepository.Add(attendee);
-            }
+            //List<AttendeeDO> existingAttendeeSet = curNegDO.Attendees ?? new List<AttendeeDO>();
+            //List<AttendeeDO> newAttendees = ManageAttendeeList(uow, existingAttendeeSet, curAttendees);
+            //foreach (var attendee in newAttendees)
+            //{
+            //    attendee.Negotiation = curNegDO;
+            //    uow.AttendeeRepository.Add(attendee);
+            //}
         }
         
         public List<AttendeeDO> ManageAttendeeList(IUnitOfWork uow, List<AttendeeDO> existingAttendeeSet, string curAttendees)

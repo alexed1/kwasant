@@ -25,8 +25,8 @@ namespace Data.Entities
         public int BookingRequestID { get; set; }
         public virtual BookingRequestDO BookingRequest { get; set; }
 
-        [InverseProperty("Negotiation")]
-        public virtual List<AttendeeDO> Attendees { get; set; }
+        //[InverseProperty("Negotiation")]
+        //public virtual List<AttendeeDO> Attendees { get; set; }
 
         [InverseProperty("Negotiation")]
         public virtual List<QuestionDO> Questions { get; set; }

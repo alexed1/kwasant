@@ -405,6 +405,18 @@
     <Compile Include="Migrations\201408041325113_RemoveRequestIDFromNegotiationDO.Designer.cs">
       <DependentUpon>201408041325113_RemoveRequestIDFromNegotiationDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408041612031_ChangeAttendeesPKV2.cs" />
+    <Compile Include="Migrations\201408041612031_ChangeAttendeesPKV2.Designer.cs">
+      <DependentUpon>201408041612031_ChangeAttendeesPKV2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041638073_FixPKs.cs" />
+    <Compile Include="Migrations\201408041638073_FixPKs.Designer.cs">
+      <DependentUpon>201408041638073_FixPKs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041658023_RemoveAttendeeToNegotiationTemp.cs" />
+    <Compile Include="Migrations\201408041658023_RemoveAttendeeToNegotiationTemp.Designer.cs">
+      <DependentUpon>201408041658023_RemoveAttendeeToNegotiationTemp.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AnswersRepository.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
@@ -649,6 +661,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408041325113_RemoveRequestIDFromNegotiationDO.resx">
       <DependentUpon>201408041325113_RemoveRequestIDFromNegotiationDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041612031_ChangeAttendeesPKV2.resx">
+      <DependentUpon>201408041612031_ChangeAttendeesPKV2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041638073_FixPKs.resx">
+      <DependentUpon>201408041638073_FixPKs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041658023_RemoveAttendeeToNegotiationTemp.resx">
+      <DependentUpon>201408041658023_RemoveAttendeeToNegotiationTemp.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

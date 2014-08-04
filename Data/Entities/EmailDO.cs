@@ -68,7 +68,6 @@ namespace Data.Entities
             Events = new List<EventDO>();
             DateCreated = DateTime.UtcNow;
             DateReceived = DateTime.UtcNow;
-            From = new EmailAddressDO();
         }
 
         public void AddEmailRecipient(int type, EmailAddressDO emailAddress)

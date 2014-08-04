@@ -132,7 +132,7 @@ namespace Data.Infrastructure
             //Debug code!
             List<object> adds = ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();
             List<object> deletes = ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToList();
-            //var modifies = ChangeTracker.Entries()
+            List<object> others = ChangeTracker.Entries().Where(e => e.State != EntityState.Deleted && e.State != EntityState.Added).Select(e => e.Entity).ToList();
 
             foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
             {
@@ -264,9 +264,9 @@ namespace Data.Infrastructure
                 .WithRequired(a => a.Event)
                 .WillCascadeOnDelete(true);
 
-            modelBuilder.Entity<NegotiationDO>()
-                .HasMany(e => e.Attendees)
-                .WithRequired(a => a.Negotiation);
+            //modelBuilder.Entity<NegotiationDO>()
+            //    .HasMany(e => e.Attendees)
+            //    .WithRequired(a => a.Negotiation);
                 //  .WillCascadeOnDelete(true); when alexed tried to make this migration, this line caused errors
 
             modelBuilder.Entity<NegotiationDO>()

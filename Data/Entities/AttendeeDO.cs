@@ -7,9 +7,9 @@ namespace Data.Entities
 {
     public class AttendeeDO : IAttendee
     {
-        [Key, Column(Order = 0), DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
         public int Id { get; set; }
-        [Key, Column(Order = 1), ForeignKey("Event")]
+        [ForeignKey("Event")]
         public int EventID { get; set; }
 
         public String Name { get; set; }
@@ -19,6 +19,9 @@ namespace Data.Entities
         public virtual EmailAddressDO EmailAddress { get; set; }
 
         public virtual EventDO Event { get; set; }
-        public virtual NegotiationDO Negotiation { get; set; }
+
+        //[ForeignKey("Negotiation")]
+        //public int? NegotiationID { get; set; }
+        //public virtual NegotiationDO Negotiation { get; set; }
     }
 }

@@ -145,7 +145,7 @@ namespace KwasantWeb.Controllers
 
                     //this takes the form data and processes it similarly to how its done in the Edit Event form
                     //IMPORTANT: the code in Attendee.cs was refactored and needs testing.
-                    _attendee.ManageNegotiationAttendeeList(uow, updatedNegotiationDO, attendeeList); //see
+                    //_attendee.ManageNegotiationAttendeeList(uow, updatedNegotiationDO, attendeeList); //see
 
                     //negotiationDO.Name = newNegotiationData.Name;
                     //negotiationDO.NegotiationState = newNegotiationData.State;
