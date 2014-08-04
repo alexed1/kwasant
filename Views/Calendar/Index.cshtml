@@ -80,13 +80,16 @@
     $(function() {
         calendar = $('#CalendarDiv').KCalendar({
                 getCalendarBackendURL: function() {
-                    return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                    //return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                    return '@Url.Content("~/Calendar/Day?calendarIDs=" + @Model.MainCalendarID)';
                 },
                 getMonthBackendURL: function () {
-                    return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                    //return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                    return '@Url.Content("~/Calendar/Month?calendarIDs=" + @Model.MainCalendarID)';
                 },
                 getNavigatorBackendURL: function() {
-                    return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                    //return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                    return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + @Model.MainCalendarID)';
                 },  
                 getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
                 getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },

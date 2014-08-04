@@ -72,6 +72,20 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        public JsonResult DeleteAnswer(int answerId = 0)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                CalendarDO calendarDO = uow.CalendarRepository.FindOne(c => c.QuestionId == answerId);
+                if (calendarDO != null)
+                    uow.CalendarRepository.Remove(calendarDO);
+
+                uow.AnswersRepository.Remove(uow.AnswersRepository.FindOne(q => q.Id == answerId));
+                uow.SaveChanges();
+                return Json("Success", JsonRequestBehavior.AllowGet);
+            }
+        }
+
         [HttpGet]
         public ActionResult ShowNegotiation(long id)
         {
@@ -97,7 +111,8 @@ namespace KwasantWeb.Controllers
                         {
                             Id = ansl.Id,
                             QuestionID = ansl.QuestionID,
-                            Status = ansl.AnswerStatus,
+                            AnswerStatusID = ansl.AnswerStatusID,
+                            //Status = ansl.AnswerStatus,
                             ObjectsType = ansl.ObjectsType,
                         }).ToList()
                     }).ToList()
@@ -141,7 +156,7 @@ namespace KwasantWeb.Controllers
                         foreach (var answers in question.Answers)
                         {
                             AnswerDO answerDO = uow.AnswersRepository.FindOne(a => a.Id == answers.Id);
-                            answerDO.AnswerStatus = answers.Status;
+                            answerDO.AnswerStatusID = answers.AnswerStatusID;
                             answerDO.ObjectsType = answers.Text;
                             uow.SaveChanges();
                         }
@@ -195,7 +210,7 @@ namespace KwasantWeb.Controllers
                     AnswerDO answerDO = new AnswerDO
                     {
                         QuestionID = questiontblID,
-                        AnswerStatusID = AnswerStatus.Proposed,
+                        AnswerStatusID = AnswerStatus.Unstarted,
                         User = userDO,
                     };
 

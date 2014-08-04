@@ -7,6 +7,7 @@
 
 @using (Html.BeginForm())
 {
+
    <div id="questionContainer" data-questionid="@questionID" data-questiontbleid="@questionDataID">
        <table>
            <tr>
@@ -23,11 +24,11 @@
            <tr>
                <td>&nbsp;
                </td>
-               <td>Type: &nbsp;
-                   <input type="radio" id="QuetypeText" value="Text" name="type" checked="checked" onclick="removerchkClass(this);" class="tester" />
+               <td class="test">Type: &nbsp;
+                   <input type="radio" id="QuetypeText" value="Text" name="text" checked="checked" class="active"/>
                    &nbsp; Text
-                   &nbsp;                 
-                   <input type="radio" id="QuetypeTimeSlot" value="Timeslot" name="type" onclick="removerchkClass(this);" class="tester" />&nbsp; Event Window
+                   &nbsp;     
+                  <input type="radio" id="QuetypeTimeSlot" value="Timeslot" name="text" class="active"  />&nbsp; Event Window
                </td>
                <td>&nbsp;
                </td>

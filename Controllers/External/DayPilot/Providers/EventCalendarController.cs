@@ -52,7 +52,7 @@ namespace KwasantWeb.Controllers.External.DayPilot.Providers
                 if (_includeLinkedCalendars)
                 {
                     var linkedUserIDs = providedCalendars.Select(c => c.OwnerID).ToList();
-                    providedCalendars = providedCalendars.Union(uow.CalendarRepository.GetQuery().Where(c => linkedUserIDs.Contains(c.OwnerID)));
+                    //providedCalendars = providedCalendars.Union(uow.CalendarRepository.GetQuery().Where(c => linkedUserIDs.Contains(c.OwnerID)));
                 }
                     
                 return providedCalendars.SelectMany(c => c.Events).ToList().Select(e =>

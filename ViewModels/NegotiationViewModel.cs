@@ -12,7 +12,6 @@ namespace KwasantWeb.ViewModels
         public int RequestId { get; set; }
         public NegotiationStateRow State { get; set; }
         public string Name { get; set; }
-
         public List<QuestionViewModel> Questions { get; set; }                  
     }
 }

@@ -747,7 +747,6 @@
     <Content Include="Views\Negotiation\Edit.cshtml" />
     <Content Include="Views\Negotiation\_Question.cshtml" />
     <Content Include="Views\Negotiation\_TextAnswer.cshtml" />
-    <Content Include="Views\Negotiation\_TimeslotAnswer.cshtml" />
     <Content Include="Views\Calendar\GetNegotiationCalendars.cshtml" />
     <Content Include="Views\Negotiation\EventWindows.cshtml" />
   </ItemGroup>

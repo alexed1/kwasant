@@ -55,16 +55,14 @@
             url: '@Url.Action("Addquestion", "Negotiation")',
             data: { questionID: (questionPresent + 1), negotiationId: negotiationtblid },
             success: function (data) {
-                //alert(data.questionID);
                 $("#appendquestinoId").append(data);
-                //alert(countValue);
             }
         });
     };
 
     var getCalltextanswer = function (ele, questionID, questiontblId) {
-        var radiotype = $(ele).closest("table").find("input[checked='checked']").val();
-
+        var radiotype = $(ele).closest("table").find('.active:checked').val();
+        
         if (radiotype == 'Timeslot') {
             $.ajax({
                 type: 'Get',
@@ -75,36 +73,29 @@
                     Kwasant.IFrame.Display('/Negotiation/EventWindows/?id=' + data,
                     {
                         horizontalAlign: 'right',
-                        //callback: calendar.refreshCalendars
                     });
                 }
             });
         }
         else {
             url = '@Url.Action("AddtextAnswer", "Negotiation")';
+            var answerPresent = $("#appendquestinoId #questionContainer[data-questionID=" + questionID + "] #appendanswerId #answerContainer").length;
+            $.ajax({
+                type: 'Get',
+                url: url,
+                data: { answerID: (answerPresent + 1), questiontblID: questiontblId },
+                success: function (data) {
+                    $(ele).closest("table").find("#appendanswerId").append(data);
+                }
+            });
         }
-
-        var answerPresent = $("#appendquestinoId #questionContainer[data-questionID=" + questionID + "] #appendanswerId #answerContainer").length;
-        $.ajax({
-            type: 'Get',
-            url: url,
-            data: { answerID: (answerPresent + 1), questiontblID: questiontblId },
-            success: function (data) {
-                $(ele).closest("table").find("#appendanswerId").append(data);
-            }
-        });
     };
 
     var removetable = function (ele) {
         $(ele).closest("table").remove();
     }
 
-    var removerchkClass = function (ele) {
-        $(ele).closest("td").find('.tester').removeAttr("checked");
-        $(ele).attr('checked', 'checked');
-    }
-
-    var removeQuestion = function (ele) {
+   var removeQuestion = function (ele) {
         var findquestiontblId = $(ele).closest("div").attr("data-questiontbleid");
         var url = "/Negotiation/DeleteQuestion/?questionId=" + findquestiontblId;
         $.get(url, null, function (data) {
@@ -113,7 +104,19 @@
             else
                 alert("Exception Error!");
         });
-    }
+   }
+
+   var removeanswer = function (ele) {
+       var findanswertblId = $(ele).closest("div").attr("data-answertbleid");
+       var url = "/Negotiation/DeleteAnswer/?answerId=" + findanswertblId;
+       $.get(url, null, function (data) {
+           if (data == "Success") {
+               removetable(ele);
+           }
+           else
+               alert("Exception Error!");
+       });
+   }
 
     var handleNegotiationCancel = function (ele) {
         cancelNegotiation();
@@ -136,9 +139,10 @@
 
                 var aText = $(this).find('#answerText').val();
                 var aStatus = $(this).find('#answerStatus').val();
-
+                
                 var answertbleid = $(this).attr("data-answertbleid")
-                answersArray.push({ Id: answertbleid, Text: aText, Status: aStatus });
+                //answersArray.push({ Id: answertbleid, Text: aText, Status: aStatus });
+                answersArray.push({ Id: answertbleid, Text: aText, AnswerStatusID: aStatus });
             });
 
             var questiontbleid = $(this).attr("data-questiontbleid")
@@ -167,8 +171,10 @@
                 $.post('/CommunicationManager/DispatchNegotiationEmail/', { BookingRequestID: bookingrequestid, NegotiationId: negotiationId }, function (data) {
                     var clarificationRequestId = data.ClarificationRequestId;
                     $.post('/ClarificationRequest/Send/', { bookingRequestId: bookingrequestid, clarificationRequestId: clarificationRequestId, negotiationId: negotiationId }, function (data) {
+                        $(window.parent.document).find("#btnNegotiation").html("Edit Negotiation");
+                        $(window.parent.document).find("#btnNegotiation").attr("data-value", "Edit Negotiation");
                         closethis();
-                        alert("Done");
+                        //alert("Done");
                     });
                 });
             }
@@ -232,7 +238,6 @@
                     var countAnsVal = 0;
                     //Assigning Answers According to Questions
                     $.each(this.Answers, function () {
-                        //alert("Answer: " + this.Id);
                         countAnsVal = countAnsVal + 1;
                         var tempanshtml = textAnsTemp;
                         tempanshtml = $(tempanshtml).find("#answerContainer").attr("data-answerid", countAnsVal);
@@ -240,6 +245,7 @@
                         $(answerPresent).find("#appendanswerId").append(tempanshtml);
                         $(tempanshtml).find("#answerText").val(this.ObjectsType);
                         $(tempanshtml).find("#answerlbl").text("A-" + countAnsVal);
+                        $(tempanshtml).find("#answerStatus").val(this.AnswerStatusID);
                     });
                 });
             }

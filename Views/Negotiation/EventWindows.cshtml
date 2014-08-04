@@ -20,12 +20,10 @@
 	@Scripts.Render("~/bundles/js/bootstrap")
 	@Scripts.Render("~/bundles/js/common")
 }
-     
 
 <div id="CalendarDiv1">
-    <input type="button" value="Ok" class="btn btn-default" onclick="processSubmit()" />
-    &nbsp; &nbsp;
-    <a href="#" onclick="closethis();">Cancel</a>
+    <input type="button" value="OK" class="btn btn-default" onclick="closethis()" />
+  
 </div>
 
 <input type="hidden" value="21" id="hdnrequestid" name="requestid" />
@@ -36,13 +34,16 @@
      
         calendar = $('#CalendarDiv1').KCalendar({
             getCalendarBackendURL: function() {
-                return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                //return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                return '@Url.Content("~/Calendar/Day?calendarIDs=" + @Model.LinkedCalendarIDs[1])';
             },
             getMonthBackendURL: function () {
-                return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                //return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                return '@Url.Content("~/Calendar/Month?calendarIDs=" + @Model.LinkedCalendarIDs[1])';
             },
             getNavigatorBackendURL: function() {
-                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                //return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + @Model.LinkedCalendarIDs[1])';
             },  
             getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
             getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
@@ -58,7 +59,7 @@
                     callback: calendar.refreshCalendars
                 });
             },
-        }
+          }
         );
     });
 
@@ -66,9 +67,12 @@
         $(window.parent.document).find("iframe").each(function () {
             if ($(this).attr("style").indexOf("z-index") > 0) {
                 if ($(this).attr("style").indexOf("display: none") < 0) {
-                    $(this).remove();
+                    if($(this).attr("src").indexOf("/Negotiation/Edit") <0){
+                        $(this).remove();
+                    }
                 }
             }
         });
     };
+    
 </script>
