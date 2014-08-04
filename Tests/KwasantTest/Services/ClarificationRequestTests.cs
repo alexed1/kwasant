@@ -80,7 +80,7 @@ namespace KwasantTest.Services
             Assert.AreEqual(decryptedParams["id"], curClarificationRequestDO.Id);
         }
 
-        [Test, Ignore]
+        [Test, Ignore,]
         [Category("ClarificationRequest")]
         public void CanProcessResponse()
         {
