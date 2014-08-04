@@ -377,10 +377,6 @@
     <Compile Include="Migrations\201408021102577_TurnOffIdentityInsert.Designer.cs">
       <DependentUpon>201408021102577_TurnOffIdentityInsert.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201408021638472_AddQuestion_to_Calendar.cs" />
-    <Compile Include="Migrations\201408021638472_AddQuestion_to_Calendar.Designer.cs">
-      <DependentUpon>201408021638472_AddQuestion_to_Calendar.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201408030427292_Attendee-NegotiationRelationship.cs" />
     <Compile Include="Migrations\201408030427292_Attendee-NegotiationRelationship.Designer.cs">
       <DependentUpon>201408030427292_Attendee-NegotiationRelationship.cs</DependentUpon>
@@ -400,6 +396,14 @@
     <Compile Include="Migrations\201408032035430_AddTextToAnswer3.cs" />
     <Compile Include="Migrations\201408032035430_AddTextToAnswer3.Designer.cs">
       <DependentUpon>201408032035430_AddTextToAnswer3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041322379_Sync.04.08.2014.cs" />
+    <Compile Include="Migrations\201408041322379_Sync.04.08.2014.Designer.cs">
+      <DependentUpon>201408041322379_Sync.04.08.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041325113_RemoveRequestIDFromNegotiationDO.cs" />
+    <Compile Include="Migrations\201408041325113_RemoveRequestIDFromNegotiationDO.Designer.cs">
+      <DependentUpon>201408041325113_RemoveRequestIDFromNegotiationDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AnswersRepository.cs" />
@@ -625,9 +629,6 @@
     <EmbeddedResource Include="Migrations\201408021102577_TurnOffIdentityInsert.resx">
       <DependentUpon>201408021102577_TurnOffIdentityInsert.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408021638472_AddQuestion_to_Calendar.resx">
-      <DependentUpon>201408021638472_AddQuestion_to_Calendar.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408030427292_Attendee-NegotiationRelationship.resx">
       <DependentUpon>201408030427292_Attendee-NegotiationRelationship.cs</DependentUpon>
     </EmbeddedResource>
@@ -642,6 +643,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408032035430_AddTextToAnswer3.resx">
       <DependentUpon>201408032035430_AddTextToAnswer3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041322379_Sync.04.08.2014.resx">
+      <DependentUpon>201408041322379_Sync.04.08.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041325113_RemoveRequestIDFromNegotiationDO.resx">
+      <DependentUpon>201408041325113_RemoveRequestIDFromNegotiationDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

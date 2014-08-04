@@ -50,7 +50,7 @@ namespace KwasantWeb.Controllers
 
                 try
                 {
-                    NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(br => br.RequestId == bookingRequestId);
+                    NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(br => br.BookingRequestID == bookingRequestId);
                     var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow, bookingRequestId, clarificationRequestId, negotiationDO.Id);
                     return View(Mapper.Map<ClarificationRequestViewModel>(curClarificationRequestDO));
                 }

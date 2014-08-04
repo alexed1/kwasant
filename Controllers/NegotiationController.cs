@@ -50,20 +50,20 @@ namespace KwasantWeb.Controllers
             NegotiationViewModel viewModel = json_serializer.Deserialize<NegotiationViewModel>(negotiation);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestID);
+                BookingRequestDO emailDO = uow.BookingRequestRepository.FindOne(el => el.Id == BookingRequestID);
                 UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
 
                 //NEED TO CHECK HERE TO SEE IF THERE ALREADY IS ONE. SOMETHING LIKE:
-                NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.RequestId == BookingRequestID && n.NegotiationStateID != NegotiationState.Resolved);
+                NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.BookingRequestID == BookingRequestID && n.NegotiationStateID != NegotiationState.Resolved);
                 if (negotiationDO != null)
                     throw new ApplicationException("tried to create a negotiation when one already existed");
 
                  negotiationDO = new NegotiationDO
                 {
                     Name = viewModel.Name,
-                    RequestId = BookingRequestID,
+                    BookingRequestID = BookingRequestID,
                     NegotiationStateID = NegotiationState.InProcess,
-                    Email = emailDO
+                    BookingRequest = emailDO
                 };
                 uow.NegotiationsRepository.Add(negotiationDO);
                 uow.SaveChanges();
@@ -93,7 +93,7 @@ namespace KwasantWeb.Controllers
             {
                 //NegotiationViewModel NegotiationQuestions = new Negotiations().getNegotiation(uow, id);
 
-                NegotiationViewModel NegotiationQuestions = uow.NegotiationsRepository.GetAll().Where(e => e.RequestId == id && e.NegotiationStateID != NegotiationState.Resolved).Select(s => new NegotiationViewModel
+                NegotiationViewModel NegotiationQuestions = uow.NegotiationsRepository.GetAll().Where(e => e.BookingRequestID == id && e.NegotiationStateID != NegotiationState.Resolved).Select(s => new NegotiationViewModel
                 {
                     Id = s.Id,
                     Name = s.Name,

@@ -7,18 +7,18 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddQuestion_to_Calendar : IMigrationMetadata
+    public sealed partial class Sync04082014 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddQuestion_to_Calendar));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Sync04082014));
         
         string IMigrationMetadata.Id
         {
-            get { return "201408021638472_AddQuestion_to_Calendar"; }
+            get { return "201408041322379_Sync.04.08.2014"; }
         }
         
         string IMigrationMetadata.Source
         {
-            get { return Resources.GetString("Source"); }
+            get { return null; }
         }
         
         string IMigrationMetadata.Target
