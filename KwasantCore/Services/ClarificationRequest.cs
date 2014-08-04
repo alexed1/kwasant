@@ -103,7 +103,7 @@ namespace KwasantCore.Services
             if (clarificationRequest == null)
             {
                 var bookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                int negotiation = uow.NegotiationsRepository.GetByKey(NegotiationId).Id;
+                NegotiationDO negotiation = uow.NegotiationsRepository.GetByKey(NegotiationId);
                 if (bookingRequest == null)
                     throw new EntityNotFoundException<IBookingRequest>();
                 clarificationRequest = Create(uow, bookingRequest, negotiation);

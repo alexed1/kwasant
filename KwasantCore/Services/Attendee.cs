@@ -79,7 +79,7 @@ namespace KwasantCore.Services
             {
                 var newAttendee = new AttendeeDO
                 {
-                    EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee);              
+                    EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee),            
                     Name = attendee
                 };
                 newAttendees.Add(newAttendee);

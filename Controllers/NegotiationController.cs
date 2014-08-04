@@ -277,7 +277,6 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        #endregion "Negotiation"
 
     }
 }

@@ -53,7 +53,7 @@ namespace KwasantCore.Services
         {
             //to be implemented.
             //Question#Update should be called for each Question.
-
+            return null;
         }
 
 
@@ -70,14 +70,14 @@ namespace KwasantCore.Services
                 if (curNegotiation == null)
                     throw new ApplicationException("DispatchNegotiationEmail was passed an invalid NegotiationId");
                 //this line should work as written once kw-287 is done
-                  if (curNegotiation.State != NegotiationState.InProcess)
+                  if (curNegotiation.NegotiationStateID != NegotiationState.InProcess)
                     throw new ApplicationException("Cannot currently dispatch negotiation email for a negotiation that does not have a state of 'InProcess' ");
 
                 ClarificationRequest _cr = new ClarificationRequest();
 
                 //Build a list of Users based on the Attendees associated with the Negotiation.
                 //This should work once the fixes to NegotiationDO are done in kw-324
-                List<UserDO> Recipients = //for each AttendeeDO associated with this Negotiation, find their corresponding UserDO
+                List<UserDO> Recipients = curNegotiation.Attendees;//FINISH: for each AttendeeDO associated with this Negotiation, find their corresponding UserDO
 
                //For each user, if there is not already a ClarificationRequestDO that has this UserId and this NeogtiationId... 
                 foreach (var user in Recipients)
