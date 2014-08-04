@@ -36,7 +36,7 @@ namespace KwasantCore.Services
             curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
 			
 			var attendee = new Attendee();
-            //attendee.DetectEmailsFromBookingRequest(curEventDO);
+            attendee.DetectEmailsFromBookingRequest(curEventDO);
 
             curEventDO.EventStatusID = EventStatus.Booking;
         }

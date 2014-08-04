@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Web.Mvc;
 using Data.Constants;
 using Data.Entities;
 using Data.Entities.Constants;
@@ -17,6 +18,7 @@ using RazorEngine;
 using StructureMap;
 using Microsoft.WindowsAzure;
 using KwasantCore.Services;
+using StructureMap.Graph;
 using Utilities;
 using Encoding = System.Text.Encoding;
 using EventStatus = Data.Constants.EventStatus;
@@ -173,17 +175,9 @@ namespace KwasantCore.Managers
             return outboundEmail;
         }
 
-        //
-        //This method takes a NegotiationId as input that must resolve to a Negotiation with status "Unresolved".
-        //Build a list of Users based on the Attendees associated with the Negotiation.
-        //For each user, if there is not already a ClarificationRequestDO that has this UserId and this NeogtiationId, call ClarificationRequest#Create, get back a ClarificationRequestDO, and associate it with the Negotiation (You will need to add a property of type NegotiationDO to ClarificationRequestDO).
-        //call ClarificationRequest#GenerateResponseURL
-        //call ClarificationRequest#Send
-        //This will generate an email with a link that takes the recipient to a response view. 
-        public void  DispatchNegotiationEmail(int NegotiationId)
-        {
-     
-        }
+
+        
+
         private bool EventHasChanged(IUnitOfWork uow, EventDO eventDO)
         {
             //Stub method for now

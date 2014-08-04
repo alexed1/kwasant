@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Net;
+using System.Web.Mvc;
 using System.Net.Mail;
 using Data.Constants;
 using Data.Entities;
@@ -18,7 +19,12 @@ namespace KwasantCore.Services
 {
     public class ClarificationRequest
     {
-        public ClarificationRequestDO Create(IUnitOfWork uow, IBookingRequest bookingRequest, int negotiationId)
+        private Email _email;
+        public ClarificationRequest()
+        {
+            _email = new Email();
+        }
+        public ClarificationRequestDO Create(IUnitOfWork uow, IBookingRequest bookingRequest, NegotiationDO curNegotiation)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -29,7 +35,7 @@ namespace KwasantCore.Services
                                                  DateCreated = DateTime.UtcNow,
                                                  DateReceived = DateTime.UtcNow,
                                                  BookingRequestId = bookingRequest.Id,
-                                                 NegotiationId = negotiationId,
+                                                 NegotiationId = curNegotiation.Id,
                                                  Subject = "We need a little more information from you",
                                                  HTMLText = "*** This should be replaced with template body ***",
                                                  PlainText = "*** This should be replaced with template body ***",
@@ -41,18 +47,41 @@ namespace KwasantCore.Services
             return newClarificationRequestDo;
         }
 
-        public void Send(IUnitOfWork uow, IClarificationRequest request, string responseUrl)
+ 
+        public void Send(ClarificationRequestDO curCR)
         {
-            if (uow == null)
-                throw new ArgumentNullException("uow");
-            if (request == null)
-                throw new ArgumentNullException("request");
-            var email = new Email(uow);
-            email.SendTemplate("clarification_request_v1", request, new Dictionary<string, string>
+            if (curCR == null)
+                throw new ArgumentNullException("Clarification Request that was passed to Send was null");
+            //do proper validation here
+            var responseUrlFormat = "foo";  //replace with appropriate formatting. the previous code could only run in the controller: string.Concat(Url.Action("", RouteConfig.ShowClarificationResponseUrl, new { }, this.Request.Url.Scheme), "?{0}");
+            var responseUrl =  GenerateResponseURL(curCR, responseUrlFormat);
+            _email.SendTemplate("clarification_request_v1", curCR, new Dictionary<string, string>
                                                                         {
                                                                             { "RESP_URL", responseUrl }
                                                                         });
         }
+
+
+        //public ActionResult Send(int bookingRequestId, int clarificationRequestId = 0, int negotiationId = 0)
+        //{
+           
+
+              
+        //            cr.Send(uow, curClarificationRequestDO, responseUrl);
+        //            uow.SaveChanges();
+        //            return Json(new { success = true });
+        //        }
+        //        catch (EntityNotFoundException ex)
+        //        {
+        //            return HttpNotFound(ex.Message);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return Json(new { success = false, error = ex.Message });
+        //        }
+        //    }
+        //}
+
 
         public string GenerateResponseURL(IClarificationRequest clarificationRequestDO, string responseUrlFormat)
         {

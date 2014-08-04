@@ -160,13 +160,14 @@
                 var Success = data.Success;
                 var bookingrequestid = data.BookingRequestID;
                 var negotiationId = data.NegotiationId;
+                //THIS SHOULD ALL BE DONE ON THE SERVER via THE NegotiationController
                 //Call CommunicationManager
-                var data1 = { BookingRequestID: bookingrequestid, NegotiationId: negotiationId };
-                $.post('/CommunicationManager/DispatchNegotiationEmail/', { BookingRequestID: bookingrequestid, NegotiationId: negotiationId }, function (data) {
-                    var clarificationRequestId = data.ClarificationRequestId;
-                    $.post('/ClarificationRequest/Send/', { bookingRequestId: bookingrequestid, clarificationRequestId: clarificationRequestId, negotiationId: negotiationId }, function (data) {
+                //var data1 = { BookingRequestID: bookingrequestid, NegotiationId: negotiationId };
+                //$.post('/CommunicationManager/DispatchNegotiationEmail/', { BookingRequestID: bookingrequestid, NegotiationId: negotiationId }, function (data) {
+                //    var clarificationRequestId = data.ClarificationRequestId;
+                //    $.post('/ClarificationRequest/Send/', { bookingRequestId: bookingrequestid, clarificationRequestId: clarificationRequestId, negotiationId: negotiationId }, function (data) {
                         closethis();
-                        alert("Done");
+                       alert("Done");
                     });
                 });
             }

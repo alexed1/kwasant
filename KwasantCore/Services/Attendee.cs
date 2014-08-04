@@ -36,31 +36,55 @@ namespace KwasantCore.Services
             return curAttendee;
         }
 
+
         //the Event View Model returns attendees as a string. we'll want to do something more sophisticated involving typeahead and ajax but for now this is it
         //we want to convert that string into objects as quickly as possible once the data is on the server.
-        public void ManageAttendeeList(IUnitOfWork uow, EventDO eventDO, string curAttendees)
+        public void ManageEventAttendeeList(IUnitOfWork uow, EventDO eventDO, string curAttendees)
         {
+            List<AttendeeDO> existingAttendeeSet = eventDO.Attendees ?? new List<AttendeeDO>();
+            List<AttendeeDO> newAttendees = ManageAttendeeList( uow, existingAttendeeSet,  curAttendees);
+            foreach (var attendee in newAttendees)
+            {
+                attendee.Event = eventDO;
+                attendee.EventID = eventDO.Id;
+                uow.AttendeeRepository.Add(attendee);
+            }         
+        }
+
+        public void ManageNegotiationAttendeeList(IUnitOfWork uow, NegotiationDO curNegDO, string curAttendees)
+        {
+            List<AttendeeDO> existingAttendeeSet = curNegDO.Attendees ?? new List<AttendeeDO>();
+            List<AttendeeDO> newAttendees = ManageAttendeeList(uow, existingAttendeeSet, curAttendees);
+            foreach (var attendee in newAttendees)
+            {
+                attendee.Negotiation = curNegDO;
+                uow.AttendeeRepository.Add(attendee);
+            }
+        }
+        
+        public List<AttendeeDO> ManageAttendeeList(IUnitOfWork uow, List<AttendeeDO> existingAttendeeSet, string curAttendees)
+        {
+            List<AttendeeDO> newAttendees = new List<AttendeeDO>();
             if (String.IsNullOrEmpty(curAttendees))
                 curAttendees = String.Empty;
 
             var attendees = curAttendees.Split(',').ToList();
 
-            var eventAttendees = eventDO.Attendees ?? new List<AttendeeDO>();
-            var attendeesToDelete = eventAttendees.Where(attendee => !attendees.Contains(attendee.EmailAddress.Address)).ToList();
+
+            var attendeesToDelete = existingAttendeeSet.Where(attendee => !attendees.Contains(attendee.EmailAddress.Address)).ToList();
             foreach (var attendeeToDelete in attendeesToDelete)
                 uow.AttendeeRepository.Remove(attendeeToDelete);
 
-            foreach (var attendee in attendees.Where(att => !eventAttendees.Select(a => a.EmailAddress.Address).Contains(att)))
+            foreach (var attendee in attendees.Where(att => !existingAttendeeSet.Select(a => a.EmailAddress.Address).Contains(att)))
             {
                 var newAttendee = new AttendeeDO
                 {
-                    EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee),
-                    Event = eventDO,
-                    EventID = eventDO.Id,
+                    EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee);              
                     Name = attendee
                 };
-                uow.AttendeeRepository.Add(newAttendee);
+                newAttendees.Add(newAttendee);
             }
+            return newAttendees;
         }
 
         public void DetectEmailsFromBookingRequest(EventDO eventDO)

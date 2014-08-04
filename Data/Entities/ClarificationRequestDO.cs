@@ -39,6 +39,8 @@ namespace Data.Entities
         [ForeignKey("NegotiationId")]
         public virtual NegotiationDO Negotiation { get; set; }
 
+        //should add a setter override that prevents more than one recipient being added to the To of a CR.
+
         #endregion
     }
 }

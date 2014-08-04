@@ -61,35 +61,6 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        [KwasantAuthorize(Roles = "Admin")]
-        [HttpPost]
-        public ActionResult Send(int bookingRequestId, int clarificationRequestId = 0, int negotiationId = 0)
-        {
-            //var submittedClarificationRequestDO = Mapper.Map<ClarificationRequestDO>(viewModel);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var cr = new ClarificationRequest();
-                try
-                {
-                    //NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(br => br.RequestId == bookingRequestId);
-                    var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow, bookingRequestId, clarificationRequestId, negotiationId);
-                    cr.UpdateClarificationRequest(uow, curClarificationRequestDO);
-                    var responseUrlFormat = string.Concat(Url.Action("", RouteConfig.ShowClarificationResponseUrl, new { }, this.Request.Url.Scheme), "?{0}");
-                    var responseUrl = cr.GenerateResponseURL(curClarificationRequestDO, responseUrlFormat);
-                    cr.Send(uow, curClarificationRequestDO, responseUrl);
-                    uow.SaveChanges();
-                    return Json(new { success = true });
-                }
-                catch (EntityNotFoundException ex)
-                {
-                    return HttpNotFound(ex.Message);
-                }
-                catch (Exception ex)
-                {
-                    return Json(new { success = false, error = ex.Message });
-                }
-            }
-        }
 
         //[KwasantAuthorize(Roles = "Admin")]
         //[HttpPost]
