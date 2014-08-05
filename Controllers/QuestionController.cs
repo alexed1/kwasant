@@ -10,14 +10,24 @@ using KwasantWeb.Controllers.External.DayPilot.Providers;
 using KwasantWeb.ViewModels;
 using StructureMap;
 using Data.Entities;
+using System.Collections.Generic;
+using Data.Constants;
 
 
 namespace KwasantWeb.Controllers
 {
     public class QuestionController : Controller
     {
+
         //
         // GET: /Question/
+        #region Question
+        private Question _question;
+        public QuestionController()
+        {
+            _question = new Question();
+        }
+
         public ActionResult EditTimeslots(int Id, int BookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -39,5 +49,25 @@ namespace KwasantWeb.Controllers
             }
         }
 
-	}
+        [HttpGet]
+        public PartialViewResult Create(int questionId, int negotiationId = 0)
+        {
+            List<int> quesId= new List<int>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                quesId = _question.CreateQuestion(uow, questionId, negotiationId);
+            }
+            return PartialView("~/Views/Negotiation/_Question.cshtml", quesId);
+        }
+
+        public JsonResult Delete(int questionId = 0)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _question.DeleteQuestion(uow, questionId);
+                return Json("Success", JsonRequestBehavior.AllowGet);
+            }
+        }
+        #endregion
+    }
 }

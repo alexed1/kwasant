@@ -52,7 +52,7 @@
 
         $.ajax({
             type: 'Get',
-            url: '@Url.Action("Addquestion", "Negotiation")',
+            url: '@Url.Action("Create", "Question")',
             data: { questionID: (questionPresent + 1), negotiationId: negotiationtblid },
             success: function (data) {
                 $("#appendquestinoId").append(data);
@@ -62,7 +62,7 @@
 
     var getCalltextanswer = function (ele, questionID, questiontblId) {
         var radiotype = $(ele).closest("table").find('.active:checked').val();
-        
+
         if (radiotype == 'Timeslot') {
             $.ajax({
                 type: 'Get',
@@ -78,12 +78,12 @@
             });
         }
         else {
-            url = '@Url.Action("AddtextAnswer", "Negotiation")';
+            url = '@Url.Action("Create", "Answer")';
             var answerPresent = $("#appendquestinoId #questionContainer[data-questionID=" + questionID + "] #appendanswerId #answerContainer").length;
             $.ajax({
                 type: 'Get',
                 url: url,
-                data: { answerID: (answerPresent + 1), questiontblID: questiontblId },
+                data: { answerId: (answerPresent + 1), bookingRequestId: id, questionId: questiontblId },
                 success: function (data) {
                     $(ele).closest("table").find("#appendanswerId").append(data);
                 }
@@ -95,28 +95,28 @@
         $(ele).closest("table").remove();
     }
 
-   var removeQuestion = function (ele) {
+    var removeQuestion = function (ele) {
         var findquestiontblId = $(ele).closest("div").attr("data-questiontbleid");
-        var url = "/Negotiation/DeleteQuestion/?questionId=" + findquestiontblId;
+        var url = "/Question/Delete/?questionId=" + findquestiontblId;
         $.get(url, null, function (data) {
             if (data == "Success")
             { removetable(ele); }
             else
                 alert("Exception Error!");
         });
-   }
+    }
 
-   var removeanswer = function (ele) {
-       var findanswertblId = $(ele).closest("div").attr("data-answertbleid");
-       var url = "/Negotiation/DeleteAnswer/?answerId=" + findanswertblId;
-       $.get(url, null, function (data) {
-           if (data == "Success") {
-               removetable(ele);
-           }
-           else
-               alert("Exception Error!");
-       });
-   }
+    var removeanswer = function (ele) {
+        var findanswertblId = $(ele).closest("div").attr("data-answertbleid");
+        var url = "/Answer/Delete/?answerId=" + findanswertblId;
+        $.get(url, null, function (data) {
+            if (data == "Success") {
+                removetable(ele);
+            }
+            else
+                alert("Exception Error!");
+        });
+    }
 
     var handleNegotiationCancel = function (ele) {
         cancelNegotiation();
@@ -127,19 +127,21 @@
         var negotiationtblid = $("#divNegotiation").attr("data-negotiationid");
         //var Negotiation = { Id: negotiationtblid, Name: null, Questions: [], State: 2 };
         var Negotiation = { Id: negotiationtblid, Name: null, Questions: [] };
-
+        var countQue = 0;
         $.each($("#appendquestinoId #questionContainer"), function () {
+            countQue = countQue + 1;
             //item = per question container with id = questionContainer.
             var qText = $(this).find('#questionText').val();
             var answersArray = [];
-            var radiotype = $(this).find("input[checked='checked']").val();
+            //var queType = $('input[type="radio"]:checked').val();
+            var queType = $('input[name=quesType_' + countQue+ ']:radio:checked').val();
+                  
             var answerContainer = $(this).find('#appendanswerId #answerContainer')
-
             $.each(answerContainer, function () {
 
                 var aText = $(this).find('#answerText').val();
                 var aStatus = $(this).find('#answerStatus').val();
-                
+
                 var answertbleid = $(this).attr("data-answertbleid")
                 //answersArray.push({ Id: answertbleid, Text: aText, Status: aStatus });
                 answersArray.push({ Id: answertbleid, Text: aText, AnswerStatusID: aStatus });
@@ -147,7 +149,7 @@
 
             var questiontbleid = $(this).attr("data-questiontbleid")
             //Negotiation.Questions.push({ Id: questiontbleid, Text: qText, Answers: answersArray, AnswerType: radiotype, Status: "Unanswered" });
-            Negotiation.Questions.push({ Id: questiontbleid, Text: qText, Answers: answersArray, AnswerType: radiotype });
+            Negotiation.Questions.push({ Id: questiontbleid, Text: qText, Answers: answersArray, AnswerType: queType });
         });
 
         Negotiation.Name = $("#NegName").val();
@@ -174,7 +176,6 @@
                         $(window.parent.document).find("#btnNegotiation").html("Edit Negotiation");
                         $(window.parent.document).find("#btnNegotiation").attr("data-value", "Edit Negotiation");
                         closethis();
-                        //alert("Done");
                     });
                 });
             }
@@ -185,8 +186,8 @@
 
         $.ajax({
             type: 'Get',
-            url: '@Url.Action("Addquestion", "Negotiation")',
-            data: { questionID: (1) },
+            url: '@Url.Action("Create", "Question")',
+            data: { questionId: (1) },
             success: function (data) {
                 questionTemp = data;
             }
@@ -194,19 +195,10 @@
 
         $.ajax({
             type: 'Get',
-            url: '@Url.Action("AddtextAnswer", "Negotiation")',
-            data: { answerID: (1) },
+            url: '@Url.Action("Create", "Answer")',
+            data: { answerId: (1), bookingRequestId: id },
             success: function (data) {
                 textAnsTemp = data;
-            }
-        });
-
-        $.ajax({
-            type: 'Get',
-            url: '@Url.Action("AddTimeslotAnswer", "Negotiation")',
-            data: { answerID: (1) },
-            success: function (data) {
-                timesloteAnsTemp = data;
             }
         });
 
@@ -232,8 +224,15 @@
                     //Assigning Question Attributes
                     $(temphtml).attr("data-questiontbleid", this.Id);
                     var answerPresent = $("#appendquestinoId #questionContainer[data-questionID=" + countQueVal + "]");
-                    $(answerPresent).find('#questionlbl').text("Question :" + countQueVal);
+                    //$(answerPresent).find('#questionlbl').text("Question :" + countQueVal);
                     $(answerPresent).find("#questionText").val(this.Text);
+
+                    $(answerPresent).find("#QuetypeText").attr('name', 'quesType_' + countQueVal);
+                    $(answerPresent).find("#QuetypeTimeSlot").attr('name', 'quesType_' + countQueVal);
+                    if (this.AnswerType == "Text")
+                    { $(answerPresent).find("#QuetypeText").attr('checked', 'checked'); }
+                    else
+                    { $(answerPresent).find("#QuetypeTimeSlot").attr('checked', 'checked'); }
 
                     var countAnsVal = 0;
                     //Assigning Answers According to Questions
@@ -284,18 +283,17 @@
 	<link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
 }
 
-<form id="f">
+<form id="f" class="negotiationsidebar">
     <div class="form-horizontal" data-negotiationId="0" id="divNegotiation">
         <h4>Negotiation</h4>
-        <hr />
-        <div class="form-group">
+        <div class="form-group negotiation-mrbottom">
             <table>
                 <tr>
                     <td>&nbsp; 
                         <label>Name:</label>
                     </td>
                     <td>
-                        <input type="text" id="NegName" name="NegNameId" value="Negotiation 1" />
+                        <input type="text" id="NegName" name="NegNameId" value="Negotiation 1" class="form-control col-md-1" />
                     </td>
                 </tr>
             </table>
@@ -304,18 +302,22 @@
 
         </div>
       <span class="form-group" id="divAddQuestion" onclick="getCallquestion()">
-      @*<span class="form-group" id="divAddQuestion" onclick="deserializeForm()">*@
-      &nbsp; &nbsp;
+             &nbsp; &nbsp;
             <img src="~/Content/img/plus.png" />
             <label>Add Question</label>
         </span>
 
-        <div class="form-group">
+        @*<div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="button" value="Ok" class="btn btn-default" onclick="processSubmit()" />
                 &nbsp; &nbsp;
                 <a href="#" onclick="closethis();">Cancel</a>
             </div>
-        </div>
+        </div>*@
+        <div class="space form-actions negotiation-form-actions">
+			<input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="processSubmit()" />
+            
+			<a href="javascript:closeWithUnsavedDataCheck(modifiedState);" class="cancel-btn pull-left">Cancel</a>
+		</div>
     </div>
 </form>

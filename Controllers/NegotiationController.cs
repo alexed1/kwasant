@@ -26,13 +26,18 @@ namespace KwasantWeb.Controllers
     //[KwasantAuthorize(Roles = "Admin")]
     public class NegotiationController : Controller
     {
-        private static int BookingRequestID { get; set; }
-
+        private static int BookingRequestId { get; set; }
+        private Answer _answer;
         #region "Negotiation"
 
+        public NegotiationController()
+        {
+            _answer = new Answer();
+        }
+        
         public ActionResult Edit(int bookingRequestID)
         {
-            BookingRequestID = bookingRequestID;
+            BookingRequestId = bookingRequestID;
             return View();
         }
 
@@ -42,12 +47,12 @@ namespace KwasantWeb.Controllers
             NegotiationViewModel viewModel = json_serializer.Deserialize<NegotiationViewModel>(negotiation);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestID);
+                EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestId);
                 UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
                 NegotiationDO negotiationDO = new NegotiationDO
                 {
                     Name = viewModel.Name,
-                    RequestId = BookingRequestID,
+                    RequestId = BookingRequestId,
                     NegotiationStateID = NegotiationState.InProcess,
                     Email = emailDO
                 };
@@ -55,34 +60,6 @@ namespace KwasantWeb.Controllers
                 uow.SaveChanges();
                 var result = new { Success = "True", NegotiationId = negotiationDO.Id };
                 return Json(result, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        public JsonResult DeleteQuestion(int questionId = 0)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                CalendarDO calendarDO = uow.CalendarRepository.FindOne(c => c.QuestionId == questionId);
-                if (calendarDO != null)
-                    uow.CalendarRepository.Remove(calendarDO);
-
-                uow.QuestionsRepository.Remove(uow.QuestionsRepository.FindOne(q => q.Id == questionId));
-                uow.SaveChanges();
-                return Json("Success", JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        public JsonResult DeleteAnswer(int answerId = 0)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                CalendarDO calendarDO = uow.CalendarRepository.FindOne(c => c.QuestionId == answerId);
-                if (calendarDO != null)
-                    uow.CalendarRepository.Remove(calendarDO);
-
-                uow.AnswersRepository.Remove(uow.AnswersRepository.FindOne(q => q.Id == answerId));
-                uow.SaveChanges();
-                return Json("Success", JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -97,7 +74,7 @@ namespace KwasantWeb.Controllers
                 {
                     Id = s.Id,
                     Name = s.Name,
-                    RequestId = BookingRequestID,
+                    RequestId = BookingRequestId,
                     State = s.NegotiationState,
 
                     Questions = uow.QuestionsRepository.GetAll().Where(que => que.NegotiationId == s.Id).Select(quel => new QuestionViewModel
@@ -131,10 +108,10 @@ namespace KwasantWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestID);
+                EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestId);
                 UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
 
-                NegotiationDO negotiationsDO = uow.NegotiationsRepository.FindOne(n => n.RequestId == BookingRequestID && n.NegotiationStateID != NegotiationState.Resolved);
+                NegotiationDO negotiationsDO = uow.NegotiationsRepository.FindOne(n => n.RequestId == BookingRequestId && n.NegotiationStateID != NegotiationState.Resolved);
 
                 //Update Negotiation
                 NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.Id == viewModel.Id);
@@ -167,69 +144,6 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        [HttpGet]
-        public PartialViewResult Addquestion(int questionID, int negotiationId = 0)
-        {
-            List<int> questionVal = new List<int>();
-            questionVal.Add(questionID);
-
-            if (negotiationId > 0)
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    QuestionDO questionDO = new QuestionDO
-                    {
-                        Negotiation = uow.NegotiationsRepository.FindOne(q => q.Id == negotiationId),
-                        QuestionStatusID = QuestionStatus.Unanswered,
-                        Text = "Question",
-                    };
-
-                    uow.QuestionsRepository.Add(questionDO);
-                    uow.SaveChanges();
-                    questionVal.Add(questionDO.Id);
-                }
-            }
-            else
-                questionVal.Add(0);
-
-            return PartialView("_Question", questionVal);
-        }
-
-        [HttpGet]
-        public PartialViewResult AddtextAnswer(int answerID, int questiontblID = 0)
-        {
-            List<int> ansVal = new List<int>();
-            ansVal.Add(answerID);
-
-            if (questiontblID > 0)
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestID);
-                    UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
-                    AnswerDO answerDO = new AnswerDO
-                    {
-                        QuestionID = questiontblID,
-                        AnswerStatusID = AnswerStatus.Unstarted,
-                        User = userDO,
-                    };
-
-                    uow.AnswersRepository.Add(answerDO);
-                    uow.SaveChanges();
-                    ansVal.Add(answerDO.Id);
-                }
-            }
-            else
-                ansVal.Add(0);
-
-            return PartialView("_TextAnswer", ansVal);
-        }
-
-        public PartialViewResult AddTimeslotAnswer(int answerID)
-        {
-            return PartialView("_TimeslotAnswer", answerID);
-        }
-
         public ActionResult EventWindows(int id = 0)
         {
             if (id <= 0)
@@ -238,7 +152,7 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IBookingRequestRepository bookingRequestRepository = uow.BookingRequestRepository;
-                var bookingRequestDO = bookingRequestRepository.GetByKey(BookingRequestID);
+                var bookingRequestDO = bookingRequestRepository.GetByKey(BookingRequestId);
                 if (bookingRequestDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
