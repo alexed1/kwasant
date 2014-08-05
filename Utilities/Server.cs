@@ -9,5 +9,7 @@ namespace Utilities
         public static String ServerUrl { get; set; }
 
         public static bool IsDevMode { get; set; }
+
+        public static bool IsProduction { get; set; }
     }
 }
