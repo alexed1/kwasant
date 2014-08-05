@@ -1,22 +1,23 @@
-﻿@model int
+﻿@model List<int>
 @{
     Layout = null;
-    string questionID = Model.ToString();
+    string questionID = Model[0].ToString();
+    string questionDataID = Model[1].ToString();
  }
 
 @using (Html.BeginForm())
 {
-   <div id="questionContainer" data-questionid="@questionID" data-questiontbleId="0">
+   <div id="questionContainer" data-questionid="@questionID" data-questiontbleid="@questionDataID">
        <table>
            <tr>
                <td>
                    <label id="questionlbl">Question : @questionID</label>
                </td>
                <td>
-                   <input type="text" id="questionText" name="Question" />
+                   <input type="text" id="questionText" name="Question"  />
                </td>
                <td>
-                   <img src="~/Content/img/Cross.png" onclick="removetable(this)" />
+                   <img src="~/Content/img/Cross.png" onclick="removeQuestion(this)" />
                </td>
            </tr>
            <tr>
@@ -26,7 +27,7 @@
                    <input type="radio" id="QuetypeText" value="Text" name="type" checked="checked" onclick="removerchkClass(this);" class="tester" />
                    &nbsp; Text
                    &nbsp;                 
-                   <input type="radio" id="QuetypeTimeSlot" value="Timeslot" name="type" onclick="removerchkClass(this);" class="tester" />&nbsp; Timeslot
+                   <input type="radio" id="QuetypeTimeSlot" value="Timeslot" name="type" onclick="removerchkClass(this);" class="tester" />&nbsp; Event Window
                </td>
                <td>&nbsp;
                </td>

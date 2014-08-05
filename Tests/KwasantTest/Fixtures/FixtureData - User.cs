@@ -4,7 +4,7 @@ namespace KwasantTest.Fixtures
 {
     partial class FixtureData
     {
-        public UserDO TestUser()
+        public UserDO TestUser1()
         {
             return new UserDO()
             {                
@@ -24,14 +24,7 @@ namespace KwasantTest.Fixtures
             };
         }
 
-        public UserDO TestImplicitUser()
-        {
-            return new UserDO()
-            {
-                FirstName = "Pabitra",
-                UserName = "pabitra1970@gmail.com"
-            };
-        }
+     
     }
 }
 

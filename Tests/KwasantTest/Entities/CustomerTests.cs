@@ -34,7 +34,7 @@ namespace KwasantTest.Models
         {
             //SETUP
             //create a customer from fixture data
-            UserDO curUserDO = _fixture.TestUser();
+            UserDO curUserDO = _fixture.TestUser1();
 
             //EXECUTE
             _uow.UserRepository.Add(curUserDO);

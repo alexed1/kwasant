@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Web.Mvc;
 using Data.Constants;
 using Data.Entities;
 using Data.Entities.Constants;
@@ -17,6 +18,7 @@ using RazorEngine;
 using StructureMap;
 using Microsoft.WindowsAzure;
 using KwasantCore.Services;
+using StructureMap.Graph;
 using Utilities;
 using Encoding = System.Text.Encoding;
 using EventStatus = Data.Constants.EventStatus;
@@ -172,6 +174,9 @@ namespace KwasantCore.Managers
 
             return outboundEmail;
         }
+
+
+        
 
         private bool EventHasChanged(IUnitOfWork uow, EventDO eventDO)
         {

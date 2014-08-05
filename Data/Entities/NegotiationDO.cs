@@ -18,16 +18,25 @@ namespace Data.Entities
        
         public string Name { get; set; }
 
-        [ForeignKey("BookingRequest")]
+        [InverseProperty("Negotiation")]
+        public virtual IList<CalendarDO> Calendars { get; set; }
+
+        [ForeignKey("BookingRequest"), Required]
         public int BookingRequestID { get; set; }
-        public BookingRequestDO BookingRequest { get; set; }
+        public virtual BookingRequestDO BookingRequest { get; set; }
+
+        //[InverseProperty("Negotiation")]
+        //public virtual List<AttendeeDO> Attendees { get; set; }
 
         [InverseProperty("Negotiation")]
-        public virtual IList<CalendarDO> Calendars { get; set; } 
+        public virtual List<QuestionDO> Questions { get; set; }
 
-        [ForeignKey("Email"), Required]
-        public int RequestId { get; set; }
-        public virtual EmailDO Email { get; set; }
+
+        public NegotiationDO ()
+        {
+            Questions = new List<QuestionDO>();
+        }
+
 
         #endregion
     }

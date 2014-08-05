@@ -174,13 +174,12 @@ namespace KwasantWeb.Controllers
         {
             List<BR_RelatedItems> bR_RelatedItems = new List<BR_RelatedItems>();
             var events = _br.GetRelatedEvents(uow, bookingRequestId);
-            var clarificationRequests =_br.GetRelatedClarificationRequests(uow, bookingRequestId);
+            //removed clarification requests, as there is no longer a direct connection. we'll need to collect them for this json via negotiation objects
 
             if (events.Count() > 0)
                 bR_RelatedItems.AddRange(events);
 
-            if (clarificationRequests.Count() > 0)
-                bR_RelatedItems.AddRange(clarificationRequests);
+          
 
               recordcount = bR_RelatedItems.Count();
             return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();
