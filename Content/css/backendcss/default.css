@@ -24,7 +24,7 @@ body {
 
 p, td {
     font-family: 'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif;
-    font-size: 10pt;
+    font-size: 11pt;
 }
 
 a {
@@ -119,6 +119,41 @@ input[type="checkbox"].input-validation-error {
 
 .dark-bg .form input:focus, .dark-bg .form textarea:focus {
 	background: #3e3e3e;
+}
+
+/* button styles */
+
+.custom-btn {
+	padding: 6px 12px;
+	border: 1px solid #d85e17;
+	background: #d85e17;
+	background-image: none;
+	text-shadow: none;
+	color: #f2e9df;
+	border-radius: 0;
+	transition: all ease-in-out .3s;
+	box-shadow: none;
+	filter: none;	
+	font-family: 'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif;
+}
+
+.custom-btn:hover {
+	border-color: #8b4f34;
+    background: #f16d20;
+	color: #fff;
+}
+
+.custom-btn.glyphicon:before {
+	padding-right: 10px;
+	font-family: 'Glyphicons Halflings';
+}
+
+td .custom-btn {
+	margin-left: 10px;
+}
+
+td .custom-btn:first-child {
+	margin-left: 0;
 }
 
 /* Main marketing message and sign up button */
@@ -436,6 +471,34 @@ nav.top-toolbar-section ul.navbar-nav li a:hover, nav.top-toolbar-section ul.nav
 	color: #fff;
 }
 
+/* Page Title Styles*/
+
+.page-title-action {
+	width: 100%; 
+	overflow: hidden;
+}
+
+.page-title-action h2 {
+	float: left;
+	width: 60%;	
+}
+
+.page-title-action a.custom-btn {
+	float: right;
+	margin-top: 21px;
+	margin-left: 10px;
+}
+
+.page-title-action .title-actions {
+	float: right;
+	width: 30%;	
+}
+
+.bottom-actions a.custom-btn {
+	margin-left: 10px;
+}
+
+
 /* Forms Styles*/
 
 .custom-form {
@@ -601,6 +664,15 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
 	background: #f8f8f8
 }
 
+.body-content table.user-details-table {
+	border-top: 1px solid #0e0e0e;
+}
+
+.body-content table.user-details-table tr td:first-child {
+	width: 150px;
+	font-weight: bold;
+}
+
 /* Data Tables customize pagination styles */
 
 .body-content .dataTables_wrapper .dataTables_paginate .paginate_button {
@@ -762,6 +834,7 @@ input[type="checkbox"].input-validation-error {
 
 .jumbotron.calendar-section {
 	padding: 10px 20px;	
+	font-size: 14px;
 }
 
 .calendar-section .toolbar {
@@ -933,8 +1006,51 @@ body.email-info-section .email-content {
 	width: 57%;
 }
 
-.calendar-inner .toolbar-section .navigator_white_main {
+/*customize event history view*/
 
+.view-popup-window {
+	width: 560px; 
+	overflow: hidden;
+}
+
+.history-view-event .popup-close {
+	float: right;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 3;	
+}
+
+.history-view-event .dataTables_wrapper .dataTables_length, .history-view-event .dataTables_wrapper .dataTables_filter {
+	width: 100%;
+	overflow: hidden;
+}
+
+.history-view-event .dataTables_wrapper .dataTables_length label, .history-view-event .dataTables_wrapper .dataTables_filter label {
+	float: left;
+}
+
+.history-view-event .dataTables_scrollHeadInner {
+	width: 100%!important;
+}
+
+.history-view-event .dataTables_scrollHead table.data-table {
+	width: 100%!important;
+	margin-bottom: 0;
+}
+
+.ifarme-body .history-view-event .dataTables_info {
+	width: 100%;
+
+}
+
+.ifarme-body .history-view-event .dataTables_paginate.paging_simple_numbers {
+	width: 100%;
+	
+}
+
+.history-view-event .dataTables_scrollBody table.data-table {
+	margin: 0 auto;
 }
 
 /*Calendar ThemeBlue*/
@@ -1008,6 +1124,12 @@ today-calendar-tbl .first-col {
 .edit-event-form .validation-errors {
 	color: #d85e17;
 	font-size: 12px;	
+}
+
+/*Users section styles*/
+
+a.user-details-btn.lnk-btn {
+	
 }
 
 /*Responsive Styles*/

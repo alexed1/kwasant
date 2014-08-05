@@ -2,8 +2,10 @@
 @{
     ViewBag.Title = "Users";
 }
-<h2>Users</h2>
-<p>@Html.ActionLink("Create New", "Create")</p>
+<div class="page-title-action">
+	<h2>Users</h2>
+	<p>@Html.ActionLink("Create New", "Create", null, new { @class = "custom-btn glyphicon glyphicon-plus" }) </p>
+</div>
 <table class="data-table dataTable">
 	<thead>
 		<tr>
@@ -11,7 +13,7 @@
 			<th>Last Name</th>
 			<th>Email Address</th>
 			<th>Role</th>
-			<th></th>
+			<th width="100">Actions</th>
 		</tr>
 	</thead>
 		@{
@@ -25,7 +27,7 @@
 						<td>@Html.DisplayFor(modelItem => item.LastName)</td>
 						<td>@Html.DisplayFor(modelItem => item.EmailAddress)</td>
 						<td>@Html.DisplayFor(modelItem => item.Role)</td>
-						<td>@Html.ActionLink("Details", "Details", new { userId = item.UserId, roleId = item.RoleId })</td>
+						<td>@Html.ActionLink("Details", "Details", new { userId = item.UserId, roleId = item.RoleId }, new { @class = "custom-btn glyphicon glyphicon-user" })</td>
 					</tr>
 				}
 			}

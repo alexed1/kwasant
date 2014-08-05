@@ -47,23 +47,26 @@
 		<div id="emailInfoBox" class="col-md-7">
 			<div class="emailInfoBox">
 				<iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.BookingRequestID"></iframe>
-               <input type="radio" id="rdnshowOtherBRs" name="group1" value="ShowOtherBRs" /> Show Other BR's  &nbsp;&nbsp; 
-                <input type="radio"  id="rdnShowRelatedItems" name="group1" value="ShowRelatedItems" checked="checked" />Show Related Items
-                 <table id="tblRelatedItems" class="email-info-tabele">
+				<div class="">
+					<input type="radio" id="rdnshowOtherBRs" name="group1" value="ShowOtherBRs" /> Show Other BR's  &nbsp;&nbsp; 
+					<input type="radio" id="rdnShowRelatedItems" name="group1" value="ShowRelatedItems" checked="checked" />Show Related Items
+				</div>
+				<table id="tblRelatedItems" class="email-info-table data-table">
 					<thead>
-                    	<tr>
+						<tr>
 							<th>Date</th>
-							<th>type</th>
+							<th>Type</th>
 						</tr>
 					</thead>
 				</table>
-					<thead>
+
+<!--				<thead>
 						<tr>
 							<th>Date Received</th>
 							<th>Subject</th>
 						</tr>
 					</thead>
-				</table>
+				</table> -->
 			</div>
         </div>        
 		<div id="CalendarDiv" class="col-md-5"></div>
@@ -252,28 +255,26 @@
             ajax:
             {
                 "url": "@Url.Action("ShowRelatedItems", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestID",
-            "dataSrc": function (json) {
-                var orgdata = JSON.parse(json.data);
-                return orgdata;
-        }
-        },
+				"dataSrc": function (json) {
+					var orgdata = JSON.parse(json.data);
+					return orgdata;
+				}
+			},
             
             createdRow: function (row, data, index) {
-                $(row).attr("style", "cursor:pointer;");
+               // $(row).attr("style", "cursor:pointer;");
             },
-        columns: [
-                    {
-                        data: function (data) {
-                            return ConvertTODateString(data.date);
-    }
-                    },
-                   { data: 'type' }
-        ]
-     });
+			columns: [
+                {
+                    data: function (data) {
+                        return ConvertTODateString(data.date);
+					}
+                },
+                { data: 'type' }
+			]
+		});
 
-    }
-
-
+	}
    
      $('#tblRelatedItems').on('click', 'tr', function () {
          $("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");

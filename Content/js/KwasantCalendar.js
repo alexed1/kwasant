@@ -317,7 +317,7 @@
         dp.eventHeaderHeight = 14;
         dp.eventHeaderVisible = false;
         dp.eventSelectColor = '#0000ff';
-        dp.headerFontSize = '10pt';
+        dp.headerFontSize = '12pt';
         dp.headerFontFamily = 'Open Sans, Helvetica, Helvetica, Arial, sans-serif';
         dp.headerFontColor = '#333';
         dp.headerHeight = 50;
