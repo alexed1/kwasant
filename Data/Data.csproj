@@ -101,6 +101,14 @@
     <Compile Include="Migrations\201408051146274_OrganizeStates.Designer.cs">
       <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408051303522_TestFixDelete.cs" />
+    <Compile Include="Migrations\201408051303522_TestFixDelete.Designer.cs">
+      <DependentUpon>201408051303522_TestFixDelete.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408051311039_Sync05.08.2014.cs" />
+    <Compile Include="Migrations\201408051311039_Sync05.08.2014.Designer.cs">
+      <DependentUpon>201408051311039_Sync05.08.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
     <Compile Include="States\EventCreateType.cs" />
@@ -677,6 +685,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408051146274_OrganizeStates.resx">
       <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408051303522_TestFixDelete.resx">
+      <DependentUpon>201408051303522_TestFixDelete.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408051311039_Sync05.08.2014.resx">
+      <DependentUpon>201408051311039_Sync05.08.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
