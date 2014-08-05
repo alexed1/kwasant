@@ -147,67 +147,54 @@ namespace KwasantWeb.Controllers
             NegotiationDO updatedNegotiationDO = new NegotiationDO();
             try
             {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
 
                     //the data passed up from the form should include a valid negotiationId.
                     NegotiationDO curNegotiationDO =
                         uow.NegotiationsRepository.FindOne(n => n.Id == newNegotiationData.Id);
 
-                //Update Negotiation
-                    NegotiationDO existingNegotiationDO = uow.NegotiationsRepository.FindOne(n => n.Id == newNegotiationData.Id);
+                    //Update Negotiation
+                    NegotiationDO existingNegotiationDO =
+                        uow.NegotiationsRepository.FindOne(n => n.Id == newNegotiationData.Id);
                     updatedNegotiationDO = _negotiation.Update(newNegotiationData, existingNegotiationDO);
 
                     //this takes the form data and processes it similarly to how its done in the Edit Event form
                     //IMPORTANT: the code in Attendee.cs was refactored and needs testing.
                     //_attendee.ManageNegotiationAttendeeList(uow, updatedNegotiationDO, attendeeList); //see
 
-                    //negotiationDO.Name = newNegotiationData.Name;
-                    //negotiationDO.NegotiationState = newNegotiationData.State;
-                    //uow.SaveChanges();
 
-                    //foreach (var question in newNegotiationData.Questions)
-                    //{
-                    //    QuestionDO questionDO = uow.QuestionsRepository.FindOne(q => q.Id == question.Id);
-
-                    //    if (questionDO != null)
-                    //    {
-                    //        questionDO.QuestionStatus = question.Status;
-                    //        questionDO.Text = question.Text;
-                    //        questionDO.AnswerType = question.AnswerType;
-                    //        uow.SaveChanges();
-
-                    //        foreach (var answers in question.Answers)
-                    //        {
-                    //            AnswerDO answerDO = uow.AnswersRepository.FindOne(a => a.Id == answers.Id);
-                    //            answerDO.AnswerStatusID = answers.AnswerStatusId;
-                    //            answerDO.ObjectsType = answers.Text;
-                    //            uow.SaveChanges();
-                    //        }
-                    //    }
-                    //}
+                    //SEE https://maginot.atlassian.net/wiki/display/SH/CRUD+for+Questions%2C+Answers%2C+Negotiations
+                    
 
                     //Process Negotiation
                     _negotiation.Process(updatedNegotiationDO);
                     //set result to a success message
-                    result = new { Success = "True", BookingRequestID = updatedNegotiationDO.BookingRequest.Id, NegotiationId = updatedNegotiationDO.Id };
-
-                        foreach (var answers in question.Answers)
+                    result =
+                        new
                         {
-                            AnswerDO answerDO = uow.AnswersRepository.FindOne(a => a.Id == answers.Id);
-                            answerDO.AnswerStatusID = answers.AnswerStatusID;
-                            answerDO.ObjectsType = answers.Text;
-                            uow.SaveChanges();
-                        }
-                    }
+                            Success = "True",
+                            BookingRequestID = updatedNegotiationDO.BookingRequest.Id,
+                            NegotiationId = updatedNegotiationDO.Id
+                        };
+
+                  
+                }
+            }
             catch (Exception)
             {
                 //set result to an error message
-                result = new { Success = "False", BookingRequestID = updatedNegotiationDO.BookingRequest.Id, NegotiationId = updatedNegotiationDO.Id };
-                }
+                result =
+                    new
+                    {
+                        Success = "False",
+                        BookingRequestID = updatedNegotiationDO.BookingRequest.Id,
+                        NegotiationId = updatedNegotiationDO.Id
+                    };
+            }
 
-            
-                return Json(result, JsonRequestBehavior.AllowGet);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
             }
 
 
