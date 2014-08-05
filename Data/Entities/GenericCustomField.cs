@@ -4,8 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Data.Constants;
 using Data.Interfaces;
+using Data.States;
 
 namespace Data.Entities
 {
@@ -14,7 +14,7 @@ namespace Data.Entities
     /// It's a generic implementation, and as such, can be used with any entity in the database, so long as it has a single primary key. Composite keys are not supported.
     /// </summary>
     /// <typeparam name="TForeignEntity">The type of the linked entity (<see cref="EmailDO"></see>, for example)</typeparam>
-    /// <typeparam name="TCustomFieldType">The type of the custom field (<see cref="TrackingStatus"></see> for example</typeparam>
+    /// <typeparam name="TCustomFieldType">The type of the custom field (<see cref="TrackingState"></see> for example</typeparam>
     public class GenericCustomField<TCustomFieldType, TForeignEntity>
         where TCustomFieldType : class, ICustomField, new()
         where TForeignEntity : class

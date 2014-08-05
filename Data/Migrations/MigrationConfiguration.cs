@@ -5,11 +5,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Data.Authentication;
-using Data.Entities.Constants;
 using Data.Repositories;
+using Data.States;
+using Data.States.Templates;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -76,7 +76,7 @@ namespace Data.Migrations
                         ConstantsType =
                             t.GetInterfaces()
                                 .Where(i => i.IsGenericType)
-                                .FirstOrDefault(i => i.GetGenericTypeDefinition() == typeof (IConstantRow<>))
+                                .FirstOrDefault(i => i.GetGenericTypeDefinition() == typeof (IStateTemplate<>))
                     })
                     .Where(t => t.ConstantsType != null).ToList();
 
@@ -140,7 +140,7 @@ namespace Data.Migrations
                                     new RemoteCalendarProviderDO()
                                         {
                                             Name = "Google",
-                                            AuthTypeID = ServiceAuthorizationType.OAuth2,
+                                            AuthType = ServiceAuthorizationType.OAuth2,
                                             AppCreds = JsonConvert.SerializeObject(
                                                 new
                                                     {
@@ -162,7 +162,7 @@ namespace Data.Migrations
 // ReSharper disable UnusedMember.Local
         private static void SeedConstants<TConstantsType, TConstantDO>(IUnitOfWork uow, Func<int, string, TConstantDO> creatorFunc)
 // ReSharper restore UnusedMember.Local
-			where TConstantDO : class, IConstantRow<TConstantsType>        {
+			where TConstantDO : class, IStateTemplate<TConstantsType>        {
             var instructionsToAdd = new List<TConstantDO>();
 
             FieldInfo[] constants = typeof(TConstantsType).GetFields();

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Net.Mail;
 using Daemons;
-using Data.Constants;
 using Data.Entities;
-using Data.Entities.Constants;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
@@ -128,7 +127,7 @@ namespace KwasantTest.Daemons
                     new RecipientDO()
                     {
                         EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("joetest2@edelstein.org")),
-                        EmailParticipantTypeID = EmailParticipantType.To
+                        EmailParticipantType = EmailParticipantType.To
                     }
                 };
             emailAddress.Address = "joetest2@edelstein.org";

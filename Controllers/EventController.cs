@@ -3,15 +3,14 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using AutoMapper;
-using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
-using EventSyncStatus = Data.Constants.EventSyncStatus;
 
 
 namespace KwasantWeb.Controllers
@@ -53,7 +52,7 @@ namespace KwasantWeb.Controllers
                 var createdEvent = CreateNewEvent(uow, null, calendarID, start, end);
 
                 createdEvent.CreatedByID = uow.CalendarRepository.GetByKey(calendarID).OwnerID;
-                createdEvent.EventStatusID = EventStatus.ProposedTimeSlot;
+                createdEvent.EventStatus = EventState.ProposedTimeSlot;
                 
                 uow.EventRepository.Add(createdEvent);
                 //And now we merge changes
@@ -218,7 +217,7 @@ namespace KwasantWeb.Controllers
                     throw new ApplicationException("should not be able to call this Update method with an ID that doesn't match an existing event");
 
                 Mapper.Map(eventVM, existingEvent);
-                existingEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;
+                existingEvent.SyncStatus = EventSyncState.SyncWithExternal;
                 _attendee.ManageEventAttendeeList(uow, existingEvent, eventVM.Attendees);
 
                 _event.Process(uow, existingEvent);

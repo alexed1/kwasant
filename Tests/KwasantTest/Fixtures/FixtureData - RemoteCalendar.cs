@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Data.Constants;
 using Data.Entities;
+using Data.States;
 
 namespace KwasantTest.Fixtures
 {
@@ -15,7 +15,7 @@ namespace KwasantTest.Fixtures
             return new RemoteCalendarProviderDO()
             {
                 AppCreds = "",
-                AuthTypeID = ServiceAuthorizationType.OAuth2,
+                AuthType = ServiceAuthorizationType.OAuth2,
                 CalDAVEndPoint = "https://test_caldav_endpoint",
                 Name = "Test CalDAV provider"
             };

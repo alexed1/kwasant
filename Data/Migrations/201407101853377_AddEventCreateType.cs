@@ -1,4 +1,4 @@
-using Data.Constants;
+using Data.States;
 
 namespace Data.Migrations
 {

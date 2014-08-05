@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Exceptions;
 using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
 using KwasantCore.Services;
 using Utilities.Logging;
 using StructureMap;
-using EventCreateType = Data.Constants.EventCreateType;
-using EventSyncStatus = Data.Constants.EventSyncStatus;
+using EventCreateType = Data.States.EventCreateType;
 
 namespace KwasantCore.Managers
 {
@@ -57,7 +56,7 @@ namespace KwasantCore.Managers
                 return;
             var calendars = args.Entities
                 .OfType<EventDO>()
-                .Where(e => e.SyncStatusID == EventSyncStatus.SyncWithExternal)
+                .Where(e => e.SyncStatus == EventSyncState.SyncWithExternal)
                 .GroupBy(e => e.CalendarID)
                 .ToArray();
             CalendarSyncManager calendarSyncManager = null;
@@ -216,8 +215,8 @@ namespace KwasantCore.Managers
             Debug.Assert(owner != null, "Local calendar associated with this calendar link has no owner.");
             // add filter by SyncStatus for local events.
             Func<EventDO, bool> existingEventPredictor = e => eventPredictor(e) 
-                && e.SyncStatusID == EventSyncStatus.SyncWithExternal
-                && e.EventStatusID != EventStatus.Deleted;
+                && e.SyncStatus == EventSyncState.SyncWithExternal
+                && e.EventStatus != EventState.Deleted;
             var existingEvents = calendar.Events.Where(existingEventPredictor).ToList();
 
             foreach (var incomingEvent in incomingEvents)
@@ -269,9 +268,9 @@ namespace KwasantCore.Managers
                 else
                 {
                     // created by remote
-                    incomingEvent.EventStatusID = EventStatus.DispatchCompleted;
-                    incomingEvent.CreateTypeID = EventCreateType.RemoteCalendar;
-                    incomingEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;
+                    incomingEvent.EventStatus = EventState.DispatchCompleted;
+                    incomingEvent.CreateType = EventCreateType.RemoteCalendar;
+                    incomingEvent.SyncStatus = EventSyncState.SyncWithExternal;
                     incomingEvent.Calendar = (CalendarDO) calendar;
                     incomingEvent.CalendarID = calendar.Id;
                     incomingEvent.CreatedBy = owner;
@@ -289,8 +288,8 @@ namespace KwasantCore.Managers
             var deletedByRemote = existingEvents.Where(e => e.DateCreated < calendarLink.DateSynchronized).ToList();
             foreach (var deleted in deletedByRemote)
             {
-                deleted.EventStatusID = EventStatus.Deleted;
-                deleted.SyncStatusID = EventSyncStatus.DoNotSync;
+                deleted.EventStatus = EventState.Deleted;
+                deleted.SyncStatus = EventSyncState.DoNotSync;
             }
         }
 

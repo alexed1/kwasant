@@ -1,5 +1,4 @@
-﻿using Data.Constants;
-using Data.Entities;
+﻿using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;

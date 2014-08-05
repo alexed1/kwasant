@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.Entities.Constants;
 using Data.Interfaces;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -16,10 +16,10 @@ namespace Data.Entities
 
         #region Implementation of IClarificationRequest
 
-        
-        [Required, ForeignKey("ClarificationRequestState")]
-        public int ClarificationRequestStateID { get; set; }
-        public ClarificationRequestStateRow ClarificationRequestState { get; set; }
+
+        [Required, ForeignKey("ClarificationRequestStateTemplate")]
+        public int ClarificationRequestState { get; set; }
+        public _ClarificationRequestStateTemplate ClarificationRequestStateTemplate { get; set; }
 
 
         public int NegotiationId { get; set; }

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.States;
 
 namespace KwasantCore.Services
 {
@@ -14,7 +14,7 @@ namespace KwasantCore.Services
 
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-            bookingRequest.BookingRequestStateID = BookingRequestState.Unprocessed;
+            bookingRequest.BookingRequestState = BookingRequestState.Unprocessed;
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
 
             bookingRequest.User = curUser;
@@ -52,7 +52,7 @@ namespace KwasantCore.Services
         {
             return
                 uow.BookingRequestRepository.GetAll()
-                    .Where(e => e.BookingRequestStateID == BookingRequestState.Unprocessed)
+                    .Where(e => e.BookingRequestState == BookingRequestState.Unprocessed)
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>

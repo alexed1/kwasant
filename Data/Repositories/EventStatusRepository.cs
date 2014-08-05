@@ -1,10 +1,10 @@
 ﻿using Data.Entities;
-using Data.Entities.Constants;
 using Data.Interfaces;
+using Data.States.Templates;
 
 namespace Data.Repositories
 {
-    public class EventStatusRepository : GenericRepository<EventStatusRow>, IEventStatusRepository
+    public class EventStatusRepository : GenericRepository<_EventStatusTemplate>, IEventStatusRepository
     {
         public EventStatusRepository(IUnitOfWork uow)
             : base(uow)
@@ -14,7 +14,7 @@ namespace Data.Repositories
     }
 
 
-    public interface IEventStatusRepository : IGenericRepository<EventStatusRow>
+    public interface IEventStatusRepository : IGenericRepository<_EventStatusTemplate>
     {
 
     }

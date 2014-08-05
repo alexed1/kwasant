@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using Data.Entities.Constants;
 using Data.Interfaces;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -9,12 +9,12 @@ namespace Data.Entities
         public int Id { get; set; }
         public string ForeignTableName { get; set; }
 
-        [ForeignKey("TrackingType")]
-        public int TrackingTypeID { get; set; }
-        public TrackingTypeRow TrackingType { get; set; }
+        [ForeignKey("TrackingTypeTemplate")]
+        public int TrackingType { get; set; }
+        public _TrackingTypeTemplate TrackingTypeTemplate { get; set; }
 
-        [ForeignKey("TrackingStatus")]
-        public int TrackingStatusID { get; set; }
-        public TrackingStatusRow TrackingStatus { get; set; }
+        [ForeignKey("TrackingStatusTemplate")]
+        public int TrackingStatus { get; set; }
+        public _TrackingStatusTemplate TrackingStatusTemplate { get; set; }
     }
 }

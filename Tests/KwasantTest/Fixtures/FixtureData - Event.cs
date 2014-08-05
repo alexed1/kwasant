@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Constants;
 using Data.Entities;
+using Data.States;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
-using EventStatus = Data.Constants.EventStatus;
 
 namespace KwasantTest.Fixtures
 {
@@ -60,7 +59,7 @@ namespace KwasantTest.Fixtures
                 Class = "Private",
                 Description = "This is a test event description.",
                 Location = "Silicon Valley",
-                EventStatusID = EventStatus.Booking,
+                EventStatus = EventState.Booking,
                 Summary = "This is a test event summary.",
                 Transparency = "Opaque" ,
                 Attendees = TestAttendeeList1().ToList(),
@@ -81,7 +80,7 @@ namespace KwasantTest.Fixtures
                 Class = "Private",
                 Description = "This is a test event description.",
                 Location = "Silicon Valley",
-                EventStatusID = EventStatus.Booking,
+                EventStatus = EventState.Booking,
                 Summary = "This is a test event summary.",
                 Transparency = "Opaque",
                 Attendees = TestAttendeeList1().ToList(),
@@ -94,7 +93,7 @@ namespace KwasantTest.Fixtures
             return new EventDO()
             {
                 CreatedByID = "1",
-                EventStatusID = EventStatus.Booking,
+                EventStatus = EventState.Booking,
                 Description = "This is my test invitation",
                 Summary = @"My test invitation",
                 Location = @"Some place!",
