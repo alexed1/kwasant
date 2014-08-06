@@ -9,258 +9,38 @@
 
 <script src="/Content/js/Kwasant/Popup.js"></script>
 <script>
-    var url = "";
-    var questionTemp = "";
-    var textAnsTemp = "";
-    var timesloteAnsTemp = "";
-    var jsonResult = "";
-    var id = parent.$("#hdnrequestid").val();
-
-    $(document).ready(function () {
-        var negAValue = parent.$("#btnNegotiation").attr("data-value");
-        if (negAValue == "Edit Negotiation")
-            deserializeForm();
-        else {
-            var negotiation = serializeForm();
-            $.ajax({
-                type: 'post',
-                url: '@Url.Action("Create", "Negotiation")',
-                data: { negotiation: JSON.stringify(negotiation) },
-                success: function (data) {
-                    var Success = data.Success;
-                    var negotiationId = data.NegotiationId;
-                    $('#divNegotiation').attr("data-negotiationId", negotiationId);
-                }
-            });
-        }
+    $(function() {
+        $('#questionContainer').hide();
+        $('#answerContainer').hide();
     });
-
-    function callAppendQuestion(ele) {
-        var findquestionId = $(ele).closest("div").attr("data-questionid");
-        var findquestiontblId = $(ele).closest("div").attr("data-questiontbleid");
-        getCalltextanswer(ele, findquestionId, findquestiontblId);
-    };
-
-    var getCallquestion = function (callfrom, countValue) {
-
-        var questionPresent;
-        if (callfrom == "editneg")
-            questionPresent = countValue;
-        else
-            questionPresent = $("#appendquestinoId #questionContainer").length;
-        var negotiationtblid = $("#divNegotiation").attr("data-negotiationid");
-
-        $.ajax({
-            type: 'Get',
-            url: '@Url.Action("Create", "Question")',
-            data: { questionID: (questionPresent + 1), negotiationId: negotiationtblid },
-            success: function (data) {
-                $("#appendquestinoId").append(data);
-            }
-        });
-    };
-
-    var getCalltextanswer = function (ele, questionID, questiontblId) {
-        var radiotype = $(ele).closest("table").find('.active:checked').val();
-
-        if (radiotype == 'Timeslot') {
-            $.ajax({
-                type: 'Get',
-                url: '@Url.Action("EditTimeslots", "Question")',
-                data: { Id: questiontblId, BookingRequestID: id },
-                success: function (data) {
-                    //$(ele).closest("table").find("#appendanswerId").append(data);
-                    Kwasant.IFrame.Display('/Negotiation/EventWindows/?id=' + data,
-                    {
-                        horizontalAlign: 'right',
-                    });
-                }
-            });
-        }
-        else {
-            url = '@Url.Action("Create", "Answer")';
-            var answerPresent = $("#appendquestinoId #questionContainer[data-questionID=" + questionID + "] #appendanswerId #answerContainer").length;
-            $.ajax({
-                type: 'Get',
-                url: url,
-                data: { answerId: (answerPresent + 1), bookingRequestId: id, questionId: questiontblId },
-                success: function (data) {
-                    $(ele).closest("table").find("#appendanswerId").append(data);
-                }
-            });
-        }
-    };
-
-    var removetable = function (ele) {
-        $(ele).closest("table").remove();
-    }
-
-    var removeQuestion = function (ele) {
-        var findquestiontblId = $(ele).closest("div").attr("data-questiontbleid");
-        var url = "/Question/Delete/?questionId=" + findquestiontblId;
-        $.get(url, null, function (data) {
-            if (data == "Success")
-            { removetable(ele); }
-            else
-                alert("Exception Error!");
+    
+    function addQuestion() {
+        $(function() {
+            var clonedHTML = $('#questionContainer').clone();
+            $('#appendquestinoId').append(clonedHTML);
+            clonedHTML.slideDown();
         });
     }
-
-    var removeanswer = function (ele) {
-        var findanswertblId = $(ele).closest("div").attr("data-answertbleid");
-        var url = "/Answer/Delete/?answerId=" + findanswertblId;
-        $.get(url, null, function (data) {
-            if (data == "Success") {
-                removetable(ele);
-            }
-            else
-                alert("Exception Error!");
+    
+    function addAnswer(obj) {
+        $(function () {
+            var clonedHTML = $('#answerContainer').clone();
+            $(obj).closest('.questionBox').find('#appendanswerId').append(clonedHTML);
+            clonedHTML.slideDown();
         });
     }
-
-    var handleNegotiationCancel = function (ele) {
-        cancelNegotiation();
+    
+    function removeQuestion(obj) {
+        $(function() {
+            $(obj).closest('.questionBox').slideUp();
+        });
     }
-
-    var serializeForm = function () {
-
-        var negotiationtblid = $("#divNegotiation").attr("data-negotiationid");
-        //var Negotiation = { Id: negotiationtblid, Name: null, Questions: [], State: 2 };
-        var Negotiation = { Id: negotiationtblid, Name: null, Questions: [] };
-        var countQue = 0;
-        $.each($("#appendquestinoId #questionContainer"), function () {
-            countQue = countQue + 1;
-            //item = per question container with id = questionContainer.
-            var qText = $(this).find('#questionText').val();
-            var answersArray = [];
-            //var queType = $('input[type="radio"]:checked').val();
-            var queType = $('input[name=quesType_' + countQue+ ']:radio:checked').val();
-                  
-            var answerContainer = $(this).find('#appendanswerId #answerContainer')
-            $.each(answerContainer, function () {
-
-                var aText = $(this).find('#answerText').val();
-                var aStatus = $(this).find('#answerStatus').val();
-
-                var answertbleid = $(this).attr("data-answertbleid")
-                //answersArray.push({ Id: answertbleid, Text: aText, Status: aStatus });
-                answersArray.push({ Id: answertbleid, Text: aText, AnswerStatusID: aStatus });
-            });
-
-            var questiontbleid = $(this).attr("data-questiontbleid")
-            //Negotiation.Questions.push({ Id: questiontbleid, Text: qText, Answers: answersArray, AnswerType: radiotype, Status: "Unanswered" });
-            Negotiation.Questions.push({ Id: questiontbleid, Text: qText, Answers: answersArray, AnswerType: queType });
+    
+    function removeAnswer(obj) {
+        $(function () {
+            $(obj).closest('.answerBox').slideUp();
         });
-
-        Negotiation.Name = $("#NegName").val();
-
-        return Negotiation;
-    };
-
-    var processSubmit = function () {
-        var negotiation = serializeForm();
-        console.log(negotiation);
-        $.ajax({
-            type: 'post',
-            url: '@Url.Action("ProcessSubmittedForm", "Negotiation")',
-            data: { negotiation: JSON.stringify(negotiation) },
-            success: function (data) {
-                var Success = data.Success;
-                var bookingrequestid = data.BookingRequestID;
-                var negotiationId = data.NegotiationId;
-                //Call CommunicationManager
-                var data1 = { BookingRequestID: bookingrequestid, NegotiationId: negotiationId };
-                $.post('/CommunicationManager/DispatchNegotiationEmail/', { BookingRequestID: bookingrequestid, NegotiationId: negotiationId }, function (data) {
-                    var clarificationRequestId = data.ClarificationRequestId;
-                    $.post('/ClarificationRequest/Send/', { bookingRequestId: bookingrequestid, clarificationRequestId: clarificationRequestId, negotiationId: negotiationId }, function (data) {
-                        $(window.parent.document).find("#btnNegotiation").html("Edit Negotiation");
-                        $(window.parent.document).find("#btnNegotiation").attr("data-value", "Edit Negotiation");
-                        closethis();
-                    });
-                });
-            }
-        });
-    };
-
-    var deserializeForm = function () {
-
-        $.ajax({
-            type: 'Get',
-            url: '@Url.Action("Create", "Question")',
-            data: { questionId: (1) },
-            success: function (data) {
-                questionTemp = data;
-            }
-        });
-
-        $.ajax({
-            type: 'Get',
-            url: '@Url.Action("Create", "Answer")',
-            data: { answerId: (1), bookingRequestId: id },
-            success: function (data) {
-                textAnsTemp = data;
-            }
-        });
-
-        var countQueVal = 0;
-        $.ajax({
-            type: 'Get',
-            url: '@Url.Action("ShowNegotiation", "Negotiation")',
-            data: { id: (id) },
-            success: function (data) {
-                jsonResult = JSON.stringify(data);
-                var objJSON = eval("(function(){return " + jsonResult + ";})()");
-                $("#NegName").val(objJSON.Name);
-                $('#divNegotiation').attr("data-negotiationId", objJSON.Id);
-
-                $.each(objJSON.Questions, function () {
-
-                    countQueVal = countQueVal + 1;
-                    var temphtml = questionTemp;
-                    //Assign Data-QuestionId
-                    temphtml = $(temphtml).find("#questionContainer").attr("data-questionid", countQueVal);
-                    //Append New Question on List
-                    $("#appendquestinoId").append(temphtml);
-                    //Assigning Question Attributes
-                    $(temphtml).attr("data-questiontbleid", this.Id);
-                    var answerPresent = $("#appendquestinoId #questionContainer[data-questionID=" + countQueVal + "]");
-                    //$(answerPresent).find('#questionlbl').text("Question :" + countQueVal);
-                    $(answerPresent).find("#questionText").val(this.Text);
-
-                    $(answerPresent).find("#QuetypeText").attr('name', 'quesType_' + countQueVal);
-                    $(answerPresent).find("#QuetypeTimeSlot").attr('name', 'quesType_' + countQueVal);
-                    if (this.AnswerType == "Text")
-                    { $(answerPresent).find("#QuetypeText").attr('checked', 'checked'); }
-                    else
-                    { $(answerPresent).find("#QuetypeTimeSlot").attr('checked', 'checked'); }
-
-                    var countAnsVal = 0;
-                    //Assigning Answers According to Questions
-                    $.each(this.Answers, function () {
-                        countAnsVal = countAnsVal + 1;
-                        var tempanshtml = textAnsTemp;
-                        tempanshtml = $(tempanshtml).find("#answerContainer").attr("data-answerid", countAnsVal);
-                        $(tempanshtml).attr("data-answertbleid", this.Id);
-                        $(answerPresent).find("#appendanswerId").append(tempanshtml);
-                        $(tempanshtml).find("#answerText").val(this.ObjectsType);
-                        $(tempanshtml).find("#answerlbl").text("A-" + countAnsVal);
-                        $(tempanshtml).find("#answerStatus").val(this.AnswerStatusID);
-                    });
-                });
-            }
-        });
-
-    };
-
-    function closethis() {
-        $(window.parent.document).find("iframe").each(function () {
-            if ($(this).attr("style").indexOf("z-index") > 0) {
-                if ($(this).attr("style").indexOf("display: none") < 0) {
-                    $(this).remove();
-                }
-            }
-        });
-    };
+    }
 </script>
 }
 @section scripts
@@ -280,10 +60,96 @@
     @Styles.Render("~/bundles/css/select2")
     @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
 	@Styles.Render("~/bundles/css/temp")
-	<link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        .questionBox {
+            border-color: #D3B9B9;
+            padding: 5px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border-style: solid;
+            border-width: 1px;
+        }
+        .answerBox {
+            border-color: #D3B9B9;
+            padding: 5px;
+            margin: 10px;
+            border-style: solid;
+            border-width: 1px;
+        }
+        .handIcon {
+            cursor: pointer;
+        }
+    </style>
 }
 
 <form id="f" class="negotiationsidebar">
+    <!-- The following is used to create questions-->
+    <div id="questionContainer" class="questionBox">
+        <table style="width: 100%">
+            <tr>
+                <td>
+                    <label id="questionlbl">Question : </label>
+                </td>
+                <td>
+                    <input type="text" id="questionText" name="Question" class="form-control col-md-1" />
+                </td>
+                <td>
+                    <img src="~/Content/img/Cross.png" class="handIcon" onclick="removeQuestion(this)" />
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    Type:
+                    <label>
+                        <input type="radio" name="questionType"value="Text" checked>
+                        Text    
+                    </label>
+                    <label>
+                        <input type="radio" name="questionType" value="Timeslot">
+                        Event Window
+                    </label>
+                </td>
+            </tr>
+        </table>
+        <div id="appendanswerId">
+        </div>
+        <span class="form-group handIcon" id="divAddAnswer" onclick="addAnswer(this)">
+            <img src="~/Content/img/plus.png" />
+            <label class="handIcon">Add Answer</label>
+        </span>
+    </div>
+    
+    <div id="answerContainer" class="answerBox" data-type="text">
+        <table style="width: 100%">
+            <tr>
+                <td>
+                    <img src="~/Content/img/minus.png" class="handIcon" onclick="collapseanswer(this)" />
+                </td>
+                <td>
+                    <input type="text" name="answerText" id="answerText" class="form-control col-md-1" />
+                </td>
+                <td>
+                    <img src="~/Content/img/Cross.png" class="handIcon" onclick="removeAnswer(this)" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Status:
+                </td>
+                <td>
+                    <select id="answerStatus" class="form-control">
+                        <option value="1">Unstarted</option>
+                        <option value="2">Proposed</option>
+                        <option value="3">Selected</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
+    
+
     <div class="form-horizontal" data-negotiationId="0" id="divNegotiation">
         <h4>Negotiation</h4>
         <div class="form-group negotiation-mrbottom">
@@ -298,26 +164,20 @@
                 </tr>
             </table>
         </div>
+        
         <div id="appendquestinoId">
-
         </div>
-      <span class="form-group" id="divAddQuestion" onclick="getCallquestion()">
-             &nbsp; &nbsp;
+
+        <span class="form-group handIcon" id="divAddQuestion" onclick="addQuestion()">
+            &nbsp; &nbsp;
             <img src="~/Content/img/plus.png" />
-            <label>Add Question</label>
+            <label class="handIcon">Add Question</label>
         </span>
 
-        @*<div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="button" value="Ok" class="btn btn-default" onclick="processSubmit()" />
-                &nbsp; &nbsp;
-                <a href="#" onclick="closethis();">Cancel</a>
-            </div>
-        </div>*@
         <div class="space form-actions negotiation-form-actions">
-			<input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="processSubmit()" />
+            <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="processSubmit()" />
             
-			<a href="javascript:closeWithUnsavedDataCheck(modifiedState);" class="cancel-btn pull-left">Cancel</a>
-		</div>
+            <a href="javascript:closeWithUnsavedDataCheck(modifiedState);" class="cancel-btn pull-left">Cancel</a>
+        </div>
     </div>
 </form>
