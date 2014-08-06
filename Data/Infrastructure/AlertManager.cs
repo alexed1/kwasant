@@ -162,7 +162,7 @@ namespace Data.Infrastructure
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 if (bookingRequestDO == null)
                     throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-                string status = bookingRequestDO.BookingRequestStateRow.Name;
+                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
                 FactDO curAction = new FactDO()
                 {
                     PrimaryCategory = "BookingRequest",
