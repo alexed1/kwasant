@@ -175,9 +175,7 @@ namespace Daemons
                             //Removing email address which are not test account in debug mode
                             #if DEBUG
                             {
-                                isRecipientRemoved = removeRecipients(envelope.Email.To.ToList(), envelope, isRecipientRemoved, subUow);
-                                isRecipientRemoved = removeRecipients(envelope.Email.BCC.ToList(), envelope, isRecipientRemoved, subUow);
-                                isRecipientRemoved = removeRecipients(envelope.Email.CC.ToList(), envelope, isRecipientRemoved, subUow);
+                                isRecipientRemoved = removeRecipients(envelope.Email.Recipients.ToList(), envelope, subUow);
                             }
                             if (isRecipientRemoved)
                             {
@@ -213,16 +211,17 @@ namespace Daemons
                 Logger.GetLogger().Info(logString);
             }
         }
-        private bool removeRecipients(List<EmailAddressDO> iteratorList, EnvelopeDO envelope, bool isRecipientRemoved,IUnitOfWork uow)
+        private bool removeRecipients(List<RecipientDO> iteratorList, EnvelopeDO envelope,IUnitOfWork uow)
         {
+            bool isRecipientRemoved = false;
             foreach (var address in iteratorList)
             {
-                UserDO user = uow.UserRepository.FindOne(e => e.EmailAddress.Address == address.Address);
+                UserDO user = uow.UserRepository.FindOne(e => e.EmailAddress.Address == address.EmailAddress.Address);
                 if (user != null)
                 {
                     if (!user.TestAccount)
                     {
-                        envelope.Email.Recipients.RemoveAll(s => s.EmailAddress.Address == address.Address);
+                        envelope.Email.Recipients.RemoveAll(s => s.EmailAddress.Address == address.EmailAddress.Address);
                         isRecipientRemoved = true;
                     }
                 }
