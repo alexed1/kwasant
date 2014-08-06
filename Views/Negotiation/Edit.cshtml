@@ -24,7 +24,7 @@
                         return $(this).get(0).checked;
                     }).val();
 
-                    var answers = $.map(element.find('#appendanswerId .answerBox'), function (answerElement) {
+                    var answers = $.map(element.find('#appendanswerId .answerBox'), function(answerElement) {
                         answerElement = $(answerElement);
                         var answerText = answerElement.find('#answerText').val();
                         var answerStatus = answerElement.find('#answerStatus').val();
@@ -34,8 +34,11 @@
 
                     return { Text: questionText, Type: selectedType, Answers: answers };
                 });
-                var t = 0;
             });
+        }
+
+        function submitNegotiation() {
+            var negotiation = getNegotiationData();
         }
 
         function addQuestion() {
@@ -205,7 +208,7 @@
         </span>
 
         <div class="space form-actions negotiation-form-actions">
-            <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="getNegotiationData()" />
+            <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="submitNegotiation()" />
             
             <a href="javascript:close();" class="cancel-btn pull-left">Cancel</a>
         </div>
