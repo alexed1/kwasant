@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
@@ -60,7 +60,7 @@ namespace KwasantTest.Entities
 
             public void SetStatus(EmailDO entityDO, int status)
             {
-                GetOrCreateCustomField(entityDO).TrackingStatusID = status;
+                GetOrCreateCustomField(entityDO).TrackingStatus = status;
             }
 
             public void DeleteStatus(EmailDO entityDO)
@@ -81,7 +81,7 @@ namespace KwasantTest.Entities
             {
                 Id = emailOne.Id,
                 ForeignTableName = "EmailDO",
-                TrackingStatusID = TrackingStatus.Unprocessed
+                TrackingStatus = TrackingState.Unprocessed
             });
             _uow.SaveChanges();
 
@@ -111,13 +111,13 @@ namespace KwasantTest.Entities
             {
                 Id = emailOne.Id,
                 ForeignTableName = "EmailDO",
-                TrackingStatusID = TrackingStatus.Unprocessed
+                TrackingStatus = TrackingState.Unprocessed
             });
             _uow.SaveChanges();
 
             TrackingStatusDO firstStatus = _trackingStatus.GetStatus(emailOne);
             Assert.NotNull(firstStatus);
-            Assert.AreEqual(TrackingStatus.Unprocessed, firstStatus.TrackingStatusID);
+            Assert.AreEqual(TrackingState.Unprocessed, firstStatus.TrackingStatus);
 
             TrackingStatusDO secondStatus = _trackingStatus.GetStatus(emailTwo);
             Assert.Null(secondStatus);
@@ -137,20 +137,20 @@ namespace KwasantTest.Entities
             TrackingStatusDO status = _trackingStatus.GetStatus(emailOne);
             Assert.Null(status);
 
-            _trackingStatus.SetStatus(emailOne, TrackingStatus.Unprocessed);
+            _trackingStatus.SetStatus(emailOne, TrackingState.Unprocessed);
             _uow.SaveChanges();
 
             status = _trackingStatus.GetStatus(emailOne);
             Assert.NotNull(status);
-            Assert.AreEqual(TrackingStatus.Unprocessed, status.TrackingStatusID);
+            Assert.AreEqual(TrackingState.Unprocessed, status.TrackingStatus);
             Assert.AreEqual(1, _uow.TrackingStatusRepository.GetAll().Count());
 
-            _trackingStatus.SetStatus(emailOne, TrackingStatus.Processed);
+            _trackingStatus.SetStatus(emailOne, TrackingState.Processed);
             _uow.SaveChanges();
 
             status = _trackingStatus.GetStatus(emailOne);
             Assert.NotNull(status);
-            Assert.AreEqual(TrackingStatus.Processed, status.TrackingStatusID);
+            Assert.AreEqual(TrackingState.Processed, status.TrackingStatus);
             Assert.AreEqual(1, _uow.TrackingStatusRepository.GetAll().Count());
         }
 
@@ -169,18 +169,18 @@ namespace KwasantTest.Entities
             {
                 Id = emailOne.Id,
                 ForeignTableName = "EmailDO",
-                TrackingStatusID = TrackingStatus.Unprocessed
+                TrackingStatus = TrackingState.Unprocessed
             });
             _uow.TrackingStatusRepository.Add(new TrackingStatusDO
             {
                 Id = emailTwo.Id,
                 ForeignTableName = "EmailDO",
-                TrackingStatusID = TrackingStatus.Processed
+                TrackingStatus = TrackingState.Processed
             });
             _uow.SaveChanges();
 
             List<EmailDO> t =
-                _trackingStatus.GetEntitiesWhereTrackingStatus(ts => ts.TrackingStatusID == TrackingStatus.Processed).ToList();
+                _trackingStatus.GetEntitiesWhereTrackingStatus(ts => ts.TrackingStatus == TrackingState.Processed).ToList();
             Assert.AreEqual(2, _uow.EmailRepository.GetAll().Count());
             Assert.AreEqual(1, t.Count);
             Assert.AreEqual(emailTwo.Id, t.First().Id);
@@ -202,13 +202,13 @@ namespace KwasantTest.Entities
             {
                 Id = emailOne.Id,
                 ForeignTableName = "EmailDO",
-                TrackingStatusID = TrackingStatus.Unprocessed
+                TrackingStatus = TrackingState.Unprocessed
             });
             _uow.TrackingStatusRepository.Add(new TrackingStatusDO
             {
                 Id = emailTwo.Id,
                 ForeignTableName = "EmailDO",
-                TrackingStatusID = TrackingStatus.Processed
+                TrackingStatus = TrackingState.Processed
             });
             _uow.SaveChanges();
 
@@ -234,7 +234,7 @@ namespace KwasantTest.Entities
             {
                 Id = emailOne.Id,
                 ForeignTableName = "EmailDO",
-                TrackingStatusID = TrackingStatus.Unprocessed
+                TrackingStatus = TrackingState.Unprocessed
             });
             _uow.SaveChanges();
 

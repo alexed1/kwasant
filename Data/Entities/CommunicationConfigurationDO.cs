@@ -1,7 +1,8 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.Entities.Constants;
+using Data.States;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -10,9 +11,9 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("CommunicationType")]
-        public int CommunicationTypeID { get; set; }
-        public CommunicationTypeRow CommunicationType { get; set; }
+        [ForeignKey("CommunicationTypeTemplate")]
+        public int CommunicationType { get; set; }
+        public _CommunicationTypeTemplate CommunicationTypeTemplate { get; set; }
         
         public String ToAddress { get; set; }
     }

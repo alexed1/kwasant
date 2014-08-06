@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
@@ -81,7 +82,7 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.BookingRequestStateID = Data.Constants.BookingRequestState.Processed;
+                bookingRequestDO.BookingRequestState = BookingRequestState.Processed;
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO, "Processed");
@@ -95,7 +96,7 @@ namespace KwasantWeb.Controllers
              using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
              {
                  BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                 bookingRequestDO.BookingRequestStateID = Data.Constants.BookingRequestState.Invalid;
+                 bookingRequestDO.BookingRequestState = BookingRequestState.Invalid;
                  bookingRequestDO.User = bookingRequestDO.User;
                  uow.SaveChanges();
                  AlertManager.BookingRequestStateChange(bookingRequestDO, "Invalid");

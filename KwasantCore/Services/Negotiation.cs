@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.States;
 using KwasantCore.Exceptions;
 using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
@@ -29,7 +29,7 @@ namespace KwasantCore.Services
             string negotiationLbl = "";
 
             //var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.RequestId == bookingRequestId && br.State != NegotiationState.Resolved);
-            var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.BookingRequestID == bookingRequestId && br.NegotiationStateID != NegotiationState.Resolved);
+            var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.BookingRequestID == bookingRequestId && br.NegotiationState != NegotiationState.Resolved);
             if (negotiationdo.Count() > 0)
                 negotiationLbl = "Edit Negotiation";
             else
@@ -70,7 +70,7 @@ namespace KwasantCore.Services
                 if (curNegotiation == null)
                     throw new ApplicationException("DispatchNegotiationEmail was passed an invalid NegotiationId");
                 //this line should work as written once kw-287 is done
-                  if (curNegotiation.NegotiationStateID != NegotiationState.InProcess)
+                  if (curNegotiation.NegotiationState != NegotiationState.InProcess)
                     throw new ApplicationException("Cannot currently dispatch negotiation email for a negotiation that does not have a state of 'InProcess' ");
 
                 ClarificationRequest _cr = new ClarificationRequest();

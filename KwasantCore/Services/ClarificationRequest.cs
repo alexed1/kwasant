@@ -5,15 +5,14 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using System.Net.Mail;
-using Data.Constants;
 using Data.Entities;
-using Data.Entities.Constants;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Exceptions;
 using Utilities;
 using StructureMap;
-using BookingRequestState = Data.Constants.BookingRequestState;
-using ClarificationRequestState = Data.Constants.ClarificationRequestState;
+using BookingRequestState = Data.States.BookingRequestState;
+using ClarificationRequestState = Data.States.ClarificationRequestState;
 
 namespace KwasantCore.Services
 {

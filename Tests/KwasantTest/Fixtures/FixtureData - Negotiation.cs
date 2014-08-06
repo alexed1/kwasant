@@ -1,5 +1,5 @@
-﻿using Data.Constants;
-using Data.Entities;
+﻿using Data.Entities;
+using Data.States;
 
 namespace KwasantTest.Fixtures
 {
@@ -11,7 +11,7 @@ namespace KwasantTest.Fixtures
             {
                 Id = 1,
                 BookingRequestID = TestBookingRequest1().Id,
-                NegotiationStateID = NegotiationState.InProcess,
+                NegotiationState = NegotiationState.InProcess,
                 Name = "Negotiation 1"
             };
             curNegotiationDO.Questions.Add(TestQuestion1());

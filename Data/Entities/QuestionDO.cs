@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.Entities.Constants;
 using Data.Interfaces;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -12,10 +12,10 @@ namespace Data.Entities
 
         [Key]
         public int Id { get; set; }
-        
-        [ForeignKey("QuestionStatus")]
-        public int QuestionStatusID { get; set; }
-        public QuestionStatusRow QuestionStatus { get; set; }
+
+        [ForeignKey("QuestionStatusTemplate")]
+        public int QuestionStatus { get; set; }
+        public _QuestionStatusTemplate QuestionStatusTemplate { get; set; }
 
         [Required]
         public string Text { get; set; }

@@ -8,8 +8,8 @@ using System.Web.Mvc;
 using AutoMapper;
 using Data.Entities;
 //using Data.Entities.Enumerations;
-using Data.Constants;
 using Data.Interfaces;
+using Data.States;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Exceptions;
 //using KwasantCore.Managers.IdentityManager;
@@ -54,7 +54,7 @@ namespace KwasantWeb.Controllers
                 UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
 
                 //NEED TO CHECK HERE TO SEE IF THERE ALREADY IS ONE. SOMETHING LIKE:
-                NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.BookingRequestID == BookingRequestID && n.NegotiationStateID != NegotiationState.Resolved);
+                NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.BookingRequestID == BookingRequestID && n.NegotiationState != NegotiationState.Resolved);
                 if (negotiationDO != null)
                     throw new ApplicationException("tried to create a negotiation when one already existed");
 
@@ -62,7 +62,7 @@ namespace KwasantWeb.Controllers
                 {
                     Name = viewModel.Name,
                     BookingRequestID = BookingRequestID,
-                    NegotiationStateID = NegotiationState.InProcess,
+                    NegotiationState = NegotiationState.InProcess,
                     BookingRequest = emailDO
                 };
                 uow.NegotiationsRepository.Add(negotiationDO);
@@ -93,7 +93,7 @@ namespace KwasantWeb.Controllers
             {
                 //NegotiationViewModel NegotiationQuestions = new Negotiations().getNegotiation(uow, id);
 
-                NegotiationViewModel NegotiationQuestions = uow.NegotiationsRepository.GetAll().Where(e => e.BookingRequestID == id && e.NegotiationStateID != NegotiationState.Resolved).Select(s => new NegotiationViewModel
+                NegotiationViewModel NegotiationQuestions = uow.NegotiationsRepository.GetAll().Where(e => e.BookingRequestID == id && e.NegotiationState != NegotiationState.Resolved).Select(s => new NegotiationViewModel
                 {
                     Id = s.Id,
                     Name = s.Name,
@@ -104,14 +104,14 @@ namespace KwasantWeb.Controllers
                     {
                         Id = quel.Id,
                         Text = quel.Text,
-                        Status = quel.QuestionStatus,
+                        Status = quel.QuestionStatusTemplate,
                         NegotiationId = quel.NegotiationId,
                         AnswerType = quel.AnswerType,
                         Answers = uow.AnswersRepository.GetAll().Where(ans => ans.QuestionID == quel.Id).Select(ansl => new AnswerViewModel
                         {
                             Id = ansl.Id,
                             QuestionID = ansl.QuestionID,
-                            AnswerStatusId = ansl.AnswerStatusID,
+                            AnswerStatusId = ansl.AnswerStatus,
                             ObjectsType = ansl.ObjectsType,
                         }).ToList()
                     }).ToList()
@@ -203,7 +203,7 @@ namespace KwasantWeb.Controllers
                     QuestionDO questionDO = new QuestionDO
                     {
                         Negotiation = uow.NegotiationsRepository.FindOne(q => q.Id == negotiationId),
-                        QuestionStatusID = QuestionStatus.Unanswered,
+                        QuestionStatus = QuestionState.Unanswered,
                         Text = "Question",
                     };
 
@@ -233,7 +233,7 @@ namespace KwasantWeb.Controllers
                     AnswerDO answerDO = new AnswerDO
                     {
                         QuestionID = questiontblID,
-                        AnswerStatusID = AnswerStatus.Proposed,
+                        AnswerStatus = AnswerState.Proposed,
                         User = userDO,
                     };
 

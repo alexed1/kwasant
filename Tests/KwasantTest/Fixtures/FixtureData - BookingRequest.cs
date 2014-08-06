@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Data.Constants;
 using Data.Entities;
-using Data.Entities.Constants;
-using BookingRequestState = Data.Constants.BookingRequestState;
+using Data.States;
+using BookingRequestState = Data.States.BookingRequestState;
 
 namespace KwasantTest.Fixtures
 {
@@ -21,9 +20,9 @@ namespace KwasantTest.Fixtures
                                               From = TestEmailAddress1(),
                                               Subject = "Booking request subject",
                                               HTMLText = "Booking request text",
-                                              EmailStatusID = EmailStatus.Unprocessed,
+                                              EmailStatus = EmailState.Unprocessed,
                                               DateReceived = DateTimeOffset.UtcNow,
-                                              BookingRequestStateID = BookingRequestState.Pending,
+                                              BookingRequestState = BookingRequestState.Pending,
                                               User = TestUser1()
                                           };
             return curBookingRequestDO;

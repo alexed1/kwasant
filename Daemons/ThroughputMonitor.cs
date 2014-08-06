@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Data.Constants;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using StructureMap;
@@ -44,7 +44,7 @@ namespace Daemons
                         uow.BookingRequestRepository.GetQuery()
                             .Where(
                                 br =>
-                                    (br.BookingRequestStateID == BookingRequestState.Unprocessed || br.BookingRequestStateID == BookingRequestState.CheckedOut) &&
+                                    (br.BookingRequestState == BookingRequestState.Unprocessed || br.BookingRequestState == BookingRequestState.CheckedOut) &&
                                     br.DateCreated <= thirtyMinutesAgo)
                             .ToList();
 

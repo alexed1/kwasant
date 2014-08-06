@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
 using KwasantCore.Services;
@@ -14,7 +14,6 @@ using KwasantTest.Fixtures;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using EventStatus = Data.Constants.EventStatus;
 
 namespace KwasantTest.Managers
 {
@@ -86,12 +85,12 @@ namespace KwasantTest.Managers
 
             // EXECUTE
             Assert.AreEqual(1, _remoteCalendarEvents.Count, "One event must be in the remote storage before synchronization.");
-            Assert.AreEqual(0, _uow.EventRepository.GetAll().Count(e => e.EventStatusID != EventStatus.Deleted), "No events must be in the repository before synchronization.");
+            Assert.AreEqual(0, _uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted), "No events must be in the repository before synchronization.");
             await _calendarSyncManager.SyncNowAsync(_uow, _curUser);
             _uow.SaveChanges();
 
             // VERIFY
-            var events = _uow.EventRepository.GetAll().Where(e => e.EventStatusID != EventStatus.Deleted).ToArray();
+            var events = _uow.EventRepository.GetAll().Where(e => e.EventStatus != EventState.Deleted).ToArray();
             Assert.AreEqual(1, events.Length, "One event must be in the repository after synchronization.");
             var newEvent = events[0];
             AssertEventsAreEqual(curEvent, newEvent);
@@ -104,14 +103,14 @@ namespace KwasantTest.Managers
             // SETUP
             var curEvent = _fixtureData.TestEvent2();
             curEvent.DateCreated = DateTimeOffset.UtcNow;
-            curEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;
+            curEvent.SyncStatus = EventSyncState.SyncWithExternal;
             var curCalendarLink = _fixtureData.TestRemoteCalendarLink(_curProvider, _curUser);
             curCalendarLink.LocalCalendar.Events.Add(curEvent);
             _uow.RemoteCalendarLinkRepository.Add(curCalendarLink);
             _uow.SaveChanges();
 
             // EXECUTE
-            Assert.AreEqual(1, _uow.EventRepository.GetAll().Count(e => e.EventStatusID != EventStatus.Deleted), "One event must be in the repository before synchronization.");
+            Assert.AreEqual(1, _uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted), "One event must be in the repository before synchronization.");
             Assert.AreEqual(0, _remoteCalendarEvents.Count, "No events must be in the remote storage before synchronization.");
             await _calendarSyncManager.SyncNowAsync(_uow, _curUser);
             _uow.SaveChanges();
@@ -129,7 +128,7 @@ namespace KwasantTest.Managers
             // SETUP
             var curEvent = _fixtureData.TestEvent2();
             curEvent.DateCreated = DateTimeOffset.UtcNow - TimeSpan.FromDays(1);
-            curEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;
+            curEvent.SyncStatus = EventSyncState.SyncWithExternal;
             _uow.EventRepository.Add(curEvent);
             var curCalendarLink = _fixtureData.TestRemoteCalendarLink(_curProvider, _curUser);
             curCalendarLink.LocalCalendar.Events.Add(curEvent);
@@ -138,13 +137,13 @@ namespace KwasantTest.Managers
             _uow.SaveChanges();
 
             // EXECUTE
-            Assert.AreEqual(1, _uow.EventRepository.GetAll().Count(e => e.EventStatusID != EventStatus.Deleted), "One event must be in the repository before synchronization.");
+            Assert.AreEqual(1, _uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted), "One event must be in the repository before synchronization.");
             Assert.AreEqual(0, _remoteCalendarEvents.Count, "No events must be in the remote storage before synchronization.");
             await _calendarSyncManager.SyncNowAsync(_uow, _curUser);
             _uow.SaveChanges();
 
             // VERIFY
-            Assert.AreEqual(0, _uow.EventRepository.GetAll().Count(e => e.EventStatusID != EventStatus.Deleted), "No events must be in the repository after synchronization.");
+            Assert.AreEqual(0, _uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted), "No events must be in the repository after synchronization.");
             Assert.AreEqual(0, _remoteCalendarEvents.Count, "No events must be in the remote storage after synchronization.");
         }
 
@@ -155,7 +154,7 @@ namespace KwasantTest.Managers
             // SETUP
             var curLocalEvent = _fixtureData.TestEvent2();
             curLocalEvent.DateCreated = DateTimeOffset.UtcNow;
-            curLocalEvent.SyncStatusID = EventSyncStatus.SyncWithExternal;
+            curLocalEvent.SyncStatus = EventSyncState.SyncWithExternal;
             _uow.EventRepository.Add(curLocalEvent);
             var curCalendarLink = _fixtureData.TestRemoteCalendarLink(_curProvider, _curUser);
             curCalendarLink.LocalCalendar.Events.Add(curLocalEvent);
@@ -172,13 +171,13 @@ namespace KwasantTest.Managers
             _remoteCalendarEvents.Add(iCalEvent);
 
             // EXECUTE
-            Assert.AreEqual(1, _uow.EventRepository.GetAll().Count(e => e.EventStatusID != EventStatus.Deleted), "One event must be in the repository before synchronization.");
+            Assert.AreEqual(1, _uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted), "One event must be in the repository before synchronization.");
             Assert.AreEqual(1, _remoteCalendarEvents.Count, "One event must be in the remote storage before synchronization.");
             await _calendarSyncManager.SyncNowAsync(_uow, _curUser);
             _uow.SaveChanges();
 
             // VERIFY
-            var localEvents = _uow.EventRepository.GetAll().Where(e => e.EventStatusID != EventStatus.Deleted).ToArray();
+            var localEvents = _uow.EventRepository.GetAll().Where(e => e.EventStatus != EventState.Deleted).ToArray();
             Assert.AreEqual(1, localEvents.Length, "One event must be in the repository after synchronization.");
             Assert.AreEqual(1, _remoteCalendarEvents.Count, "One event must be in the remote storage after synchronization.");
             var newLocalEvent = localEvents[0];

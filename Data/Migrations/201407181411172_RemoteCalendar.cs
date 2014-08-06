@@ -1,4 +1,4 @@
-using Data.Constants;
+using Data.States;
 
 namespace Data.Migrations
 {
@@ -19,8 +19,8 @@ namespace Data.Migrations
                 .PrimaryKey(t => t.Id);
 
             Sql(@"SET IDENTITY_INSERT dbo.EventSyncStatus ON;");
-            Sql(string.Format("INSERT dbo.EventSyncStatus (Id, Name) VALUES ({0}, N'DoNotSync')", EventSyncStatus.DoNotSync));
-            Sql(string.Format("INSERT dbo.EventSyncStatus (Id, Name) VALUES ({0}, N'SyncWithExternal')", EventSyncStatus.SyncWithExternal));
+            Sql(string.Format("INSERT dbo.EventSyncStatus (Id, Name) VALUES ({0}, N'DoNotSync')", EventSyncState.DoNotSync));
+            Sql(string.Format("INSERT dbo.EventSyncStatus (Id, Name) VALUES ({0}, N'SyncWithExternal')", EventSyncState.SyncWithExternal));
             Sql(@"SET IDENTITY_INSERT dbo.EventSyncStatus OFF;");
 
             CreateTable(
@@ -80,7 +80,7 @@ namespace Data.Migrations
                 .Index(t => t.LocalCalendarID)
                 .Index(t => t.ProviderID);
 
-            AddColumn("dbo.Events", "SyncStatusID", c => c.Int(nullable: false, defaultValue: EventSyncStatus.DoNotSync));
+            AddColumn("dbo.Events", "SyncStatusID", c => c.Int(nullable: false, defaultValue: EventSyncState.DoNotSync));
             CreateIndex("dbo.Events", "SyncStatusID");
             AddForeignKey("dbo.Events", "SyncStatusID", "dbo.EventSyncStatus", "Id", cascadeDelete: true);
             DropColumn("dbo.Users", "GoogleAuthData");

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using Data.Constants;
-using Data.Entities.Constants;
 using Data.Interfaces;
+using Data.States;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -20,9 +20,9 @@ namespace Data.Entities
         public DateTimeOffset DateReceived { get; set; }
         public DateTimeOffset DateCreated { get; set; }
 
-        [ForeignKey("EmailStatus")]
-        public int EmailStatusID { get; set; }
-        public EmailStatusRow EmailStatus { get; set; }
+        [ForeignKey("EmailStatusTemplate")]
+        public int EmailStatus { get; set; }
+        public _EmailStatusTemplate EmailStatusTemplate { get; set; }
         
         [InverseProperty("Email")]
         public virtual List<RecipientDO> Recipients { get; set; }
@@ -41,7 +41,7 @@ namespace Data.Entities
         {
             get
             {
-                return Recipients.Where(eea => eea.EmailParticipantTypeID == EmailParticipantType.To).Select(eea => eea.EmailAddress).ToList();
+                return Recipients.Where(eea => eea.EmailParticipantType == EmailParticipantType.To).Select(eea => eea.EmailAddress).ToList();
             }
         }
 
@@ -49,7 +49,7 @@ namespace Data.Entities
         {
             get
             {
-                return Recipients.Where(eea => eea.EmailParticipantTypeID == EmailParticipantType.Bcc).Select(eea => eea.EmailAddress).ToList();
+                return Recipients.Where(eea => eea.EmailParticipantType == EmailParticipantType.Bcc).Select(eea => eea.EmailAddress).ToList();
             }
         }
 
@@ -57,7 +57,7 @@ namespace Data.Entities
         {
             get
             {
-                return Recipients.Where(eea => eea.EmailParticipantTypeID == EmailParticipantType.Cc).Select(eea => eea.EmailAddress).ToList();
+                return Recipients.Where(eea => eea.EmailParticipantType == EmailParticipantType.Cc).Select(eea => eea.EmailAddress).ToList();
             }
         }
 
@@ -78,7 +78,7 @@ namespace Data.Entities
                 EmailAddress = emailAddress,
                 EmailAddressID = emailAddress.Id,
                 EmailID = Id,
-                EmailParticipantTypeID = type
+                EmailParticipantType = type
             };
 
             Recipients.Add(newLink);

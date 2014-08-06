@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.States;
 using KwasantCore.Managers;
 using StructureMap;
-using TrackingStatus = Data.Constants.TrackingStatus;
 
 namespace Daemons
 {
@@ -34,7 +33,7 @@ namespace Daemons
 
             CommunicationManager cm = new CommunicationManager();
             cm.ProcessBRNotifications(unprocessedBookingRequests);
-            unprocessedBookingRequests.ForEach(br => ts.SetStatus(TrackingType.BookingState, br, TrackingStatus.Processed));
+            unprocessedBookingRequests.ForEach(br => ts.SetStatus(TrackingType.BookingState, br, TrackingState.Processed));
 
             uow.SaveChanges();
         }

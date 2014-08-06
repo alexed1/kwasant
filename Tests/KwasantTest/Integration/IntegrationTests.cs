@@ -5,11 +5,10 @@ using System.Linq;
 using System.Net.Mail;
 using System.Threading;
 using Daemons;
-using Data.Constants;
 using Data.Entities;
-using Data.Entities.Constants;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.States;
 using FluentValidation.Validators;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
@@ -285,7 +284,7 @@ namespace KwasantTest.Workflow
                     new RecipientDO()
                     {
                         EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintegration@gmail.com")),
-                        EmailParticipantTypeID = EmailParticipantType.To
+                        EmailParticipantType = EmailParticipantType.To
                     }
                 },
                 Subject = subject,
@@ -321,13 +320,13 @@ namespace KwasantTest.Workflow
                     new RecipientDO()
                     {
                         EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintegration@gmail.com")),
-                        EmailParticipantTypeID = EmailParticipantType.To
+                        EmailParticipantType = EmailParticipantType.To
                     }
                 },
                 Subject = subject,
                 PlainText = body,
                 HTMLText = body,
-                EmailStatusID = EmailStatus.Queued
+                EmailStatus = EmailState.Queued
             };
 
             _uow.EmailRepository.Add(emailDO);
