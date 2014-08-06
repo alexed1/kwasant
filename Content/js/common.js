@@ -40,6 +40,10 @@ function isEmail(email) {
     return regex.test(email);
 }
 
+function getURLParameter(name) {
+    return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
+}
+
 /*** Kwasant.IFrame functions ***/
 function closeWithUnsavedDataCheck(modifiedState) {
     if (!modifiedState.modified) {

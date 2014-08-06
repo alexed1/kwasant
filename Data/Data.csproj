@@ -97,53 +97,57 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authentication\Account.cs" />
-    <Compile Include="Constants\BookingRequestState.cs" />
-    <Compile Include="Constants\ClarificationRequestState.cs" />
-    <Compile Include="Constants\EventCreateType.cs" />
-    <Compile Include="Constants\EventStatus.cs" />
-    <Compile Include="Constants\EventSyncStatus.cs" />
-    <Compile Include="Entities\Constants\AnswerStatusRow.cs" />
-    <Compile Include="Entities\Constants\IConstantRow.cs" />
-    <Compile Include="Constants\InstructionConstants.cs" />
-    <Compile Include="Constants\ServiceAuthorizationType.cs" />
+    <Compile Include="Migrations\201408051146274_OrganizeStates.cs" />
+    <Compile Include="Migrations\201408051146274_OrganizeStates.Designer.cs">
+      <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="States\BookingRequestState.cs" />
+    <Compile Include="States\ClarificationRequestState.cs" />
+    <Compile Include="States\EventCreateType.cs" />
+    <Compile Include="States\EventState.cs" />
+    <Compile Include="States\EventSyncState.cs" />
+    <Compile Include="States\Templates\_AnswerStatusTemplate.cs" />
+    <Compile Include="States\Templates\IStateTemplate.cs" />
+    <Compile Include="States\InstructionConstants.cs" />
+    <Compile Include="States\ServiceAuthorizationType.cs" />
     <Compile Include="Entities\AnswerDO.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
-    <Compile Include="Entities\Constants\BookingRequestStateRow.cs" />
+    <Compile Include="States\Templates\_BookingRequestStateTemplate.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
-    <Compile Include="Entities\Constants\ClarificationRequestStateRow.cs" />
-    <Compile Include="Constants\CommunicationTypeRow.cs" />
-    <Compile Include="Entities\Constants\EmailParticipantTypeRow.cs" />
-    <Compile Include="Entities\Constants\EmailStatusRow.cs" />
-    <Compile Include="Entities\Constants\EventSyncStatusRow.cs" />
-    <Compile Include="Entities\Constants\EventCreateTypeRow.cs" />
-    <Compile Include="Entities\Constants\NegotiationStateRow.cs" />
-    <Compile Include="Entities\Constants\QuestionStatusRow.cs" />
-    <Compile Include="Entities\Constants\TrackingStatusRow.cs" />
-    <Compile Include="Entities\Constants\EventStatusRow.cs" />
-    <Compile Include="Entities\Constants\TrackingTypeRow.cs" />
-    <Compile Include="Constants\AnswerStatus.cs" />
-    <Compile Include="Constants\NegotiationState.cs" />
+    <Compile Include="States\Templates\_ClarificationRequestStateTemplate.cs" />
+    <Compile Include="States\Templates\_CommunicationTypeTemplate.cs" />
+    <Compile Include="States\Templates\_EmailParticipantTypeTemplate.cs" />
+    <Compile Include="States\Templates\_EmailStatusTemplate.cs" />
+    <Compile Include="States\Templates\_EventSyncStatusTemplate.cs" />
+    <Compile Include="States\Templates\_EventCreateTypeTemplate.cs" />
+    <Compile Include="States\Templates\_NegotiationStateTemplate.cs" />
+    <Compile Include="States\Templates\_QuestionStatusTemplate.cs" />
+    <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
+    <Compile Include="States\Templates\_EventStatusTemplate.cs" />
+    <Compile Include="States\Templates\_TrackingTypeTemplate.cs" />
+    <Compile Include="States\AnswerState.cs" />
+    <Compile Include="States\NegotiationState.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
     <Compile Include="Interfaces\IRemoteCalendarLink.cs" />
     <Compile Include="Interfaces\IRemoteCalendarAuthData.cs" />
     <Compile Include="Entities\RemoteCalendarAuthDataDO.cs" />
     <Compile Include="Entities\RemoteCalendarLinkDO.cs" />
-    <Compile Include="Entities\Constants\ServiceAuthorizationTypeRow.cs" />
+    <Compile Include="States\Templates\_ServiceAuthorizationTypeTemplate.cs" />
     <Compile Include="Interfaces\IRemoteCalendarProvider.cs" />
     <Compile Include="Entities\NegotiationDO.cs" />
     <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\FactDO.cs" />
-    <Compile Include="Constants\QuestionStatus.cs" />
+    <Compile Include="States\QuestionState.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\RecipientDO.cs" />
-    <Compile Include="Constants\CommunicationType.cs" />
-    <Compile Include="Constants\EmailParticipantType.cs" />
-    <Compile Include="Constants\EmailStatus.cs" />
-    <Compile Include="Constants\TrackingStatus.cs" />
-    <Compile Include="Constants\TrackingType.cs" />
+    <Compile Include="States\CommunicationType.cs" />
+    <Compile Include="States\EmailParticipantType.cs" />
+    <Compile Include="States\EmailState.cs" />
+    <Compile Include="States\TrackingState.cs" />
+    <Compile Include="States\TrackingType.cs" />
     <Compile Include="Entities\RemoteCalendarProviderDO.cs" />
     <Compile Include="Infrastructure\IncidentReporter.cs" />
     <Compile Include="Infrastructure\JSONDataStore.cs" />
@@ -365,9 +369,57 @@
     <Compile Include="Migrations\201407301747128_RenamedEnums.Designer.cs">
       <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201407310710406_UpdateStateHandling.cs" />
-    <Compile Include="Migrations\201407310710406_UpdateStateHandling.Designer.cs">
-      <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
+    <Compile Include="Migrations\201408011152379_UpdateStateHandling.cs" />
+    <Compile Include="Migrations\201408011152379_UpdateStateHandling.Designer.cs">
+      <DependentUpon>201408011152379_UpdateStateHandling.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408010906358_LinkBRToNegotiation.cs" />
+    <Compile Include="Migrations\201408010906358_LinkBRToNegotiation.Designer.cs">
+      <DependentUpon>201408010906358_LinkBRToNegotiation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408021102577_TurnOffIdentityInsert.cs" />
+    <Compile Include="Migrations\201408021102577_TurnOffIdentityInsert.Designer.cs">
+      <DependentUpon>201408021102577_TurnOffIdentityInsert.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408030427292_Attendee-NegotiationRelationship.cs" />
+    <Compile Include="Migrations\201408030427292_Attendee-NegotiationRelationship.Designer.cs">
+      <DependentUpon>201408030427292_Attendee-NegotiationRelationship.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408030444387_Question-NegotiationRelationship.cs" />
+    <Compile Include="Migrations\201408030444387_Question-NegotiationRelationship.Designer.cs">
+      <DependentUpon>201408030444387_Question-NegotiationRelationship.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408031640497_AddTextToAnswer.cs" />
+    <Compile Include="Migrations\201408031640497_AddTextToAnswer.Designer.cs">
+      <DependentUpon>201408031640497_AddTextToAnswer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408031644084_AddTextToAnswer2.cs" />
+    <Compile Include="Migrations\201408031644084_AddTextToAnswer2.Designer.cs">
+      <DependentUpon>201408031644084_AddTextToAnswer2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408032035430_AddTextToAnswer3.cs" />
+    <Compile Include="Migrations\201408032035430_AddTextToAnswer3.Designer.cs">
+      <DependentUpon>201408032035430_AddTextToAnswer3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041322379_Sync.04.08.2014.cs" />
+    <Compile Include="Migrations\201408041322379_Sync.04.08.2014.Designer.cs">
+      <DependentUpon>201408041322379_Sync.04.08.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041325113_RemoveRequestIDFromNegotiationDO.cs" />
+    <Compile Include="Migrations\201408041325113_RemoveRequestIDFromNegotiationDO.Designer.cs">
+      <DependentUpon>201408041325113_RemoveRequestIDFromNegotiationDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041612031_ChangeAttendeesPKV2.cs" />
+    <Compile Include="Migrations\201408041612031_ChangeAttendeesPKV2.Designer.cs">
+      <DependentUpon>201408041612031_ChangeAttendeesPKV2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041638073_FixPKs.cs" />
+    <Compile Include="Migrations\201408041638073_FixPKs.Designer.cs">
+      <DependentUpon>201408041638073_FixPKs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408041658023_RemoveAttendeeToNegotiationTemp.cs" />
+    <Compile Include="Migrations\201408041658023_RemoveAttendeeToNegotiationTemp.Designer.cs">
+      <DependentUpon>201408041658023_RemoveAttendeeToNegotiationTemp.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
     <Compile Include="Repositories\AnswersRepository.cs" />
@@ -584,11 +636,51 @@
     <EmbeddedResource Include="Migrations\201407301747128_RenamedEnums.resx">
       <DependentUpon>201407301747128_RenamedEnums.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201407310710406_UpdateStateHandling.resx">
-      <DependentUpon>201407310710406_UpdateStateHandling.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201408011152379_UpdateStateHandling.resx">
+      <DependentUpon>201408011152379_UpdateStateHandling.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408010906358_LinkBRToNegotiation.resx">
+      <DependentUpon>201408010906358_LinkBRToNegotiation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408021102577_TurnOffIdentityInsert.resx">
+      <DependentUpon>201408021102577_TurnOffIdentityInsert.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408030427292_Attendee-NegotiationRelationship.resx">
+      <DependentUpon>201408030427292_Attendee-NegotiationRelationship.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408030444387_Question-NegotiationRelationship.resx">
+      <DependentUpon>201408030444387_Question-NegotiationRelationship.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408031640497_AddTextToAnswer.resx">
+      <DependentUpon>201408031640497_AddTextToAnswer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408031644084_AddTextToAnswer2.resx">
+      <DependentUpon>201408031644084_AddTextToAnswer2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408032035430_AddTextToAnswer3.resx">
+      <DependentUpon>201408032035430_AddTextToAnswer3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041322379_Sync.04.08.2014.resx">
+      <DependentUpon>201408041322379_Sync.04.08.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041325113_RemoveRequestIDFromNegotiationDO.resx">
+      <DependentUpon>201408041325113_RemoveRequestIDFromNegotiationDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041612031_ChangeAttendeesPKV2.resx">
+      <DependentUpon>201408041612031_ChangeAttendeesPKV2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041638073_FixPKs.resx">
+      <DependentUpon>201408041638073_FixPKs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408041658023_RemoveAttendeeToNegotiationTemp.resx">
+      <DependentUpon>201408041658023_RemoveAttendeeToNegotiationTemp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408051146274_OrganizeStates.resx">
+      <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Constants\" />
     <Folder Include="Entities\Enumerations\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

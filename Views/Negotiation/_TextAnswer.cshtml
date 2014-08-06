@@ -1,13 +1,14 @@
-﻿@model int
+﻿@model List<int>
 
 @{
     Layout = null;
-    string answerID = Model.ToString();
+    string answerID = Model[0].ToString();
+    string answertlbID = Model[1].ToString();
  }
 
 @using (Html.BeginForm())
 {
-   <div id="answerContainer" data-type="text" data-answerid="@answerID" data-answertbleId="0">
+   <div id="answerContainer" data-type="text" data-answerid="@answerID" data-answertbleId="@answertlbID">
        <table>
            <tr>
                <td>

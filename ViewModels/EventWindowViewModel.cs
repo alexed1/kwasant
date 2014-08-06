@@ -5,6 +5,6 @@ namespace KwasantWeb.ViewModels
     public class EventWindowViewModel
     {
         public List<int> LinkedCalendarIDs { get; set; }
-        public int MainCalendarID { get; set; }
+        public int ActiveCalendarID { get; set; }
     }
 }

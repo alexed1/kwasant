@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.Entities.Constants;
 using Data.Interfaces;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -18,15 +18,14 @@ namespace Data.Entities
 
         public List<InstructionDO> Instructions { get; set; }
 
-/*
-        public virtual ClarificationRequestDO ClarificationRequest { get; set; }
-*/
+        [InverseProperty("BookingRequest")]
+        public IList<NegotiationDO> Negotiations { get; set; }
 
         [InverseProperty("BookingRequests")]
         public virtual List<CalendarDO> Calendars { get; set; }
 
-        [Required, ForeignKey("BookingRequestStateRow")]
-        public int BookingRequestStateID { get; set; }
-        public virtual BookingRequestStateRow BookingRequestStateRow { get; set; }
+        [Required, ForeignKey("BookingRequestStateTemplate")]
+        public int BookingRequestState { get; set; }
+        public virtual _BookingRequestStateTemplate BookingRequestStateTemplate { get; set; }
     }
 }

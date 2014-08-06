@@ -4,12 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using Data.Constants;
 using Data.Entities;
-using Data.Entities.Constants;
 using Data.Infrastructure.JoinTables;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.States;
 using Data.Validators;
 using FluentValidation;
 using KwasantCore.Managers.APIManager.Packagers;
@@ -36,6 +35,11 @@ namespace KwasantCore.Services
         /// </summary>
         /// 
 
+        public Email()
+        {
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>(); ;
+            _curEventValidator = new EventValidator();
+        }
         //this constructor enables the creation of an email that doesn't necessarily have anything to do with an Event. It gets called by the other constructors
         public Email(IUnitOfWork uow)
         {
@@ -59,7 +63,7 @@ namespace KwasantCore.Services
         public EnvelopeDO SendTemplate(string templateName, IEmail message, Dictionary<string, string> mergeFields)
         {
             var envelope = _uow.EnvelopeRepository.CreateMandrillEnvelope(message, templateName, mergeFields);
-            message.EmailStatusID = EmailStatus.Queued;
+            message.EmailStatus = EmailState.Queued;
             _uow.EnvelopeRepository.Add(envelope);
             return envelope;
         }
@@ -67,7 +71,7 @@ namespace KwasantCore.Services
         public EnvelopeDO Send()
         {
             var envelope = _uow.EnvelopeRepository.CreateGmailEnvelope(_curEmailDO);
-            _curEmailDO.EmailStatusID = EmailStatus.Queued;
+            _curEmailDO.EmailStatus = EmailState.Queued;
             _uow.EnvelopeRepository.Add(envelope);
             return envelope;
         }
@@ -171,7 +175,7 @@ namespace KwasantCore.Services
 
             emailDO.Attachments.ForEach(a => a.Email = emailDO);
             //emailDO.EmailStatus = EmailStatus.QUEUED; we no longer want to set this here. not all Emails are outbound emails. This should only be set in functions like Event#Dispatch
-            emailDO.EmailStatusID = EmailStatus.Unstarted; //we'll use this new state so that every email has a valid status.
+            emailDO.EmailStatus = EmailState.Unstarted; //we'll use this new state so that every email has a valid status.
             emailRepository.Add(emailDO);
             return emailDO;
         }
@@ -223,7 +227,7 @@ namespace KwasantCore.Services
                                               new RecipientDO()
                                                  {
                                                        EmailAddress = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress("info@kwasant.com")),
-                                                       EmailParticipantTypeID = EmailParticipantType.To
+                                                       EmailParticipantType = EmailParticipantType.To
                                                  }
                                          },
                 Subject = "",

@@ -7,8 +7,8 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.SqlServer;
 using System.Linq;
-using Data.Entities.Constants;
 using Data.Infrastructure.JoinTables;
+using Data.States.Templates;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Data.Entity.ModelConfiguration;
 
@@ -132,7 +132,7 @@ namespace Data.Infrastructure
             //Debug code!
             List<object> adds = ChangeTracker.Entries().Where(e => e.State == EntityState.Added).Select(e => e.Entity).ToList();
             List<object> deletes = ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToList();
-            //var modifies = ChangeTracker.Entries()
+            List<object> others = ChangeTracker.Entries().Where(e => e.State != EntityState.Deleted && e.State != EntityState.Added).Select(e => e.Entity).ToList();
 
             foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
             {
@@ -161,10 +161,8 @@ namespace Data.Infrastructure
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
-            modelBuilder.Entity<BookingRequestStateRow>().ToTable("BookingRequestStates");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
-            modelBuilder.Entity<ClarificationRequestDO>().ToTable("ClarificationRequests");
-            modelBuilder.Entity<ClarificationRequestStateRow>().ToTable("ClarificationRequestStates");
+            modelBuilder.Entity<ClarificationRequestDO>().ToTable("ClarificationRequests");            
             modelBuilder.Entity<QuestionDO>().ToTable("Questions");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
@@ -172,9 +170,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<EmailDO>().ToTable("Emails");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<EventDO>().ToTable("Events");
-            modelBuilder.Entity<EventStatusRow>().ToTable("EventStatuses");
-            modelBuilder.Entity<EventSyncStatusRow>().ToTable("EventSyncStatus");
-            modelBuilder.Entity<EventCreateTypeRow>().ToTable("EventCreateTypes");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
@@ -185,11 +180,10 @@ namespace Data.Infrastructure
             modelBuilder.Entity<IncidentDO>().ToTable("Incidents");
             modelBuilder.Entity<NegotiationDO>().ToTable("Negotiations");
             modelBuilder.Entity<AnswerDO>().ToTable("Answers");
-            modelBuilder.Entity<ServiceAuthorizationTypeRow>().ToTable("ServiceAuthorizationTypes");
             modelBuilder.Entity<RemoteCalendarProviderDO>().ToTable("RemoteCalendarProviders");
             modelBuilder.Entity<RemoteCalendarAuthDataDO>().ToTable("RemoteCalendarAuthData");
             modelBuilder.Entity<RemoteCalendarLinkDO>().ToTable("RemoteCalendarLinks");
-            
+
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)
                 .WithMany()
@@ -237,16 +231,7 @@ namespace Data.Infrastructure
                     mapping => mapping.MapLeftKey("BookingRequestID").MapRightKey("InstructionID").ToTable("BookingRequestInstruction")
                 );
 
-            modelBuilder.Entity<ClarificationRequestDO>()
-                .HasRequired(cr => cr.BookingRequest)
-                .WithMany()
-                .HasForeignKey(cr => cr.BookingRequestId);
-
-            modelBuilder.Entity<QuestionDO>()
-                .HasOptional(cq => cq.ClarificationRequest)
-                .WithMany(cr => cr.Questions)
-                .HasForeignKey(cq => cq.ClarificationRequestId);
-            
+         
             modelBuilder.Entity<AttachmentDO>()
                 .HasRequired(a => a.Email)
                 .WithMany(e => e.Attachments)
@@ -257,13 +242,26 @@ namespace Data.Infrastructure
                 .WithRequired(a => a.Event)
                 .WillCascadeOnDelete(true);
 
+            //modelBuilder.Entity<NegotiationDO>()
+            //    .HasMany(e => e.Attendees)
+            //    .WithRequired(a => a.Negotiation);
+                //  .WillCascadeOnDelete(true); when alexed tried to make this migration, this line caused errors
+
+            modelBuilder.Entity<NegotiationDO>()
+                .HasMany(e => e.Questions)
+                .WithRequired(a => a.Negotiation);
+              //.WillCascadeOnDelete(true);
+
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new
                 {
                     ts.Id,
                     ts.ForeignTableName
                 });
-
+            modelBuilder.Entity<QuestionDO>()
+                .HasMany(e => e.Answers)
+                .WithRequired(a => a.Question)
+                .WillCascadeOnDelete(true);
 
             base.OnModelCreating(modelBuilder);
         }

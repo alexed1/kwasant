@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 
 namespace Data.Infrastructure
 {
@@ -59,13 +59,13 @@ namespace Data.Infrastructure
         /// <returns>IQueryable of entities without any status</returns>
         public IQueryable<TForeignEntity> GetEntitiesWithoutStatus(int type)
         {
-            return GetEntitiesWithoutCustomFields(cf => cf.TrackingTypeID == type);
+            return GetEntitiesWithoutCustomFields(cf => cf.TrackingType == type);
         }
 
         public IQueryable<TForeignEntity> GetUnprocessedEntities(int type)
         {
             //Get entities without a status, or with a status marked 'Unprocessed'
-            return GetJoinResult(cf => cf.TrackingTypeID == type, null, jr => jr.CustomFieldDO == null || jr.CustomFieldDO.TrackingStatusID == TrackingStatus.Unprocessed).Select(jr => jr.ForeignDO);
+            return GetJoinResult(cf => cf.TrackingType == type, null, jr => jr.CustomFieldDO == null || jr.CustomFieldDO.TrackingStatus == TrackingState.Unprocessed).Select(jr => jr.ForeignDO);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Data.Infrastructure
         /// <returns>IQueryable of entities with a status</returns>
         public IQueryable<TForeignEntity> GetEntitiesWithStatus(int type)
         {
-            return GetEntitiesWithCustomField(cf => cf.TrackingTypeID == type);
+            return GetEntitiesWithCustomField(cf => cf.TrackingType == type);
         }
 
         /// <summary>
@@ -94,9 +94,9 @@ namespace Data.Infrastructure
         /// <param name="status">Value of the status</param>
         public void SetStatus(int trackingType, TForeignEntity entityDO, int status)
         {
-            var row = GetOrCreateCustomField(entityDO, cf => cf.TrackingTypeID == trackingType);
-            row.TrackingStatusID = status;
-            row.TrackingTypeID = trackingType;
+            var row = GetOrCreateCustomField(entityDO, cf => cf.TrackingType == trackingType);
+            row.TrackingStatus = status;
+            row.TrackingType = trackingType;
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Data.Infrastructure
         /// <param name="entityDO">The status of the provided entity</param>
         public TrackingStatusDO GetStatus(int type, TForeignEntity entityDO)
         {
-            return GetCustomField(entityDO, cf => cf.TrackingTypeID == type);
+            return GetCustomField(entityDO, cf => cf.TrackingType == type);
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Data.Infrastructure
         /// <param name="entityDO">Entity to delete the status on</param>
         public void DeleteStatus(int type, TForeignEntity entityDO)
         {
-            DeleteCustomField(entityDO, cf => cf.TrackingTypeID == type);
+            DeleteCustomField(entityDO, cf => cf.TrackingType == type);
         }
     }
 }

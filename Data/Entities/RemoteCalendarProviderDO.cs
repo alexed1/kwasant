@@ -5,8 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Data.Entities.Constants;
 using Data.Interfaces;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -20,9 +20,9 @@ namespace Data.Entities
         [Index(IsUnique = true), MaxLength(32)]
         public string Name { get; set; }
 
-        [ForeignKey("AuthType"), Required]
-        public int AuthTypeID { get; set; }
-        public virtual ServiceAuthorizationTypeRow AuthType { get; set; }
+        [ForeignKey("AuthTypeTemplate"), Required]
+        public int AuthType { get; set; }
+        public virtual _ServiceAuthorizationTypeTemplate AuthTypeTemplate { get; set; }
         
         /// <summary>
         /// JSON string for storing Kwasant application credentials for operating with provider (for instance: ClientId, ClientSecret and Scopes for OAuth authorization)

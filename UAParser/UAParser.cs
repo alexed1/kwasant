@@ -251,12 +251,15 @@ namespace UAParser
             // ReSharper disable once InconsistentNaming
             public static Func<string, OS> OS(Regex regex, string osReplacement, string v1Replacement, string v2Replacement)
             {
-                return Create(regex, from family in Replace(osReplacement, "$1")
-                                     from v1 in Replace(v1Replacement)
-                                     from v2 in Replace(v2Replacement)
-                                     from v3 in Select(v => v)
-                                     from v4 in Select(v => v)
-                                     select new OS(family, v1, v2, v3, v4));
+                return Create<OS>(regex, (m, num) =>
+                {
+                    var family = Replace(osReplacement, "$1")(m, num);
+                    var v1 = Replace(v1Replacement)(m, num);
+                    var v2 = Replace(v2Replacement)(m, num);
+                    var v3 = Select(v => v)(m, num);
+                    var v4 = Select(v => v)(m, num);
+                    return new OS(family, v1, v2, v3, v4);
+                });
             }
 
             public static Func<string, string> Device(Regex regex, string familyReplacement)
@@ -266,11 +269,14 @@ namespace UAParser
 
             public static Func<string, UserAgent> UserAgent(Regex regex, string familyReplacement, string majorReplacement, string minorReplacement)
             {
-                return Create(regex, from family in Replace(familyReplacement, "$1")
-                                     from v1 in Replace(majorReplacement)
-                                     from v2 in Replace(minorReplacement)
-                                     from v3 in Select()
-                                     select new UserAgent(family, v1, v2, v3));
+                return Create<UserAgent>(regex, (m, num) =>
+                {
+                    var family = Replace(familyReplacement, "$1")(m, num);
+                    var v1 = Replace(majorReplacement)(m, num);
+                    var v2 = Replace(minorReplacement)(m, num);
+                    var v3 = Select()(m, num);
+                    return new UserAgent(family, v1, v2, v3);
+                });
             }
 
             static Func<Match, IEnumerator<int>, string> Replace(string replacement)

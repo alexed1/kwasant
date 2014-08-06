@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
@@ -15,7 +16,8 @@ using Data.Infrastructure.StructureMap;
 using System;
 using Data.Repositories;
 using Data.Infrastructure;
-
+using System.Collections.Generic;
+using System.Linq;
 
 namespace KwasantWeb.Controllers
 {
@@ -24,6 +26,7 @@ namespace KwasantWeb.Controllers
     {
         private DataTablesPackager _datatables;
         private BookingRequest _br;
+        private int recordcount;
 
         public BookingRequestController()
         {
@@ -79,7 +82,7 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.BookingRequestStateID = Data.Constants.BookingRequestState.Processed;
+                bookingRequestDO.BookingRequestState = BookingRequestState.Processed;
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
@@ -93,7 +96,7 @@ namespace KwasantWeb.Controllers
              using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
              {
                  BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                 bookingRequestDO.BookingRequestStateID = Data.Constants.BookingRequestState.Invalid;
+                 bookingRequestDO.BookingRequestState = BookingRequestState.Invalid;
                  bookingRequestDO.User = bookingRequestDO.User;
                  uow.SaveChanges();
                  AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
@@ -108,7 +111,6 @@ namespace KwasantWeb.Controllers
             {
                 string userId = _br.GetUserId(uow.BookingRequestRepository, bookingRequestId.Value);
                 int recordcount = _br.GetBookingRequestsCount(uow.BookingRequestRepository, userId);
-                
                 var jsonResult = Json(new
                 {
                     draw = draw,
@@ -147,6 +149,41 @@ namespace KwasantWeb.Controllers
                 result = "Sorry! Something went wrong. Alpha software...";
             }
             return Content(result);
+        }
+
+        // GET: /RelatedItems 
+        [HttpGet]
+        public ActionResult ShowRelatedItems(int bookingRequestId, int draw, int start, int length)
+        {
+            List<BR_RelatedItems> obj = new List<BR_RelatedItems>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            { 
+                var jsonResult = Json(new
+                {
+                    draw = draw,
+                    data = _datatables.Pack(BuildRelatedItemsJSON(uow, bookingRequestId, start, length)),
+                    recordsTotal = recordcount,
+                    recordsFiltered = recordcount,
+                   
+                }, JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+
+        public List<BR_RelatedItems> BuildRelatedItemsJSON(IUnitOfWork uow, int bookingRequestId, int start, int length)
+        {
+            List<BR_RelatedItems> bR_RelatedItems = new List<BR_RelatedItems>();
+            var events = _br.GetRelatedEvents(uow, bookingRequestId);
+            //removed clarification requests, as there is no longer a direct connection. we'll need to collect them for this json via negotiation objects
+
+            if (events.Count() > 0)
+                bR_RelatedItems.AddRange(events);
+
+          
+
+              recordcount = bR_RelatedItems.Count();
+            return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();
         }
 	}
 }

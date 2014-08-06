@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using Data.Constants;
 using Data.Entities;
-using Data.Entities.Constants;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.States;
 using FluentValidation;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Services;
@@ -52,7 +51,7 @@ namespace KwasantTest.Services
             var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Id == _curEmailDO.Id);
             Assert.NotNull(envelope, "Envelope was not created.");
             Assert.AreEqual(envelope.Handler, EnvelopeDO.GmailHander, "Envelope handler should be Gmail");
-            Assert.AreEqual(EmailStatus.Queued, _curEmailDO.EmailStatusID);
+            Assert.AreEqual(EmailState.Queued, _curEmailDO.EmailStatus);
         }
 
         [Test]

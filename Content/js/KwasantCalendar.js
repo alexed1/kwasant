@@ -68,6 +68,14 @@
         };
         calendar = this;
 
+        this.getStoredCalendar = function () {
+            return storedCalendars;
+        };
+
+        this.getNavigator = function () {
+            return nav;
+        };
+
         return this;
     };
 

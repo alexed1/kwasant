@@ -2,20 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.States;
 
 namespace KwasantCore.Services
 {
     public class BookingRequest
     {
+
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-            bookingRequest.BookingRequestStateID = BookingRequestState.Unprocessed;
+            bookingRequest.BookingRequestState = BookingRequestState.Unprocessed;
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
-            
+
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
 
@@ -51,7 +52,7 @@ namespace KwasantCore.Services
         {
             return
                 uow.BookingRequestRepository.GetAll()
-                    .Where(e => e.BookingRequestStateID == BookingRequestState.Unprocessed)
+                    .Where(e => e.BookingRequestState == BookingRequestState.Unprocessed)
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
@@ -68,10 +69,10 @@ namespace KwasantCore.Services
                             })
                     .ToList();
         }
-        
+
         private List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)
         {
-            List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?) travelTime).ToList();
+            List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?)travelTime).ToList();
             instructionIDs.Add(ProcessAllDay(emailBody));
             instructionIDs = instructionIDs.Where(i => i.HasValue).Distinct().ToList();
             InstructionRepository instructionRepo = uow.InstructionRepository;
@@ -122,5 +123,26 @@ namespace KwasantCore.Services
             }
             return null;
         }
+
+
+        public List<BR_RelatedItems> GetRelatedEvents(IUnitOfWork uow, int bookingRequestId)
+        {
+            return uow.EventRepository.GetAll().Where(e => e.BookingRequestID == bookingRequestId).Select(e => new BR_RelatedItems
+                  {
+                      id = e.Id,
+                      Type = "Event",
+                      Date = e.StartDate.ToString("M-d-yy hh:mm tt")
+                  }).ToList();
+        }
+
+       
     }
+    public struct BR_RelatedItems
+    {
+        public int id { get; set; }
+        public string Date { get; set; }
+        public string Type { get; set; }
+    }
+
+
 }

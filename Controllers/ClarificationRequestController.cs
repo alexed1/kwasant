@@ -5,7 +5,6 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
-using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using DayPilot.Web.Mvc.Json;
@@ -50,7 +49,7 @@ namespace KwasantWeb.Controllers
 
                 try
                 {
-                    NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(br => br.RequestId == bookingRequestId);
+                    NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(br => br.BookingRequestID == bookingRequestId);
                     var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow, bookingRequestId, clarificationRequestId, negotiationDO.Id);
                     return View(Mapper.Map<ClarificationRequestViewModel>(curClarificationRequestDO));
                 }
@@ -61,35 +60,6 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        [KwasantAuthorize(Roles = "Admin")]
-        [HttpPost]
-        public ActionResult Send(int bookingRequestId, int clarificationRequestId = 0, int negotiationId = 0)
-        {
-            //var submittedClarificationRequestDO = Mapper.Map<ClarificationRequestDO>(viewModel);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var cr = new ClarificationRequest();
-                try
-                {
-                    //NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(br => br.RequestId == bookingRequestId);
-                    var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow, bookingRequestId, clarificationRequestId, negotiationId);
-                    cr.UpdateClarificationRequest(uow, curClarificationRequestDO);
-                    var responseUrlFormat = string.Concat(Url.Action("", RouteConfig.ShowClarificationResponseUrl, new { }, this.Request.Url.Scheme), "?{0}");
-                    var responseUrl = cr.GenerateResponseURL(curClarificationRequestDO, responseUrlFormat);
-                    cr.Send(uow, curClarificationRequestDO, responseUrl);
-                    uow.SaveChanges();
-                    return Json(new { success = true });
-                }
-                catch (EntityNotFoundException ex)
-                {
-                    return HttpNotFound(ex.Message);
-                }
-                catch (Exception ex)
-                {
-                    return Json(new { success = false, error = ex.Message });
-                }
-            }
-        }
 
         //[KwasantAuthorize(Roles = "Admin")]
         //[HttpPost]
@@ -129,10 +99,7 @@ namespace KwasantWeb.Controllers
                 var curClarificationRequestDO = uow.ClarificationRequestRepository.GetByKey(id);
                 if (curClarificationRequestDO == null)
                     return HttpNotFound("Clarification request not found.");
-                if (curClarificationRequestDO.BookingRequest == null)
-                    return HttpNotFound("Booking request not found.");
-                if (curClarificationRequestDO.Questions.Count(q => q.QuestionStatusID == QuestionStatus.Unanswered) == 0)
-                    return View("~/Views/ClarificationResponse/AllAnswered.cshtml");
+               
                 var curClarificationResponseViewModel = Mapper.Map<ClarificationRequestDO, ClarificationResponseViewModel>(curClarificationRequestDO);
                 return View("~/Views/ClarificationResponse/New.cshtml", curClarificationResponseViewModel);
             }

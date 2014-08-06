@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
-using Data.Constants;
-using Data.Entities.Constants;
+using Data.States;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -23,9 +23,9 @@ namespace Data.Entities
             set { throw new Exception("This field is reserved. You probably want to use 'State' instead."); }
         }
 
-        [ForeignKey("EventStatus")]
-        public int EventStatusID { get; set; }
-        public EventStatusRow EventStatus { get; set; }
+        [ForeignKey("EventStatusTemplate")]
+        public int EventStatus { get; set; }
+        public virtual _EventStatusTemplate EventStatusTemplate { get; set; }
 
         public string Transparency { get; set; }
         public string Class { get; set; }
@@ -57,18 +57,18 @@ namespace Data.Entities
 
         public DateTimeOffset DateCreated { get; set; }
 
-        [ForeignKey("CreateType"), Required]
-        public int CreateTypeID { get; set; }
-        public virtual EventCreateTypeRow CreateType { get; set; }
+        [ForeignKey("CreateTypeTemplate"), Required]
+        public int CreateType { get; set; }
+        public virtual _EventCreateTypeTemplate CreateTypeTemplate { get; set; }
 
-        [ForeignKey("SyncStatus"), Required]
-        public int SyncStatusID { get; set; }
-        public virtual EventSyncStatusRow SyncStatus { get; set; }
+        [ForeignKey("SyncStatusTemplate"), Required]
+        public int SyncStatus { get; set; }
+        public virtual _EventSyncStatusTemplate SyncStatusTemplate { get; set; }
 
         public EventDO()
         {
-            CreateTypeID = EventCreateType.KwasantBR;
-            SyncStatusID = EventSyncStatus.DoNotSync;
+            CreateType = EventCreateType.KwasantBR;
+            SyncStatus = EventSyncState.DoNotSync;
             Attendees = new List<AttendeeDO>();
             Emails = new List<EmailDO>();
         }
