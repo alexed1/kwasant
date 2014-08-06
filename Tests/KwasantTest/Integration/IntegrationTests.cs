@@ -302,7 +302,6 @@ namespace KwasantTest.Workflow
         [Category("Workflow")]
         public void Workflow_CanAddBcctoOutbound()
         {
-            Assert.True(false);
            // var _polling.requestToEmailTimeout = TimeSpan.FromSeconds(60);
            // Stopwatch _polling.requestToEmailDuration = new Stopwatch();
 
