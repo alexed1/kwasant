@@ -7,41 +7,71 @@
     @Scripts.Render("~/bundles/js/select2")    
     @Scripts.Render("~/bundles/js/jqueryvalidate")
 
-<script src="/Content/js/Kwasant/Popup.js"></script>
-<script>
-    $(function() {
-        $('#questionContainer').hide();
-        $('#answerContainer').hide();
-    });
-    
-    function addQuestion() {
+    <script src="/Content/js/Kwasant/Popup.js"></script>
+    <script>
         $(function() {
-            var clonedHTML = $('#questionContainer').clone();
-            $('#appendquestinoId').append(clonedHTML);
-            clonedHTML.slideDown();
+            $('#questionContainer').hide();
+            $('#answerContainer').hide();
         });
-    }
-    
-    function addAnswer(obj) {
-        $(function () {
-            var clonedHTML = $('#answerContainer').clone();
-            $(obj).closest('.questionBox').find('#appendanswerId').append(clonedHTML);
-            clonedHTML.slideDown();
-        });
-    }
-    
-    function removeQuestion(obj) {
-        $(function() {
-            $(obj).closest('.questionBox').slideUp();
-        });
-    }
-    
-    function removeAnswer(obj) {
-        $(function () {
-            $(obj).closest('.answerBox').slideUp();
-        });
-    }
-</script>
+
+        function getNegotiationData() {
+            $(function() {
+                var negotiation = {};
+                negotiation.Questions = $.map($('#appendquestinoId .questionBox'), function(element) {
+                    element = $(element);
+                    var questionText = element.find('#questionText').val();
+                    var selectedType = element.find('input[type="radio"][name="questionType"]').filter(function() {
+                        return $(this).get(0).checked;
+                    }).val();
+
+                    var answers = $.map(element.find('#appendanswerId .answerBox'), function (answerElement) {
+                        answerElement = $(answerElement);
+                        var answerText = answerElement.find('#answerText').val();
+                        var answerStatus = answerElement.find('#answerStatus').val();
+
+                        return { Text: answerText, Status: answerStatus };
+                    });
+
+                    return { Text: questionText, Type: selectedType, Answers: answers };
+                });
+                var t = 0;
+            });
+        }
+
+        function addQuestion() {
+            $(function() {
+                var clonedHTML = $('#questionContainer').clone();
+                $('#appendquestinoId').append(clonedHTML);
+                clonedHTML.slideDown();
+            });
+        }
+
+        function addAnswer(obj) {
+            $(function() {
+                var parentBox = $(obj).closest('.questionBox');
+                var selectedType = parentBox.find('input[type="radio"][name="questionType"]').filter(function() {
+                    return $(this).get(0).checked;
+                });
+                if (selectedType.val() === "Text") {
+                    var clonedHTML = $('#answerContainer').clone();
+                    parentBox.find('#appendanswerId').append(clonedHTML);
+                    clonedHTML.slideDown();
+                }
+            });
+        }
+
+        function removeQuestion(obj) {
+            $(function() {
+                $(obj).closest('.questionBox').slideUp();
+            });
+        }
+
+        function removeAnswer(obj) {
+            $(function() {
+                $(obj).closest('.answerBox').slideUp();
+            });
+        }
+    </script>
 }
 @section scripts
 {
@@ -175,9 +205,9 @@
         </span>
 
         <div class="space form-actions negotiation-form-actions">
-            <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="processSubmit()" />
+            <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="getNegotiationData()" />
             
-            <a href="javascript:closeWithUnsavedDataCheck(modifiedState);" class="cancel-btn pull-left">Cancel</a>
+            <a href="javascript:close();" class="cancel-btn pull-left">Cancel</a>
         </div>
     </div>
 </form>
