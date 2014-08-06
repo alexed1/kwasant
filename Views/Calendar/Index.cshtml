@@ -93,15 +93,15 @@
         calendar = $('#CalendarDiv').KCalendar({
                 getCalendarBackendURL: function() {
                     //return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
-                    return '@Url.Content("~/Calendar/Day?calendarIDs=" + @Model.MainCalendarID)';
+                    return '@Url.Content("~/Calendar/Day?calendarIDs=" + @Model.ActiveCalendarID)';
                 },
                 getMonthBackendURL: function () {
                     //return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
-                    return '@Url.Content("~/Calendar/Month?calendarIDs=" + @Model.MainCalendarID)';
+                    return '@Url.Content("~/Calendar/Month?calendarIDs=" + @Model.ActiveCalendarID)';
                 },
                 getNavigatorBackendURL: function() {
                     //return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
-                    return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + @Model.MainCalendarID)';
+                    return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + @Model.ActiveCalendarID)';
                 },  
                 getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
                 getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
