@@ -1,21 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using AutoMapper;
 using Data.Entities;
-//using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.States;
-using DayPilot.Web.Mvc.Json;
-using KwasantCore.Exceptions;
-//using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
-using KwasantWeb.App_Start;
-using KwasantWeb.Filters;
 using KwasantWeb.ViewModels;
 using StructureMap;
 using System.Web.Script.Serialization;
@@ -29,7 +20,7 @@ namespace KwasantWeb.Controllers
     public class NegotiationController : Controller
     {
         private static int BookingRequestID { get; set; }
-        private Negotiation _negotiation ;
+        private Negotiation _negotiation;
         private Attendee _attendee;
 
         public NegotiationController()
@@ -58,7 +49,7 @@ namespace KwasantWeb.Controllers
                 if (negotiationDO != null)
                     throw new ApplicationException("tried to create a negotiation when one already existed");
 
-                 negotiationDO = new NegotiationDO
+                negotiationDO = new NegotiationDO
                 {
                     Name = viewModel.Name,
                     BookingRequestID = BookingRequestID,
@@ -86,6 +77,20 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        public JsonResult DeleteAnswer(int answerId = 0)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                CalendarDO calendarDO = uow.CalendarRepository.FindOne(c => c.QuestionId == answerId);
+                if (calendarDO != null)
+                    uow.CalendarRepository.Remove(calendarDO);
+
+                uow.AnswersRepository.Remove(uow.AnswersRepository.FindOne(q => q.Id == answerId));
+                uow.SaveChanges();
+                return Json("Success", JsonRequestBehavior.AllowGet);
+            }
+        }
+
         [HttpGet]
         public ActionResult ShowNegotiation(long id)
         {
@@ -104,14 +109,15 @@ namespace KwasantWeb.Controllers
                     {
                         Id = quel.Id,
                         Text = quel.Text,
-                        Status = quel.QuestionStatusTemplate,
+                        Status = quel.QuestionStatus,
                         NegotiationId = quel.NegotiationId,
                         AnswerType = quel.AnswerType,
                         Answers = uow.AnswersRepository.GetAll().Where(ans => ans.QuestionID == quel.Id).Select(ansl => new AnswerViewModel
                         {
                             Id = ansl.Id,
                             QuestionID = ansl.QuestionID,
-                            AnswerStatusId = ansl.AnswerStatus,
+                            AnswerStatusID = ansl.AnswerStatus,
+                            //Status = ansl.AnswerStatus,
                             ObjectsType = ansl.ObjectsType,
                         }).ToList()
                     }).ToList()
@@ -123,7 +129,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public JsonResult ProcessSubmittedForm(EditNegotiationVM curVM )
+        public JsonResult ProcessSubmittedForm(EditNegotiationVM curVM)
         {
             NegotiationDO newNegotiationData = curVM.curNegotiation;
             string attendeeList = curVM.attendeeList;
@@ -140,62 +146,64 @@ namespace KwasantWeb.Controllers
                         uow.NegotiationsRepository.FindOne(n => n.Id == newNegotiationData.Id);
 
                     //Update Negotiation
-                    NegotiationDO existingNegotiationDO = uow.NegotiationsRepository.FindOne(n => n.Id == newNegotiationData.Id);
+                    NegotiationDO existingNegotiationDO =
+                        uow.NegotiationsRepository.FindOne(n => n.Id == newNegotiationData.Id);
                     updatedNegotiationDO = _negotiation.Update(newNegotiationData, existingNegotiationDO);
 
                     //this takes the form data and processes it similarly to how its done in the Edit Event form
                     //IMPORTANT: the code in Attendee.cs was refactored and needs testing.
                     //_attendee.ManageNegotiationAttendeeList(uow, updatedNegotiationDO, attendeeList); //see
 
-                    //negotiationDO.Name = newNegotiationData.Name;
-                    //negotiationDO.NegotiationState = newNegotiationData.State;
-                    //uow.SaveChanges();
 
-                    //foreach (var question in newNegotiationData.Questions)
-                    //{
-                    //    QuestionDO questionDO = uow.QuestionsRepository.FindOne(q => q.Id == question.Id);
+                    //SEE https://maginot.atlassian.net/wiki/display/SH/CRUD+for+Questions%2C+Answers%2C+Negotiations
 
-                    //    if (questionDO != null)
-                    //    {
-                    //        questionDO.QuestionStatus = question.Status;
-                    //        questionDO.Text = question.Text;
-                    //        questionDO.AnswerType = question.AnswerType;
-                    //        uow.SaveChanges();
-
-                    //        foreach (var answers in question.Answers)
-                    //        {
-                    //            AnswerDO answerDO = uow.AnswersRepository.FindOne(a => a.Id == answers.Id);
-                    //            answerDO.AnswerStatusID = answers.AnswerStatusId;
-                    //            answerDO.ObjectsType = answers.Text;
-                    //            uow.SaveChanges();
-                    //        }
-                    //    }
-                    //}
 
                     //Process Negotiation
                     _negotiation.Process(updatedNegotiationDO);
                     //set result to a success message
-                    result = new { Success = "True", BookingRequestID = updatedNegotiationDO.BookingRequest.Id, NegotiationId = updatedNegotiationDO.Id };
+                    result =
+                        new
+                        {
+                            Success = "True",
+                            BookingRequestID = updatedNegotiationDO.BookingRequest.Id,
+                            NegotiationId = updatedNegotiationDO.Id
+                        };
+
 
                 }
             }
             catch (Exception)
             {
                 //set result to an error message
-                result = new { Success = "False", BookingRequestID = updatedNegotiationDO.BookingRequest.Id, NegotiationId = updatedNegotiationDO.Id };
+                result =
+                    new
+                    {
+                        Success = "False",
+                        BookingRequestID = updatedNegotiationDO.BookingRequest.Id,
+                        NegotiationId = updatedNegotiationDO.Id
+                    };
             }
 
-            
-             return Json(result, JsonRequestBehavior.AllowGet);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
-       
+
 
         [HttpGet]
         public PartialViewResult AddQuestion(int questionID, int negotiationId = 0)
         {
-                        Success = "False",
-                        BookingRequestID = updatedNegotiationDO.BookingRequest.Id,
-                        NegotiationId = updatedNegotiationDO.Id
+            List<int> questionVal = new List<int>();
+            questionVal.Add(questionID);
+
+            if (negotiationId > 0)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    QuestionDO questionDO = new QuestionDO
+                    {
+                        Negotiation = uow.NegotiationsRepository.FindOne(q => q.Id == negotiationId),
+                        QuestionStatus = QuestionState.Unanswered,
+                        Text = "Question",
                     };
 
                     uow.QuestionsRepository.Add(questionDO);
@@ -209,7 +217,28 @@ namespace KwasantWeb.Controllers
             return PartialView("_Question", questionVal);
         }
 
-            return Json(result, JsonRequestBehavior.AllowGet);
+        [HttpGet]
+        public PartialViewResult AddtextAnswer(int answerID, int questiontblID = 0)
+        {
+            List<int> ansVal = new List<int>();
+            ansVal.Add(answerID);
+
+            if (questiontblID > 0)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestID);
+                    UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
+                    AnswerDO answerDO = new AnswerDO
+                    {
+                        QuestionID = questiontblID,
+                        AnswerStatus = AnswerState.Unstarted,
+                        User = userDO,
+                    };
+
+                    uow.AnswersRepository.Add(answerDO);
+                    uow.SaveChanges();
+                    ansVal.Add(answerDO.Id);
                 }
             }
             else

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Constants;
+using Data.States;
 
 namespace KwasantCore.Services
 {
@@ -31,7 +27,7 @@ namespace KwasantCore.Services
                 QuestionDO questionDO = new QuestionDO
                 {
                     Negotiation = uow.NegotiationsRepository.FindOne(q => q.Id == negotiationId),
-                    QuestionStatusID = QuestionStatus.Unanswered,
+                    QuestionStatus = QuestionState.Unanswered,
                     Text = "Question",
                 };
 

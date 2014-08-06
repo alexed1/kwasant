@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Constants;
+using Data.States;
 
 namespace KwasantCore.Services
 {
@@ -29,7 +25,7 @@ namespace KwasantCore.Services
                     AnswerDO answerDO = new AnswerDO
                     {
                         QuestionID = questionId,
-                        AnswerStatusID = AnswerStatus.Unstarted,
+                        AnswerStatus = AnswerState.Unstarted,
                         User = userDO,
                     };
 

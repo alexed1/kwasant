@@ -1,17 +1,8 @@
-﻿using System.Linq;
-using System.Net;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using Data.Interfaces;
-using Data.Repositories;
-using KwasantCore.Managers;
 using KwasantCore.Services;
-using KwasantWeb.Controllers.External.DayPilot;
-using KwasantWeb.Controllers.External.DayPilot.Providers;
-using KwasantWeb.ViewModels;
 using StructureMap;
-using Data.Entities;
 using System.Collections.Generic;
-using Data.Constants;
 
 
 namespace KwasantWeb.Controllers
