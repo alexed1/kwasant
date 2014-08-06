@@ -162,6 +162,7 @@ namespace KwasantTest.Timeslots
         [Test]
         public void TestOverLapAfterDoesMerge()
         {
+            Assert.True(false);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 CreateOriginalTimeSlot(1, "11:00am", "12:00pm");
