@@ -98,7 +98,7 @@ namespace KwasantWeb.Controllers
                     Id = s.Id,
                     Name = s.Name,
                     RequestId = BookingRequestID,
-                    State = s.NegotiationStateTemplate,
+                    State = s.NegotiationState,
 
                     Questions = uow.QuestionsRepository.GetAll().Where(que => que.NegotiationId == s.Id).Select(quel => new QuestionViewModel
                     {

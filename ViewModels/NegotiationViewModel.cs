@@ -10,7 +10,7 @@ namespace KwasantWeb.ViewModels
     {
         public int Id { get; set; }        
         public int RequestId { get; set; }
-        public _NegotiationStateTemplate State { get; set; }
+        public int State { get; set; }
         public string Name { get; set; }
 
         public List<QuestionViewModel> Questions { get; set; }                  
