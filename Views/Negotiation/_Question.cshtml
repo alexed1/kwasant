@@ -7,14 +7,15 @@
 
 @using (Html.BeginForm())
 {
+
    <div id="questionContainer" data-questionid="@questionID" data-questiontbleid="@questionDataID">
        <table>
            <tr>
                <td>
-                   <label id="questionlbl">Question : @questionID</label>
+                   <label id="questionlbl">Question : </label>
                </td>
                <td>
-                   <input type="text" id="questionText" name="Question"  />
+                   <input type="text" id="questionText" name="Question" class="form-control col-md-1" />
                </td>
                <td>
                    <img src="~/Content/img/Cross.png" onclick="removeQuestion(this)" />
@@ -23,11 +24,11 @@
            <tr>
                <td>&nbsp;
                </td>
-               <td>Type: &nbsp;
-                   <input type="radio" id="QuetypeText" value="Text" name="type" checked="checked" onclick="removerchkClass(this);" class="tester" />
+               <td class="test">Type: &nbsp;
+                   <input type="radio" id="QuetypeText" value="Text" name="quesType_@questionID" checked="checked" class="active"/>
                    &nbsp; Text
-                   &nbsp;                 
-                   <input type="radio" id="QuetypeTimeSlot" value="Timeslot" name="type" onclick="removerchkClass(this);" class="tester" />&nbsp; Event Window
+                   &nbsp;     
+                  <input type="radio" id="QuetypeTimeSlot" value="Timeslot" name="quesType_@questionID" class="active"  />&nbsp; Event Window
                </td>
                <td>&nbsp;
                </td>

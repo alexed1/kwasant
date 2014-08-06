@@ -193,18 +193,9 @@ namespace KwasantWeb.Controllers
         [HttpGet]
         public PartialViewResult AddQuestion(int questionID, int negotiationId = 0)
         {
-            List<int> questionVal = new List<int>();
-            questionVal.Add(questionID);
-
-            if (negotiationId > 0)
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    QuestionDO questionDO = new QuestionDO
-                    {
-                        Negotiation = uow.NegotiationsRepository.FindOne(q => q.Id == negotiationId),
-                        QuestionStatus = QuestionState.Unanswered,
-                        Text = "Question",
+                        Success = "False",
+                        BookingRequestID = updatedNegotiationDO.BookingRequest.Id,
+                        NegotiationId = updatedNegotiationDO.Id
                     };
 
                     uow.QuestionsRepository.Add(questionDO);
@@ -218,28 +209,7 @@ namespace KwasantWeb.Controllers
             return PartialView("_Question", questionVal);
         }
 
-        [HttpGet]
-        public PartialViewResult AddtextAnswer(int answerID, int questiontblID = 0)
-        {
-            List<int> ansVal = new List<int>();
-            ansVal.Add(answerID);
-
-            if (questiontblID > 0)
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestID);
-                    UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
-                    AnswerDO answerDO = new AnswerDO
-                    {
-                        QuestionID = questiontblID,
-                        AnswerStatus = AnswerState.Proposed,
-                        User = userDO,
-                    };
-
-                    uow.AnswersRepository.Add(answerDO);
-                    uow.SaveChanges();
-                    ansVal.Add(answerDO.Id);
+            return Json(result, JsonRequestBehavior.AllowGet);
                 }
             }
             else

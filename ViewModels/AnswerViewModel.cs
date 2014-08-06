@@ -9,7 +9,8 @@ namespace KwasantWeb.ViewModels
     {
         public int Id { get; set; }        
         public int QuestionID { get; set; }       
-        public int AnswerStatusId { get; set; }
+        public int AnswerStatusID { get; set; }
+        public AnswerStatusRow  Status { get; set; }
         public string ObjectsType { get; set; }
         public string Text { get; set; }
     }
