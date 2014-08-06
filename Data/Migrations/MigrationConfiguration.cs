@@ -320,6 +320,8 @@ namespace Data.Migrations
                 BookingRequestState = BookingRequestState.Unprocessed,
                 User = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db as KwasantDbContext)).FindByName(curUserName)
             };
+            foreach (var calendar in curBookingRequestDO.User.Calendars)
+                curBookingRequestDO.Calendars.Add(calendar);
             uow.BookingRequestRepository.Add(curBookingRequestDO);
         }
 
