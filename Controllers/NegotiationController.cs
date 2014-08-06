@@ -31,16 +31,23 @@ namespace KwasantWeb.Controllers
         private static int BookingRequestID { get; set; }
         private Negotiation _negotiation ;
         private Attendee _attendee;
+        private static int BookingRequestId { get; set; }
+        private Answer _answer;
 
         public NegotiationController()
         {
             _negotiation = new Negotiation();
             _attendee = new Attendee();
+            _answer = new Answer();
         }
 
+
+
+    
+        
         public ActionResult Edit(int bookingRequestID)
         {
-            BookingRequestID = bookingRequestID;
+            BookingRequestId = bookingRequestID;
             return View();
         }
 
@@ -72,34 +79,6 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public JsonResult DeleteQuestion(int questionId = 0)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                CalendarDO calendarDO = uow.CalendarRepository.FindOne(c => c.QuestionId == questionId);
-                if (calendarDO != null)
-                    uow.CalendarRepository.Remove(calendarDO);
-
-                uow.QuestionsRepository.Remove(uow.QuestionsRepository.FindOne(q => q.Id == questionId));
-                uow.SaveChanges();
-                return Json("Success", JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        public JsonResult DeleteAnswer(int answerId = 0)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                CalendarDO calendarDO = uow.CalendarRepository.FindOne(c => c.QuestionId == answerId);
-                if (calendarDO != null)
-                    uow.CalendarRepository.Remove(calendarDO);
-
-                uow.AnswersRepository.Remove(uow.AnswersRepository.FindOne(q => q.Id == answerId));
-                uow.SaveChanges();
-                return Json("Success", JsonRequestBehavior.AllowGet);
-            }
-        }
-
         [HttpGet]
         public ActionResult ShowNegotiation(long id)
         {
@@ -111,7 +90,7 @@ namespace KwasantWeb.Controllers
                 {
                     Id = s.Id,
                     Name = s.Name,
-                    RequestId = BookingRequestID,
+                    RequestId = BookingRequestId,
                     State = s.NegotiationState,
 
                     Questions = uow.QuestionsRepository.GetAll().Where(que => que.NegotiationId == s.Id).Select(quel => new QuestionViewModel
@@ -165,7 +144,7 @@ namespace KwasantWeb.Controllers
 
 
                     //SEE https://maginot.atlassian.net/wiki/display/SH/CRUD+for+Questions%2C+Answers%2C+Negotiations
-                    
+
 
                     //Process Negotiation
                     _negotiation.Process(updatedNegotiationDO);
@@ -178,7 +157,20 @@ namespace KwasantWeb.Controllers
                             NegotiationId = updatedNegotiationDO.Id
                         };
 
-                  
+                    //if (questionDO != null)
+                    //{
+                    //    questionDO.QuestionStatus = question.Status;
+                    //    questionDO.Text = question.Text;
+                    //    questionDO.AnswerType = question.AnswerType;
+                    //    uow.SaveChanges();
+
+                    //    foreach (var answers in question.Answers)
+                    //    {
+                    //        AnswerDO answerDO = uow.AnswersRepository.FindOne(a => a.Id == answers.Id);
+                    //        answerDO.AnswerStatusID = answers.AnswerStatusID;
+                    //        answerDO.ObjectsType = answers.Text;
+                    //        uow.SaveChanges();
+                    //    }
                 }
             }
             catch (Exception)
@@ -195,71 +187,8 @@ namespace KwasantWeb.Controllers
 
 
             return Json(result, JsonRequestBehavior.AllowGet);
-            }
-
-
-        [HttpGet]
-        public PartialViewResult AddQuestion(int questionID, int negotiationId = 0)
-        {
-            List<int> questionVal = new List<int>();
-            questionVal.Add(questionID);
-
-            if (negotiationId > 0)
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    QuestionDO questionDO = new QuestionDO
-                    {
-                        Negotiation = uow.NegotiationsRepository.FindOne(q => q.Id == negotiationId),
-                        QuestionStatusID = QuestionStatus.Unanswered,
-                        Text = "Question",
-                    };
-
-                    uow.QuestionsRepository.Add(questionDO);
-                    uow.SaveChanges();
-                    questionVal.Add(questionDO.Id);
-                }
-            }
-            else
-                questionVal.Add(0);
-
-            return PartialView("_Question", questionVal);
         }
-
-        [HttpGet]
-        public PartialViewResult AddtextAnswer(int answerID, int questiontblID = 0)
-        {
-            List<int> ansVal = new List<int>();
-            ansVal.Add(answerID);
-
-            if (questiontblID > 0)
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    EmailDO emailDO = uow.EmailRepository.FindOne(el => el.Id == BookingRequestID);
-                    UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
-                    AnswerDO answerDO = new AnswerDO
-                    {
-                        QuestionID = questiontblID,
-                        AnswerStatusID = AnswerStatus.Unstarted,
-                        User = userDO,
-                    };
-
-                    uow.AnswersRepository.Add(answerDO);
-                    uow.SaveChanges();
-                    ansVal.Add(answerDO.Id);
-                }
-            }
-            else
-                ansVal.Add(0);
-
-            return PartialView("_TextAnswer", ansVal);
-        }
-
-        public PartialViewResult AddTimeslotAnswer(int answerID)
-        {
-            return PartialView("_TimeslotAnswer", answerID);
-        }
+        
 
         public ActionResult EventWindows(int id = 0)
         {
@@ -269,7 +198,7 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IBookingRequestRepository bookingRequestRepository = uow.BookingRequestRepository;
-                var bookingRequestDO = bookingRequestRepository.GetByKey(BookingRequestID);
+                var bookingRequestDO = bookingRequestRepository.GetByKey(BookingRequestId);
                 if (bookingRequestDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 

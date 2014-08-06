@@ -12,10 +12,10 @@
        <table>
            <tr>
                <td>
-                   <label id="questionlbl">Question : @questionID</label>
+                   <label id="questionlbl">Question : </label>
                </td>
                <td>
-                   <input type="text" id="questionText" name="Question"  />
+                   <input type="text" id="questionText" name="Question" class="form-control col-md-1" />
                </td>
                <td>
                    <img src="~/Content/img/Cross.png" onclick="removeQuestion(this)" />
@@ -25,10 +25,10 @@
                <td>&nbsp;
                </td>
                <td class="test">Type: &nbsp;
-                   <input type="radio" id="QuetypeText" value="Text" name="text" checked="checked" class="active"/>
+                   <input type="radio" id="QuetypeText" value="Text" name="quesType_@questionID" checked="checked" class="active"/>
                    &nbsp; Text
                    &nbsp;     
-                  <input type="radio" id="QuetypeTimeSlot" value="Timeslot" name="text" class="active"  />&nbsp; Event Window
+                  <input type="radio" id="QuetypeTimeSlot" value="Timeslot" name="quesType_@questionID" class="active"  />&nbsp; Event Window
                </td>
                <td>&nbsp;
                </td>
