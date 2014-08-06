@@ -27,7 +27,8 @@ namespace Data.Authentication
                     UserName = curUserName,
                     EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
                     FirstName = curUserName,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    TestAccount = true
                 };
 
                 IdentityResult ir = um.Create(curUser, curPassword);
