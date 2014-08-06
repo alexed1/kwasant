@@ -39,7 +39,7 @@ namespace KwasantWeb.Controllers
 
                 //put it in a view model to hand to the view
                 var curEventVM = Mapper.Map<EventDO, EventViewModel>(createdEvent);
-                dsds
+
                 //construct a Calendar view model for this Calendar View 
                 return View("~/Views/Event/Edit.cshtml", curEventVM);
             }
