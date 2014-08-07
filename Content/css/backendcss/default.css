@@ -697,16 +697,16 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
 
 /* Data Tables customize pagination styles */
 
-.body-content .dataTables_wrapper .dataTables_paginate .paginate_button {
+.body-content .dataTables_wrapper .dataTables_paginate .paginate_button, .ifarme-body .dataTables_wrapper .dataTables_paginate .paginate_button {
 	transition: all ease-in-out .3s;	
 }
 
-.body-content .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+.body-content .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover, .ifarme-body .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
 	background: #0e0e0e;
 	color: #fff!important;	
 }
 
-.body-content .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+.body-content .dataTables_wrapper .dataTables_paginate .paginate_button.current, .ifarme-body .dataTables_wrapper .dataTables_paginate .paginate_button.current {
 	background: #d85e17!important;
 	border-color: #ff6207!important;
 	color: #fff!important;
@@ -1120,6 +1120,7 @@ today-calendar-tbl .first-col {
 .edit-event-form span.input-group-addon {
 	background: #fff;
 	border-color: #3e3e3e;	
+	border-radius: 0;
 }
 
 .edit-event-form span.input-group-addon span {
