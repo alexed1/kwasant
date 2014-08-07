@@ -567,6 +567,28 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
 	text-decoration: none;
 }
 
+.delete-btn {
+	border: 1px solid #8b4f34;
+    background: #E44242;
+    background-image: none;
+    text-shadow: none;
+    color: #f2e9df;
+    border-radius: 0;
+    transition: all ease-in-out .3s;
+    box-shadow: none;
+    filter: none;
+    padding: 11px 25px;
+    font-size: 18px;	
+}
+
+.delete-btn:hover {
+    border-color:  #8b4f34;
+    background: #B44141;
+	color: #f2e9df;
+	text-decoration: none;
+}
+
+
 /*Login forms*/
 
 .login-fields p {
