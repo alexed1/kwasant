@@ -290,8 +290,8 @@
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="ViewModels\CalendarViewModel.cs" />
     <Compile Include="ViewModels\AnswerViewModel.cs" />
+    <Compile Include="ViewModels\CalendarViewModel.cs" />
     <Compile Include="ViewModels\MyAccountModel.cs" />
     <Compile Include="Filters\RequestParamsEncryptedFilter.cs" />
     <Compile Include="Global.asax.cs">

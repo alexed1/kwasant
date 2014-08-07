@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers;
@@ -32,10 +34,12 @@ namespace KwasantWeb.Controllers
                 if (bookingRequestDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                ViewBag.negotiationlbl = new Negotiation().getNegotiationTask(uow, id);
+                var linkedNegotiationID = bookingRequestDO.Negotiations.Select(n => n.Id).FirstOrDefault();
 
                 return View(new CalendarViewModel
                 {
+                    LinkedNegotiationID = linkedNegotiationID,
+
                     BookingRequestID = bookingRequestDO.Id,
                     LinkedCalendarIDs = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).ToList(),
 
@@ -57,13 +61,26 @@ namespace KwasantWeb.Controllers
                 if (calendarDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                var calendarsViaNegotiationRequest = calendarDO.Negotiation.Calendars; //get calendars linked to negotiation
-                var recipientAddresses = calendarDO.Negotiation.BookingRequest.Recipients.Select(r => r.EmailAddress) //Get email addresses for each recipient
-                        .SelectMany(a => uow.UserRepository.GetOrCreateUser(a).Calendars).ToList(); //Grab the user from the email and find their calendars
-
-                return View("~/Views/Calendar/SelectEventWindows.cshtml", new EventWindowViewModel
+                IEnumerable<CalendarDO> calendarsViaNegotiationRequest;
+                if (calendarDO.Negotiation != null)
                 {
-                    LinkedCalendarIDs = calendarsViaNegotiationRequest.Union(recipientAddresses).Select(c => c.Id).Union(new[] { calendarID }).Distinct().ToList(),
+                    calendarsViaNegotiationRequest = calendarDO.Negotiation.Calendars;
+                    var recipientAddresses =
+                        calendarDO.Negotiation.BookingRequest.Recipients.Select(r => r.EmailAddress)
+                            //Get email addresses for each recipient
+                            .SelectMany(a => uow.UserRepository.GetOrCreateUser(a).Calendars).ToList();
+                    
+                    //Grab the user from the email and find their calendars
+                    calendarsViaNegotiationRequest = calendarsViaNegotiationRequest.Union(recipientAddresses);
+                }
+                else
+                {
+                    calendarsViaNegotiationRequest = new List<CalendarDO>();
+                }
+
+                return View("~/Views/Negotiation/EventWindows.cshtml", new EventWindowViewModel
+                {
+                    LinkedCalendarIDs = calendarsViaNegotiationRequest.Select(c => c.Id).Union(new[] { calendarID }).Distinct().ToList(),
                     ActiveCalendarID = calendarID
                 });
             }

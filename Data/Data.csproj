@@ -101,6 +101,14 @@
     <Compile Include="Migrations\201408051146274_OrganizeStates.Designer.cs">
       <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408071310263_LinkAnswerToCalendar.cs" />
+    <Compile Include="Migrations\201408071310263_LinkAnswerToCalendar.Designer.cs">
+      <DependentUpon>201408071310263_LinkAnswerToCalendar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408071321043_AnswerDoesntNeedCalendar.cs" />
+    <Compile Include="Migrations\201408071321043_AnswerDoesntNeedCalendar.Designer.cs">
+      <DependentUpon>201408071321043_AnswerDoesntNeedCalendar.cs</DependentUpon>
+    </Compile>
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
     <Compile Include="States\EventCreateType.cs" />
@@ -677,6 +685,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408051146274_OrganizeStates.resx">
       <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408071310263_LinkAnswerToCalendar.resx">
+      <DependentUpon>201408071310263_LinkAnswerToCalendar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408071321043_AnswerDoesntNeedCalendar.resx">
+      <DependentUpon>201408071321043_AnswerDoesntNeedCalendar.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

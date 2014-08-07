@@ -24,19 +24,19 @@ namespace KwasantCore.Services
         {
             _cr = new ClarificationRequest();
         }
-        public string getNegotiationTask(IUnitOfWork uow, int bookingRequestId)
-        {
-            string negotiationLbl = "";
+        //public int? getNegotiationTask(IUnitOfWork uow, int bookingRequestId)
+        //{
+        //    string negotiationLbl = "";
 
-            //var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.RequestId == bookingRequestId && br.State != NegotiationState.Resolved);
-            var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.BookingRequestID == bookingRequestId && br.NegotiationState != NegotiationState.Resolved);
-            if (negotiationdo.Count() > 0)
-                negotiationLbl = "Edit Negotiation";
-            else
-                negotiationLbl = "Create Negotiation";
+        //    //var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.RequestId == bookingRequestId && br.State != NegotiationState.Resolved);
+        //    var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.BookingRequestID == bookingRequestId && br.NegotiationState != NegotiationState.Resolved);
+        //    if (negotiationdo.Count() > 0)
+        //        negotiationLbl = "Edit Negotiation";
+        //    else
+        //        negotiationLbl = "Create Negotiation";
 
-            return negotiationLbl;
-        }
+        //    return negotiationLbl;
+        //}
 
         //generate CR's and dispatch them.
         public void Process(NegotiationDO curNegotiation)
