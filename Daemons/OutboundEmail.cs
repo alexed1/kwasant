@@ -171,15 +171,13 @@ namespace Daemons
                                 envelope.Email.AddEmailRecipient(EmailParticipantType.Bcc, outboundemailaddress);
                             }
 
-                            bool isRecipientRemoved = false;
                             //Removing email address which are not test account in debug mode
                             #if DEBUG
                             {
-                                isRecipientRemoved = removeRecipients(envelope.Email.Recipients.ToList(), envelope, subUow);
-                            }
-                            if (isRecipientRemoved)
-                            {
-                                Logger.GetLogger().Info("Removed one or more email recipients because they were not test accounts");
+                                if (RemoveRecipients(envelope.Email.Recipients.ToList(), envelope, subUow))
+                                {
+                                    Logger.GetLogger().Info("Removed one or more email recipients because they were not test accounts");
+                                }
                             }
                             #endif
                             packager.Send(envelope);
@@ -211,17 +209,17 @@ namespace Daemons
                 Logger.GetLogger().Info(logString);
             }
         }
-        private bool removeRecipients(List<RecipientDO> iteratorList, EnvelopeDO envelope,IUnitOfWork uow)
+        private bool RemoveRecipients(List<RecipientDO> recipientList, EnvelopeDO envelope, IUnitOfWork uow)
         {
             bool isRecipientRemoved = false;
-            foreach (var address in iteratorList)
+            foreach (RecipientDO recipient in recipientList)
             {
-                UserDO user = uow.UserRepository.FindOne(e => e.EmailAddress.Address == address.EmailAddress.Address);
+                UserDO user = uow.UserRepository.FindOne(e => e.EmailAddress.Address == recipient.EmailAddress.Address);
                 if (user != null)
                 {
                     if (!user.TestAccount)
                     {
-                        envelope.Email.Recipients.RemoveAll(s => s.EmailAddress.Address == address.EmailAddress.Address);
+                        envelope.Email.Recipients.RemoveAll(s => s.EmailAddress.Address == recipient.EmailAddress.Address);
                         isRecipientRemoved = true;
                     }
                 }
