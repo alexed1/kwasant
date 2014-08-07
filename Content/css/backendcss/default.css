@@ -1011,6 +1011,7 @@ body.email-info-section .email-content {
 .view-popup-window {
 	width: 560px; 
 	overflow: hidden;
+	padding: 0 10px;
 }
 
 .history-view-event .popup-close {
@@ -1045,8 +1046,7 @@ body.email-info-section .email-content {
 }
 
 .ifarme-body .history-view-event .dataTables_paginate.paging_simple_numbers {
-	width: 100%;
-	
+	width: 100%;	
 }
 
 .history-view-event .dataTables_scrollBody table.data-table {

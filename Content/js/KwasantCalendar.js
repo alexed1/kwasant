@@ -307,8 +307,8 @@
         dp.durationBarWidth = 5;
         dp.durationBarImageUrl = null;
         dp.eventArrangement = 'SideBySide';
-        dp.eventBackColor = '#638EDE';
-        dp.eventBorderColor = '#2951A5';
+        dp.eventBackColor = '#000';
+        dp.eventBorderColor = '#0e0e0e';
         dp.eventFontFamily = 'Open Sans, Helvetica, Helvetica, Arial, sans-serif';
         dp.eventFontSize = '8pt';
         dp.eventFontColor = '#ffffff';

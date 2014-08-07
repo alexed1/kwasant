@@ -276,41 +276,30 @@
 	@Styles.Render("~/bundles/css/temp")
 	<link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
 }
+<div class="light-bg">
+	<form id="f" class="edit-event-form form">
+		<div class="form-horizontal" data-negotiationid="0" id="divNegotiation">
+			<h3 class="with-border">Negotiation</h3>
+			<div class="formItem">
+				<div class="formLabel">Name:</div>
+				<input type="text" id="NegName" class="form-control col-md-1" name="NegNameId" value="Negotiation 1" />
+			</div>
+			<div id="questionSet">
 
-<form id="f">
-    <div class="form-horizontal" data-negotiationId="0" id="divNegotiation">
-        <h4>Negotiation</h4>
-        <hr />
-        <div class="form-group">
-            <table>
-                <tr>
-                    <td>&nbsp; 
-                        <label>Name:</label>
-                    </td>
-                    <td>
-                        <input type="text" id="NegName" name="NegNameId" value="Negotiation 1" />
-                    </td>
-                </tr>
-            </table>
-        </div>
-        <div id="questionSet">
+			</div>
 
-        </div>
-        
 
-        <span class="form-group" id="divAddQuestion" onclick="getAddQuestion()">
-      @*<span class="form-group" id="divAddQuestion" onclick="deserializeForm()">*@
-      &nbsp; &nbsp;
-            <img src="~/Content/img/plus.png" />
-            <label>Add Question</label>
-        </span>
+			<span class="form-group" id="divAddQuestion" onclick="getAddQuestion()">
+				@*<span class="form-group" id="divAddQuestion" onclick="deserializeForm()">*@
+				&nbsp; &nbsp;
+				<img src="~/Content/img/plus.png" />
+				<label>Add Question</label>
+			</span>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="button" value="Ok" class="btn btn-default" onclick="processSubmit()" />
-                &nbsp; &nbsp;
-                <a href="#" onclick="closethis();">Cancel</a>
-            </div>
-        </div>
-    </div>
-</form>
+			<div class="space form-actions">
+				<input type="button" value="Ok" class="btn btn-default pull-left" onclick="processSubmit()" />
+				<a href="#" onclick="closethis();" class="cancel-btn pull-left">Cancel</a>
+			</div>
+		</div>
+	</form>
+</div>

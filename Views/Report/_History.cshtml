@@ -30,22 +30,22 @@ Layout = "~/Views/Shared/_Blank.cshtml";
 	@Styles.Render("~/bundles/css/temp")
 	<link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
 }
-<div class="body-content">
-	<div class="light-bg history-view-event">
-		<h3 class="with-border popup-title">History</h3>
-		<a class="popup-close glyphicon glyphicon-remove" onclick="closethis(this);"></a>
-		<table id="tblHistoryReport" class="table data-table">
-			<thead>
-				<tr>
-					<th style="width: 15%">Date</th>
-					<th style="width: 15%">Category</th>
-					<th style="width: 15%">Activity</th>
-					<th style="width: 10%">Status</th>
-				</tr>
-			</thead>
-		</table>
-	</div>
+
+<div class="light-bg history-view-event">
+	<h3 class="with-border popup-title">History</h3>
+	<a class="popup-close glyphicon glyphicon-remove" onclick="closethis(this);"></a>
+	<table id="tblHistoryReport" class="table data-table">
+		<thead>
+			<tr>
+				<th style="width: 15%">Date</th>
+				<th style="width: 15%">Category</th>
+				<th style="width: 15%">Activity</th>
+				<th style="width: 10%">Status</th>
+			</tr>
+		</thead>
+	</table>
 </div>
+
 	<script type="text/javascript">
 		showHistory();
 		function showHistory()

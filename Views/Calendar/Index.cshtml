@@ -60,19 +60,17 @@
 						</tr>
 					</thead>
 				</table>
-            <table id="tbluserrequests" class="email-info-tabele">
-                <thead>
-                    <tr>
-                        <th>Date Received</th>
-                        <th>Subject</th>
-                    </tr>
-                </thead>
-            </table>
-            <br />
-            <br />
+				<table id="tbluserrequests" class="email-info-table data-table">
+					<thead>
+						<tr>
+							<th>Date Received</th>
+							<th>Subject</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
         </div>
-        
-	    <div id="CalendarDiv" ></div>
+		<div id="CalendarDiv" class="col-md-5"></div>
 
 	</div>
 </div>
@@ -114,7 +112,9 @@
     //called by : rows in tbluserrequests on click
     function loadrequest(id, linkedCalendarIDs, ele) {
     	$("#tbluserrequests tr").removeClass('current-row');
-        $(ele).addClass('current-row');        
+    	if ($('#tbluserrequests tr').length > 2) {
+    		$(ele).addClass('current-row');
+    	}    
         $("#hdnrequestid").val(id);
         $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("MarkAsProcessed", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
         $("#emailInfoFrame")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
@@ -218,7 +218,7 @@
             },
             //Callback function for row created.
             createdRow: function (row, data, index) {
-                if (data.id == $("#hdnrequestid").val()) {
+            	if (data.id == $("#hdnrequestid").val() && $('#tbluserrequests tr').length > 2) {
                 	$(row).addClass('current-row');
                 }
                 else {
@@ -244,8 +244,7 @@
 
 
     var table1;
-    function showRelatedItems()
-            {
+    function showRelatedItems() {
 
         $('#tbluserrequests_wrapper').hide();
         table1 = $('#tblRelatedItems').DataTable({
@@ -265,7 +264,14 @@
 				}
 			},
             
-            createdRow: function (row, data, index) {
+        	createdRow: function (row, data, index) {
+        		if (data.id == $("#hdnrequestid").val() && $('#tblRelatedItems tr').length > 2) {
+        			$(row).addClass('current-row');
+        		}
+        		else {
+        			$(row).removeClass('current-row');
+        		}
+
                // $(row).attr("style", "cursor:pointer;");
             },
 			columns: [
@@ -280,10 +286,13 @@
 
 	}
    
-     $('#tblRelatedItems').on('click', 'tr', function () {
-         $("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
-         $(this).attr("style", "background-color: #aaa;");
-
+	$('#tblRelatedItems').on('click', 'tr', function () {
+		//$("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
+		//$(this).attr("style", "background-color: #aaa;");
+		$('#tblRelatedItems tr').removeClass('current-row');
+		if ( $('#tblRelatedItems tr').length > 2) {     	
+			$(this).addClass('current-row');
+		}
         var data = table1.row($(this)).data();
         var dp_day = storedCalendar[0];
         dp_day.startDate = data.date;
