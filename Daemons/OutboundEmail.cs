@@ -11,6 +11,7 @@ using StructureMap;
 using Utilities.Logging;
 using Microsoft.WindowsAzure;
 using Data.Infrastructure;
+using System.Collections.Generic;
 
 namespace Daemons
 {
@@ -142,7 +143,7 @@ namespace Daemons
 
         public override int WaitTimeBetweenExecution
         {
-            get { return (int) TimeSpan.FromSeconds(10).TotalMilliseconds; }
+            get { return (int)TimeSpan.FromSeconds(10).TotalMilliseconds; }
         }
 
         protected override void Run()
@@ -169,6 +170,16 @@ namespace Daemons
                                 EmailAddressDO outboundemailaddress = new EmailAddressDO(CloudConfigurationManager.GetSetting("ArchiveEmailAddress"));
                                 envelope.Email.AddEmailRecipient(EmailParticipantType.Bcc, outboundemailaddress);
                             }
+
+                            //Removing email address which are not test account in debug mode
+                            #if DEBUG
+                            {
+                                if (RemoveRecipients(envelope.Email.Recipients.ToList(), envelope, subUow))
+                                {
+                                    Logger.GetLogger().Info("Removed one or more email recipients because they were not test accounts");
+                                }
+                            }
+                            #endif
                             packager.Send(envelope);
                             numSent++;
 
@@ -185,7 +196,7 @@ namespace Daemons
                         }
                     }
                 }
-                
+
                 if (numSent == 0)
                 {
                     logString = "nothing sent";
@@ -197,6 +208,23 @@ namespace Daemons
 
                 Logger.GetLogger().Info(logString);
             }
+        }
+        private bool RemoveRecipients(List<RecipientDO> recipientList, EnvelopeDO envelope, IUnitOfWork uow)
+        {
+            bool isRecipientRemoved = false;
+            foreach (RecipientDO recipient in recipientList)
+            {
+                UserDO user = uow.UserRepository.FindOne(e => e.EmailAddress.Address == recipient.EmailAddress.Address);
+                if (user != null)
+                {
+                    if (!user.TestAccount)
+                    {
+                        envelope.Email.Recipients.RemoveAll(s => s.EmailAddress.Address == recipient.EmailAddress.Address);
+                        isRecipientRemoved = true;
+                    }
+                }
+            }
+            return isRecipientRemoved;
         }
     }
 }
