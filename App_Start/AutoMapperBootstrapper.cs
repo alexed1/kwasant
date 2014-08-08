@@ -4,6 +4,7 @@ using System.Linq;
 using AutoMapper;
 using Data.Entities;
 using KwasantWeb.ViewModels;
+using ViewModel.Models;
 
 namespace KwasantWeb.App_Start
 {
@@ -48,6 +49,28 @@ namespace KwasantWeb.App_Start
                                          Provider = p.Name,
                                          AccessGranted = tuple.Item1.IsRemoteCalendarAccessGranted(p.Name)
                                      })));
+
+            Mapper.CreateMap<NegotiationDO, EditNegotiationVM>()
+                .ForMember(vm => vm.RequestId, opts => opts.ResolveUsing(n => n.BookingRequestID))
+                .ForMember(vm => vm.AttendeeList, opts => opts.Ignore());
+
+            Mapper.CreateMap<EditNegotiationVM, NegotiationDO>()
+                .ForMember(n => n.BookingRequest, opts => opts.Ignore())
+                .ForMember(n => n.BookingRequestID, opts => opts.Ignore())
+                .ForMember(n => n.Calendars, opts => opts.Ignore())
+                .ForMember(n => n.Id, opts => opts.Ignore())
+                .ForMember(n => n.NegotiationStateTemplate, opts => opts.UseValue(null));
+
+            Mapper.CreateMap<QuestionViewModel, QuestionDO>()
+                .ForMember(q => q.Id, opts => opts.Ignore())
+                .ForMember(q => q.Negotiation, opts => opts.Ignore())
+                .ForMember(q => q.Response, opts => opts.Ignore())
+                .ForMember(q => q.QuestionStatus, opts => opts.ResolveUsing(vm => vm.Status))
+                .ForMember(q => q.QuestionStatusTemplate, opts => opts.UseValue(null));
+
+            Mapper.CreateMap<AnswerViewModel, AnswerDO>()
+                .ForMember(a => a.AnswerStatus, opts => opts.ResolveUsing(vm => vm.AnswerStatusID))
+                .ForMember(n => n.AnswerStatusTemplate, opts => opts.UseValue(null));
         }
     }
 }

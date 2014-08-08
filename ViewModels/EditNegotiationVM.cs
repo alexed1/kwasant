@@ -1,12 +1,19 @@
 ﻿using System;
-using Data.Entities;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using Data.States.Templates;
 
-namespace ViewModel.Models
+namespace KwasantWeb.ViewModels
 {
     public class EditNegotiationVM
     {
-        public NegotiationDO curNegotiation { get; set; }
-        public string attendeeList { get; set; }
-       
+        public int Id { get; set; }        
+        public int RequestId { get; set; }
+        public int State { get; set; }
+        public string Name { get; set; }
+        public List<QuestionViewModel> Questions { get; set; }
+
+        public string AttendeeList { get; set; }
     }
 }

@@ -310,7 +310,6 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ManageUserViewModel.cs" />
-    <Compile Include="ViewModels\NegotiationViewModel.cs" />
     <Compile Include="ViewModels\EditNegotiationVM.cs" />
     <Compile Include="ViewModels\QuestionViewModel.cs" />
     <Compile Include="ViewModels\ClarificationRequestViewModel.cs" />
