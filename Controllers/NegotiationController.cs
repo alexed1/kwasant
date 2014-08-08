@@ -1,21 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using AutoMapper;
 using Data.Entities;
-//using Data.Entities.Enumerations;
 using Data.Interfaces;
 using Data.States;
-using DayPilot.Web.Mvc.Json;
-using KwasantCore.Exceptions;
-//using KwasantCore.Managers.IdentityManager;
 using KwasantCore.Services;
-using KwasantWeb.App_Start;
-using KwasantWeb.Filters;
 using KwasantWeb.ViewModels;
 using StructureMap;
 using System.Web.Script.Serialization;
@@ -28,7 +19,7 @@ namespace KwasantWeb.Controllers
     //[KwasantAuthorize(Roles = "Admin")]
     public class NegotiationController : Controller
     {
-        private Negotiation _negotiation ;
+        private Negotiation _negotiation;
         private Attendee _attendee;
 
         public NegotiationController()
@@ -54,7 +45,7 @@ namespace KwasantWeb.Controllers
                 if (negotiationDO != null)
                     throw new ApplicationException("tried to create a negotiation when one already existed");
 
-                 negotiationDO = new NegotiationDO
+                negotiationDO = new NegotiationDO
                 {
                     Name = negotiation.Name,
                     BookingRequestID = negotiation.RequestId,
@@ -82,6 +73,20 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        public JsonResult DeleteAnswer(int answerId = 0)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                CalendarDO calendarDO = uow.CalendarRepository.FindOne(c => c.QuestionId == answerId);
+                if (calendarDO != null)
+                    uow.CalendarRepository.Remove(calendarDO);
+
+                uow.AnswersRepository.Remove(uow.AnswersRepository.FindOne(q => q.Id == answerId));
+                uow.SaveChanges();
+                return Json("Success", JsonRequestBehavior.AllowGet);
+            }
+        }
+
         [HttpGet]
         public ActionResult ShowNegotiation(long id)
         {
@@ -102,14 +107,15 @@ namespace KwasantWeb.Controllers
                     {
                         Id = quel.Id,
                         Text = quel.Text,
-                        Status = quel.QuestionStatusTemplate,
+                        Status = quel.QuestionStatus,
                         NegotiationId = quel.NegotiationId,
                         AnswerType = quel.AnswerType,
                         Answers = uow.AnswersRepository.GetAll().Where(ans => ans.QuestionID == quel.Id).Select(ansl => new AnswerViewModel
                         {
                             Id = ansl.Id,
                             QuestionID = ansl.QuestionID,
-                            AnswerStatusId = ansl.AnswerStatus,
+                            AnswerStatusID = ansl.AnswerStatus,
+                            //Status = ansl.AnswerStatus,
                             ObjectsType = ansl.ObjectsType,
                         }).ToList()
                     }).ToList()
@@ -140,24 +146,38 @@ namespace KwasantWeb.Controllers
                     //_attendee.ManageNegotiationAttendeeList(uow, updatedNegotiationDO, curVM.AttendeeList); //see
 
                     uow.SaveChanges();
+                    //SEE https://maginot.atlassian.net/wiki/display/SH/CRUD+for+Questions%2C+Answers%2C+Negotiations
 
                     //Process Negotiation
                     _negotiation.Process(updatedNegotiationDO);
                     //set result to a success message
-                    result = new { Success = "True", BookingRequestID = updatedNegotiationDO.BookingRequest.Id, NegotiationId = updatedNegotiationDO.Id };
+                    result =
+                        new
+                        {
+                            Success = "True",
+                            BookingRequestID = updatedNegotiationDO.BookingRequest.Id,
+                            NegotiationId = updatedNegotiationDO.Id
+                        };
+
 
                 }
             }
             catch (Exception)
             {
                 //set result to an error message
-                result = new { Success = "False", BookingRequestID = curVM.RequestId, NegotiationId = curVM.Id };
+                result =
+                    new
+                    {
+                        Success = "False",
+                        BookingRequestID = updatedNegotiationDO.BookingRequest.Id,
+                        NegotiationId = updatedNegotiationDO.Id
+                    };
             }
 
-            
-             return Json(result, JsonRequestBehavior.AllowGet);
+
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
-       
+
 
         [HttpGet]
         public PartialViewResult AddQuestion(int questionID, int negotiationId = 0)
@@ -202,7 +222,7 @@ namespace KwasantWeb.Controllers
                     AnswerDO answerDO = new AnswerDO
                     {
                         QuestionID = questiontblID,
-                        AnswerStatus = AnswerState.Proposed,
+                        AnswerStatus = AnswerState.Unstarted,
                         User = userDO,
                     };
 
