@@ -111,9 +111,11 @@
     </Compile>
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
+    <Compile Include="States\ConfirmationStatus.cs" />
     <Compile Include="States\EventCreateType.cs" />
     <Compile Include="States\EventState.cs" />
     <Compile Include="States\EventSyncState.cs" />
+    <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\Templates\_AnswerStatusTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
@@ -125,10 +127,12 @@
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="States\Templates\_ClarificationRequestStateTemplate.cs" />
     <Compile Include="States\Templates\_CommunicationTypeTemplate.cs" />
+    <Compile Include="States\Templates\_ConfirmationStatusTemplate.cs" />
     <Compile Include="States\Templates\_EmailParticipantTypeTemplate.cs" />
     <Compile Include="States\Templates\_EmailStatusTemplate.cs" />
     <Compile Include="States\Templates\_EventSyncStatusTemplate.cs" />
     <Compile Include="States\Templates\_EventCreateTypeTemplate.cs" />
+    <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
     <Compile Include="States\Templates\_NegotiationStateTemplate.cs" />
     <Compile Include="States\Templates\_QuestionStatusTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
