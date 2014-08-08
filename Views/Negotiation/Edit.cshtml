@@ -1,5 +1,6 @@
-﻿@*@model Data.Entities.NegotiationDO
-@model KwasantWeb.ViewModels.NegotiationViewModel*@
+﻿
+@model KwasantWeb.ViewModels.NegotiationEditViewModel
+
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @section immediateScripts
 {
@@ -14,17 +15,19 @@
             $('#answerContainer').hide();
         });
 
-        function getNegotiationData() {
-            $(function() {
-                var negotiation = {};
-                negotiation.Questions = $.map($('#appendquestinoId .questionBox'), function(element) {
+        function mapNegotiationForm() {
+            var negotiation = {};
+            
+            $(function( ) {
+                var index = 0;        
+                @Model.negotiation.Questions = $.map($('#questionContainerGroup .questionContainerClass'), function(element) {
                     element = $(element);
                     var questionText = element.find('#questionText').val();
                     var selectedType = element.find('input[type="radio"][name="questionType"]').filter(function() {
                         return $(this).get(0).checked;
                     }).val();
 
-                    var answers = $.map(element.find('#appendanswerId .answerBox'), function(answerElement) {
+                    var answers = $.map(element.find('#appendanswerId .answerContainerClass'), function(answerElement) {
                         answerElement = $(answerElement);
                         var answerText = answerElement.find('#answerText').val();
                         var answerStatus = answerElement.find('#answerStatus').val();
@@ -35,43 +38,45 @@
                     return { Text: questionText, Type: selectedType, Answers: answers };
                 });
             });
+            return negotiation;
         }
 
         function submitNegotiation() {
-            var negotiation = getNegotiationData();
+            var negotiation = mapNegotiationForm();
+            @Model.
         }
 
         function addQuestion() {
             $(function() {
-                var clonedHTML = $('#questionContainer').clone();
-                $('#appendquestinoId').append(clonedHTML);
-                clonedHTML.slideDown();
+                var curQuestion = $('#questionContainer').clone();
+                $('#questionContainerGroup').append(curQuestion);
+                curQuestion.slideDown();
             });
         }
 
         function addAnswer(obj) {
             $(function() {
-                var parentBox = $(obj).closest('.questionBox');
+                var parentBox = $(obj).closest('.questionContainerClass');
                 var selectedType = parentBox.find('input[type="radio"][name="questionType"]').filter(function() {
                     return $(this).get(0).checked;
                 });
                 if (selectedType.val() === "Text") {
-                    var clonedHTML = $('#answerContainer').clone();
-                    parentBox.find('#appendanswerId').append(clonedHTML);
-                    clonedHTML.slideDown();
+                    var curAnswer = $('#answerContainer').clone();
+                    parentBox.find('#appendanswerId').append(curAnswer);
+                    curAnswer.slideDown();
                 }
             });
         }
 
         function removeQuestion(obj) {
             $(function() {
-                $(obj).closest('.questionBox').slideUp();
+                $(obj).closest('.questionContainerClass').slideUp();
             });
         }
 
         function removeAnswer(obj) {
             $(function() {
-                $(obj).closest('.answerBox').slideUp();
+                $(obj).closest('.answerContainerClass').slideUp();
             });
         }
     </script>
@@ -95,7 +100,7 @@
 	@Styles.Render("~/bundles/css/temp")
     <link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
     <style type="text/css">
-        .questionBox {
+        .questionContainerClass {
             border-color: #D3B9B9;
             padding: 5px;
             margin-right: 10px;
@@ -103,7 +108,7 @@
             border-style: solid;
             border-width: 1px;
         }
-        .answerBox {
+        .answerContainerClass {
             border-color: #D3B9B9;
             padding: 5px;
             margin: 10px;
@@ -118,7 +123,7 @@
 
 <form id="f" class="negotiationsidebar">
     <!-- The following is used to create questions-->
-    <div id="questionContainer" class="questionBox">
+    <div id="questionContainer" class="questionContainerClass">
         <table style="width: 100%">
             <tr>
                 <td>
@@ -154,7 +159,7 @@
         </span>
     </div>
     
-    <div id="answerContainer" class="answerBox" data-type="text">
+    <div id="answerContainer" class="answerContainerClass" data-type="text">
         <table style="width: 100%">
             <tr>
                 <td>
@@ -198,7 +203,7 @@
             </table>
         </div>
         
-        <div id="appendquestinoId">
+        <div id="questionContainerGroup">
         </div>
 
         <span class="form-group handIcon" id="divAddQuestion" onclick="addQuestion()">

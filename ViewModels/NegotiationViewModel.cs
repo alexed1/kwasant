@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Data.Entities;
 using Data.States.Templates;
 
 namespace KwasantWeb.ViewModels
 {
-    public class NegotiationViewModel
+    public class NegotiationEditViewModel
     {
-        public int Id { get; set; }        
-        public int RequestId { get; set; }
-        public int State { get; set; }
-        public string Name { get; set; }
-        public List<QuestionViewModel> Questions { get; set; }                  
+        public NegotiationDO negotiation;
+        public string attendeeString;
     }
-}
