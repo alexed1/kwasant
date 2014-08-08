@@ -1,5 +1,4 @@
-﻿@*@model Data.Entities.NegotiationDO
-@model KwasantWeb.ViewModels.NegotiationViewModel*@
+﻿@model KwasantWeb.ViewModels.NegotiationViewModel
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @section immediateScripts
 {
@@ -9,7 +8,7 @@
 
 <script src="/Content/js/Kwasant/Popup.js"></script>
 <script>
-    var url = "";
+    //var url = "";
     var questionTemp = "";
     var textAnsTemp = "";
     var timesloteAnsTemp = "";
@@ -25,7 +24,7 @@
             $.ajax({
                 type: 'post',
                 url: '@Url.Action("Create", "Negotiation")',
-                data: { negotiation: JSON.stringify(negotiation) },
+                data: negotiation,
                 success: function (data) {
                     var Success = data.Success;
                     var negotiationId = data.NegotiationId;
@@ -41,7 +40,7 @@
         getCalltextanswer(ele, findquestionId, findquestiontblId);
     };
 
-    var getAddQuestion = function (callfrom, countValue) {
+    function getAddQuestion(callfrom, countValue) {
         var questionCount;
         if (callfrom == "editneg")
             questionCount = countValue;
@@ -70,7 +69,7 @@
                 data: { Id: questiontblId, BookingRequestID: id },
                 success: function (data) {
                     //$(ele).closest("table").find("#appendanswerId").append(data);
-                    Kwasant.IFrame.Display('/Negotiation/EventWindows/?id=' + data,
+                    Kwasant.IFrame.Display('@Url.Action("EventWindows", "Negotiation", new { bookingRequestId = Model.RequestId } )&id=' + data,
                     {
                         horizontalAlign: 'right',
                         //callback: calendar.refreshCalendars
@@ -79,18 +78,17 @@
             });
         }
         else {
-            url = '@Url.Action("AddtextAnswer", "Negotiation")';
+            var url = '@Url.Action("AddTextAnswer", "Negotiation")';
+            var answerPresent = $("#questionSet #question[data-questionID=" + questionID + "] #appendanswerId #answerContainer").length;
+            $.ajax({
+                type: 'Get',
+                url: url,
+                data: { bookingRequestId : @Model.RequestId, answerID: (answerPresent + 1), questiontblID: questiontblId },
+                success: function (data) {
+                    $(ele).closest("table").find("#appendanswerId").append(data);
+                }
+            });
         }
-
-        var answerPresent = $("#questionSet #question[data-questionID=" + questionID + "] #appendanswerId #answerContainer").length;
-        $.ajax({
-            type: 'Get',
-            url: url,
-            data: { answerID: (answerPresent + 1), questiontblID: questiontblId },
-            success: function (data) {
-                $(ele).closest("table").find("#appendanswerId").append(data);
-            }
-        });
     };
 
     var removetable = function (ele) {
@@ -121,7 +119,7 @@
 
         var negotiationTableId = $("#divNegotiation").attr("data-negotiationid");
         //var Negotiation = { Id: negotiationTableId, Name: null, Questions: [], State: 2 };
-        var Negotiation = { Id: negotiationTableId, Name: null, Questions: [] };
+        var Negotiation = { Id: negotiationTableId, RequestId: @Model.RequestId, Name: null, Questions: [] };
 
         $.each($("#questionSet #question"), function () {
             //item = per question container with id = questionContainer.
@@ -155,17 +153,17 @@
         $.ajax({
             type: 'post',
             url: '@Url.Action("ProcessSubmittedForm", "Negotiation")',
-            data: { negotiation: JSON.stringify(negotiation) },
+            data: negotiation,
             success: function (data) {
                 var Success = data.Success;
                 var bookingrequestid = data.BookingRequestID;
                 var negotiationId = data.NegotiationId;
                 //THIS SHOULD ALL BE DONE ON THE SERVER via THE NegotiationController
                 //Call CommunicationManager
-                //var data1 = { BookingRequestID: bookingrequestid, NegotiationId: negotiationId };
-                //$.post('/CommunicationManager/DispatchNegotiationEmail/', { BookingRequestID: bookingrequestid, NegotiationId: negotiationId }, function (data) {
-                //    var clarificationRequestId = data.ClarificationRequestId;
-                //    $.post('/ClarificationRequest/Send/', { bookingRequestId: bookingrequestid, clarificationRequestId: clarificationRequestId, negotiationId: negotiationId }, function (data) {
+                var data1 = { BookingRequestID: bookingrequestid, NegotiationId: negotiationId };
+                $.post('/CommunicationManager/DispatchNegotiationEmail/', { BookingRequestID: bookingrequestid, NegotiationId: negotiationId }, function (data) {
+                    var clarificationRequestId = data.ClarificationRequestId;
+                    $.post('/ClarificationRequest/Send/', { bookingRequestId: bookingrequestid, clarificationRequestId: clarificationRequestId, negotiationId: negotiationId }, function (data) {
                         closethis();
                        alert("Done");
                     });
@@ -187,8 +185,8 @@
 
         $.ajax({
             type: 'Get',
-            url: '@Url.Action("AddtextAnswer", "Negotiation")',
-            data: { answerID: (1) },
+            url: '@Url.Action("AddTextAnswer", "Negotiation")',
+            data: { bookingRequestId: @Model.RequestId, answerID: (1) },
             success: function (data) {
                 textAnsTemp = data;
             }
@@ -278,7 +276,7 @@
 }
 
 <form id="f">
-    <div class="form-horizontal" data-negotiationId="0" id="divNegotiation">
+    <div class="form-horizontal" data-negotiationId="@Model.Id" id="divNegotiation">
         <h4>Negotiation</h4>
         <hr />
         <div class="form-group">

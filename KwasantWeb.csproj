@@ -310,7 +310,7 @@
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ManageUserViewModel.cs" />
     <Compile Include="ViewModels\NegotiationViewModel.cs" />
-    <Compile Include="ViewModels\EditNegotiationVM.cs" />
+    <Compile Include="ViewModels\EditNegotiationViewModel.cs" />
     <Compile Include="ViewModels\QuestionViewModel.cs" />
     <Compile Include="ViewModels\ClarificationRequestViewModel.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />

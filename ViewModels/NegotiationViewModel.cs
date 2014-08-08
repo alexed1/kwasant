@@ -13,6 +13,8 @@ namespace KwasantWeb.ViewModels
         public int State { get; set; }
         public string Name { get; set; }
 
-        public List<QuestionViewModel> Questions { get; set; }                  
+        public List<QuestionViewModel> Questions { get; set; }
+
+        public string AttendeeList { get; set; }
     }
 }

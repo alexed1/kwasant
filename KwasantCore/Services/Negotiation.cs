@@ -49,14 +49,6 @@ namespace KwasantCore.Services
             }
         }
 
-        public NegotiationDO Update(NegotiationDO newNegotiationData, NegotiationDO existingNegotiationDO)
-        {
-            //to be implemented.
-            //Question#Update should be called for each Question.
-            return null;
-        }
-
-
         //This will generate CR emails  with a link that takes the recipient to a response view. 
         public List<ClarificationRequestDO> GenerateClarificationRequests(NegotiationDO curNegotiation)
         {
