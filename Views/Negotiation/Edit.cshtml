@@ -27,7 +27,7 @@
                         return $(this).get(0).checked;
                     }).val();
 
-                    var answers = $.map(element.find('#appendanswerId .answerContainerClass'), function(answerElement) {
+                    var answers = $.map(element.find('#answerContainerGroup .answerContainerClass'), function(answerElement) {
                         answerElement = $(answerElement);
                         var answerText = answerElement.find('#answerText').val();
                         var answerStatus = answerElement.find('#answerStatus').val();
@@ -62,7 +62,7 @@
                 });
                 if (selectedType.val() === "Text") {
                     var curAnswer = $('#answerContainer').clone();
-                    parentBox.find('#appendanswerId').append(curAnswer);
+                    parentBox.find('#answerContainerGroup').append(curAnswer);
                     curAnswer.slideDown();
                 }
             });
@@ -151,7 +151,7 @@
                 </td>
             </tr>
         </table>
-        <div id="appendanswerId">
+        <div id="answerContainerGroup">
         </div>
         <span class="form-group handIcon" id="divAddAnswer" onclick="addAnswer(this)">
             <img src="~/Content/img/plus.png" />
