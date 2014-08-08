@@ -17,10 +17,10 @@
 
         function mapNegotiationForm() {
             var negotiation = {};
-            
-            $(function( ) {
-                var index = 0;        
-                @Model.negotiation.Questions = $.map($('#questionContainerGroup .questionContainerClass'), function(element) {
+
+            $(function() {
+                var negotiation = {};
+                negotiation.Questions = $.map($('#questionContainerGroup .questionContainerClass'), function(element) {
                     element = $(element);
                     var questionText = element.find('#questionText').val();
                     var selectedType = element.find('input[type="radio"][name="questionType"]').filter(function() {
@@ -43,7 +43,7 @@
 
         function submitNegotiation() {
             var negotiation = mapNegotiationForm();
-            @Model.
+
         }
 
         function addQuestion() {
