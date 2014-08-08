@@ -297,7 +297,6 @@ namespace Data.Migrations
             _account.AddRole("Customer", userId, uow);
         }
 
-
         private void AddBookingRequest(IUnitOfWork unitOfWork)
         {
             if (unitOfWork.BookingRequestRepository.GetQuery().Count() == 0)
@@ -324,6 +323,7 @@ namespace Data.Migrations
                 curBookingRequestDO.Calendars.Add(calendar);
             uow.BookingRequestRepository.Add(curBookingRequestDO);
         }
+
 
 
     }
