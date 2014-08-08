@@ -11,7 +11,9 @@ using KwasantWeb.ViewModels;
 using StructureMap;
 using System.Web.Script.Serialization;
 using Data.Repositories;
+using Utilities;
 using ViewModel.Models;
+using AutoMapper;
 
 
 namespace KwasantWeb.Controllers
@@ -21,34 +23,36 @@ namespace KwasantWeb.Controllers
     {
         private Negotiation _negotiation;
         private Attendee _attendee;
+        private IMappingEngine _mappingEngine;
 
         public NegotiationController()
         {
             _negotiation = new Negotiation();
             _attendee = new Attendee();
+            _mappingEngine = Mapper.Engine; // should be injected
         }
 
         public ActionResult Edit(int bookingRequestID)
         {
-            return View(new NegotiationViewModel() { RequestId = bookingRequestID });
+            return View(new EditNegotiationVM() { RequestId = bookingRequestID });
         }
 
-        public ActionResult Create(NegotiationViewModel negotiation)
+        public ActionResult Create(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                BookingRequestDO emailDO = uow.BookingRequestRepository.FindOne(el => el.Id == negotiation.RequestId);
+                BookingRequestDO emailDO = uow.BookingRequestRepository.FindOne(el => el.Id == bookingRequestId);
                 UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
 
                 //NEED TO CHECK HERE TO SEE IF THERE ALREADY IS ONE. SOMETHING LIKE:
-                NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.BookingRequestID == negotiation.RequestId && n.NegotiationState != NegotiationState.Resolved);
+                NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.BookingRequestID == bookingRequestId && n.NegotiationState != NegotiationState.Resolved);
                 if (negotiationDO != null)
                     throw new ApplicationException("tried to create a negotiation when one already existed");
 
                 negotiationDO = new NegotiationDO
                 {
-                    Name = negotiation.Name,
-                    BookingRequestID = negotiation.RequestId,
+                    Name = "Negotiation",
+                    BookingRequestID = bookingRequestId,
                     NegotiationState = NegotiationState.InProcess,
                     BookingRequest = emailDO
                 };
@@ -94,7 +98,7 @@ namespace KwasantWeb.Controllers
             {
                 //NegotiationViewModel NegotiationQuestions = new Negotiations().getNegotiation(uow, id);
                 var curNegotiationDO = uow.NegotiationsRepository.GetAll().FirstOrDefault(e => e.BookingRequestID == id && e.NegotiationState != NegotiationState.Resolved);
-                var curNegotiationViewModel = Mapper.Map<NegotiationViewModel>(curNegotiationDO);
+                var curNegotiationViewModel = _mappingEngine.Map<EditNegotiationVM>(curNegotiationDO);
 /*
                 NegotiationViewModel NegotiationQuestions = uow.NegotiationsRepository.GetAll().Where(e => e.BookingRequestID == id && e.NegotiationState != NegotiationState.Resolved).Select(s => new NegotiationViewModel
                 {
@@ -128,7 +132,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public JsonResult ProcessSubmittedForm(NegotiationViewModel curVM)
+        public JsonResult ProcessSubmittedForm(EditNegotiationVM curVM)
         {
             object result;
             try
@@ -138,12 +142,12 @@ namespace KwasantWeb.Controllers
 
                     //Update Negotiation
                     NegotiationDO existingNegotiationDO = uow.NegotiationsRepository.GetByKey(curVM.Id);
-                    NegotiationDO updatedNegotiationDO = Mapper.Map(curVM, existingNegotiationDO);
+                    NegotiationDO updatedNegotiationDO = _mappingEngine.Map(curVM, existingNegotiationDO);
                     //updatedNegotiationDO = _negotiation.Update(newNegotiationData, existingNegotiationDO);
 
                     //this takes the form data and processes it similarly to how its done in the Edit Event form
                     //IMPORTANT: the code in Attendee.cs was refactored and needs testing.
-                    //_attendee.ManageNegotiationAttendeeList(uow, updatedNegotiationDO, curVM.AttendeeList); //see
+                    _attendee.ManageNegotiationAttendeeList(uow, updatedNegotiationDO, curVM.AttendeeList); //see
 
                     uow.SaveChanges();
                     //SEE https://maginot.atlassian.net/wiki/display/SH/CRUD+for+Questions%2C+Answers%2C+Negotiations
@@ -169,8 +173,8 @@ namespace KwasantWeb.Controllers
                     new
                     {
                         Success = "False",
-                        BookingRequestID = updatedNegotiationDO.BookingRequest.Id,
-                        NegotiationId = updatedNegotiationDO.Id
+                        BookingRequestID = curVM.RequestId,
+                        NegotiationId = curVM.Id
                     };
             }
 

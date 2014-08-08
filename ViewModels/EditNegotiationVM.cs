@@ -6,7 +6,7 @@ using Data.States.Templates;
 
 namespace KwasantWeb.ViewModels
 {
-    public class NegotiationViewModel
+    public class EditNegotiationVM
     {
         public int Id { get; set; }        
         public int RequestId { get; set; }
