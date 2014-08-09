@@ -30,7 +30,7 @@ namespace KwasantCore.Services
             
             var curCalendar = bookingRequestDO.User.Calendars.FirstOrDefault();
             if (curCalendar == null)
-                throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");
+            throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");
             
             curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
 			

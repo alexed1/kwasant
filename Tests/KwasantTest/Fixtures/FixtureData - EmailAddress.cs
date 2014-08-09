@@ -7,9 +7,10 @@ namespace KwasantTest.Fixtures
         public EmailAddressDO TestEmailAddress1()
         {
 
+            //password: lucrelucre
             return new EmailAddressDO()
             {
-                Address = "alexlucre1@gmail.com",
+                Address = "alexlucre1@gmail.com", //if this starts failing, might be a gmail capacity limiter. we should just move this to kwasant.net
                 Id = 1,
                 Name = "Alex Lucre1"
             };
@@ -25,19 +26,19 @@ namespace KwasantTest.Fixtures
                 Name = "Joe Test Account 2"
             };
         }
-
-        public EmailAddressDO TestEmail3()
+        public EmailAddressDO TestEmailAddress3()
         {
 
             return new EmailAddressDO()
             {
-                Address = "pabitra@hotmail.com",
+                Address = "kwasantintegration@gmail.com",
                 Id = 3,
-                Name = "Person Test account"
+                Name = "Kwasant Integration"
             };
         }
+      
 
-        public EmailAddressDO TestEmail4()
+        public EmailAddressDO TestEmailAddress4()
         {
 
             return new EmailAddressDO()
@@ -48,7 +49,7 @@ namespace KwasantTest.Fixtures
             };
         }
 
-        public EmailAddressDO TestEmail5()
+        public EmailAddressDO TestEmailAddress5()
         {
 
             return new EmailAddressDO()

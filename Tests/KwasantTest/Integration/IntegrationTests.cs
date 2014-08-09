@@ -29,37 +29,37 @@ namespace KwasantTest.Workflow
     public class IntegrationTests
     {
         private IUnitOfWork _uow;
-        private string _testUserEmail;
-        private string _testUserEmailPassword;
+        private string _outboundIMAPUsername;
+        private string _outboundIMAPPassword;
         private string _archivePollEmail;
         private string _archivePollPassword;
         private Email _emailService;
-        private OutboundEmail _outboundDaemon;
+  
         private string _startPrefix;
         private string _endPrefix;
         private ImapClient _client;
         private FixtureData _fixture;
         private PollingEngine _polling;
-       
 
+   
         [SetUp]
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
-            _testUserEmail = ConfigRepository.Get("OutboundUserName");
-            _testUserEmailPassword = ConfigRepository.Get("OutboundUserPassword");
+            _outboundIMAPUsername = ConfigRepository.Get("OutboundUserName");
+            _outboundIMAPPassword = ConfigRepository.Get("OutboundUserPassword");
 
             _archivePollEmail = ConfigRepository.Get("ArchivePollEmailAddress");
             _archivePollPassword = ConfigRepository.Get("ArchivePollEmailPassword");
             _emailService= new Email(_uow);
-           _outboundDaemon = new OutboundEmail();
+          
            _startPrefix = "Start:";
            _endPrefix = "End:";
-           _client = new ImapClient("imap.gmail.com", 993, _testUserEmail.Split('@')[0], _testUserEmailPassword, AuthMethod.Login, true);
+           _client = new ImapClient("imap.gmail.com", 993, _outboundIMAPUsername.Split('@')[0], _outboundIMAPPassword, AuthMethod.Login, true);
            _fixture = new FixtureData();
-            _polling = new PollingEngine();
+            _polling = new PollingEngine(_uow);
         }
 
      
@@ -76,17 +76,35 @@ namespace KwasantTest.Workflow
             // iCal truncates time up to seconds so we need to truncate as well to be able to compare time
             var start = new DateTimeOffset(now.Ticks / TimeSpan.TicksPerSecond * TimeSpan.TicksPerSecond, now.Offset).AddDays(1);
             var end = start.AddHours(1);
+            var body  = CreateTestBody(start, end);
 
-            EmailDO testEmail = CreateTestEmail(start, end);
+            EmailDO testEmail = _fixture.TestEmail3();
+            testEmail.HTMLText = body;
+            testEmail.PlainText = body;
+            //need to add user to pass OutboundEmail validation.
+            _uow.UserRepository.Add(_fixture.TestUser3());
+            _uow.EmailRepository.Add(testEmail);
+            _uow.SaveChanges();
+            Console.WriteLine("Setup Objects Complete");
+            _polling.StartTimer();
 
             //EXECUTE
-            SendEmailAndStartTimer(testEmail);
+            _emailService.Send(testEmail);
+            Console.WriteLine("Sending of test BR Complete");
+
+            //make sure queued outbound email gets sent.
+            _polling.FlushOutboundEmailQueues();
+            
+
             BookingRequestDO foundBookingRequest = PollForBookingRequest(testEmail.Subject);
+            Console.WriteLine("Booking Request detected in intake");
             EventDO testEvent = CreateTestEvent(foundBookingRequest);
+            Console.WriteLine("Test Event Created");
             //start the stopwatch measuring time from email send
             _polling.requestToEmailDuration.Start();
             //run the outbound daemon to send any outgoing invite(s)
-            DaemonTests.RunDaemonOnce(_outboundDaemon);
+            _polling.FlushOutboundEmailQueues();
+            Console.WriteLine("Beginning Polling...");
             PollInboxForEvent(start, end, testEmail.Subject);
 
             //VERIFY
@@ -94,81 +112,35 @@ namespace KwasantTest.Workflow
             _polling.CheckTimeouts();
         
         }
+
+        
+     
+
         public BookingRequestDO PollForBookingRequest(string subject)
         {
             EmailDO targetCriteria = new EmailDO();
             targetCriteria.Subject = subject;
-            targetCriteria.From.Address = _testUserEmail;
+            targetCriteria.From.Address = _outboundIMAPUsername;
             PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindBookingRequest;
-            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria);
+            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "intake", _client);
             BookingRequestDO foundBookingRequest = (BookingRequestDO)queryResults.First();
             return foundBookingRequest;
         }
 
-        //This method takes a NegotiationId as input that must resolve to a Negotiation with status "Unresolved".
-        //Build a list of Users based on the Attendee lists of the associated Events.
-        //For each user, if there is not already a ClarificationRequestDO that has this UserId and this NeogtiationId, call ClarificationRequest#Create, get back a ClarificationRequestDO, and associate it with the Negotiation (You will need to add a property of type NegotiationDO to ClarificationRequestDO).
-        //call ClarificationRequest#GenerateResponseURL
-        //call ClarificationRequest#Send
-        //This will generate an email with a link that takes the recipient to a response view. 
-        [Test]
-        [Category("IntegrationTests")]
-        public void ITest_CanDispatchNegotiationEmail()
-        {
-            //Create a BookingRequest and two test Attendees
-            //Create a Negotiation with a Question and an Answer
-            //Save the Negotiation as if running ProcessSubmittedNegotiation
-            //Verify that Clarification Request was received by Attendee
-            //Verify that executing link in clarification request produces appropriate view
-
-            BookingRequestDO testBR = _fixture.TestBookingRequest1();
-            AttendeeDO testAttendee1 = _fixture.TestAttendee1();
-            AttendeeDO testAttendee2 = _fixture.TestAttendee2();
-            NegotiationDO testNegotiation = _fixture.TestNegotiation1();
-            _uow.NegotiationsRepository.Add(testNegotiation);
-            _uow.SaveChanges();
-
-            //Verify that Clarification Request was sent to Attendee
-            //we will poll the test account for a ClarificationRequest that meets the criteria
-            _polling.pollingDuration.Start();
-            ClarificationRequestDO foundCR = PollForClarificationRequest(testAttendee1);
-
-            //VERIFY
-            //check timeouts
-            _polling.CheckTimeouts();
-
-        }
+       
 
 
-        public ClarificationRequestDO PollForClarificationRequest(AttendeeDO testAttendee)
-        {
-            EmailDO targetCriteria = new EmailDO();
-            targetCriteria.Subject = "We need a little more information from you"; //this is the current subject for clarification requests.
-            targetCriteria.From = testAttendee.EmailAddress; //misleading. We really are going to test whether the To address on the received CR matches the address of this testAttendee. but can't currently set the To value directly. So hijacking the From field. Should be improved.
-            PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindClarificationRequest;
-            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria);
-            ClarificationRequestDO foundCR = (ClarificationRequestDO)queryResults.FirstOrDefault();
-            return foundCR;
-        }
-        //Check the specified account until some non-null query results are returned, or until timeout. 
-        //The actual query is passed in as a delegate method called injectedQuery, which is of type InjectedEmailQuery, which is a delegate.
-        //targetCriteria is passed through this method into the injectedQuery
-        //this allows this method's machinery to be reused for many different kinds of email queries.
+     
 
       
 
         #region Injected Queries
         //Injected Queries
       
-        public static List<EmailDO> InjectedQuery_FindClarificationRequest(EmailDO targetCriteria)
-        {
-            var UOW = ObjectFactory.GetInstance<IUnitOfWork>();
-            ClarificationRequestDO foundCR = UOW.ClarificationRequestRepository.FindOne(cr => cr.To.First().Address == targetCriteria.From.Address && cr.Subject == targetCriteria.Subject); //note that we're using the From field to hold the criteria, but we're really checking To
-            return ConvertToEmailList(foundCR);
-        }
+
 
         //This query looks for a single email of type booking request that meets provided From address and Subject criteria
-        public static List<EmailDO> InjectedQuery_FindBookingRequest(EmailDO targetCriteria)
+        public static IEnumerable<EmailDO> InjectedQuery_FindBookingRequest(EmailDO targetCriteria, List<EmailDO> unreadMessages)
         {
             var UOW = ObjectFactory.GetInstance<IUnitOfWork>();
             BookingRequestDO foundBR = UOW.BookingRequestRepository.FindOne( br => br.From.Address == targetCriteria.From.Address && br.Subject == targetCriteria.Subject);
@@ -187,6 +159,13 @@ namespace KwasantTest.Workflow
              return normalizedList;
         }
 
+        public static IEnumerable<EmailDO> InjectedQuery_FindSpecificEvent(EmailDO targetCriteria, List<EmailDO> unreadMessages)
+        {
+            var UOW = ObjectFactory.GetInstance<IUnitOfWork>();
+            BookingRequestDO foundBR = UOW.BookingRequestRepository.FindOne(br => br.From.Address == targetCriteria.From.Address && br.Subject == targetCriteria.Subject);
+            return ConvertToEmailList(foundBR);
+        }
+
         public void PollInboxForEvent(DateTimeOffset start, DateTimeOffset end, string subject)
         {
             //poll the specified account inbox until either the expected message is received, or timeout
@@ -196,6 +175,10 @@ namespace KwasantTest.Workflow
             {
                 Thread.Sleep(TimeSpan.FromSeconds(1));
                 var uids = _client.Search(SearchCondition.Unseen()).ToList();
+                //checkpoint. not finding any messages.  it loooks like this test submits imap mail and sends it to and tries to receive it at kwasantintegration@gmail.com. That could be getting shut down. switch
+                //to submit using our normal submit: sendgrid, and send to integrationtesting@kwasant.net
+                //move this stuff to integration testing setup
+
 
                 //for each returned IMAP message id number...
                 foreach (var uid in uids)
@@ -256,43 +239,15 @@ namespace KwasantTest.Workflow
         }
      
 
-        public void SendEmailAndStartTimer(EmailDO testEmail)
-        {
-            //adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
-            AddNewTestCustomer(testEmail.From);
-            //EXECUTE
-            _emailService.Send(testEmail);
-            _uow.SaveChanges();
-            DaemonTests.RunDaemonOnce(_outboundDaemon);
-            _polling.totalOperationDuration.Start();
-            _polling.pollingDuration.Start();
+     
 
-        }
-
-        public EmailDO CreateTestEmail(DateTimeOffset start, DateTimeOffset end)
+        public string CreateTestBody(DateTimeOffset start, DateTimeOffset end)
         {
             //create a test email 
             var subject = string.Format("Event {0}", Guid.NewGuid());
-          
-
             var body = string.Format("Event details:\r\n{0}{1}\r\n{2}{3}", _startPrefix, start, _endPrefix, end);
-            var emailDO = new EmailDO()
-            {
-                From = Email.GenerateEmailAddress(_uow, new MailAddress(_testUserEmail)),
-                Recipients = new List<RecipientDO>()
-                {
-                    new RecipientDO()
-                    {
-                        EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("kwasantintegration@gmail.com")),
-                        EmailParticipantType = EmailParticipantType.To
-                    }
-                },
-                Subject = subject,
-                PlainText = body,
-                HTMLText = body
-            };
-            _uow.EmailRepository.Add(emailDO);
-            return emailDO;
+            
+            return body;
         }
 
 
@@ -314,7 +269,7 @@ namespace KwasantTest.Workflow
 
             var emailDO = new EmailDO()
             {
-                From = Email.GenerateEmailAddress(_uow, new MailAddress(_testUserEmail)),
+                From = Email.GenerateEmailAddress(_uow, new MailAddress(_outboundIMAPUsername)),
                 Recipients = new List<RecipientDO>()
                 {
                     new RecipientDO()
@@ -338,8 +293,8 @@ namespace KwasantTest.Workflow
             };
             _uow.EnvelopeRepository.Add(envelope);
 
-            //adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
-            AddNewTestCustomer(emailDO.From);
+            //THIS SHOULDN"T BE NECESSARY ANYMORE adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
+            //AddNewTestCustomer(emailDO.From);
 
             OutboundEmail outboundDaemon = new OutboundEmail();
             DaemonTests.RunDaemonOnce(outboundDaemon);
@@ -365,24 +320,6 @@ namespace KwasantTest.Workflow
             Assert.AreEqual(1, mailcount);
         }
 
-        private void AddNewTestCustomer(EmailAddressDO emailAddress)
-        {
-            var role = new Role();
-            role.Add(_uow, new KwasantTest.Fixtures.FixtureData().TestRole());
-            var u = new UserDO();
-            var user = new User();
-            UserDO currUserDO = new UserDO();
-            currUserDO.EmailAddress = emailAddress;
-            currUserDO.Calendars = new List<CalendarDO>() { 
-                new CalendarDO()    {
-                        Id=1,
-                        Name="test"
-                }
-            };
-            CalendarDO t = new CalendarDO();
-            t.Name = "test";
-            t.Id = 1;
-            _uow.UserRepository.Add(currUserDO);
-        }
+     
     }
 }

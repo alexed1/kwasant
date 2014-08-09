@@ -12,3 +12,4 @@ namespace KwasantWeb.ViewModels
         public NegotiationDO negotiation;
         public string attendeeString;
     }
+}
