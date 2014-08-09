@@ -51,7 +51,7 @@ namespace KwasantTest.Services
         private Negotiation _negotiation;
 
         private PollingEngine _polling;
-        private ImapClient _client;
+
 
 
         public NegotiationTests()
@@ -81,7 +81,16 @@ namespace KwasantTest.Services
             BookingRequestDO testBR = _fixture.TestBookingRequest1();
             UserDO testUser1 = _fixture.TestUser1();
             AttendeeDO testAttendee1 = _fixture.TestAttendee1();
-            string accountPassword = "thorium65";
+           
+
+
+            string targetAddress = testUser1.EmailAddress.Address;
+            string targetPassword = "thorium65";
+            ImapClient client = new ImapClient("imap.gmail.com", 993, targetAddress, targetPassword, AuthMethod.Login, true);
+            InboundEmail inboundDaemon = new InboundEmail();
+            inboundDaemon.username = targetAddress;
+            inboundDaemon.password = targetPassword;
+
            // AttendeeDO testAttendee2 = _fixture.TestAttendee2();
             NegotiationDO testNegotiation = _fixture.TestNegotiation1();
             _uow.NegotiationsRepository.Add(testNegotiation);
@@ -101,11 +110,11 @@ namespace KwasantTest.Services
 
             //VERIFY
             //Verify that attendee has received an appropriate ClarificationRequest.
-            _client = _polling.SetPollingTarget(testUser1.EmailAddress.Address, accountPassword);
-            List<EmailDO> unreadMessages = _polling.GetUnreadMessages(_client);
+
+            List<EmailDO> unreadMessages = _polling.GetUnreadMessages(client);
 
             //If attendee has received the CR, the first EmailDO should have certain characteristics
-            ClarificationRequestDO foundCR = PollForClarificationRequest(testAttendee1);
+            ClarificationRequestDO foundCR = PollForClarificationRequest(testAttendee1, client, inboundDaemon);
             
             //check timeouts
             _polling.CheckTimeouts();
@@ -124,12 +133,12 @@ namespace KwasantTest.Services
         }
         
         //Inject a query into the email polling engine that looks for a clarification request with characteristics matching the specified Attendee
-        public ClarificationRequestDO PollForClarificationRequest(AttendeeDO testAttendee)
+        public ClarificationRequestDO PollForClarificationRequest(AttendeeDO testAttendee, ImapClient client, InboundEmail inboundDaemon)
         {
             EmailDO targetCriteria = new EmailDO();
             targetCriteria.Subject = "We need a little more information from you"; //this is the current subject for clarification requests.
             PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindClarificationRequest;
-            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "external", targetCriteria.To.First().Address, "thorium65");
+            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "external", client, inboundDaemon);
             return (ClarificationRequestDO)queryResults.First();
 
         }

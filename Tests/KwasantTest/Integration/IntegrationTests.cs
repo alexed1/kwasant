@@ -37,7 +37,7 @@ namespace KwasantTest.Workflow
   
         private string _startPrefix;
         private string _endPrefix;
-        public ImapClient _client;
+        
         private FixtureData _fixture;
         private PollingEngine _polling;
 
@@ -57,7 +57,6 @@ namespace KwasantTest.Workflow
           
            _startPrefix = "Start:";
            _endPrefix = "End:";
-          // _client = new ImapClient("imap.gmail.com", 993, _outboundIMAPUsername.Split('@')[0], _outboundIMAPPassword, AuthMethod.Login, true);
            _fixture = new FixtureData();
             _polling = new PollingEngine(_uow);
         }
@@ -81,6 +80,12 @@ namespace KwasantTest.Workflow
             EmailDO testEmail = _fixture.TestEmail3(); //integrationtesting@kwasant.net
             testEmail.HTMLText = body;
             testEmail.PlainText = body;
+            string targetAddress = testEmail.To.First().Address;
+            string targetPassword = "thorium65";
+            ImapClient client = new ImapClient("imap.gmail.com", 993, targetAddress, targetPassword, AuthMethod.Login, true);
+            InboundEmail inboundDaemon = new InboundEmail();
+            inboundDaemon.username = targetAddress;
+            inboundDaemon.password = targetPassword;
 
             //need to add user to pass OutboundEmail validation.
             _uow.UserRepository.Add(_fixture.TestUser3());
@@ -97,7 +102,8 @@ namespace KwasantTest.Workflow
             _polling.FlushOutboundEmailQueues();
             
 
-            BookingRequestDO foundBookingRequest = PollForBookingRequest(testEmail.Subject);
+
+            BookingRequestDO foundBookingRequest = PollForBookingRequest(testEmail.Subject, client, inboundDaemon);
             Console.WriteLine("Booking Request detected in intake");
             EventDO testEvent = CreateTestEvent(foundBookingRequest);
             Console.WriteLine("Test Event Created");
@@ -107,25 +113,25 @@ namespace KwasantTest.Workflow
             _polling.FlushOutboundEmailQueues();
             Console.WriteLine("Beginning Polling...");
 
-            PollMailboxForEvent(start, end, testEmail.Subject, testEmail.To.First().Address, "thorium65" );
+            PollMailboxForEvent(start, end, testEmail.Subject,client );
 
             //VERIFY
             //check timeouts
             _polling.CheckTimeouts();
+            client.Dispose();
         
         }
 
         
      
 
-        public BookingRequestDO PollForBookingRequest(string subject)
+        public BookingRequestDO PollForBookingRequest(string subject, ImapClient client, InboundEmail inboundDaemon)
         {
             EmailDO targetCriteria = _fixture.TestEmail3();
             PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindBookingRequest;
-            
-            //_client = _polling.SetPollingTarget(targetCriteria.To.First().Address, "thorium65");
-            
-            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "intake", targetCriteria.To.First().Address, "thorium65");
+
+
+            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "intake", client, inboundDaemon);
             BookingRequestDO foundBookingRequest = (BookingRequestDO)queryResults.First();
             return foundBookingRequest;
         }
@@ -169,7 +175,7 @@ namespace KwasantTest.Workflow
             return ConvertToEmailList(foundBR);
         }
 
-        public void PollMailboxForEvent(DateTimeOffset start, DateTimeOffset end, string subject, string accountName, string password)
+        public void PollMailboxForEvent(DateTimeOffset start, DateTimeOffset end, string subject, ImapClient client)
         {
             //poll the specified account inbox until either the expected message is received, or timeout
             MailMessage inviteMessage = null;
@@ -177,8 +183,8 @@ namespace KwasantTest.Workflow
             do
             {
                 Thread.Sleep(TimeSpan.FromSeconds(1));
-                _client = _polling.SetPollingTarget(accountName, password);
-                var uids = _client.Search(SearchCondition.Unseen()).ToList();
+                
+                var uids = client.Search(SearchCondition.Unseen()).ToList();
                 //checkpoint. not finding any messages.  it loooks like this test submits imap mail and sends it to and tries to receive it at kwasantintegration@gmail.com. That could be getting shut down. switch
                 //to submit using our normal submit: sendgrid, and send to integrationtesting@kwasant.net
                 //move this stuff to integration testing setup
@@ -188,7 +194,7 @@ namespace KwasantTest.Workflow
                 foreach (var uid in uids)
                 {
                     //get the message...
-                    var curMessage = _client.GetMessage(uid);
+                    var curMessage = client.GetMessage(uid);
                     var icsView = curMessage.AlternateViews
                         .FirstOrDefault(v => string.Equals(v.ContentType.MediaType, "application/ics"));
 
@@ -209,14 +215,15 @@ namespace KwasantTest.Workflow
                         }
                     }
                 }
+                
             } while (inviteMessage == null && _polling.requestToEmailDuration.Elapsed < _polling.requestToEmailTimeout);
             _polling.requestToEmailDuration.Stop();
             //cleanup the inbox by deleting the messages
-            var requestMessages = _client.Search(SearchCondition.Subject(subject)).ToList();
-            _client.DeleteMessages(requestMessages);
+            var requestMessages = client.Search(SearchCondition.Subject(subject)).ToList();
+            client.DeleteMessages(requestMessages);
             if (inviteMessage != null)
             {
-                _client.DeleteMessage(inviteMessageId);
+                client.DeleteMessage(inviteMessageId);
             }
             _polling.totalOperationDuration.Stop();
         }
