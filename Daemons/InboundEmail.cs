@@ -15,13 +15,23 @@ namespace Daemons
 {
     public class InboundEmail : Daemon
     {
-        private readonly IImapClient _client;
+        private  ImapClient _client;
+        public string username;
+        public string password;
 
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
         {
-            
+          
         }
+
+        //be careful about using this form. can get into problems involving disposal.
+        public InboundEmail(ImapClient client)
+        {
+            _client = client;
+        }
+
+        
         private static string GetIMAPServer()
         {
             return ConfigRepository.Get("InboundEmailHost");
@@ -46,10 +56,7 @@ namespace Daemons
             return ConfigRepository.Get<bool>("InboundEmailUseSSL");
         }
 
-        public InboundEmail(IImapClient client)
-        {
-            _client = client;
-        }
+        
 
         public override int WaitTimeBetweenExecution
         {
@@ -58,10 +65,13 @@ namespace Daemons
 
         protected override void Run()
         {
-            IImapClient client;
+            ImapClient client;
             try
             {
-                client = _client ?? new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
+                client = _client ?? new ImapClient(GetIMAPServer(), GetIMAPPort(), UseSSL());
+                string curUser = username ?? GetUserName();
+                string curPwd = password ?? GetPassword();
+                client.Login(curUser, curPwd, AuthMethod.Login );
             }
             catch (ConfigurationException ex)
             {

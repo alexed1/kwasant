@@ -55,12 +55,16 @@ namespace KwasantTest.Utilities
         //The actual query is passed in as a delegate method called injectedQuery, which is of type InjectedEmailQuery
         //targetCriteria is passed through this method into the injectedQuery
         //this allows this method's machinery to be reused for many different kinds of email-related queries.
-        public List<EmailDO> PollForEmail(InjectedEmailQuery injectedQuery, EmailDO targetCriteria, string targetType, ImapClient client)
+        public List<EmailDO> PollForEmail(InjectedEmailQuery injectedQuery, EmailDO targetCriteria, string targetType, string targetAddress, string targetPassword)
         {
             List<EmailDO> queryResults;
             List<EmailDO> unreadMessages;
+            ImapClient curClient = SetPollingTarget(targetAddress, targetPassword);
+
             //run inbound daemon, checking for a generated BookingRequest, until success or timeout
             InboundEmail inboundDaemon = new InboundEmail();
+            inboundDaemon.password = targetPassword;
+            inboundDaemon.username = targetAddress;
             BookingRequestDO request;
             do
             {
@@ -70,7 +74,9 @@ namespace KwasantTest.Utilities
                     DaemonTests.RunDaemonOnce(inboundDaemon);
                 }
 
-                unreadMessages = GetUnreadMessages(client);
+              
+                unreadMessages = GetUnreadMessages(curClient);
+                curClient.Dispose();
                 queryResults = injectedQuery(targetCriteria, unreadMessages).ToList();
                 Console.WriteLine(String.Format("queryResults count is {0}",queryResults.Count()));
             } while (queryResults.Count == 0 && pollingDuration.Elapsed < maxPollingTime);
@@ -108,12 +114,11 @@ namespace KwasantTest.Utilities
         }
               //====================================
 
-       
-        public ImapClient ConfigurePollingTarget(UserDO curTarget, string password)
-        {
-            var client = new ImapClient("imap.gmail.com", 993, curTarget.EmailAddress.Address, password, AuthMethod.Login, true);
 
-            return client;
+        public ImapClient SetPollingTarget(string accountName, string password)
+        {
+            return new ImapClient("imap.gmail.com", 993, accountName, password, AuthMethod.Login, true);
+
         }
         private void AddNewTestCustomer(EmailAddressDO emailAddress)
         {

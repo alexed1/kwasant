@@ -31,7 +31,7 @@ namespace KwasantTest.Fixtures
 
             return new EmailAddressDO()
             {
-                Address = "kwasantintegration@gmail.com",
+                Address = "integrationtesting@kwasant.net",
                 Id = 3,
                 Name = "Kwasant Integration"
             };

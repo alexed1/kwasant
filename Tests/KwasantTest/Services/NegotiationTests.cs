@@ -101,7 +101,7 @@ namespace KwasantTest.Services
 
             //VERIFY
             //Verify that attendee has received an appropriate ClarificationRequest.
-            _client = _polling.ConfigurePollingTarget(testUser1, accountPassword);
+            _client = _polling.SetPollingTarget(testUser1.EmailAddress.Address, accountPassword);
             List<EmailDO> unreadMessages = _polling.GetUnreadMessages(_client);
 
             //If attendee has received the CR, the first EmailDO should have certain characteristics
@@ -129,7 +129,7 @@ namespace KwasantTest.Services
             EmailDO targetCriteria = new EmailDO();
             targetCriteria.Subject = "We need a little more information from you"; //this is the current subject for clarification requests.
             PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindClarificationRequest;
-            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "external", _client);
+            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "external", targetCriteria.To.First().Address, "thorium65");
             return (ClarificationRequestDO)queryResults.First();
 
         }
