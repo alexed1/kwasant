@@ -16,6 +16,26 @@
 
             //Now we setup our values
             $('#NegName').val('@Model.Name');
+            
+            data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a =>
+                                "{id: '" + a + "', text: '" + a + "'}"
+                                )))];
+
+            $('#attendeesSel').select2({
+                createSearchChoice: function (term) {
+                    return { id: term, text: term };
+                },
+                validateFormat: function (term) {
+                    if (!isEmail(term))
+                        return "Invalid Email";
+                    return null;
+                },
+                multiple: true,
+                data: [],
+                width: '100%',
+            });
+            $('#attendeesSel').select2('data', data);
+
             @{
                 @:var question;
                 @:var answer;
@@ -51,6 +71,7 @@
             negotiation.BookingRequestID = @Model.BookingRequestID;
             negotiation.Id = @Model.Id;
             negotiation.State = @Model.State;
+            negotiation.Attendees = $('#attendeesSel').val().split(',');
 
             negotiation.Questions = $.map($('#appendquestinoId .questionBox'), function(element) {
                 element = $(element);
@@ -351,13 +372,21 @@
     <div class="form-horizontal" data-negotiationId="0" id="divNegotiation">
         <h4>Negotiation</h4>
         <div class="form-group negotiation-mrbottom">
-            <table>
+            <table style="width: 90%">
                 <tr>
                     <td>&nbsp; 
                         <label>Name:</label>
                     </td>
                     <td>
                         <input type="text" id="NegName" name="NegNameId" value="Negotiation 1" class="form-control col-md-1" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp; 
+                        <label>Attendees:</label>
+                    </td>
+                    <td>
+                        <input type="hidden" name="Attendees" id="attendeesSel" />
                     </td>
                 </tr>
             </table>

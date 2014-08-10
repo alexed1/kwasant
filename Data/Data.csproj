@@ -109,6 +109,14 @@
     <Compile Include="Migrations\201408071321043_AnswerDoesntNeedCalendar.Designer.cs">
       <DependentUpon>201408071321043_AnswerDoesntNeedCalendar.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408101004077_AddAttendeesToNegotiation.cs" />
+    <Compile Include="Migrations\201408101004077_AddAttendeesToNegotiation.Designer.cs">
+      <DependentUpon>201408101004077_AddAttendeesToNegotiation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408101041136_FixTypeOfKey.cs" />
+    <Compile Include="Migrations\201408101041136_FixTypeOfKey.Designer.cs">
+      <DependentUpon>201408101041136_FixTypeOfKey.cs</DependentUpon>
+    </Compile>
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
     <Compile Include="States\EventCreateType.cs" />
@@ -691,6 +699,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408071321043_AnswerDoesntNeedCalendar.resx">
       <DependentUpon>201408071321043_AnswerDoesntNeedCalendar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408101004077_AddAttendeesToNegotiation.resx">
+      <DependentUpon>201408101004077_AddAttendeesToNegotiation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408101041136_FixTypeOfKey.resx">
+      <DependentUpon>201408101041136_FixTypeOfKey.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

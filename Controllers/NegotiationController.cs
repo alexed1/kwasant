@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
 
@@ -21,13 +22,14 @@ namespace KwasantWeb.Controllers
                 var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (negotiationDO == null)
                     throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
-
+                
                 var model = new NegotiationViewModel
                 {
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
                     BookingRequestID = negotiationDO.BookingRequestID,
                     State = negotiationDO.NegotiationState,
+                    Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
                         new QuestionViewModel
                         {
@@ -82,6 +84,9 @@ namespace KwasantWeb.Controllers
                 negotiationDO.Name = value.Name;
                 negotiationDO.NegotiationState = value.State;
                 negotiationDO.BookingRequestID = value.BookingRequestID;
+
+                var attendee = new Attendee();
+                attendee.ManageNegotiationAttendeeList(uow, negotiationDO, value.Attendees);
 
                 var proposedQuestionIDs = value.Questions.Select(q => q.Id);
                 //Delete the existing questions which no longer exist in our proposed negotiation
