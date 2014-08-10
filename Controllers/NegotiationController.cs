@@ -121,62 +121,76 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public JsonResult ProcessSubmittedForm(NegotiationViewModel value)
         {
-            var res = this;
-            //NegotiationDO newNegotiationData = curVM.curNegotiation;
-            //string attendeeList = curVM.attendeeList;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                NegotiationDO negotiationDO;
+                if (value.Id == 0)
+                {
+                    negotiationDO = new NegotiationDO();
+                    uow.NegotiationsRepository.Add(negotiationDO);
+                }
+                else
+                    negotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
 
-            //object result;
-            //NegotiationDO updatedNegotiationDO = new NegotiationDO();
-            //try
-            //{
-            //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            //    {
+                negotiationDO.Name = value.Name;
+                negotiationDO.NegotiationState = value.State;
 
-            //        //the data passed up from the form should include a valid negotiationId.
-            //        NegotiationDO curNegotiationDO =
-            //            uow.NegotiationsRepository.FindOne(n => n.Id == newNegotiationData.Id);
+                var proposedQuestionIDs = value.Questions.Select(q => q.Id);
+                //Delete the existing questions which no longer exist in our proposed negotiation
+                var existingQuestions = negotiationDO.Questions.ToList();
+                foreach (var existingQuestion in existingQuestions.Where(q => !proposedQuestionIDs.Contains(q.Id)))
+                {
+                    uow.QuestionsRepository.Remove(existingQuestion);
+                }
 
-            //        //Update Negotiation
-            //        NegotiationDO existingNegotiationDO =
-            //            uow.NegotiationsRepository.FindOne(n => n.Id == newNegotiationData.Id);
-            //        updatedNegotiationDO = _negotiation.Update(newNegotiationData, existingNegotiationDO);
+                //Here we add/update questions based on our proposed negotiation
+                foreach (var question in value.Questions)
+                {
+                    QuestionDO questionDO;
+                    if (question.Id == 0)
+                    {
+                        questionDO = new QuestionDO();
+                        uow.QuestionsRepository.Add(questionDO);
+                    }
+                    else
+                        questionDO = uow.QuestionsRepository.GetByKey(question.Id);
 
-            //        //this takes the form data and processes it similarly to how its done in the Edit Event form
-            //        //IMPORTANT: the code in Attendee.cs was refactored and needs testing.
-            //        //_attendee.ManageNegotiationAttendeeList(uow, updatedNegotiationDO, attendeeList); //see
+                    questionDO.Negotiation = negotiationDO;
+                    questionDO.AnswerType = question.AnswerType;
+                    questionDO.QuestionStatus = question.Status;
+                    questionDO.Text = question.Text;
 
+                    var proposedAnswerIDs = question.Answers.Select(a => a.Id);
+                    //Delete the existing answers which no longer exist in our proposed negotiation
+                    var existingAnswers = questionDO.Answers.ToList();
+                    foreach (var existingAnswer in existingAnswers.Where(a => !proposedAnswerIDs.Contains(a.Id)))
+                    {
+                        uow.AnswersRepository.Remove(existingAnswer);
+                    }
 
-            //        //SEE https://maginot.atlassian.net/wiki/display/SH/CRUD+for+Questions%2C+Answers%2C+Negotiations
+                    foreach (var answer in question.Answers)
+                    {
+                        AnswerDO answerDO;
+                        if (answer.Id == 0)
+                        {
+                            answerDO = new AnswerDO();
+                            uow.AnswersRepository.Add(answerDO);
+                        }
+                        else
+                            answerDO = uow.AnswersRepository.GetByKey(answer.Id);
 
+                        answerDO.Question = questionDO;
+                        answerDO.AnswerStatus = answer.AnswerState;
+                        answerDO.CalendarID = answer.CalendarID;
+                        answerDO.Text = answer.Text;
+                        answer.ObjectsType = answer.ObjectsType;
+                    }
+                }
 
-            //        //Process Negotiation
-            //        _negotiation.Process(updatedNegotiationDO);
-            //        //set result to a success message
-            //        result =
-            //            new
-            //            {
-            //                Success = "True",
-            //                BookingRequestID = updatedNegotiationDO.BookingRequest.Id,
-            //                NegotiationId = updatedNegotiationDO.Id
-            //            };
+                uow.SaveChanges();
+            }
 
-
-            //    }
-            //}
-            //catch (Exception)
-            //{
-            //    //set result to an error message
-            //    result =
-            //        new
-            //        {
-            //            Success = "False",
-            //            BookingRequestID = updatedNegotiationDO.BookingRequest.Id,
-            //            NegotiationId = updatedNegotiationDO.Id
-            //        };
-            //}
-
-
-            return Json(null, JsonRequestBehavior.AllowGet);
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
     }
 }

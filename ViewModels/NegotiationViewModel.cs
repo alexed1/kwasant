@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Data.States.Templates;
+﻿using System.Collections.Generic;
 
 namespace KwasantWeb.ViewModels
 {
     public class NegotiationViewModel
     {
+        public NegotiationViewModel()
+        {
+            Questions = new List<QuestionViewModel>();
+        }
+
         public int Id { get; set; }        
         public int BookingRequestID { get; set; }
         public int State { get; set; }

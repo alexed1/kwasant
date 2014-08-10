@@ -1,4 +1,5 @@
-﻿@model KwasantWeb.ViewModels.NegotiationViewModel
+﻿@using Data.States
+@model KwasantWeb.ViewModels.NegotiationViewModel
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @section immediateScripts
 {
@@ -22,6 +23,7 @@
                 {
                     @:question = $(addQuestion(true));
                     @:question.attr('questionID', @question.Id);
+                    @:question.attr('questionStatus', @question.Status);
                     @:question.find('#questionText').val("@question.Text");
                     @:question.find('input[type="radio"][group="questionType"]').filter(function () { return $(this).val() === "@question.AnswerType"; }).get(0).checked = true;
                     foreach (var answer in question.Answers)
@@ -30,7 +32,7 @@
                         @:answer.attr('answerID', @answer.Id);
                         if (answer.CalendarID != null)
                         {
-                            @:answer.find('[name="eventWindow"]').attr('calendarID', @answer.CalendarID);
+                            @:answer.attr('calendarID', @answer.CalendarID);
                         }
                         if (!String.IsNullOrEmpty(answer.Text))
                         {
@@ -48,10 +50,12 @@
             negotiation.Name = $('#NegName').val();
             negotiation.BookingRequestID = @Model.BookingRequestID;
             negotiation.Id = @Model.Id;
+            negotiation.State = @Model.State;
 
             negotiation.Questions = $.map($('#appendquestinoId .questionBox'), function(element) {
                 element = $(element);
                 var questionID = element.attr('questionID');
+                var questionStatus = element.attr('questionStatus');
                 var negotiationID = negotiation.Id = @Model.Id;
                 var questionText = element.find('#questionText').val();
                 var selectedType = element.find('input[type="radio"][group="questionType"]').filter(function() {
@@ -68,12 +72,14 @@
                     return { ID: answerID, QuestionID: questionID, Text: answerText, AnswerState: answerStatus };
                 });
 
-                var eventWindowAnswers = $.map(element.find('#appendanswerId a[name="eventWindow"]'), function(answerElement) {
+                //eventWindowAnswerBox
+                //a[name="eventWindow"]
+                var eventWindowAnswers = $.map(element.find('#appendanswerId .eventWindowAnswerBox'), function(answerElement) {
                     answerElement = $(answerElement);
                     answerID = answerElement.attr('answerID');
                     var calendarID = answerElement.attr('calendarID');
 
-                    return { ID: answerID, QuestionID: questionID, CalendarID: calendarID };
+                    return { ID: answerID, QuestionID: questionID, CalendarID: calendarID, AnswerState: @AnswerState.Unstarted };
                 });
 
                 var i;
@@ -83,7 +89,7 @@
                 for (i = 0; i < eventWindowAnswers.length; i++)
                     answers.push(eventWindowAnswers[i]);
 
-                return { Id: questionID, NegotiationID: negotiationID, Text: questionText, AnswerType: selectedType, Answers: answers };
+                return { Id: questionID, NegotiationID: negotiationID, Status : questionStatus, Text: questionText, AnswerType: selectedType, Answers: answers };
             });
             return negotiation;
         }
@@ -100,8 +106,10 @@
                 data: JSON.stringify(negotiation)
             })
             .success(function() {
+                Kwasant.IFrame.CloseMe();
             })
             .fail(function() {
+                alert('An error occured on the server. Your changes have not been saved.');
             })
             .always(function() {
                 if (spinner !== null) {
@@ -126,11 +134,13 @@
         }
 
         function startEventWindowSelection(obj) {
-            var calendarID = $(obj).attr('calendarID');
+            var answerBox = $(obj).closest('.eventWindowAnswerBox');
+            var calendarID = answerBox.attr('calendarID');
             if (calendarID === undefined)
                 calendarID = null;
 
             var launchCalendar = function(calID) {
+                answerBox.attr('calendarID', calID);
                 Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID,
                     {
                         horizontalAlign: 'left',
@@ -146,7 +156,7 @@
 
         function addAnswer(obj, immediate) {
             var parentBox = $(obj).closest('.questionBox');
-            var selectedType = parentBox.find('input[type="radio"][name="questionType"]').filter(function() {
+            var selectedType = parentBox.find('input[type="radio"][group="questionType"]').filter(function() {
                 return $(this).get(0).checked;
             });
             var clonedHTML;
@@ -166,7 +176,7 @@
                 else
                     clonedHTML.slideDown();
             }
-            var eventTypeButtons = parentBox.find('input[type="radio"][name="questionType"]');
+            var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
             eventTypeButtons.prop('disabled', true);
             eventTypeButtons.prop('title', 'Unable to change question type while answers exist.');
 
@@ -188,7 +198,7 @@
                     $(this).remove();
 
                     if (parentBox.find('.eventWindowAnswerBox').length === 0) {
-                        var eventTypeButtons = parentBox.find('input[type="radio"][name="questionType"]');
+                        var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
                         eventTypeButtons.removeAttr('disabled');
                         eventTypeButtons.removeAttr('title', '');
                     }
@@ -204,7 +214,7 @@
                     $(this).remove();
 
                     if (parentBox.find('.answerBox').length === 0) {
-                        var eventTypeButtons = parentBox.find('input[type="radio"][name="questionType"]');
+                        var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
                         eventTypeButtons.removeAttr('disabled');
                         eventTypeButtons.removeAttr('title', '');
                     }

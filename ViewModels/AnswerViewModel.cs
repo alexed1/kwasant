@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Data.States;
-
-namespace KwasantWeb.ViewModels
+﻿namespace KwasantWeb.ViewModels
 {   
     public class AnswerViewModel
     {
