@@ -72,8 +72,6 @@
                     return { ID: answerID, QuestionID: questionID, Text: answerText, AnswerState: answerStatus };
                 });
 
-                //eventWindowAnswerBox
-                //a[name="eventWindow"]
                 var eventWindowAnswers = $.map(element.find('#appendanswerId .eventWindowAnswerBox'), function(answerElement) {
                     answerElement = $(answerElement);
                     answerID = answerElement.attr('answerID');
@@ -106,7 +104,7 @@
                 data: JSON.stringify(negotiation)
             })
             .success(function() {
-                Kwasant.IFrame.CloseMe();
+                Kwasant.IFrame.CloseMe(true);
             })
             .fail(function() {
                 alert('An error occured on the server. Your changes have not been saved.');

@@ -49,7 +49,7 @@
 						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
 						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
 						<li>@Html.ActionLink("Show Users", "Index", "User")</li>
-                        <li><a id="btnNegotiation" onclick="window.parent.getNegotiationwindo();" data-value='@(Model.LinkedNegotiationID == null ? "Create Negotiation" : "Edit Negotiation")' href="#">@(Model.LinkedNegotiationID == null ? "Create Negotiation" : "Edit Negotiation")</a></li>
+                        <li><a id="btnNegotiation" onclick="window.parent.getNegotiationWindow();" data-value='@(Model.LinkedNegotiationID == null ? "Create Negotiation" : "Edit Negotiation")' href="#">@(Model.LinkedNegotiationID == null ? "Create Negotiation" : "Edit Negotiation")</a></li>
                      <li> <a id="btnHistory" onclick="HistoryClick(@Model.BookingRequestID);" class="btnHistory" href="#">History</a></li>
 					</ul>
 				</div>
@@ -320,11 +320,26 @@
 
     
     //this function will open the new iframe for negotiation window and close the iframe for Edit Event window.
-    function getNegotiationwindo() {
-        Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=@Model.LinkedNegotiationID',
+    function getNegotiationWindow() {
+        @{
+            if (Model.LinkedNegotiationID != null)
             {
-                horizontalAlign: 'right',
-            });
+                @:Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=@Model.LinkedNegotiationID',
+                @:{
+                @:  horizontalAlign: 'right',
+                @:});
+            }
+            else
+            {
+                @:Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestID',
+                @:{
+                @:  horizontalAlign: 'right',
+                @:  callback: function (result) { if (result) $('#btnNegotiation').html('Edit Negotiation'); }
+                @:});
+            }
+        }
+
+        
     }
   
 </script>

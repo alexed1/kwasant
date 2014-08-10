@@ -34,7 +34,7 @@ namespace KwasantWeb.Controllers
                 if (bookingRequestDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                var linkedNegotiationID = bookingRequestDO.Negotiations.Select(n => n.Id).FirstOrDefault();
+                var linkedNegotiationID = bookingRequestDO.Negotiations.Select(n => (int?)n.Id).FirstOrDefault();
 
                 return View(new CalendarViewModel
                 {

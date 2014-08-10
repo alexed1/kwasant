@@ -3,10 +3,9 @@ using System.Linq;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.Services;
+using Data.States;
 using KwasantWeb.ViewModels;
 using StructureMap;
-using ViewModel.Models;
 
 
 namespace KwasantWeb.Controllers
@@ -14,15 +13,7 @@ namespace KwasantWeb.Controllers
     //[KwasantAuthorize(Roles = "Admin")]
     public class NegotiationController : Controller
     {
-        private Negotiation _negotiation;
-        private Attendee _attendee;
-
-        public NegotiationController()
-        {
-            _negotiation = new Negotiation();
-            _attendee = new Attendee();
-        }
-
+        
         public ActionResult Edit(int negotiationID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -63,59 +54,15 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        //This is completely broken. Static means that it's stored for _all_ connections, including different users!!!
-        //public ActionResult Create(NegotiationViewModel viewModel)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        BookingRequestDO emailDO = uow.BookingRequestRepository.FindOne(el => el.Id == BookingRequestID);
-        //        UserDO userDO = uow.UserRepository.FindOne(ur => ur.EmailAddressID == emailDO.FromID);
 
-        //        //NEED TO CHECK HERE TO SEE IF THERE ALREADY IS ONE. SOMETHING LIKE:
-        //        NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.BookingRequestID == BookingRequestID && n.NegotiationState != NegotiationState.Resolved);
-        //        if (negotiationDO != null)
-        //            throw new ApplicationException("tried to create a negotiation when one already existed");
-
-        //        negotiationDO = new NegotiationDO
-        //        {
-        //            Name = viewModel.Name,
-        //            BookingRequestID = BookingRequestID,
-        //            NegotiationState = NegotiationState.InProcess,
-        //            BookingRequest = emailDO
-        //        };
-        //        uow.NegotiationsRepository.Add(negotiationDO);
-        //        uow.SaveChanges();
-        //        var result = new { Success = "True", NegotiationId = negotiationDO.Id };
-        //        return Json(result, JsonRequestBehavior.AllowGet);
-        //    }
-        //}
-
-        public JsonResult DeleteQuestion(int questionId = 0)
+        public ActionResult Create(int bookingRequestID)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            return View("~/Views/Negotiation/Edit.cshtml", new NegotiationViewModel
             {
-                CalendarDO calendarDO = uow.CalendarRepository.FindOne(c => c.QuestionId == questionId);
-                if (calendarDO != null)
-                    uow.CalendarRepository.Remove(calendarDO);
-
-                uow.QuestionsRepository.Remove(uow.QuestionsRepository.FindOne(q => q.Id == questionId));
-                uow.SaveChanges();
-                return Json("Success", JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        public JsonResult DeleteAnswer(int answerId = 0)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                CalendarDO calendarDO = uow.CalendarRepository.FindOne(c => c.QuestionId == answerId);
-                if (calendarDO != null)
-                    uow.CalendarRepository.Remove(calendarDO);
-
-                uow.AnswersRepository.Remove(uow.AnswersRepository.FindOne(q => q.Id == answerId));
-                uow.SaveChanges();
-                return Json("Success", JsonRequestBehavior.AllowGet);
-            }
+                Name = "Negotiation 1",
+                BookingRequestID = bookingRequestID,
+                State = NegotiationState.InProcess,
+            });
         }
 
         [HttpPost]
@@ -134,6 +81,7 @@ namespace KwasantWeb.Controllers
 
                 negotiationDO.Name = value.Name;
                 negotiationDO.NegotiationState = value.State;
+                negotiationDO.BookingRequestID = value.BookingRequestID;
 
                 var proposedQuestionIDs = value.Questions.Select(q => q.Id);
                 //Delete the existing questions which no longer exist in our proposed negotiation
