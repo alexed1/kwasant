@@ -144,6 +144,8 @@
             var newGroupName = guid();
             radioButtons.attr('name', newGroupName);
 
+            clonedHTML.attr('questionStatus', @QuestionState.Unanswered);
+
             $('#appendquestinoId').append(clonedHTML);
             if (immediate)
                 clonedHTML.show();
