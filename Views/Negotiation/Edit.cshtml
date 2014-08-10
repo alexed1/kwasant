@@ -197,6 +197,8 @@
                 else
                     clonedHTML.slideDown();
             }
+
+            parentBox.find('#divAddAnswer').hide();
             var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
             eventTypeButtons.prop('disabled', true);
             eventTypeButtons.prop('title', 'Unable to change question type while answers exist.');
@@ -222,6 +224,8 @@
                         var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
                         eventTypeButtons.removeAttr('disabled');
                         eventTypeButtons.removeAttr('title', '');
+
+                        parentBox.find('#divAddAnswer').show();
                     }
                 });
             });
@@ -238,6 +242,8 @@
                         var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
                         eventTypeButtons.removeAttr('disabled');
                         eventTypeButtons.removeAttr('title', '');
+                        
+                        parentBox.find('#divAddAnswer').show();
                     }
                 });
             });
