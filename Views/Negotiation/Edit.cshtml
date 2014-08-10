@@ -12,62 +12,70 @@
             $('#questionContainer').hide();
             $('#textAnswerContainer').hide();
             $('#eventWindowAnswerContainer').hide();
-            
+
             //Now we setup our values
             $('#NegName').val('@Model.Name');
             @{
-            @:var question;
-            @:var answer;
+                @:var question;
+                @:var answer;
                 foreach (var question in Model.Questions)
                 {
-            @:question = $(addQuestion(true));
-            @:question.find('#questionText').val("@question.Text");
-            @:question.find('input[type="radio"][name="questionType"]').filter(function () { return $(this).val() === "@question.AnswerType"; }).get(0).checked = true;
+                    @:question = $(addQuestion(true));
+                    @:question.attr('questionID', @question.Id);
+                    @:question.find('#questionText').val("@question.Text");
+                    @:question.find('input[type="radio"][group="questionType"]').filter(function () { return $(this).val() === "@question.AnswerType"; }).get(0).checked = true;
                     foreach (var answer in question.Answers)
                     {
-            @:answer = $(addAnswer(question, true));
+                        @:answer = $(addAnswer(question, true));
+                        @:answer.attr('answerID', @answer.Id);
                         if (answer.CalendarID != null)
                         {
-            @:answer.find('[name="eventWindow"]').attr('calendarID', @answer.CalendarID);
+                            @:answer.find('[name="eventWindow"]').attr('calendarID', @answer.CalendarID);
                         }
                         if (!String.IsNullOrEmpty(answer.Text))
                         {
-            @:answer.find('#answerText').val('@answer.Text');
-            @:answer.find('#answerStatus').val('@answer.AnswerState');
+                            @:answer.find('#answerText').val('@answer.Text');
+                            @:answer.find('#answerStatus').val('@answer.AnswerState');
                         }
                     }
                 }
             }
         });
 
-       
+
         function getNegotiationData() {
             var negotiation = {};
             negotiation.Name = $('#NegName').val();
             negotiation.BookingRequestID = @Model.BookingRequestID;
-                
+            negotiation.Id = @Model.Id;
+
             negotiation.Questions = $.map($('#appendquestinoId .questionBox'), function(element) {
                 element = $(element);
+                var questionID = element.attr('questionID');
+                var negotiationID = negotiation.Id = @Model.Id;
                 var questionText = element.find('#questionText').val();
-                var selectedType = element.find('input[type="radio"][name="questionType"]').filter(function() {
+                var selectedType = element.find('input[type="radio"][group="questionType"]').filter(function() {
                     return $(this).get(0).checked;
                 }).val();
 
+                var answerID;
                 var textAnswers = $.map(element.find('#appendanswerId .answerBox'), function(answerElement) {
                     answerElement = $(answerElement);
+                    answerID = answerElement.attr('answerID');
                     var answerText = answerElement.find('#answerText').val();
                     var answerStatus = answerElement.find('#answerStatus').val();
 
-                    return { Text: answerText, Status: answerStatus };
+                    return { ID: answerID, QuestionID: questionID, Text: answerText, AnswerState: answerStatus };
                 });
 
                 var eventWindowAnswers = $.map(element.find('#appendanswerId a[name="eventWindow"]'), function(answerElement) {
                     answerElement = $(answerElement);
+                    answerID = answerElement.attr('answerID');
                     var calendarID = answerElement.attr('calendarID');
 
-                    return { CalendarID: calendarID };
+                    return { ID: answerID, QuestionID: questionID, CalendarID: calendarID };
                 });
-                    
+
                 var i;
                 var answers = [];
                 for (i = 0; i < textAnswers.length; i++)
@@ -75,12 +83,14 @@
                 for (i = 0; i < eventWindowAnswers.length; i++)
                     answers.push(eventWindowAnswers[i]);
 
-                return { Text: questionText, AnswerType: selectedType, Answers: answers };
+                return { Id: questionID, NegotiationID: negotiationID, Text: questionText, AnswerType: selectedType, Answers: answers };
             });
             return negotiation;
         }
 
         function submitNegotiation() {
+            var spinner = Kwasant.IFrame.DisplaySpinner();
+
             var negotiation = getNegotiationData();
             $.ajax({
                 type: "POST",
@@ -88,11 +98,25 @@
                 contentType: 'application/json',
                 url: '/Negotiation/ProcessSubmittedForm',
                 data: JSON.stringify(negotiation)
+            })
+            .success(function() {
+            })
+            .fail(function() {
+            })
+            .always(function() {
+                if (spinner !== null) {
+                    spinner.hide();
+                }
             });
         }
 
         function addQuestion(immediate) {
             var clonedHTML = $('#questionContainer').clone();
+            
+            var radioButtons = clonedHTML.find('input[type="radio"][group="questionType"]');
+            var newGroupName = guid();
+            radioButtons.attr('name', newGroupName);
+
             $('#appendquestinoId').append(clonedHTML);
             if (immediate)
                 clonedHTML.show();
@@ -162,7 +186,7 @@
                     var parentBox = $(obj).closest('.questionBox');
 
                     $(this).remove();
-                    
+
                     if (parentBox.find('.eventWindowAnswerBox').length === 0) {
                         var eventTypeButtons = parentBox.find('input[type="radio"][name="questionType"]');
                         eventTypeButtons.removeAttr('disabled');
@@ -174,11 +198,11 @@
 
         function removeAnswer(obj) {
             $(function() {
-                $(obj).closest('.answerBox').slideUp("normal", function () {
+                $(obj).closest('.answerBox').slideUp("normal", function() {
                     var parentBox = $(obj).closest('.questionBox');
-                    
+
                     $(this).remove();
-                    
+
                     if (parentBox.find('.answerBox').length === 0) {
                         var eventTypeButtons = parentBox.find('input[type="radio"][name="questionType"]');
                         eventTypeButtons.removeAttr('disabled');
@@ -256,11 +280,11 @@
                 <td>
                     Type:
                     <label>
-                        <input type="radio" name="questionType"value="Text" checked>
+                        <input type="radio" group="questionType" name="questionType"value="Text" checked>
                         Text    
                     </label>
                     <label>
-                        <input type="radio" name="questionType" value="Timeslot">
+                        <input type="radio" group="questionType" name="questionType" value="Timeslot">
                         Event Window
                     </label>
                 </td>
