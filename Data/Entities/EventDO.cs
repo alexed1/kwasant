@@ -64,13 +64,14 @@ namespace Data.Entities
         [ForeignKey("SyncStatusTemplate"), Required]
         public int SyncStatus { get; set; }
         public virtual _EventSyncStatusTemplate SyncStatusTemplate { get; set; }
-
+        
         public EventDO()
         {
             CreateType = EventCreateType.KwasantBR;
             SyncStatus = EventSyncState.DoNotSync;
             Attendees = new List<AttendeeDO>();
             Emails = new List<EmailDO>();
+            ExternalGUID = Guid.NewGuid().ToString();
         }
 
         public void CopyFrom(EventDO eventDO)
@@ -82,6 +83,8 @@ namespace Data.Entities
                 prop.SetValue(this, prop.GetValue(eventDO));
             }
         }
+
+        public string ExternalGUID { get; set; }
 
     }
 }
