@@ -125,6 +125,10 @@
     <Compile Include="Migrations\201408051311039_Sync05.08.2014.Designer.cs">
       <DependentUpon>201408051311039_Sync05.08.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408060827557_Add_TestAccount_to_User.cs" />
+    <Compile Include="Migrations\201408060827557_Add_TestAccount_to_User.designer.cs">
+      <DependentUpon>201408060827557_Add_TestAccount_to_User.cs</DependentUpon>
+    </Compile>
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
     <Compile Include="States\EventCreateType.cs" />
@@ -719,6 +723,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408051311039_Sync05.08.2014.resx">
       <DependentUpon>201408051311039_Sync05.08.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408060827557_Add_TestAccount_to_User.resx">
+      <DependentUpon>201408060827557_Add_TestAccount_to_User.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

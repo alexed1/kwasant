@@ -18,7 +18,7 @@ using Utilities;
 
 namespace Data.Migrations
 {
-    
+
     public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasantDbContext>
     {
         private Account _account;
@@ -31,8 +31,8 @@ namespace Data.Migrations
             ContextKey = "Data.Infrastructure.KwasantDbContext";
             _account = new Account();
 
-            }
-        
+        }
+
         protected override void Seed(KwasantDbContext context)
         {
             //  This method will be called after migrating to the latest version.
@@ -50,6 +50,7 @@ namespace Data.Migrations
             AddRoles(unitOfWork);
             AddAdmins(unitOfWork);
             AddCustomers(unitOfWork);
+            AddBookingRequest(unitOfWork);
 
             SeedRemoteCalendarProviders(unitOfWork);
         }
@@ -69,14 +70,14 @@ namespace Data.Migrations
         private static void SeedConstants(IUnitOfWork context)
         {
             var constantsToSeed =
-                typeof (MigrationConfiguration).Assembly.GetTypes()
+                typeof(MigrationConfiguration).Assembly.GetTypes()
                     .Select(t => new
                     {
                         RowType = t,
                         ConstantsType =
                             t.GetInterfaces()
                                 .Where(i => i.IsGenericType)
-                                .FirstOrDefault(i => i.GetGenericTypeDefinition() == typeof (IStateTemplate<>))
+                                .FirstOrDefault(i => i.GetGenericTypeDefinition() == typeof(IStateTemplate<>))
                     })
                     .Where(t => t.ConstantsType != null).ToList();
 
@@ -85,8 +86,8 @@ namespace Data.Migrations
                 var rowType = constantToSeed.RowType;
                 var constantType = constantToSeed.ConstantsType.GenericTypeArguments.First();
 
-                var idParam = Expression.Parameter(typeof (int));
-                var nameParam = Expression.Parameter(typeof (String));
+                var idParam = Expression.Parameter(typeof(int));
+                var nameParam = Expression.Parameter(typeof(String));
 
                 //The below uses the .NET Expression builder to construct this:
                 // (id, name) => new [rowType] { Id = id, Name = name };
@@ -109,33 +110,33 @@ namespace Data.Migrations
                 //We have 'constructedRowType' as the last expression, which tells us it will be returned
 
                 var constructedRowType = Expression.Variable(rowType, "constructedRowType");
-                    var fullMethod = Expression.Block(
-                    new[] {constructedRowType},
-                    Expression.Assign(constructedRowType, Expression.New(rowType)),
-                    Expression.Assign(Expression.Property(constructedRowType, "Id"), idParam),
-                    Expression.Assign(Expression.Property(constructedRowType, "Name"), nameParam),
-                    constructedRowType);
+                var fullMethod = Expression.Block(
+                new[] { constructedRowType },
+                Expression.Assign(constructedRowType, Expression.New(rowType)),
+                Expression.Assign(Expression.Property(constructedRowType, "Id"), idParam),
+                Expression.Assign(Expression.Property(constructedRowType, "Name"), nameParam),
+                constructedRowType);
 
-                    //Now we take that expression and compile it. It's still typed as a 'Delegate', but it is now castable to Func<int, string, TConstantDO>
-                    //For example, it could be Func<int, string, BookingRequestStateRow>
-                
-                var compiledExpression = Expression.Lambda(fullMethod, new[] {idParam, nameParam}).Compile();
+                //Now we take that expression and compile it. It's still typed as a 'Delegate', but it is now castable to Func<int, string, TConstantDO>
+                //For example, it could be Func<int, string, BookingRequestStateRow>
+
+                var compiledExpression = Expression.Lambda(fullMethod, new[] { idParam, nameParam }).Compile();
 
                 //Now we have our expression, we need to call something similar to this:
                 //SeedConstants<constantType, rowType>(context, compiledExpression)
 
-                var seedMethod = typeof (MigrationConfiguration)
+                var seedMethod = typeof(MigrationConfiguration)
                     .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
                     .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod)
                     .MakeGenericMethod(constantType, rowType);
-                
-                seedMethod.Invoke(null, new object[] {context, compiledExpression});
+
+                seedMethod.Invoke(null, new object[] { context, compiledExpression });
             }
         }
 
         private static void SeedRemoteCalendarProviders(IUnitOfWork uow)
         {
-            var providers = new []
+            var providers = new[]
                                 {
                                     new RemoteCalendarProviderDO()
                                         {
@@ -159,10 +160,11 @@ namespace Data.Migrations
         }
 
         //Do not remove. Resharper says it's not in use, but it's being used via reflection
-// ReSharper disable UnusedMember.Local
+        // ReSharper disable UnusedMember.Local
         private static void SeedConstants<TConstantsType, TConstantDO>(IUnitOfWork uow, Func<int, string, TConstantDO> creatorFunc)
-// ReSharper restore UnusedMember.Local
-			where TConstantDO : class, IStateTemplate<TConstantsType>        {
+            // ReSharper restore UnusedMember.Local
+            where TConstantDO : class, IStateTemplate<TConstantsType>
+        {
             var instructionsToAdd = new List<TConstantDO>();
 
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
@@ -276,7 +278,7 @@ namespace Data.Migrations
         /// <returns></returns>
         private void CreateAdmin(string curUserName, string curPassword, IUnitOfWork uow)
         {
-            
+
             string userId = _account.Create(curUserName, curPassword, uow);
             _account.AddRole("Admin", userId, uow);
             _account.AddRole("Customer", userId, uow);
@@ -295,10 +297,35 @@ namespace Data.Migrations
             _account.AddRole("Customer", userId, uow);
         }
 
-
-
-   
-            
+        private void AddBookingRequest(IUnitOfWork unitOfWork)
+        {
+            if (unitOfWork.BookingRequestRepository.GetQuery().Count() == 0)
+            {
+                CreateBookingRequest("alexlucre1@gmail.com", "First Booking request subject", "First Booking request text", unitOfWork);
+                CreateBookingRequest("alexlucre1@gmail.com", "Second Booking request subject", "Second Booking request text", unitOfWork);
+            }
         }
+
+        private void CreateBookingRequest(string curUserName, string subject, string htmlText, IUnitOfWork uow)
+        {
+            var curBookingRequestDO = new BookingRequestDO
+            {
+                DateCreated = DateTimeOffset.UtcNow,
+                From = uow.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
+                Subject = subject,
+                HTMLText = htmlText,
+                EmailStatus = EmailState.Unprocessed,
+                DateReceived = DateTimeOffset.UtcNow,
+                BookingRequestState = BookingRequestState.Unprocessed,
+                User = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db as KwasantDbContext)).FindByName(curUserName)
+            };
+            foreach (var calendar in curBookingRequestDO.User.Calendars)
+                curBookingRequestDO.Calendars.Add(calendar);
+            uow.BookingRequestRepository.Add(curBookingRequestDO);
+        }
+
+
+
     }
+}
 
