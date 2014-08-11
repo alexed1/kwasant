@@ -65,6 +65,7 @@ namespace KwasantWeb.Controllers
                 if (calendarDO.Negotiation != null)
                 {
                     calendarsViaNegotiationRequest = calendarDO.Negotiation.Calendars;
+                    var user = new User();
                     var recipientAddresses = calendarDO.Negotiation.BookingRequest.Recipients.Select(r => r.EmailAddress) //Get email addresses for each recipient
                         .Select(a => user.Get(uow, a)).Where(u => u != null).SelectMany(u => u.Calendars).ToList(); //Grab the user from the email and find their calendars
                     
