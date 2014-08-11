@@ -267,6 +267,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AnswerController.cs" />
     <Compile Include="Controllers\External\DayPilot\KwasantCalendarControl.cs" />
     <Compile Include="Controllers\External\DayPilot\Providers\ICalendarController.cs" />
     <Compile Include="Controllers\External\GoogleCalendar\AuthCallbackController.cs" />
@@ -289,8 +290,8 @@
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="ViewModels\CalendarViewModel.cs" />
     <Compile Include="ViewModels\AnswerViewModel.cs" />
+    <Compile Include="ViewModels\CalendarViewModel.cs" />
     <Compile Include="ViewModels\MyAccountModel.cs" />
     <Compile Include="Filters\RequestParamsEncryptedFilter.cs" />
     <Compile Include="Global.asax.cs">
@@ -310,7 +311,6 @@
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ManageUserViewModel.cs" />
     <Compile Include="ViewModels\NegotiationViewModel.cs" />
-    <Compile Include="ViewModels\EditNegotiationVM.cs" />
     <Compile Include="ViewModels\QuestionViewModel.cs" />
     <Compile Include="ViewModels\ClarificationRequestViewModel.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
@@ -754,7 +754,6 @@
     <Content Include="Views\Negotiation\Edit.cshtml" />
     <Content Include="Views\Negotiation\_Question.cshtml" />
     <Content Include="Views\Negotiation\_TextAnswer.cshtml" />
-    <Content Include="Views\Negotiation\_TimeslotAnswer.cshtml" />
     <Content Include="Views\Calendar\GetNegotiationCalendars.cshtml" />
     <Content Include="Views\Negotiation\EventWindows.cshtml" />
   </ItemGroup>

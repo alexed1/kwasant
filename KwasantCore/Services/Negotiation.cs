@@ -24,19 +24,19 @@ namespace KwasantCore.Services
         {
             _cr = new ClarificationRequest();
         }
-        public string getNegotiationTask(IUnitOfWork uow, int bookingRequestId)
-        {
-            string negotiationLbl = "";
+        //public int? getNegotiationTask(IUnitOfWork uow, int bookingRequestId)
+        //{
+        //    string negotiationLbl = "";
 
-            //var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.RequestId == bookingRequestId && br.State != NegotiationState.Resolved);
-            var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.BookingRequestID == bookingRequestId && br.NegotiationState != NegotiationState.Resolved);
-            if (negotiationdo.Count() > 0)
-                negotiationLbl = "Edit Negotiation";
-            else
-                negotiationLbl = "Create Negotiation";
+        //    //var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.RequestId == bookingRequestId && br.State != NegotiationState.Resolved);
+        //    var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.BookingRequestID == bookingRequestId && br.NegotiationState != NegotiationState.Resolved);
+        //    if (negotiationdo.Count() > 0)
+        //        negotiationLbl = "Edit Negotiation";
+        //    else
+        //        negotiationLbl = "Create Negotiation";
 
-            return negotiationLbl;
-        }
+        //    return negotiationLbl;
+        //}
 
         //generate CR's and dispatch them.
         public void Process(NegotiationDO curNegotiation)
@@ -48,15 +48,7 @@ namespace KwasantCore.Services
                   _cr.Send(cr);
             }
         }
-
-        public NegotiationDO Update(NegotiationDO newNegotiationData, NegotiationDO existingNegotiationDO)
-        {
-            //to be implemented.
-            //Question#Update should be called for each Question.
-            return null;
-        }
-
-
+        
         //This will generate CR emails  with a link that takes the recipient to a response view. 
         public List<ClarificationRequestDO> GenerateClarificationRequests(NegotiationDO curNegotiation)
         {

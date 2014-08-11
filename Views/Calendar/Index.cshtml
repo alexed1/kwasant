@@ -38,7 +38,7 @@
                         <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
 						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>						
 						<li>@Html.ActionLink("Show Users", "Index", "User")</li>                     
-                        <li><a id="btnNegotiation" onclick="window.parent.getNegotiationwindo();" data-value="@ViewBag.negotiationlbl" href="#">@ViewBag.negotiationlbl</a></li>
+                        <li><a id="btnNegotiation" onclick="window.parent.getNegotiationWindow();" data-value='@(Model.LinkedNegotiationID == null ? "Create Negotiation" : "Edit Negotiation")' href="#">@(Model.LinkedNegotiationID == null ? "Create Negotiation" : "Edit Negotiation")</a></li>
 						<li><a id="btnHistory" onclick="HistoryClick(@Model.BookingRequestID);" class="btnHistory" href="#">History</a></li>
 						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
 					</ul>
@@ -82,13 +82,16 @@
     $(function() {
         calendar = $('#CalendarDiv').KCalendar({
                 getCalendarBackendURL: function() {
-                    return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                    //return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                    return '@Url.Content("~/Calendar/Day?calendarIDs=" + @Model.ActiveCalendarID)';
                 },
                 getMonthBackendURL: function () {
-                    return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                    //return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                    return '@Url.Content("~/Calendar/Month?calendarIDs=" + @Model.ActiveCalendarID)';
                 },
                 getNavigatorBackendURL: function() {
-                    return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                    //return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                    return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + @Model.ActiveCalendarID)';
                 },  
                 getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
                 getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
@@ -316,19 +319,26 @@
 
     
     //this function will open the new iframe for negotiation window and close the iframe for Edit Event window.
-    function getNegotiationwindo() {
-        if (Kwasant.IFrame.PopupsActive()) {
-            $(document).find("iframe").each(function () {
-                eventId = this;
-                window.parent.jQuery(this).hide();
-            });
-        }
-        var id = $("#hdnrequestid").val();
-        Kwasant.IFrame.Display('/Negotiation/Edit?bookingRequestID=' + id,
+    function getNegotiationWindow() {
+        @{
+            if (Model.LinkedNegotiationID != null)
             {
-                horizontalAlign: 'right',
-                //callback: refresh
-            });
+                @:Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=@Model.LinkedNegotiationID',
+                @:{
+                @:  horizontalAlign: 'right',
+                @:});
+            }
+            else
+            {
+                @:Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestID',
+                @:{
+                @:  horizontalAlign: 'right',
+                @:  callback: function (result) { if (result) $('#btnNegotiation').html('Edit Negotiation'); }
+                @:});
+            }
+        }
+
+        
     }
   
 </script>
