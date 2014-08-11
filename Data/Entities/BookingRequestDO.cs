@@ -11,15 +11,16 @@ namespace Data.Entities
         public BookingRequestDO()
         {
             Calendars = new List<CalendarDO>();
+            Negotiations = new List<NegotiationDO>();
         }
 
         [Required]
         public virtual UserDO User { get; set; }
 
-        public List<InstructionDO> Instructions { get; set; }
+        public virtual List<InstructionDO> Instructions { get; set; }
 
         [InverseProperty("BookingRequest")]
-        public IList<NegotiationDO> Negotiations { get; set; }
+        public virtual IList<NegotiationDO> Negotiations { get; set; }
 
         [InverseProperty("BookingRequests")]
         public virtual List<CalendarDO> Calendars { get; set; }
