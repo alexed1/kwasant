@@ -17,6 +17,7 @@ namespace Data.Repositories
         {
             //_curValidator.ValidateAndThrow(entity); //fix this
             base.Add(entity);
+/*
             // check default calendar
             UnitOfWork.CalendarRepository.CheckUserHasCalendar(entity);
             // do not send to Admins
@@ -24,7 +25,21 @@ namespace Data.Repositories
             {
                 AlertManager.CustomerCreated(this.UnitOfWork, entity);
             }
+*/
         }
+
+        public UserDO GetByEmailAddress(EmailAddressDO emailAddressDO)
+        {
+            string fromEmailAddress = emailAddressDO.Address;
+            UserRepository userRepo = UnitOfWork.UserRepository;
+
+            UserDO curUser = userRepo.DBSet.Local.FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress) ??
+                             userRepo.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
+
+            return curUser;
+        }
+
+/*
         public UserDO GetOrCreateUser(EmailAddressDO emailAddressDO)
         {
             string fromEmailAddress = emailAddressDO.Address;
@@ -43,7 +58,9 @@ namespace Data.Repositories
             }
             return curUser;
         }
+*/
 
+/*
         public UserDO GetOrCreateUser(BookingRequestDO curMessage)
         {
             string fromEmailAddress = curMessage.From.Address;
@@ -65,5 +82,6 @@ namespace Data.Repositories
             }
             return curUser;
         }
+*/
     }
 }

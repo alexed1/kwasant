@@ -1,5 +1,7 @@
 ﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
 using System;
+using System.Diagnostics;
+using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Microsoft.WindowsAzure;
@@ -11,7 +13,7 @@ namespace Data.Infrastructure
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
     {       
-        public delegate void CustomerCreatedHandler(IUnitOfWork uow, DateTime createdDate, UserDO userDO);
+        public delegate void CustomerCreatedHandler(string userId);
         public static event CustomerCreatedHandler AlertCustomerCreated;
 
         public delegate void BookingRequestCreatedHandler(int bookingRequestId);
@@ -37,10 +39,10 @@ namespace Data.Infrastructure
         /// <summary>
         /// Publish Customer Created event
         /// </summary>
-        public static void CustomerCreated(IUnitOfWork uow, UserDO curUser)
+        public static void CustomerCreated(string userId)
         {
             if (AlertCustomerCreated != null)
-                AlertCustomerCreated(uow, DateTime.Now, curUser);
+                AlertCustomerCreated(userId);
         }
 
         public static void BookingRequestCreated(int bookingRequestId)
@@ -90,7 +92,33 @@ namespace Data.Infrastructure
             AlertManager.AlertEmailSent += EmailDispatched;
             AlertManager.AlertBookingRequestCreated += ProcessBookingRequestCreated;
             AlertManager.AlertBookingRequestStateChange += ProcessBookingRequestStateChange;
+            AlertManager.AlertCustomerCreated += NewCustomerCreated;
         }
+
+        private void NewCustomerCreated(string userId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUser = uow.UserRepository.GetByKey(userId);
+                if (curUser == null)
+                    throw new ArgumentException(string.Format("Cannot find a User by given id: {0}", userId), "userId");
+
+                FactDO curAction = new FactDO
+                                       {
+                                           Name = "CustomerCreated",
+                                           PrimaryCategory = "User",
+                                           SecondaryCategory = "Customer",
+                                           Activity = "Created",
+                                           CustomerId = userId,
+                                           CreateDate = DateTimeOffset.Now,
+                                           ObjectId = 0,
+                                           Data = string.Format("User with email {0} created from: {1}", curUser.EmailAddress.Address, new StackTrace())
+                                       };
+                AddFact(uow, curAction);
+                uow.SaveChanges();
+            }
+        }
+
         public void NewEmailReceived(int emailId, string customerId)
         {
             FactDO curAction = new FactDO()
@@ -181,12 +209,6 @@ namespace Data.Infrastructure
         }
         private void SaveFact(FactDO curAction)
         {
-            curAction.Data = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}", 
-                curAction.PrimaryCategory, 
-                curAction.SecondaryCategory, 
-                curAction.Activity, 
-                curAction.ObjectId, 
-                curAction.CustomerId);
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 AddFact(uow, curAction);
@@ -195,6 +217,17 @@ namespace Data.Infrastructure
         }
         private void AddFact(IUnitOfWork uow, FactDO curAction)
         {
+            Debug.Assert(uow != null);
+            Debug.Assert(curAction != null);
+            if (string.IsNullOrEmpty(curAction.Data))
+            {
+                curAction.Data = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
+                    curAction.PrimaryCategory,
+                    curAction.SecondaryCategory,
+                    curAction.Activity,
+                    curAction.ObjectId,
+                    curAction.CustomerId);
+            }
             if (CloudConfigurationManager.GetSetting("LogLevel") == "Verbose")
                 Logger.GetLogger().Info(curAction.Data);
             uow.FactRepository.Add(curAction);

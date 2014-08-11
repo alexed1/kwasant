@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using StructureMap;
 
 namespace KwasantCore.Services
 {
@@ -14,9 +16,9 @@ namespace KwasantCore.Services
 
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
+            var user = new User();
             bookingRequest.BookingRequestState = BookingRequestState.Unprocessed;
-            UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest);
-
+            UserDO curUser = user.GetOrCreate(uow, bookingRequest.From);
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
 
