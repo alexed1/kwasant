@@ -52,7 +52,7 @@ namespace KwasantWeb.App_Start
 
             Mapper.CreateMap<NegotiationDO, EditNegotiationVM>()
                 .ForMember(vm => vm.State, opts => opts.ResolveUsing(n => n.NegotiationState))
-                .ForMember(vm => vm.Attendees, opts => opts.ResolveUsing(n => n.Attendees.Select(a => a.Name).ToList()));
+                .ForMember(vm => vm.Attendees, opts => opts.ResolveUsing(n => n.Attendees.Select(a => a.EmailAddress.Address).ToList()));
 
             Mapper.CreateMap<EditNegotiationVM, NegotiationDO>()
                 .ForMember(n => n.Attendees, opts => opts.Ignore())
