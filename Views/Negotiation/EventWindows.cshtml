@@ -1,4 +1,4 @@
-﻿@model KwasantWeb.ViewModels.CalendarViewModel
+﻿@model KwasantWeb.ViewModels.EventWindowViewModel
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @{
 	ViewBag.Title = "Event ";
@@ -64,8 +64,7 @@
         }
 </style>
 <div id="CalendarDiv1">
-    <input type="button" value="OK" class="btn btn-default" onclick="closethis()" />
-
+    <input type="button" value="OK" class="btn btn-default" style="cursor: pointer;" onclick="Kwasant.IFrame.CloseMe()" />
 </div>
 <input type="hidden" value="21" id="hdnrequestid" name="requestid" />
 
@@ -75,16 +74,13 @@
      
         calendar = $('#CalendarDiv1').KCalendar({
             getCalendarBackendURL: function() {
-                //return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
-                return '@Url.Content("~/Calendar/Day?calendarIDs=" + @Model.LinkedCalendarIDs[1])';
+                return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
             },
             getMonthBackendURL: function () {
-                //return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
-                return '@Url.Content("~/Calendar/Month?calendarIDs=" + @Model.LinkedCalendarIDs[1])';
+                return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
             },
             getNavigatorBackendURL: function() {
-                //return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
-                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + @Model.LinkedCalendarIDs[1])';
+                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
             },  
             getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
             getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
@@ -94,26 +90,10 @@
                     return;
                 }
                 var id = $("#hdnrequestid").val();
-                Kwasant.IFrame.Display('/Event/NewTimeSlot/?calendarID=' + @Model.LinkedCalendarIDs[1] + '&start=' + start + 'z&end=' + end + 'z',
-                {
-                    horizontalAlign: 'right',
-                    callback: calendar.refreshCalendars
-                });
+                Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z', calendar.refreshCalendars);
             },
         }
         );
     });
 
-    function closethis() {
-        $(window.parent.document).find("iframe").each(function () {
-            if ($(this).attr("style").indexOf("z-index") > 0) {
-                if ($(this).attr("style").indexOf("display: none") < 0) {
-                    if($(this).attr("src").indexOf("/Negotiation/Edit") <0){
-                        $(this).remove();
-                    }
-                }
-            }
-        });
-    };
-    
 </script>
