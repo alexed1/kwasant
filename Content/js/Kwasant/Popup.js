@@ -112,14 +112,15 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
         }
     };
 
-    Kwasant.IFrame.DispatchUrlRequest = function(url) {
+    Kwasant.IFrame.DispatchUrlRequest = function(url, callback) {
         var spinner = Kwasant.IFrame.DisplaySpinner();
         $.get(url)
+            .success(callback)
             .fail(function() {
                 alert('Error connecting to server. Your changes were not saved.');
-            }).always(function() {
-                calendar.refreshCalendars();
-                spinner.hide();
+            }).always(function () {
+                if(spinner !== null)
+                    spinner.hide();
             });
     };
     
