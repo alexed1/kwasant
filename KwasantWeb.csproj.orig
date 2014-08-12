@@ -263,7 +263,6 @@
     <Compile Include="App_Start\AutoMapperBootstrapper.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\ListValueResolver.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -311,7 +310,11 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ManageUserViewModel.cs" />
+<<<<<<< HEAD
     <Compile Include="ViewModels\EditNegotiationVM.cs" />
+=======
+    <Compile Include="ViewModels\NegotiationViewModel.cs" />
+>>>>>>> dev
     <Compile Include="ViewModels\QuestionViewModel.cs" />
     <Compile Include="ViewModels\ClarificationRequestViewModel.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
@@ -430,16 +433,10 @@
     <Content Include="Content\img\Cross.png" />
     <Content Include="Content\img\EmailLogo.png" />
     <Content Include="Content\img\favicon.ico" />
-    <Content Include="Content\img\icons\sort_asc.png" />
-    <Content Include="Content\img\icons\sort_asc_disabled.png" />
-    <Content Include="Content\img\icons\sort_both.png" />
-    <Content Include="Content\img\icons\sort_desc.png" />
-    <Content Include="Content\img\icons\sort_desc_disabled.png" />
     <Content Include="Content\img\Management\alexhead.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
-    <Content Include="Content\img\site\email-header.png" />
     <Content Include="Content\img\site\example_using_kwasant_email.png" />
     <Content Include="Content\img\site\from_this_to_this.png" />
     <Content Include="Content\img\site\How_it_works_diagram.png" />
@@ -447,7 +444,6 @@
     <Content Include="Content\img\site\logo.png" />
     <Content Include="Content\img\site\perfect-krawsant.jpg" />
     <Content Include="Content\img\site\perfect-krawsant.png" />
-    <Content Include="Content\img\temp\kwasant_header.png" />
     <Content Include="Content\img\temp\old\background-match.jpg" />
     <Content Include="Content\img\temp\old\background-test5.jpg" />
     <Content Include="Content\img\temp\old\background-test6.jpg" />
