@@ -95,7 +95,17 @@ namespace KwasantCore.Services
             }
         }
 
-        
-              
+        public string Delete(IUnitOfWork uow, int BookingRequestId = 0)
+        {
+            NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.BookingRequestID == BookingRequestId && n.NegotiationState != NegotiationState.Resolved);
+            if (negotiationDO != null)
+            {
+                negotiationDO.NegotiationState = NegotiationState.Invalid;
+                uow.SaveChanges();
+                return "Negotiation Deleted!";
+            }
+            else
+                return "Does not exist!";
+        }
     }
 }
