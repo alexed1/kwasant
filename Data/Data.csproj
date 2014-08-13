@@ -101,6 +101,22 @@
     <Compile Include="Migrations\201408051146274_OrganizeStates.Designer.cs">
       <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408071310263_LinkAnswerToCalendar.cs" />
+    <Compile Include="Migrations\201408071310263_LinkAnswerToCalendar.Designer.cs">
+      <DependentUpon>201408071310263_LinkAnswerToCalendar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408071321043_AnswerDoesntNeedCalendar.cs" />
+    <Compile Include="Migrations\201408071321043_AnswerDoesntNeedCalendar.Designer.cs">
+      <DependentUpon>201408071321043_AnswerDoesntNeedCalendar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408101004077_AddAttendeesToNegotiation.cs" />
+    <Compile Include="Migrations\201408101004077_AddAttendeesToNegotiation.Designer.cs">
+      <DependentUpon>201408101004077_AddAttendeesToNegotiation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408101041136_FixTypeOfKey.cs" />
+    <Compile Include="Migrations\201408101041136_FixTypeOfKey.Designer.cs">
+      <DependentUpon>201408101041136_FixTypeOfKey.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201408051303522_TestFixDelete.cs" />
     <Compile Include="Migrations\201408051303522_TestFixDelete.Designer.cs">
       <DependentUpon>201408051303522_TestFixDelete.cs</DependentUpon>
@@ -108,6 +124,18 @@
     <Compile Include="Migrations\201408051311039_Sync05.08.2014.cs" />
     <Compile Include="Migrations\201408051311039_Sync05.08.2014.Designer.cs">
       <DependentUpon>201408051311039_Sync05.08.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408060827557_Add_TestAccount_to_User.cs" />
+    <Compile Include="Migrations\201408060827557_Add_TestAccount_to_User.designer.cs">
+      <DependentUpon>201408060827557_Add_TestAccount_to_User.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408111407003_AddGUID_ToEvent.cs" />
+    <Compile Include="Migrations\201408111407003_AddGUID_ToEvent.Designer.cs">
+      <DependentUpon>201408111407003_AddGUID_ToEvent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408121644147_Sync-12.08.2014.cs" />
+    <Compile Include="Migrations\201408121644147_Sync-12.08.2014.Designer.cs">
+      <DependentUpon>201408121644147_Sync-12.08.2014.cs</DependentUpon>
     </Compile>
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
@@ -690,11 +718,32 @@
     <EmbeddedResource Include="Migrations\201408051146274_OrganizeStates.resx">
       <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408071310263_LinkAnswerToCalendar.resx">
+      <DependentUpon>201408071310263_LinkAnswerToCalendar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408071321043_AnswerDoesntNeedCalendar.resx">
+      <DependentUpon>201408071321043_AnswerDoesntNeedCalendar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408101004077_AddAttendeesToNegotiation.resx">
+      <DependentUpon>201408101004077_AddAttendeesToNegotiation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408101041136_FixTypeOfKey.resx">
+      <DependentUpon>201408101041136_FixTypeOfKey.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408051303522_TestFixDelete.resx">
       <DependentUpon>201408051303522_TestFixDelete.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408051311039_Sync05.08.2014.resx">
       <DependentUpon>201408051311039_Sync05.08.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408060827557_Add_TestAccount_to_User.resx">
+      <DependentUpon>201408060827557_Add_TestAccount_to_User.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408111407003_AddGUID_ToEvent.resx">
+      <DependentUpon>201408111407003_AddGUID_ToEvent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408121644147_Sync-12.08.2014.resx">
+      <DependentUpon>201408121644147_Sync-12.08.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

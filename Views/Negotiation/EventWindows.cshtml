@@ -1,10 +1,11 @@
-﻿@model KwasantWeb.ViewModels.CalendarViewModel
+﻿@model KwasantWeb.ViewModels.EventWindowViewModel
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @{
 	ViewBag.Title = "Event ";
 }
 @section styles{
     @Styles.Render("~/bundles/css/daypilot")
+    
 }
 @section immediateScripts
 {
@@ -20,14 +21,51 @@
 	@Scripts.Render("~/bundles/js/bootstrap")
 	@Scripts.Render("~/bundles/js/common")
 }
-     
+<style>
+    #toolbar {
+        background: none;
+        border: none;
+        margin: 10px 0px 20px 0px;
+        position: relative;
+        width: 174px;
+      }
 
+        #toolbar a {
+            background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#e2e2e2));
+            background: -webkit-linear-gradient(top, #fafafa 0%, #e2e2e2);
+            background: -moz-linear-gradient(top, #fafafa 0%, #e2e2e2);
+            background: -ms-linear-gradient(top, #fafafa 0%, #e2e2e2);
+            background: -o-linear-gradient(top, #fafafa 0%, #e2e2e2);
+            background: linear-gradient(top, #fafafa 0%, #e2e2e2);
+            border: 1px solid #aaa;
+            font-family: 'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif;
+            color: #666;
+            font-size:12px;
+            display: inline-block;
+            filter: progid:DXImageTransform.Microsoft.Gradient(startColorStr="#fafafa", endColorStr="#e2e2e2");
+            padding: 5px;
+            text-decoration: none;
+        }
+        input[type="submit"].btn, input[type="button"].btn {
+            border: 1px solid #d85e17;
+            background: #d85e17;
+            background-image: none;
+            text-shadow: none;
+            color: #f2e9df;
+            border-radius: 0;
+            transition: all ease-in-out .3s;
+            box-shadow: none;
+            filter: none;
+            padding: 5px 12px;
+            font-size: 12px;
+            position: absolute;
+            right: 0px;
+            font-weight: bold;
+        }
+</style>
 <div id="CalendarDiv1">
-    <input type="button" value="Ok" class="btn btn-default" onclick="processSubmit()" />
-    &nbsp; &nbsp;
-    <a href="#" onclick="closethis();">Cancel</a>
+    <input type="button" value="OK" class="btn btn-default" style="cursor: pointer;" onclick="Kwasant.IFrame.CloseMe()" />
 </div>
-
 <input type="hidden" value="21" id="hdnrequestid" name="requestid" />
 
 <script type="text/javascript">
@@ -52,23 +90,10 @@
                     return;
                 }
                 var id = $("#hdnrequestid").val();
-                Kwasant.IFrame.Display('/Event/NewTimeSlot/?calendarID=' + @Model.LinkedCalendarIDs[1] + '&start=' + start + 'z&end=' + end + 'z',
-                {
-                    horizontalAlign: 'right',
-                    callback: calendar.refreshCalendars
-                });
+                Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z', calendar.refreshCalendars);
             },
         }
         );
     });
 
-    function closethis() {
-        $(window.parent.document).find("iframe").each(function () {
-            if ($(this).attr("style").indexOf("z-index") > 0) {
-                if ($(this).attr("style").indexOf("display: none") < 0) {
-                    $(this).remove();
-                }
-            }
-        });
-    };
 </script>
