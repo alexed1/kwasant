@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authentication\Account.cs" />
+    <Compile Include="Entities\InvitationDO.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.Designer.cs">
       <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
@@ -137,11 +138,17 @@
     <Compile Include="Migrations\201408121644147_Sync-12.08.2014.Designer.cs">
       <DependentUpon>201408121644147_Sync-12.08.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408130809305_Add_InvitationDO.cs" />
+    <Compile Include="Migrations\201408130809305_Add_InvitationDO.Designer.cs">
+      <DependentUpon>201408130809305_Add_InvitationDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
+    <Compile Include="States\ConfirmationStatus.cs" />
     <Compile Include="States\EventCreateType.cs" />
     <Compile Include="States\EventState.cs" />
     <Compile Include="States\EventSyncState.cs" />
+    <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\Templates\_AnswerStatusTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
@@ -153,10 +160,12 @@
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="States\Templates\_ClarificationRequestStateTemplate.cs" />
     <Compile Include="States\Templates\_CommunicationTypeTemplate.cs" />
+    <Compile Include="States\Templates\_ConfirmationStatusTemplate.cs" />
     <Compile Include="States\Templates\_EmailParticipantTypeTemplate.cs" />
     <Compile Include="States\Templates\_EmailStatusTemplate.cs" />
     <Compile Include="States\Templates\_EventSyncStatusTemplate.cs" />
     <Compile Include="States\Templates\_EventCreateTypeTemplate.cs" />
+    <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
     <Compile Include="States\Templates\_NegotiationStateTemplate.cs" />
     <Compile Include="States\Templates\_QuestionStatusTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
@@ -740,6 +749,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408121644147_Sync-12.08.2014.resx">
       <DependentUpon>201408121644147_Sync-12.08.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408130809305_Add_InvitationDO.resx">
+      <DependentUpon>201408130809305_Add_InvitationDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

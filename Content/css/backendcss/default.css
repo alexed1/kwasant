@@ -1276,3 +1276,6 @@ today-calendar-tbl .first-col {
         padding-right: 0;
     }
 }
+.dropdown-menu {
+    text-align:left;
+}
