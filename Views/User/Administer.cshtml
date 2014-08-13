@@ -1,0 +1,32 @@
+﻿@model KwasantWeb.ViewModels.UserAdministerVM
+@{
+    ViewBag.Title = "Administer";
+}
+@section styles{
+    @Styles.Render("~/bundles/css/daypilot")
+}
+@section immediateScripts
+{
+	@Scripts.Render("~/bundles/js/jquery")
+	@Scripts.Render("~/bundles/js/daypilot")
+    @Scripts.Render("~/bundles/js/kwasantcalendar")
+    @Scripts.Render("~/bundles/js/kwasantpopup")
+
+}
+@section scripts
+{
+	@Scripts.Render("~/bundles/js/modernizr")
+	@Scripts.Render("~/bundles/js/bootstrap")
+	@Scripts.Render("~/bundles/js/common")
+}
+<h2>Administer</h2>
+<table width="100%">
+    <tr>
+        <td width="35%" style="vertical-align:top;" id="tduserblock">
+            @Html.Partial("../User/Admin", Model)
+        </td>
+        <td width="65%">
+            @Html.Partial("../Calendar/Show", Model)
+        </td>
+    </tr>
+</table>

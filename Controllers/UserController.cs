@@ -15,12 +15,22 @@ using StructureMap;
 using ViewModel.Models;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
+using KwasantCore.Managers.APIManager.Packagers.DataTable;
 
 namespace KwasantWeb.Controllers
 {
     [KwasantAuthorize(Roles = "Customer")]
     public class UserController : Controller
     {
+        private DataTablesPackager _datatables;
+        private User _user;
+
+        public UserController()
+        {
+            _datatables = new DataTablesPackager();
+            _user = new User();
+        }
+
         [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Index()
         {
@@ -106,6 +116,35 @@ namespace KwasantWeb.Controllers
                 var curManageUserViewModel = AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserViewModel>(tuple);
                 return View(curManageUserViewModel);
             }
+        }
+
+        public ActionResult Administer(UserAdministerVM curUserAdminVM)
+        {
+            if (curUserAdminVM.User == null)
+            {
+                curUserAdminVM = new UserAdministerVM();
+                var curUserId = this.GetUserId();
+                curUserAdminVM.User = _user.GetCurrentUser(curUserId);
+            }
+            return View(curUserAdminVM);
+        }
+
+        public ActionResult ShowUsers()
+        {
+            return View();
+        }
+
+        public ActionResult GetAllUsers()
+        {
+            UsersAdmin currUsersAdmin = new UsersAdmin();
+            var jsonResult = Json(_datatables.Pack(currUsersAdmin.GetUsersAdminViewData()), JsonRequestBehavior.AllowGet);
+            jsonResult.MaxJsonLength = int.MaxValue;
+            return jsonResult;
+        }
+        
+        public ActionResult GetCalendars(string curUserId)
+        {
+            return Json(_datatables.Pack(_user.GetCalendars(curUserId)), JsonRequestBehavior.AllowGet);
         }
 
     }

@@ -135,5 +135,30 @@ namespace KwasantCore.Services
 
             return um;
         }
+
+        public List<CalendarDO> GetCalendars(string curUserId) 
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.CalendarRepository.GetAll().Where(e => e.OwnerID == curUserId).Select(e => new CalendarDO { Id = e.Id, Name = e.Name }).ToList();
+            }
+        }
+
+        public UserDO GetCurrentUser(string curUserId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUserDO = uow.UserRepository.GetByKey(curUserId);
+                return new UserDO()
+                {
+                    Calendars = curUserDO.Calendars,
+                    AccessFailedCount = curUserDO.AccessFailedCount,
+                    Email = curUserDO.Email,
+                    BookingRequests = curUserDO.BookingRequests,
+                    Id = curUserDO.Id,
+                    EmailAddress = curUserDO.EmailAddress
+                };
+            }
+        }
     }
 }
