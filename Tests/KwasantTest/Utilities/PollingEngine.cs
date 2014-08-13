@@ -18,13 +18,43 @@ namespace KwasantTest.Utilities
 {
     class PollingEngine
     {
+        class Timer : IDisposable
+        {
+            private readonly TimeSpan _timeout;
+            private readonly Stopwatch _timer = new Stopwatch();
+
+            public Timer(TimeSpan timeout, string description = null)
+            {
+                _timeout = timeout;
+                Description = description;
+            }
+
+            public void Start()
+            {
+                _timer.Start();
+            }
+
+            public bool TimedOut { get { return _timer.Elapsed >= _timeout; } }
+
+            public string Description { get; private set; }
+
+            public void Dispose()
+            {
+                _timer.Stop();
+            }
+        }
+
         private IUnitOfWork _uow;
         private OutboundEmail _outboundDaemon;
         //POLLING MACHINERY
 
+        private readonly List<Timer> _timers = new List<Timer>(); 
+
+/*
         public Stopwatch totalOperationDuration = new Stopwatch();
-        public Stopwatch pollingDuration = new Stopwatch();
+        public List<Stopwatch> pollingDurations = new List<Stopwatch>();
         public Stopwatch requestToEmailDuration = new Stopwatch();
+*/
         public TimeSpan maxPollingTime = TimeSpan.FromSeconds(90);
         public TimeSpan requestToEmailTimeout = TimeSpan.FromSeconds(60);
         public TimeSpan totalOperationTimeout = TimeSpan.FromSeconds(120);
@@ -37,13 +67,27 @@ namespace KwasantTest.Utilities
              _outboundDaemon = new OutboundEmail();
         }
 
+/*
         public void StartTimer()
         {
             //adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
             //AddNewTestCustomer(testEmail.From); This should not be necessary. better approach is to create the test user at the same time we generate other fixtures, and save them together.
             
             totalOperationDuration.Start();
-            pollingDuration.Start();
+        }
+*/
+
+        private Timer CreateTimer(TimeSpan timeout, string description = null)
+        {
+            var timer = new Timer(timeout, description);
+            _timers.Add(timer);
+            timer.Start();
+            return timer;
+        }
+
+        public IDisposable NewTimer(TimeSpan timeout, string description = null)
+        {
+            return CreateTimer(timeout, description);
         }
 
         public void FlushOutboundEmailQueues()
@@ -55,29 +99,30 @@ namespace KwasantTest.Utilities
         //The actual query is passed in as a delegate method called injectedQuery, which is of type InjectedEmailQuery
         //targetCriteria is passed through this method into the injectedQuery
         //this allows this method's machinery to be reused for many different kinds of email-related queries.
-        public List<EmailDO> PollForEmail(InjectedEmailQuery injectedQuery, EmailDO targetCriteria, string targetType,  ImapClient curClient, InboundEmail inboundDaemon)
+        public List<EmailDO> PollForEmail(InjectedEmailQuery injectedQuery, EmailDO targetCriteria, string targetType,  ImapClient curClient, InboundEmail inboundDaemon = null)
         {
             List<EmailDO> queryResults;
             List<EmailDO> unreadMessages;
             
 
             //run inbound daemon, checking for a generated BookingRequest, until success or timeout
-
-            BookingRequestDO request;
-            do
+            using (var timer = this.CreateTimer(maxPollingTime, "Polling"))
             {
-                if (targetType == "intake")
-                { 
-                    //querying one of our intake accounts. Might need to kick the Daemon, like getting a car engine to turn over
-                    DaemonTests.RunDaemonOnce(inboundDaemon);
-                }
+                BookingRequestDO request;
+                do
+                {
+                    if (inboundDaemon != null && targetType == "intake")
+                    {
+                        //querying one of our intake accounts. Might need to kick the Daemon, like getting a car engine to turn over
+                        DaemonTests.RunDaemonOnce(inboundDaemon);
+                    }
 
-              
-                unreadMessages = GetUnreadMessages(curClient);
-                queryResults = injectedQuery(targetCriteria, unreadMessages).ToList();
-                Console.WriteLine(String.Format("queryResults count is {0}",queryResults.Count()));
-            } while (queryResults.Count == 0 && pollingDuration.Elapsed < maxPollingTime);
-            pollingDuration.Stop();
+
+                    unreadMessages = GetUnreadMessages(curClient);
+                    queryResults = injectedQuery(targetCriteria, unreadMessages).ToList();
+                    Console.WriteLine(String.Format("queryResults count is {0}", queryResults.Count()));
+                } while (queryResults.Count == 0 && !timer.TimedOut);
+            }
             return queryResults;
         }
 
@@ -103,11 +148,13 @@ namespace KwasantTest.Utilities
 
         public void CheckTimeouts()
         {
-            Assert.Less(pollingDuration.Elapsed, maxPollingTime, "Polling Duration timed out.");
+            Assert.That(_timers.All(timer => !timer.TimedOut), string.Join("\r\n", _timers.Where(timer => timer.TimedOut).Select(t => string.Format("{0} timed out.", t.Description))));
 
+/*
             //these are old and should be generalized:
             Assert.Less(requestToEmailDuration.Elapsed, requestToEmailTimeout, "BookingRequest to Invitation conversion timed out.");
             Assert.Less(totalOperationDuration.Elapsed, totalOperationTimeout, "Workflow timed out.");
+*/
         }
               //====================================
 

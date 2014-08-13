@@ -53,13 +53,16 @@ namespace KwasantTest.Services
         private PollingEngine _polling;
 
 
-
-        public NegotiationTests()
+        [SetUp]
+        public void SetUp()
         {
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
+            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
+
             _negotiation = new Negotiation();
+            _fixture = new FixtureData();
+            _polling = new PollingEngine(_uow);
         }
-
-
 
    
         //This method takes a NegotiationId as input that must resolve to a Negotiation with status "Unresolved".
@@ -84,7 +87,7 @@ namespace KwasantTest.Services
            
 
 
-            string targetAddress = testUser1.EmailAddress.Address;
+            string targetAddress = testUser1.EmailAddress.Address; // MUST BE integration@kwawant
             string targetPassword = "thorium65";
             ImapClient client = new ImapClient("imap.gmail.com", 993, targetAddress, targetPassword, AuthMethod.Login, true);
             InboundEmail inboundDaemon = new InboundEmail();
@@ -97,22 +100,20 @@ namespace KwasantTest.Services
             _uow.SaveChanges();
 
 
-            //Start Timer
-            _polling.StartTimer();
-
             //EXECUTE
-            _negotiation.Process(testNegotiation);
 
-            //make sure that the emails go out. this may not be necessary
-            _polling.FlushOutboundEmailQueues();
+            //Start Timer
+            using (_polling.NewTimer(_polling.totalOperationTimeout, "Workflow"))
+            {
+                _negotiation.Process(testNegotiation);
 
-
+                //make sure that the emails go out. this may not be necessary
+                _polling.FlushOutboundEmailQueues();
+            }
 
             //VERIFY
+
             //Verify that attendee has received an appropriate ClarificationRequest.
-
-            List<EmailDO> unreadMessages = _polling.GetUnreadMessages(client);
-
             //If attendee has received the CR, the first EmailDO should have certain characteristics
             ClarificationRequestDO foundCR = PollForClarificationRequest(testAttendee1, client, inboundDaemon);
             
