@@ -9,245 +9,252 @@
 
     <script src="/Content/js/Kwasant/Popup.js"></script>
     <script>
-        $(function() {
-            $('#questionContainer').hide();
-            $('#textAnswerContainer').hide();
-            $('#eventWindowAnswerContainer').hide();
+    $(function() {
+        $('#questionContainer').hide();
+        $('#textAnswerContainer').hide();
+        $('#eventWindowAnswerContainer').hide();
 
-            //Now we setup our values
-            $('#NegName').val('@Model.Name');
-            
-            data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a =>
+        //Now we setup our values
+        $('#NegName').val('@Model.Name');
+
+        data = [@Html.Raw(String.Join(",", Model.Attendees.Select(a =>
                                 "{id: '" + a + "', text: '" + a + "'}"
                                 )))];
 
-            $('#attendeesSel').select2({
-                createSearchChoice: function (term) {
-                    return { id: term, text: term };
-                },
-                validateFormat: function (term) {
-                    if (!isEmail(term))
-                        return "Invalid Email";
-                    return null;
-                },
-                multiple: true,
-                data: [],
-                width: '100%',
-            });
-            $('#attendeesSel').select2('data', data);
+        $('#attendeesSel').select2({
+            createSearchChoice: function (term) {
+                return { id: term, text: term };
+            },
+            validateFormat: function (term) {
+                if (!isEmail(term))
+                    return "Invalid Email";
+                return null;
+            },
+            multiple: true,
+            data: [],
+            width: '100%',
+        });
+        $('#attendeesSel').select2('data', data);
 
-            @{
+        @{
                 @:var question;
-                @:var answer;
-                foreach (var question in Model.Questions)
+                                @:var answer;
+                                foreach (var question in Model.Questions)
                 {
                     @:question = $(addQuestion(true));
-                    @:question.attr('questionID', @question.Id);
-                    @:question.attr('questionStatus', @question.Status);
-                    @:question.find('#questionText').val("@question.Text");
-                    @:question.find('input[type="radio"][group="questionType"]').filter(function () { return $(this).val() === "@question.AnswerType"; }).get(0).checked = true;
-                    foreach (var answer in question.Answers)
+                                    @:question.attr('questionID', @question.Id);
+                                    @:question.attr('questionStatus', @question.Status);
+                                    @:question.find('#questionText').val("@question.Text");
+                                    @:question.find('input[type="radio"][group="questionType"]').filter(function () { return $(this).val() === "@question.AnswerType"; }).get(0).checked = true;
+                                    foreach (var answer in question.Answers)
                     {
                         @:answer = $(addAnswer(question, true));
-                        @:answer.attr('answerID', @answer.Id);
-                        if (answer.CalendarID != null)
+                                        @:answer.attr('answerID', @answer.Id);
+                                        if (answer.CalendarID != null)
                         {
                             @:answer.attr('calendarID', @answer.CalendarID);
-                        }
+                                        }
                         if (!String.IsNullOrEmpty(answer.Text))
                         {
                             @:answer.find('#answerText').val('@answer.Text');
-                            @:answer.find('#answerStatus').val('@answer.AnswerState');
-                        }
+                                            @:answer.find('#answerStatus').val('@answer.AnswerState');
+                                        }
                     }
                 }
             }
+    });
+
+    var negID = @(Model.Id == null ? "null" : Model.Id.ToString());
+
+
+    function getNegotiationData() {
+        var negotiation = {};
+        negotiation.Name = $('#NegName').val();
+        negotiation.BookingRequestID = @Model.BookingRequestID;
+        negotiation.Id = negID;
+        negotiation.State = @Model.State;
+
+        var selectedAttendees = $('#attendeesSel').val();
+        var attendees = [];
+        if (selectedAttendees != "")
+            attendees = selectedAttendees.split(',');
+        negotiation.Attendees = attendees;
+
+        negotiation.Questions = $.map($('#appendquestinoId .questionBox'), function(element) {
+            element = $(element);
+            var questionID = element.attr('questionID');
+            var questionStatus = element.attr('questionStatus');
+            var negotiationID = negotiation.Id = negID;
+            var questionText = element.find('#questionText').val();
+            var selectedType = element.find('input[type="radio"][group="questionType"]').filter(function() {
+                return $(this).get(0).checked;
+            }).val();
+
+            var answerID;
+            var textAnswers = $.map(element.find('#appendanswerId .answerBox'), function(answerElement) {
+                answerElement = $(answerElement);
+                answerID = answerElement.attr('answerID');
+                var answerText = answerElement.find('#answerText').val();
+                var answerStatus = answerElement.find('#answerStatus').val();
+
+                return { ID: answerID, QuestionID: questionID, Text: answerText, AnswerState: answerStatus };
+            });
+
+            var eventWindowAnswers = $.map(element.find('#appendanswerId .eventWindowAnswerBox'), function(answerElement) {
+                answerElement = $(answerElement);
+                answerID = answerElement.attr('answerID');
+                var calendarID = answerElement.attr('calendarID');
+
+                return { ID: answerID, QuestionID: questionID, CalendarID: calendarID, AnswerState: @AnswerState.Unstarted };
+            });
+
+            var i;
+            var answers = [];
+            for (i = 0; i < textAnswers.length; i++)
+                answers.push(textAnswers[i]);
+            for (i = 0; i < eventWindowAnswers.length; i++)
+                answers.push(eventWindowAnswers[i]);
+
+            return { Id: questionID, NegotiationID: negotiationID, Status : questionStatus, Text: questionText, AnswerType: selectedType, Answers: answers };
         });
+        return negotiation;
+    }
 
+    function submitNegotiation() {
+        var spinner = Kwasant.IFrame.DisplaySpinner();
 
-        function getNegotiationData() {
-            var negotiation = {};
-            negotiation.Name = $('#NegName').val();
-            negotiation.BookingRequestID = @Model.BookingRequestID;
-            negotiation.Id = @Model.Id;
-            negotiation.State = @Model.State;
-            negotiation.Attendees = $('#attendeesSel').val().split(',');
+        var negotiation = getNegotiationData();
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            contentType: 'application/json',
+            url: '/Negotiation/ProcessSubmittedForm',
+            data: JSON.stringify(negotiation)
+        })
+        .success(function(negotiationID) {
+            Kwasant.IFrame.CloseMe(negotiationID);
+        })
+        .fail(function() {
+            alert('An error occured on the server. Your changes have not been saved.');
+        })
+        .always(function() {
+            if (spinner !== null) {
+                spinner.hide();
+            }
+        });
+    }
 
-            negotiation.Questions = $.map($('#appendquestinoId .questionBox'), function(element) {
-                element = $(element);
-                var questionID = element.attr('questionID');
-                var questionStatus = element.attr('questionStatus');
-                var negotiationID = negotiation.Id = @Model.Id;
-                var questionText = element.find('#questionText').val();
-                var selectedType = element.find('input[type="radio"][group="questionType"]').filter(function() {
-                    return $(this).get(0).checked;
-                }).val();
+    function addQuestion(immediate) {
+        var clonedHTML = $('#questionContainer').clone();
 
-                var answerID;
-                var textAnswers = $.map(element.find('#appendanswerId .answerBox'), function(answerElement) {
-                    answerElement = $(answerElement);
-                    answerID = answerElement.attr('answerID');
-                    var answerText = answerElement.find('#answerText').val();
-                    var answerStatus = answerElement.find('#answerStatus').val();
+        var radioButtons = clonedHTML.find('input[type="radio"][group="questionType"]');
+        var newGroupName = guid();
+        radioButtons.attr('name', newGroupName);
 
-                    return { ID: answerID, QuestionID: questionID, Text: answerText, AnswerState: answerStatus };
+        clonedHTML.attr('questionStatus', @QuestionState.Unanswered);
+
+        $('#appendquestinoId').append(clonedHTML);
+        if (immediate)
+            clonedHTML.show();
+        else
+            clonedHTML.slideDown();
+        return clonedHTML;
+    }
+
+    function startEventWindowSelection(obj) {
+        var answerBox = $(obj).closest('.eventWindowAnswerBox');
+        var calendarID = answerBox.attr('calendarID');
+        if (calendarID === undefined)
+            calendarID = null;
+
+        var launchCalendar = function(calID) {
+            answerBox.attr('calendarID', calID);
+            Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID,
+                {
+                    horizontalAlign: 'left',
                 });
+        };
 
-                var eventWindowAnswers = $.map(element.find('#appendanswerId .eventWindowAnswerBox'), function(answerElement) {
-                    answerElement = $(answerElement);
-                    answerID = answerElement.attr('answerID');
-                    var calendarID = answerElement.attr('calendarID');
-
-                    return { ID: answerID, QuestionID: questionID, CalendarID: calendarID, AnswerState: @AnswerState.Unstarted };
-                });
-
-                var i;
-                var answers = [];
-                for (i = 0; i < textAnswers.length; i++)
-                    answers.push(textAnswers[i]);
-                for (i = 0; i < eventWindowAnswers.length; i++)
-                    answers.push(eventWindowAnswers[i]);
-
-                return { Id: questionID, NegotiationID: negotiationID, Status : questionStatus, Text: questionText, AnswerType: selectedType, Answers: answers };
-            });
-            return negotiation;
+        if (calendarID == null) {
+            Kwasant.IFrame.DispatchUrlRequest('/Question/EditTimeslots?calendarID=null&negotiationID=' + negID, launchCalendar);
+        } else {
+            launchCalendar(calendarID);
         }
+    }
 
-        function submitNegotiation() {
-            var spinner = Kwasant.IFrame.DisplaySpinner();
-
-            var negotiation = getNegotiationData();
-            $.ajax({
-                type: "POST",
-                dataType: 'json',
-                contentType: 'application/json',
-                url: '/Negotiation/ProcessSubmittedForm',
-                data: JSON.stringify(negotiation)
-            })
-            .success(function() {
-                Kwasant.IFrame.CloseMe(true);
-            })
-            .fail(function() {
-                alert('An error occured on the server. Your changes have not been saved.');
-            })
-            .always(function() {
-                if (spinner !== null) {
-                    spinner.hide();
-                }
-            });
-        }
-
-        function addQuestion(immediate) {
-            var clonedHTML = $('#questionContainer').clone();
-            
-            var radioButtons = clonedHTML.find('input[type="radio"][group="questionType"]');
-            var newGroupName = guid();
-            radioButtons.attr('name', newGroupName);
-
-            clonedHTML.attr('questionStatus', @QuestionState.Unanswered);
-
-            $('#appendquestinoId').append(clonedHTML);
+    function addAnswer(obj, immediate) {
+        var parentBox = $(obj).closest('.questionBox');
+        var selectedType = parentBox.find('input[type="radio"][group="questionType"]').filter(function() {
+            return $(this).get(0).checked;
+        });
+        var clonedHTML;
+        var eventType = selectedType.val();
+        if (eventType === "Text") {
+            clonedHTML = $('#textAnswerContainer').clone();
+            parentBox.find('#appendanswerId').append(clonedHTML);
             if (immediate)
                 clonedHTML.show();
             else
                 clonedHTML.slideDown();
-            return clonedHTML;
+        } else if (eventType === "Timeslot") {
+            clonedHTML = $('#eventWindowAnswerContainer').clone();
+            parentBox.find('#appendanswerId').append(clonedHTML);
+            if (immediate)
+                clonedHTML.show();
+            else
+                clonedHTML.slideDown();
         }
 
-        function startEventWindowSelection(obj) {
-            var answerBox = $(obj).closest('.eventWindowAnswerBox');
-            var calendarID = answerBox.attr('calendarID');
-            if (calendarID === undefined)
-                calendarID = null;
+        parentBox.find('#divAddAnswer').hide();
+        var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
+        eventTypeButtons.prop('disabled', true);
+        eventTypeButtons.prop('title', 'Unable to change question type while answers exist.');
 
-            var launchCalendar = function(calID) {
-                answerBox.attr('calendarID', calID);
-                Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID,
-                    {
-                        horizontalAlign: 'left',
-                    });
-            };
+        return clonedHTML;
+    }
 
-            if (calendarID == null) {
-                Kwasant.IFrame.DispatchUrlRequest('/Question/EditTimeslots?calendarID=null&negotiationID=@Model.Id', launchCalendar);
-            } else {
-                launchCalendar(calendarID);
-            }
-        }
+    function removeQuestion(obj) {
+        $(function() {
+            $(obj).closest('.questionBox').slideUp("normal", function() { $(this).remove(); });
+        });
+    }
 
-        function addAnswer(obj, immediate) {
-            var parentBox = $(obj).closest('.questionBox');
-            var selectedType = parentBox.find('input[type="radio"][group="questionType"]').filter(function() {
-                return $(this).get(0).checked;
+    function removeEventWindowAnswer(obj) {
+        $(function() {
+            $(obj).closest('.eventWindowAnswerBox').slideUp("normal", function() {
+
+                var parentBox = $(obj).closest('.questionBox');
+
+                $(this).remove();
+
+                if (parentBox.find('.eventWindowAnswerBox').length === 0) {
+                    var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
+                    eventTypeButtons.removeAttr('disabled');
+                    eventTypeButtons.removeAttr('title', '');
+
+                    parentBox.find('#divAddAnswer').show();
+                }
             });
-            var clonedHTML;
-            var eventType = selectedType.val();
-            if (eventType === "Text") {
-                clonedHTML = $('#textAnswerContainer').clone();
-                parentBox.find('#appendanswerId').append(clonedHTML);
-                if (immediate)
-                    clonedHTML.show();
-                else
-                    clonedHTML.slideDown();
-            } else if (eventType === "Timeslot") {
-                clonedHTML = $('#eventWindowAnswerContainer').clone();
-                parentBox.find('#appendanswerId').append(clonedHTML);
-                if (immediate)
-                    clonedHTML.show();
-                else
-                    clonedHTML.slideDown();
-            }
+        });
+    }
 
-            parentBox.find('#divAddAnswer').hide();
-            var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
-            eventTypeButtons.prop('disabled', true);
-            eventTypeButtons.prop('title', 'Unable to change question type while answers exist.');
+    function removeAnswer(obj) {
+        $(function() {
+            $(obj).closest('.answerBox').slideUp("normal", function() {
+                var parentBox = $(obj).closest('.questionBox');
 
-            return clonedHTML;
-        }
+                $(this).remove();
 
-        function removeQuestion(obj) {
-            $(function() {
-                $(obj).closest('.questionBox').slideUp("normal", function() { $(this).remove(); });
+                if (parentBox.find('.answerBox').length === 0) {
+                    var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
+                    eventTypeButtons.removeAttr('disabled');
+                    eventTypeButtons.removeAttr('title', '');
+
+                    parentBox.find('#divAddAnswer').show();
+                }
             });
-        }
-
-        function removeEventWindowAnswer(obj) {
-            $(function() {
-                $(obj).closest('.eventWindowAnswerBox').slideUp("normal", function() {
-
-                    var parentBox = $(obj).closest('.questionBox');
-
-                    $(this).remove();
-
-                    if (parentBox.find('.eventWindowAnswerBox').length === 0) {
-                        var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
-                        eventTypeButtons.removeAttr('disabled');
-                        eventTypeButtons.removeAttr('title', '');
-
-                        parentBox.find('#divAddAnswer').show();
-                    }
-                });
-            });
-        }
-
-        function removeAnswer(obj) {
-            $(function() {
-                $(obj).closest('.answerBox').slideUp("normal", function() {
-                    var parentBox = $(obj).closest('.questionBox');
-
-                    $(this).remove();
-
-                    if (parentBox.find('.answerBox').length === 0) {
-                        var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
-                        eventTypeButtons.removeAttr('disabled');
-                        eventTypeButtons.removeAttr('title', '');
-                        
-                        parentBox.find('#divAddAnswer').show();
-                    }
-                });
-            });
-        }
+        });
+    }
     </script>
 }
 @section scripts

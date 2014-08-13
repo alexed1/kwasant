@@ -12,7 +12,7 @@ namespace KwasantWeb.ViewModels
             Attendees = new List<string>();
         }
 
-        public int Id { get; set; }        
+        public int? Id { get; set; }        
         public int BookingRequestID { get; set; }
         public int State { get; set; }
         public string Name { get; set; }

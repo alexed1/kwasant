@@ -22,7 +22,7 @@ namespace KwasantWeb.Controllers
             _question = new Question();
         }
 
-        public ActionResult EditTimeslots(int? calendarID, int negotiationID)
+        public ActionResult EditTimeslots(int? calendarID, int? negotiationID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

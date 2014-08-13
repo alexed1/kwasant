@@ -73,7 +73,7 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 NegotiationDO negotiationDO;
-                if (value.Id == 0)
+                if (value.Id == null)
                 {
                     negotiationDO = new NegotiationDO();
                     uow.NegotiationsRepository.Add(negotiationDO);
@@ -140,10 +140,17 @@ namespace KwasantWeb.Controllers
                     }
                 }
 
-                uow.SaveChanges();
-            }
+                var calendarIDs = value.Questions.SelectMany(q => q.Answers.Select(a => a.CalendarID)).Where(c => c != null).ToList();
+                var calendars = uow.CalendarRepository.GetQuery().Where(c => c.NegotiationID == null && calendarIDs.Contains(c.Id));
+                foreach (var calendar in calendars)
+                {
+                    calendar.Negotiation = negotiationDO;
+                }
 
-            return Json(true, JsonRequestBehavior.AllowGet);
+                uow.SaveChanges();
+
+                return Json(negotiationDO.Id, JsonRequestBehavior.AllowGet);
+            }
         }
     }
 }
