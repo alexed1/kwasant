@@ -845,7 +845,9 @@ today-calendar-tbl .first-col {
     }
 }
 
-
+.dropdown-menu {
+    text-align:left;
+}
 /*Negotiation*/
 /*05/Aug/2014*/
 
