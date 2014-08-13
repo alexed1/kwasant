@@ -46,6 +46,8 @@ namespace KwasantCore.Services
 
         public UserDO Get(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
         {
+            if (bookingRequestDO == null)
+                throw new ArgumentNullException("bookingRequestDO");
             return Get(uow, bookingRequestDO.From);
         }
 
@@ -77,44 +79,28 @@ namespace KwasantCore.Services
                 var curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress);
                 var curUser = Create(uow, curEmailAddress);
                 uow.SaveChanges();
-                AlertManager.CustomerCreated(curUser.Id);
+                AlertManager.CustomerCreated(curUser);
                 return curUser.Id;
             }
         }
 
-        private UserDO Create(IUnitOfWork uow, EmailAddressDO emailAddressDO)
+        private UserDO Create(IUnitOfWork uow, EmailAddressDO emailAddressDO,
+            string userName = null, string firstName = null, string lastName = null)
         {
-            Debug.Assert(emailAddressDO != null);
-            return Create(uow,
-                          emailAddressDO: emailAddressDO,
-                          userName: emailAddressDO.Address,
-                          firstName: emailAddressDO.Name,
-                          lastName: string.Empty);
-        }
-
-        private UserDO Create(IUnitOfWork uow, EmailAddressDO emailAddressDO, 
-            string userName, string firstName, string lastName)
-        {
+            Debug.Assert(uow != null);
             Debug.Assert(emailAddressDO != null);
             var curUser = new UserDO
             {
-                UserName = userName,
-                FirstName = firstName,
-                LastName = lastName,
+                UserName = userName ?? emailAddressDO.Address,
+                FirstName = firstName ?? emailAddressDO.Name,
+                LastName = lastName ?? string.Empty,
                 EmailAddress = emailAddressDO
             };
-            Create(uow, curUser);
-            return curUser;
-        }
-
-        private void Create(IUnitOfWork uow, UserDO curUser)
-        {
-            Debug.Assert(uow != null);
-            Debug.Assert(curUser != null);
             UserValidator curUserValidator = new UserValidator();
             curUserValidator.ValidateAndThrow(curUser);
             uow.UserRepository.Add(curUser);
             uow.CalendarRepository.CheckUserHasCalendar(curUser);
+            return curUser;
         }
 
         public UserDO Register (IUnitOfWork uow, string userName, string password, string role)

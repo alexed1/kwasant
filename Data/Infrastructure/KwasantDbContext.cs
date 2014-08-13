@@ -239,7 +239,8 @@ namespace Data.Infrastructure
 
             modelBuilder.Entity<NegotiationDO>()
                 .HasMany(e => e.Questions)
-                .WithRequired(a => a.Negotiation);
+                .WithRequired(a => a.Negotiation)
+                .WillCascadeOnDelete(true);
             
             modelBuilder.Entity<TrackingStatusDO>()
                 .HasKey(ts => new

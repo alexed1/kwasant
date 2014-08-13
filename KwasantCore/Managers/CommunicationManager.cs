@@ -32,16 +32,17 @@ namespace KwasantCore.Managers
         }
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
-        public void NewCustomerWorkflow(string userId)
+        public void NewCustomerWorkflow(UserDO curUser)
         {
-            GenerateWelcomeEmail(userId);  
+            GenerateWelcomeEmail(curUser);  
         }
 
-        public void GenerateWelcomeEmail(string userId)
+        public void GenerateWelcomeEmail(UserDO user)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curUser = uow.UserRepository.GetByKey(userId);
+                // WARNING: 'user' parameter must not be used as reference in scope of this UnitOfWork as it is attached to another UnitOfWork
+                var curUser = uow.UserRepository.GetByKey(user.Id);
                 EmailDO curEmail = new EmailDO();
                 curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);

@@ -61,7 +61,7 @@ namespace KwasantCore.Services
 
                 if (newUserDO != null)
                 {
-                    AlertManager.CustomerCreated(newUserDO.Id);
+                    AlertManager.CustomerCreated(newUserDO);
                 }
 
                 return curRegStatus;

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -30,13 +31,10 @@ namespace Data.Repositories
 
         public UserDO GetByEmailAddress(EmailAddressDO emailAddressDO)
         {
+            if (emailAddressDO == null)
+                throw new ArgumentNullException("emailAddressDO");
             string fromEmailAddress = emailAddressDO.Address;
-            UserRepository userRepo = UnitOfWork.UserRepository;
-
-            UserDO curUser = userRepo.DBSet.Local.FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress) ??
-                             userRepo.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
-
-            return curUser;
+            return UnitOfWork.UserRepository.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
         }
 
 /*

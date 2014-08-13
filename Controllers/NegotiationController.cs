@@ -7,6 +7,7 @@ using Data.States;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
+using AutoMapper;
 
 
 namespace KwasantWeb.Controllers
@@ -14,44 +15,22 @@ namespace KwasantWeb.Controllers
     //[KwasantAuthorize(Roles = "Admin")]
     public class NegotiationController : Controller
     {
+        private IMappingEngine _mappingEngine;
+
+        public NegotiationController()
+        {
+            _mappingEngine = Mapper.Engine; // should be injected
+        }
         
         public ActionResult Edit(int negotiationID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
+                var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
                 if (negotiationDO == null)
                     throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
-                
-                var model = new NegotiationViewModel
-                {
-                    Id = negotiationDO.Id,
-                    Name = negotiationDO.Name,
-                    BookingRequestID = negotiationDO.BookingRequestID,
-                    State = negotiationDO.NegotiationState,
-                    Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
-                    Questions = negotiationDO.Questions.Select(q =>
-                        new QuestionViewModel
-                        {
-                            AnswerType = q.AnswerType,
-                            Id = q.Id,
-                            Status = q.QuestionStatus,
-                            Text = q.Text,
-                            NegotiationId = negotiationDO.Id,
-                            Answers = q.Answers.Select(a =>
-                            new AnswerViewModel
-                            {
-                                AnswerState = a.AnswerStatus,
-                                Id = a.Id,
-                                QuestionID = q.Id,
-                                Text = a.Text,
-                                ObjectsType = a.ObjectsType,
-                                CalendarID = a.CalendarID
-                            }).ToList()
-                        }
-                        ).ToList()
-                };
 
+                var model = _mappingEngine.Map<EditNegotiationVM>(negotiationDO);
                 return View(model);
             }
         }
@@ -59,7 +38,7 @@ namespace KwasantWeb.Controllers
 
         public ActionResult Create(int bookingRequestID)
         {
-            return View("~/Views/Negotiation/Edit.cshtml", new NegotiationViewModel
+            return View("~/Views/Negotiation/Edit.cshtml", new EditNegotiationVM
             {
                 Name = "Negotiation 1",
                 BookingRequestID = bookingRequestID,
@@ -68,7 +47,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public JsonResult ProcessSubmittedForm(NegotiationViewModel value)
+        public JsonResult ProcessSubmittedForm(EditNegotiationVM value)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -81,64 +60,41 @@ namespace KwasantWeb.Controllers
                 else
                     negotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
 
-                negotiationDO.Name = value.Name;
-                negotiationDO.NegotiationState = value.State;
-                negotiationDO.BookingRequestID = value.BookingRequestID;
+                // these collections will be used further
+                var questions = negotiationDO.Questions.ToArray();
+                var answers = negotiationDO.Questions.SelectMany(q => q.Answers).ToArray();
 
+                negotiationDO = _mappingEngine.Map(value, negotiationDO);
+
+                // NOTE: code below is to remove orphan objects. EF doesn't support their automatic removing.
+                #region Remove Orphan Objects
+                // questions to remove
+                var questionsToRemove = questions
+                    .Select(q => q.Id)
+                    .Except(negotiationDO.Questions.Select(q => q.Id))
+                    .SelectMany(id => questions.Where(q => q.Id == id)).ToArray();
+                // answers to remove. excluding answers of removed questions as they are being removed automatically
+                var answersToRemove = answers
+                    .Select(a => a.Id)
+                    .Except(negotiationDO.Questions.SelectMany(q => q.Answers).Select(a => a.Id))
+                    .SelectMany(id => answers.Where(a => a.Id == id))
+                    .Where(a => !questionsToRemove.Any(q => q.Id == a.QuestionID))
+                    .ToArray();
+
+                foreach (var questionDO in questionsToRemove)
+                {
+                    uow.QuestionsRepository.Remove(questionDO);
+                }
+
+                foreach (var answerDO in answersToRemove)
+                {
+                    uow.AnswersRepository.Remove(answerDO);
+                }
+                #endregion
+
+                // Attendees managing
                 var attendee = new Attendee();
                 attendee.ManageNegotiationAttendeeList(uow, negotiationDO, value.Attendees);
-
-                var proposedQuestionIDs = value.Questions.Select(q => q.Id);
-                //Delete the existing questions which no longer exist in our proposed negotiation
-                var existingQuestions = negotiationDO.Questions.ToList();
-                foreach (var existingQuestion in existingQuestions.Where(q => !proposedQuestionIDs.Contains(q.Id)))
-                {
-                    uow.QuestionsRepository.Remove(existingQuestion);
-                }
-
-                //Here we add/update questions based on our proposed negotiation
-                foreach (var question in value.Questions)
-                {
-                    QuestionDO questionDO;
-                    if (question.Id == 0)
-                    {
-                        questionDO = new QuestionDO();
-                        uow.QuestionsRepository.Add(questionDO);
-                    }
-                    else
-                        questionDO = uow.QuestionsRepository.GetByKey(question.Id);
-
-                    questionDO.Negotiation = negotiationDO;
-                    questionDO.AnswerType = question.AnswerType;
-                    questionDO.QuestionStatus = question.Status;
-                    questionDO.Text = question.Text;
-
-                    var proposedAnswerIDs = question.Answers.Select(a => a.Id);
-                    //Delete the existing answers which no longer exist in our proposed negotiation
-                    var existingAnswers = questionDO.Answers.ToList();
-                    foreach (var existingAnswer in existingAnswers.Where(a => !proposedAnswerIDs.Contains(a.Id)))
-                    {
-                        uow.AnswersRepository.Remove(existingAnswer);
-                    }
-
-                    foreach (var answer in question.Answers)
-                    {
-                        AnswerDO answerDO;
-                        if (answer.Id == 0)
-                        {
-                            answerDO = new AnswerDO();
-                            uow.AnswersRepository.Add(answerDO);
-                        }
-                        else
-                            answerDO = uow.AnswersRepository.GetByKey(answer.Id);
-
-                        answerDO.Question = questionDO;
-                        answerDO.AnswerStatus = answer.AnswerState;
-                        answerDO.CalendarID = answer.CalendarID;
-                        answerDO.Text = answer.Text;
-                        answer.ObjectsType = answer.ObjectsType;
-                    }
-                }
 
                 uow.SaveChanges();
             }

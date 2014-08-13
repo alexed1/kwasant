@@ -105,16 +105,8 @@ namespace Daemons
 
                     unitOfWork.SaveChanges();
 
-                    try
-                    {
-                        // these two calls may be divided by independent exception handling
-                        AlertManager.BookingRequestCreated(bookingRequest.Id);
-                        AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.GetLogger().Error(string.Format("EmailProcessingNotificationFailure Reported. ObjectID = {0}", uid), e);
-                    }
+                    AlertManager.BookingRequestCreated(bookingRequest);
+                    AlertManager.EmailReceived(bookingRequest, bookingRequest.User);
                 }
                 catch (Exception e)
                 {
