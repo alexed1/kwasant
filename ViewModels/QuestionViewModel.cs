@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace KwasantWeb.ViewModels
 {
@@ -15,5 +16,7 @@ namespace KwasantWeb.ViewModels
         public int NegotiationId { get; set; }
         public List<AnswerViewModel> Answers { get; set; }
         public string AnswerType { get; set; }
+        public int? CalendarID { get; set; }
+        public List<QuestionCalendarEventViewModel> CalendarEvents { get; set; }
     }
 }

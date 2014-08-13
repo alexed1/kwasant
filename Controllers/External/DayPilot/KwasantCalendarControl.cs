@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Web.Mvc;
 using DayPilot.Web.Mvc;
 using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Calendar;
@@ -67,6 +70,18 @@ namespace KwasantWeb.Controllers.External.DayPilot
 
             Events = _provider.LoadData();
         }
+
+        //public ActionResult GetEvents()
+        //{
+        //    var rawData  = _provider.LoadData();
+            
+        //    var returnData = rawData.Select(d => new
+        //    {
+        //        d.StartDate,
+        //        d.EndDate,
+        //    });
+
+        //} 
 
         protected override void OnBeforeEventRender(BeforeEventRenderArgs e)
         {

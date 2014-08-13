@@ -24,14 +24,16 @@ namespace Data.Entities
        
         public string Response { get; set; }
 
-      
+        [ForeignKey("Calendar")]
+        public int? CalendarID { get; set; }
+        public virtual CalendarDO Calendar { get; set; }
+
         [ForeignKey("NegotiationId")]
         public virtual NegotiationDO Negotiation { get; set; }
 
         [InverseProperty("Question")]
         public virtual List<AnswerDO> Answers { get; set; }
         #endregion
-
 
         public QuestionDO()
         {

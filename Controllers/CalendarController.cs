@@ -107,6 +107,12 @@ namespace KwasantWeb.Controllers
             return new KwasantNavigatorControl(new EventDataProvider(true, ids)).CallBack(this);
         }
 
+        //public ActionResult GetEvents(string calendarIDs)
+        //{
+        //    var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+        //    return new KwasantCalendarController(new EventDataProvider(true, ids)).GetEvents();
+        //}
+
         public ActionResult Rtl()
         {
             return View();

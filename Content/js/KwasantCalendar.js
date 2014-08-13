@@ -42,6 +42,12 @@
 
         createCalendars();
 
+        this.getEvents = function() {
+            if (storedCalendars.length > 0) {
+                return storedCalendars[0].events.list;
+            }
+            return [];
+        };
 
         //This causes all the widgets (all three month controls and the navigator) to reload data from the server
         this.refreshCalendars = function () {

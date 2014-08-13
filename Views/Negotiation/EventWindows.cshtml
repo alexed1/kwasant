@@ -64,7 +64,10 @@
         }
 </style>
 <div id="CalendarDiv1">
-    <input type="button" value="OK" class="btn btn-default" style="cursor: pointer;" onclick="Kwasant.IFrame.CloseMe()" />
+    <input type="button" value="OK" class="btn btn-default" style="cursor: pointer;" onclick="Kwasant.IFrame.CloseMe({
+    action: true,
+    events: calendar.getEvents()
+})" />
 </div>
 <input type="hidden" value="21" id="hdnrequestid" name="requestid" />
 
@@ -89,7 +92,6 @@
                 if (Kwasant.IFrame.PopupsActive()) {
                     return;
                 }
-                var id = $("#hdnrequestid").val();
                 Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z', calendar.refreshCalendars);
             },
         }

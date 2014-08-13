@@ -13,6 +13,7 @@
         $('#questionContainer').hide();
         $('#textAnswerContainer').hide();
         $('#eventWindowAnswerContainer').hide();
+        $('#eventWindowRendererTemplate').hide();
 
         //Now we setup our values
         $('#NegName').val('@Model.Name');
@@ -38,28 +39,45 @@
 
         @{
                 @:var question;
-                                @:var answer;
-                                foreach (var question in Model.Questions)
+                        @:var answer;
+                        foreach (var question in Model.Questions)
                 {
                     @:question = $(addQuestion(true));
-                                    @:question.attr('questionID', @question.Id);
-                                    @:question.attr('questionStatus', @question.Status);
-                                    @:question.find('#questionText').val("@question.Text");
-                                    @:question.find('input[type="radio"][group="questionType"]').filter(function () { return $(this).val() === "@question.AnswerType"; }).get(0).checked = true;
-                                    foreach (var answer in question.Answers)
+
+
+
+                    @:question.attr('questionID', @question.Id);
+                            @:question.attr('calendarID', @(question.CalendarID == null ? "null" : question.CalendarID.ToString()));
+                            @:question.attr('questionStatus', @question.Status);
+                            @:question.find('#questionText').val("@question.Text");
+                            @:question.find('input[type="radio"][group="questionType"]').filter(function () { return $(this).val() === "@question.AnswerType"; }).get(0).checked = true;
+                            foreach (var answer in question.Answers)
                     {
                         @:answer = $(addAnswer(question, true));
-                                        @:answer.attr('answerID', @answer.Id);
-                                        if (answer.CalendarID != null)
-                        {
-                            @:answer.attr('calendarID', @answer.CalendarID);
-                                        }
-                        if (!String.IsNullOrEmpty(answer.Text))
+                                @:answer.attr('answerID', @answer.Id);
+                                if (!String.IsNullOrEmpty(answer.Text))
                         {
                             @:answer.find('#answerText').val('@answer.Text');
-                                            @:answer.find('#answerStatus').val('@answer.AnswerState');
-                                        }
-                    }
+                                    @:answer.find('#answerStatus').val('@answer.AnswerState');
+                                }
+
+                        @:questionEventWindows = [];
+                                foreach (var calendarEvent in question.CalendarEvents)
+                        {
+                            @:var startDate = new Date(@calendarEvent.StartDate.Year, (@calendarEvent.StartDate.Month - 1), @calendarEvent.StartDate.Day, @calendarEvent.StartDate.Hour, @calendarEvent.StartDate.Minute, @calendarEvent.StartDate.Millisecond)
+                                    @:var endDate = new Date(@calendarEvent.EndDate.Year, (@calendarEvent.EndDate.Month - 1), @calendarEvent.EndDate.Day, @calendarEvent.EndDate.Hour, @calendarEvent.EndDate.Minute, @calendarEvent.EndDate.Millisecond)
+
+    						@:questionEventWindows.push({
+            @:  startDate: startDate.toDateString(),
+                            @:  startTime: startDate.getHours() + ':' + startDate.getMinutes(),
+    						@:
+                            @:  endDate: endDate.toDateString(),
+                            @:  endTime: endDate.getHours() + ':' + endDate.getMinutes(),
+                                        @:});
+
+                        }
+                    @:renderEvents(answer, questionEventWindows);
+                            }
                 }
             }
     });
@@ -83,6 +101,7 @@
         negotiation.Questions = $.map($('#appendquestinoId .questionBox'), function(element) {
             element = $(element);
             var questionID = element.attr('questionID');
+            var calendarID = element.attr('calendarID');
             var questionStatus = element.attr('questionStatus');
             var negotiationID = negotiation.Id = negID;
             var questionText = element.find('#questionText').val();
@@ -103,9 +122,8 @@
             var eventWindowAnswers = $.map(element.find('#appendanswerId .eventWindowAnswerBox'), function(answerElement) {
                 answerElement = $(answerElement);
                 answerID = answerElement.attr('answerID');
-                var calendarID = answerElement.attr('calendarID');
 
-                return { ID: answerID, QuestionID: questionID, CalendarID: calendarID, AnswerState: @AnswerState.Unstarted };
+                return { ID: answerID, QuestionID: questionID, AnswerState: @AnswerState.Unstarted };
             });
 
             var i;
@@ -115,7 +133,7 @@
             for (i = 0; i < eventWindowAnswers.length; i++)
                 answers.push(eventWindowAnswers[i]);
 
-            return { Id: questionID, NegotiationID: negotiationID, Status : questionStatus, Text: questionText, AnswerType: selectedType, Answers: answers };
+            return { Id: questionID, CalendarID: calendarID, NegotiationID: negotiationID, Status : questionStatus, Text: questionText, AnswerType: selectedType, Answers: answers };
         });
         return negotiation;
     }
@@ -162,16 +180,28 @@
     }
 
     function startEventWindowSelection(obj) {
-        var answerBox = $(obj).closest('.eventWindowAnswerBox');
-        var calendarID = answerBox.attr('calendarID');
+        var questionBox = $(obj).closest('.questionBox');
+        var calendarID = questionBox.attr('calendarID');
         if (calendarID === undefined)
             calendarID = null;
 
         var launchCalendar = function(calID) {
-            answerBox.attr('calendarID', calID);
+            questionBox.attr('calendarID', calID);
             Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID,
                 {
                     horizontalAlign: 'left',
+                    callback: function(result) {
+                        renderEvents(questionBox, $.map(result.events, function(elem, index) {
+                            return {
+                                startDate: elem.start.d.toDateString(),
+                                startTime: elem.start.getHours() + ':' + elem.start.getMinutes(),
+
+                                endDate: elem.end.d.toDateString(),
+                                endTime: elem.end.getHours() + ':' + elem.end.getMinutes()
+                            };
+                        }));
+                    }
+
                 });
         };
 
@@ -179,6 +209,22 @@
             Kwasant.IFrame.DispatchUrlRequest('/Question/EditTimeslots?calendarID=null&negotiationID=' + negID, launchCalendar);
         } else {
             launchCalendar(calendarID);
+        }
+    }
+
+    function renderEvents(questionBox, events) {
+        var eventWindowRenderer = questionBox.find('#eventWindowRenderer');
+        eventWindowRenderer.empty();
+
+        for (var i = 0; i < events.length; i++) {
+            var currEvent = events[i];
+            var eventStr = currEvent.startDate + ' ' + currEvent.startTime + ' - ' + currEvent.endTime
+
+            var clonedHTML = $('#eventWindowRendererTemplate').clone();
+            clonedHTML.html(eventStr);
+
+            eventWindowRenderer.append(clonedHTML);
+            clonedHTML.show();
         }
     }
 
@@ -298,6 +344,13 @@
             border-style: solid;
             border-width: 1px;
         }
+        .eventWindowRendererTemplate {
+            border-color: #D3B9B9;
+            padding: 5px;
+            margin: 10px;
+            border-style: solid;
+            border-width: 1px;
+        } 
         .handIcon {
             cursor: pointer;
         }
@@ -370,11 +423,17 @@
         </table>
     </div>
     
+    <div id="eventWindowRendererTemplate" class="eventWindowRendererTemplate">
+
+    </div>
+    
     <div id="eventWindowAnswerContainer" class="eventWindowAnswerBox">
+        <div id="eventWindowRenderer" >
+        </div>
         <table style="width:100%">
             <tr>
                 <td>
-                    <a style="margin-top:10px;margin-bottom:20px;width:100%;" class="cancel-btn pull-left handIcon" name="eventWindow" onclick="startEventWindowSelection(this);">Select Event Windows</a>            
+                    <a style="margin-top:10px;margin-bottom:20px;width:100%;" class="cancel-btn pull-left handIcon" name="eventWindow" onclick="startEventWindowSelection(this);">Edit Event Windows</a>            
                 </td>
                 <td>
                     <img src="~/Content/img/Cross.png" class="handIcon" onclick="removeEventWindowAnswer(this)" />

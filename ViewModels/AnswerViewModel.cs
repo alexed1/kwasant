@@ -7,6 +7,6 @@
         public int AnswerState { get; set; }
         public string ObjectsType { get; set; }
         public string Text { get; set; }
-        public int? CalendarID { get; set; }
+        
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Data.Entities;
@@ -7,7 +8,6 @@ using Data.States;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
-
 
 namespace KwasantWeb.Controllers
 {
@@ -29,6 +29,7 @@ namespace KwasantWeb.Controllers
                     Name = negotiationDO.Name,
                     BookingRequestID = negotiationDO.BookingRequestID,
                     State = negotiationDO.NegotiationState,
+
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
                         new QuestionViewModel
@@ -38,16 +39,22 @@ namespace KwasantWeb.Controllers
                             Status = q.QuestionStatus,
                             Text = q.Text,
                             NegotiationId = negotiationDO.Id,
-                            Answers = q.Answers.Select(a =>
-                            new AnswerViewModel
+                            CalendarEvents = q.Calendar == null ? new List<QuestionCalendarEventViewModel>() : q.Calendar.Events.Select(e => new QuestionCalendarEventViewModel
                             {
-                                AnswerState = a.AnswerStatus,
-                                Id = a.Id,
-                                QuestionID = q.Id,
-                                Text = a.Text,
-                                ObjectsType = a.ObjectsType,
-                                CalendarID = a.CalendarID
-                            }).ToList()
+                                StartDate = e.StartDate,
+                                EndDate = e.EndDate
+                            }).ToList(),
+                            
+                            CalendarID = q.CalendarID,
+                            Answers = q.Answers.Select(a =>
+                                new AnswerViewModel
+                                {
+                                    AnswerState = a.AnswerStatus,
+                                    Id = a.Id,
+                                    QuestionID = q.Id,
+                                    Text = a.Text,
+                                    ObjectsType = a.ObjectsType,
+                                }).ToList()
                         }
                         ).ToList()
                 };
@@ -112,6 +119,7 @@ namespace KwasantWeb.Controllers
                     questionDO.AnswerType = question.AnswerType;
                     questionDO.QuestionStatus = question.Status;
                     questionDO.Text = question.Text;
+                    questionDO.CalendarID = question.CalendarID;
 
                     var proposedAnswerIDs = question.Answers.Select(a => a.Id);
                     //Delete the existing answers which no longer exist in our proposed negotiation
@@ -134,13 +142,12 @@ namespace KwasantWeb.Controllers
 
                         answerDO.Question = questionDO;
                         answerDO.AnswerStatus = answer.AnswerState;
-                        answerDO.CalendarID = answer.CalendarID;
                         answerDO.Text = answer.Text;
                         answer.ObjectsType = answer.ObjectsType;
                     }
                 }
 
-                var calendarIDs = value.Questions.SelectMany(q => q.Answers.Select(a => a.CalendarID)).Where(c => c != null).ToList();
+                var calendarIDs = value.Questions.Select(a => a.CalendarID).Where(c => c != null).ToList();
                 var calendars = uow.CalendarRepository.GetQuery().Where(c => c.NegotiationID == null && calendarIDs.Contains(c.Id));
                 foreach (var calendar in calendars)
                 {
