@@ -24,6 +24,7 @@ namespace Data.Entities
 
         public String FirstName { get; set; }
         public String LastName { get; set; }
+        public Boolean TestAccount { get; set; }
 
         [ForeignKey("EmailAddress")]
         public int EmailAddressID { get; set; }

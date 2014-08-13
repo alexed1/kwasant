@@ -24,19 +24,19 @@ namespace KwasantCore.Services
         {
             _cr = new ClarificationRequest();
         }
-        public string getNegotiationTask(IUnitOfWork uow, int bookingRequestId)
-        {
-            string negotiationLbl = "";
+        //public int? getNegotiationTask(IUnitOfWork uow, int bookingRequestId)
+        //{
+        //    string negotiationLbl = "";
 
-            //var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.RequestId == bookingRequestId && br.State != NegotiationState.Resolved);
-            var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.BookingRequestID == bookingRequestId && br.NegotiationState != NegotiationState.Resolved);
-            if (negotiationdo.Count() > 0)
-                negotiationLbl = "Edit Negotiation";
-            else
-                negotiationLbl = "Create Negotiation";
+        //    //var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.RequestId == bookingRequestId && br.State != NegotiationState.Resolved);
+        //    var negotiationdo = uow.NegotiationsRepository.GetAll().Where(br => br.BookingRequestID == bookingRequestId && br.NegotiationState != NegotiationState.Resolved);
+        //    if (negotiationdo.Count() > 0)
+        //        negotiationLbl = "Edit Negotiation";
+        //    else
+        //        negotiationLbl = "Create Negotiation";
 
-            return negotiationLbl;
-        }
+        //    return negotiationLbl;
+        //}
 
         //generate CR's and dispatch them.
         public void Process(NegotiationDO curNegotiation)
@@ -48,7 +48,7 @@ namespace KwasantCore.Services
                   _cr.Send(cr);
             }
         }
-
+        
         //This will generate CR emails  with a link that takes the recipient to a response view. 
         public List<ClarificationRequestDO> GenerateClarificationRequests(NegotiationDO curNegotiation)
         {
@@ -95,7 +95,17 @@ namespace KwasantCore.Services
             }
         }
 
-        
-              
+        public string Delete(IUnitOfWork uow, int BookingRequestId = 0)
+        {
+            NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.BookingRequestID == BookingRequestId && n.NegotiationState != NegotiationState.Resolved);
+            if (negotiationDO != null)
+            {
+                negotiationDO.NegotiationState = NegotiationState.Invalid;
+                uow.SaveChanges();
+                return "Negotiation Deleted!";
+            }
+            else
+                return "Does not exist!";
+        }
     }
 }
