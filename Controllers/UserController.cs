@@ -118,13 +118,13 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Administer(UserAdministerVM curUserAdminVM)
         {
             if (curUserAdminVM.User == null)
             {
                 curUserAdminVM = new UserAdministerVM();
-                var curUserId = this.GetUserId();
-                curUserAdminVM.User = _user.GetCurrentUser(curUserId);
+                curUserAdminVM.User = _user.GetFirstUser();
             }
             return View(curUserAdminVM);
         }

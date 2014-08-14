@@ -144,11 +144,11 @@ namespace KwasantCore.Services
             }
         }
 
-        public UserDO GetCurrentUser(string curUserId)
+        public UserDO GetFirstUser()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curUserDO = uow.UserRepository.GetByKey(curUserId);
+                var curUserDO = uow.UserRepository.GetAll().First();
                 return new UserDO()
                 {
                     Calendars = curUserDO.Calendars,
