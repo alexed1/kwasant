@@ -42,6 +42,11 @@ namespace KwasantTest.Utilities
             {
                 _timer.Stop();
             }
+
+            public override string ToString()
+            {
+                return string.Format("{0}: {1}", Description, TimedOut ? "Timed Out" : "In Time");
+            }
         }
 
         private IUnitOfWork _uow;
@@ -102,7 +107,7 @@ namespace KwasantTest.Utilities
         public List<EmailDO> PollForEmail(InjectedEmailQuery injectedQuery, EmailDO targetCriteria, string targetType,  ImapClient curClient, InboundEmail inboundDaemon = null)
         {
             List<EmailDO> queryResults;
-            List<EmailDO> unreadMessages;
+            List<EmailDO> unreadMessages = null;
             
 
             //run inbound daemon, checking for a generated BookingRequest, until success or timeout
@@ -116,9 +121,11 @@ namespace KwasantTest.Utilities
                         //querying one of our intake accounts. Might need to kick the Daemon, like getting a car engine to turn over
                         DaemonTests.RunDaemonOnce(inboundDaemon);
                     }
+                    else
+                    {
+                        unreadMessages = GetUnreadMessages(curClient);
+                    }
 
-
-                    unreadMessages = GetUnreadMessages(curClient);
                     queryResults = injectedQuery(targetCriteria, unreadMessages).ToList();
                     Console.WriteLine(String.Format("queryResults count is {0}", queryResults.Count()));
                 } while (queryResults.Count == 0 && !timer.TimedOut);
@@ -129,14 +136,30 @@ namespace KwasantTest.Utilities
         //Loads unread messages from an Imap account
         public List<EmailDO> GetUnreadMessages(ImapClient client)
         {
-            IEnumerable<uint> uids = client.Search(SearchCondition.Unseen()).ToList();
-            MailMessage message;
+            var messages = client.ListMailboxes()
+                .SelectMany(mailbox => client
+                                           .Search(SearchCondition.Unseen(), mailbox)
+                                           .Select(uid => new { Mailbox = mailbox, Uid = uid }))
+                .ToList();
             List<EmailDO> emailList = new List<EmailDO>();
             EmailRepository emailRepo = _uow.EmailRepository;
-            foreach (var uid in uids)
+            foreach (var message in messages)
             {
-                EmailDO email = Email.ConvertMailMessageToEmail(emailRepo,  client.GetMessage(uid));
-                emailList.Add(email);
+                try
+                {
+                    var emailMessage = client.GetMessage(message.Uid);
+                    if (emailMessage.From == null)
+                    {
+                        continue;
+                    }
+                    EmailDO email = Email.ConvertMailMessageToEmail(emailRepo, emailMessage);
+                    emailList.Add(email);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error on converting MailMessage to EmailDO: {0}.", ex.Message);
+                    client.AddMessageFlags(message.Uid, message.Mailbox, MessageFlag.Seen);
+                }
             }
             return emailList;
         }
@@ -148,13 +171,7 @@ namespace KwasantTest.Utilities
 
         public void CheckTimeouts()
         {
-            Assert.That(_timers.All(timer => !timer.TimedOut), string.Join("\r\n", _timers.Where(timer => timer.TimedOut).Select(t => string.Format("{0} timed out.", t.Description))));
-
-/*
-            //these are old and should be generalized:
-            Assert.Less(requestToEmailDuration.Elapsed, requestToEmailTimeout, "BookingRequest to Invitation conversion timed out.");
-            Assert.Less(totalOperationDuration.Elapsed, totalOperationTimeout, "Workflow timed out.");
-*/
+            Assert.True(_timers.All(timer => !timer.TimedOut), string.Join("\r\n", _timers.Where(timer => timer.TimedOut).Select(t => string.Format("{0} timed out.", t.Description))));
         }
               //====================================
 

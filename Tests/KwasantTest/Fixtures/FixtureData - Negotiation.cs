@@ -7,10 +7,12 @@ namespace KwasantTest.Fixtures
     {
         public NegotiationDO TestNegotiation1()
         {
+            var curBookingRequestDO = TestBookingRequest1();
             var curNegotiationDO = new NegotiationDO
             {
                 Id = 1,
-                BookingRequestID = TestBookingRequest1().Id,
+                BookingRequest = curBookingRequestDO,
+                BookingRequestID = curBookingRequestDO.Id,
                 NegotiationState = NegotiationState.InProcess,
                 Name = "Negotiation 1"
             };

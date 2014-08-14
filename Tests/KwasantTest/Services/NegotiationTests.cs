@@ -2,7 +2,6 @@
 using Data.Interfaces;
 using KwasantCore.Services;
 using KwasantTest.Fixtures;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 using Daemons;
 using KwasantTest.Utilities;
@@ -81,21 +80,18 @@ namespace KwasantTest.Services
             //Verify that Clarification Request was received by Attendee
             //Verify that executing link in clarification request produces appropriate view
 
-            BookingRequestDO testBR = _fixture.TestBookingRequest1();
-            UserDO testUser1 = _fixture.TestUser1();
-            AttendeeDO testAttendee1 = _fixture.TestAttendee1();
+            UserDO testUser3 = _fixture.TestUser3();
            
 
 
-            string targetAddress = testUser1.EmailAddress.Address; // MUST BE integration@kwawant
+            string targetAddress = testUser3.EmailAddress.Address; // MUST BE integration@kwawant
             string targetPassword = "thorium65";
             ImapClient client = new ImapClient("imap.gmail.com", 993, targetAddress, targetPassword, AuthMethod.Login, true);
-            InboundEmail inboundDaemon = new InboundEmail();
-            inboundDaemon.username = targetAddress;
-            inboundDaemon.password = targetPassword;
 
-           // AttendeeDO testAttendee2 = _fixture.TestAttendee2();
+            AttendeeDO testAttendee3 = _fixture.TestAttendee3();
             NegotiationDO testNegotiation = _fixture.TestNegotiation1();
+            testNegotiation.BookingRequest.User = testUser3;
+            testNegotiation.Attendees.Add(testAttendee3);
             _uow.NegotiationsRepository.Add(testNegotiation);
             _uow.SaveChanges();
 
@@ -106,6 +102,7 @@ namespace KwasantTest.Services
             using (_polling.NewTimer(_polling.totalOperationTimeout, "Workflow"))
             {
                 _negotiation.Process(testNegotiation);
+                _uow.SaveChanges();
 
                 //make sure that the emails go out. this may not be necessary
                 _polling.FlushOutboundEmailQueues();
@@ -115,8 +112,8 @@ namespace KwasantTest.Services
 
             //Verify that attendee has received an appropriate ClarificationRequest.
             //If attendee has received the CR, the first EmailDO should have certain characteristics
-            ClarificationRequestDO foundCR = PollForClarificationRequest(testAttendee1, client, inboundDaemon);
-            
+            EmailDO foundCR = PollForClarificationRequest(testAttendee3, client);
+            Assert.NotNull(foundCR, "No ClarificationRequest retrieved.");
             //check timeouts
             _polling.CheckTimeouts();
 
@@ -129,18 +126,18 @@ namespace KwasantTest.Services
         public static IEnumerable<EmailDO> InjectedQuery_FindClarificationRequest(EmailDO targetCriteria, List<EmailDO> unreadMessages)
         {
 
-            List<EmailDO> matchingEmails =  unreadMessages.FindAll(um => um.Subject == targetCriteria.Subject && um.To.Equals(targetCriteria.To));
+            List<EmailDO> matchingEmails =  unreadMessages.FindAll(um => um.Subject == targetCriteria.Subject);
             return matchingEmails;
         }
         
         //Inject a query into the email polling engine that looks for a clarification request with characteristics matching the specified Attendee
-        public ClarificationRequestDO PollForClarificationRequest(AttendeeDO testAttendee, ImapClient client, InboundEmail inboundDaemon)
+        public EmailDO PollForClarificationRequest(AttendeeDO testAttendee, ImapClient client)
         {
             EmailDO targetCriteria = new EmailDO();
             targetCriteria.Subject = "We need a little more information from you"; //this is the current subject for clarification requests.
             PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindClarificationRequest;
-            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "external", client, inboundDaemon);
-            return (ClarificationRequestDO)queryResults.First();
+            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "external", client);
+            return queryResults.FirstOrDefault();
 
         }
         

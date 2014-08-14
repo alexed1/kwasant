@@ -86,26 +86,34 @@ namespace Daemons
             }
 
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
-            IEnumerable<uint> uids = client.Search(SearchCondition.Unseen()).ToList();
+            var messages = client.ListMailboxes()
+                .SelectMany(mailbox => client
+                                           .Search(SearchCondition.Unseen(), mailbox)
+                                           .Select(uid => new {Mailbox = mailbox, Uid = uid}))
+                .ToList();
             
 
 
             string logString;
 
             //the difference in syntax makes it easy to have nonzero hits stand out visually in the log dashboard
-            if (uids.Any())           
-                logString = GetType().Name + " - " + uids.Count() + " emails found!";      
+            if (messages.Any())           
+                logString = GetType().Name + " - " + messages.Count() + " emails found!";      
             else
                 logString = GetType().Name + " - 0 emails found...";
             Logger.GetLogger().Info(logString);
 
-            foreach (var uid in uids)
+            foreach (var emailMessage in messages)
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
                 BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
                 
-                var message = client.GetMessage(uid);                
-                
+                var message = client.GetMessage(emailMessage.Uid);                
+                if (message.From == null)
+                {
+                    continue;
+                }
+
                 try
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
@@ -120,7 +128,8 @@ namespace Daemons
                 catch (Exception e)
                 {
                     AlertManager.EmailProcessingFailure(message.Headers["Date"], e.Message);
-                    Logger.GetLogger().Error("EmailProcessingFailure Reported. ObjectID =" + uid);
+                    Logger.GetLogger().Error("EmailProcessingFailure Reported. ObjectID =" + emailMessage);
+                    client.AddMessageFlags(emailMessage.Uid, emailMessage.Mailbox, MessageFlag.Seen);
                 }
             }
 

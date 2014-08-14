@@ -25,7 +25,7 @@ using Utilities;
 
 namespace KwasantTest.Workflow
 {
-    [TestFixture, Ignore("Tests neveR finish!")]
+    [TestFixture]
     public class IntegrationTests
     {
         private IUnitOfWork _uow;
@@ -71,11 +71,9 @@ namespace KwasantTest.Workflow
         {
             //SETUP                     
             //setup start time and end time for test event. 
-            var now = DateTimeOffset.Now;
-            // iCal truncates time up to seconds so we need to truncate as well to be able to compare time
-            var start = new DateTimeOffset(now.Ticks / TimeSpan.TicksPerSecond * TimeSpan.TicksPerSecond, now.Offset).AddDays(1);
+            var start = GenerateEventStartDate();
             var end = start.AddHours(1);
-            EmailDO testEmail = CreateTestEmail(start, end);
+            EmailDO testEmail = CreateTestEmail(start, end, "Event");
             string targetAddress = testEmail.To.First().Address;
             string targetPassword = "thorium65";
             ImapClient client = new ImapClient("imap.gmail.com", 993, targetAddress, targetPassword, AuthMethod.Login, true);
@@ -90,6 +88,8 @@ namespace KwasantTest.Workflow
             Console.WriteLine("Setup Objects Complete");
 
             //EXECUTE
+            BookingRequestDO foundBookingRequest = null;
+            EmailDO eventEmail = null;
             using (_polling.NewTimer(_polling.totalOperationTimeout, "Workflow"))
             {
                 _emailService.Send(testEmail);
@@ -101,23 +101,28 @@ namespace KwasantTest.Workflow
 
 
 
-                BookingRequestDO foundBookingRequest = PollForBookingRequest(testEmail, client, inboundDaemon);
-                Console.WriteLine("Booking Request detected in intake");
-                EventDO testEvent = CreateTestEvent(foundBookingRequest);
-                Console.WriteLine("Test Event Created");
-
-                //start the stopwatch measuring time from email send
-                using (_polling.NewTimer(_polling.requestToEmailTimeout, "BookingRequest to Invitation"))
+                foundBookingRequest = PollForBookingRequest(testEmail, client, inboundDaemon);
+                if (foundBookingRequest != null)
                 {
-                    //run the outbound daemon to send any outgoing invite(s)
-                    _polling.FlushOutboundEmailQueues();
-                    Console.WriteLine("Beginning Polling...");
+                    Console.WriteLine("Booking Request detected in intake");
+                    EventDO testEvent = CreateTestEvent(foundBookingRequest);
+                    Console.WriteLine("Test Event Created");
 
-                    var eventEmail = PollMailboxForEvent(testEmail, client, start, end);
+                    //start the stopwatch measuring time from email send
+                    using (_polling.NewTimer(_polling.requestToEmailTimeout, "BookingRequest to Invitation"))
+                    {
+                        //run the outbound daemon to send any outgoing invite(s)
+                        _polling.FlushOutboundEmailQueues();
+                        Console.WriteLine("Beginning Polling...");
+
+                        eventEmail = PollMailboxForEvent(testEmail, client, start, end);
+                    }
                 }
             }
 
             //VERIFY
+            Assert.NotNull(foundBookingRequest, "No BookingRequest found.");
+            Assert.NotNull(eventEmail, "No Invitation found.");
             //check timeouts
             _polling.CheckTimeouts();
             client.Dispose();
@@ -129,7 +134,7 @@ namespace KwasantTest.Workflow
             PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindBookingRequest;
 
             List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "intake", client, inboundDaemon);
-            BookingRequestDO foundBookingRequest = (BookingRequestDO)queryResults.First();
+            BookingRequestDO foundBookingRequest = (BookingRequestDO)queryResults.FirstOrDefault();
             return foundBookingRequest;
         }
 
@@ -139,47 +144,6 @@ namespace KwasantTest.Workflow
             //poll the specified account inbox until either the expected message is received, or timeout
             var eventEmails = _polling.PollForEmail((criteria, unreadMessages) => InjectedQuery_FindSpecificEvent(unreadMessages, start, end), targetCriteria, "external", client);
             return eventEmails.FirstOrDefault();
-            /*
-                        MailMessage inviteMessage = null;
-                        uint inviteMessageId = 0;
-                        do
-                        {
-                            Thread.Sleep(TimeSpan.FromSeconds(1));
-                
-                            var uids = client.Search(SearchCondition.Unseen()).ToList();
-                            //checkpoint. not finding any messages.  it loooks like this test submits imap mail and sends it to and tries to receive it at kwasantintegration@gmail.com. That could be getting shut down. switch
-                            //to submit using our normal submit: sendgrid, and send to integrationtesting@kwasant.net
-                            //move this stuff to integration testing setup
-
-
-                            //for each returned IMAP message id number...
-                            foreach (var uid in uids)
-                            {
-                                //get the message...
-                                var curMessage = client.GetMessage(uid);
-                                var icsView = curMessage.AlternateViews
-                                    .FirstOrDefault(v => string.Equals(v.ContentType.MediaType, "application/ics"));
-
-                                //if it has an ICS attachment....
-                                if (icsView != null)
-                                {
-                                    var cal = iCalendar.LoadFromStream(icsView.ContentStream).FirstOrDefault();
-
-                                    //...and if that attachment has a cal with the expected event
-                                    if (cal != null && cal.Events.Count > 0 &&
-                                        cal.Events[0].Start.Value == start &&
-                                        cal.Events[0].End.Value == end)
-                                    {
-                                        //...then we're done.
-                                        inviteMessageId = uid;
-                                        inviteMessage = curMessage;
-                                        break;
-                                    }
-                                }
-                            }
-                
-                        } while (inviteMessage == null && _polling.requestToEmailDuration.Elapsed < _polling.requestToEmailTimeout);
-            */
             /*
                         //cleanup the inbox by deleting the messages
                         var requestMessages = client.Search(SearchCondition.Subject(targetCriteria.Subject)).ToList();
@@ -236,6 +200,13 @@ namespace KwasantTest.Workflow
                                             cal.Events[0].End.Value == end));
         }
 
+        public DateTimeOffset GenerateEventStartDate()
+        {
+            var now = DateTimeOffset.Now;
+            // iCal truncates time up to seconds so we need to truncate as well to be able to compare time
+            return new DateTimeOffset(now.Ticks / TimeSpan.TicksPerSecond * TimeSpan.TicksPerSecond, now.Offset).AddDays(1);
+        }
+
         public EventDO CreateTestEvent(BookingRequestDO testBR)
         {
             EventDO eventDO;
@@ -257,10 +228,10 @@ namespace KwasantTest.Workflow
             return null;
         }
 
-        private EmailDO CreateTestEmail(DateTimeOffset start, DateTimeOffset end)
+        private EmailDO CreateTestEmail(DateTimeOffset start, DateTimeOffset end, string emailType)
         {
-            var subject = string.Format("Event {0}", Guid.NewGuid());
-            var body = string.Format("Event details:\r\n{0}{1}\r\n{2}{3}", _startPrefix, start, _endPrefix, end);
+            var subject = string.Format("{0} {1}", emailType, Guid.NewGuid());
+            var body = string.Concat(emailType, string.Format(" details:\r\n{0}{1}\r\n{2}{3}", _startPrefix, start, _endPrefix, end));
 
             EmailDO testEmail = _fixture.TestEmail3(); //integrationtesting@kwasant.net
             testEmail.Subject = subject;
@@ -275,36 +246,10 @@ namespace KwasantTest.Workflow
         [Category("Workflow")]
         public void ITest_CanAddBcctoOutbound()
         {
-            // var _polling.requestToEmailTimeout = TimeSpan.FromSeconds(60);
-            // Stopwatch _polling.requestToEmailDuration = new Stopwatch();
-
-            var subject = string.Format("Bcc Test {0}", Guid.NewGuid());
-            var now = DateTimeOffset.Now;
-            // iCal truncates time up to seconds so we need to truncate as well to be able to compare time
-            var start =
-                new DateTimeOffset(now.Ticks/TimeSpan.TicksPerSecond*TimeSpan.TicksPerSecond, now.Offset).AddDays(1);
+            var start = GenerateEventStartDate();
             var end = start.AddHours(1);
-            var body = string.Format("Bcc Test details:\r\n{0}{1}\r\n{2}{3}", _startPrefix, start, _endPrefix, end);
 
-            var emailDO = new EmailDO()
-                              {
-                                  From = Email.GenerateEmailAddress(_uow, new MailAddress(_outboundIMAPUsername)),
-                                  Recipients = new List<RecipientDO>()
-                                                   {
-                                                       new RecipientDO()
-                                                           {
-                                                               EmailAddress =
-                                                                   Email.GenerateEmailAddress(_uow,
-                                                                                              new MailAddress(
-                                                                                                  "kwasantintegration@gmail.com")),
-                                                               EmailParticipantType = EmailParticipantType.To
-                                                           }
-                                                   },
-                                  Subject = subject,
-                                  PlainText = body,
-                                  HTMLText = body,
-                                  EmailStatus = EmailState.Queued
-                              };
+            var emailDO = CreateTestEmail(start, end, "Bcc Test");
 
             _uow.EmailRepository.Add(emailDO);
 

@@ -207,7 +207,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             List<MandrillResponse> responses;
             try
             {
-                responses = jsonSerializer.Deserialize<List<MandrillResponse>>(responseStr);
+                responses = jsonSerializer.Deserialize<List<MandrillResponse>>(responseStr) ?? new List<MandrillResponse>();
             }
             catch (JsonSerializationException)
             {
@@ -323,6 +323,10 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
                 throw new ArgumentNullException("envelope");
             if (!string.Equals(envelope.Handler, EnvelopeDO.MandrillHander))
                 throw new ArgumentException("This envelope should not be handled with Mandrill.", "envelope");
+            if (envelope.Email == null)
+                throw new ArgumentException("This envelope has no Email.", "envelope");
+            if (envelope.Email.Recipients.Count == 0)
+                throw new ArgumentException("This envelope has no recipients.", "envelope");
             PostMessageSendTemplate(envelope.TemplateName, envelope.Email, envelope.MergeData);
         }
 
