@@ -17,31 +17,22 @@
     <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
     <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 }
-@section scripts
-{
-	@Scripts.Render("~/bundles/js/modernizr")
-	@Scripts.Render("~/bundles/js/bootstrap")
-	@Scripts.Render("~/bundles/js/common")
-}
+
 @*width: 1270px;*@
 <div class="jumbotron calendar-section jumbotron_new">
 	<div class="row">
-        @*width: 420px;*@
-
-	
+        @*width: 420px;*@	
 		<nav class="navbar navbar-default top-toolbar-section" role="navigation">
 			<div class="container-fluid">
-
 				<div class="navbar-header">
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
 						<span class="sr-only">Toggle navigation</span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
 				</div>
-
-				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<div class="collapse navbar-collapse" id="navbar-collapse">
 					<ul class="nav navbar-nav">
 					    <!--<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.BookingRequestID, status = BookingRequestState.Processed })');" href="#">Mark Processed</a></li> -->
                         <li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
@@ -71,32 +62,32 @@
 				</div>
 			</div>
 		</nav>
-
-        <div id="emailInfoBox" class="col-md-5 container_box emailInfoBox">
-            <iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.BookingRequestID" style=""></iframe>
-               <input type="radio" id="rdnshowOtherBRs" name="group1" value="ShowOtherBRs" /> Show Other BR's  &nbsp;&nbsp; 
-                <input type="radio"  id="rdnShowRelatedItems" name="group1" value="ShowRelatedItems" checked="checked" />Show Related Items
-                 <table id="tblRelatedItems" class="email-info-tabele">
+		<div id="emailInfoBox" class="col-md-7">
+			<div class="emailInfoBox">
+				<iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.BookingRequestID"></iframe>
+				<div class="">
+					<input type="radio" id="rdnshowOtherBRs" name="group1" value="ShowOtherBRs" /> Show Other BR's  &nbsp;&nbsp; 
+					<input type="radio" id="rdnShowRelatedItems" name="group1" value="ShowRelatedItems" checked="checked" />Show Related Items
+				</div>
+				<table id="tblRelatedItems" class="email-info-table data-table">
 					<thead>
-                    	<tr>
+						<tr>
 							<th>Date</th>
-							<th>type</th>
+							<th>Type</th>
 						</tr>
 					</thead>
 				</table>
-            <table id="tbluserrequests" class="email-info-tabele">
-                <thead>
-                    <tr>
-                        <th>Date Received</th>
-                        <th>Subject</th>
-                    </tr>
-                </thead>
-            </table>
-            <br />
-            <br />
+				<table id="tbluserrequests" class="email-info-table data-table">
+					<thead>
+						<tr>
+							<th>Date Received</th>
+							<th>Subject</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
         </div>
-        
-	    <div id="CalendarDiv" ></div>
+		<div id="CalendarDiv" class="col-md-5"></div>
 
 	</div>
 </div>
@@ -140,8 +131,10 @@
     //funtion to load booking request info in iframe "emailInfoFrame" on "tbluserrequests" request row click.
     //called by : rows in tbluserrequests on click
     function loadrequest(id, linkedCalendarIDs, ele) {
-        $("#tbluserrequests tr").attr("style", "");
-        $(ele).attr("style", "background-color: #aaa;");
+    	$("#tbluserrequests tr").removeClass('current-row');
+    	if ($('#tbluserrequests tr').length > 2) {
+    		$(ele).addClass('current-row');
+    	}    
         $("#hdnrequestid").val(id);
         $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("MarkAsProcessed", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
         $("#emailInfoFrame")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
@@ -245,11 +238,11 @@
         },
             //Callback function for row created.
             createdRow: function (row, data, index) {
-                if (data.id == $("#hdnrequestid").val()) {
-                    $(row).attr("style", "cursor:pointer;background-color: #aaa;");
+            	if (data.id == $("#hdnrequestid").val() && $('#tbluserrequests tr').length > 2) {
+                	$(row).addClass('current-row');
                 }
                 else {
-                    $(row).attr("style", "cursor:pointer;");
+                	$(row).removeClass('current-row');
                 }
             },
         columns: [
@@ -271,8 +264,7 @@
 
 
     var table1;
-    function showRelatedItems()
-    {
+    function showRelatedItems() {
 
         $('#tbluserrequests_wrapper').hide();
         table1 = $('#tblRelatedItems').DataTable({
@@ -286,33 +278,41 @@
             ajax:
             {
                 "url": "@Url.Action("ShowRelatedItems", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestID",
-            "dataSrc": function (json) {
-                var orgdata = JSON.parse(json.data);
-                return orgdata;
-            }
-        },
+				"dataSrc": function (json) {
+					var orgdata = JSON.parse(json.data);
+					return orgdata;
+				}
+			},
             
-            createdRow: function (row, data, index) {
-                $(row).attr("style", "cursor:pointer;");
+        	createdRow: function (row, data, index) {
+        		if (data.id == $("#hdnrequestid").val() && $('#tblRelatedItems tr').length > 2) {
+        			$(row).addClass('current-row');
+        		}
+        		else {
+        			$(row).removeClass('current-row');
+        		}
+
+               // $(row).attr("style", "cursor:pointer;");
             },
-        columns: [
-                    {
-                        data: function (data) {
-                            return ConvertTODateString(data.date);
-                        }
-                    },
-                   { data: 'type' }
-        ]
-    });
+			columns: [
+                {
+                    data: function (data) {
+                        return ConvertTODateString(data.date);
+					}
+                },
+                { data: 'type' }
+			]
+		});
 
-    }
-
-
+	}
    
-    $('#tblRelatedItems').on('click', 'tr', function () {
-        $("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
-        $(this).attr("style", "background-color: #aaa;");
-
+	$('#tblRelatedItems').on('click', 'tr', function () {
+		//$("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
+		//$(this).attr("style", "background-color: #aaa;");
+		$('#tblRelatedItems tr').removeClass('current-row');
+		if ( $('#tblRelatedItems tr').length > 2) {     	
+			$(this).addClass('current-row');
+		}
         var data = table1.row($(this)).data();
         var dp_day = storedCalendar[0];
         dp_day.startDate = data.date;
@@ -329,9 +329,9 @@
         var bookingrequest="@Model.BookingRequestID";
         var path = '/ClarificationRequest/Edit/?bookingRequestId=' + bookingrequest + '&clarificationRequestId=' + id;
         Kwasant.IFrame.Display(path,
-            {
-                horizontalAlign: 'left',
-            });
+        {
+            horizontalAlign: 'left',
+        });
     }
 
     
