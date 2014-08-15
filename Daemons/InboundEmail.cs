@@ -104,13 +104,14 @@ namespace Daemons
                     (new BookingRequest()).Process(unitOfWork, bookingRequest);
 
                     unitOfWork.SaveChanges();
-                    
-                    AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+
+                    AlertManager.BookingRequestCreated(bookingRequest);
+                    AlertManager.EmailReceived(bookingRequest, bookingRequest.User);
                 }
                 catch (Exception e)
                 {
                     AlertManager.EmailProcessingFailure(message.Headers["Date"], e.Message);
-                    Logger.GetLogger().Error("EmailProcessingFailure Reported. ObjectID =" + uid);
+                    Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", uid));
                 }
             }
 

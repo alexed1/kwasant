@@ -207,7 +207,9 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             List<MandrillResponse> responses;
             try
             {
-                responses = jsonSerializer.Deserialize<List<MandrillResponse>>(responseStr);
+                // Max Kostyrkin: got responseStr = '[]' and this was deserialized as null.
+                responses = jsonSerializer.Deserialize<List<MandrillResponse>>(responseStr) ??
+                    new List<MandrillResponse>();
             }
             catch (JsonSerializationException)
             {

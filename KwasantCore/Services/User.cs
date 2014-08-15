@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -20,10 +21,6 @@ namespace KwasantCore.Services
 {
     public class User
     {
-
-
-      
-
         private static IAuthenticationManager AuthenticationManager
         {
             get
@@ -32,18 +29,87 @@ namespace KwasantCore.Services
             }
         }
 
+        public UserDO GetOrCreate(IUnitOfWork uow, EmailAddressDO emailAddressDO)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (emailAddressDO == null)
+                throw new ArgumentNullException("emailAddressDO");
+            UserDO curUser = Get(uow, emailAddressDO);
+            if (curUser == null)
+            {
+                var id = Create(emailAddressDO.Address);
+                curUser = uow.UserRepository.GetByKey(id);
+            }
+            return curUser;
+        }
+
+        public UserDO Get(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
+        {
+            if (bookingRequestDO == null)
+                throw new ArgumentNullException("bookingRequestDO");
+            return Get(uow, bookingRequestDO.From);
+        }
+
+        public UserDO Get(IUnitOfWork uow, EmailAddressDO emailAddressDO)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (emailAddressDO == null)
+                throw new ArgumentNullException("emailAddressDO");
+            return uow.UserRepository.GetByEmailAddress(emailAddressDO);
+        }
+
+        /// <summary>
+        /// Creates a user with passed email address in a separate UnitOfWork.
+        /// </summary>
+        /// <returns>
+        /// Returns created user's ID.
+        /// </returns>
+        /// <remarks>
+        /// Doesn't return the created user entity object as anyway it would belong to closed UnitOfWork instantiated inside.
+        /// </remarks>
+        /// <param name="emailAddress"></param>
+        public string Create(string emailAddress)
+        {
+            if (string.IsNullOrEmpty(emailAddress))
+                throw new ArgumentNullException("emailAddress");
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress);
+                var curUser = Create(uow, curEmailAddress);
+                uow.SaveChanges();
+                AlertManager.CustomerCreated(curUser);
+                return curUser.Id;
+            }
+        }
+
+        private UserDO Create(IUnitOfWork uow, EmailAddressDO emailAddressDO,
+            string userName = null, string firstName = null, string lastName = null)
+        {
+            Debug.Assert(uow != null);
+            Debug.Assert(emailAddressDO != null);
+            var curUser = new UserDO
+            {
+                UserName = userName ?? emailAddressDO.Address,
+                FirstName = firstName ?? emailAddressDO.Name,
+                LastName = lastName ?? string.Empty,
+                EmailAddress = emailAddressDO
+            };
+            UserValidator curUserValidator = new UserValidator();
+            curUserValidator.ValidateAndThrow(curUser);
+            uow.UserRepository.Add(curUser);
+            uow.CalendarRepository.CheckUserHasCalendar(curUser);
+            return curUser;
+        }
+
         public UserDO Register (IUnitOfWork uow, string userName, string password, string role)
         {
-            var userDO = new UserDO();
-            userDO.FirstName = userName;
-            userDO.LastName = userName;
-            userDO.UserName = userName;
-            userDO.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
-            uow.UserRepository.Add(userDO);
-            uow.CalendarRepository.CheckUserHasCalendar(userDO);
-
-            UserValidator curUserValidator = new UserValidator();
-            curUserValidator.ValidateAndThrow(userDO);
+            var userDO = Create(uow,
+                emailAddressDO: uow.EmailAddressRepository.GetOrCreateEmailAddress(userName),
+                userName: userName,
+                firstName: userName,
+                lastName: userName);
 
             UserManager<UserDO> userManager = GetUserManager(uow);;
             IdentityResult result = userManager.Create(userDO, password);
