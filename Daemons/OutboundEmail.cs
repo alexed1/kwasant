@@ -189,8 +189,15 @@ namespace Daemons
                             email.EmailStatus = EmailState.Dispatched;
                             subUow.SaveChanges();
 
-                            string customerId = subUow.UserRepository.GetAll().Where(e => e.EmailAddress.Address == email.Recipients.First(c => c.EmailParticipantType == EmailParticipantType.To).EmailAddress.Address).First().Id;
-                            AlertManager.EmailSent(email.Id, customerId);
+                            foreach (var recipient in email.To)
+                            {
+                                var curUser = subUow.UserRepository.GetQuery()
+                                    .FirstOrDefault(u => u.EmailAddressID == recipient.Id);
+                                if (curUser != null)
+                                {
+                                    AlertManager.EmailSent(email.Id, curUser.Id);
+                                }
+                            }
                         }
                         catch (StructureMapConfigurationException ex)
                         {

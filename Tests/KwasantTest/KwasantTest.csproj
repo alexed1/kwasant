@@ -131,11 +131,11 @@
     <Compile Include="Services\ClarificationRequestTests.cs" />
     <Compile Include="Services\EmailTests.cs" />
     <Compile Include="Services\EventServiceTests.cs" />
-    <Compile Include="Services\NegotiationTests.cs" />
+    <Compile Include="Integration\NegotiationITests\NegotiationTests.cs" />
     <Compile Include="Services\SMSTests.cs" />
     <Compile Include="Timeslots\TimeslotMergeTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
-    <Compile Include="Integration\IntegrationTests.cs" />
+    <Compile Include="Integration\BookingITests\IntegrationTests.cs" />
     <Compile Include="Utilities\PollingEngine.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -173,10 +173,7 @@
       <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Integration\BookingITests\" />
-    <Folder Include="Integration\NegotiationITests\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -3,49 +3,19 @@ using Data.Interfaces;
 using KwasantCore.Services;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
-using Daemons;
 using KwasantTest.Utilities;
 using S22.Imap;
-using KwasantTest.Daemons;
 using System.Collections.Generic;
-using System.Net.Mail;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.Mail;
-using System.Threading;
-using Daemons;
-using Data.Entities;
-using Data.Infrastructure;
-using Data.Interfaces;
-using Data.States;
-using FluentValidation.Validators;
-using KwasantCore.Services;
 using KwasantCore.StructureMap;
-using KwasantICS.DDay.iCal;
-using KwasantTest.Daemons;
-using KwasantTest.Fixtures;
-using KwasantTest.Utilities;
-using Moq;
-using NUnit.Framework;
-using S22.Imap;
 using StructureMap;
-using Utilities;
 
-namespace KwasantTest.Services
+namespace KwasantTest.Integration.NegotiationITests
 {
     [TestFixture]
     public class NegotiationTests
     {
         private IUnitOfWork _uow;
-        private string _testUserEmail;
-        private string _testUserEmailPassword;
-        private string _archivePollEmail;
-        private string _archivePollPassword;
-        private Email _emailService;
-        private string _startPrefix;
-        private string _endPrefix;     
         private FixtureData _fixture;
         private Negotiation _negotiation;
 

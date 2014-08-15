@@ -26,15 +26,15 @@ namespace KwasantTest.Fixtures
 
         public UserDO TestUser3()
         {
+            var curEmailAddressDO = TestEmailAddress3();
             return new UserDO()
             {
                 FirstName = "Kwasant",
                 LastName = "Integration",
-                EmailAddress = TestEmailAddress3()
+                EmailAddress = curEmailAddressDO,
+                EmailAddressID = curEmailAddressDO.Id
             };
         }
-
-     
     }
 }
 

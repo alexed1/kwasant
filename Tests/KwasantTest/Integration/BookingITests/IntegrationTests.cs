@@ -242,23 +242,21 @@ namespace KwasantTest.Workflow
         }
 
         //this should be DRYed up by using the newly modular functions, above.
-        [Test, Ignore]
+        [Test]
         [Category("Workflow")]
         public void ITest_CanAddBcctoOutbound()
         {
             var start = GenerateEventStartDate();
             var end = start.AddHours(1);
 
+            _uow.UserRepository.Add(_fixture.TestUser3());
+            
             var emailDO = CreateTestEmail(start, end, "Bcc Test");
-
             _uow.EmailRepository.Add(emailDO);
+            var email = new Email(_uow);
 
-            var envelope = new EnvelopeDO()
-                               {
-                                   Email = emailDO,
-                                   Handler = EnvelopeDO.GmailHander
-                               };
-            _uow.EnvelopeRepository.Add(envelope);
+            // EXECUTE
+            email.Send(emailDO);
             _uow.SaveChanges();
 
             //THIS SHOULDN"T BE NECESSARY ANYMORE adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
