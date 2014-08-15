@@ -1,4 +1,4 @@
-﻿@model KwasantWeb.ViewModels.ClarificationResponseViewModel
+﻿@model List<KwasantWeb.ViewModels.NegotiationQuestionViewModel>
 
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @section immediateScripts
@@ -18,7 +18,105 @@
 }
 
 
-@using (Html.BeginForm("ProcessSubmittedClarificationData", "ClarificationResponse", FormMethod.Post))
+
+@*@using (Html.BeginForm("ProcessSubmittedClarificationData", "ClarificationResponse", FormMethod.Post))
+{*@
+
+
+<h2>We need clarification about the following to finish booking your event:</h2>
+
+
+@foreach (var question in Model)
+{
+    <div class="formItem">
+        <label>Question : </label>
+        @question.Text
+    </div>
+    <div class="formItem">
+        @foreach (var ans in question.Answers)
+        {
+            <input type="radio" name="@question.Id" value="@ans.Id"/>   @ans.ObjectType<br />
+        }
+        @if (question.Response == "Text")
+        {
+            <input type="radio" name="@question.Id" data-type="Text" value="suggestion"/>
+            @Html.Raw("Suggest your own answer")<br />
+            <input type="text" style="margin-left: 16px;" value="" id="@question.Id"/><br />   
+        }
+        else
+        {
+            <input type="radio" name="@question.Id" data-type="Timeslot" value="suggestion"/>
+            @Html.Raw("Suggest your own answer")<br />
+            <button class="pick" style="margin-left: 16px;" onclick="return false;">Pick Times</button><br />
+        }
+        <br />
+        <br />
+    </div>
+}
+
+<div class="space">
+    <div style="clear: both">
+        <div style="float: left">
+            <input type="button" value="send" onclick="sendthis();"/>
+        </div>
+    </div>
+    <br />
+    <br />
+</div>
+
+<script type="text/javascript">
+    function sendthis() {
+        var answers = [];
+        $("input[type='radio']").each(function () {
+            if (this.checked) {
+                if (this.value != "suggestion") {
+                    answers.push(this.value);
+                }
+                else {
+                    if ($(this).attr("data-type") == "Text") {
+                        answers.push(this.name + "~" + $("#" + this.name).val());
+                    }
+                }
+            }
+        });
+        var data = { answerArray: JSON.stringify(answers) };
+        $.ajax({
+            type: 'Get',
+            url: '@Url.Action("ProcessResponse", "ClarificationRequest")',
+            dataType: "json",
+            data: data,
+            success: function (response) {
+                //alert(response);
+            }
+        });
+    }
+</script>
+
+@*<div class="space">
+    <div style="clear: both">
+        <div style="float: left">
+            <input type="submit" value="Send" style="border: 2px solid black; height: 30px; margin-right: 20px; width: 100px;">
+        </div>
+    </div>
+    <br />
+    <br />
+</div>*@
+
+@*}*@
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*@using (Html.BeginForm("ProcessSubmittedClarificationData", "ClarificationResponse", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.Id)
     @Html.HiddenFor(m => m.BookingRequestId)
@@ -57,6 +155,6 @@
         <br />
     </div>
     
-}
+}*@
 
 

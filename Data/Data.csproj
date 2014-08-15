@@ -147,10 +147,13 @@
     <Compile Include="States\InstructionConstants.cs" />
     <Compile Include="States\ServiceAuthorizationType.cs" />
     <Compile Include="Entities\AnswerDO.cs" />
+    <Compile Include="Entities\AnswerDO.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="States\Templates\_BookingRequestStateTemplate.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
+    <Compile Include="Entities\ConceptDO.cs" />
+    <Compile Include="Entities\EventStatusDO.cs" />
     <Compile Include="States\Templates\_ClarificationRequestStateTemplate.cs" />
     <Compile Include="States\Templates\_CommunicationTypeTemplate.cs" />
     <Compile Include="States\Templates\_EmailParticipantTypeTemplate.cs" />
@@ -165,6 +168,7 @@
     <Compile Include="States\AnswerState.cs" />
     <Compile Include="States\NegotiationState.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
+    <Compile Include="Entities\NegotiationDO.cs" />
     <Compile Include="Interfaces\IRemoteCalendarLink.cs" />
     <Compile Include="Interfaces\IRemoteCalendarAuthData.cs" />
     <Compile Include="Entities\RemoteCalendarAuthDataDO.cs" />
@@ -369,6 +373,10 @@
     <Compile Include="Migrations\201407141107371_AddIncidentDO.Designer.cs">
       <DependentUpon>201407141107371_AddIncidentDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407151914079_Sync-15.07.2014.cs" />
+    <Compile Include="Migrations\201407151914079_Sync-15.07.2014.designer.cs">
+      <DependentUpon>201407151914079_Sync-15.07.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201407111624232_AddCalendarLastSynchronized.cs" />
     <Compile Include="Migrations\201407111624232_AddCalendarLastSynchronized.Designer.cs">
       <DependentUpon>201407111624232_AddCalendarLastSynchronized.cs</DependentUpon>
@@ -482,6 +490,7 @@
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />
     <Compile Include="Repositories\EventRepository.cs" />
+    <Compile Include="Repositories\QuestionRepository.cs" />
     <Compile Include="Repositories\NegotiationsRepository.cs" />
     <Compile Include="Repositories\QuestionsRepository.cs" />
     <Compile Include="Repositories\StoredFileRepository.cs" />
