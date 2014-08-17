@@ -137,6 +137,10 @@
     <Compile Include="Migrations\201408131011227_MoveCalendarIDToQuestionDO.Designer.cs">
       <DependentUpon>201408131011227_MoveCalendarIDToQuestionDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408170907069_Sync.17.08.2014.cs" />
+    <Compile Include="Migrations\201408170907069_Sync.17.08.2014.Designer.cs">
+      <DependentUpon>201408170907069_Sync.17.08.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
@@ -742,6 +746,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408131011227_MoveCalendarIDToQuestionDO.resx">
       <DependentUpon>201408131011227_MoveCalendarIDToQuestionDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408170907069_Sync.17.08.2014.resx">
+      <DependentUpon>201408170907069_Sync.17.08.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

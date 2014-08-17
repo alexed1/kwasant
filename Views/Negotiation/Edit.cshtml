@@ -58,7 +58,7 @@
                                 if (!String.IsNullOrEmpty(answer.Text))
                         {
                             @:answer.find('#answerText').val('@answer.Text');
-                                    @:answer.find('#answerStatus').val('@answer.AnswerState');
+                                    @:answer.find('#answerStatus').val('@answer.Status');
                                 }
 
                         @:questionEventWindows = [];
@@ -116,7 +116,7 @@
                 var answerText = answerElement.find('#answerText').val();
                 var answerStatus = answerElement.find('#answerStatus').val();
 
-                return { ID: answerID, QuestionID: questionID, Text: answerText, AnswerState: answerStatus };
+                return { ID: answerID, QuestionID: questionID, Text: answerText, Status: answerStatus };
             });
 
             var eventWindowAnswers = $.map(element.find('#appendanswerId .eventWindowAnswerBox'), function(answerElement) {
