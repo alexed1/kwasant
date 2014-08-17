@@ -20,6 +20,6 @@ namespace KwasantWeb.ViewModels
     {
         public int Id { get; set; }
         public int Name { get; set; }
-        public List<NegotiationQuestionViewModel> Questions { get; set; }
+        public List<QuestionCalendarEventViewModel> Questions { get; set; }
     }
 }

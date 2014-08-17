@@ -309,15 +309,6 @@ namespace Data.Infrastructure
             }
         }
 
-        private AnswersRepository _answersRepository;
-
-        public AnswersRepository AnswersRepository
-        {
-            get
-            {
-                return _answersRepository ?? (_answersRepository = new AnswersRepository(this));
-            }
-        }
         public void Save()
         {
             _context.SaveChanges();

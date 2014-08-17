@@ -47,13 +47,12 @@ namespace KwasantWeb.Controllers
                             
                             CalendarID = q.CalendarID,
                             Answers = q.Answers.Select(a =>
-                                new AnswerViewModel
+                                new NegotiationAnswerViewModel
                                 {
-                                    AnswerState = a.AnswerStatus,
+                                    Status = a.AnswerStatus,
                                     Id = a.Id,
-                                    QuestionID = q.Id,
-                                    Text = a.Text,
-                                    ObjectsType = a.ObjectsType,
+                                    QuestionId = q.Id,
+                                    Text = a.Text
                                 }).ToList()
                         }
                         ).ToList()
@@ -126,7 +125,7 @@ namespace KwasantWeb.Controllers
                     var existingAnswers = questionDO.Answers.ToList();
                     foreach (var existingAnswer in existingAnswers.Where(a => !proposedAnswerIDs.Contains(a.Id)))
                     {
-                        uow.AnswersRepository.Remove(existingAnswer);
+                        uow.AnswerRepository.Remove(existingAnswer);
                     }
 
                     foreach (var answer in question.Answers)
@@ -135,15 +134,14 @@ namespace KwasantWeb.Controllers
                         if (answer.Id == 0)
                         {
                             answerDO = new AnswerDO();
-                            uow.AnswersRepository.Add(answerDO);
+                            uow.AnswerRepository.Add(answerDO);
                         }
                         else
-                            answerDO = uow.AnswersRepository.GetByKey(answer.Id);
+                            answerDO = uow.AnswerRepository.GetByKey(answer.Id);
 
                         answerDO.Question = questionDO;
-                        answerDO.AnswerStatus = answer.AnswerState;
+                        answerDO.AnswerStatus = answer.Status;
                         answerDO.Text = answer.Text;
-                        answer.ObjectsType = answer.ObjectsType;
                     }
                 }
 

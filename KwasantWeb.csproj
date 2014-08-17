@@ -290,7 +290,6 @@
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
-    <Compile Include="ViewModels\AnswerViewModel.cs" />
     <Compile Include="ViewModels\CalendarViewModel.cs" />
     <Compile Include="ViewModels\MyAccountModel.cs" />
     <Compile Include="Filters\RequestParamsEncryptedFilter.cs" />
@@ -312,9 +311,9 @@
     <Compile Include="ViewModels\ManageUserViewModel.cs" />
     <Compile Include="ViewModels\NegotiationViewModel.cs" />
     <Compile Include="ViewModels\QuestionCalendarEventViewModel.cs" />
-    <Compile Include="ViewModels\QuestionViewModel.cs" />
     <Compile Include="ViewModels\ClarificationRequestViewModel.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
+    <Compile Include="ViewModels\QuestionViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\RemoteCalendarViewModel.cs" />
     <Compile Include="ViewModels\UsersAdminViewModel.cs" />

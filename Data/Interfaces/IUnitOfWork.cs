@@ -30,7 +30,6 @@ namespace Data.Interfaces
         IncidentRepository IncidentRepository { get; }
         NegotiationsRepository NegotiationsRepository { get; }
         QuestionsRepository QuestionsRepository { get; }
-        AnswersRepository AnswersRepository { get; }
         FactRepository FactRepository { get; }
         QuestionRepository QuestionRepository { get; }
         AnswerRepository AnswerRepository { get; }

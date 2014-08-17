@@ -19,7 +19,6 @@ namespace Data.Entities
         public _AnswerStatusTemplate AnswerStatusTemplate { get; set; }
         
         public virtual UserDO User { get; set; }
-        public string ObjectsType { get; set; }
         public string Text { get; set; }
 
         

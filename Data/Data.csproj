@@ -137,6 +137,7 @@
     <Compile Include="Migrations\201408131011227_MoveCalendarIDToQuestionDO.Designer.cs">
       <DependentUpon>201408131011227_MoveCalendarIDToQuestionDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
     <Compile Include="States\EventCreateType.cs" />
@@ -147,13 +148,11 @@
     <Compile Include="States\InstructionConstants.cs" />
     <Compile Include="States\ServiceAuthorizationType.cs" />
     <Compile Include="Entities\AnswerDO.cs" />
-    <Compile Include="Entities\AnswerDO.cs" />
     <Compile Include="Entities\AspNetRolesDO.cs" />
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="States\Templates\_BookingRequestStateTemplate.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
     <Compile Include="Entities\ConceptDO.cs" />
-    <Compile Include="Entities\EventStatusDO.cs" />
     <Compile Include="States\Templates\_ClarificationRequestStateTemplate.cs" />
     <Compile Include="States\Templates\_CommunicationTypeTemplate.cs" />
     <Compile Include="States\Templates\_EmailParticipantTypeTemplate.cs" />
@@ -175,7 +174,6 @@
     <Compile Include="Entities\RemoteCalendarLinkDO.cs" />
     <Compile Include="States\Templates\_ServiceAuthorizationTypeTemplate.cs" />
     <Compile Include="Interfaces\IRemoteCalendarProvider.cs" />
-    <Compile Include="Entities\NegotiationDO.cs" />
     <Compile Include="Entities\QuestionDO.cs" />
     <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
@@ -373,10 +371,6 @@
     <Compile Include="Migrations\201407141107371_AddIncidentDO.Designer.cs">
       <DependentUpon>201407141107371_AddIncidentDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201407151914079_Sync-15.07.2014.cs" />
-    <Compile Include="Migrations\201407151914079_Sync-15.07.2014.designer.cs">
-      <DependentUpon>201407151914079_Sync-15.07.2014.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201407111624232_AddCalendarLastSynchronized.cs" />
     <Compile Include="Migrations\201407111624232_AddCalendarLastSynchronized.Designer.cs">
       <DependentUpon>201407111624232_AddCalendarLastSynchronized.cs</DependentUpon>
@@ -466,7 +460,6 @@
       <DependentUpon>201408041658023_RemoveAttendeeToNegotiationTemp.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
-    <Compile Include="Repositories\AnswersRepository.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
