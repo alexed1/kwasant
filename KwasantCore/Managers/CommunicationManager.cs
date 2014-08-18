@@ -32,19 +32,25 @@ namespace KwasantCore.Managers
         }
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
-        public void NewCustomerWorkflow(IUnitOfWork uow, DateTime createdDate, UserDO userDO)
+        public void NewCustomerWorkflow(UserDO curUser)
         {
-            GenerateWelcomeEmail(uow, userDO);  
+            GenerateWelcomeEmail(curUser);  
         }
 
-        public void GenerateWelcomeEmail(IUnitOfWork uow, UserDO curUser)
+        public void GenerateWelcomeEmail(UserDO user)
         {
-            EmailDO curEmail = new EmailDO();
-            curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
-            curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
-            curEmail.Subject = "Welcome to Kwasant";
-            Email _email = new Email(uow);
-            _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // WARNING: 'user' parameter must not be used as reference in scope of this UnitOfWork as it is attached to another UnitOfWork
+                var curUser = uow.UserRepository.GetByKey(user.Id);
+                EmailDO curEmail = new EmailDO();
+                curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
+                curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
+                curEmail.Subject = "Welcome to Kwasant";
+                Email _email = new Email(uow);
+                _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null);
+                uow.SaveChanges();
+            }
         }
 
         public void DispatchInvitations(IUnitOfWork uow, EventDO eventDO)
@@ -145,7 +151,8 @@ namespace KwasantCore.Managers
             toEmailAddress.Name = attendeeDO.Name;
             outboundEmail.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
 
-            var userID = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress).Id;
+            var user = new User();
+            var userID = user.GetOrCreate(uow, attendeeDO.EmailAddress).Id;
             
             if (isUpdate)
             {

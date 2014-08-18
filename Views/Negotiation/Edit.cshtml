@@ -268,52 +268,22 @@
     @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
 	@Styles.Render("~/bundles/css/temp")
     <link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
-    <style type="text/css">
-        .questionBox {
-            border-color: #D3B9B9;
-            padding: 5px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-            border-style: solid;
-            border-width: 1px;
-        }
-        .answerBox {
-            border-color: #D3B9B9;
-            padding: 5px;
-            margin: 10px;
-            border-style: solid;
-            border-width: 1px;
-        }
-        .eventWindowAnswerBox {
-            border-color: #D3B9B9;
-            padding: 5px;
-            margin: 10px;
-            border-style: solid;
-            border-width: 1px;
-        }
-        .handIcon {
-            cursor: pointer;
-        }
-    </style>
 }
-
-<form id="f" class="negotiationsidebar">
+<div class="light-bg">
+<form id="f" class="edit-event-form form negotiationsidebar">
     <!-- The following is used to create questions-->
-    <div id="questionContainer" class="questionBox">
-        <table style="width: 100%">
+    <div id="questionContainer" class="form-horizontal questionBox">
+		<div class="formItem">
+			<div class="formLabel" id="questionlbl">Question</div>
+			<div class="input-group">				
+				<input type="text" id="questionText" name="Question" class="form-control col-md-1" />
+				<span class="input-group-btn">
+					<button class="btn btn-default" type="button" onclick="removeQuestion(this)"><span class="glyphicon glyphicon-remove"></span></button>
+				</span>
+			</div>
+		</div>
+        <table width="100%">
             <tr>
-                <td>
-                    <label id="questionlbl">Question : </label>
-                </td>
-                <td>
-                    <input type="text" id="questionText" name="Question" class="form-control col-md-1" />
-                </td>
-                <td>
-                    <img src="~/Content/img/Cross.png" class="handIcon" onclick="removeQuestion(this)" />
-                </td>
-            </tr>
-            <tr>
-                <td></td>
                 <td>
                     Type:
                     <label>
@@ -327,13 +297,11 @@
                 </td>
             </tr>
         </table>
-        <div id="appendanswerId">
-        </div>
-        <span class="form-group handIcon" id="divAddAnswer" onclick="addAnswer(this)">
-            <img src="~/Content/img/plus.png" />
-            <label class="handIcon">Add Answer</label>
-        </span>
-    </div>
+        <div id="appendanswerId"></div>
+		<div class="formItem">
+			<span class="custom-btn btn-grey glyphicon glyphicon-plus" id="divAddAnswer" onclick="addAnswer(this)">Add Answer</span>
+		</div>
+	</div>
     
     <div id="textAnswerContainer" class="answerBox" data-type="text">
         <table style="width: 100%">
@@ -342,16 +310,16 @@
                     <img src="~/Content/img/minus.png" class="handIcon" onclick="collapseanswer(this)" />
                 </td>
                 <td>
-                    <input type="text" name="answerText" id="answerText" class="form-control col-md-1" />
-                </td>
-                <td>
-                    <img src="~/Content/img/Cross.png" class="handIcon" onclick="removeAnswer(this)" />
+					<div class="input-group">
+						<input type="text" name="answerText" id="answerText" class="form-control col-md-1" />
+						<span class="input-group-btn">
+							<button class="btn btn-default handIcon" type="button" onclick="removeAnswer(this)"><span class="glyphicon glyphicon-remove"></span></button>
+						</span>
+					</div>
                 </td>
             </tr>
             <tr>
-                <td>
-                    Status:
-                </td>
+                <td>Status:</td>
                 <td>
                     <select id="answerStatus" class="form-control">
                         <option value="1">Unstarted</option>
@@ -364,55 +332,40 @@
     </div>
     
     <div id="eventWindowAnswerContainer" class="eventWindowAnswerBox">
-        <table style="width:100%">
+        <table width="100%">
             <tr>
                 <td>
-                    <a style="margin-top:10px;margin-bottom:20px;width:100%;" class="cancel-btn pull-left handIcon" name="eventWindow" onclick="startEventWindowSelection(this);">Select Event Windows</a>            
+					<a class="custom-btn btn-grey glyphicon glyphicon-calendar handIcon" name="eventWindow" onclick="startEventWindowSelection(this);">Select Event Windows</a>            
                 </td>
-                <td>
-                    <img src="~/Content/img/Cross.png" class="handIcon" onclick="removeEventWindowAnswer(this)" />
+                <td align="right">
+					<span class="glyphicon glyphicon-remove" onclick="removeEventWindowAnswer(this)"></span>
                 </td>
             </tr>
         </table>
-    </div>
-    
+    </div>    
 
     <div class="form-horizontal" data-negotiationId="0" id="divNegotiation">
-        <h4>Negotiation</h4>
-        <div class="form-group negotiation-mrbottom">
-            <table style="width: 90%">
-                <tr>
-                    <td>&nbsp; 
-                        <label>Name:</label>
-                    </td>
-                    <td>
-                        <input type="text" id="NegName" name="NegNameId" value="Negotiation 1" class="form-control col-md-1" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp; 
-                        <label>Attendees:</label>
-                    </td>
-                    <td>
-                        <input type="hidden" name="Attendees" id="attendeesSel" />
-                    </td>
-                </tr>
-            </table>
-        </div>
+		<h3 class="with-border">Negotiation</h3>
+		<div class="negotiation-mrbottom">
+			<div class="formItem">
+				<div class="formLabel">Name</div>
+				<input type="text" id="NegName" name="NegNameId" value="Negotiation 1" class="form-control col-md-1" />
+			</div>
+			<div class="formItem">
+				<div class="formLabel">Attendees</div>
+				<input type="hidden" name="Attendees" id="attendeesSel" />
+			</div>
+		</div>			
+	</div>
         
-        <div id="appendquestinoId">
-        </div>
+    <div id="appendquestinoId"></div>
+	<div class="formItem">
+		<span class="custom-btn btn-grey glyphicon glyphicon-plus" id="divAddQuestion" onclick="addQuestion()">Add Question</span>
+	</div>
 
-        <span class="form-group handIcon" id="divAddQuestion" onclick="addQuestion()">
-            &nbsp; &nbsp;
-            <img src="~/Content/img/plus.png" />
-            <label class="handIcon">Add Question</label>
-        </span>
-
-        <div class="space form-actions negotiation-form-actions">
-            <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="submitNegotiation()" />
-            
-            <a href="javascript:close();" class="cancel-btn pull-left">Cancel</a>
-        </div>
-    </div>
-</form>
+    <div class="space form-actions negotiation-form-actions">
+        <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="submitNegotiation()" />            
+        <a href="javascript:close();" class="cancel-btn pull-left">Cancel</a>
+	</div>
+	</form>
+</div>

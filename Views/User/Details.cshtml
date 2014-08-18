@@ -3,23 +3,38 @@
 @{
     ViewBag.Title = "User Details";
 }
-
-<h3>Details</h3>
-<hr />
-<div>    
-    <div style="padding-left:400px">        
-        @Html.ActionLink("Edit", "Edit", "Account", new { userId = @Model.UserId, roleId = @Model.RoleId }, null)         
-    </div>
-    <dl class="dl-horizontal">
-        @{  
-                <dt>First Name :</dt> <dd>@Model.FirstName</dd>
-                <dt>Last Name  :</dt> <dd>@Model.LastName</dd>
-                <dt>Email Address  :</dt> <dd>@Model.EmailAddress</dd>
-                <dt>Role  :</dt> <dd>@Model.Role</dd>            
-         }        
-    </dl>
-    <p>
-        @Html.ActionLink("Back to List", "Index")
-    </p>
+<div class="page-title-action">
+	<h2>Details</h2>
+	<div class="title-actions">
+		@Html.ActionLink("Back to List", "Index", null, new { @class = "custom-btn glyphicon glyphicon-arrow-left" })
+		@Html.ActionLink("Edit", "Edit", "Account", new { userId = @Model.UserId, roleId = @Model.RoleId }, new { @class = "custom-btn glyphicon glyphicon-pencil" })
+	</div>	
 </div>
+<table class="data-table dataTable user-details-table">
+		@{
+			<tr>
+				<td>First Name:</td>
+				<td>@Model.FirstName</td>
+			</tr>
+			<tr>
+				<td>Last Name:</td>
+				<td>@Model.LastName</td>
+			</tr>
+			<tr>
+				<td>Email Address:</td>
+				<td>@Model.EmailAddress</td>
+			</tr>
+			<tr>
+				<td>Role:</td>
+				<td>@Model.Role</td>
+			</tr>
+		}
+</table>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('.body-content table.data-table tbody tr:odd').addClass('even');
+	})
+</script>
+
 

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -17,7 +18,26 @@ namespace Data.Repositories
         {
             //_curValidator.ValidateAndThrow(entity); //fix this
             base.Add(entity);
+/*
+            // check default calendar
+            UnitOfWork.CalendarRepository.CheckUserHasCalendar(entity);
+            // do not send to Admins
+            if (entity.Roles.All(r => UnitOfWork.AspNetRolesRepository.GetByKey(r.RoleId).Name != "Admin"))
+            {
+                AlertManager.CustomerCreated(this.UnitOfWork, entity);
+            }
+*/
         }
+
+        public UserDO GetByEmailAddress(EmailAddressDO emailAddressDO)
+        {
+            if (emailAddressDO == null)
+                throw new ArgumentNullException("emailAddressDO");
+            string fromEmailAddress = emailAddressDO.Address;
+            return UnitOfWork.UserRepository.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
+        }
+
+/*
         public UserDO GetOrCreateUser(EmailAddressDO emailAddressDO)
         {
             string fromEmailAddress = emailAddressDO.Address;
@@ -33,11 +53,12 @@ namespace Data.Repositories
                 curUser.FirstName = emailAddressDO.Name;
                 curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 userRepo.Add(curUser);
-                UnitOfWork.CalendarRepository.CheckUserHasCalendar(curUser);
             }
             return curUser;
         }
+*/
 
+/*
         public UserDO GetOrCreateUser(BookingRequestDO curMessage)
         {
             string fromEmailAddress = curMessage.From.Address;
@@ -56,9 +77,9 @@ namespace Data.Repositories
                 curUser.EmailAddress = UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(fromEmailAddress);
                 curMessage.User = curUser;
                 userRepo.Add(curUser);
-                UnitOfWork.CalendarRepository.CheckUserHasCalendar(curUser);
             }
             return curUser;
         }
+*/
     }
 }
