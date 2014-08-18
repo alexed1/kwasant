@@ -16,7 +16,7 @@ namespace KwasantTest.Fixtures
             return new AttendeeDO()
             {
                 EmailAddress = TestEmailAddress1(),
-                Name = "Alex Lucre1"
+                Name = "Alex Lucre1 Attendee"
             };
         }
 
@@ -27,6 +27,16 @@ namespace KwasantTest.Fixtures
             {
                 EmailAddress = TestEmailAddress2(),
                 Name = "Joe Test Account 2"
+            };
+        }
+
+        public AttendeeDO TestAttendee3()
+        {
+
+            return new AttendeeDO()
+            {
+                EmailAddress = TestEmailAddress3(),
+                Name = "Kwasant Integration Attendee"
             };
         }
 

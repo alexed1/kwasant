@@ -10,7 +10,7 @@ namespace KwasantTest.Fixtures
             {                
                 FirstName = "Jack",
                 LastName = "Maginot",
-                EmailAddress = TestEmail4()
+                EmailAddress = TestEmailAddress1() //note that some tests have Attendees that assume this won't change
             };
         }
 
@@ -20,11 +20,21 @@ namespace KwasantTest.Fixtures
             {
                 FirstName = "Rob",
                 LastName = "Maginot",
-                EmailAddress = TestEmail5()
+                EmailAddress = TestEmailAddress5()
             };
         }
 
-     
+        public UserDO TestUser3()
+        {
+            var curEmailAddressDO = TestEmailAddress3();
+            return new UserDO()
+            {
+                FirstName = "Kwasant",
+                LastName = "Integration",
+                EmailAddress = curEmailAddressDO,
+                EmailAddressID = curEmailAddressDO.Id
+            };
+        }
     }
 }
 
