@@ -50,7 +50,7 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("bookingRequestDO");
             return Get(uow, bookingRequestDO.From);
         }
-
+      
         public UserDO Get(IUnitOfWork uow, EmailAddressDO emailAddressDO)
         {
             if (uow == null)
@@ -82,7 +82,7 @@ namespace KwasantCore.Services
                 AlertManager.CustomerCreated(curUser);
                 return curUser.Id;
             }
-        }
+            }
 
         private UserDO Create(IUnitOfWork uow, EmailAddressDO emailAddressDO,
             string userName = null, string firstName = null, string lastName = null)
