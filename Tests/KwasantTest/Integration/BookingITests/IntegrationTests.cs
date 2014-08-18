@@ -144,15 +144,6 @@ namespace KwasantTest.Workflow
             //poll the specified account inbox until either the expected message is received, or timeout
             var eventEmails = _polling.PollForEmail((criteria, unreadMessages) => InjectedQuery_FindSpecificEvent(unreadMessages, start, end), targetCriteria, "external", client);
             return eventEmails.FirstOrDefault();
-            /*
-                        //cleanup the inbox by deleting the messages
-                        var requestMessages = client.Search(SearchCondition.Subject(targetCriteria.Subject)).ToList();
-                        client.DeleteMessages(requestMessages);
-                        if (inviteMessage != null)
-                        {
-                            client.DeleteMessage(inviteMessageId);
-                        }
-            */
         }
        
 
