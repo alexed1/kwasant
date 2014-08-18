@@ -119,14 +119,9 @@ namespace KwasantWeb.Controllers
         }
 
         [KwasantAuthorize(Roles = "Admin")]
-        public ActionResult Administer(UserAdministerVM curUserAdminVM)
+        public ActionResult Administer()
         {
-            if (curUserAdminVM.User == null)
-            {
-                curUserAdminVM = new UserAdministerVM();
-                curUserAdminVM.User = _user.GetFirstUser();
-            }
-            return View(curUserAdminVM);
+            return View();
         }
 
         public ActionResult ShowUsers()

@@ -1,4 +1,4 @@
-﻿@model KwasantWeb.ViewModels.UserAdministerVM
+﻿@*@model KwasantWeb.ViewModels.UserAdministerVM*@
 @{
     ViewBag.Title = "Administer";
 }
@@ -23,10 +23,10 @@
 <table width="100%">
     <tr>
         <td width="35%" style="vertical-align:top;" id="tduserblock">
-            @Html.Partial("../User/Admin", Model)
+            @Html.Partial("../User/Admin")
         </td>
         <td width="65%">
-            @Html.Partial("../Calendar/Show", Model)
+            @Html.Partial("../Calendar/Show")
         </td>
     </tr>
 </table>

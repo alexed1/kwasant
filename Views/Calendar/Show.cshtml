@@ -1,4 +1,4 @@
-﻿@model KwasantWeb.ViewModels.UserAdministerVM
+﻿@*@model KwasantWeb.ViewModels.UserAdministerVM*@
 <div id="divCalendarContainer">
    
 </div>
@@ -9,14 +9,13 @@
      
         calendar = $('#divCalendarContainer').KCalendar({
             getCalendarBackendURL: function () {
-                return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.User.Calendars.Select(e=>e.Id).ToList()))';
+                return '@Url.Content("~/Calendar/Day?calendarIDs=''")';
             },
             getMonthBackendURL: function () {
-                //return 'Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
-                return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.User.Calendars.Select(e=>e.Id).ToList()))';
+                return '@Url.Content("~/Calendar/Month?calendarIDs=''")';
             },
             getNavigatorBackendURL: function () {
-                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.User.Calendars.Select(e=>e.Id).ToList()))';
+                return '@Url.Content("~/Calendar/Navigator?calendarIDs=''")';
             },
             getEditURL: function (id) { return; },
             getMoveURL: function (id, newStart, newEnd) { return; },

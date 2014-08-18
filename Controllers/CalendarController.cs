@@ -91,20 +91,32 @@ namespace KwasantWeb.Controllers
         #region "DayPilot-Related Methods"
         public ActionResult Day(string calendarIDs)
         {
-            var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
-            return new KwasantCalendarController(new EventDataProvider(true, ids)).CallBack(this);
+            if (calendarIDs != "")
+            {
+                var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+                return new KwasantCalendarController(new EventDataProvider(true, ids)).CallBack(this);
+            }
+            return new KwasantCalendarController(new EventDataProvider(false, new int { })).CallBack(this);
         }
 
         public ActionResult Month(string calendarIDs)
         {
-            var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
-            return new KwasantMonthController(new EventDataProvider(true, ids)).CallBack(this);
+            if (calendarIDs != "")
+            {
+                var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+                return new KwasantMonthController(new EventDataProvider(true, ids)).CallBack(this);
+            }
+            return new KwasantMonthController(new EventDataProvider(false, new int { })).CallBack(this);
         }
 
         public ActionResult Navigator(string calendarIDs)
         {
-            var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
-            return new KwasantNavigatorControl(new EventDataProvider(true, ids)).CallBack(this);
+            if (calendarIDs != "")
+            {
+                var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+                return new KwasantNavigatorControl(new EventDataProvider(true, ids)).CallBack(this);
+            }
+            return new KwasantNavigatorControl(new EventDataProvider(false, new int { })).CallBack(this);
         }
 
         public ActionResult Rtl()

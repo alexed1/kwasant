@@ -1,17 +1,13 @@
-﻿@model KwasantWeb.ViewModels.UserAdministerVM
+﻿@*@model KwasantWeb.ViewModels.UserAdministerVM*@
 <div>
     User :
-    <input id="txtemailid" type="text" value="@Model.User.EmailAddress.Address" />
+    <input id="txtemailid" type="text" value="" />
     <input id="btnChange" type="button" value="Change" />
     <br />
     <br />
     Show Calendars :
     <br />
     <div id="divCalendarChooser">
-        @foreach (var calendar in Model.User.Calendars)
-        {
-            <input type="checkbox" value="@calendar.Id" onclick="refreshCalendar()" checked="checked" />@calendar.Name
-        }
     </div>
 </div>
 <script>
