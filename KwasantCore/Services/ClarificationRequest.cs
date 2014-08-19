@@ -51,7 +51,7 @@ namespace KwasantCore.Services
             if (curCR == null)
                 throw new ArgumentNullException("Clarification Request that was passed to Send was null");
             //do proper validation here
-            var responseUrlFormat = "foo";  //replace with appropriate formatting. the previous code could only run in the controller: string.Concat(Url.Action("", RouteConfig.ShowClarificationResponseUrl, new { }, this.Request.Url.Scheme), "?{0}");
+            var responseUrlFormat = "foo";  //replace with appropriate formatting. the previous code could only run in the controller: string.Concat(Url.Action("", RouteConfig.ShowNegotiationResponseUrl, new { }, this.Request.Url.Scheme), "?{0}");
             var responseUrl =  GenerateResponseURL(curCR, responseUrlFormat);
             _email.SendTemplate("clarification_request_v1", curCR, new Dictionary<string, string>
                                                                         {

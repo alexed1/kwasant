@@ -19,7 +19,7 @@
 
 
 
-@*@using (Html.BeginForm("ProcessSubmittedClarificationData", "ClarificationResponse", FormMethod.Post))
+@*@using (Html.BeginForm("ProcessSubmittedClarificationData", "NegotiationResponse", FormMethod.Post))
 {*@
 
 
@@ -35,7 +35,7 @@
     <div class="formItem">
         @foreach (var ans in question.Answers)
         {
-            <input type="radio" name="@question.Id" value="@ans.Id"/>   @ans.ObjectType<br />
+            <input type="radio" name="@question.Id" value="@ans.Id"/>   @ans.Text<br />
         }
         @if (question.Response == "Text")
         {
@@ -116,7 +116,7 @@
 
 
 
-@*@using (Html.BeginForm("ProcessSubmittedClarificationData", "ClarificationResponse", FormMethod.Post))
+@*@using (Html.BeginForm("ProcessSubmittedClarificationData", "NegotiationResponse", FormMethod.Post))
 {
     @Html.HiddenFor(m => m.Id)
     @Html.HiddenFor(m => m.BookingRequestId)

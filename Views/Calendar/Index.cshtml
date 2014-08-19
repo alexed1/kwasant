@@ -46,7 +46,6 @@
 					<!--	<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.BookingRequestID, status = BookingRequestState.Processed })');" href="#">Mark Processed</a></li> -->
 
                         <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
-						<li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
 						<li>@Html.ActionLink("Back to booking requests", "Index", "BookingRequest")</li>
 						<li>@Html.ActionLink("Show Users", "Index", "User")</li>
                         <li><a id="btnNegotiation" onclick="window.parent.getNegotiationWindow();" negotiationID='@Model.LinkedNegotiationID' href="#">@(Model.LinkedNegotiationID == null ? "Create Negotiation" : "Edit Negotiation")</a></li>
@@ -152,15 +151,6 @@
         var data = table.row($(this)).data();
         loadrequest(data.id, data.linkedcalendarids, this);
     });
-
-    $('#btnRequestClarification').click(function () {
-        if (Kwasant.IFrame.PopupsActive()) { return false; }
-        Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.BookingRequestID })',
-            {
-                horizontalAlign: 'left',
-            });
-    });
-   
 
     function emailFrameLoaded() {
         var iframe = $("#emailInfoFrame").get(0);

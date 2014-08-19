@@ -1,0 +1,83 @@
+﻿@model KwasantWeb.ViewModels.NegotiationViewModel
+
+@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/jqueryvalidate")
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+}
+@section styles
+{
+    @Styles.Render("~/bundles/css/bootstrap30")
+    @Styles.Render("~/bundles/css/backendcss")
+}
+
+<h2>We need clarification about the following to finish booking your event:</h2>
+
+@foreach (var question in Model.Questions)
+{
+    <div class="formItem">
+        <label>Question : </label>
+        @question.Text
+    </div>
+    <div class="formItem">
+        @foreach (var ans in question.Answers)
+        {
+            <input type="radio" name="@question.Id" value="@ans.Id" />   @ans.Text<br />
+        }
+        @if (question.AnswerType == "Text")
+        {
+            <input type="radio" name="@question.Id" data-type="Text" value="suggestion" />
+            @Html.Raw("Suggest your own answer")<br />
+            <input type="text" style="margin-left: 16px;" value="" id="@question.Id" /><br />
+        }
+        else
+        {
+            <input type="radio" name="@question.Id" data-type="Timeslot" value="suggestion" />
+            @Html.Raw("Suggest your own answer")<br />
+            <button class="pick" style="margin-left: 16px;" onclick="return false;">Pick Times</button><br />
+        }
+        <br />
+        <br />
+    </div>
+}
+
+<div class="space">
+    <div style="clear: both">
+        <div style="float: left">
+            <input type="button" value="send" onclick="sendthis();" />
+        </div>
+    </div>
+    <br />
+    <br />
+</div>
+
+<script type="text/javascript">
+    function sendthis() {
+        var response = {};
+        response.NegotiationID = @Model.Id;
+        
+        var answers = [];
+        $("input[type='radio']").each(function () {
+            if (this.checked) {
+                if (this.value != "suggestion") {
+                    answers.push({ QuestionID: this.name, AnswerID: this.value});
+                }
+                else {
+                    if ($(this).attr("data-type") == "Text") {
+                        answers.push({ QuestionID: this.name, AnswerID: $('#' + this.name).val()});
+                    }
+                }
+            }
+        });
+        response.Responses = answers;
+
+        var url = '@Url.Action("ProcessResponse", "NegotiationResponse")?value=' + $.param(response);
+        window.location.href = url;
+    };
+</script>

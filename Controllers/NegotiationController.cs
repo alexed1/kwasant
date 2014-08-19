@@ -11,10 +11,8 @@ using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
-    //[KwasantAuthorize(Roles = "Admin")]
     public class NegotiationController : Controller
-    {
-        
+    {        
         public ActionResult Edit(int negotiationID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -32,7 +30,7 @@ namespace KwasantWeb.Controllers
 
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
-                        new QuestionViewModel
+                        new NegotiationQuestionViewModel
                         {
                             AnswerType = q.AnswerType,
                             Id = q.Id,

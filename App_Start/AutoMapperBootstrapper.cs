@@ -29,17 +29,6 @@ namespace KwasantWeb.App_Start
                 .ForMember(eventDO => eventDO.CreatedBy, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.CreatedByID, opts => opts.Ignore());
 
-            Mapper.CreateMap<ClarificationRequestDO, ClarificationRequestViewModel>()
-               
-                .ForMember(cr => cr.Recipients, opts => opts.ResolveUsing(ev => String.Join(",", ev.Recipients.Select(eea => eea.EmailAddress.Address).Distinct())));
-            Mapper.CreateMap<ClarificationRequestViewModel, ClarificationRequestDO>()
-              
-                .ForMember(cr => cr.Recipients, opts => opts.Ignore());
-
-               
-
-               
-
             Mapper.CreateMap<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserViewModel>()
                 .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(tuple => !string.IsNullOrEmpty(tuple.Item1.PasswordHash)))
                 .ForMember(mu => mu.RemoteCalendars, opts => opts.ResolveUsing(tuple => tuple.Item2
