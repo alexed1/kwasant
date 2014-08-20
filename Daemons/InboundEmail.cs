@@ -86,37 +86,36 @@ namespace Daemons
             }
 
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
-            var messages = client.ListMailboxes()
+            var allMessageInfos = client.ListMailboxes()
                 .SelectMany(mailbox => client
                                            .Search(SearchCondition.Unseen(), mailbox)
-                                           .Select(uid => new {Mailbox = mailbox, Uid = uid}))
+                                           .Select(uid => new { Mailbox = mailbox, Uid = uid, Message = client.GetMessage(uid, mailbox: mailbox) }))
+                .Where(messageInfo => messageInfo.Message.From != null)
                 .ToList();
-            
+            var messageInfos = allMessageInfos
+                .Select(messageInfo => messageInfo.Message.Headers["Message-ID"])
+                .Distinct(StringComparer.Ordinal)
+                .Select(id => allMessageInfos.First(messageInfo => string.Equals(messageInfo.Message.Headers["Message-ID"], id, StringComparison.Ordinal)))
+                .ToList();
 
 
             string logString;
 
             //the difference in syntax makes it easy to have nonzero hits stand out visually in the log dashboard
-            if (messages.Any())           
-                logString = GetType().Name + " - " + messages.Count() + " emails found!";      
+            if (messageInfos.Any())           
+                logString = GetType().Name + " - " + messageInfos.Count() + " emails found!";      
             else
                 logString = GetType().Name + " - 0 emails found...";
             Logger.GetLogger().Info(logString);
 
-            foreach (var emailMessage in messages)
+            foreach (var messageInfo in messageInfos)
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
                 BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
-                
-                var message = client.GetMessage(emailMessage.Uid);                
-                if (message.From == null)
-                {
-                    continue;
-                }
 
                 try
                 {
-                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, messageInfo.Message);
                     //assign the owner of the booking request to be the owner of the From address
 
                     (new BookingRequest()).Process(unitOfWork, bookingRequest);
@@ -128,9 +127,9 @@ namespace Daemons
                 }
                 catch (Exception e)
                 {
-                    AlertManager.EmailProcessingFailure(message.Headers["Date"], e.Message);
-                    Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", emailMessage.Uid));
-                    client.AddMessageFlags(emailMessage.Uid, emailMessage.Mailbox, MessageFlag.Seen);
+                    AlertManager.EmailProcessingFailure(messageInfo.Message.Headers["Date"], e.Message);
+                    Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Message.Headers["Message-ID"]));
+                    client.AddMessageFlags(messageInfo.Uid, messageInfo.Mailbox, MessageFlag.Seen);
                 }
             }
 

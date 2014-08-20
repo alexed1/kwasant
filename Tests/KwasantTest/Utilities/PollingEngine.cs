@@ -136,29 +136,30 @@ namespace KwasantTest.Utilities
         //Loads unread messages from an Imap account
         public List<EmailDO> GetUnreadMessages(ImapClient client)
         {
-            var messages = client.ListMailboxes()
+            var allMessageInfos = client.ListMailboxes()
                 .SelectMany(mailbox => client
                                            .Search(SearchCondition.Unseen(), mailbox)
-                                           .Select(uid => new { Mailbox = mailbox, Uid = uid }))
+                                           .Select(uid => new { Mailbox = mailbox, Uid = uid, Message = client.GetMessage(uid, mailbox: mailbox) }))
+                .Where(messageInfo => messageInfo.Message.From != null)
                 .ToList();
+            var messageInfos = allMessageInfos
+                .Select(messageInfo => messageInfo.Message.Headers["Message-ID"])
+                .Distinct(StringComparer.Ordinal)
+                .Select(id => allMessageInfos.First(messageInfo => string.Equals(messageInfo.Message.Headers["Message-ID"], id, StringComparison.Ordinal)));
+
             List<EmailDO> emailList = new List<EmailDO>();
             EmailRepository emailRepo = _uow.EmailRepository;
-            foreach (var message in messages)
+            foreach (var messageInfo in messageInfos)
             {
                 try
                 {
-                    var emailMessage = client.GetMessage(message.Uid);
-                    if (emailMessage.From == null)
-                    {
-                        continue;
-                    }
-                    EmailDO email = Email.ConvertMailMessageToEmail(emailRepo, emailMessage);
+                    EmailDO email = Email.ConvertMailMessageToEmail(emailRepo, messageInfo.Message);
                     emailList.Add(email);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Error on converting MailMessage to EmailDO: {0}.", ex.Message);
-                    client.AddMessageFlags(message.Uid, message.Mailbox, MessageFlag.Seen);
+                    client.AddMessageFlags(messageInfo.Uid, messageInfo.Mailbox, MessageFlag.Seen);
                 }
             }
             return emailList;
