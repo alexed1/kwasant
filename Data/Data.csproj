@@ -142,6 +142,7 @@
     <Compile Include="Migrations\201408130809305_Add_InvitationDO.Designer.cs">
       <DependentUpon>201408130809305_Add_InvitationDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Repositories\InvitationRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
@@ -9,11 +10,25 @@ using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using Utilities;
 using IEvent = Data.Interfaces.IEvent;
+using AutoMapper;
 
 namespace KwasantCore.Services
 {
     public class Event : IEvent
     {
+        private readonly IMappingEngine _mappingEngine;
+
+        public Event() : this(Mapper.Engine)
+        {
+            
+        }
+
+        public Event(IMappingEngine mappingEngine)
+        {
+            if (mappingEngine == null)
+                throw new ArgumentNullException("mappingEngine");
+            _mappingEngine = mappingEngine;
+        }
 
         //this is called when a booker clicks on the calendar to create a new event. The form has not yet been filled out, so only 
         //some info about the event is known.
@@ -50,15 +65,135 @@ namespace KwasantCore.Services
             return curEventDO;
         }
 
+        public void Process(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, List<AttendeeDO> existingAttendees)
+        {
+            var invitations = GenerateInvitations(uow, eventDO, newAttendees, existingAttendees);
+            var invitation = new Invitation();
+            foreach (var invitationDO in invitations)
+            {
+                invitation.Dispatch(uow, invitationDO);
+            }
+            eventDO.EventStatus = EventState.DispatchCompleted;
+        }
 
         //takes submitted form data and updates as necessary
         //in general, the new event data will simply overwrite the old data. 
         //in some cases, additional work is necessary to handle the changes
-        public void Process(IUnitOfWork uow, EventDO eventDO)
-        {            
-            new CommunicationManager().DispatchInvitations(uow, eventDO);
+        public void Process(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, List<AttendeeDO> updatedAttendees)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (eventDO == null)
+                throw new ArgumentNullException("eventDO");
+            if (updatedEventInfo == null)
+                throw new ArgumentNullException("updatedEventInfo");
+            if (updatedAttendees == null)
+                throw new ArgumentNullException("updatedAttendees");
+
+            List<AttendeeDO> newAttendees; 
+            List<AttendeeDO > existingAttendees;
+            eventDO = Update(uow, eventDO, updatedEventInfo, updatedAttendees, out newAttendees, out existingAttendees);
+            if (eventDO != null)
+            {
+                Process(uow, eventDO, newAttendees, existingAttendees);
+            }
         }
      
+        public List<InvitationDO> GenerateInvitations(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, List<AttendeeDO> existingAttendees)
+        {
+            //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
+            //var createdDate = eventDO.BookingRequest.DateCreated;
+            //eventDO.StartDate = eventDO.StartDate.ToOffset(createdDate.Offset);
+            //eventDO.EndDate = eventDO.EndDate.ToOffset(createdDate.Offset);
+            var invitations = new List<InvitationDO>();
+            Invitation invitation = new Invitation();
+            invitations.AddRange(newAttendees.Select(newAttendee => invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO)).Where(i => i != null));
+            invitations.AddRange(existingAttendees.Select(existingAttendee => invitation.Generate(uow, InvitationType.ChangeNotification, existingAttendee, eventDO)).Where(i => i != null));
+
+            return invitations;
+/*
+            var t = Utilities.Server.ServerUrl;
+            switch (eventDO.EventStatus)
+            {
+                case EventState.Booking:
+                    {
+                        eventDO.EventStatus = EventState.DispatchCompleted;
+
+                        var calendar = Event.GenerateICSCalendarStructure(eventDO);
+                        foreach (var attendeeDO in eventDO.Attendees)
+                        {
+                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, false);
+                            var email = new Email(uow, emailDO);
+                            AttachCalendarToEmail(calendar, emailDO);
+                            email.Send();
+                        }
+
+                        break;
+                    }
+                case EventState.ReadyForDispatch:
+                case EventState.DispatchCompleted:
+                    //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
+                    if (EventHasChanged(uow, eventDO))
+                    {
+                        eventDO.EventStatus = EventState.DispatchCompleted;
+                        var calendar = Event.GenerateICSCalendarStructure(eventDO);
+
+                        var newAttendees = eventDO.Attendees.Where(a => a.Id == 0).ToList();
+
+                        foreach (var attendeeDO in eventDO.Attendees)
+                        {
+                            //Id > 0 means it's an existing attendee, so we need to send the 'update' email to them.
+                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, !newAttendees.Contains(attendeeDO));
+                            var email = new Email(uow, emailDO);
+                            AttachCalendarToEmail(calendar, emailDO);
+                            email.Send();
+                        }
+                    }
+                    else
+                    {
+                        //If the event hasn't changed - we don't need a new email..?
+                    }
+                    break;
+
+                case EventState.ProposedTimeSlot:
+                    //Do nothing
+                    break;
+                default:
+                    throw new Exception("Invalid event status");
+            }
+*/
+        }
+
+        private EventDO Update(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, List<AttendeeDO> updatedAttendees, out List<AttendeeDO> newAttendees, out List<AttendeeDO> existingAttendees)
+        {
+            newAttendees = UpdateAttendees(uow, eventDO, updatedAttendees);
+            existingAttendees = updatedAttendees.Except(newAttendees).ToList();
+            eventDO = _mappingEngine.Map(updatedEventInfo, eventDO);
+            if (/*newAttendees != null || */uow.IsEntityModified(eventDO))
+            {
+                return eventDO;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public List<AttendeeDO> UpdateAttendees(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> updatedAttendeeList)
+        {
+            List<AttendeeDO> newAttendees = new List<AttendeeDO>();
+
+            var attendeesToDelete = eventDO.Attendees.Where(attendee => !updatedAttendeeList.Select(a => a.EmailAddress.Address).Contains(attendee.EmailAddress.Address)).ToList();
+            foreach (var attendeeToDelete in attendeesToDelete)
+                uow.AttendeeRepository.Remove(attendeeToDelete);
+
+            foreach (var attendee in updatedAttendeeList.Where(att => !eventDO.Attendees.Select(a => a.EmailAddress.Address).Contains(att.EmailAddress.Address)))
+            {
+                newAttendees.Add(attendee);
+            }
+            return newAttendees.Any() ? newAttendees : null;
+        }
+
         public EventDO AddAttendee(UserDO curUserDO, EventDO curEvent)
         {
             var curAttendee = new Attendee();

@@ -13,12 +13,12 @@ namespace KwasantWeb.App_Start
 
         public static void ConfigureAutoMapper()
         {
-            Mapper.CreateMap<EventDO, EventViewModel>()
+            Mapper.CreateMap<EventDO, EventEditVM>()
                 .ForMember(ev => ev.Attendees, opts => opts.ResolveUsing(ev => String.Join(",", ev.Attendees.Select(eea => eea.EmailAddress.Address).Distinct())))
                 .ForMember(ev => ev.CreatedByAddress, opts => opts.ResolveUsing(evdo => evdo.CreatedBy.EmailAddress.Address))
                 .ForMember(ev => ev.BookingRequestTimezoneOffsetInMinutes, opts => opts.ResolveUsing(evdo => evdo.DateCreated.Offset.TotalMinutes * - 1));
 
-            Mapper.CreateMap<EventViewModel, EventDO>()
+            Mapper.CreateMap<EventEditVM, EventDO>()
                 .ForMember(eventDO => eventDO.Attendees, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.ActivityStatus, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.CreatedBy, opts => opts.Ignore())

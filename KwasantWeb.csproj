@@ -314,7 +314,7 @@
     <Compile Include="ViewModels\EditNegotiationVM.cs" />
     <Compile Include="ViewModels\QuestionViewModel.cs" />
     <Compile Include="ViewModels\ClarificationRequestViewModel.cs" />
-    <Compile Include="ViewModels\EventViewModel.cs" />
+    <Compile Include="ViewModels\EventEditVM.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\RemoteCalendarViewModel.cs" />
     <Compile Include="ViewModels\UsersAdminViewModel.cs" />
@@ -763,7 +763,6 @@
     <Folder Include="archive\" />
     <Folder Include="Content\fonts\" />
     <Folder Include="Content\img\forms\" />
-    <Folder Include="Content\img\icons\" />
     <Folder Include="Views\CommunicationManager\" />
   </ItemGroup>
   <ItemGroup>

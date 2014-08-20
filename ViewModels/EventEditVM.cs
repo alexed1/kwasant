@@ -2,7 +2,7 @@
 
 namespace KwasantWeb.ViewModels
 {
-    public class EventViewModel
+    public class EventEditVM
     {
         public int Id { get; set; }
         public DateTimeOffset StartDate { get; set; }

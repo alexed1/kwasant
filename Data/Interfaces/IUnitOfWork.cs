@@ -5,7 +5,6 @@ namespace Data.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        #region Method
 
         AttachmentRepository AttachmentRepository { get; }
         AttendeeRepository AttendeeRepository { get; }
@@ -21,6 +20,7 @@ namespace Data.Interfaces
         EventRepository EventRepository { get; }
         EventStatusRepository EventStatusRepository { get; }
         InstructionRepository InstructionRepository { get; }
+        InvitationRepository InvitationRepository { get; }
         StoredFileRepository StoredFileRepository { get; }
         TrackingStatusRepository TrackingStatusRepository { get; }
         UserAgentInfoRepository UserAgentInfoRepository { get; }
@@ -61,6 +61,8 @@ namespace Data.Interfaces
         /// The save changes.
         /// </summary>
         // void SaveChanges(SaveOptions saveOptions);
-        #endregion
+
+        bool IsEntityModified<TEntity>(TEntity entity)
+            where TEntity : class;
     }
 }
