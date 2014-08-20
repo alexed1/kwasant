@@ -52,7 +52,6 @@ namespace KwasantCore.Services
                 attendee.Event = eventDO;
                 attendee.EventID = eventDO.Id;
                 uow.AttendeeRepository.Add(attendee);
-                existingAttendeeSet.Add(attendee);
             }         
         }
 
@@ -66,7 +65,6 @@ namespace KwasantCore.Services
                 attendee.Negotiation = negotiationDO;
                 attendee.NegotiationID = negotiationDO.Id;
                 uow.AttendeeRepository.Add(attendee);
-                existingAttendeeSet.Add(attendee);
             }
         }
 
