@@ -64,13 +64,11 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                string bookerId = _br.CheckBookerStatus(uow, bookingRequestDO.Id);
-                if (bookerId != this.GetUserId())
-                {
-                    //bookingRequestDO.BookerID = this.GetUserId();
-                    bookingRequestDO.BookingRequestState = BookingRequestState.Booking;
-                    uow.SaveChanges();   
-                }
+                bookingRequestDO.BookerID = this.GetUserId();
+                bookingRequestDO.User = bookingRequestDO.User;
+                //Update Last Time too....
+                bookingRequestDO.BookingRequestState = BookingRequestState.Booking;
+                uow.SaveChanges();
             }
 
             if (bookingRequestDO == null)
@@ -84,6 +82,22 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        [HttpGet]
+        public string IsBookerValid(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                if (bookingRequestDO.BookerID != this.GetUserId())
+                {
+                    if (bookingRequestDO.BookerID != null)
+                        return uow.UserRepository.GetByKey(bookingRequestDO.BookerID).FirstName;
+                    else
+                        return "valid";
+                }
+                return "valid";
+            }
+        }
 
         [HttpGet]
         public ActionResult MarkAsProcessed(int id)
@@ -92,6 +106,7 @@ namespace KwasantWeb.Controllers
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 bookingRequestDO.BookingRequestState = BookingRequestState.Resolved;
+                bookingRequestDO.BookerID = this.GetUserId();
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
@@ -106,6 +121,7 @@ namespace KwasantWeb.Controllers
              {
                  BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                  bookingRequestDO.BookingRequestState = BookingRequestState.Invalid;
+                 bookingRequestDO.BookerID = this.GetUserId();
                  bookingRequestDO.User = bookingRequestDO.User;
                  uow.SaveChanges();
                  AlertManager.BookingRequestStateChange(bookingRequestDO.Id);

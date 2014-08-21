@@ -110,7 +110,25 @@
                 //return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
                 return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + @Model.ActiveCalendarID)';
             },  
-            getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
+            getEditURL: function (id) {
+                return '/Event/Edit/?eventID=' + id;
+                //$.ajax({
+                //    url: "/BookingRequest/IsBookerValid",
+                //    type: "GET",
+                //    data: { id: $("#hdnrequestid").val() },
+                //    success: function (response) {
+                //        //alert(response);
+                //        if (response == "valid") {
+                //            //alert("in");
+                //            return '/Event/Edit/?eventID=' + id;
+                //        } else {
+                //            if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
+                //                return '/Event/Edit/?eventID=' + id;
+                //            }
+                //        }
+                //    }
+                //});
+            },
             getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
             getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
             onEventNew: function(start, end) {
@@ -189,8 +207,24 @@
 
     //Mark processed function will execute on click to update the Request status to "Processed".
     function updateStatus(path) {
-        $.getJSON(path, function () {
-            window.location.href = "@Url.Action("Index", "BookingRequest")";
+        $.ajax({
+            url: "/BookingRequest/IsBookerValid",
+            type: "GET",
+            data: { id: "@Model.BookingRequestID" },
+            success: function (response) {
+                if (response == "valid") {
+                    //redirecting to main calendar view for details
+                    $.getJSON(path, function () {
+                        window.location.href = "@Url.Action("Index", "BookingRequest")";
+                    });
+                } else {
+                    if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
+                        $.getJSON(path, function () {
+                            window.location.href = "@Url.Action("Index", "BookingRequest")";
+                        });
+                    }
+                }
+            }
         });
     }
 

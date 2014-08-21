@@ -46,24 +46,39 @@
                 //checking clicked button value for appropriate action this will be either "detail" or "invalid"
                 switch ($(this).val()) {
                     case "detail":
-                        //redirecting to main calendar view for details
-                        window.location.href = '@Url.Action("Details")' + "/" + data.id;
+                        $.ajax({
+                            url: "/BookingRequest/IsBookerValid",
+                            type: "GET",
+                            data: { id: data.id },
+                            success: function (response) {
+                                if (response == "valid") {
+                                    //redirecting to main calendar view for details
+                                    window.location.href = '@Url.Action("Details")' + "/" + data.id;
+                                } else {
+                                    if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
+                                        window.location.href = '@Url.Action("Details")' + "/" + data.id;
+                                    }
+                                }
+                            }
+                        });
                         break;
                     case "invalid":
                         //setting status of booking request to "INVALID" and removing the row
                         $.ajax({
-                            url: "/BookingRequest/Invalidate",
-                            dataType: "json",
-                            contentType: "application/json",
+                            url: "/BookingRequest/IsBookerValid",
                             type: "GET",
                             data: { id: data.id },
                             success: function (response) {
-                                if (response.Name == "Success") {
-                                    //removing the current row
-                                    $(parentcontrol).parents('tr').remove();
-                                }
-                                else {
-                                    alert(response.Message);
+                                if (response == "valid") {
+                                    $.getJSON("/BookingRequest/Invalidate?id=" + data.id, function () {
+                                        $(parentcontrol).parents('tr').remove();
+                                    });
+                                } else {
+                                    if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
+                                        $.getJSON("/BookingRequest/Invalidate?id="+data.id, function (response) {
+                                            $(parentcontrol).parents('tr').remove();
+                                        });
+                                    }
                                 }
                             }
                         });

@@ -136,13 +136,6 @@ namespace KwasantCore.Services
                       Date = e.StartDate.ToString("M-d-yy hh:mm tt")
                   }).ToList();
         }
-
-        public string CheckBookerStatus(IUnitOfWork uow, int bookingRequestId)
-        {
-            return (from requests in uow.BookingRequestRepository.GetAll()
-                    where requests.Id == bookingRequestId
-                    select requests.BookerID).FirstOrDefault();
-        }
        
     }
     public struct BR_RelatedItems
