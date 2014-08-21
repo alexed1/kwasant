@@ -142,6 +142,18 @@
     <Compile Include="Migrations\201408130809305_Add_InvitationDO.Designer.cs">
       <DependentUpon>201408130809305_Add_InvitationDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408210715180_AddLastUpdated_toEmailDO.cs" />
+    <Compile Include="Migrations\201408210715180_AddLastUpdated_toEmailDO.Designer.cs">
+      <DependentUpon>201408210715180_AddLastUpdated_toEmailDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408210718119_AddBookerId_toBookingRequestDO.cs" />
+    <Compile Include="Migrations\201408210718119_AddBookerId_toBookingRequestDO.Designer.cs">
+      <DependentUpon>201408210718119_AddBookerId_toBookingRequestDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408210721022_UpdateIncidentDO.cs" />
+    <Compile Include="Migrations\201408210721022_UpdateIncidentDO.Designer.cs">
+      <DependentUpon>201408210721022_UpdateIncidentDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
@@ -752,6 +764,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408130809305_Add_InvitationDO.resx">
       <DependentUpon>201408130809305_Add_InvitationDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408210715180_AddLastUpdated_toEmailDO.resx">
+      <DependentUpon>201408210715180_AddLastUpdated_toEmailDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408210718119_AddBookerId_toBookingRequestDO.resx">
+      <DependentUpon>201408210718119_AddBookerId_toBookingRequestDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408210721022_UpdateIncidentDO.resx">
+      <DependentUpon>201408210721022_UpdateIncidentDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

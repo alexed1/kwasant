@@ -8,6 +8,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using StructureMap;
+using Utilities.Logging;
 
 namespace KwasantCore.Services
 {
@@ -137,7 +138,41 @@ namespace KwasantCore.Services
                   }).ToList();
         }
 
-       
+        public void ProcessTimeout( List<BookingRequestDO> bookingRequestDOs)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestDO bookingRequestDO;
+                foreach (var bookingRequest in bookingRequestDOs)
+                {
+                    bookingRequestDO = new BookingRequestDO();
+                    bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequest.Id);
+                    string bookerId = bookingRequestDO.BookerId;
+                    
+                    AlertManager.BookingRequestProcessingTimeout(bookingRequestDO);
+
+                    bookingRequestDO.BookingRequestState = BookingRequestState.Unprocessed;
+                    bookingRequestDO.BookerId = null;
+                    bookingRequestDO.User = bookingRequestDO.User;
+                    uow.SaveChanges();
+
+                    Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + bookingRequestDO.Id);
+
+                    // Send mail to Booker
+                    UserDO userDO = new UserDO();
+                    userDO = uow.UserRepository.GetByKey(bookerId);
+                    EmailAddressDO emailAddressDO = new EmailAddressDO(userDO.EmailAddress.Address);
+                    Email email = new Email(uow);
+                    string message = "Your BookingRequest ID :" + bookingRequestDO.Id + " Timed Out";
+                    EmailDO emailDO = email.GenerateBookerMessage(emailAddressDO, message);
+                    emailDO.Subject = "Warning";
+                    email.Send(emailDO);
+                    uow.SaveChanges();
+                }
+            }
+        }
+
+
     }
     public struct BR_RelatedItems
     {
