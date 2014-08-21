@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace KwasantWeb.ViewModels
 {
@@ -10,11 +11,12 @@ namespace KwasantWeb.ViewModels
     public class NegotiationResponseQuestionViewModel : NegotiationQuestionViewModel
     {
         public int? SelectedAnswerID { get; set; }
+        public int? SelectedCalendarID { get; set; }
         public String SelectedText { get; set; }
     }
 
     public class NegotiationResponseAnswerViewModel : NegotiationAnswerViewModel
     {
-        
+        public List<QuestionCalendarEventViewModel> CalendarEvents { get; set; }
     }
 }

@@ -194,10 +194,10 @@
                         renderEvents(questionBox, $.map(result.events, function(elem, index) {
                             return {
                                 startDate: elem.start.d.toDateString(),
-                                startTime: elem.start.getHours() + ':' + elem.start.getMinutes(),
+                                startTime: padMins(elem.start.getHours()) + ':' + padMins(elem.start.getMinutes()),
 
                                 endDate: elem.end.d.toDateString(),
-                                endTime: elem.end.getHours() + ':' + elem.end.getMinutes()
+                                endTime: padMins(elem.end.getHours()) + ':' + padMins(elem.end.getMinutes())
                             };
                         }));
                     }
@@ -210,6 +210,12 @@
         } else {
             launchCalendar(calendarID);
         }
+    }
+    
+    function padMins(mins) {
+        if (mins < 10)
+            return mins + '0';
+        return mins;
     }
 
     function renderEvents(questionBox, events) {

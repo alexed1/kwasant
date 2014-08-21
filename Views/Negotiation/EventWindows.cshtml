@@ -74,16 +74,25 @@
 <script type="text/javascript">
     var calendar;
     $(function() {
-     
+     @{
+         var calendarsToDisplay = new List<int>();
+         if (Model.LinkedCalendarIDs != null)
+         {
+             calendarsToDisplay.AddRange(Model.LinkedCalendarIDs);
+         }
+         calendarsToDisplay.Add(Model.ActiveCalendarID);
+         var calendarString = String.Join(",", calendarsToDisplay.Distinct());
+     }
+
         calendar = $('#CalendarDiv1').KCalendar({
             getCalendarBackendURL: function() {
-                return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                return '@Url.Content("~/Calendar/Day?calendarIDs=" + calendarString)';
             },
             getMonthBackendURL: function () {
-                return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                return '@Url.Content("~/Calendar/Month?calendarIDs=" + calendarString)';
             },
             getNavigatorBackendURL: function() {
-                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + calendarString)';
             },  
             getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
             getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },

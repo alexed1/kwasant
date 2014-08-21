@@ -5,6 +5,7 @@
 {
     @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/jqueryvalidate")
+    <script src="/Content/js/Kwasant/Popup.js"></script>
 }
 @section scripts
 {
@@ -15,9 +16,26 @@
 {
     @Styles.Render("~/bundles/css/bootstrap30")
     @Styles.Render("~/bundles/css/backendcss")
+
+    <style>
+        .handIcon {
+            cursor: pointer;
+        }
+        .eventWindowRendererTemplate {
+            border-color: #D3B9B9;
+            padding: 5px;
+            margin: 10px;
+            border-style: solid;
+            border-width: 1px;
+        } 
+    </style>
 }
 
 <h2>We need clarification about the following to finish booking your event:</h2>
+
+<div id="eventWindowRendererTemplate" class="eventWindowRendererTemplate">
+
+</div>
 
 @foreach (NegotiationResponseQuestionViewModel question in Model.Questions)
 {
@@ -26,11 +44,11 @@
         @question.Text
     </div>
     <div class="formItem">
-                @foreach (var ans in question.Answers)
+        @foreach (var ans in question.Answers)
         {
             <label>
                 <input type="radio" name="@question.Id" value="@ans.Id" @Html.Raw(question.SelectedAnswerID == ans.Id ? "checked" : String.Empty) />   
-                @ans.Text
+                @Html.Raw(question.AnswerType == "Text" ? ans.Text : "Timeslot")
             </label><br />
         }
         @if (question.AnswerType == "Text")
@@ -41,17 +59,20 @@
             </label>
             //We don't need a check for the selected text. Either it's empty, or they picked a different answer.
             <input type="text" style="margin-left: 16px;" value="@Html.Raw(question.SelectedText)" id="@question.Id" /><br />
-        }
-        else
+        } else if (question.AnswerType == "Timeslot")
         {
+            <div id="@Html.Raw(question.Id + "_EventWindowRendererOption")">
+            </div>
             <label>
-                <input type="radio" name="@question.Id" data-type="Timeslot" value="suggestion" />
+                <input type="radio" name="@question.Id" data-type="Timeslot" value="suggestion" @Html.Raw(question.SelectedCalendarID != null ? "checked" : String.Empty) />
                 Suggest your own answer<br />
             </label>
-            <button class="pick" style="margin-left: 16px;" onclick="return false;">Pick Times</button><br />
+            <a class="handIcon" questionID="@question.Id" calendarid="@Html.Raw(question.SelectedCalendarID == null ? "null" : question.SelectedCalendarID.ToString())" id="@Html.Raw(question.Id + "_EventWindow")" onclick=" startEventWindowSelection(this); ">Pick Times</a>
+            <div id="@Html.Raw(question.Id + "_EventWindowRenderer")">
+            </div>
+            <br />
+            <br />
         }
-        <br />
-        <br />
     </div>
 }
 
@@ -69,18 +90,116 @@
     $(function() {
         $("input[type='radio']").change(updateEnabledControls);
         updateEnabledControls();
+        $('#eventWindowRendererTemplate').hide();
+        @foreach (NegotiationResponseQuestionViewModel question in Model.Questions)
+        {
+            @:questionEventWindows = [];
+            foreach (var calendarEvent in question.CalendarEvents)
+            {
+                @:var startDate = new Date(@calendarEvent.StartDate.Year, (@calendarEvent.StartDate.Month - 1), @calendarEvent.StartDate.Day, @calendarEvent.StartDate.Hour, @calendarEvent.StartDate.Minute, @calendarEvent.StartDate.Millisecond)
+                        @:var endDate = new Date(@calendarEvent.EndDate.Year, (@calendarEvent.EndDate.Month - 1), @calendarEvent.EndDate.Day, @calendarEvent.EndDate.Hour, @calendarEvent.EndDate.Minute, @calendarEvent.EndDate.Millisecond)
+
+    			@:questionEventWindows.push({
+@:  startDate: startDate.toDateString(),
+                @:  startTime: startDate.getHours() + ':' + padMins(startDate.getMinutes()),
+                @:  endDate: endDate.toDateString(),
+                @:  endTime: endDate.getHours() + ':' + padMins(endDate.getMinutes()),
+                            @:});
+
+            }
+        @:renderEvents($('#' + '@question.Id.ToString()' + '_EventWindowRenderer'), questionEventWindows);
+                        }
+        
+        @foreach (NegotiationResponseQuestionViewModel question in Model.Questions)
+        {
+            foreach (NegotiationResponseAnswerViewModel answer in question.Answers)
+            {
+                @:questionEventWindows = [];
+                foreach (var calendarEvent in answer.CalendarEvents)
+                {
+
+                    @:var startDate = new Date(@calendarEvent.StartDate.Year, (@calendarEvent.StartDate.Month - 1), @calendarEvent.StartDate.Day, @calendarEvent.StartDate.Hour, @calendarEvent.StartDate.Minute, @calendarEvent.StartDate.Millisecond)
+                    @:var endDate = new Date(@calendarEvent.EndDate.Year, (@calendarEvent.EndDate.Month - 1), @calendarEvent.EndDate.Day, @calendarEvent.EndDate.Hour, @calendarEvent.EndDate.Minute, @calendarEvent.EndDate.Millisecond)
+
+                    @:questionEventWindows.push({
+                    @:  startDate: startDate.toDateString(),
+                    @:  startTime: startDate.getHours() + ':' + padMins(startDate.getMinutes()),
+                    @:  endDate: endDate.toDateString(),
+                    @:  endTime: endDate.getHours() + ':' + padMins(endDate.getMinutes()),
+                    @:});
+
+                }
+                @:renderEvents($('#' + '@question.Id.ToString()' + '_EventWindowRendererOption'), questionEventWindows);
+            }
+        }
     });
     
     function updateEnabledControls() {
         $("input[type='radio']").each(function() {
             if (this.checked) {
+                $('#' + this.name).prop('disabled', true);
+                $('#' + this.name + "_EventWindow").hide();
+                
                 if ($(this).attr("data-type") == "Text") {
                     $('#' + this.name).prop('disabled', false);
-                } else {
-                    $('#' + this.name).prop('disabled', true);
+                } else if ($(this).attr("data-type") == "Timeslot") {
+                    $('#' + this.name + "_EventWindow").show();    
                 }
             }
         });
+    }
+    
+    function startEventWindowSelection(holder) {
+        var calendarID = $(holder).attr('calendarID');
+        if (calendarID === "null")
+            calendarID = null;
+
+        var launchCalendar = function(calID) {
+            $(holder).attr('calendarID', calID);
+            Kwasant.IFrame.Display('/Calendar/GetSpecificCalendar?calendarID=' + calID,
+                {
+                    horizontalAlign: 'left',
+                    callback: function(result) {
+                        renderEvents($('#' + $(holder).attr('questionID') + "_EventWindowRenderer"), $.map(result.events, function(elem, index) {
+                            return {
+                                startDate: elem.start.d.toDateString(),
+                                startTime: elem.start.getHours() + ':' + padMins(elem.start.getMinutes()),
+
+                                endDate: elem.end.d.toDateString(),
+                                endTime: elem.end.getHours() + ':' + padMins(elem.end.getMinutes())
+                            };
+                        }));
+                    }
+
+                });
+        };
+
+        if (calendarID == null) {
+            Kwasant.IFrame.DispatchUrlRequest('/Question/EditTimeslots?calendarID=null&negotiationID=@Model.Id', launchCalendar);
+        } else {
+            launchCalendar(calendarID);
+        }
+    }
+    
+    function padMins(mins) {
+        if (mins < 10)
+            return mins + '0';
+        return mins;
+    }
+    
+    function renderEvents(renderer, events) {
+        renderer.empty();
+
+        for (var i = 0; i < events.length; i++) {
+            var currEvent = events[i];
+            var eventStr = currEvent.startDate + ' ' + currEvent.startTime + ' - ' + currEvent.endTime;
+
+            var clonedHTML = $('#eventWindowRendererTemplate').clone();
+            clonedHTML.html(eventStr);
+
+            renderer.append(clonedHTML);
+            clonedHTML.show();
+        }
     }
 
     function sendthis() {
@@ -93,10 +212,10 @@
                 if (this.value != "suggestion") {
                     answers.push({ QuestionID: this.name, AnswerID: this.value});
                 }
-                else {
-                    if ($(this).attr("data-type") == "Text") {
-                        answers.push({ QuestionID: this.name, Response: $('#' + this.name).val()});
-                    }
+                else if ($(this).attr("data-type") == "Text") {
+                    answers.push({ QuestionID: this.name, Response: $('#' + this.name).val()});
+                }else if ($(this).attr("data-type") == "Timeslot") {
+                    answers.push({ QuestionID: this.name, CalendarID: $('#' + this.name + "_EventWindow").attr('calendarID')});
                 }
             }
         });

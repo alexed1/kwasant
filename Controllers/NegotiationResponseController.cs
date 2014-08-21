@@ -48,46 +48,63 @@ namespace KwasantWeb.Controllers
 
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
-                        (NegotiationQuestionViewModel)new NegotiationResponseQuestionViewModel
+                    {
+                        var answeredQuestions = alreadyAnsweredQuestions.Where(aq => aq.QuestionID == q.Id).ToList();
+                        var linkedCalendar = answeredQuestions.Select(aq => aq.Calendar).FirstOrDefault();
+                        return (NegotiationQuestionViewModel) new NegotiationResponseQuestionViewModel
                         {
                             AnswerType = q.AnswerType,
                             Id = q.Id,
                             Status = q.QuestionStatus,
                             Text = q.Text,
                             
-                            //The following two properties let us setup the page with their existing answers, if they've already provided some answers
+                            //The following three properties let us setup the page with their existing answers, if they've already provided some answers
                             //It also doubles as selecting the first answer if no previous answer was picked (having a radio button unchecked by default is ugly)
                             SelectedAnswerID =
-                                
                                 //If we have a selected answer, use that
-                                alreadyAnsweredQuestions.Where(aq => aq.QuestionID == q.Id).Select(aq => aq.AnswerID).FirstOrDefault() ??
-                                //Otherwise, if we have no entered text
-                                (String.IsNullOrEmpty(alreadyAnsweredQuestions.Where(aq => aq.QuestionID == q.Id).Select(aq => aq.Text).FirstOrDefault()) 
+                                answeredQuestions.Select(aq => aq.AnswerID).FirstOrDefault() ??
+
+                                //Otherwise, if we have no entered text, and no calendar
+                                (String.IsNullOrEmpty(answeredQuestions.Select(aq => aq.Text).FirstOrDefault()) &&
+                                 (answeredQuestions.Select(aq => aq.CalendarID).FirstOrDefault() != null)
+                                
                                     //Then use the first answer
                                     ? q.Answers.Select(a => a.Id).FirstOrDefault() 
-                                    //Otherwise, since we have selected text, we use null (no answer ID selected)
-                                    : (int?)null),
-                            
-                            SelectedText = alreadyAnsweredQuestions.Where(aq => aq.QuestionID == q.Id).Select(aq => aq.Text).FirstOrDefault(),
+                                
+                                    //Otherwise, since we have selected text or a calendar, we use null (no answer ID selected)
+                                    : (int?) null),
+
+                            SelectedCalendarID = answeredQuestions.Select(aq => aq.CalendarID).FirstOrDefault(),
+                            SelectedText = answeredQuestions.Select(aq => aq.Text).FirstOrDefault(),
 
                             NegotiationId = negotiationDO.Id,
-                            CalendarEvents = q.Calendar == null ? new List<QuestionCalendarEventViewModel>() : q.Calendar.Events.Select(e => new QuestionCalendarEventViewModel
-                            {
-                                StartDate = e.StartDate,
-                                EndDate = e.EndDate
-                            }).ToList(),
+
+                            CalendarEvents = linkedCalendar == null
+                                ? new List<QuestionCalendarEventViewModel>()
+                                : linkedCalendar.Events.Select(e => new QuestionCalendarEventViewModel
+                                {
+                                    StartDate = e.StartDate,
+                                    EndDate = e.EndDate
+                                }).ToList(),
 
                             CalendarID = q.CalendarID,
                             Answers = q.Answers.Select(a =>
-                                (NegotiationAnswerViewModel)new NegotiationResponseAnswerViewModel
+                                (NegotiationAnswerViewModel) new NegotiationResponseAnswerViewModel
                                 {
                                     Status = a.AnswerStatus,
                                     Id = a.Id,
                                     QuestionId = q.Id,
-                                    Text = a.Text
+                                    Text = a.Text,
+                                    CalendarEvents = q.Calendar == null
+                                        ? new List<QuestionCalendarEventViewModel>()
+                                        : q.Calendar.Events.Select(e => new QuestionCalendarEventViewModel
+                                        {
+                                            StartDate = e.StartDate,
+                                            EndDate = e.EndDate
+                                        }).ToList(),
                                 }).ToList()
-                        }
-                        ).ToList()
+                        };
+                    }).ToList()
                 };
 
                 return View(model);
@@ -115,6 +132,7 @@ namespace KwasantWeb.Controllers
 
                         questionResponse.QuestionID = response.QuestionID;
                         questionResponse.AnswerID = response.AnswerID;
+                        questionResponse.CalendarID = response.CalendarID;
                         questionResponse.Text = response.Response;
                         questionResponse.UserID = userID;
                     }
@@ -135,6 +153,7 @@ namespace KwasantWeb.Controllers
         {
             public int QuestionID { get; set; }
             public int? AnswerID { get; set; }
+            public int? CalendarID { get; set; }
             public String Response { get; set; }
         }
 	}
