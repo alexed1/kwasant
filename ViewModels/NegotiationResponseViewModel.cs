@@ -1,18 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace KwasantWeb.ViewModels
 {
-    public class NegotiationResponseViewModel
+	public class NegotiationResponseViewModel : NegotiationViewModel
+	{
+
+	}
+
+    public class NegotiationResponseQuestionViewModel : NegotiationQuestionViewModel
     {
-        public int NegotiationID { get; set; }
-        public List<NegotiationQuestionAnswerPair> Responses { get; set; }
+        public int? SelectedAnswerID { get; set; }
+        public String SelectedText { get; set; }
     }
 
-    public class NegotiationQuestionAnswerPair
+    public class NegotiationResponseAnswerViewModel : NegotiationAnswerViewModel
     {
-        public int QuestionID { get; set; }
-        public int? AnswerID { get; set; }
-        public String Response { get; set; }
+        
     }
 }

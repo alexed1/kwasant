@@ -1,4 +1,4 @@
-﻿@model KwasantWeb.ViewModels.NegotiationViewModel
+﻿@using KwasantWeb.ViewModels
 
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @section immediateScripts
@@ -19,27 +19,35 @@
 
 <h2>We need clarification about the following to finish booking your event:</h2>
 
-@foreach (var question in Model.Questions)
+@foreach (NegotiationResponseQuestionViewModel question in Model.Questions)
 {
     <div class="formItem">
         <label>Question : </label>
         @question.Text
     </div>
     <div class="formItem">
-        @foreach (var ans in question.Answers)
+                @foreach (var ans in question.Answers)
         {
-            <input type="radio" name="@question.Id" value="@ans.Id" />   @ans.Text<br />
+            <label>
+                <input type="radio" name="@question.Id" value="@ans.Id" @Html.Raw(question.SelectedAnswerID == ans.Id ? "checked" : String.Empty) />   
+                @ans.Text
+            </label><br />
         }
         @if (question.AnswerType == "Text")
         {
-            <input type="radio" name="@question.Id" data-type="Text" value="suggestion" />
-            @Html.Raw("Suggest your own answer")<br />
-            <input type="text" style="margin-left: 16px;" value="" id="@question.Id" /><br />
+            <label>
+                <input type="radio" name="@question.Id" data-type="Text" value="suggestion" @Html.Raw(!String.IsNullOrEmpty(question.SelectedText) ? "checked" : String.Empty) />
+                Suggest your own answer<br />
+            </label>
+            //We don't need a check for the selected text. Either it's empty, or they picked a different answer.
+            <input type="text" style="margin-left: 16px;" value="@Html.Raw(question.SelectedText)" id="@question.Id" /><br />
         }
         else
         {
-            <input type="radio" name="@question.Id" data-type="Timeslot" value="suggestion" />
-            @Html.Raw("Suggest your own answer")<br />
+            <label>
+                <input type="radio" name="@question.Id" data-type="Timeslot" value="suggestion" />
+                Suggest your own answer<br />
+            </label>
             <button class="pick" style="margin-left: 16px;" onclick="return false;">Pick Times</button><br />
         }
         <br />
@@ -58,6 +66,23 @@
 </div>
 
 <script type="text/javascript">
+    $(function() {
+        $("input[type='radio']").change(updateEnabledControls);
+        updateEnabledControls();
+    });
+    
+    function updateEnabledControls() {
+        $("input[type='radio']").each(function() {
+            if (this.checked) {
+                if ($(this).attr("data-type") == "Text") {
+                    $('#' + this.name).prop('disabled', false);
+                } else {
+                    $('#' + this.name).prop('disabled', true);
+                }
+            }
+        });
+    }
+
     function sendthis() {
         var response = {};
         response.NegotiationID = @Model.Id;
@@ -85,10 +110,10 @@
             url: '@Url.Action("ProcessResponse", "NegotiationResponse")',
             data: data
         })
-        .always(function(result) {
-            var newDoc = document.open("text/html", "replace");
-            newDoc.write(result.responseText);
-            newDoc.close();
-        });
+            .always(function(result) {
+                var newDoc = document.open("text/html", "replace");
+                newDoc.write(result.responseText);
+                newDoc.close();
+            });
     };
 </script>

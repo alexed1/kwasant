@@ -24,12 +24,13 @@ namespace KwasantWeb.Controllers
                 if (negotiationDO == null)
                     throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
 
-
+                //Temporary for now, perhaps it can be a parameter (if they see the 'already answered page', maybe they want to force-change their answers).
                 var checkAlreadyAnswered = false;
+
+                var questionIDs = negotiationDO.Questions.Select(q => q.Id).Distinct().ToList();
+                var alreadyAnsweredQuestions = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.UserID == userID && questionIDs.Contains(qr.QuestionID)).ToList();
                 if (checkAlreadyAnswered)
                 {
-                    var questionIDs = negotiationDO.Questions.Select(q => q.Id).Distinct().ToList();
-                    var alreadyAnsweredQuestions = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.UserID == userID && questionIDs.Contains(qr.QuestionID)).ToList();
                     if (alreadyAnsweredQuestions.Select(aq => aq.QuestionID).Distinct().Count() == questionIDs.Count)
                     {
                         //Answered everything already
@@ -37,7 +38,8 @@ namespace KwasantWeb.Controllers
                     }
                 }
 
-                var model = new NegotiationViewModel
+
+                var model = new NegotiationResponseViewModel
                 {
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
@@ -46,12 +48,28 @@ namespace KwasantWeb.Controllers
 
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
-                        new NegotiationQuestionViewModel
+                        (NegotiationQuestionViewModel)new NegotiationResponseQuestionViewModel
                         {
                             AnswerType = q.AnswerType,
                             Id = q.Id,
                             Status = q.QuestionStatus,
                             Text = q.Text,
+                            
+                            //The following two properties let us setup the page with their existing answers, if they've already provided some answers
+                            //It also doubles as selecting the first answer if no previous answer was picked (having a radio button unchecked by default is ugly)
+                            SelectedAnswerID =
+                                
+                                //If we have a selected answer, use that
+                                alreadyAnsweredQuestions.Where(aq => aq.QuestionID == q.Id).Select(aq => aq.AnswerID).FirstOrDefault() ??
+                                //Otherwise, if we have no entered text
+                                (String.IsNullOrEmpty(alreadyAnsweredQuestions.Where(aq => aq.QuestionID == q.Id).Select(aq => aq.Text).FirstOrDefault()) 
+                                    //Then use the first answer
+                                    ? q.Answers.Select(a => a.Id).FirstOrDefault() 
+                                    //Otherwise, since we have selected text, we use null (no answer ID selected)
+                                    : (int?)null),
+                            
+                            SelectedText = alreadyAnsweredQuestions.Where(aq => aq.QuestionID == q.Id).Select(aq => aq.Text).FirstOrDefault(),
+
                             NegotiationId = negotiationDO.Id,
                             CalendarEvents = q.Calendar == null ? new List<QuestionCalendarEventViewModel>() : q.Calendar.Events.Select(e => new QuestionCalendarEventViewModel
                             {
@@ -61,7 +79,7 @@ namespace KwasantWeb.Controllers
 
                             CalendarID = q.CalendarID,
                             Answers = q.Answers.Select(a =>
-                                new NegotiationAnswerViewModel
+                                (NegotiationAnswerViewModel)new NegotiationResponseAnswerViewModel
                                 {
                                     Status = a.AnswerStatus,
                                     Id = a.Id,
@@ -78,7 +96,7 @@ namespace KwasantWeb.Controllers
 
         [KwasantAuthorize(Roles = "Customer")]
         [HttpPost]
-        public ActionResult ProcessResponse(NegotiationResponseViewModel value)
+        public ActionResult ProcessResponse(NegotiationResponsePostData value)
         {
             var userID = User.Identity.GetUserId();
 
@@ -105,6 +123,19 @@ namespace KwasantWeb.Controllers
             }
 
             return View();
+        }
+
+        public class NegotiationResponsePostData
+        {
+            public int NegotiationID { get; set; }
+            public List<NegotiationQuestionAnswerPair> Responses { get; set; }
+        }
+
+        public class NegotiationQuestionAnswerPair
+        {
+            public int QuestionID { get; set; }
+            public int? AnswerID { get; set; }
+            public String Response { get; set; }
         }
 	}
 }
