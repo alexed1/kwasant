@@ -1,6 +1,5 @@
-﻿@*@model KwasantWeb.ViewModels.UserAdministerVM*@
+﻿@model KwasantWeb.ViewModels.CalendarShowVM
 <div id="divCalendarContainer">
-   
 </div>
 
 <script type="text/javascript">
@@ -9,13 +8,13 @@
      
         calendar = $('#divCalendarContainer').KCalendar({
             getCalendarBackendURL: function () {
-                return '@Url.Content("~/Calendar/Day?calendarIDs=''")';
+                return '@Url.Content("~/Calendar/Day?calendarIDs="+String.Join(",", Model.LinkedCalendarIds))';
             },
             getMonthBackendURL: function () {
-                return '@Url.Content("~/Calendar/Month?calendarIDs=''")';
+                return '@Url.Content("~/Calendar/Month?calendarIDs="+String.Join(",", Model.LinkedCalendarIds))';
             },
             getNavigatorBackendURL: function () {
-                return '@Url.Content("~/Calendar/Navigator?calendarIDs=''")';
+                return '@Url.Content("~/Calendar/Navigator?calendarIDs="+String.Join(",", Model.LinkedCalendarIds))';
             },
             getEditURL: function (id) { return; },
             getMoveURL: function (id, newStart, newEnd) { return; },
@@ -26,4 +25,5 @@
         });
     });
 </script>
+
 

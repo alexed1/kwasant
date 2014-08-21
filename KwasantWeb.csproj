@@ -292,6 +292,7 @@
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="ViewModels\AnswerViewModel.cs" />
+    <Compile Include="ViewModels\CalendarShowVM.cs" />
     <Compile Include="ViewModels\CalendarViewModel.cs" />
     <Compile Include="ViewModels\MyAccountModel.cs" />
     <Compile Include="Filters\RequestParamsEncryptedFilter.cs" />
@@ -318,6 +319,7 @@
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\RemoteCalendarViewModel.cs" />
     <Compile Include="ViewModels\UserAdministerVM.cs" />
+    <Compile Include="ViewModels\UserQueryVM.cs" />
     <Compile Include="ViewModels\UsersAdminViewModel.cs" />
     <Compile Include="ViewModels\ProcessCreateEventViewModel.cs" />
     <Compile Include="Webhooks\MandrillWebhookController.cs" />
@@ -758,17 +760,16 @@
     <Content Include="Views\Negotiation\_TextAnswer.cshtml" />
     <Content Include="Views\Calendar\GetNegotiationCalendars.cshtml" />
     <Content Include="Views\Negotiation\EventWindows.cshtml" />
+    <Content Include="Views\User\ShowCalendars.cshtml" />
+    <Content Include="Views\User\ShowQuery.cshtml" />
     <Content Include="Views\User\Admin.cshtml" />
-    <Content Include="Views\User\Administer.cshtml" />
-    <Content Include="Views\User\ShowUsers.cshtml" />
-    <Content Include="Views\Calendar\Show.cshtml" />
+    <Content Include="Views\User\ShowEvents.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="archive\" />
     <Folder Include="Content\fonts\" />
     <Folder Include="Content\img\forms\" />
-    <Folder Include="Content\img\icons\" />
     <Folder Include="Views\CommunicationManager\" />
   </ItemGroup>
   <ItemGroup>

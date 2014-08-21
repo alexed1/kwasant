@@ -202,11 +202,20 @@ namespace KwasantCore.Services
             return um;
         }
 
-        public List<CalendarDO> GetCalendars(string curUserId)
+        public UserDO GetUser(string curUserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return uow.CalendarRepository.GetAll().Where(e => e.OwnerID == curUserId).Select(e => new CalendarDO { Id = e.Id, Name = e.Name }).ToList();
+                var curUser = uow.UserRepository.GetAll().Where(e => e.Id == curUserId).FirstOrDefault();
+                return new UserDO
+                {
+                    Id = curUser.Id,
+                    Calendars = curUser.Calendars,
+                    Email = curUser.Email,
+                    EmailAddress = curUser.EmailAddress,
+                    FirstName = curUser.FirstName,
+                    LastName = curUser.LastName
+                };
             }
         }
     }
