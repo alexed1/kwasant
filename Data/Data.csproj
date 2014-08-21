@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authentication\Account.cs" />
+    <Compile Include="Entities\QuestionResponseDO.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.Designer.cs">
       <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
@@ -141,7 +142,16 @@
     <Compile Include="Migrations\201408170907069_Sync.17.08.2014.Designer.cs">
       <DependentUpon>201408170907069_Sync.17.08.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408210907370_ImplementResponses.cs" />
+    <Compile Include="Migrations\201408210907370_ImplementResponses.Designer.cs">
+      <DependentUpon>201408210907370_ImplementResponses.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408210953042_AddUserToResponse.cs" />
+    <Compile Include="Migrations\201408210953042_AddUserToResponse.Designer.cs">
+      <DependentUpon>201408210953042_AddUserToResponse.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\AnswerRepository.cs" />
+    <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
     <Compile Include="States\EventCreateType.cs" />
@@ -749,6 +759,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408170907069_Sync.17.08.2014.resx">
       <DependentUpon>201408170907069_Sync.17.08.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408210907370_ImplementResponses.resx">
+      <DependentUpon>201408210907370_ImplementResponses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408210953042_AddUserToResponse.resx">
+      <DependentUpon>201408210953042_AddUserToResponse.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

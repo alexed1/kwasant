@@ -288,6 +288,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private QuestionResponseRepository _questionResponseRepository;
+
+        public QuestionResponseRepository QuestionResponseRepository
+        {
+            get
+            {
+                return _questionResponseRepository ?? (_questionResponseRepository = new QuestionResponseRepository(this));
+            }
+        }
+
 
         private NegotiationsRepository _negotiationsRepository;
 

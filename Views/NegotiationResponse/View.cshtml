@@ -70,14 +70,25 @@
                 }
                 else {
                     if ($(this).attr("data-type") == "Text") {
-                        answers.push({ QuestionID: this.name, AnswerID: $('#' + this.name).val()});
+                        answers.push({ QuestionID: this.name, Response: $('#' + this.name).val()});
                     }
                 }
             }
         });
         response.Responses = answers;
+        var data = JSON.stringify(response);
 
-        var url = '@Url.Action("ProcessResponse", "NegotiationResponse")?value=' + $.param(response);
-        window.location.href = url;
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            contentType: 'application/json',
+            url: '@Url.Action("ProcessResponse", "NegotiationResponse")',
+            data: data
+        })
+        .always(function(result) {
+            var newDoc = document.open("text/html", "replace");
+            newDoc.write(result.responseText);
+            newDoc.close();
+        });
     };
 </script>

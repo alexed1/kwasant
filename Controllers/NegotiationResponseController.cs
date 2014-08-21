@@ -4,11 +4,9 @@ using System.Linq;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.Exceptions;
 using KwasantCore.Managers;
-using KwasantCore.Services;
 using KwasantWeb.ViewModels;
-using AutoMapper;
+using Microsoft.AspNet.Identity;
 using StructureMap;
 
 namespace KwasantWeb.Controllers
@@ -18,11 +16,21 @@ namespace KwasantWeb.Controllers
         [KwasantAuthorize(Roles = "Customer")]
         public ActionResult View(int negotiationID)
         {
+            var userID = User.Identity.GetUserId();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (negotiationDO == null)
                     throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
+
+                var questionIDs = negotiationDO.Questions.Select(q => q.Id).Distinct().ToList();
+                var alreadyAnsweredQuestions = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.UserID == userID && questionIDs.Contains(qr.QuestionID)).ToList();
+                if (alreadyAnsweredQuestions.Select(aq => aq.QuestionID).Distinct().Count() == questionIDs.Count)
+                {
+                    //Answered everything already
+                    return View("~/Views/ClarificationResponse/AllAnswered.cshtml");
+                }
 
                 var model = new NegotiationViewModel
                 {
@@ -64,8 +72,30 @@ namespace KwasantWeb.Controllers
         }
 
         [KwasantAuthorize(Roles = "Customer")]
+        [HttpPost]
         public ActionResult ProcessResponse(NegotiationResponseViewModel value)
         {
+            var userID = User.Identity.GetUserId();
+
+            if (value.Responses != null)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    foreach (var response in value.Responses)
+                    {
+                        var questionResponse = new QuestionResponseDO
+                        {
+                            QuestionID = response.QuestionID,
+                            AnswerID = response.AnswerID,
+                            Text = response.Response,
+                            UserID = userID,
+                        };
+                        uow.QuestionResponseRepository.Add(questionResponse);
+                    }
+                    uow.SaveChanges();
+                }
+            }
+
             return View();
         }
 	}
