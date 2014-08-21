@@ -83,14 +83,17 @@ namespace KwasantWeb.Controllers
                 {
                     foreach (var response in value.Responses)
                     {
-                        var questionResponse = new QuestionResponseDO
+                        var questionResponse = uow.QuestionResponseRepository.GetQuery().FirstOrDefault(qr => qr.QuestionID == response.QuestionID);
+                        if (questionResponse == null)
                         {
-                            QuestionID = response.QuestionID,
-                            AnswerID = response.AnswerID,
-                            Text = response.Response,
-                            UserID = userID,
-                        };
-                        uow.QuestionResponseRepository.Add(questionResponse);
+                            questionResponse = new QuestionResponseDO();
+                            uow.QuestionResponseRepository.Add(questionResponse);
+                        }
+
+                        questionResponse.QuestionID = response.QuestionID;
+                        questionResponse.AnswerID = response.AnswerID;
+                        questionResponse.Text = response.Response;
+                        questionResponse.UserID = userID;
                     }
                     uow.SaveChanges();
                 }
