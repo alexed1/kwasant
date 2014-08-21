@@ -1,7 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Data.Entities;
-
 namespace Data.Interfaces
 {
     public interface IRemoteCalendarAuthData

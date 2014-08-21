@@ -2,10 +2,6 @@
 using Data.Validators;
 using FluentValidation;
 using Data.Entities;
-using System.Collections.Generic;
-using KwasantWeb.Filters;
-using Data.Infrastructure;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using StructureMap;
 using KwasantCore.Services;

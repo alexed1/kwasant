@@ -1,18 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Net;
-using System.Web.Mvc;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.Exceptions;
 using Utilities;
-using StructureMap;
-using BookingRequestState = Data.States.BookingRequestState;
-using ClarificationRequestState = Data.States.ClarificationRequestState;
 
 namespace KwasantCore.Services
 {

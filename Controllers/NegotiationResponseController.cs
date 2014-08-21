@@ -24,12 +24,17 @@ namespace KwasantWeb.Controllers
                 if (negotiationDO == null)
                     throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
 
-                var questionIDs = negotiationDO.Questions.Select(q => q.Id).Distinct().ToList();
-                var alreadyAnsweredQuestions = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.UserID == userID && questionIDs.Contains(qr.QuestionID)).ToList();
-                if (alreadyAnsweredQuestions.Select(aq => aq.QuestionID).Distinct().Count() == questionIDs.Count)
+
+                var checkAlreadyAnswered = false;
+                if (checkAlreadyAnswered)
                 {
-                    //Answered everything already
-                    return View("~/Views/ClarificationResponse/AllAnswered.cshtml");
+                    var questionIDs = negotiationDO.Questions.Select(q => q.Id).Distinct().ToList();
+                    var alreadyAnsweredQuestions = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.UserID == userID && questionIDs.Contains(qr.QuestionID)).ToList();
+                    if (alreadyAnsweredQuestions.Select(aq => aq.QuestionID).Distinct().Count() == questionIDs.Count)
+                    {
+                        //Answered everything already
+                        return View("~/Views/ClarificationResponse/AllAnswered.cshtml");
+                    }
                 }
 
                 var model = new NegotiationViewModel

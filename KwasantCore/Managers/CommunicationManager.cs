@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
-using System.Web.Mvc;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -17,7 +16,6 @@ using RazorEngine;
 using StructureMap;
 using Microsoft.WindowsAzure;
 using KwasantCore.Services;
-using StructureMap.Graph;
 using Utilities;
 using Encoding = System.Text.Encoding;
 

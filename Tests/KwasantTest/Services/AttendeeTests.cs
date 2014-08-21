@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using KwasantCore.Services;
 using NUnit.Framework;
 

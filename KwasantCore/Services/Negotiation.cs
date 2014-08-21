@@ -5,12 +5,8 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using KwasantCore.Exceptions;
-using KwasantCore.Managers;
-using KwasantICS.DDay.iCal;
-using KwasantICS.DDay.iCal.DataTypes;
 using StructureMap;
-using Utilities;
+
 //using Data.Constants;
 
 

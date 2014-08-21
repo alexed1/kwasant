@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
@@ -12,7 +7,6 @@ using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
 using Utilities;
-using BookingRequestState = Data.States.BookingRequestState;
 using ClarificationRequestState = Data.States.ClarificationRequestState;
 
 namespace KwasantTest.Services

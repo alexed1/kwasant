@@ -5,18 +5,13 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
-using Data.Infrastructure.JoinTables;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using Data.Validators;
 using FluentValidation;
-using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
-using Microsoft.WindowsAzure;
 using StructureMap;
-
-using KwasantCore.Services;
 
 
 namespace KwasantCore.Services

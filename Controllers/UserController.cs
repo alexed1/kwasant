@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using System.Net;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.Exceptions;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantWeb.ViewModels;

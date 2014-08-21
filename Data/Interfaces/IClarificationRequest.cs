@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Data.Entities;
-using Data.States.Templates;
+﻿using Data.States.Templates;
 
 namespace Data.Interfaces
 {

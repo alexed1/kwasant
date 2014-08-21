@@ -1,6 +1,5 @@
 namespace Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     
     public partial class change_datetime_to_offset_Fact : DbMigration
