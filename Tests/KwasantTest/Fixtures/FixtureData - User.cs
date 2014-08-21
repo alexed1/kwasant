@@ -32,7 +32,8 @@ namespace KwasantTest.Fixtures
                 FirstName = "Kwasant",
                 LastName = "Integration",
                 EmailAddress = curEmailAddressDO,
-                EmailAddressID = curEmailAddressDO.Id
+                EmailAddressID = curEmailAddressDO.Id,
+                TestAccount = true
             };
         }
     }

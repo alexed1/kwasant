@@ -9,8 +9,6 @@ if(Utilities.Server.IsDevMode)
 imageURL = "kwasant.com/Content/img/EmailLogo.png";
 }
 
-var customerID = Model.UserID;
-
 var time = Model.IsAllDay
 ? "All day - " + Model.StartDate.ToString("ddd d MMM")
 : Model.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " + Model.EndDate.ToString("hh:mm tt");
@@ -67,7 +65,7 @@ var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
                                     <tr>
                                         <td style="color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-right: 10px;">
                                             <div>
-                                                <div style="margin: 0px 0px 0.3em"><a href="mailto:@attendee.EmailAddress">@attendee.Name</a></div>
+                                                <div style="margin: 0px 0px 0.3em"><a href="mailto:@attendee.EmailAddress">@(String.IsNullOrEmpty(attendee.Name) ? attendee.EmailAddress : attendee.Name)</a></div>
                                             </div>
                                         </td>
                                     </tr>
@@ -75,9 +73,6 @@ var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
                                     }
                                 </tbody>
                             </table>
-                        </td>
-                        <td>
-                            <a href="@linkTo/Api/EventResponse.aspx?answer=going&userID=@customerID">I'm going!</a>
                         </td>
                     </tr>
                 </tbody>
