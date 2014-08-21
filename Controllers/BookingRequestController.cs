@@ -63,7 +63,14 @@ namespace KwasantWeb.Controllers
             BookingRequestDO bookingRequestDO = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);   
+                bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                string bookerId = _br.CheckBookerStatus(uow, bookingRequestDO.Id);
+                if (bookerId != this.GetUserId())
+                {
+                    //bookingRequestDO.BookerID = this.GetUserId();
+                    bookingRequestDO.BookingRequestState = BookingRequestState.Booking;
+                    uow.SaveChanges();   
+                }
             }
 
             if (bookingRequestDO == null)
@@ -84,7 +91,7 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.BookingRequestState = BookingRequestState.Processed;
+                bookingRequestDO.BookingRequestState = BookingRequestState.Resolved;
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);

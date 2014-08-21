@@ -26,7 +26,7 @@ namespace Data.Migrations
         {
             //Do not ever turn this on! It will break database upgrades
             AutomaticMigrationsEnabled = false;
-
+            
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.KwasantDbContext";
             _account = new Account();
@@ -51,7 +51,6 @@ namespace Data.Migrations
             AddAdmins(unitOfWork);
             AddCustomers(unitOfWork);
             AddBookingRequest(unitOfWork);
-
             SeedRemoteCalendarProviders(unitOfWork);
         }
 
@@ -243,6 +242,11 @@ namespace Data.Migrations
             {
                 roleManager.Create(new IdentityRole("Customer"));
             }
+
+            if (roleManager.RoleExists("Booker") == false)
+            {
+                roleManager.Create(new IdentityRole("Booker"));
+            }
         }
 
         /// <summary>
@@ -316,7 +320,7 @@ namespace Data.Migrations
                 HTMLText = htmlText,
                 EmailStatus = EmailState.Unprocessed,
                 DateReceived = DateTimeOffset.UtcNow,
-                BookingRequestState = BookingRequestState.Unprocessed,
+                BookingRequestState = BookingRequestState.Unstarted,
                 User = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db as KwasantDbContext)).FindByName(curUserName)
             };
             foreach (var calendar in curBookingRequestDO.User.Calendars)

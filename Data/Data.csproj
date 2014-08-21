@@ -142,6 +142,10 @@
     <Compile Include="Migrations\201408130809305_Add_InvitationDO.Designer.cs">
       <DependentUpon>201408130809305_Add_InvitationDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408210807349_AddBooker_to_BookingRequests.cs" />
+    <Compile Include="Migrations\201408210807349_AddBooker_to_BookingRequests.Designer.cs">
+      <DependentUpon>201408210807349_AddBooker_to_BookingRequests.cs</DependentUpon>
+    </Compile>
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
@@ -752,6 +756,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408130809305_Add_InvitationDO.resx">
       <DependentUpon>201408130809305_Add_InvitationDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408210807349_AddBooker_to_BookingRequests.resx">
+      <DependentUpon>201408210807349_AddBooker_to_BookingRequests.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

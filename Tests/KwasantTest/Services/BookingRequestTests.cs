@@ -199,7 +199,7 @@ namespace KwasantTest.Services
         public void ShowUnprocessedRequestTest()
         {
             object requests = (new BookingRequest()).GetUnprocessed(_uow);
-            object requestNow = _uow.BookingRequestRepository.GetAll().Where(e => e.BookingRequestState == BookingRequestState.Unprocessed).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
+            object requestNow = _uow.BookingRequestRepository.GetAll().Where(e => e.BookingRequestState == BookingRequestState.Unstarted).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
 
             Assert.AreEqual(requestNow, requests);
     }

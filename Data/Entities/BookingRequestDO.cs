@@ -28,5 +28,9 @@ namespace Data.Entities
         [Required, ForeignKey("BookingRequestStateTemplate")]
         public int BookingRequestState { get; set; }
         public virtual _BookingRequestStateTemplate BookingRequestStateTemplate { get; set; }
+
+        [ForeignKey("Bookers")]
+        public string BookerID { get; set; }
+        public virtual UserDO Bookers { get; set; }
     }
 }
