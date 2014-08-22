@@ -59,10 +59,12 @@ ga('send', 'pageview');
                     <ul class="nav pull-right">
                         <li data-section="2"><a href="#how_to_works" title="How it Works">How it Works</a></li>
                         <li data-section="3"><a href="#faq" title="FAQ">FAQ</a></li>
-                        <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
+  
                         <li><a href="/Account/Index" title="SignUp/Login">SignUp/Login</a></li>
-                        <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
+ 
                         <li data-section="4"><a href="#contacts" title="Contact">Contact</a></li>
+                        <li><a href="http://blog.kwasant.com" title="Blog">Blog</a></li>
+                        <li><a href="http://blog.kwasant.com/bookers" title="Bookers">For Bookers</a></li>
                     </ul>
                 </div>
             </div>
