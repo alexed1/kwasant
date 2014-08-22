@@ -49,7 +49,7 @@
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email Address</th>
-                <th>Role</th>
+               @* <th>Role</th>*@
                 <th class="action-cell">Action</th>
             </tr>
         </thead>
@@ -71,7 +71,7 @@
         //Binding click event handler to Search button.
         $("#btnSearch").click(function () {
             $.ajax({
-                url: '@Url.Action("RunQuery", "User")',
+                url: '@Url.Action("FindUser", "User")',
                 type: 'post',
                 data: $('#searchInfoForm').serialize(),
                 success: function (response) {
@@ -82,7 +82,7 @@
                     else {
                         $("#tblusers").css("visibility", "visible");
                         if (JSON.parse(response).length == 1) {
-                            loadCalendars(JSON.parse(response)[0].user_id);
+                            loadCalendars(JSON.parse(response)[0].id);
                         }
                         else {
                             showUsers(response);
@@ -101,8 +101,8 @@
                 columns: [
                     { data: 'first_name' },
                     { data: 'last_name' },
-                    { data: 'email_address' },
-                    { data: 'role' },
+                    { data: 'email_address.address' },
+                    //{ data: 'role' },
                     {
                         data: null,
                         defaultContent: "<button value='select'>Select</button>"
@@ -118,7 +118,7 @@
                 switch ($(this).val()) {
                     case "select":
                         //redirecting to main calendar view for details
-                        loadCalendars(data.user_id);
+                        loadCalendars(data.id);
                         break;
                     default:
                         //generates an alert for invalid selection, generally it won't happen.

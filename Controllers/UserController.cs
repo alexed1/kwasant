@@ -37,7 +37,7 @@ namespace KwasantWeb.Controllers
         public ActionResult Index()
         {
             UsersAdmin currUsersAdmin = new UsersAdmin();
-            List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData(null);
+            List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData();
             List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;
 
             return View(currUsersAdminViewModels);
@@ -121,7 +121,7 @@ namespace KwasantWeb.Controllers
         }
 
         [KwasantAuthorize(Roles = "Admin")]
-        public ActionResult Administer(UserAdministerVM curUserAdminVM)
+        public ActionResult ShowUserQueryForm(UserAdministerVM curUserAdminVM)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -133,37 +133,42 @@ namespace KwasantWeb.Controllers
                     LastName = ""
                 };
             }
-            return View("Admin", curUserAdminVM);
+            return View("Query", curUserAdminVM);
         }
 
         [HttpPost]
-        public ActionResult RunQuery(UserQueryVM curUserQueryVM)
+        public ActionResult FindUser(UserQueryVM curUserQueryVM)
         {
-            if (string.IsNullOrEmpty(curUserQueryVM.User.EmailAddress.Address) && string.IsNullOrEmpty(curUserQueryVM.User.FirstName) && string.IsNullOrEmpty(curUserQueryVM.User.LastName)) 
+            UserDO curUser = curUserQueryVM.User;
+
+            if (string.IsNullOrEmpty(curUser.EmailAddress.Address) && string.IsNullOrEmpty(curUser.FirstName) && string.IsNullOrEmpty(curUser.LastName)) 
             {
                 var jsonErrorResult = Json(_datatables.Pack(new { Error = "Atleast one field is required" }), JsonRequestBehavior.AllowGet);
                 return jsonErrorResult;
             }
-            if (curUserQueryVM.User.EmailAddress.Address != null)
+            if (curUser.EmailAddress.Address != null)
             {
                 EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-                if (!(emailAddressValidator.Validate(curUserQueryVM.User.EmailAddress).IsValid))
+                if (!(emailAddressValidator.Validate(curUser.EmailAddress).IsValid))
                 {
                     var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
                     return jsonErrorResult;
                 }
             }
-            UsersAdmin currUsersAdmin = new UsersAdmin();
-            var jsonResult = Json(_datatables.Pack(currUsersAdmin.GetUsersAdminViewData(curUserQueryVM.User)), JsonRequestBehavior.AllowGet);
-            jsonResult.MaxJsonLength = int.MaxValue;
-            return jsonResult;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var jsonResult = Json(_datatables.Pack(_user.Query(uow, curUser)), JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
         }
-        
+
         public ActionResult GetCalendars(string curUserId)
         {
             UserAdministerVM curUserAdminVM = new UserAdministerVM();
             curUserAdminVM.User = _user.GetUser(curUserId);
             return PartialView("ShowCalendars", curUserAdminVM);
+
         }
 
         public ActionResult ChangeUser(string curUserId)

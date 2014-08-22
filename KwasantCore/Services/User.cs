@@ -50,7 +50,7 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("bookingRequestDO");
             return Get(uow, bookingRequestDO.From);
         }
-      
+
         public UserDO Get(IUnitOfWork uow, EmailAddressDO emailAddressDO)
         {
             if (uow == null)
@@ -82,7 +82,7 @@ namespace KwasantCore.Services
                 AlertManager.CustomerCreated(curUser);
                 return curUser.Id;
             }
-            }
+        }
 
         private UserDO Create(IUnitOfWork uow, EmailAddressDO emailAddressDO,
             string userName = null, string firstName = null, string lastName = null)
@@ -103,7 +103,7 @@ namespace KwasantCore.Services
             return curUser;
         }
 
-        public UserDO Register (IUnitOfWork uow, string userName, string password, string role)
+        public UserDO Register(IUnitOfWork uow, string userName, string password, string role)
         {
             var userDO = Create(uow,
                 emailAddressDO: uow.EmailAddressRepository.GetOrCreateEmailAddress(userName),
@@ -111,7 +111,7 @@ namespace KwasantCore.Services
                 firstName: userName,
                 lastName: userName);
 
-            UserManager<UserDO> userManager = GetUserManager(uow);;
+            UserManager<UserDO> userManager = GetUserManager(uow); ;
             IdentityResult result = userManager.Create(userDO, password);
             if (result.Succeeded)
             {
@@ -129,7 +129,7 @@ namespace KwasantCore.Services
         {
             if (userDO != null)
             {
-                UserManager<UserDO> curUserManager = GetUserManager(uow);;
+                UserManager<UserDO> curUserManager = GetUserManager(uow); ;
 
                 curUserManager.RemovePassword(userDO.Id); //remove old password
                 var curResult = curUserManager.AddPassword(userDO.Id, password); // add new password
@@ -143,7 +143,7 @@ namespace KwasantCore.Services
         public async Task<LoginStatus> Login(IUnitOfWork uow, string username, string password, bool isPersistent)
         {
             LoginStatus curLogingStatus = LoginStatus.Successful;
-            UserManager<UserDO> curUserManager = GetUserManager(uow);;
+            UserManager<UserDO> curUserManager = GetUserManager(uow); ;
             UserDO curUser = await curUserManager.FindAsync(username, password);
             if (curUser != null)
             {
@@ -172,7 +172,7 @@ namespace KwasantCore.Services
         {
             AuthenticationManager.SignOut();
         }
-        
+
         //problem: this assumes a single role but we need support for multiple roles on one account
         //problem: the line between account and user is really murky. do we need both?
         public bool ChangeUserRole(IUnitOfWork uow, IdentityUserRole identityUserRole)
@@ -218,7 +218,21 @@ namespace KwasantCore.Services
                 };
             }
         }
+
+        public List<UserDO> Query(IUnitOfWork uow, UserDO curUserSearch)
+        {
+            return uow.UserRepository.GetAll().ToList().Where(e =>
+                  curUserSearch.FirstName != null ?
+                  e.FirstName != null ?
+                  e.FirstName.Contains(curUserSearch.FirstName) : false : false ||
+                  curUserSearch.LastName != null ?
+                  e.LastName != null ?
+                  e.LastName.Contains(curUserSearch.LastName) : false : false ||
+                  curUserSearch.EmailAddress.Address != null ?
+                  e.EmailAddress.Address != null ?
+                  e.EmailAddress.Address.Contains(curUserSearch.EmailAddress.Address) : false : false
+                  ).ToList();
+        }
     }
 }
 
-        

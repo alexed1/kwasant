@@ -762,7 +762,7 @@
     <Content Include="Views\Negotiation\EventWindows.cshtml" />
     <Content Include="Views\User\ShowCalendars.cshtml" />
     <Content Include="Views\User\ShowQuery.cshtml" />
-    <Content Include="Views\User\Admin.cshtml" />
+    <Content Include="Views\User\Query.cshtml" />
     <Content Include="Views\User\ShowEvents.cshtml" />
   </ItemGroup>
   <ItemGroup>

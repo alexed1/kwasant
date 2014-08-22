@@ -90,6 +90,7 @@ namespace KwasantWeb.Controllers
         #region "DayPilot-Related Methods"
         public ActionResult Day(string calendarIDs)
         {
+            //calendarIDs will be blank when calendar widget is initialized from views like "ShowEvents", else should not be blank
             if (calendarIDs != "")
             {
                 var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();

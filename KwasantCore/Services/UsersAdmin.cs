@@ -58,27 +58,14 @@ namespace KwasantCore.Services
             }
         }
 
-        public List<UsersAdminData> GetUsersAdminViewData(UserDO curUserSearch)
+        public List<UsersAdminData> GetUsersAdminViewData()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 List<UsersAdminData> currUsersAdminDataList = new List<UsersAdminData>();
                 List<UserDO> currUserDOs =new List<UserDO>();
-                if (curUserSearch != null)
-                {
-                    currUserDOs = uow.UserRepository.GetAll().ToList().Where(e =>
-                        curUserSearch.FirstName != null ?
-                        e.FirstName != null ?
-                        e.FirstName.Contains(curUserSearch.FirstName) : false : false ||
-                        curUserSearch.LastName != null ?
-                        e.LastName != null ?
-                        e.LastName.Contains(curUserSearch.LastName) : false : false ||
-                        curUserSearch.EmailAddress.Address != null ?
-                        e.EmailAddress.Address != null ?
-                        e.EmailAddress.Address.Contains(curUserSearch.EmailAddress.Address) : false : false
-                        ).ToList();
-                }
-                else { currUserDOs = uow.UserRepository.GetAll().ToList(); }
+
+                currUserDOs = uow.UserRepository.GetAll().ToList(); 
 
                 var currUserManager = User.GetUserManager(uow);
 
