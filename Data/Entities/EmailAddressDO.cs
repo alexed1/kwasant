@@ -11,7 +11,7 @@ namespace Data.Entities
         public int Id { get; set; }
 
         public String Name { get; set; }
-        [MaxLength(30)]
+        [MaxLength(256)]
         public String Address { get; set; }
 
         public virtual List<RecipientDO> Recipients { get; set; }

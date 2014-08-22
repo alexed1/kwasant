@@ -142,9 +142,9 @@
     <Compile Include="Migrations\201408130809305_Add_InvitationDO.Designer.cs">
       <DependentUpon>201408130809305_Add_InvitationDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201408220044446_foo.cs" />
-    <Compile Include="Migrations\201408220044446_foo.Designer.cs">
-      <DependentUpon>201408220044446_foo.cs</DependentUpon>
+    <Compile Include="Migrations\201408201056135_ChangeEmailAddressMaxLength.cs" />
+    <Compile Include="Migrations\201408201056135_ChangeEmailAddressMaxLength.Designer.cs">
+      <DependentUpon>201408201056135_ChangeEmailAddressMaxLength.cs</DependentUpon>
     </Compile>
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
@@ -757,8 +757,8 @@
     <EmbeddedResource Include="Migrations\201408130809305_Add_InvitationDO.resx">
       <DependentUpon>201408130809305_Add_InvitationDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408220044446_foo.resx">
-      <DependentUpon>201408220044446_foo.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201408201056135_ChangeEmailAddressMaxLength.resx">
+      <DependentUpon>201408201056135_ChangeEmailAddressMaxLength.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

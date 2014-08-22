@@ -69,16 +69,16 @@ namespace KwasantCore.Services
 
                 //Build a list of Users based on the Attendees associated with the Negotiation.
                 //This should work once the fixes to NegotiationDO are done in kw-324
-                List<UserDO> Recipients = new List<UserDO>(); //this is a placeholder. see the line below this.
+                List<EmailAddressDO> Recipients = curNegotiation.Attendees.Select(a => a.EmailAddress).ToList(); //this is a placeholder. see the line below this.
                     //curNegotiation.Attendees;//FINISH: for each AttendeeDO associated with this Negotiation, find their corresponding UserDO
 
                //For each user, if there is not already a ClarificationRequestDO that has this UserId and this NeogtiationId... 
-                foreach (var user in Recipients)
+                foreach (var emailAddressDO in Recipients)
                 {
                     ClarificationRequestDO existingCR =
                         uow.ClarificationRequestRepository.FindOne(
-                            c => c.To.First().Address == user.EmailAddress.Address);
-                    if (existingCR != null && existingCR.NegotiationId != curNegotiation.Id)
+                            c => c.To.First().Address == emailAddressDO.Address);
+                    if (existingCR == null ||existingCR.NegotiationId != curNegotiation.Id)
                     {
                         
                         //call ClarificationRequest#Create, get back a ClarificationRequestDO,

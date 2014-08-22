@@ -158,16 +158,18 @@ namespace Daemons
                 EventRepository eventRepository = unitOfWork.EventRepository;
                 CommunicationManager _comm = new CommunicationManager();
                 var numSent = 0;
-                foreach (EnvelopeDO envelope in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
+                foreach (EnvelopeDO curEnvelopeDO in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
                 {
                     using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         try
                         {
+                            // we have to query EnvelopeDO one more time to have it loaded in subUow
+                            var envelope = subUow.EnvelopeRepository.GetByKey(curEnvelopeDO.Id);
                             IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
                             if (CloudConfigurationManager.GetSetting("ArchiveOutboundEmail") == "true")
                             {
-                                EmailAddressDO outboundemailaddress = new EmailAddressDO(CloudConfigurationManager.GetSetting("ArchiveEmailAddress"));
+                                EmailAddressDO outboundemailaddress = subUow.EmailAddressRepository.GetOrCreateEmailAddress(CloudConfigurationManager.GetSetting("ArchiveEmailAddress"), "Outbound Archive");
                                 envelope.Email.AddEmailRecipient(EmailParticipantType.Bcc, outboundemailaddress);
                             }
 
@@ -183,16 +185,24 @@ namespace Daemons
                             packager.Send(envelope);
                             numSent++;
 
-                            var email = subUow.EmailRepository.GetQuery().First(e => e.Id == envelope.Email.Id); // probably "= envelope.Email" will work now...
+                            var email = envelope.Email; // subUow.EmailRepository.GetQuery().First(e => e.Id == envelope.Email.Id);
                             email.EmailStatus = EmailState.Dispatched;
                             subUow.SaveChanges();
-                            string customerId = subUow.UserRepository.GetAll().Where(e => e.EmailAddress.Address == email.Recipients.First(c => c.EmailParticipantType == EmailParticipantType.To).EmailAddress.Address).First().Id;
-                            AlertManager.EmailSent(email.Id, customerId);
+
+                            foreach (var recipient in email.To)
+                            {
+                                var curUser = subUow.UserRepository.GetQuery()
+                                    .FirstOrDefault(u => u.EmailAddressID == recipient.Id);
+                                if (curUser != null)
+                                {
+                                    AlertManager.EmailSent(email.Id, curUser.Id);
+                                }
+                            }
                         }
                         catch (StructureMapConfigurationException ex)
                         {
-                            Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", envelope.Handler);
-                            throw new UnknownEmailPackagerException(string.Format("Unknown email packager: {0}", envelope.Handler), ex);
+                            Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", curEnvelopeDO.Handler);
+                            throw new UnknownEmailPackagerException(string.Format("Unknown email packager: {0}", curEnvelopeDO.Handler), ex);
                         }
                     }
                 }

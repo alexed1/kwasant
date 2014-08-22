@@ -22,7 +22,7 @@ namespace KwasantCore.Services
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
 
-            foreach (var calendar in bookingRequest.User.Calendars)
+            foreach (var calendar in bookingRequest.User.Calendars)  //this is smelly. Calendars are associated with a User. Why do we need to manually add them to BookingREquest.Calendars when they're easy to access?
                 bookingRequest.Calendars.Add(calendar);
         }
 
