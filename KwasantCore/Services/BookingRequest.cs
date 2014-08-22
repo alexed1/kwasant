@@ -136,6 +136,8 @@ namespace KwasantCore.Services
                       Date = e.StartDate.ToString("M-d-yy hh:mm tt")
                   }).ToList();
         }
+
+       
        
     }
     public struct BR_RelatedItems

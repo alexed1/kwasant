@@ -152,7 +152,7 @@ namespace KwasantWeb.Controllers
             return createdEvent;
         }
 
-        public ActionResult Edit(int eventID)
+        public ActionResult Edit(int eventID, int bookingrequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

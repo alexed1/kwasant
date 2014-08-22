@@ -8,6 +8,7 @@ using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
 using AutoMapper;
+using Data.Infrastructure;
 
 
 namespace KwasantWeb.Controllers
@@ -21,8 +22,8 @@ namespace KwasantWeb.Controllers
         {
             _mappingEngine = Mapper.Engine; // should be injected
         }
-        
-        public ActionResult Edit(int negotiationID)
+
+        public ActionResult Edit(int negotiationID, int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -31,6 +32,18 @@ namespace KwasantWeb.Controllers
                     throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
 
                 var model = _mappingEngine.Map<EditNegotiationVM>(negotiationDO);
+
+                // NOTE: code below is to add BookerID in BookingRequest if Another booker will loging
+                BookingRequestDO bookingRequestDO = null;
+                bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+                if (bookingRequestDO.BookerID != this.GetUserId())
+                {
+                    bookingRequestDO.BookerID = this.GetUserId();
+                    bookingRequestDO.User = bookingRequestDO.User;
+                    uow.SaveChanges();
+                    AlertManager.BookingRequestOwnershipChange(bookingRequestID, this.GetUserId());
+                }
+
                 return View(model);
             }
         }
@@ -38,6 +51,7 @@ namespace KwasantWeb.Controllers
 
         public ActionResult Create(int bookingRequestID)
         {
+           
             return View("~/Views/Negotiation/Edit.cshtml", new EditNegotiationVM
             {
                 Name = "Negotiation 1",

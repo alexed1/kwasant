@@ -49,7 +49,7 @@
     					</li>
                         <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
                              <ul class="dropdown-menu">
-                                <li><a id="liCreateOrEditNegotiation" onclick="window.parent.getNegotiationWindow();" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
+                                <li><a id="liCreateOrEditNegotiation" onclick="checkIsBookerValid(@Model.BookingRequestID);" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
                                 <li id="liDeleteNegotiatoin"><a id="btnDeleteNegotiatoin" onclick="deleteActiveNegotiation(@Model.BookingRequestID);" href="#">Delete</a></li>
                             </ul>
                         </li>
@@ -111,23 +111,8 @@
                 return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + @Model.ActiveCalendarID)';
             },  
             getEditURL: function (id) {
-                return '/Event/Edit/?eventID=' + id;
-                //$.ajax({
-                //    url: "/BookingRequest/IsBookerValid",
-                //    type: "GET",
-                //    data: { id: $("#hdnrequestid").val() },
-                //    success: function (response) {
-                //        //alert(response);
-                //        if (response == "valid") {
-                //            //alert("in");
-                //            return '/Event/Edit/?eventID=' + id;
-                //        } else {
-                //            if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
-                //                return '/Event/Edit/?eventID=' + id;
-                //            }
-                //        }
-                //    }
-                //});
+                var bookingRequestID =$("#hdnrequestid").val();
+                return '/Event/Edit/?eventID=' + id + '&bookingrequestID='+ bookingRequestID;
             },
             getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
             getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
@@ -145,24 +130,6 @@
         }
         );
     });
-     
-    //funtion to load booking request info in iframe "emailInfoFrame" on "tbluserrequests" request row click.
-    //called by : rows in tbluserrequests on click
-    function loadrequest(id, linkedCalendarIDs, ele) {
-    	$("#tbluserrequests tr").removeClass('current-row');
-    	if ($('#tbluserrequests tr').length > 2) {
-    		$(ele).addClass('current-row');
-    	}    
-        $("#hdnrequestid").val(id);
-        $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("MarkAsProcessed", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
-        $("#emailInfoFrame")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
-        
-        if (calendar !== undefined) {
-            calendar.updateBackendURLs("@Url.Content("~/Calendar/Day?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Month?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Navigator?calendarIDs=")" + linkedCalendarIDs);
-        }
-    }
-
-
 
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
@@ -272,11 +239,11 @@
         },
             //Callback function for row created.
             createdRow: function (row, data, index) {
-            	if (data.id == $("#hdnrequestid").val() && $('#tbluserrequests tr').length > 2) {
-                	$(row).addClass('current-row');
+                if (data.id == $("#hdnrequestid").val() && $('#tbluserrequests tr').length > 2) {
+                    $(row).addClass('current-row');
                 }
                 else {
-                	$(row).removeClass('current-row');
+                    $(row).removeClass('current-row');
                 }
             },
         columns: [
@@ -312,41 +279,41 @@
             ajax:
             {
                 "url": "@Url.Action("ShowRelatedItems", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestID",
-				"dataSrc": function (json) {
-					var orgdata = JSON.parse(json.data);
-					return orgdata;
-				}
-			},
+            "dataSrc": function (json) {
+                var orgdata = JSON.parse(json.data);
+                return orgdata;
+            }
+        },
             
-        	createdRow: function (row, data, index) {
-        		if (data.id == $("#hdnrequestid").val() && $('#tblRelatedItems tr').length > 2) {
-        			$(row).addClass('current-row');
-        		}
-        		else {
-        			$(row).removeClass('current-row');
-        		}
+            createdRow: function (row, data, index) {
+                if (data.id == $("#hdnrequestid").val() && $('#tblRelatedItems tr').length > 2) {
+                    $(row).addClass('current-row');
+                }
+                else {
+                    $(row).removeClass('current-row');
+                }
 
-               // $(row).attr("style", "cursor:pointer;");
+                // $(row).attr("style", "cursor:pointer;");
             },
-			columns: [
-                {
-                    data: function (data) {
-                        return ConvertTODateString(data.date);
-					}
-                },
-                { data: 'type' }
-			]
-		});
+        columns: [
+            {
+                data: function (data) {
+                    return ConvertTODateString(data.date);
+                }
+            },
+            { data: 'type' }
+        ]
+    });
 
-	}
+    }
    
-	$('#tblRelatedItems').on('click', 'tr', function () {
-		//$("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
-		//$(this).attr("style", "background-color: #aaa;");
-		$('#tblRelatedItems tr').removeClass('current-row');
-		if ( $('#tblRelatedItems tr').length > 2) {     	
-			$(this).addClass('current-row');
-		}
+    $('#tblRelatedItems').on('click', 'tr', function () {
+        //$("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
+        //$(this).attr("style", "background-color: #aaa;");
+        $('#tblRelatedItems tr').removeClass('current-row');
+        if ( $('#tblRelatedItems tr').length > 2) {     	
+            $(this).addClass('current-row');
+        }
         var data = table1.row($(this)).data();
         var dp_day = storedCalendar[0];
         dp_day.startDate = data.date;
@@ -370,24 +337,43 @@
 
     
     //this function will open the new iframe for negotiation window and close the iframe for Edit Event window.
-    function getNegotiationWindow() {
-        @{
-            if (Model.LinkedNegotiationID != null)
-            {
-                @:Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=@Model.LinkedNegotiationID',
-                    @:{
-                    @:  horizontalAlign: 'right',
-                    @:});
+    function checkIsBookerValid(bookingRequestId)
+    {
+        $.ajax({
+            url: "/BookingRequest/IsBookerValid",
+            type: "GET",
+            data: { id: bookingRequestId },
+            success: function (response) {
+                if (response == "valid") {
+                    //redirecting to main calendar view for details
+                    window.parent.getNegotiationWindow(bookingRequestId);
+                } else {
+                    if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
+                        window.parent.getNegotiationWindow(bookingRequestId);
+                    }
+                }
+            } 
+        });   
+    }
+
+    function getNegotiationWindow(bookingRequestId) {
+            @{
+                if (Model.LinkedNegotiationID != null)
+                {
+                    @:Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=@Model.LinkedNegotiationID&bookingRequestID=' + bookingRequestId,
+                        @:{
+                        @:  horizontalAlign: 'right',
+                        @:});
+                }
+                else
+                {
+                    @:Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestID',
+                        @:{
+                        @:  horizontalAlign: 'right',
+                        @:  callback: function (result) { if (result) $('#liCreateOrEditNegotiation').html('Edit'); }
+                        @:});
+                }
             }
-            else
-            {
-                @:Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestID',
-                    @:{
-                    @:  horizontalAlign: 'right',
-                    @:  callback: function (result) { if (result) $('#liCreateOrEditNegotiation').html('Edit'); }
-                    @:});
-            }
-        }
     }
 
     function deleteActiveNegotiation(bookingRequestId)

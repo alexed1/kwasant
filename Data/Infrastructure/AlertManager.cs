@@ -35,10 +35,10 @@ namespace Data.Infrastructure
         public static event BookingRequestStateChangeHandler AlertBookingRequestStateChange;
 
 
-        public delegate void BookingRequestCheckedOutHandler(int bookingRequestId, int bookerId);
+        public delegate void BookingRequestCheckedOutHandler(int bookingRequestId, string bookerId);
         public static event BookingRequestCheckedOutHandler AlertBookingRequestCheckedOut;
 
-        public delegate void BookingRequestOwnershipChangeHandler(int bookingRequestId, int bookerId);
+        public delegate void BookingRequestOwnershipChangeHandler(int bookingRequestId, string bookerId);
         public static event BookingRequestOwnershipChangeHandler AlertBookingRequestOwnershipChange;
 
         #region Method
@@ -86,13 +86,13 @@ namespace Data.Infrastructure
                 AlertBookingRequestStateChange(bookingRequestId);
         }
 
-        public static void BookingRequestCheckedOut(int bookingRequestId, int bookerId)
+        public static void BookingRequestCheckedOut(int bookingRequestId, string bookerId)
         {
             if (AlertBookingRequestStateChange != null)
                 AlertBookingRequestCheckedOut(bookingRequestId, bookerId);
         }
 
-        public static void BookingRequestOwnershipChange(int bookingRequestId, int bookerId)
+        public static void BookingRequestOwnershipChange(int bookingRequestId, string bookerId)
         {
             if (AlertBookingRequestStateChange != null)
                 AlertBookingRequestOwnershipChange(bookingRequestId, bookerId);
@@ -249,7 +249,7 @@ namespace Data.Infrastructure
             uow.FactRepository.Add(curAction);
         }
 
-        public void ProcessBookingRequestCheckedOut(int bookingRequestId, int bookerId)
+        public void ProcessBookingRequestCheckedOut(int bookingRequestId, string bookerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -274,7 +274,7 @@ namespace Data.Infrastructure
             }
         }
 
-        public void BookingRequestOwnershipChange(int bookingRequestId,int bookerId)
+        public void BookingRequestOwnershipChange(int bookingRequestId,string bookerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
