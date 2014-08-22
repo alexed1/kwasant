@@ -96,19 +96,19 @@
             @:questionEventWindows = [];
             foreach (var calendarEvent in question.CalendarEvents)
             {
-                @:var startDate = new Date(@calendarEvent.StartDate.Year, (@calendarEvent.StartDate.Month - 1), @calendarEvent.StartDate.Day, @calendarEvent.StartDate.Hour, @calendarEvent.StartDate.Minute, @calendarEvent.StartDate.Millisecond)
-                        @:var endDate = new Date(@calendarEvent.EndDate.Year, (@calendarEvent.EndDate.Month - 1), @calendarEvent.EndDate.Day, @calendarEvent.EndDate.Hour, @calendarEvent.EndDate.Minute, @calendarEvent.EndDate.Millisecond)
+                @:var startDate = new Date(@calendarEvent.StartDate.Year, (@calendarEvent.StartDate.Month - 1), @calendarEvent.StartDate.Day, @calendarEvent.StartDate.Hour, @calendarEvent.StartDate.Minute, @calendarEvent.StartDate.Millisecond);
+                @:var endDate = new Date(@calendarEvent.EndDate.Year, (@calendarEvent.EndDate.Month - 1), @calendarEvent.EndDate.Day, @calendarEvent.EndDate.Hour, @calendarEvent.EndDate.Minute, @calendarEvent.EndDate.Millisecond);
 
-    			@:questionEventWindows.push({
-@:  startDate: startDate.toDateString(),
+                @:questionEventWindows.push({
+                @:  startDate: startDate.toDateString(),
                 @:  startTime: startDate.getHours() + ':' + padMins(startDate.getMinutes()),
                 @:  endDate: endDate.toDateString(),
                 @:  endTime: endDate.getHours() + ':' + padMins(endDate.getMinutes()),
-                            @:});
+                @:});
 
             }
-        @:renderEvents($('#' + '@question.Id.ToString()' + '_EventWindowRenderer'), questionEventWindows);
-                        }
+            @:renderEvents($('#' + '@question.Id.ToString()' + '_EventWindowRenderer'), questionEventWindows);
+        }
         
         @foreach (NegotiationResponseQuestionViewModel question in Model.Questions)
         {

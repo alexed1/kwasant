@@ -17,8 +17,6 @@
 
             showNavigator: true,
 
-            requireConfirmation: true,
-
             getCalendarBackendURL: function() { alert('getCalendarBackendURL must be set in the options.'); },
             getMonthBackendURL: function() { alert('getMonthBackendURL must be set in the options.'); },
             getNavigatorBackendURL: function() { alert('getNavigatorBackendURL must be set in the options.'); },
@@ -447,15 +445,18 @@
         if (Kwasant.IFrame.PopupsActive()) {
             return;
         }
+        var url = settings.getEditURL(id);
+        if (url === null || url === undefined || url === '')
+            return;
 
         if (settings.editRequiresConfirmation) {
-            Kwasant.IFrame.Display(settings.getEditURL(id),
+            Kwasant.IFrame.Display(url,
                 {
                     horizontalAlign: 'right',
                     callback: calendar.refreshCalendars
                 });
         } else {
-            Kwasant.IFrame.DispatchUrlRequest(settings.getEditURL(id));
+            Kwasant.IFrame.DispatchUrlRequest(url);
         }
     };
     var onEventNew = function(start, end) {
@@ -470,7 +471,7 @@
                     callback: calendar.refreshCalendars
                 });
         } else {
-            Kwasant.IFrame.DispatchUrlRequest(settings.getNewURL(start, end));
+            Kwasant.IFrame.DispatchUrlRequest(settings.getNewURL(start, end), calendar.refreshCalendars);
         }
     };
     var onEventMove = function(id, newStart, newEnd) {
@@ -485,7 +486,7 @@
                     callback: calendar.refreshCalendars
                 });
         } else {
-            Kwasant.IFrame.DispatchUrlRequest(settings.getMoveURL(id, newStart, newEnd));
+            Kwasant.IFrame.DispatchUrlRequest(settings.getMoveURL(id, newStart, newEnd), calendar.refreshCalendars);
         }
     };
     var onEventDelete = function (id) {
@@ -496,7 +497,7 @@
                     callback: calendar.refreshCalendars
                 });
         } else {
-            Kwasant.IFrame.DispatchUrlRequest(settings.getDeleteURL(id));
+            Kwasant.IFrame.DispatchUrlRequest(settings.getDeleteURL(id), calendar.refreshCalendars);
         }
     };
 }(jQuery));

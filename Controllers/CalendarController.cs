@@ -64,7 +64,10 @@ namespace KwasantWeb.Controllers
 
                 return View("~/Views/Negotiation/EventWindows.cshtml", new EventWindowViewModel
                 {
-                    ActiveCalendarID = calendarID
+                    ActiveCalendarID = calendarID,
+                    ClickEditEnabled = false,
+                    MergeEvents = true,
+                    RequiresConfirmation = false
                 });
             }
         }
@@ -101,7 +104,10 @@ namespace KwasantWeb.Controllers
                 return View("~/Views/Negotiation/EventWindows.cshtml", new EventWindowViewModel
                 {
                     LinkedCalendarIDs = calendarsViaNegotiationRequest.Select(c => c.Id).Union(new[] { calendarID }).Distinct().ToList(),
-                    ActiveCalendarID = calendarID
+                    ActiveCalendarID = calendarID,
+                    ClickEditEnabled = false,
+                    MergeEvents = true,
+                    RequiresConfirmation = false
                 });
             }
         }

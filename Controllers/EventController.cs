@@ -45,7 +45,7 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public ActionResult NewTimeSlot(int calendarID, string start, string end)
+        public ActionResult NewTimeSlot(int calendarID, string start, string end, bool mergeEvents = false)
         {
             using (var uow = GetUnitOfWork())
             {
@@ -56,7 +56,9 @@ namespace KwasantWeb.Controllers
                 
                 uow.EventRepository.Add(createdEvent);
                 //And now we merge changes
-                MergeTimeSlots(uow, createdEvent);
+                if (mergeEvents)
+                    MergeTimeSlots(uow, createdEvent);
+
                 uow.SaveChanges();
 
                 return JavaScript(SimpleJsonSerializer.Serialize(true));

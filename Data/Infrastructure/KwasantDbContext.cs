@@ -229,6 +229,11 @@ namespace Data.Infrastructure
                     mapping => mapping.MapLeftKey("EventID").MapRightKey("EmailID").ToTable("EventEmail")
                 );
 
+            modelBuilder.Entity<EventDO>()
+                .HasMany(ev => ev.Attendees)
+                .WithOptional(a => a.Event)
+                .WillCascadeOnDelete(true);
+
             modelBuilder.Entity<CalendarDO>()
                 .HasMany(ev => ev.BookingRequests)
                 .WithMany(e => e.Calendars)

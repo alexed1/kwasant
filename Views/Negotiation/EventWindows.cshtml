@@ -82,6 +82,8 @@
          }
          calendarsToDisplay.Add(Model.ActiveCalendarID);
          var calendarString = String.Join(",", calendarsToDisplay.Distinct());
+         var requiresConfirmation = Model.RequiresConfirmation ? "true" : "false";
+         var mergeEvents = Model.MergeEvents ? "true" : "false";
      }
 
         calendar = $('#CalendarDiv1').KCalendar({
@@ -94,17 +96,31 @@
             getNavigatorBackendURL: function() {
                 return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + calendarString)';
             },  
-            getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
-            getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
-            getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
+            getEditURL: function (id) {
+                @if (Model.ClickEditEnabled)
+                {
+                    @:return '/Event/Edit/?eventID=' + id + '&requiresConfirmation=@requiresConfirmation';
+                }
+                else
+                {
+                    @:return '';
+                }
+            },
+            getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z&requiresConfirmation=@requiresConfirmation&mergeEvents=@mergeEvents'; },
+            getDeleteURL: function (id) { return '/Event/DeleteEvent/?eventID=' + id + '&requiresConfirmation=@requiresConfirmation'; },
             onEventNew: function(start, end) {
                 if (Kwasant.IFrame.PopupsActive()) {
                     return;
                 }
-                Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z', calendar.refreshCalendars);
+                Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z&mergeEvents=@mergeEvents', calendar.refreshCalendars);
             },
-        }
-        );
+
+            editRequiresConfirmation: @requiresConfirmation,
+            newRequiresConfirmation: @requiresConfirmation,
+            deleteRequiresConfirmation: @requiresConfirmation,
+            moveRequiresConfirmation: @requiresConfirmation,
+
+        });
     });
 
 </script>
