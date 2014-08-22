@@ -31,8 +31,6 @@ namespace KwasantCore.Services
             var curCalendar = bookingRequestDO.User.Calendars.FirstOrDefault();
             if (curCalendar == null)
                 throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");
-            
-            curEventDO = AddAttendee(bookingRequestDO.User, curEventDO);
 			
 			var attendee = new Attendee();
             attendee.DetectEmailsFromBookingRequest(uow, curEventDO);
@@ -81,7 +79,7 @@ namespace KwasantCore.Services
             if (eventDO.IsAllDay)
             {
                 dDayEvent.IsAllDay = true;
-    }
+            }
             else
             {
                 dDayEvent.DTStart = new iCalDateTime(DateTime.SpecifyKind(eventDO.StartDate.ToUniversalTime().DateTime, DateTimeKind.Utc));
@@ -94,6 +92,7 @@ namespace KwasantCore.Services
             dDayEvent.Location = eventDO.Location;
             dDayEvent.Description = eventDO.Description;
             dDayEvent.Summary = eventDO.Summary;
+            dDayEvent.UID = eventDO.ExternalGUID;
 
             //more attendee configuration
             foreach (AttendeeDO attendee in eventDO.Attendees)

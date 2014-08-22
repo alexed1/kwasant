@@ -1,10 +1,12 @@
 html {
-    height: 100%;
+	display: table;    
+    width: 100%;
+	height: 100%;
 }
 
 body {
 	background: #f2e9df;
-	display: table;
+	display: table-cell;
 	width: 100%;
 	min-height: 100%;
 	height: 100%;
@@ -22,11 +24,16 @@ body {
 
 p, td {
     font-family: 'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif;
-    font-size: 10pt;
+    font-size: 11pt;
 }
 
 a {
     color: #d85e17;
+}
+
+a:hover {
+    text-decoration: none;
+	color: #0e0e0e;
 }
 
 /*Titles Styles*/
@@ -90,28 +97,82 @@ input[type="checkbox"].input-validation-error {
 }
 
 .light-bg .form input, .light-bg .form textarea {
-	background: #fff;
+	background: #f8f8f8;
 	border: 1px solid #3e3e3e;
 	border-radius: 0;
+	transition: all ease-in-out .3s;
+}
+
+.light-bg .form .input-group-btn .btn-default {
+	background: #f8f8f8;
+	border: 1px solid #3e3e3e;
+	border-radius: 0;
+	transition: all ease-in-out .3s;		
 }
 
 .dark-bg .form input, .dark-bg .form textarea {
-	background: #3e3e3e;
+	background: #f8f8f8;
+	border: 1px solid #3e3e3e;
 	border-radius: 0;
+	transition: all ease-in-out .3s;
 }
 
 .form input:focus, .form textarea:focus {
-	border: 1px solid #d85E17;
 	box-shadow: none;
 	outline: none;
 }
 
 .light-bg .form input:focus, .light-bg .form textarea:focus {
-	background: #efefef;
+	background: #fff;
 }
 
 .dark-bg .form input:focus, .dark-bg .form textarea:focus {
-	background: #3e3e3e;
+	background: #fff;
+}
+
+/* button styles */
+
+.custom-btn {
+	padding: 6px 12px;
+	border: 1px solid #d85e17;
+	background: #d85e17;
+	background-image: none;
+	text-shadow: none;
+	color: #f2e9df;
+	border-radius: 0;
+	transition: all ease-in-out .3s;
+	box-shadow: none;
+	filter: none;	
+	font-family: 'Open Sans', Helvetica, Helvetica Nue, Arial, sans-serif;
+}
+
+.custom-btn:hover {
+	border-color: #8b4f34;
+    background: #f16d20;
+	color: #fff;
+}
+
+.custom-btn.btn-grey {
+	background: #8e8e8e;	
+	border: 1px solid #8b4f34;
+}
+
+.custom-btn.btn-grey:hover {
+	background: #717171;
+	border: 1px solid #8b4f34;
+}
+
+.custom-btn.glyphicon:before {
+	padding-right: 10px;
+	font-family: 'Glyphicons Halflings';
+}
+
+td .custom-btn {
+	margin-left: 10px;
+}
+
+td .custom-btn:first-child {
+	margin-left: 0;
 }
 
 /* Main marketing message and sign up button */
@@ -390,6 +451,7 @@ html.ifarme-body body {
     margin: 0;
     padding: 10px 0;
     float: left;
+	text-transform: none;
 }
 
 .site-header h3 a {
@@ -399,7 +461,7 @@ html.ifarme-body body {
 /* Toolbar Styles */
 
 nav.top-toolbar-section {
-	margin-bottom: 30px;
+	margin: 20px 0 30px;
 	border-radius: 0;
 }
 
@@ -423,9 +485,47 @@ nav.top-toolbar-section ul.navbar-nav li a {
 	transition: all ease-in-out .2s;
 }
 
-nav.top-toolbar-section ul.navbar-nav li a:hover, nav.top-toolbar-section ul.navbar-nav li.active a {
+nav.top-toolbar-section ul.navbar-nav li a:hover, nav.top-toolbar-section ul.navbar-nav li a.current, nav.top-toolbar-section ul.navbar-nav li:hover, nav.top-toolbar-section ul.navbar-nav > li:hover > a {
 	background: #d85e17;
 	color: #fff;
+}
+
+nav.top-toolbar-section ul.navbar-nav li ul.dropdown-menu {
+	padding: 0;
+	border-radius: 0;
+	background: #f8f8f8;
+	border: 1px solid #e7e7e7;
+}
+
+nav.top-toolbar-section ul.navbar-nav li ul.dropdown-menu li a {
+	padding: 10px 15px;
+}
+
+/* Page Title Styles*/
+
+.page-title-action {
+	width: 100%; 
+	overflow: hidden;
+}
+
+.page-title-action h2 {
+	float: left;
+	width: 60%;	
+}
+
+.page-title-action a.custom-btn {
+	float: right;
+	margin-top: 21px;
+	margin-left: 10px;
+}
+
+.page-title-action .title-actions {
+	float: right;
+	width: 30%;	
+}
+
+.bottom-actions a.custom-btn {
+	margin-left: 10px;
 }
 
 
@@ -548,9 +648,133 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
 }
 
 /*Styles for table*/
+/* Data Tables customize general styles */
+
+.dataTables_wrapper {
+	padding-bottom: 20px;
+}
+
+.dataTables_wrapper label {
+	font-weight: 300;
+}
+
+.dataTables_wrapper input[type=search],  .dataTables_wrapper select {
+	background: #f8f8f8;
+	border: 1px solid #d2d2d2;
+	border-radius: 0;
+	transition: all ease-in-out .3s;
+}
+
+.dataTables_wrapper input[type=search]:focus, .dataTables_wrapper select:focus {
+	border: 1px solid #d2d2d2;
+	background: #fff;
+	box-shadow: none;
+	outline: none;
+}
 
 .table-with-action .action-cell {
 	width: 15%;	
+}
+
+.body-content table.data-table {
+	margin: 15px auto;	
+	border-bottom: 1px solid #0e0e0e;
+	width: 100%;
+}
+
+.body-content table.data-table tbody tr {
+	transition: all ease-in-out .3s;	
+	background: #fff;
+}
+
+.body-content table.data-table thead th, .body-content table.data-table thead td, .body-content table.data-table td {
+	padding: 8px 10px;	
+}
+
+.body-content table.data-table thead th {
+	border-bottom: 1px solid #0e0e0e;
+	font-weight: 600;
+}
+
+.body-content table.data-table thead .sorting {
+	background: url(/Content/img/icons/sort_both.png) no-repeat center right;
+}
+
+.body-content table.data-table thead .sorting_asc {
+	background: url(/Content/img/icons/sort_asc.png) no-repeat center right;
+}
+
+.body-content table.data-table thead .sorting_desc {
+	background: url(/Content/img/icons/sort_desc.png) no-repeat center right;
+}
+
+.body-content table.data-table tbody tr:hover {
+	background: #e7e7e7;	
+}
+
+.body-content table.data-table tr.even {
+	background: #f8f8f8
+}
+
+.body-content table.user-details-table {
+	border-top: 1px solid #0e0e0e;
+}
+
+.body-content table.user-details-table tr td:first-child {
+	width: 150px;
+	font-weight: bold;
+}
+
+/* Data Tables customize pagination styles */
+
+.body-content .dataTables_wrapper .dataTables_paginate .paginate_button, .ifarme-body .dataTables_wrapper .dataTables_paginate .paginate_button {
+	transition: all ease-in-out .3s;	
+}
+
+.body-content .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover, .ifarme-body .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+	background: #0e0e0e;
+	color: #fff!important;	
+}
+
+.body-content .dataTables_wrapper .dataTables_paginate .paginate_button.current, .ifarme-body .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+	background: #d85e17!important;
+	border-color: #ff6207!important;
+	color: #fff!important;
+}
+
+/*History Customize*/
+
+.history-filter {
+	padding-bottom: 20px;	
+}
+
+.history-filter label {
+	font-weight: 300;
+	line-height: 32px;
+	padding: 0;	
+}
+
+.history-filter input[type=text], .history-filter select {
+	width: 100%;
+	background: #f8f8f8;
+	border: 1px solid #d2d2d2;
+	border-radius: 0;
+	transition: all ease-in-out .3s;
+}
+
+.history-filter .full-width-input {
+	padding-right: 0;
+}
+
+.history-filter input[type=text]:focus, .history-filter select:focus {
+	border: 1px solid #d2d2d2;
+	background: #fff;
+	box-shadow: none;
+	outline: none;
+}
+
+.history-filter input[type="button"].btn {
+	padding: 3px 25px;
 }
 
 /*Calendar Index*/
@@ -634,7 +858,7 @@ input[type="checkbox"].input-validation-error {
     border: none;
     margin: 10px 0px 20px 0px;
     position: relative;
-    width: 174px;
+    /*width: 174px;*/
 }
 
 #toolbar a {
@@ -657,56 +881,12 @@ input[type="checkbox"].input-validation-error {
     background-color: #aaa;
 }
 
+/* styles for calendar view */
+/* general calendar view styles */
+
 .jumbotron.calendar-section {
 	padding: 10px 20px;	
-}
-
-.calendar-section .emailInfoBox {
-	border: none; 
-	height: 100%; 
-	padding: 0;
-}
-
-.calendar-section .emailInfoBox button {
-	width: 120px; 
-	font-size: 14px; 
-	height: 40px;
-}
-
-.calendar-section .emailInfoBox iframe.frminfo {
-	width: 100%;
-	border: none; 
-	margin-top: -7px;	
-}
-
-.calendar-section .emailInfoBox table.email-info-tabele {
-	width: 95%;	
-	box-shadow: #000 0 0 10px; 
-	margin: 10px; 	
-}
-
-.calendar-section .emailInfoBox table.email-info-tabele tr th {
-	width: 70%;	
-	text-align: center;	
-	font-size: 14px;	
-}
-
-.calendar-section .emailInfoBox table.email-info-tabele tr th:first-child {
-	width: 30%;		
-}
-
-.calendar-section .emailInfoBox table.email-info-tabele tbody {
-	border-top: 1px solid #808080;
-}
-
-.calendar-section a.btnRequestClarification button {
-	width: 160px; 
-	font-size: 14px; 
-	height: 40px;	
-}
-
-.calendar-section .divCalender {
-	padding-bottom: 79px;	
+	font-size: 14px;
 }
 
 .calendar-section .toolbar {
@@ -718,11 +898,212 @@ input[type="checkbox"].input-validation-error {
 	padding-right: 5px
 }
 
-.calendar-section .calendar-area {
-	float: left; 
-	padding-bottom: 101px; 
-	padding-top: 53px; 
-	position: relative;
+.calendar-section .divCalender-inner .calendar_greenevent {
+	background-color: #d85e17!important;
+	border-radius: 0!important;
+}
+
+/*styles for email-info section*/
+
+.calendar-section .emailInfoBox {	
+	height: 100%; 	
+	margin-left: -15px;		
+}
+
+.calendar-section .emailInfoBox button {
+	width: 120px; 
+	font-size: 14px; 
+	height: 40px;
+}
+
+.calendar-section .emailInfoBox iframe.frminfo {
+	width: 100%;
+	border: none; 
+}
+
+/*styles for email-info-section iframe*/
+
+body.email-info-section {
+	background: #f8f8f8!important;	
+	border: 1px solid #e7e7e7;	
+	padding: 15px;
+	overflow-y: auto;	
+}
+
+body.email-info-section .email-subject h4 {
+	margin: 0;
+	color: #0e0e0e;
+	font-weight: bold;		
+	font-size: 16px;	
+}
+
+body.email-info-section .email-subject {
+	padding-bottom: 15px;	
+}
+
+body.email-info-section .email-details {
+	font-size: 14px;
+	padding-bottom: 15px;
+	margin-bottom: 15px;	
+}
+
+body.email-info-section .email-content {
+	font-size: 14px;
+}
+
+/*styles for email-info-table section*/
+
+.calendar-section table.email-info-table {
+	width: 100%!important;	
+	margin: 0 auto 15px; 
+} 
+
+.calendar-section table.email-info-table tr th {
+	width: 70%;	
+	text-align: left;	
+	font-size: 14px;	
+}
+
+.calendar-section table.email-info-table tr th:first-child {
+	width: 30%;		
+}
+
+.calendar-section table.email-info-table tbody {
+	border-top: 1px solid #808080;	
+}
+
+.calendar-section table.email-info-table tbody tr:hover {
+	cursor: pointer;
+}
+
+.calendar-section table.email-info-table tbody tr.current-row {
+	background: #d85e17;
+	color: #fff;
+}
+
+.calendar-section table.email-info-table tbody td {
+	text-align: left;
+}
+
+.calendar-section .dataTables_wrapper {
+	font-size: 14px;
+	line-height: 1.428;
+}
+
+/*styles for calendar section*/
+
+.calendar-inner .toolbar-section {
+	background: #f8f8f8!important;
+	border: 1px solid #e7e7e7;
+	padding: 15px;
+	margin-bottom: 20px;
+	overflow: hidden;
+}
+
+.calendar-inner .toolbar-section .toolbar {
+	float: left;
+	width: 40%;
+	text-align: left;
+	padding-right: 2%;	
+}
+
+.calendar-inner .toolbar-section .toolbar > a {
+	display: block;
+	border-top: 1px solid #d85e17;
+	line-height: 52px;
+	font-size: 14px;
+	color: #333;
+	padding: 0 15px;
+	transition: all ease-in-out .3s;
+}
+
+.calendar-inner .toolbar-section .toolbar > a:first-child {
+	border-top: 0 none;
+}
+
+.calendar-inner .toolbar-section .toolbar > a:hover, .calendar-inner .toolbar-section .toolbar > a.current {
+	color: #fff;
+	background: #d85e17;
+}
+
+/*customize navigator*/
+.calendar-inner .toolbar-section .navigator_green_main {
+	box-sizing: content-box;	
+}
+
+.calendar-inner .toolbar-section .navigator_green_title, .calendar-inner .toolbar-section .navigator_green_titleleft, .calendar-inner .toolbar-section .navigator_green_titleright {
+	background: #0e0e0e;	
+}
+
+.calendar-inner .toolbar-section .navigator_green_select {
+	background: #d85e17;
+	color: #fff;	
+}
+
+.calendar-inner .toolbar-section .navigator_green_dayother {
+	color: #e7e7e7;
+}
+
+.calendar-inner .navigator_green_todaybox {
+	border: 1px solid #0e0e0e;
+	width: 100%!important;
+	height: 100%!important;
+}
+
+.calendar-inner .toolbar-section .navigator_green_day, .calendar-inner .toolbar-section .navigator_green_select, .calendar-inner .toolbar-section .navigator_green_dayother {
+	text-align: center!important;
+}
+
+.calendar-inner .toolbar-section .calendar-area {
+	float: left;
+	width: 57%;
+}
+
+/*customize event history view*/
+
+.view-popup-window {
+	width: 560px; 
+	overflow: hidden;
+	padding: 0 10px;
+}
+
+.history-view-event .popup-close {
+	float: right;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	z-index: 3;	
+}
+
+.history-view-event .dataTables_wrapper .dataTables_length, .history-view-event .dataTables_wrapper .dataTables_filter {
+	width: 100%;
+	overflow: hidden;
+}
+
+.history-view-event .dataTables_wrapper .dataTables_length label, .history-view-event .dataTables_wrapper .dataTables_filter label {
+	float: left;
+}
+
+.history-view-event .dataTables_scrollHeadInner {
+	width: 100%!important;
+}
+
+.history-view-event .dataTables_scrollHead table.data-table {
+	width: 100%!important;
+	margin-bottom: 0;
+}
+
+.ifarme-body .history-view-event .dataTables_info {
+	width: 100%;
+
+}
+
+.ifarme-body .history-view-event .dataTables_paginate.paging_simple_numbers {
+	width: 100%;	
+}
+
+.history-view-event .dataTables_scrollBody table.data-table {
+	margin: 0 auto;
 }
 
 /*Calendar ThemeBlue*/
@@ -770,6 +1151,7 @@ today-calendar-tbl .first-col {
 .edit-event-form span.input-group-addon {
 	background: #fff;
 	border-color: #3e3e3e;	
+	border-radius: 0;
 }
 
 .edit-event-form span.input-group-addon span {
@@ -793,12 +1175,59 @@ today-calendar-tbl .first-col {
 	margin-right: 15px;
 }
 
-
-
 .edit-event-form .validation-errors {
 	color: #d85e17;
 	font-size: 12px;	
 }
+
+/*Negotiation Styles*/
+
+.negotiationsidebar .questionBox {
+    border-color: #D3B9B9;
+    padding: 5px;
+    margin-bottom: 10px;
+    border-style: solid;
+    border-width: 1px;
+}
+.negotiationsidebar .answerBox {
+    border-color: #D3B9B9;
+    padding: 5px;
+    margin: 10px;
+    border-style: solid;
+    border-width: 1px;
+}
+.negotiationsidebar .eventWindowAnswerBox {
+    border-color: #D3B9B9;
+    padding: 5px;
+    margin: 10px;
+    border-style: solid;
+    border-width: 1px;
+}
+.negotiationsidebar .handIcon {
+    cursor: pointer;
+}
+
+.negotiationsidebar .negotiation-form-actions input {
+    margin-right: 15px !important;
+}
+
+.negotiationsidebar .negotiationsidebar {
+    height: 500px;
+    overflow-x: hidden;
+}
+   
+.negotiationsidebar .negotiationsidebar label {
+  padding: 0 6px;
+}
+.negotiationsidebar .negotiation-mrbottom {
+	margin-bottom: 10px;
+	border-bottom: 1px solid #d85e17;
+}
+.negotiationsidebar .clear {
+    clear:both;
+}
+
+/*Users section styles*/
 
 /*Responsive Styles*/
 
@@ -836,38 +1265,28 @@ today-calendar-tbl .first-col {
     }
 }
 
+@media screen and (min-width: 768px) and (max-width: 991px) {
+
+	.site-header .mmenu {
+		padding-top: 20px;
+	}
+
+	.site-header .mmenu ul li a {
+		font-size: 14px;
+		line-height: 10px;
+		padding: 10px;
+	}
+}	
+
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
-    /* Remove the padding we set earlier */
+	
+	/* Remove the padding we set earlier */
     .masthead, .marketing, .footer {
         padding-left: 0;
         padding-right: 0;
     }
 }
-
-
-/*Negotiation*/
-/*05/Aug/2014*/
-
-.negotiation-form-actions input{
-    margin-right: 15px !important;
-}
-
-.negotiationsidebar {
-    height: 500px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-   
-.negotiationsidebar label
-{
-  padding: 0 6px;
-}
-.negotiation-mrbottom
-{
-   margin-bottom: 25px !important;
-}
-.clear
-{
-    clear:both;
+.dropdown-menu {
+    text-align:left;
 }

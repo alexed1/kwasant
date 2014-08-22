@@ -21,6 +21,8 @@ namespace KwasantCore.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 RegistrationStatus curRegStatus = RegistrationStatus.Pending;
+                var isNewUser = false;
+                UserDO newUserDO = null;
                 //check if we know this email address
 
                 EmailAddressDO existingEmailAddressDO = uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
@@ -43,17 +45,22 @@ namespace KwasantCore.Services
                     }
                     else
                     {
-                        var userDO = Register(uow, email, password, "Customer");
+                        newUserDO = Register(uow, email, password, "Customer");
                         curRegStatus = RegistrationStatus.Successful;
                     }
                 }
                 else
                 {
-                    var userDO = Register(uow, email, password, "Customer");
+                    newUserDO = Register(uow, email, password, "Customer");
                     curRegStatus = RegistrationStatus.Successful;
                 }
 
                 uow.SaveChanges();
+
+                if (newUserDO != null)
+                {
+                    AlertManager.CustomerCreated(newUserDO);
+                }
 
                 return curRegStatus;
             }

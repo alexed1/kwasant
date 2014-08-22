@@ -24,7 +24,7 @@ namespace KwasantTest.Daemons
         [Test]
         public void TestInboundEmail()
         {
-            var clientMock = new Mock<IImapClient>();
+            var clientMock = new Mock<ImapClient>();
 
             const string testFromEmailAddress = "test.user@gmail.com";
             const string testSubject = "Test Subject";

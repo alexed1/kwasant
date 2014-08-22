@@ -24,11 +24,13 @@ namespace KwasantWeb.Controllers
         private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
+        private Negotiation _negotiation;
 
         public BookingRequestController()
         {
             _datatables = new DataTablesPackager();
             _br = new BookingRequest();
+            _negotiation = new Negotiation();
         }
 
         // GET: /BookingRequest/
@@ -82,7 +84,7 @@ namespace KwasantWeb.Controllers
                 bookingRequestDO.BookingRequestState = BookingRequestState.Processed;
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
-                AlertManager.BookingRequestStateChange(bookingRequestDO, "Processed");
+                AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -96,7 +98,7 @@ namespace KwasantWeb.Controllers
                  bookingRequestDO.BookingRequestState = BookingRequestState.Invalid;
                  bookingRequestDO.User = bookingRequestDO.User;
                  uow.SaveChanges();
-                 AlertManager.BookingRequestStateChange(bookingRequestDO, "Invalid");
+                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
                  return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
              }
          }
@@ -181,6 +183,15 @@ namespace KwasantWeb.Controllers
 
               recordcount = bR_RelatedItems.Count();
             return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();
+        }
+
+        public JsonResult DeleteActiveNegotiation(int BookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                string result = _negotiation.Delete(uow, BookingRequestId);
+                return Json(result, JsonRequestBehavior.AllowGet);
+            }
         }
 	}
 }

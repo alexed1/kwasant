@@ -87,7 +87,7 @@
         //First, setup the HTML
 
         //This displays the toolbar to swap between day, week and month
-        var toolbar = $("<div id='toolbar' class='toolbar'></div>");
+        var toolbar = $("<div class='toolbar'></div>");
         var inner = $("<div class='divCalender-inner'></div>");
 
         var switcher = new DayPilot.Switcher();
@@ -122,13 +122,14 @@
             queueCalendarForInit(createMonthCalendar, 'Month');
         }
 
-        var toolbarRow = $("<div class='row'></div>");
+        var toolbarRow = $("<div class='row toolbar-section'></div>");
         toolbarRow.append(toolbar);
+
 
         var calendarRow = $("<div class='row'></div>");
         calendarRow.append(inner);
 
-        var calendarBox = $("<div class='col-md-6 container_box divCalender'></div>");
+        var calendarBox = $("<div class='divCalender calendar-inner'></div>");
         calendarBox.append(toolbarRow);
         calendarBox.append(calendarRow);
 
@@ -143,14 +144,16 @@
         
         if (settings.showNavigator) {
             var navi = createNavigator();
-            var wrapper = $('<div class="col-lg-2 container_box calendar-area">');
-            wrapper.append(navi.div);
+            var wrapper = $('<div class="calendar-area">');
+            wrapper.append(navi.div);            
             settings.topElement.append(wrapper);
+            toolbarRow.append(wrapper);
             navi.dp.init();
             switcher.addNavigator(navi.dp);
-
             nav = navi.dp;
         }
+
+        
 
         if (firstToDisplay !== null)
             switcher.show(firstToDisplay);
@@ -193,18 +196,18 @@
         dp.borderColor = 'Black';
         dp.cellHeaderBackColor = '';
         dp.cellHeaderFontColor = null;
-        dp.cellHeaderFontFamily = 'Tahoma, Arial, Helvetica, sans-serif';
+        dp.cellHeaderFontFamily = 'Open Sans, Helvetica, Helvetica, Arial, sans-serif';
         dp.cellHeaderFontSize = '10pt';
         dp.cellHeight = 90;
         dp.cellHeaderHeight = 16;
         dp.cellMode = false;
-        dp.theme = 'calendar_white';
+        dp.theme = 'calendar_green';
         dp.cssOnly = false;
         dp.eventBackColor = 'White';
         dp.eventBorderColor = 'Black';
         dp.eventCorners = 'Rounded';
         dp.eventFontColor = '#000000';
-        dp.eventFontFamily = 'Tahoma, Arial, Helvetica, sans-serif';
+        dp.eventFontFamily = 'Open Sans, Helvetica, Helvetica, Arial, sans-serif';
         dp.eventFontSize = '10px';
         dp.eventHeight = 50;
         dp.eventMoveToPosition = false;
@@ -268,13 +271,13 @@
         var divHolder = $("<div id='" + id + "'></div>");
 
         var dp = new DayPilot.Calendar(id);
-
+       // f0f0f0
         dp.allDayEnd = 'DateTime';
         dp.allDayEventBackColor = 'white';
-        dp.allDayEventBorderColor = '#000000';
-        dp.allDayEventFontFamily = 'Tahoma, Arial, Helvetica, sans-serif';
+        dp.allDayEventBorderColor = '#e6e6e6';
+        dp.allDayEventFontFamily = 'Open Sans, Helvetica, Helvetica, Arial, sans-serif';
         dp.allDayEventFontSize = '8pt';
-        dp.allDayEventFontColor = '#000000';
+        dp.allDayEventFontColor = '#000';
         dp.allDayEventHeight = 25;
         dp.allowMultiSelect = true;
         dp.api = 1;
@@ -282,22 +285,22 @@
         dp.autoRefreshEnabled = false;
         dp.autoRefreshInterval = 60;
         dp.autoRefreshMaxCount = 20;
-        dp.borderColor = '#CED2CE';
+        dp.borderColor = '#e6e6e6';
         dp.businessBeginsHour = 9;
         dp.businessEndsHour = 18;
         dp.cellBackColor = '#FFFFFF';
-        dp.cellBackColorNonBusiness = '#FFF4BC';
+        dp.cellBackColorNonBusiness = '#f0f0f0';
         dp.cellBorderColor = '#DEDFDE';
         dp.cellHeight = 25;
         dp.cellDuration = 30;
         dp.columnMarginRight = 5;
         dp.columnWidthSpec = 'Auto';
         dp.columnWidth = 200;
-        dp.cornerBackColor = '#F3F3F9';
+        dp.cornerBackColor = '#f8f8f8';
         dp.crosshairColor = 'gray';
         dp.crosshairOpacity = 20;
         dp.crosshairType = 'Header';
-        dp.theme = 'calendar_white';
+        dp.theme = 'calendar_green';
         dp.cssOnly = false;
         dp.deleteImageUrl = null;
         dp.dayBeginsHour = 0;
@@ -308,9 +311,9 @@
         dp.durationBarWidth = 5;
         dp.durationBarImageUrl = null;
         dp.eventArrangement = 'SideBySide';
-        dp.eventBackColor = '#638EDE';
-        dp.eventBorderColor = '#2951A5';
-        dp.eventFontFamily = 'Tahoma, Arial, Helvetica, sans-serif';
+        dp.eventBackColor = '#000';
+        dp.eventBorderColor = '#0e0e0e';
+        dp.eventFontFamily = 'Open Sans, Helvetica, Helvetica, Arial, sans-serif';
         dp.eventFontSize = '8pt';
         dp.eventFontColor = '#ffffff';
         dp.eventHeaderFontSize = '8pt';
@@ -318,9 +321,9 @@
         dp.eventHeaderHeight = 14;
         dp.eventHeaderVisible = false;
         dp.eventSelectColor = '#0000ff';
-        dp.headerFontSize = '10pt';
-        dp.headerFontFamily = 'Tahoma, Arial, Helvetica, sans-serif';
-        dp.headerFontColor = '#42658C';
+        dp.headerFontSize = '12pt';
+        dp.headerFontFamily = 'Open Sans, Helvetica, Helvetica, Arial, sans-serif';
+        dp.headerFontColor = '#333';
         dp.headerHeight = 50;
         dp.headerHeightAutoFit = false;
         dp.headerLevels = 1;
@@ -330,16 +333,16 @@
         dp.hideUntilInit = false;
         dp.hourHalfBorderColor = '#EBEDEB';
         dp.hourBorderColor = '#DEDFDE';
-        dp.hourFontColor = '#42658C';
-        dp.hourFontFamily = 'Tahoma, Arial, Helvetica, sans-serif';
-        dp.hourNameBackColor = '#F3F3F9';
+        dp.hourFontColor = '#333';
+        dp.hourFontFamily = 'Open Sans, Helvetica, Helvetica, Arial, sans-serif';
+        dp.hourNameBackColor = '#f8f8f8';
         dp.hourNameBorderColor = '#DEDFDE';
         dp.hourWidth = 45;
         dp.initScrollPos = '450';
         dp.loadingLabelText = 'Loading...';
         dp.loadingLabelVisible = true;
         dp.loadingLabelFontSize = '10pt';
-        dp.loadingLabelFontFamily = 'Tahoma, Arial, Helvetica, sans-serif';
+        dp.loadingLabelFontFamily = 'Open Sans, Helvetica, Helvetica, Arial, sans-serif';
         dp.loadingLabelFontColor = '#ffffff';
         dp.loadingLabelBackColor = '#ff0000';
         dp.locale = 'en-us';
@@ -409,8 +412,9 @@
         dp_navigator.api = 1;
         dp_navigator.cellHeight = 20;
         dp_navigator.cellWidth = 20;
+        dp_navigator.cellWidthSpec = "Auto";
         dp_navigator.command = 'navigate';
-        dp_navigator.theme = 'navigator_white';
+        dp_navigator.theme = 'navigator_green';
         dp_navigator.cssOnly = true;
         dp_navigator.dayHeaderHeight = 20;
         dp_navigator.locale = 'en-us';

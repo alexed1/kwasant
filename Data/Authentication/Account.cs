@@ -42,7 +42,7 @@ namespace Data.Authentication
                 Console.WriteLine(forceEmail);
                 
             }
-            unitOfWork.CalendarRepository.CheckUserHasCalendar(curUser);
+        
             return curUser.Id;
         }
 

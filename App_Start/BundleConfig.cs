@@ -131,7 +131,7 @@ namespace KwasantWeb.App_Start
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/daypilot").Include(
-				"~/Content/css/Daypilot/*_white.css", new CssRewriteUrlTransform()
+				"~/Content/css/Daypilot/*_green.css", new CssRewriteUrlTransform()
                 ));
 
             bundles.Add(new StyleBundle("~/bundles/css/select2").Include(
