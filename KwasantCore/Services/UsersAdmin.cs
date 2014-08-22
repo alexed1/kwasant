@@ -63,7 +63,9 @@ namespace KwasantCore.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 List<UsersAdminData> currUsersAdminDataList = new List<UsersAdminData>();
-                List<UserDO> currUserDOs = uow.UserRepository.GetAll().ToList();
+                List<UserDO> currUserDOs =new List<UserDO>();
+
+                currUserDOs = uow.UserRepository.GetAll().ToList(); 
 
                 var currUserManager = User.GetUserManager(uow);
 

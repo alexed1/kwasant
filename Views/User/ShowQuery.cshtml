@@ -1,0 +1,151 @@
+﻿@model KwasantWeb.ViewModels.UserQueryVM
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+<!-- MODEL SHOULD BE USERQUERYVM WILL BE SAME AS UserAdministerVM, SO USING THAT FOR NOW.............. -->
+<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+<link href="~/Content/css/backendcss/default.css" rel="stylesheet" />
+<div style="padding-right:40px;">
+    <fieldset id="searchInfoForm">
+        <table>
+            <tr>
+                <td colspan="2">
+                    <label id="lblError" style="color:red;"></label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    First Name 
+                </td>
+                <td>
+                    @Html.TextBoxFor(curUser => curUser.User.FirstName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Last Name 
+                </td>
+                <td>
+                    @Html.TextBoxFor(curUser => curUser.User.LastName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Email Address
+                </td>
+                <td>
+                    @Html.TextBoxFor(curUser => curUser.User.EmailAddress.Address)
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+    <br />
+    <input type="button" id="btnSearch" value="Search" />&nbsp;&nbsp;
+        <input type="button" id="btnClose" value="Close" />
+    <br /><br />
+    <input type="hidden" id="hdnUserId" value="@Model.User.Id" />
+    <table id="tblusers" class="table table-with-action" style="visibility:hidden;">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email Address</th>
+               @* <th>Role</th>*@
+                <th class="action-cell">Action</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<script>
+    //Document ready function, will run after page is ready and all elements are loaded.
+    $(document).ready(function () {
+        var table;
+
+        $("#btnClose").click(function () {
+            if ($("#hdnUserId").val() != "") {
+                loadCalendars($("#hdnUserId").val());
+            } else {
+                alert("User not selected");
+            }
+        });
+
+        //Binding click event handler to Search button.
+        $("#btnSearch").click(function () {
+            $.ajax({
+                url: '@Url.Action("FindUser", "User")',
+                type: 'post',
+                data: $('#searchInfoForm').serialize(),
+                success: function (response) {
+                    $("#lblError").html("");
+                    if (JSON.parse(response).error != undefined) {
+                        $("#lblError").html(JSON.parse(response).error);
+                    }
+                    else {
+                        $("#tblusers").css("visibility", "visible");
+                        if (JSON.parse(response).length == 1) {
+                            loadCalendars(JSON.parse(response)[0].id);
+                        }
+                        else {
+                            showUsers(response);
+                        }
+                    }
+                }
+            });
+        });
+
+        //Load all users into DataTable Widget
+        function showUsers(response) {
+            //This configuration supports one button "select" to choose any user from the table and several columns of user info
+            table = $('#tblusers').DataTable({
+                destroy: true,
+                data: JSON.parse(response),
+                columns: [
+                    { data: 'first_name' },
+                    { data: 'last_name' },
+                    { data: 'email_address.address' },
+                    //{ data: 'role' },
+                    {
+                        data: null,
+                        defaultContent: "<button value='select'>Select</button>"
+                    }
+                ],
+            });
+
+            //This function will bind a click function on every button in table "tblusers"
+            $('#tblusers tbody').on('click', 'button', function () {
+                var data = table.row($(this).parents('tr')).data();
+
+                //checking clicked button value for appropriate action this will be "select"
+                switch ($(this).val()) {
+                    case "select":
+                        //redirecting to main calendar view for details
+                        loadCalendars(data.id);
+                        break;
+                    default:
+                        //generates an alert for invalid selection, generally it won't happen.
+                        alert("Not a valid action!");
+                }
+            });
+        }
+
+        //This function renders ShowCalendars Partial View and refresh the calendars.
+        function loadCalendars(userId)
+        {
+            var userDiv = $("#tduserblock");
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: "@Url.Action("GetCalendars", "User")",
+                data: { "curUserId": userId },
+                success: function (data) {
+                    userDiv.html('');
+                    userDiv.html(data);
+                    window.parent.refreshCalendar();
+                },
+                error: function () {
+                    alert('Failed to retrieve Users.');
+                }
+            });
+        }
+    });
+</script>
+
