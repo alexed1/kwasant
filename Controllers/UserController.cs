@@ -15,17 +15,29 @@ using StructureMap;
 using ViewModel.Models;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
+using KwasantCore.Managers.APIManager.Packagers.DataTable;
+//using System.Linq;
+using Data.Validators;
 
 namespace KwasantWeb.Controllers
 {
     [KwasantAuthorize(Roles = "Customer")]
     public class UserController : Controller
     {
+        private DataTablesPackager _datatables;
+        private User _user;
+
+        public UserController()
+        {
+            _datatables = new DataTablesPackager();
+            _user = new User();
+        }
+
         [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Index()
         {
             UsersAdmin currUsersAdmin = new UsersAdmin();
-            List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData();
+            List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData(null);
             List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;
 
             return View(currUsersAdminViewModels);
@@ -106,6 +118,59 @@ namespace KwasantWeb.Controllers
                 var curManageUserViewModel = AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserViewModel>(tuple);
                 return View(curManageUserViewModel);
             }
+        }
+
+        [KwasantAuthorize(Roles = "Admin")]
+        public ActionResult Administer(UserAdministerVM curUserAdminVM)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curUserAdminVM.User = new UserDO
+                {
+                    Id = "",
+                    EmailAddress = new EmailAddressDO() { Address = "" },
+                    FirstName = "",
+                    LastName = ""
+                };
+            }
+            return View("Admin", curUserAdminVM);
+        }
+
+        [HttpPost]
+        public ActionResult RunQuery(UserQueryVM curUserQueryVM)
+        {
+            if (string.IsNullOrEmpty(curUserQueryVM.User.EmailAddress.Address) && string.IsNullOrEmpty(curUserQueryVM.User.FirstName) && string.IsNullOrEmpty(curUserQueryVM.User.LastName)) 
+            {
+                var jsonErrorResult = Json(_datatables.Pack(new { Error = "Atleast one field is required" }), JsonRequestBehavior.AllowGet);
+                return jsonErrorResult;
+            }
+            if (curUserQueryVM.User.EmailAddress.Address != null)
+            {
+                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+                if (!(emailAddressValidator.Validate(curUserQueryVM.User.EmailAddress).IsValid))
+                {
+                    var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
+                    return jsonErrorResult;
+                }
+            }
+            UsersAdmin currUsersAdmin = new UsersAdmin();
+            var jsonResult = Json(_datatables.Pack(currUsersAdmin.GetUsersAdminViewData(curUserQueryVM.User)), JsonRequestBehavior.AllowGet);
+            jsonResult.MaxJsonLength = int.MaxValue;
+            return jsonResult;
+        }
+        
+        public ActionResult GetCalendars(string curUserId)
+        {
+            UserAdministerVM curUserAdminVM = new UserAdministerVM();
+            curUserAdminVM.User = _user.GetUser(curUserId);
+            return PartialView("ShowCalendars", curUserAdminVM);
+        }
+
+        public ActionResult ChangeUser(string curUserId)
+        {
+            UserQueryVM curUserQueryVM = new UserQueryVM();
+            curUserQueryVM.User = _user.GetUser(curUserId);
+            return PartialView("ShowQuery", curUserQueryVM);
         }
 
     }

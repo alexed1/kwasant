@@ -50,7 +50,7 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("bookingRequestDO");
             return Get(uow, bookingRequestDO.From);
         }
-
+      
         public UserDO Get(IUnitOfWork uow, EmailAddressDO emailAddressDO)
         {
             if (uow == null)
@@ -82,7 +82,7 @@ namespace KwasantCore.Services
                 AlertManager.CustomerCreated(curUser);
                 return curUser.Id;
             }
-        }
+            }
 
         private UserDO Create(IUnitOfWork uow, EmailAddressDO emailAddressDO,
             string userName = null, string firstName = null, string lastName = null)
@@ -201,5 +201,24 @@ namespace KwasantCore.Services
 
             return um;
         }
+
+        public UserDO GetUser(string curUserId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUser = uow.UserRepository.GetAll().Where(e => e.Id == curUserId).FirstOrDefault();
+                return new UserDO
+                {
+                    Id = curUser.Id,
+                    Calendars = curUser.Calendars,
+                    Email = curUser.Email,
+                    EmailAddress = curUser.EmailAddress,
+                    FirstName = curUser.FirstName,
+                    LastName = curUser.LastName
+                };
+            }
+        }
     }
 }
+
+        
