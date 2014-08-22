@@ -175,6 +175,10 @@
     <Compile Include="Migrations\201408220936364_AddCascadeForAttendeeEvent.Designer.cs">
       <DependentUpon>201408220936364_AddCascadeForAttendeeEvent.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408221103162_Sync.22.08.2014.cs" />
+    <Compile Include="Migrations\201408221103162_Sync.22.08.2014.Designer.cs">
+      <DependentUpon>201408221103162_Sync.22.08.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
@@ -812,6 +816,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408220936364_AddCascadeForAttendeeEvent.resx">
       <DependentUpon>201408220936364_AddCascadeForAttendeeEvent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408221103162_Sync.22.08.2014.resx">
+      <DependentUpon>201408221103162_Sync.22.08.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
