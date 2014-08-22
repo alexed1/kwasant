@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -43,6 +44,28 @@ namespace KwasantCore.Managers
             curEmail.Subject = "Welcome to Kwasant";
             Email _email = new Email(uow);
             _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null);
+        }
+
+        public void DispatchNegotiationRequests(IUnitOfWork uow, NegotiationDO negotiationDO)
+        {
+            if (negotiationDO.Attendees == null)
+                return;
+
+            foreach (var attendee in negotiationDO.Attendees)
+            {
+                var emailDO = new EmailDO();
+                emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
+                emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
+                emailDO.Subject = "Welcome to Kwasant";
+                var htmlText = String.Format("Please click <a href='{0}NegotiationResponse/View?negotiationID={1}'>here</a> to answer some questions about your upcoming event.", Server.ServerUrl, negotiationDO.Id);
+
+                emailDO.HTMLText = htmlText;
+                emailDO.PlainText = "Please click here: " + String.Format("{0}NegotiationResponse/View?negotiationID={1}", Server.ServerUrl, negotiationDO.Id);
+                emailDO.EmailStatus = EmailState.Queued;
+
+                uow.EnvelopeRepository.CreateGmailEnvelope(emailDO);
+                uow.EmailRepository.Add(emailDO);
+            }
         }
 
         public void DispatchInvitations(IUnitOfWork uow, EventDO eventDO)

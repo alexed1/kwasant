@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
@@ -149,6 +150,9 @@ namespace KwasantWeb.Controllers
                 {
                     calendar.Negotiation = negotiationDO;
                 }
+
+                var communicationManager = new CommunicationManager();
+                communicationManager.DispatchNegotiationRequests(uow, negotiationDO);
 
                 uow.SaveChanges();
 
