@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
@@ -13,9 +14,13 @@ namespace KwasantWeb.Controllers
 {
     public class NegotiationResponseController : Controller
     {
+        private const bool EnforceUserInAttendees = true;
+
         [KwasantAuthorize(Roles = "Customer")]
         public ActionResult View(int negotiationID)
         {
+            ConfirmUserInAttendees(negotiationID);
+
             var userID = User.Identity.GetUserId();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -66,7 +71,7 @@ namespace KwasantWeb.Controllers
 
                                 //Otherwise, if we have no entered text, and no calendar
                                 (String.IsNullOrEmpty(answeredQuestions.Select(aq => aq.Text).FirstOrDefault()) &&
-                                 (answeredQuestions.Select(aq => aq.CalendarID).FirstOrDefault() != null)
+                                 (linkedCalendar != null)
                                 
                                     //Then use the first answer
                                     ? q.Answers.Select(a => a.Id).FirstOrDefault() 
@@ -74,7 +79,7 @@ namespace KwasantWeb.Controllers
                                     //Otherwise, since we have selected text or a calendar, we use null (no answer ID selected)
                                     : (int?) null),
 
-                            SelectedCalendarID = answeredQuestions.Select(aq => aq.CalendarID).FirstOrDefault(),
+                            SelectedCalendarID = linkedCalendar == null ? (int?)null : linkedCalendar.Id,
                             SelectedText = answeredQuestions.Select(aq => aq.Text).FirstOrDefault(),
 
                             NegotiationId = negotiationDO.Id,
@@ -115,6 +120,8 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult ProcessResponse(NegotiationResponsePostData value)
         {
+            ConfirmUserInAttendees(value.NegotiationID);
+
             var userID = User.Identity.GetUserId();
 
             if (value.Responses != null)
@@ -141,6 +148,34 @@ namespace KwasantWeb.Controllers
             }
 
             return View();
+        }
+
+        public void ConfirmUserInAttendees(int negotiationID)
+        {
+            if (!EnforceUserInAttendees)
+                return;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+                if(negotiationDO == null)
+                    throw new HttpException(404, "Negotiation not found.");
+
+                var attendees = negotiationDO.Attendees;
+                var currentUserID = User.Identity.GetUserId();
+
+                var existingUserDO = uow.UserRepository.GetQuery().Where(u => u.Id == currentUserID).FirstOrDefault();
+                if (existingUserDO == null)
+                    throw new HttpException(404, "User not found.");
+
+                var currentUserEmail = existingUserDO.EmailAddress.Address.ToLower();
+
+                foreach(var attendee in attendees)
+                    if (attendee.EmailAddress.Address.ToLower() == currentUserEmail)
+                        return;
+
+                throw new HttpException(404, "Negotiation not found.");
+            }
         }
 
         public class NegotiationResponsePostData
