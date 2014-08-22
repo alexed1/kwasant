@@ -103,7 +103,7 @@ namespace KwasantCore.Services
             return curUser;
         }
 
-        public UserDO Register (IUnitOfWork uow, string userName, string password, string role)
+        public UserDO Register(IUnitOfWork uow, string userName, string password, string role)
         {
             var userDO = Create(uow,
                 emailAddressDO: uow.EmailAddressRepository.GetOrCreateEmailAddress(userName),
@@ -111,7 +111,7 @@ namespace KwasantCore.Services
                 firstName: userName,
                 lastName: userName);
 
-            UserManager<UserDO> userManager = GetUserManager(uow);;
+            UserManager<UserDO> userManager = GetUserManager(uow); ;
             IdentityResult result = userManager.Create(userDO, password);
             if (result.Succeeded)
             {
@@ -129,7 +129,7 @@ namespace KwasantCore.Services
         {
             if (userDO != null)
             {
-                UserManager<UserDO> curUserManager = GetUserManager(uow);;
+                UserManager<UserDO> curUserManager = GetUserManager(uow); ;
 
                 curUserManager.RemovePassword(userDO.Id); //remove old password
                 var curResult = curUserManager.AddPassword(userDO.Id, password); // add new password
@@ -143,7 +143,7 @@ namespace KwasantCore.Services
         public async Task<LoginStatus> Login(IUnitOfWork uow, string username, string password, bool isPersistent)
         {
             LoginStatus curLogingStatus = LoginStatus.Successful;
-            UserManager<UserDO> curUserManager = GetUserManager(uow);;
+            UserManager<UserDO> curUserManager = GetUserManager(uow); ;
             UserDO curUser = await curUserManager.FindAsync(username, password);
             if (curUser != null)
             {
@@ -172,7 +172,7 @@ namespace KwasantCore.Services
         {
             AuthenticationManager.SignOut();
         }
-        
+
         //problem: this assumes a single role but we need support for multiple roles on one account
         //problem: the line between account and user is really murky. do we need both?
         public bool ChangeUserRole(IUnitOfWork uow, IdentityUserRole identityUserRole)
@@ -201,5 +201,48 @@ namespace KwasantCore.Services
 
             return um;
         }
+
+
+        public List<UsersAdminData> Query(String userId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                List<UsersAdminData> currUsersAdminDataList = new List<UsersAdminData>();
+
+                if (uow.UserRepository == null)
+                    return currUsersAdminDataList;
+
+                List<UserDO> currUserDOs = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null).ToList();
+                var currUserManager = User.GetUserManager(uow);
+
+                foreach (UserDO userDO in currUserDOs)
+                {
+                    if (userDO.Roles != null && userDO.Roles.Count > 0)
+                    {
+                        UsersAdminData currUsersAdminData = new UsersAdminData();
+
+                        currUsersAdminData.UserId = userDO.Id;
+                        currUsersAdminData.FirstName = userDO.FirstName;
+                        currUsersAdminData.LastName = userDO.LastName;
+                        currUsersAdminData.EmailAddress = userDO.EmailAddress != null
+                            ? userDO.EmailAddress.Address
+                            : String.Empty;
+                        currUsersAdminData.EmailAddressID = userDO.EmailAddress != null
+                            ? userDO.EmailAddress.Id
+                            : 0;
+                        currUsersAdminData.RoleId = userDO.Roles != null && userDO.Roles.Count > 0
+                            ? userDO.Roles.ToList()[0].RoleId
+                            : String.Empty;
+
+                        var roles = currUserManager.GetRoles(userDO.Id);
+                        currUsersAdminData.Role = roles != null && roles.Count > 0 ? roles[0] : String.Empty;
+
+                        currUsersAdminDataList.Add(currUsersAdminData);
+                    }
+                }
+                return currUsersAdminDataList;
+            }
+        }
+
     }
 }
