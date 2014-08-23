@@ -44,12 +44,12 @@
 						<li class="dropdown"><a id="btnUser">User</a>
                             <ul class="dropdown-menu">
                                  <li> @Html.ActionLink("Get All", "Index", "User") </li>
-                                 <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
+                                 <li><a id="btnProcessed" onclick="checkBookerStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })','MarkAsProcessed');" href="#">Mark Processed</a></li>
                             </ul>
     					</li>
                         <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
                              <ul class="dropdown-menu">
-                                <li><a id="liCreateOrEditNegotiation" onclick="checkIsBookerValid(@Model.BookingRequestID);" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
+                                <li><a id="liCreateOrEditNegotiation" onclick="checkBookerStatus(' ','Negotiation');" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
                                 <li id="liDeleteNegotiatoin"><a id="btnDeleteNegotiatoin" onclick="deleteActiveNegotiation(@Model.BookingRequestID);" href="#">Delete</a></li>
                             </ul>
                         </li>
@@ -111,8 +111,10 @@
                 return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + @Model.ActiveCalendarID)';
             },  
             getEditURL: function (id) {
+                
                 var bookingRequestID =$("#hdnrequestid").val();
                 return '/Event/Edit/?eventID=' + id + '&bookingrequestID='+ bookingRequestID;
+        
             },
             getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
             getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
@@ -172,27 +174,42 @@
         return dateFormat;
     }
 
-    //Mark processed function will execute on click to update the Request status to "Processed".
-    function updateStatus(path) {
-        $.ajax({
-            url: "/BookingRequest/IsBookerValid",
-            type: "GET",
-            data: { id: "@Model.BookingRequestID" },
-            success: function (response) {
+    //this function will check the booker status and after that it will redirected according calledby.
+    function checkBookerStatus(path, calledBy)
+    {
+        var url="/BookingRequest/IsBookerValid/?id=" + '@Model.BookingRequestID';
+        $.get(url, null, function (response) {
                 if (response == "valid") {
-                    //redirecting to main calendar view for details
-                    $.getJSON(path, function () {
-                        window.location.href = "@Url.Action("Index", "BookingRequest")";
-                    });
-                } else {
-                    if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
+                    if(calledBy =="MarkAsProcessed")
+                    {
+                        //redirecting to Booking Request
                         $.getJSON(path, function () {
                             window.location.href = "@Url.Action("Index", "BookingRequest")";
                         });
                     }
+                    else if(calledBy =="Negotiation")
+                    {
+                        //Call Negotiationwindow method
+                        window.parent.getNegotiationWindow(bookingRequestId);
+                    }
+                    
+                } else {
+                    if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
+                        if(calledBy =="MarkAsProcessed")
+                        {
+                            //redirecting to Booking Request
+                            $.getJSON(path, function () {
+                                window.location.href = "@Url.Action("Index", "BookingRequest")";
+                            });
+                        }
+                        else if(calledBy =="Negotiation")
+                        {
+                            //Call Negotiationwindow method
+                            window.parent.getNegotiationWindow('@Model.BookingRequestID');
+                        }
+                    }
                 }
-            }
-        });
+        });   
     }
 
     function HistoryClick(id) {
@@ -336,26 +353,6 @@
     }
 
     
-    //this function will open the new iframe for negotiation window and close the iframe for Edit Event window.
-    function checkIsBookerValid(bookingRequestId)
-    {
-        $.ajax({
-            url: "/BookingRequest/IsBookerValid",
-            type: "GET",
-            data: { id: bookingRequestId },
-            success: function (response) {
-                if (response == "valid") {
-                    //redirecting to main calendar view for details
-                    window.parent.getNegotiationWindow(bookingRequestId);
-                } else {
-                    if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
-                        window.parent.getNegotiationWindow(bookingRequestId);
-                    }
-                }
-            } 
-        });   
-    }
-
     function getNegotiationWindow(bookingRequestId) {
             @{
                 if (Model.LinkedNegotiationID != null)

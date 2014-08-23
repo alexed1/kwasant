@@ -3,15 +3,15 @@
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 
 <table id="tblbookingrequest" class="data-table table-with-action">
-	<thead>
-		<tr>
-			<th width="15%">Date Recieved</th>
-			<th>From</th>	
-			<th>Subject</th>
-			<th>Body</th>		
-			<th class="action-cell">Action</th>
-		</tr>
-	</thead>
+    <thead>
+        <tr>
+            <th width="15%">Date Recieved</th>
+            <th>From</th>
+            <th>Subject</th>
+            <th>Body</th>
+            <th class="action-cell">Action</th>
+        </tr>
+    </thead>
 </table>
 
 <script type="text/javascript">
@@ -25,7 +25,7 @@
             //This configuration supports two buttons (Invalid and Details) and several columns of data
             var table = $('#tblbookingrequest').DataTable({
                 data: JSON.parse(response),
-                order: [ 2, 'desc' ],
+                order: [2, 'desc'],
                 columns: [
                     { data: 'date_received' },
                     { data: 'from_address' },
@@ -40,24 +40,20 @@
 
             //This function will bind a click function on every button in table "tblbookingrequest"
             $('#tblbookingrequest tbody').on('click', 'button', function () {
-              
+
                 var data = table.row($(this).parents('tr')).data();
                 var parentcontrol = this;
                 //checking clicked button value for appropriate action this will be either "detail" or "invalid"
                 switch ($(this).val()) {
                     case "detail":
-                        $.ajax({
-                            url: "/BookingRequest/IsBookerValid",
-                            type: "GET",
-                            data: { id: data.id },
-                            success: function (response) {
-                                if (response == "valid") {
-                                    //redirecting to main calendar view for details
+                        var url = "/BookingRequest/IsBookerValid/?id=" + data.id;
+                        $.get(url, null, function (response) {
+                            if (response == "valid") {
+                                //redirecting to main calendar view for details
+                                window.location.href = '@Url.Action("Details")' + "/" + data.id;
+                            } else {
+                                if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
                                     window.location.href = '@Url.Action("Details")' + "/" + data.id;
-                                } else {
-                                    if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
-                                        window.location.href = '@Url.Action("Details")' + "/" + data.id;
-                                    }
                                 }
                             }
                         });
@@ -75,7 +71,7 @@
                                     });
                                 } else {
                                     if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
-                                        $.getJSON("/BookingRequest/Invalidate?id="+data.id, function (response) {
+                                        $.getJSON("/BookingRequest/Invalidate?id=" + data.id, function (response) {
                                             $(parentcontrol).parents('tr').remove();
                                         });
                                     }

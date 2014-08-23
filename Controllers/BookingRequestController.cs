@@ -109,15 +109,15 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string BookerID;
+                string bookerId;
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                BookerID = bookingRequestDO.BookerID;
+                bookerId = bookingRequestDO.BookerID;
                 bookingRequestDO.BookingRequestState = BookingRequestState.Resolved;
                 bookingRequestDO.BookerID = this.GetUserId();
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
-                if (BookerID != this.GetUserId())
+                if (bookerId != this.GetUserId())
                     AlertManager.BookingRequestOwnershipChange(bookingRequestDO.Id, this.GetUserId());
 
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
@@ -129,15 +129,15 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string BookerID;
+                string bookerId;
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                BookerID = bookingRequestDO.BookerID;
+                bookerId = bookingRequestDO.BookerID;
                 bookingRequestDO.BookingRequestState = BookingRequestState.Invalid;
                 bookingRequestDO.BookerID = this.GetUserId();
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
-                if (BookerID != this.GetUserId())
+                if (bookerId != this.GetUserId())
                     AlertManager.BookingRequestOwnershipChange(bookingRequestDO.Id, this.GetUserId());
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
