@@ -7,22 +7,22 @@ namespace KwasantWeb.Controllers.Helpers
 {
     public class ObjectMapper
     {
-        public static List<UsersAdminViewModel> GetMappedUsersAdminViewModelList(List<UsersAdminData> usersAdminDataList)
+        public static List<UsersAdminVM> GetMappedUsersAdminVMList(List<UsersAdminData> usersAdminDataList)
         {
-            List<UsersAdminViewModel> currUsersAdminViewModels = new List<UsersAdminViewModel>();
+            List<UsersAdminVM> currUsersAdminVMs = new List<UsersAdminVM>();
 
-            Mapper.CreateMap<UsersAdminData, UsersAdminViewModel>();
+            Mapper.CreateMap<UsersAdminData, UsersAdminVM>();
 
             foreach (UsersAdminData usersAdminData in usersAdminDataList)
             {
-                UsersAdminViewModel usersAdminViewModel = Mapper.Map<UsersAdminData, UsersAdminViewModel>(usersAdminData);
-                currUsersAdminViewModels.Add(usersAdminViewModel);
+                UsersAdminVM usersAdminVM = Mapper.Map<UsersAdminData, UsersAdminVM>(usersAdminData);
+                currUsersAdminVMs.Add(usersAdminVM);
             }
 
             //Func<UsersAdminViewModel, string> orderingFunction = (c => c.FirstName);
             //currUsersAdminViewModels.OrderByDescending(orderingFunction);
 
-            return currUsersAdminViewModels;
+            return currUsersAdminVMs;
         }
 
     }

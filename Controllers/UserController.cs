@@ -26,9 +26,9 @@ namespace KwasantWeb.Controllers
         {
             UsersAdmin currUsersAdmin = new UsersAdmin();
             List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData();
-            List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;
+            List<UsersAdminVM> currUsersAdminVMs = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminVMList(currUsersAdminDataList) : null;
 
-            return View(currUsersAdminViewModels);
+            return View(currUsersAdminVMs);
         }
 
         [KwasantAuthorize(Roles = "Admin")]
@@ -41,11 +41,11 @@ namespace KwasantWeb.Controllers
             UsersAdmin currUsersAdmin = new UsersAdmin();
             List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData(userId, roleId);
 
-            List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;
+            List<UsersAdminVM> currUsersAdminVMs = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminVMList(currUsersAdminDataList) : null;
 
-            UsersAdminViewModel currUsersAdminViewModel = currUsersAdminViewModels == null || currUsersAdminViewModels.Count == 0 ? new UsersAdminViewModel() : currUsersAdminViewModels[0];
+            UsersAdminVM currUsersAdminVM = currUsersAdminVMs == null || currUsersAdminVMs.Count == 0 ? new UsersAdminVM() : currUsersAdminVMs[0];
 
-            return View(currUsersAdminViewModel);
+            return View(currUsersAdminVM);
         }
 
         public async Task<ActionResult> GrantRemoteCalendarAccess(string providerName)
@@ -102,9 +102,9 @@ namespace KwasantWeb.Controllers
                 }
                 var remoteCalendarProviders = uow.RemoteCalendarProviderRepository.GetAll();
                 var tuple = new Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>(curUserDO, remoteCalendarProviders);
-                
-                var curManageUserViewModel = AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserViewModel>(tuple);
-                return View(curManageUserViewModel);
+
+                var curManageUserVM = AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserVM>(tuple);
+                return View(curManageUserVM);
             }
         }
 

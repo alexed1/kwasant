@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace KwasantWeb.ViewModels
 {
-    public class RegisterViewModel
+    public class RegisterVM
     {
         [Required]
         [DataType(DataType.EmailAddress)]

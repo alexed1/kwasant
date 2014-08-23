@@ -18,10 +18,10 @@ namespace KwasantWeb.Controllers
     {
         [KwasantAuthorize(Roles = "Customer")]
         [HttpPost]
-        public ActionResult ProcessSubmittedClarificationData(ClarificationResponseViewModel responseViewModel)
+        public ActionResult ProcessSubmittedClarificationData(ClarificationResponseVM responseVM)
         {
             var curClarificationRequestDO =
-                Mapper.Map<ClarificationResponseViewModel, ClarificationRequestDO>(responseViewModel);
+                Mapper.Map<ClarificationResponseVM, ClarificationRequestDO>(responseVM);
             try
             {
                 var clarificationRequest = new ClarificationRequest();

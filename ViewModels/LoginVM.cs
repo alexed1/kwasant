@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace KwasantWeb.ViewModels
 {
-    public class LoginViewModel
+    public class LoginVM
     {
         [Required]
         [Display(Name = "Email")]

@@ -31,7 +31,7 @@ namespace KwasantWeb.Controllers
                 {
                     //NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(br => br.RequestId == bookingRequestId);
                     var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow, bookingRequestId, clarificationRequestId, negotiationId);
-                    return View(Mapper.Map<ClarificationRequestViewModel>(curClarificationRequestDO));
+                    return View(Mapper.Map<ClarificationRequestVM>(curClarificationRequestDO));
                 }
                 catch (EntityNotFoundException<IBookingRequest>)
                 {
@@ -51,7 +51,7 @@ namespace KwasantWeb.Controllers
                 {
                     NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(br => br.BookingRequestID == bookingRequestId);
                     var curClarificationRequestDO = cr.GetOrCreateClarificationRequest(uow, bookingRequestId, clarificationRequestId, negotiationDO.Id);
-                    return View(Mapper.Map<ClarificationRequestViewModel>(curClarificationRequestDO));
+                    return View(Mapper.Map<ClarificationRequestVM>(curClarificationRequestDO));
                 }
                 catch (EntityNotFoundException<IBookingRequest>)
                 {
@@ -100,8 +100,8 @@ namespace KwasantWeb.Controllers
                 if (curClarificationRequestDO == null)
                     return HttpNotFound("Clarification request not found.");
                
-                var curClarificationResponseViewModel = Mapper.Map<ClarificationRequestDO, ClarificationResponseViewModel>(curClarificationRequestDO);
-                return View("~/Views/ClarificationResponse/New.cshtml", curClarificationResponseViewModel);
+                var curClarificationResponseVM = Mapper.Map<ClarificationRequestDO, ClarificationResponseVM>(curClarificationRequestDO);
+                return View("~/Views/ClarificationResponse/New.cshtml", curClarificationResponseVM);
             }
         }
     }

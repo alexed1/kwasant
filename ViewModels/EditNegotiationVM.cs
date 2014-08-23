@@ -10,7 +10,7 @@ namespace KwasantWeb.ViewModels
     {
         public EditNegotiationVM()
         {
-            Questions = new List<QuestionViewModel>();
+            Questions = new List<QuestionVM>();
             Attendees = new List<string>();
         }
 
@@ -18,7 +18,7 @@ namespace KwasantWeb.ViewModels
         public int BookingRequestID { get; set; }
         public int State { get; set; }
         public string Name { get; set; }
-        public List<QuestionViewModel> Questions { get; set; }
+        public List<QuestionVM> Questions { get; set; }
         public List<String> Attendees { get; set; } 
     }
 }

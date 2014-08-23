@@ -38,7 +38,7 @@ namespace KwasantWeb.Controllers
                 uow.SaveChanges();
 
                 //put it in a view model to hand to the view
-                var curEventVM = Mapper.Map<EventDO, EventViewModel>(createdEvent);
+                var curEventVM = Mapper.Map<EventDO, EventVM>(createdEvent);
 
                 //construct a Calendar view model for this Calendar View 
                 return View("~/Views/Event/Edit.cshtml", curEventVM);
@@ -157,7 +157,7 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                return View(Mapper.Map<EventDO, EventViewModel>(eventDO));
+                return View(Mapper.Map<EventDO, EventVM>(eventDO));
             }
         }
 
@@ -186,7 +186,7 @@ namespace KwasantWeb.Controllers
 
                 var eventDO = uow.EventRepository.GetByKey(eventID);
 
-                var evm = Mapper.Map<EventDO, EventViewModel>(eventDO);
+                var evm = Mapper.Map<EventDO, EventVM>(eventDO);
 
                 evm.StartDate = DateTime.Parse(newStart, CultureInfo.InvariantCulture, 0).ToUniversalTime();
                 evm.EndDate = DateTime.Parse(newEnd, CultureInfo.InvariantCulture, 0).ToUniversalTime();
@@ -198,13 +198,13 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public ActionResult ConfirmChanges(EventViewModel eventViewModel)
+        public ActionResult ConfirmChanges(EventVM eventVM)
         {
-            return View(eventViewModel);
+            return View(eventVM);
         }
 
         //processes events that have been entered into the form and confirmed
-        public ActionResult ProcessConfirmedEvent(EventViewModel eventVM, bool mergeEvents = false)
+        public ActionResult ProcessConfirmedEvent(EventVM eventVM, bool mergeEvents = false)
         {
             using (var uow = GetUnitOfWork())
             {
@@ -239,7 +239,7 @@ namespace KwasantWeb.Controllers
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                    return View(Mapper.Map<EventDO, EventViewModel>(eventDO));
+                    return View(Mapper.Map<EventDO, EventVM>(eventDO));
                 }
             }
 
