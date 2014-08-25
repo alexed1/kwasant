@@ -55,8 +55,8 @@
     					</li>
                         <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
                              <ul class="dropdown-menu">
-                                <li><a id="liCreateOrEditNegotiation" onclick="window.parent.getNegotiationWindow();" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
-                                <li id="liDeleteNegotiatoin"><a id="btnDeleteNegotiatoin" onclick="deleteActiveNegotiation(@Model.LinkedNegotiationID);" href="#">Delete</a></li>
+                                <li><a id="liCreateOrEditNegotiation" onclick="getNegotiationWindow();" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
+                                <li id="liDeleteNegotiation"><a id="btnDeleteNegotiatoin" onclick="deleteActiveNegotiation(@Model.LinkedNegotiationID);" href="#">Delete</a></li>
                             </ul>
                         </li>
                         <li class="dropdown"><a id="btnReport">Reports</a>
@@ -335,30 +335,32 @@
         var bookingrequest="@Model.BookingRequestID";
         var path = '/ClarificationRequest/Edit/?bookingRequestId=' + bookingrequest + '&clarificationRequestId=' + id;
         Kwasant.IFrame.Display(path,
-        {
-            horizontalAlign: 'left',
-        });
+            {
+                horizontalAlign: 'left',
+            });
     }
 
-    
+
     //this function will open the new iframe for negotiation window and close the iframe for Edit Event window.
+
     function getNegotiationWindow() {
-        @{
-            if (Model.LinkedNegotiationID != null)
-            {
-                @:Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=@Model.LinkedNegotiationID',
-                    @:{
-                    @:  horizontalAlign: 'right',
-                    @:});
-            }
-            else
-            {
-                @:Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestID',
-                    @:{
-                    @:  horizontalAlign: 'right',
-                    @:  callback: function (result) { if (result) $('#liCreateOrEditNegotiation').html('Edit'); }
-                    @:});
-            }
+        if (linkedNegotiationID != null) {
+            Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID,
+                {
+                    horizontalAlign: 'right',
+                });
+        } else {
+            Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestID',
+                {
+                    horizontalAlign: 'right',
+                    callback: function(result) {
+                        if (result) {
+                            $('#liCreateOrEditNegotiation').html('Edit');
+                            linkedNegotiationID = result;
+                            updateCreateDeleteButtons();
+                        }
+                    }
+                });
         }
     }
 
@@ -367,24 +369,34 @@
         if (confirm("Are you sure you want to delete the negotiation?")) {
             var url = "/Negotiation/Delete?negotiationID=" + negotiationID;
             $.get(url, null, function (data) {
-                if (!data)
+                if (!data) {
                     alert('An error occured on the server. Your changes were not saved.');
+                } else {
+                    linkedNegotiationID = null;
+                    $('#liCreateOrEditNegotiation').html('Create');
+                    updateCreateDeleteButtons();
+                }
             });
         }       
     }
+
+    var linkedNegotiationID = @Html.Raw(Model.LinkedNegotiationID == null ? "null" : Model.LinkedNegotiationID.ToString());
+    
+    function updateCreateDeleteButtons() {
+        if (linkedNegotiationID == null) {
+            $('#liDeleteNegotiation').hide();
+        } else {
+            $('#liDeleteNegotiation').show();
+        }
+    }
   
     $(document).ready(function() {
-        //alert('@(Model.LinkedNegotiationID == null ? "Create" : "Edit")');
-        var getNegotiationText = '@(Model.LinkedNegotiationID == null ? "Create" : "Edit")';
-        if(getNegotiationText == "Edit")
-            $('#liDeleteNegotiatoin').show();
-        else
-            $('#liDeleteNegotiatoin').hide();
+        updateCreateDeleteButtons();
 
         $('.navbar .dropdown').hover(function() {
             $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
         }, function() {
-            $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105)
+            $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
         });
     });
 </script>
