@@ -22,7 +22,7 @@ namespace Daemons
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
         {
-          
+            
         }
 
         //be careful about using this form. can get into problems involving disposal.
@@ -56,7 +56,7 @@ namespace Daemons
             return ConfigRepository.Get<bool>("InboundEmailUseSSL");
         }
 
-        
+
 
         public override int WaitTimeBetweenExecution
         {
@@ -112,7 +112,7 @@ namespace Daemons
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
                 BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
-
+                
                 try
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, messageInfo.Message);
@@ -121,7 +121,7 @@ namespace Daemons
                     (new BookingRequest()).Process(unitOfWork, bookingRequest);
 
                     unitOfWork.SaveChanges();
-
+                    
                     AlertManager.BookingRequestCreated(bookingRequest);
                     AlertManager.EmailReceived(bookingRequest, bookingRequest.User);
                 }

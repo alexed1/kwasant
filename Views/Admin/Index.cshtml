@@ -5,10 +5,12 @@
     <h2>Kwasant Admin Console</h2>
     @Html.ActionLink("Show Booking Requests", "Index", "BookingRequest", null, new { @class = "" })
     <p></p>
-    @Html.ActionLink("Show Incident Report", "Index", "Report", new { type = "incident" }, new { @class = "" })
+@Html.ActionLink("Show Incident Report", "Index", "Report", new { type = "incident" }, new { @class = "" })
+<p></p>
+@Html.ActionLink("Show Usage Report", "Index", "Report", new { type = "usage" }, new { @class = "" })
     <p></p>
-    @Html.ActionLink("Show Usage Report", "Index", "Report", new { type = "usage" }, new { @class = "" })
+@Html.ActionLink("View History ", "History", "Report", new { area = "" }, new { @class = "" })
     <p></p>
-    @Html.ActionLink("View History ", "History", "Report", new{area=""}, new { @class = "" })
+@Html.ActionLink("View User Administer", "ShowUserQueryForm", "User", new { area = "" }, new { @class = "" })
     <p></p>
-    <a href="/Website/index.aspx">Go to kwasant.com</a>
+<a href="/Website/index.aspx">Go to kwasant.com</a>.
