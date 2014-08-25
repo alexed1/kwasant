@@ -1,6 +1,6 @@
 ﻿namespace KwasantWeb.ViewModels
 {   
-    public class AnswerViewModel
+    public class AnswerVM
     {
         public int Id { get; set; }        
         public int QuestionID { get; set; }       

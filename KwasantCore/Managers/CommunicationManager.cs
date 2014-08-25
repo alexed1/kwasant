@@ -152,7 +152,7 @@ namespace KwasantCore.Managers
             outboundEmail.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
 
             var user = new User();
-            var userID = user.GetOrCreate(uow, attendeeDO.EmailAddress).Id;
+            var userID = user.GetOrCreateFromBR(uow, attendeeDO.EmailAddress).Id;
             
             if (isUpdate)
             {

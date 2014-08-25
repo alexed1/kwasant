@@ -2,7 +2,7 @@
 
 namespace KwasantWeb.ViewModels
 {
-    public class EventWindowViewModel
+    public class EventWindowVM
     {
         public List<int> LinkedCalendarIDs { get; set; }
         public int ActiveCalendarID { get; set; }
