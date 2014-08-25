@@ -2,7 +2,7 @@
 using FluentValidation;
 using FluentValidation.Results;
 
-namespace Data.Validators
+namespace Data.Validations
 {
     public class EventValidator : AbstractValidator<EventDO>
     {

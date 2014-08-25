@@ -9,7 +9,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Data.Validators;
+using Data.Validations;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;

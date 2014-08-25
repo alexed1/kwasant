@@ -2,7 +2,7 @@
 
 namespace KwasantWeb.ViewModels
 {
-    public class MyAccountModel
+    public class MyAccountVM
     {
         [DataType(DataType.EmailAddress)]
         [Display(Name = "Email")]

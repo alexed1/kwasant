@@ -2,6 +2,7 @@
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Validations;
 using FluentValidation;
 
 namespace Data.Repositories

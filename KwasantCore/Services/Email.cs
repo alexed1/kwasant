@@ -8,7 +8,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Data.Validators;
+using Data.Validations;
 using FluentValidation;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using StructureMap;

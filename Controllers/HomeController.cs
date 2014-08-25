@@ -1,5 +1,5 @@
 ﻿using System.Web.Mvc;
-using Data.Validators;
+using Data.Validations;
 using FluentValidation;
 using Data.Entities;
 using Data.Interfaces;

@@ -11,7 +11,7 @@ namespace KwasantWeb.ViewModels
         public bool RequiresConfirmation { get; set; }
         public bool ClickEditEnabled { get; set; }
 
-        public EventWindowViewModel()
+        public EventWindowVM()
         {
             RequiresConfirmation = true;
             ClickEditEnabled = true;

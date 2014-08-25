@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace KwasantWeb.ViewModels
 {
-    public class NegotiationViewModel
+    public class NegotiationVM
     {
-        public NegotiationViewModel()
+        public NegotiationVM()
         {
-            Questions = new List<NegotiationQuestionViewModel>();
+            Questions = new List<NegotiationQuestionVM>();
             Attendees = new List<string>();
         }
 
@@ -15,28 +15,28 @@ namespace KwasantWeb.ViewModels
         public int BookingRequestID { get; set; }
         public int State { get; set; }
         public string Name { get; set; }
-        public List<NegotiationQuestionViewModel> Questions { get; set; }
+        public List<NegotiationQuestionVM> Questions { get; set; }
         public List<String> Attendees { get; set; }
     }
 
-    public class NegotiationQuestionViewModel
+    public class NegotiationQuestionVM
     {
-        public NegotiationQuestionViewModel()
+        public NegotiationQuestionVM()
         {
-            Answers = new List<NegotiationAnswerViewModel>();
+            Answers = new List<NegotiationAnswerVM>();
         }
 
         public int Id { get; set; }
         public string Text { get; set; }
         public int Status { get; set; }
         public int NegotiationId { get; set; }
-        public List<NegotiationAnswerViewModel> Answers { get; set; }
+        public List<NegotiationAnswerVM> Answers { get; set; }
         public string AnswerType { get; set; }
         public int? CalendarID { get; set; }
-        public List<QuestionCalendarEventViewModel> CalendarEvents { get; set; }
+        public List<QuestionCalendarEventVM> CalendarEvents { get; set; }
     }
 
-    public class NegotiationAnswerViewModel
+    public class NegotiationAnswerVM
     {
         public int Id { get; set; }
         public int QuestionId { get; set; }

@@ -555,6 +555,7 @@
     <Compile Include="Repositories\TrackingStatusRepository.cs" />
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Validations\BookingRequestValidator.cs" />
     <Compile Include="Validations\EnvelopeValidator.cs" />
     <Compile Include="Validations\EventValidator.cs" />
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />

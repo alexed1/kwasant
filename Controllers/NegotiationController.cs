@@ -22,7 +22,7 @@ namespace KwasantWeb.Controllers
                 if (negotiationDO == null)
                     throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
                 
-                var model = new NegotiationViewModel
+                var model = new NegotiationVM
                 {
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
@@ -31,14 +31,14 @@ namespace KwasantWeb.Controllers
 
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
-                        new NegotiationQuestionViewModel
+                        new NegotiationQuestionVM
                         {
                             AnswerType = q.AnswerType,
                             Id = q.Id,
                             Status = q.QuestionStatus,
                             Text = q.Text,
                             NegotiationId = negotiationDO.Id,
-                            CalendarEvents = q.Calendar == null ? new List<QuestionCalendarEventViewModel>() : q.Calendar.Events.Select(e => new QuestionCalendarEventViewModel
+                            CalendarEvents = q.Calendar == null ? new List<QuestionCalendarEventVM>() : q.Calendar.Events.Select(e => new QuestionCalendarEventVM
                             {
                                 StartDate = e.StartDate,
                                 EndDate = e.EndDate
@@ -46,7 +46,7 @@ namespace KwasantWeb.Controllers
                             
                             CalendarID = q.CalendarID,
                             Answers = q.Answers.Select(a =>
-                                new NegotiationAnswerViewModel
+                                new NegotiationAnswerVM
                                 {
                                     Status = a.AnswerStatus,
                                     Id = a.Id,
@@ -64,7 +64,7 @@ namespace KwasantWeb.Controllers
 
         public ActionResult Create(int bookingRequestID)
         {
-            return View("~/Views/Negotiation/Edit.cshtml", new NegotiationViewModel
+            return View("~/Views/Negotiation/Edit.cshtml", new NegotiationVM
             {
                 Name = "Negotiation 1",
                 BookingRequestID = bookingRequestID,
@@ -73,7 +73,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public JsonResult ProcessSubmittedForm(NegotiationViewModel value)
+        public JsonResult ProcessSubmittedForm(NegotiationVM value)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

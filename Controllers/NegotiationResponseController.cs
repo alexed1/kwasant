@@ -44,7 +44,7 @@ namespace KwasantWeb.Controllers
                 }
 
 
-                var model = new NegotiationResponseViewModel
+                var model = new NegotiationResponseVM
                 {
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
@@ -56,7 +56,7 @@ namespace KwasantWeb.Controllers
                     {
                         var answeredQuestions = alreadyAnsweredQuestions.Where(aq => aq.QuestionID == q.Id).ToList();
                         var linkedCalendar = answeredQuestions.Select(aq => aq.Calendar).FirstOrDefault();
-                        return (NegotiationQuestionViewModel) new NegotiationResponseQuestionViewModel
+                        return (NegotiationQuestionVM) new NegotiationResponseQuestionVM
                         {
                             AnswerType = q.AnswerType,
                             Id = q.Id,
@@ -85,8 +85,8 @@ namespace KwasantWeb.Controllers
                             NegotiationId = negotiationDO.Id,
 
                             CalendarEvents = linkedCalendar == null
-                                ? new List<QuestionCalendarEventViewModel>()
-                                : linkedCalendar.Events.Select(e => new QuestionCalendarEventViewModel
+                                ? new List<QuestionCalendarEventVM>()
+                                : linkedCalendar.Events.Select(e => new QuestionCalendarEventVM
                                 {
                                     StartDate = e.StartDate,
                                     EndDate = e.EndDate
@@ -94,15 +94,15 @@ namespace KwasantWeb.Controllers
 
                             CalendarID = q.CalendarID,
                             Answers = q.Answers.Select(a =>
-                                (NegotiationAnswerViewModel) new NegotiationResponseAnswerViewModel
+                                (NegotiationAnswerVM) new NegotiationResponseAnswerVM
                                 {
                                     Status = a.AnswerStatus,
                                     Id = a.Id,
                                     QuestionId = q.Id,
                                     Text = a.Text,
                                     CalendarEvents = q.Calendar == null
-                                        ? new List<QuestionCalendarEventViewModel>()
-                                        : q.Calendar.Events.Select(e => new QuestionCalendarEventViewModel
+                                        ? new List<QuestionCalendarEventVM>()
+                                        : q.Calendar.Events.Select(e => new QuestionCalendarEventVM
                                         {
                                             StartDate = e.StartDate,
                                             EndDate = e.EndDate

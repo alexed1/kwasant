@@ -1,4 +1,4 @@
-﻿namespace Data.Validators
+﻿namespace Data.Validations
 {
     public class OutboundTemplatedEmailValidator : OutboundEmailValidatorBase
     {

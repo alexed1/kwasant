@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Data.Validators
+namespace Data.Validations
 {
     public class OutboundHtmlEmailValidator : OutboundEmailValidatorBase
     {

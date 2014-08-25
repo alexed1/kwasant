@@ -1,4 +1,4 @@
-﻿using Data.Validators;
+﻿using Data.Validations;
 using FluentValidation;
 using Utilities;
 

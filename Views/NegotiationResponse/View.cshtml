@@ -37,7 +37,7 @@
 
 </div>
 
-@foreach (NegotiationResponseQuestionViewModel question in Model.Questions)
+@foreach (NegotiationResponseQuestionVM question in Model.Questions)
 {
     <div class="formItem">
         <label>Question : </label>
@@ -91,7 +91,7 @@
         $("input[type='radio']").change(updateEnabledControls);
         updateEnabledControls();
         $('#eventWindowRendererTemplate').hide();
-        @foreach (NegotiationResponseQuestionViewModel question in Model.Questions)
+        @foreach (NegotiationResponseQuestionVM question in Model.Questions)
         {
             @:questionEventWindows = [];
             foreach (var calendarEvent in question.CalendarEvents)
@@ -110,9 +110,9 @@
             @:renderEvents($('#' + '@question.Id.ToString()' + '_EventWindowRenderer'), questionEventWindows);
         }
         
-        @foreach (NegotiationResponseQuestionViewModel question in Model.Questions)
+        @foreach (NegotiationResponseQuestionVM question in Model.Questions)
         {
-            foreach (NegotiationResponseAnswerViewModel answer in question.Answers)
+            foreach (NegotiationResponseAnswerVM answer in question.Answers)
             {
                 @:questionEventWindows = [];
                 foreach (var calendarEvent in answer.CalendarEvents)
