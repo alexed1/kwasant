@@ -103,27 +103,7 @@ namespace Data.Infrastructure
         }
 
 /*
-        public List<EntityChangeInformation> GetModifiedEntities()
-        {
-            var res = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified)
-                .Select(e =>
-                {
-                    string actualName = (e.Entity.GetType().FullName.StartsWith("System.Data.Entity.DynamicProxies") &&
-                                        e.Entity.GetType().BaseType != null)
-                    ? e.Entity.GetType().BaseType.Name
-                    : e.Entity.GetType().FullName;
 
-                    return new EntityChangeInformation
-                    {
-                        EntityName = actualName,
-                        Changes = GetEntityModifications(e)
-                    };
-                })
-                .Where(e => e.Changes.Any())
-                .ToList();
-
-            return res;
-        }
 */
 
         public override int SaveChanges()
@@ -141,10 +121,29 @@ namespace Data.Infrastructure
 
             var saveResult = base.SaveChanges();
 
+            foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
+            {
+                entity.Entity.AfterSave();
+            }
+
+            foreach (DbEntityEntry<ICreateHook> entity in ChangeTracker.Entries<ICreateHook>()
+   .Where(u => u.State.HasFlag(EntityState.Added)))
+            {
+
+                entity.Entity.AfterCreate();
+                //if (newUser.Entity.Roles.All(r => UnitOfWork.AspNetRolesRepository.GetByKey(r.RoleId).Name != "Admin"))
+                //{
+                //    AlertManager.CustomerCreated(this.UnitOfWork, entity.Entity);
+                //}
+            }
+
             foreach (var entity in ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged))
             {
                 entity.State = EntityState.Unchanged;
             }
+
+
+
 
             return saveResult;
         }

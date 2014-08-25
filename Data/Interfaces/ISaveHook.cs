@@ -1,10 +1,12 @@
 ﻿namespace Data.Interfaces
 {
     /// <summary>
-    /// Implementing this interface will allow you to perform pre-save processing.
+    /// Implementing this interface will allow you to perform pre-save and post-save processing.
     /// </summary>
     public interface ISaveHook
     {
         void BeforeSave();
+
+        void AfterSave();
     }
 }
