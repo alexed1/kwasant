@@ -124,7 +124,8 @@
                 url: '/Negotiation/ProcessSubmittedForm',
                 data: JSON.stringify(negotiation)
             })
-            .success(function() {
+            .success(function(data) {
+                $(window.parent.document).find('#hdnnegotiationid').val(data);
                 Kwasant.IFrame.CloseMe(true);
             })
             .fail(function() {

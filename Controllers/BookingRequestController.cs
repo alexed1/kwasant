@@ -188,11 +188,11 @@ namespace KwasantWeb.Controllers
             return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();
         }
 
-        public JsonResult DeleteActiveNegotiation(int BookingRequestId)
+        public JsonResult DeleteActiveNegotiation(int negotiationId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string result = _negotiation.Delete(uow, BookingRequestId);
+                string result = _negotiation.Delete(uow, negotiationId);
                 return Json(result, JsonRequestBehavior.AllowGet);
             }
         }

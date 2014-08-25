@@ -97,9 +97,10 @@ namespace KwasantWeb.Controllers
                 attendee.ManageNegotiationAttendeeList(uow, negotiationDO, value.Attendees);
 
                 uow.SaveChanges();
+                return Json(negotiationDO.Id, JsonRequestBehavior.AllowGet);
             }
 
-            return Json(true, JsonRequestBehavior.AllowGet);
+            
         }
     }
 }
