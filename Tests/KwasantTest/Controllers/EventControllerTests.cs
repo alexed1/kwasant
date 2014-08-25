@@ -53,7 +53,7 @@ namespace KwasantTest.Controllers
             _uow.SaveChanges();
 
             EventController curEventController = new EventController();
-            EventViewModel curEventVM = new EventViewModel
+            var curEventVM = new EventVM
             {
                 Id=testEvent.Id
             };
