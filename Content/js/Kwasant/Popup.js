@@ -218,7 +218,7 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
 
                     var sidePadding = 2;
                     var topPos;
-                    iframeDoc.find('body').addClass('ifarme-body');
+                    iframeDoc.find('body').addClass('iframe-body');
 
                     if (options.verticalAlign === 'top') {
                         topPos = scrollTop + sidePadding;
