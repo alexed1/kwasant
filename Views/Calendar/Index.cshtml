@@ -54,7 +54,7 @@
                         <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
                              <ul class="dropdown-menu">
                                 <li><a id="liCreateOrEditNegotiation" onclick="getNegotiationWindow();" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
-                                <li id="liDeleteNegotiation"><a id="btnDeleteNegotiatoin" onclick="deleteActiveNegotiation(@Model.LinkedNegotiationID);" href="#">Delete</a></li>
+                                <li id="liDeleteNegotiation"><a id="btnDeleteNegotiatoin" onclick="deleteActiveNegotiation(linkedNegotiationID);" href="#">Delete</a></li>
                             </ul>
                         </li>
                         <li class="dropdown"><a id="btnReport">Reports</a>
