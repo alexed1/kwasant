@@ -129,7 +129,6 @@
     <Compile Include="Entities\EventTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\EventRepositoryTests.cs" />
-    <Compile Include="Services\ClarificationRequestTests.cs" />
     <Compile Include="Services\EmailTests.cs" />
     <Compile Include="Services\EventServiceTests.cs" />
     <Compile Include="Integration\NegotiationITests\NegotiationTests.cs" />

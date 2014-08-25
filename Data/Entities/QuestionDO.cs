@@ -20,15 +20,15 @@ namespace Data.Entities
         [Required]
         public string Text { get; set; }
         public string AnswerType { get; set; }
-        public int NegotiationId { get; set; }
-       
+        
         public string Response { get; set; }
 
         [ForeignKey("Calendar")]
         public int? CalendarID { get; set; }
         public virtual CalendarDO Calendar { get; set; }
 
-        [ForeignKey("NegotiationId")]
+        [ForeignKey("Negotiation"), Required]
+        public int? NegotiationId { get; set; }
         public virtual NegotiationDO Negotiation { get; set; }
 
         [InverseProperty("Question")]

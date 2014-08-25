@@ -52,6 +52,11 @@ namespace KwasantCore.Managers
             }
         }
 
+        public void DispatchNegotiationRequests(IUnitOfWork uow, int negotiationID)
+        {
+            DispatchNegotiationRequests(uow, uow.NegotiationsRepository.GetByKey(negotiationID));
+        }
+
         public void DispatchNegotiationRequests(IUnitOfWork uow, NegotiationDO negotiationDO)
         {
             if (negotiationDO.Attendees == null)

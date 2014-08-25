@@ -14,7 +14,6 @@ namespace Data.Interfaces
         BookingRequestRepository BookingRequestRepository { get; }
         BookingRequestStatusRepository BookingRequestStatusRepository { get; }
         CalendarRepository CalendarRepository { get; }
-        ClarificationRequestRepository ClarificationRequestRepository { get; }
         CommunicationConfigurationRepository CommunicationConfigurationRepository { get; }
         EmailRepository EmailRepository { get; }
         EnvelopeRepository EnvelopeRepository { get; }

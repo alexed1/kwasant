@@ -117,17 +117,7 @@ namespace Data.Infrastructure
                 return _remoteCalendarLinkRepository ?? (_remoteCalendarLinkRepository = new RemoteCalendarLinkRepository(this));
             }
         }
-
-        private ClarificationRequestRepository _clarificationRequestRepository;
-
-        public ClarificationRequestRepository ClarificationRequestRepository
-        {
-            get
-            {
-                return _clarificationRequestRepository ?? (_clarificationRequestRepository = new ClarificationRequestRepository(this));
-            }
-        }
-
+        
         private CommunicationConfigurationRepository _communicationConfigurationRepository;
 
         public CommunicationConfigurationRepository CommunicationConfigurationRepository

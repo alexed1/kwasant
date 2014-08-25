@@ -58,25 +58,6 @@ namespace Data.Infrastructure
             return GetEntityModifications((DbEntityEntry) entity);
         }
 
-/*
-        private List<PropertyChangeInformation> GetEntityModifications(DbEntityEntry entity)
-        {
-            List<PropertyChangeInformation> changedValues = new List<PropertyChangeInformation>();
-            foreach (string prop in entity.OriginalValues.PropertyNames)
-            {
-                object originalValue = entity.OriginalValues[prop];
-                object currentValue = entity.CurrentValues[prop];
-                if ((originalValue == null && currentValue != null) ||
-                    (originalValue != null && !originalValue.Equals(currentValue)))
-                {
-                    changedValues.Add(new PropertyChangeInformation {PropertyName = prop, OriginalValue = originalValue, NewValue = currentValue});
-                }
-            }
-
-            return changedValues;
-        }
-*/
-
         public void DetectChanges()
         {
             ChangeTracker.DetectChanges();
@@ -96,10 +77,6 @@ namespace Data.Infrastructure
         {
             get { return ChangeTracker.Entries().Where(e => e.State == EntityState.Deleted).Select(e => e.Entity).ToArray(); }
         }
-
-/*
-
-*/
 
         public override int SaveChanges()
         {
@@ -137,10 +114,7 @@ namespace Data.Infrastructure
             {
                 entity.State = EntityState.Unchanged;
             }
-
-
-
-
+            
             return saveResult;
         }
 
@@ -157,7 +131,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<AttendeeDO>().ToTable("Attendees");
             modelBuilder.Entity<BookingRequestDO>().ToTable("BookingRequests");
             modelBuilder.Entity<CalendarDO>().ToTable("Calendars");
-            modelBuilder.Entity<ClarificationRequestDO>().ToTable("ClarificationRequests");            
             modelBuilder.Entity<QuestionDO>().ToTable("Questions");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
             modelBuilder.Entity<RecipientDO>().ToTable("Recipients");
@@ -242,6 +215,11 @@ namespace Data.Infrastructure
             modelBuilder.Entity<NegotiationDO>()
                 .HasMany(e => e.Questions)
                 .WithRequired(a => a.Negotiation)
+                .WillCascadeOnDelete(true);
+
+            modelBuilder.Entity<NegotiationDO>()
+                .HasMany(e => e.Attendees)
+                .WithOptional(a => a.Negotiation)
                 .WillCascadeOnDelete(true);
             
             modelBuilder.Entity<TrackingStatusDO>()

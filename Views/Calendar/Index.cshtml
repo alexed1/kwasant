@@ -56,7 +56,7 @@
                         <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
                              <ul class="dropdown-menu">
                                 <li><a id="liCreateOrEditNegotiation" onclick="window.parent.getNegotiationWindow();" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
-                                <li id="liDeleteNegotiatoin"><a id="btnDeleteNegotiatoin" onclick="deleteActiveNegotiation(@Model.BookingRequestID);" href="#">Delete</a></li>
+                                <li id="liDeleteNegotiatoin"><a id="btnDeleteNegotiatoin" onclick="deleteActiveNegotiation(@Model.LinkedNegotiationID);" href="#">Delete</a></li>
                             </ul>
                         </li>
                         <li class="dropdown"><a id="btnReport">Reports</a>
@@ -362,16 +362,13 @@
         }
     }
 
-    function deleteActiveNegotiation(bookingRequestId)
+    function deleteActiveNegotiation(negotiationID)
     {
-        if (confirm("are you sure you want to delete negotiation?")) {
-            var url = "/BookingRequest/DeleteActiveNegotiation/?BookingRequestId=" + bookingRequestId;
+        if (confirm("Are you sure you want to delete the negotiation?")) {
+            var url = "/Negotiation/Delete?negotiationID=" + negotiationID;
             $.get(url, null, function (data) {
-                if (data == "Success") {
-                    alert(data);
-                }
-                else
-                    alert(data);
+                if (!data)
+                    alert('An error occured on the server. Your changes were not saved.');
             });
         }       
     }

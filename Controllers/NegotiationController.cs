@@ -152,12 +152,28 @@ namespace KwasantWeb.Controllers
                 }
 
                 var communicationManager = new CommunicationManager();
-                communicationManager.DispatchNegotiationRequests(uow, negotiationDO);
 
                 uow.SaveChanges();
 
+                using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    communicationManager.DispatchNegotiationRequests(subUow, negotiationDO.Id);
+                    subUow.SaveChanges();
+                }
+
                 return Json(negotiationDO.Id, JsonRequestBehavior.AllowGet);
             }
+        }
+
+        public ActionResult Delete(int negotiationID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+                uow.NegotiationsRepository.Remove(negotiationDO);
+                uow.SaveChanges();
+            }
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
     }
 }
