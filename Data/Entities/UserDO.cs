@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using Data.Infrastructure;
 using Data.Repositories;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class UserDO : IdentityUser, IUser
+    public class UserDO : IdentityUser, IUser, ISaveHook, ICreateHook
     {
         public UserDO()
         {
@@ -67,6 +68,16 @@ namespace Data.Entities
                 Calendars.Add(curCalendar);
                
             }
+        }
+
+        void ISaveHook.BeforeSave()
+        {
+            
+        }
+
+        void ICreateHook.AfterCreate()
+        {
+            AlertManager.CustomerCreated(this);
         }
     }
 }

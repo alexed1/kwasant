@@ -2,7 +2,7 @@
 
 namespace KwasantWeb.ViewModels
 {
-    public class CalendarViewModel
+    public class CalendarVM
     {
         public int BookingRequestID { get; set; }
         public int? LinkedNegotiationID { get; set; }

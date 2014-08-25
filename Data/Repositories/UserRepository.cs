@@ -2,6 +2,7 @@
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using FluentValidation;
 
 namespace Data.Repositories
 {
@@ -33,6 +34,24 @@ namespace Data.Repositories
                 throw new ArgumentNullException("emailAddressDO");
             string fromEmailAddress = emailAddressDO.Address;
             return UnitOfWork.UserRepository.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
+        }
+
+        public UserDO CreateFromEmail(EmailAddressDO emailAddressDO,
+            string userName = null, string firstName = null, string lastName = null)
+        {
+            var curUser = new UserDO
+            {
+                UserName = userName ?? emailAddressDO.Address,
+                FirstName = firstName ?? emailAddressDO.Name,
+                LastName = lastName ?? string.Empty,
+                EmailAddress = emailAddressDO
+            };
+            UserValidator curUserValidator = new UserValidator();
+            curUserValidator.ValidateAndThrow(curUser);
+            _uow.UserRepository.Add(curUser);
+            _uow.CalendarRepository.CheckUserHasCalendar(curUser);
+            return curUser;
+
         }
 
 /*

@@ -30,7 +30,7 @@ namespace KwasantTest.Services
         //NOTE: THESE TESTS NEED TO BE REEVALUATED NOW THAT CR'S HAVE CHANGED SO MUCH.
       
         [Test,Ignore]
-        [Category("ClarificationRequest")]
+        [Category("CRClarificationRequest")]
         public void CanSend()
         {
             // SETUP
@@ -53,7 +53,7 @@ namespace KwasantTest.Services
 
         [Test, Ignore]
         [Category("ClarificationRequest")]
-        public void CanGenerateResponseUrl()
+        public void CRCanGenerateResponseUrl()
         {
             // SETUP
             var curBookingRequestDO = _fixture.TestBookingRequest1();
@@ -75,7 +75,7 @@ namespace KwasantTest.Services
 
         [Test, Ignore,]
         [Category("ClarificationRequest")]
-        public void CanProcessResponse()
+        public void CRCanProcessResponse()
         {
             // SETUP
             var curBookingRequestDO = _fixture.TestBookingRequest1();

@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace KwasantWeb.ViewModels
 {
-    public class ExternalLoginConfirmationViewModel
+    public class ExternalLoginConfirmationVM
     {
         [Required]
         [Display(Name = "User name")]

@@ -37,7 +37,7 @@ namespace KwasantWeb.Controllers
 
                 var linkedNegotiationID = bookingRequestDO.Negotiations.Select(n => (int?)n.Id).FirstOrDefault();
 
-                return View(new CalendarViewModel
+                return View(new CalendarVM
                 {
                     LinkedNegotiationID = linkedNegotiationID,
 
@@ -100,7 +100,7 @@ namespace KwasantWeb.Controllers
                     calendarsViaNegotiationRequest = new List<CalendarDO>();
                 }
 
-                return View("~/Views/Negotiation/EventWindows.cshtml", new EventWindowViewModel
+                return View("~/Views/Negotiation/EventWindows.cshtml", new EventWindowVM
                 {
                     LinkedCalendarIDs = calendarsViaNegotiationRequest.Select(c => c.Id).Union(new[] { calendarID }).Distinct().ToList(),
                     ActiveCalendarID = calendarID,
