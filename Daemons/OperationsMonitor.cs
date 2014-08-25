@@ -29,21 +29,24 @@ namespace Daemons
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //Process Timing Out BR status "CheckedOut" to "Unprocessed"
-                int maxBRIdle = Convert.ToInt32(ConfigRepository.Get<string>("MaxBRIdle"));
-                DateTimeOffset date = DateTimeOffset.Now;
-                DateTimeOffset time = date.AddMinutes(-maxBRIdle);
-                List<BookingRequestDO> bookingRequestDOs = new List<BookingRequestDO>();
-                bookingRequestDOs = uow.BookingRequestRepository.GetAll().Where(x => x.BookingRequestState == BookingRequestState.CheckedOut && x.LastUpdated.DateTime < time.DateTime && !string.IsNullOrEmpty(x.BookerId)).ToList();
-                if (bookingRequestDOs.Count() > 0)
+                int maxBRIdleMinutes = Convert.ToInt32(ConfigRepository.Get<string>("MaxBRIdle"));
+                DateTimeOffset idleTimeLimit = DateTimeOffset.Now.AddMinutes(-maxBRIdleMinutes);
+                List<BookingRequestDO> staleBRList = new List<BookingRequestDO>();
+
+                staleBRList = uow.BookingRequestRepository.GetAll().Where(x => x.BookingRequestState == BookingRequestState.CheckedOut && x.LastUpdated.DateTime < idleTimeLimit.DateTime ).ToList();
+                BookingRequest _br = new BookingRequest();
+                foreach (var br in staleBRList)
                 {
-                    BookingRequest _br = new BookingRequest();
-                    _br.ProcessTimeout(bookingRequestDOs);
+                    _br.Timeout(uow, br);
                 }
+                
                 //---------------
 
                 BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
                 TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(bookingRequestRepo);
+
+
                 List<BookingRequestDO> unprocessedBookingRequests = ts.GetUnprocessedEntities(TrackingType.BookingState).ToList();
                 if (!unprocessedBookingRequests.Any()) 
                     return;
