@@ -211,7 +211,7 @@ namespace KwasantWeb.Controllers
                 if (eventVM.Id == 0)
                     throw new ApplicationException("event should have been created and saved in #new, so Id should not be zero");
 
-                var existingEvent = uow.EventRepository.GetByKey(eventVM.Id);
+                EventDO existingEvent = uow.EventRepository.GetByKey(eventVM.Id);
 
                 if (existingEvent == null)
                     throw new ApplicationException("should not be able to call this Update method with an ID that doesn't match an existing event");

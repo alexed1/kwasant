@@ -103,27 +103,7 @@ namespace Data.Infrastructure
         }
 
 /*
-        public List<EntityChangeInformation> GetModifiedEntities()
-        {
-            var res = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified)
-                .Select(e =>
-                {
-                    string actualName = (e.Entity.GetType().FullName.StartsWith("System.Data.Entity.DynamicProxies") &&
-                                        e.Entity.GetType().BaseType != null)
-                    ? e.Entity.GetType().BaseType.Name
-                    : e.Entity.GetType().FullName;
 
-                    return new EntityChangeInformation
-                    {
-                        EntityName = actualName,
-                        Changes = GetEntityModifications(e)
-                    };
-                })
-                .Where(e => e.Changes.Any())
-                .ToList();
-
-            return res;
-        }
 */
 
         public override int SaveChanges()
@@ -139,12 +119,32 @@ namespace Data.Infrastructure
                 entity.Entity.BeforeSave();
             }
 
+            //the only way we know what is being created is to look at EntityState.Added. But after the savechanges, that will all be erased.
+            //so we have to build a little list of entities that will have their AfterCreate hook called.
+            var createdEntityList = new List<DbEntityEntry<ICreateHook>>();
+            foreach (DbEntityEntry<ICreateHook> entity in ChangeTracker.Entries<ICreateHook>()
+.Where(u => u.State.HasFlag(EntityState.Added)))
+            {
+               createdEntityList.Add(entity);
+            }
+
             var saveResult = base.SaveChanges();
 
+
+            foreach (var createdEntity in createdEntityList)
+            {
+                Console.WriteLine("created an Entity. Calling Create Hook");
+                createdEntity.Entity.AfterCreate();
+            }
+         
+            //alex: I think this is unnecessary, because I think SaveChanges is resetting all entitystates to unchanged.
             foreach (var entity in ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged))
             {
                 entity.State = EntityState.Unchanged;
             }
+
+
+
 
             return saveResult;
         }

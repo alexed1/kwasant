@@ -18,7 +18,7 @@ namespace KwasantCore.Services
         {
             var user = new User();
             bookingRequest.BookingRequestState = BookingRequestState.Unprocessed;
-            UserDO curUser = user.GetOrCreate(uow, bookingRequest.From);
+            UserDO curUser = user.GetOrCreateFromBR(uow, bookingRequest.From);
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
 
