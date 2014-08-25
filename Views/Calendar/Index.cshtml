@@ -40,8 +40,6 @@
 				</div>
 				<div class="collapse navbar-collapse" id="navbar-collapse">
 					<ul class="nav navbar-nav">
-					    <!--<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("SetStatus", "BookingRequest", new { id = Model.BookingRequestID, status = BookingRequestState.Processed })');" href="#">Mark Processed</a></li> -->
-                        <li><a id="btnRequestClarification" class="btnRequestClarification" href="#">Request Clarification</a></li>
                         <li class="dropdown"><a id="btnBookingRequest">BookingRequest</a>
                             <ul class="dropdown-menu">
                                 <li>@Html.ActionLink("Get All", "Index", "BookingRequest")</li>
@@ -167,15 +165,6 @@
         var data = table.row($(this)).data();
         loadrequest(data.id, data.linkedcalendarids, this);
     });
-
-    $('#btnRequestClarification').click(function () {
-        if (Kwasant.IFrame.PopupsActive()) { return false; }
-        Kwasant.IFrame.Display('@Url.Action("Edit", "ClarificationRequest", new { bookingRequestId = Model.BookingRequestID })',
-            {
-                horizontalAlign: 'left',
-            });
-    });
-   
 
     function emailFrameLoaded() {
         var iframe = $("#emailInfoFrame").get(0);
@@ -331,7 +320,7 @@
 
     function clarificationPopUpWindow(id)
     {
-        if (Kwasant.IFrame.PopupsActive()) { return false; }
+        if (Kwasant.IFrame.PopupsActive()) { return; }
         var bookingrequest="@Model.BookingRequestID";
         var path = '/ClarificationRequest/Edit/?bookingRequestId=' + bookingrequest + '&clarificationRequestId=' + id;
         Kwasant.IFrame.Display(path,
@@ -340,7 +329,6 @@
             });
     }
 
-
     //this function will open the new iframe for negotiation window and close the iframe for Edit Event window.
 
     function getNegotiationWindow() {
@@ -348,11 +336,15 @@
             Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID,
                 {
                     horizontalAlign: 'right',
+                    minHeight: 700,
+                    minWidth: 300,
                 });
         } else {
             Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestID',
                 {
                     horizontalAlign: 'right',
+                    minHeight: 700,
+                    minWidth: 300,
                     callback: function(result) {
                         if (result) {
                             $('#liCreateOrEditNegotiation').html('Edit');
