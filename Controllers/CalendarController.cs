@@ -62,7 +62,7 @@ namespace KwasantWeb.Controllers
                 if (calendarDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                return View("~/Views/Negotiation/EventWindows.cshtml", new EventWindowViewModel
+                return View("~/Views/Negotiation/EventWindows.cshtml", new EventWindowVM
                 {
                     ActiveCalendarID = calendarID,
                     ClickEditEnabled = false,
