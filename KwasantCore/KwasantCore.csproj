@@ -155,7 +155,6 @@
     <Compile Include="Managers\APIManagers\Transmitters\Http\OAuthHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />
-    <Compile Include="Helper\UsersAdminData.cs" />
     <Compile Include="Managers\APIManagers\Packagers\GmailPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\IEmailPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Mandrill\MandrillPackager.cs" />

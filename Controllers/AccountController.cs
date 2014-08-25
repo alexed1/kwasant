@@ -228,69 +228,77 @@ namespace KwasantWeb.Controllers
         }
 
 
-        public ActionResult Edit(String userId, String roleId)
-        {
-            if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //public ActionResult Edit(String userId, String roleId)
+        //{
+        //    if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
 
-            User currUser = new User();
-            List<UsersAdminData> currUsersAdminDataList = currUser.Query(userId);
+        //    User currUser = new User();
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        UserVM currUserVM = currUser.Query(uow, userId)[0];
+        //        return View(currUserVM);
 
-            List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;
 
-            UsersAdminViewModel currUsersAdminViewModel = currUsersAdminViewModels == null || currUsersAdminViewModels.Count == 0 ? new UsersAdminViewModel() : currUsersAdminViewModels[0];
+        //        //UsersAdminViewModel currUsersAdminViewModel = new UsersAdminViewModel();
+        //        //List<UsersAdminData> currUsersAdminDataList = currUser.Query(userId);
 
-            return View(currUsersAdminViewModel);
-        }
+        //        //  List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;
 
-        [System.Web.Http.HttpPost]
-        public ActionResult Edit(UsersAdminViewModel usersAdminViewModel)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //Check if any field edited by user on the font-end.
-                if (!IsDirty(usersAdminViewModel))
-                    return RedirectToAction("Index", "User");
+        //        //  UsersAdminViewModel currUsersAdminViewModel = currUsersAdminViewModels == null || currUsersAdminViewModels.Count == 0 ? new UsersAdminViewModel() : currUsersAdminViewModels[0];
 
-                var userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == usersAdminViewModel.UserId);
-                userDO.Id = usersAdminViewModel.UserId;
-                userDO.FirstName = usersAdminViewModel.FirstName;
-                userDO.LastName = usersAdminViewModel.LastName;
-                userDO.EmailAddress = new EmailAddressDO()
-                {
-                    Id = usersAdminViewModel.EmailAddressID,
-                    Address = usersAdminViewModel.EmailAddress
-                };
+        //        //  return View(currUsersAdminViewModel);
+        //    }
+        //}
 
-                userDO.EmailAddressID = usersAdminViewModel.EmailAddressID;
-                userDO.UserName = usersAdminViewModel.EmailAddress;
+        //[System.Web.Http.HttpPost]
+        //public ActionResult Edit(UsersAdminViewModel usersAdminViewModel)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        //Check if any field edited by user on the font-end.
+        //        if (!IsDirty(usersAdminViewModel))
+        //            return RedirectToAction("Index", "User");
 
-                IdentityUserRole identityUserRole = null;
+        //        var userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == usersAdminViewModel.UserId);
+        //        userDO.Id = usersAdminViewModel.UserId;
+        //        userDO.FirstName = usersAdminViewModel.FirstName;
+        //        userDO.LastName = usersAdminViewModel.LastName;
+        //        userDO.EmailAddress = new EmailAddressDO()
+        //        {
+        //            Id = usersAdminViewModel.EmailAddressID,
+        //            Address = usersAdminViewModel.EmailAddress
+        //        };
 
-                // Set RoleId & UserId if role is changed on the font-end other wise IdentityUserRole is set to null and user's role will not be updated.
-                if (usersAdminViewModel.RoleId != usersAdminViewModel.PreviousRoleId)
-                {
-                    identityUserRole = new IdentityUserRole();
-                    identityUserRole.RoleId = usersAdminViewModel.RoleId;
-                    identityUserRole.UserId = usersAdminViewModel.UserId;
+        //        userDO.EmailAddressID = usersAdminViewModel.EmailAddressID;
+        //        userDO.UserName = usersAdminViewModel.EmailAddress;
 
-                    User user = new User();
-                    user.ChangeUserRole(uow, identityUserRole);
-                }
+        //        IdentityUserRole identityUserRole = null;
 
-                uow.SaveChanges();
-                return RedirectToAction("Index", "User");
-            }
-        }
+        //        // Set RoleId & UserId if role is changed on the font-end other wise IdentityUserRole is set to null and user's role will not be updated.
+        //        if (usersAdminViewModel.RoleId != usersAdminViewModel.PreviousRoleId)
+        //        {
+        //            identityUserRole = new IdentityUserRole();
+        //            identityUserRole.RoleId = usersAdminViewModel.RoleId;
+        //            identityUserRole.UserId = usersAdminViewModel.UserId;
 
-        private bool IsDirty(UsersAdminViewModel usersAdminViewModel)
-        {
-            bool blnIsDirty = false;
+        //            User user = new User();
+        //            user.ChangeUserRole(uow, identityUserRole);
+        //        }
 
-            blnIsDirty = usersAdminViewModel.FirstName != usersAdminViewModel.PreviousFirstName ? true : usersAdminViewModel.LastName != usersAdminViewModel.PreviousLasttName ? true : usersAdminViewModel.FirstName != usersAdminViewModel.PreviousFirstName ? true : usersAdminViewModel.LastName != usersAdminViewModel.PreviousLasttName ? true : usersAdminViewModel.EmailAddress != usersAdminViewModel.PreviousEmailAddress ? true : usersAdminViewModel.RoleId != usersAdminViewModel.PreviousRoleId ? true : false;
+        //        uow.SaveChanges();
+        //        return RedirectToAction("Index", "User");
+        //    }
+        //}
 
-            return blnIsDirty;
-        }
+        //private bool IsDirty(UsersAdminViewModel usersAdminViewModel)
+        //{
+        //    bool blnIsDirty = false;
+
+        //    blnIsDirty = usersAdminViewModel.FirstName != usersAdminViewModel.PreviousFirstName ? true : usersAdminViewModel.LastName != usersAdminViewModel.PreviousLasttName ? true : usersAdminViewModel.FirstName != usersAdminViewModel.PreviousFirstName ? true : usersAdminViewModel.LastName != usersAdminViewModel.PreviousLasttName ? true : usersAdminViewModel.EmailAddress != usersAdminViewModel.PreviousEmailAddress ? true : usersAdminViewModel.RoleId != usersAdminViewModel.PreviousRoleId ? true : false;
+
+        //    return blnIsDirty;
+        //}
     }
 }

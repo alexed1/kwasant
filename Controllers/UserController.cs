@@ -26,10 +26,12 @@ namespace KwasantWeb.Controllers
         {
             string userId = "";
             User currUser = new User();
-            List<UsersAdminData> currUsersAdminDataList = currUser.Query(userId);
-            List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;
 
-            return View(currUsersAdminViewModels);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                List<UserVM> currUserVM = currUser.Query(uow, userId);
+                return View(currUserVM);
+            }
         }
 
         [KwasantAuthorize(Roles = "Admin")]
@@ -40,13 +42,11 @@ namespace KwasantWeb.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             User currUser = new User();
-            List<UsersAdminData> currUsersAdminDataList = currUser.Query(userId);
-
-            List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;
-
-            UsersAdminViewModel currUsersAdminViewModel = currUsersAdminViewModels == null || currUsersAdminViewModels.Count == 0 ? new UsersAdminViewModel() : currUsersAdminViewModels[0];
-
-            return View(currUsersAdminViewModel);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                UserVM currUserVM = currUser.Query(uow, userId)[0];
+                return View(currUserVM);
+            }
         }
 
         public async Task<ActionResult> GrantRemoteCalendarAccess(string providerName)

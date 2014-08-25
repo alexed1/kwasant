@@ -16,6 +16,8 @@ using System.Web;
 using Data.Entities;
 using StructureMap;
 using Utilities;
+using KwasantWeb.ViewModels;
+
 
 namespace KwasantCore.Services
 {
@@ -203,46 +205,30 @@ namespace KwasantCore.Services
         }
 
 
-        public List<UsersAdminData> Query(String userId)
+       
+
+        public List<UserVM> Query(IUnitOfWork uow, String userId)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                List<UsersAdminData> currUsersAdminDataList = new List<UsersAdminData>();
+            List<UserVM> currUserVMs = new List<UserVM>();
 
-                if (uow.UserRepository == null)
-                    return currUsersAdminDataList;
+            if (uow.UserRepository == null)
+                return currUserVMs;
 
-                List<UserDO> currUserDOs = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null).ToList();
-                var currUserManager = User.GetUserManager(uow);
-
-                foreach (UserDO userDO in currUserDOs)
-                {
-                    if (userDO.Roles != null && userDO.Roles.Count > 0)
-                    {
-                        UsersAdminData currUsersAdminData = new UsersAdminData();
-
-                        currUsersAdminData.UserId = userDO.Id;
-                        currUsersAdminData.FirstName = userDO.FirstName;
-                        currUsersAdminData.LastName = userDO.LastName;
-                        currUsersAdminData.EmailAddress = userDO.EmailAddress != null
-                            ? userDO.EmailAddress.Address
-                            : String.Empty;
-                        currUsersAdminData.EmailAddressID = userDO.EmailAddress != null
-                            ? userDO.EmailAddress.Id
-                            : 0;
-                        currUsersAdminData.RoleId = userDO.Roles != null && userDO.Roles.Count > 0
-                            ? userDO.Roles.ToList()[0].RoleId
-                            : String.Empty;
-
-                        var roles = currUserManager.GetRoles(userDO.Id);
-                        currUsersAdminData.Role = roles != null && roles.Count > 0 ? roles[0] : String.Empty;
-
-                        currUsersAdminDataList.Add(currUsersAdminData);
-                    }
-                }
-                return currUsersAdminDataList;
-            }
+            var currUserManager = User.GetUserManager(uow);
+            currUserVMs = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null)
+               .Select(
+                    u =>
+                        new UserVM
+                        {
+                            User = new UserDO { Id = u.Id, FirstName = u.FirstName, LastName = u.LastName, EmailAddress = u.EmailAddress },
+                            RoleId = u.Roles.ToList()[0].RoleId,
+                            Role = currUserManager.GetRoles(u.Id).ToList()[0]
+                        })
+                .ToList();
+            return currUserVMs;
         }
+      
+        
 
     }
 }
