@@ -69,9 +69,6 @@ namespace Data.Entities
             FileManager.SaveFile(this);
         }
 
-        void ISaveHook.AfterSave()
-        {
-           
-        }
+
     }
 }

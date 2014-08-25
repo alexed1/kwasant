@@ -7,6 +7,10 @@
     {
         void BeforeSave();
 
-        void AfterSave();
+    }
+
+    public interface ICreateHook
+    {
+        void AfterCreate();
     }
 }

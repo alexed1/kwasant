@@ -11,7 +11,7 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class UserDO : IdentityUser, IUser, ISaveHook
+    public class UserDO : IdentityUser, IUser, ISaveHook, ICreateHook
     {
         public UserDO()
         {
@@ -76,7 +76,7 @@ namespace Data.Entities
             
         }
 
-        void ISaveHook.AfterSave()
+        void ICreateHook.AfterCreate()
         {
             AlertManager.CustomerCreated(this);
         }

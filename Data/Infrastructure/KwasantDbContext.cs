@@ -119,24 +119,25 @@ namespace Data.Infrastructure
                 entity.Entity.BeforeSave();
             }
 
+            //the only way we know what is being created is to look at EntityState.Added. But after the savechanges, that will all be erased.
+            //so we have to build a little list of entities that will have their AfterCreate hook called.
+            var createdEntityList = new List<DbEntityEntry<ICreateHook>>();
+            foreach (DbEntityEntry<ICreateHook> entity in ChangeTracker.Entries<ICreateHook>()
+.Where(u => u.State.HasFlag(EntityState.Added)))
+            {
+               createdEntityList.Add(entity);
+            }
+
             var saveResult = base.SaveChanges();
 
-            foreach (DbEntityEntry<ISaveHook> entity in ChangeTracker.Entries<ISaveHook>().Where(e => e.State != EntityState.Unchanged))
+
+            foreach (var createdEntity in createdEntityList)
             {
-                entity.Entity.AfterSave();
+                Console.WriteLine("created an Entity. Calling Create Hook");
+                createdEntity.Entity.AfterCreate();
             }
-
-            foreach (DbEntityEntry<ICreateHook> entity in ChangeTracker.Entries<ICreateHook>()
-   .Where(u => u.State.HasFlag(EntityState.Added)))
-            {
-
-                entity.Entity.AfterCreate();
-                //if (newUser.Entity.Roles.All(r => UnitOfWork.AspNetRolesRepository.GetByKey(r.RoleId).Name != "Admin"))
-                //{
-                //    AlertManager.CustomerCreated(this.UnitOfWork, entity.Entity);
-                //}
-            }
-
+         
+            //alex: I think this is unnecessary, because I think SaveChanges is resetting all entitystates to unchanged.
             foreach (var entity in ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged))
             {
                 entity.State = EntityState.Unchanged;
