@@ -12,6 +12,7 @@ using KwasantWeb.Controllers.External.DayPilot;
 using KwasantWeb.Controllers.External.DayPilot.Providers;
 using KwasantWeb.ViewModels;
 using StructureMap;
+using Data.States;
 
 namespace KwasantWeb.Controllers
 {
@@ -35,7 +36,8 @@ namespace KwasantWeb.Controllers
                 if (bookingRequestDO == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                var linkedNegotiationID = bookingRequestDO.Negotiations.Select(n => (int?)n.Id).FirstOrDefault();
+                //var linkedNegotiationID = bookingRequestDO.Negotiations.Select(n => (int?)n.Id).FirstOrDefault();
+                var linkedNegotiationID = bookingRequestDO.Negotiations.Where(n => n.NegotiationState == NegotiationState.InProcess || n.NegotiationState == NegotiationState.AwaitingClient).Select(n => (int?)n.Id).SingleOrDefault();
 
                 return View(new CalendarVM
                 {
