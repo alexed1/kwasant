@@ -68,6 +68,18 @@ namespace KwasantWeb.Controllers.External.DayPilot
             Events = _provider.LoadData();
         }
 
+        //public ActionResult GetEvents()
+        //{
+        //    var rawData  = _provider.LoadData();
+            
+        //    var returnData = rawData.Select(d => new
+        //    {
+        //        d.StartDate,
+        //        d.EndDate,
+        //    });
+
+        //} 
+
         protected override void OnBeforeEventRender(BeforeEventRenderArgs e)
         {
             _provider.BeforeCellRender(e);

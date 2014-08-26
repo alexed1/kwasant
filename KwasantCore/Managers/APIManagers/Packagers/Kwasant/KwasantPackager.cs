@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Data.Entities;
 using KwasantCore.Managers.APIManagers.Serializers.Json;
-using StructureMap.Diagnostics;
 using Utilities;
 
 namespace KwasantCore.Managers.APIManager.Packagers.Kwasant

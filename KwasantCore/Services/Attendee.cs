@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Interfaces;
-using StructureMap;
 
 namespace KwasantCore.Services
 {

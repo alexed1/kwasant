@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -36,7 +37,7 @@ namespace KwasantWeb.Controllers
 
                 var linkedNegotiationID = bookingRequestDO.Negotiations.Select(n => (int?)n.Id).FirstOrDefault();
 
-                return View(new CalendarViewModel
+                return View(new CalendarVM
                 {
                     LinkedNegotiationID = linkedNegotiationID,
 
@@ -45,6 +46,28 @@ namespace KwasantWeb.Controllers
 
                     //In the future, we won't need this - the 'main' calendar will be picked by the booker
                     ActiveCalendarID = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
+                });
+            }
+        }
+
+        public ActionResult GetSpecificCalendar(int calendarID)
+        {
+            if (calendarID <= 0)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var calendarRepository = uow.CalendarRepository;
+                var calendarDO = calendarRepository.GetByKey(calendarID);
+                if (calendarDO == null)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                return View("~/Views/Negotiation/EventWindows.cshtml", new EventWindowVM
+                {
+                    ActiveCalendarID = calendarID,
+                    ClickEditEnabled = false,
+                    MergeEvents = true,
+                    RequiresConfirmation = false
                 });
             }
         }
@@ -77,10 +100,13 @@ namespace KwasantWeb.Controllers
                     calendarsViaNegotiationRequest = new List<CalendarDO>();
                 }
 
-                return View("~/Views/Negotiation/EventWindows.cshtml", new EventWindowViewModel
+                return View("~/Views/Negotiation/EventWindows.cshtml", new EventWindowVM
                 {
                     LinkedCalendarIDs = calendarsViaNegotiationRequest.Select(c => c.Id).Union(new[] { calendarID }).Distinct().ToList(),
-                    ActiveCalendarID = calendarID
+                    ActiveCalendarID = calendarID,
+                    ClickEditEnabled = false,
+                    MergeEvents = true,
+                    RequiresConfirmation = false
                 });
             }
         }
@@ -90,21 +116,27 @@ namespace KwasantWeb.Controllers
         #region "DayPilot-Related Methods"
         public ActionResult Day(string calendarIDs)
         {
-            var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+            var ids = calendarIDs.Split(',').Where(c => !String.IsNullOrEmpty(c)).Select(int.Parse).ToArray();
             return new KwasantCalendarController(new EventDataProvider(true, ids)).CallBack(this);
         }
 
         public ActionResult Month(string calendarIDs)
         {
-            var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+            var ids = calendarIDs.Split(',').Where(c => !String.IsNullOrEmpty(c)).Select(int.Parse).ToArray();
             return new KwasantMonthController(new EventDataProvider(true, ids)).CallBack(this);
         }
 
         public ActionResult Navigator(string calendarIDs)
         {
-            var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+            var ids = calendarIDs.Split(',').Where(c => !String.IsNullOrEmpty(c)).Select(int.Parse).ToArray();
             return new KwasantNavigatorControl(new EventDataProvider(true, ids)).CallBack(this);
         }
+
+        //public ActionResult GetEvents(string calendarIDs)
+        //{
+        //    var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+        //    return new KwasantCalendarController(new EventDataProvider(true, ids)).GetEvents();
+        //}
 
         public ActionResult Rtl()
         {

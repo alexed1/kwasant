@@ -98,6 +98,7 @@
   <ItemGroup>
     <Compile Include="Authentication\Account.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
+    <Compile Include="Entities\QuestionResponseDO.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.Designer.cs">
       <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
@@ -130,6 +131,10 @@
     <Compile Include="Migrations\201408060827557_Add_TestAccount_to_User.designer.cs">
       <DependentUpon>201408060827557_Add_TestAccount_to_User.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408111022358_Sync-11.08.2014.cs" />
+    <Compile Include="Migrations\201408111022358_Sync-11.08.2014.Designer.cs">
+      <DependentUpon>201408111022358_Sync-11.08.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201408111407003_AddGUID_ToEvent.cs" />
     <Compile Include="Migrations\201408111407003_AddGUID_ToEvent.Designer.cs">
       <DependentUpon>201408111407003_AddGUID_ToEvent.cs</DependentUpon>
@@ -138,17 +143,54 @@
     <Compile Include="Migrations\201408121644147_Sync-12.08.2014.Designer.cs">
       <DependentUpon>201408121644147_Sync-12.08.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408130529172_Sync.13.08.cs" />
+    <Compile Include="Migrations\201408130529172_Sync.13.08.Designer.cs">
+      <DependentUpon>201408130529172_Sync.13.08.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201408130809305_Add_InvitationDO.cs" />
     <Compile Include="Migrations\201408130809305_Add_InvitationDO.Designer.cs">
       <DependentUpon>201408130809305_Add_InvitationDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408131011227_MoveCalendarIDToQuestionDO.cs" />
+    <Compile Include="Migrations\201408131011227_MoveCalendarIDToQuestionDO.Designer.cs">
+      <DependentUpon>201408131011227_MoveCalendarIDToQuestionDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408170907069_Sync.17.08.2014.cs" />
+    <Compile Include="Migrations\201408170907069_Sync.17.08.2014.Designer.cs">
+      <DependentUpon>201408170907069_Sync.17.08.2014.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201408201056135_ChangeEmailAddressMaxLength.cs" />
     <Compile Include="Migrations\201408201056135_ChangeEmailAddressMaxLength.Designer.cs">
       <DependentUpon>201408201056135_ChangeEmailAddressMaxLength.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\InvitationRepository.cs" />
+    <Compile Include="Migrations\201408210907370_ImplementResponses.cs" />
+    <Compile Include="Migrations\201408210907370_ImplementResponses.Designer.cs">
+      <DependentUpon>201408210907370_ImplementResponses.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408210953042_AddUserToResponse.cs" />
+    <Compile Include="Migrations\201408210953042_AddUserToResponse.Designer.cs">
+      <DependentUpon>201408210953042_AddUserToResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408220936364_AddCascadeForAttendeeEvent.cs" />
+    <Compile Include="Migrations\201408220936364_AddCascadeForAttendeeEvent.Designer.cs">
+      <DependentUpon>201408220936364_AddCascadeForAttendeeEvent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408221103162_Sync.22.08.2014.cs" />
+    <Compile Include="Migrations\201408221103162_Sync.22.08.2014.Designer.cs">
+      <DependentUpon>201408221103162_Sync.22.08.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408251215414_Sync.25.08.2014.cs" />
+    <Compile Include="Migrations\201408251215414_Sync.25.08.2014.Designer.cs">
+      <DependentUpon>201408251215414_Sync.25.08.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.cs" />
+    <Compile Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.Designer.cs">
+      <DependentUpon>201408251234014_AddCascadeForAttendeeOnNegotiations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repositories\AnswerRepository.cs" />
+    <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
-    <Compile Include="States\ClarificationRequestState.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
     <Compile Include="States\EventCreateType.cs" />
     <Compile Include="States\EventState.cs" />
@@ -163,7 +205,7 @@
     <Compile Include="Entities\AspNetUserRolesDO.cs" />
     <Compile Include="States\Templates\_BookingRequestStateTemplate.cs" />
     <Compile Include="Entities\CalendarDO.cs" />
-    <Compile Include="States\Templates\_ClarificationRequestStateTemplate.cs" />
+    <Compile Include="Entities\ConceptDO.cs" />
     <Compile Include="States\Templates\_CommunicationTypeTemplate.cs" />
     <Compile Include="States\Templates\_ConfirmationStatusTemplate.cs" />
     <Compile Include="States\Templates\_EmailParticipantTypeTemplate.cs" />
@@ -179,15 +221,14 @@
     <Compile Include="States\AnswerState.cs" />
     <Compile Include="States\NegotiationState.cs" />
     <Compile Include="Entities\IncidentDO.cs" />
+    <Compile Include="Entities\NegotiationDO.cs" />
     <Compile Include="Interfaces\IRemoteCalendarLink.cs" />
     <Compile Include="Interfaces\IRemoteCalendarAuthData.cs" />
     <Compile Include="Entities\RemoteCalendarAuthDataDO.cs" />
     <Compile Include="Entities\RemoteCalendarLinkDO.cs" />
     <Compile Include="States\Templates\_ServiceAuthorizationTypeTemplate.cs" />
     <Compile Include="Interfaces\IRemoteCalendarProvider.cs" />
-    <Compile Include="Entities\NegotiationDO.cs" />
     <Compile Include="Entities\QuestionDO.cs" />
-    <Compile Include="Entities\ClarificationRequestDO.cs" />
     <Compile Include="Entities\CommunicationConfigurationDO.cs" />
     <Compile Include="Entities\FactDO.cs" />
     <Compile Include="States\QuestionState.cs" />
@@ -219,7 +260,6 @@
     <Compile Include="Interfaces\IAspNetUserRoles.cs" />
     <Compile Include="Interfaces\ICalendar.cs" />
     <Compile Include="Interfaces\IQuestion.cs" />
-    <Compile Include="Interfaces\IClarificationRequest.cs" />
     <Compile Include="Interfaces\ICustomField.cs" />
     <Compile Include="Entities\TrackingStatusDO.cs" />
     <Compile Include="Infrastructure\FileManager.cs" />
@@ -472,7 +512,6 @@
       <DependentUpon>201408041658023_RemoveAttendeeToNegotiationTemp.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.cs" />
-    <Compile Include="Repositories\AnswersRepository.cs" />
     <Compile Include="Repositories\AspNetRolesRepository.cs" />
     <Compile Include="Repositories\AspNetUserRolesRepository.cs" />
     <Compile Include="Repositories\AttachmentRepository.cs" />
@@ -486,7 +525,6 @@
     <Compile Include="Repositories\EventStatusRepository.cs" />
     <Compile Include="Repositories\IncidentRepository.cs" />
     <Compile Include="Repositories\FactRepository.cs" />
-    <Compile Include="Repositories\ClarificationRequestRepository.cs" />
     <Compile Include="Repositories\EmailEmailAddressRepository.cs" />
     <Compile Include="Repositories\CommunicationRepository.cs" />
     <Compile Include="Repositories\EmailAddressRepository.cs" />
@@ -496,6 +534,7 @@
     <Compile Include="Interfaces\IGenericRepository.cs" />
     <Compile Include="Repositories\InstructionRepository.cs" />
     <Compile Include="Repositories\EventRepository.cs" />
+    <Compile Include="Repositories\QuestionRepository.cs" />
     <Compile Include="Repositories\NegotiationsRepository.cs" />
     <Compile Include="Repositories\QuestionsRepository.cs" />
     <Compile Include="Repositories\StoredFileRepository.cs" />
@@ -520,6 +559,7 @@
     <Compile Include="Repositories\TrackingStatusRepository.cs" />
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="Validations\BookingRequestValidator.cs" />
     <Compile Include="Validations\EnvelopeValidator.cs" />
     <Compile Include="Validations\EventValidator.cs" />
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />
@@ -749,17 +789,47 @@
     <EmbeddedResource Include="Migrations\201408060827557_Add_TestAccount_to_User.resx">
       <DependentUpon>201408060827557_Add_TestAccount_to_User.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408111022358_Sync-11.08.2014.resx">
+      <DependentUpon>201408111022358_Sync-11.08.2014.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408111407003_AddGUID_ToEvent.resx">
       <DependentUpon>201408111407003_AddGUID_ToEvent.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408121644147_Sync-12.08.2014.resx">
       <DependentUpon>201408121644147_Sync-12.08.2014.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408130529172_Sync.13.08.resx">
+      <DependentUpon>201408130529172_Sync.13.08.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408130809305_Add_InvitationDO.resx">
       <DependentUpon>201408130809305_Add_InvitationDO.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408131011227_MoveCalendarIDToQuestionDO.resx">
+      <DependentUpon>201408131011227_MoveCalendarIDToQuestionDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408170907069_Sync.17.08.2014.resx">
+      <DependentUpon>201408170907069_Sync.17.08.2014.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408201056135_ChangeEmailAddressMaxLength.resx">
       <DependentUpon>201408201056135_ChangeEmailAddressMaxLength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408210907370_ImplementResponses.resx">
+      <DependentUpon>201408210907370_ImplementResponses.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408210953042_AddUserToResponse.resx">
+      <DependentUpon>201408210953042_AddUserToResponse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408220936364_AddCascadeForAttendeeEvent.resx">
+      <DependentUpon>201408220936364_AddCascadeForAttendeeEvent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408221103162_Sync.22.08.2014.resx">
+      <DependentUpon>201408221103162_Sync.22.08.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408251215414_Sync.25.08.2014.resx">
+      <DependentUpon>201408251215414_Sync.25.08.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.resx">
+      <DependentUpon>201408251234014_AddCascadeForAttendeeOnNegotiations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

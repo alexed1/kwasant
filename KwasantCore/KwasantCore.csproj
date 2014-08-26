@@ -178,18 +178,14 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\Account.cs" />
-    <Compile Include="Services\Answer.cs" />
     <Compile Include="Services\Attendee.cs" />
     <Compile Include="Services\Calendar.cs" />
     <Compile Include="Services\EmailAddress.cs" />
-    <Compile Include="Services\ClarificationRequest.cs" />
     <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\Invitation.cs" />
-    <Compile Include="Services\Negotiation.cs" />
-    <Compile Include="Services\Question.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Role.cs" />
     <Compile Include="Services\UsersAdmin.cs" />

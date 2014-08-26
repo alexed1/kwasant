@@ -1,5 +1,4 @@
-﻿using Data.Entities;
-using Data.Interfaces;
+﻿using Data.Interfaces;
 using Data.States.Templates;
 
 namespace Data.Repositories

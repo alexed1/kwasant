@@ -1,4 +1,4 @@
-﻿@model KwasantWeb.ViewModels.EventWindowViewModel
+﻿@model KwasantWeb.ViewModels.EventWindowVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @{
 	ViewBag.Title = "Event ";
@@ -64,36 +64,63 @@
         }
 </style>
 <div id="CalendarDiv1">
-    <input type="button" value="OK" class="btn btn-default" style="cursor: pointer;" onclick="Kwasant.IFrame.CloseMe()" />
+    <input type="button" value="OK" class="btn btn-default" style="cursor: pointer;" onclick="Kwasant.IFrame.CloseMe({
+    action: true,
+    events: calendar.getEvents()
+})" />
 </div>
 <input type="hidden" value="21" id="hdnrequestid" name="requestid" />
 
 <script type="text/javascript">
     var calendar;
     $(function() {
-     
+     @{
+         var calendarsToDisplay = new List<int>();
+         if (Model.LinkedCalendarIDs != null)
+         {
+             calendarsToDisplay.AddRange(Model.LinkedCalendarIDs);
+         }
+         calendarsToDisplay.Add(Model.ActiveCalendarID);
+         var calendarString = String.Join(",", calendarsToDisplay.Distinct());
+         var requiresConfirmation = Model.RequiresConfirmation ? "true" : "false";
+         var mergeEvents = Model.MergeEvents ? "true" : "false";
+     }
+
         calendar = $('#CalendarDiv1').KCalendar({
             getCalendarBackendURL: function() {
-                return '@Url.Content("~/Calendar/Day?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                return '@Url.Content("~/Calendar/Day?calendarIDs=" + calendarString)';
             },
             getMonthBackendURL: function () {
-                return '@Url.Content("~/Calendar/Month?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                return '@Url.Content("~/Calendar/Month?calendarIDs=" + calendarString)';
             },
             getNavigatorBackendURL: function() {
-                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + String.Join(",", Model.LinkedCalendarIDs))';
+                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + calendarString)';
             },  
-            getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
+            getEditURL: function (id) {
+                @if (Model.ClickEditEnabled)
+                {
+                    @:return '/Event/Edit/?eventID=' + id + '&requiresConfirmation=@requiresConfirmation';
+                }
+                else
+                {
+                    @:return '';
+                }
+            },
             getMoveURL: function(id, newStart, newEnd) { return '/Event/ProcessChangedEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
-            getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
+            getDeleteURL: function (id) { return '/Event/DeleteEvent/?eventID=' + id + '&requiresConfirmation=@requiresConfirmation'; },
             onEventNew: function(start, end) {
                 if (Kwasant.IFrame.PopupsActive()) {
                     return;
                 }
-                var id = $("#hdnrequestid").val();
-                Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z', calendar.refreshCalendars);
+                Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z&mergeEvents=@mergeEvents', calendar.refreshCalendars);
             },
-        }
-        );
+
+            editRequiresConfirmation: @requiresConfirmation,
+            newRequiresConfirmation: @requiresConfirmation,
+            deleteRequiresConfirmation: @requiresConfirmation,
+            moveRequiresConfirmation: @requiresConfirmation,
+
+        });
     });
 
 </script>

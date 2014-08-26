@@ -5,13 +5,11 @@ using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Google.Apis.Auth.OAuth2.Mvc;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
@@ -86,7 +84,7 @@ namespace KwasantWeb.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult Confirm(RegisterViewModel model)
+        public ActionResult Confirm(RegisterVM model)
         {
             return View(model);
         }
@@ -94,7 +92,7 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public  ActionResult Register(RegisterViewModel model)
+        public  ActionResult Register(RegisterVM model)
         {
             try
             {
@@ -126,7 +124,7 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
+        public async Task<ActionResult> Login(LoginVM model, string returnUrl)
         {
             try
             {
@@ -236,43 +234,44 @@ namespace KwasantWeb.Controllers
             UsersAdmin currUsersAdmin = new UsersAdmin();
             List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData(userId, roleId);
 
-            List<UsersAdminViewModel> currUsersAdminViewModels = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminViewModelList(currUsersAdminDataList) : null;
 
-            UsersAdminViewModel currUsersAdminViewModel = currUsersAdminViewModels == null || currUsersAdminViewModels.Count == 0 ? new UsersAdminViewModel() : currUsersAdminViewModels[0];
+            List<UsersAdminVM> currUsersAdminVMs = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminVMList(currUsersAdminDataList) : null;
 
-            return View(currUsersAdminViewModel);
+            UsersAdminVM currUsersAdminVM = currUsersAdminVMs == null || currUsersAdminVMs.Count == 0 ? new UsersAdminVM() : currUsersAdminVMs[0];
+
+            return View(currUsersAdminVM);
         }
 
         [System.Web.Http.HttpPost]
-        public ActionResult Edit(UsersAdminViewModel usersAdminViewModel)
+        public ActionResult Edit(UsersAdminVM usersAdminVM)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //Check if any field edited by user on the font-end.
-                if (!IsDirty(usersAdminViewModel))
+                if (!IsDirty(usersAdminVM))
                     return RedirectToAction("Index", "User");
 
-                var userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == usersAdminViewModel.UserId);
-                userDO.Id = usersAdminViewModel.UserId;
-                userDO.FirstName = usersAdminViewModel.FirstName;
-                userDO.LastName = usersAdminViewModel.LastName;
+                var userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == usersAdminVM.UserId);
+                userDO.Id = usersAdminVM.UserId;
+                userDO.FirstName = usersAdminVM.FirstName;
+                userDO.LastName = usersAdminVM.LastName;
                 userDO.EmailAddress = new EmailAddressDO()
                 {
-                    Id = usersAdminViewModel.EmailAddressID,
-                    Address = usersAdminViewModel.EmailAddress
+                    Id = usersAdminVM.EmailAddressID,
+                    Address = usersAdminVM.EmailAddress
                 };
 
-                userDO.EmailAddressID = usersAdminViewModel.EmailAddressID;
-                userDO.UserName = usersAdminViewModel.EmailAddress;
+                userDO.EmailAddressID = usersAdminVM.EmailAddressID;
+                userDO.UserName = usersAdminVM.EmailAddress;
 
                 IdentityUserRole identityUserRole = null;
 
                 // Set RoleId & UserId if role is changed on the font-end other wise IdentityUserRole is set to null and user's role will not be updated.
-                if (usersAdminViewModel.RoleId != usersAdminViewModel.PreviousRoleId)
+                if (usersAdminVM.RoleId != usersAdminVM.PreviousRoleId)
                 {
                     identityUserRole = new IdentityUserRole();
-                    identityUserRole.RoleId = usersAdminViewModel.RoleId;
-                    identityUserRole.UserId = usersAdminViewModel.UserId;
+                    identityUserRole.RoleId = usersAdminVM.RoleId;
+                    identityUserRole.UserId = usersAdminVM.UserId;
 
                     User user = new User();
                     user.ChangeUserRole(uow, identityUserRole);
@@ -283,11 +282,11 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        private bool IsDirty(UsersAdminViewModel usersAdminViewModel)
+        private bool IsDirty(UsersAdminVM usersAdminVM)
         {
             bool blnIsDirty = false;
 
-            blnIsDirty = usersAdminViewModel.FirstName != usersAdminViewModel.PreviousFirstName ? true : usersAdminViewModel.LastName != usersAdminViewModel.PreviousLasttName ? true : usersAdminViewModel.FirstName != usersAdminViewModel.PreviousFirstName ? true : usersAdminViewModel.LastName != usersAdminViewModel.PreviousLasttName ? true : usersAdminViewModel.EmailAddress != usersAdminViewModel.PreviousEmailAddress ? true : usersAdminViewModel.RoleId != usersAdminViewModel.PreviousRoleId ? true : false;
+            blnIsDirty = usersAdminVM.FirstName != usersAdminVM.PreviousFirstName ? true : usersAdminVM.LastName != usersAdminVM.PreviousLasttName ? true : usersAdminVM.FirstName != usersAdminVM.PreviousFirstName ? true : usersAdminVM.LastName != usersAdminVM.PreviousLasttName ? true : usersAdminVM.EmailAddress != usersAdminVM.PreviousEmailAddress ? true : usersAdminVM.RoleId != usersAdminVM.PreviousRoleId ? true : false;
 
             return blnIsDirty;
         }

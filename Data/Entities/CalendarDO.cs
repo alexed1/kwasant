@@ -31,9 +31,5 @@ namespace Data.Entities
 
         [InverseProperty("Calendar")]
         public virtual List<EventDO> Events { get; set; }
-
-        [ForeignKey("Question")]
-        public int? QuestionId { get; set; }
-        public virtual QuestionDO Question { get; set; }
     }
 }
