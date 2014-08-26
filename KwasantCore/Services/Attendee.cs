@@ -29,6 +29,7 @@ namespace KwasantCore.Services
             EmailAddressDO emailAddress = emailAddressRepository.GetOrCreateEmailAddress(emailAddressString, name);
             curAttendee.EmailAddressID = emailAddress.Id;
             curAttendee.EmailAddress = emailAddress;
+            curAttendee.Name = emailAddress.Name;
             curAttendee.Event = curEventDO;  //do we have to also manually set the EventId? Seems unDRY
             //uow.AttendeeRepository.Add(curAttendee); //is this line necessary?
             

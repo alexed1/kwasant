@@ -240,7 +240,7 @@ namespace KwasantWeb.Controllers
 */
 
         [HttpPost]
-        public ActionResult ProcessChangedEvent(EventEditVM curEventVM, int confStatus)
+        public ActionResult ProcessChangedEvent(EventEditVM curEventVM, int confStatus = ConfirmationStatus.Unconfirmed, bool mergeEvents = false)
         {
             if (confStatus == ConfirmationStatus.Unconfirmed)
             {
@@ -257,6 +257,10 @@ namespace KwasantWeb.Controllers
                     throw new EntityNotFoundException<EventDO>();
                 List<AttendeeDO> updatedAttendeeList = _attendee.ConvertFromString(uow, curEventVM.Attendees);
                 _event.Process(uow, curEventDO, updatedEventInfo, updatedAttendeeList);
+
+                if (mergeEvents)
+                    MergeTimeSlots(uow, curEventDO);
+
                 uow.SaveChanges();
             }
             return Json(true);

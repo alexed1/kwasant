@@ -65,6 +65,15 @@ namespace KwasantCore.Services
 
         public void Process(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, List<AttendeeDO> existingAttendees)
         {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (eventDO == null)
+                throw new ArgumentNullException("eventDO");
+            if (newAttendees == null)
+                throw new ArgumentNullException("newAttendees");
+            if (existingAttendees == null)
+                throw new ArgumentNullException("existingAttendees");
+
             var invitations = GenerateInvitations(uow, eventDO, newAttendees, existingAttendees);
             var invitation = new Invitation();
             foreach (var invitationDO in invitations)
@@ -89,7 +98,7 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("updatedAttendees");
 
             List<AttendeeDO> newAttendees; 
-            List<AttendeeDO > existingAttendees;
+            List<AttendeeDO> existingAttendees;
             eventDO = Update(uow, eventDO, updatedEventInfo, updatedAttendees, out newAttendees, out existingAttendees);
             if (eventDO != null)
             {
