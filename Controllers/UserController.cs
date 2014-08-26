@@ -16,7 +16,7 @@ using ViewModel.Models;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
-//using System.Linq;
+using System.Linq;
 using Data.Validators;
 
 namespace KwasantWeb.Controllers
@@ -178,6 +178,63 @@ namespace KwasantWeb.Controllers
             return PartialView("ShowQuery", curUserQueryVM);
         }
 
+        public ActionResult ShowAddUser()
+        {
+            UserAdministerVM curUserAdminVM = new UserAdministerVM();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curUserAdminVM.User = new UserDO
+                {
+                    Id = "",
+                    EmailAddress = new EmailAddressDO() { Address = "" },
+                    FirstName = "",
+                    LastName = ""
+                };
+            }
+            return View(curUserAdminVM);
+        }
+
+        public ActionResult Edit(CreateUserVM curCreateUserVM)
+        {
+            UserDO curUser = curCreateUserVM.User;
+            string selectedRole = curCreateUserVM.UserRole;
+            
+            if (string.IsNullOrEmpty(curUser.EmailAddress.Address) || string.IsNullOrEmpty(curUser.FirstName) || string.IsNullOrEmpty(curUser.LastName) || string.IsNullOrEmpty(selectedRole))
+            {
+                var jsonErrorResult = Json(_datatables.Pack(new { Error = "All Fields are required" }), JsonRequestBehavior.AllowGet);
+                return jsonErrorResult;
+            }
+
+            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+            if (!(emailAddressValidator.Validate(curUser.EmailAddress).IsValid))
+            {
+                var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
+                return jsonErrorResult;
+            }
+            var jsonSuccessResult = Json(_datatables.Pack("valid"), JsonRequestBehavior.AllowGet);
+            return jsonSuccessResult;
+        }
+
+        public ActionResult ShowDetails(string curUserId)
+        {
+            CreateUserVM curUserAdminVM = new CreateUserVM();
+            curUserAdminVM.User = _user.GetUser(curUserId);
+            curUserAdminVM.UserRole = _user.GetRole(curUserId);
+            return PartialView("ShowDetails", curUserAdminVM);
+        }
+
+        public ActionResult ProcessEdits(CreateUserVM curCreateUserVM, bool sendEmail)
+        {
+            UserDO curUser = curCreateUserVM.User;
+            string role = curCreateUserVM.Roles.Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _user.CreateOrUpdateUser(uow, curUser, role, sendEmail);
+            }
+            var jsonSuccessResult = Json(_datatables.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
+            return jsonSuccessResult;
+        }
     }
 }
 

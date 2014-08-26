@@ -86,6 +86,31 @@ namespace KwasantCore.Services
             return userDO;
         }
 
+        public UserDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string role)
+        {
+
+            EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
+
+            var userDO = uow.UserRepository.CreateFromEmail(
+                emailAddressDO: curEmailAddress,
+                userName: userName,
+                firstName: userName,
+                lastName: userName);
+
+            UserManager<UserDO> userManager = GetUserManager(uow); ;
+            IdentityResult result = userManager.Create(userDO, password);
+            if (result.Succeeded)
+            {
+                userManager.AddToRole(userDO.Id, role);
+            }
+            else
+            {
+                throw new ApplicationException("There was a problem trying to register you. Please try again.");
+            }
+
+            return userDO;
+        }
+
         public void UpdatePassword(IUnitOfWork uow, UserDO userDO, string password)
         {
             if (userDO != null)
@@ -180,6 +205,15 @@ namespace KwasantCore.Services
             }
         }
 
+        public string GetRole(string curUserId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curManager = User.GetUserManager(uow);
+                return curManager.GetRoles(curUserId)[0];
+            }
+        }
+
         public List<UserDO> Query(IUnitOfWork uow, UserDO curUserSearch)
         {
             return uow.UserRepository.GetAll().ToList().Where(e =>
@@ -193,6 +227,31 @@ namespace KwasantCore.Services
                   e.EmailAddress.Address != null ?
                   e.EmailAddress.Address.Contains(curUserSearch.EmailAddress.Address) : false : false
                   ).ToList();
+        }
+
+        public void CreateOrUpdateUser(IUnitOfWork uow, UserDO curUser, string role, bool sendEmail) 
+        {
+            EmailAddressDO mailaddress = uow.EmailAddressRepository.GetAll().Where(e => e.Address == curUser.EmailAddress.Address).FirstOrDefault();
+            if (mailaddress != null)
+            {
+                UserDO existingUser = uow.UserRepository.GetAll().Where(e => e.EmailAddress.Address == curUser.EmailAddress.Address).FirstOrDefault();
+                existingUser.FirstName = curUser.FirstName;
+                existingUser.LastName = curUser.LastName;
+                existingUser.EmailAddress.Address = curUser.EmailAddress.Address;
+                var curManager = User.GetUserManager(uow);
+                curManager.AddToRole(existingUser.Id, role);
+                uow.SaveChanges();
+            }
+            else
+            {
+                Register(uow, curUser.EmailAddress.Address, curUser.FirstName, curUser.LastName, "test@1234", role);
+                uow.SaveChanges();
+                AlertManager.CustomerCreated(curUser);
+                //if (sendEmail)
+                //{
+                //    new KwasantCore.Managers.CommunicationManager().GenerateWelcomeEmail(curUser);
+                //}
+            }
         }
     }
 }

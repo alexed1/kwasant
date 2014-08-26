@@ -83,6 +83,9 @@
                         $("#tblusers").css("visibility", "visible");
                         if (JSON.parse(response).length == 1) {
                             loadCalendars(JSON.parse(response)[0].id);
+                            if ($("#divUserDetails").html() != undefined) {
+                                refreshDetails(JSON.parse(response)[0].id);
+                            }
                         }
                         else {
                             showUsers(response);
@@ -119,6 +122,9 @@
                     case "select":
                         //redirecting to main calendar view for details
                         loadCalendars(data.id);
+                        if ($("#divUserDetails").html() != undefined) {
+                            refreshDetails(data.id);
+                        }
                         break;
                     default:
                         //generates an alert for invalid selection, generally it won't happen.
@@ -140,6 +146,25 @@
                     userDiv.html('');
                     userDiv.html(data);
                     window.parent.refreshCalendar();
+                },
+                error: function () {
+                    alert('Failed to retrieve Users.');
+                }
+            });
+        }
+
+        //This function refreshes the User details partial view
+        function refreshDetails(userId) {
+            var userDetails = $("#divUserDetails");
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: "@Url.Action("ShowDetails", "User")",
+                data: { "curUserId": userId },
+                success: function (data) {
+                    userDetails.html('');
+                    userDetails.html(data);
+                    toggleFields(true);
                 },
                 error: function () {
                     alert('Failed to retrieve Users.');

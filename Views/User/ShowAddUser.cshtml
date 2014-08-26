@@ -1,0 +1,51 @@
+﻿@model KwasantWeb.ViewModels.UserAdministerVM
+@{
+    ViewBag.Title = "ShowAddUser";
+}
+@section styles{
+    @Styles.Render("~/bundles/css/daypilot")
+}
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/daypilot")
+    @Scripts.Render("~/bundles/js/kwasantcalendar")
+    @Scripts.Render("~/bundles/js/kwasantpopup")
+
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
+<h2>View/Add User</h2>
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/smoothness/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+@*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>*@
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+<script>
+    $(function () {
+        $("#tabs").tabs();
+    });
+</script>
+<table width="100%">
+    <tr>
+        <td width="45%" style="vertical-align: top;padding-right:40px;">
+            <div id="tabs">
+                <ul>
+                    <li><a href="#tduserblock">Calendars</a></li>
+                    <li><a href="#divUserDetails">Details</a></li>
+                </ul>
+                <div id="tduserblock">
+                    @Html.Partial("ShowQuery", new KwasantWeb.ViewModels.UserQueryVM { User = Model.User })
+                </div>
+                <div id="divUserDetails">
+                    @Html.Partial("ShowDetails", new KwasantWeb.ViewModels.CreateUserVM { User = Model.User })
+                </div>
+            </div>
+        </td>
+        <td width="55%" style="vertical-align: top;">
+            @Html.Partial("ShowEvents", new KwasantWeb.ViewModels.CalendarShowVM { LinkedCalendarIds = new List<int>() })
+        </td>
+    </tr>
+</table>
