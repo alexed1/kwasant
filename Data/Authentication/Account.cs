@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -27,7 +23,8 @@ namespace Data.Authentication
                     UserName = curUserName,
                     EmailAddress = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
                     FirstName = curUserName,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    TestAccount = true
                 };
 
                 IdentityResult ir = um.Create(curUser, curPassword);
@@ -45,7 +42,7 @@ namespace Data.Authentication
                 Console.WriteLine(forceEmail);
                 
             }
-            unitOfWork.CalendarRepository.CheckUserHasCalendar(curUser);
+        
             return curUser.Id;
         }
 

@@ -15,13 +15,23 @@ namespace Daemons
 {
     public class InboundEmail : Daemon
     {
-        private readonly IImapClient _client;
+        private IImapClient _client;
+        public string username;
+        public string password;
 
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
         {
-            
+          
         }
+
+        //be careful about using this form. can get into problems involving disposal.
+        public InboundEmail(IImapClient client)
+        {
+            _client = client;
+        }
+
+        
         private static string GetIMAPServer()
         {
             return ConfigRepository.Get("InboundEmailHost");
@@ -46,10 +56,7 @@ namespace Daemons
             return ConfigRepository.Get<bool>("InboundEmailUseSSL");
         }
 
-        public InboundEmail(IImapClient client)
-        {
-            _client = client;
-        }
+        
 
         public override int WaitTimeBetweenExecution
         {
@@ -61,7 +68,10 @@ namespace Daemons
             IImapClient client;
             try
             {
-                client = _client ?? new ImapClient(GetIMAPServer(), GetIMAPPort(), GetUserName(), GetPassword(), AuthMethod.Login, UseSSL());
+                client = _client ?? new ImapClient(GetIMAPServer(), GetIMAPPort(), UseSSL());
+                string curUser = username ?? GetUserName();
+                string curPwd = password ?? GetPassword();
+                client.Login(curUser, curPwd, AuthMethod.Login );
             }
             catch (ConfigurationException ex)
             {
@@ -76,41 +86,50 @@ namespace Daemons
             }
 
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
-            IEnumerable<uint> uids = client.Search(SearchCondition.Unseen()).ToList();
-            //IEnumerable<uint> uids = client.Search(SearchCondition.SentSince(DateTime.Now.AddMinutes(-30))).ToList();
+            var allMessageInfos = client.ListMailboxes()
+                .SelectMany(mailbox => client
+                                           .Search(SearchCondition.Unseen(), mailbox)
+                                           .Select(uid => new { Mailbox = mailbox, Uid = uid, Message = client.GetMessage(uid, mailbox: mailbox) }))
+                .Where(messageInfo => messageInfo.Message.From != null)
+                .ToList();
+            var messageInfos = allMessageInfos
+                .Select(messageInfo => messageInfo.Message.Headers["Message-ID"])
+                .Distinct(StringComparer.Ordinal)
+                .Select(id => allMessageInfos.First(messageInfo => string.Equals(messageInfo.Message.Headers["Message-ID"], id, StringComparison.Ordinal)))
+                .ToList();
 
 
             string logString;
 
             //the difference in syntax makes it easy to have nonzero hits stand out visually in the log dashboard
-            if (uids.Any())           
-                logString = GetType().Name + " - " + uids.Count() + " emails found!";      
+            if (messageInfos.Any())           
+                logString = GetType().Name + " - " + messageInfos.Count() + " emails found!";      
             else
                 logString = GetType().Name + " - 0 emails found...";
             Logger.GetLogger().Info(logString);
 
-            foreach (var uid in uids)
+            foreach (var messageInfo in messageInfos)
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
                 BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
-                
-                var message = client.GetMessage(uid);                
-                
+
                 try
                 {
-                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, messageInfo.Message);
                     //assign the owner of the booking request to be the owner of the From address
 
                     (new BookingRequest()).Process(unitOfWork, bookingRequest);
 
                     unitOfWork.SaveChanges();
-                    
-                    AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+
+                    AlertManager.BookingRequestCreated(bookingRequest);
+                    AlertManager.EmailReceived(bookingRequest, bookingRequest.User);
                 }
                 catch (Exception e)
                 {
-                    AlertManager.EmailProcessingFailure(message.Headers["Date"], e.Message);
-                    Logger.GetLogger().Error("EmailProcessingFailure Reported. ObjectID =" + uid);
+                    AlertManager.EmailProcessingFailure(messageInfo.Message.Headers["Date"], e.Message);
+                    Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Message.Headers["Message-ID"]));
+                    client.AddMessageFlags(messageInfo.Uid, messageInfo.Mailbox, MessageFlag.Seen);
                 }
             }
 

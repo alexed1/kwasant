@@ -1,8 +1,7 @@
-using Data.Constants;
+using Data.States;
 
 namespace Data.Migrations
 {
-    using System;
     using System.Data.Entity.Migrations;
     
     public partial class UpdateStateHandling : DbMigration
@@ -100,23 +99,23 @@ namespace Data.Migrations
             Sql(@"
 SET IDENTITY_INSERT dbo.EmailStatusRows ON;
 INSERT INTO dbo.EmailStatusRows (Id, Name) 
-VALUES (" + EmailStatus.Dispatched + @",'')
+VALUES (" + EmailState.Dispatched + @",'')
 INSERT INTO dbo.EmailStatusRows (Id, Name) 
-VALUES (" + EmailStatus.Invalid + @",'')
+VALUES (" + EmailState.Invalid + @",'')
 INSERT INTO dbo.EmailStatusRows (Id, Name) 
-VALUES (" + EmailStatus.Processed + @",'')
+VALUES (" + EmailState.Processed + @",'')
 INSERT INTO dbo.EmailStatusRows (Id, Name) 
-VALUES (" + EmailStatus.Queued + @",'')
+VALUES (" + EmailState.Queued + @",'')
 INSERT INTO dbo.EmailStatusRows (Id, Name) 
-VALUES (" + EmailStatus.SendCriticalError + @",'')
+VALUES (" + EmailState.SendCriticalError + @",'')
 INSERT INTO dbo.EmailStatusRows (Id, Name) 
-VALUES (" + EmailStatus.SendRejected + @",'')
+VALUES (" + EmailState.SendRejected + @",'')
 INSERT INTO dbo.EmailStatusRows (Id, Name) 
-VALUES (" + EmailStatus.Sent + @",'')
+VALUES (" + EmailState.Sent + @",'')
 INSERT INTO dbo.EmailStatusRows (Id, Name) 
-VALUES (" + EmailStatus.Unprocessed + @",'')
+VALUES (" + EmailState.Unprocessed + @",'')
 INSERT INTO dbo.EmailStatusRows (Id, Name) 
-VALUES (" + EmailStatus.Unstarted + @",'')
+VALUES (" + EmailState.Unstarted + @",'')
 SET IDENTITY_INSERT dbo.EmailStatusRows OFF;");
 
             Sql(@"
@@ -140,17 +139,17 @@ SET IDENTITY_INSERT dbo.CommunicationTypeRows OFF;");
             Sql(@"
 SET IDENTITY_INSERT dbo.TrackingStatusRows ON;
 INSERT INTO dbo.TrackingStatusRows (Id, Name) 
-VALUES (" + TrackingStatus.Completed + @",'')
+VALUES (" + TrackingState.Completed + @",'')
 INSERT INTO dbo.TrackingStatusRows (Id, Name) 
-VALUES (" + TrackingStatus.Invalid + @",'')
+VALUES (" + TrackingState.Invalid + @",'')
 INSERT INTO dbo.TrackingStatusRows (Id, Name) 
-VALUES (" + TrackingStatus.PendingClarification + @",'')
+VALUES (" + TrackingState.PendingClarification + @",'')
 INSERT INTO dbo.TrackingStatusRows (Id, Name) 
-VALUES (" + TrackingStatus.Processed + @",'')
+VALUES (" + TrackingState.Processed + @",'')
 INSERT INTO dbo.TrackingStatusRows (Id, Name) 
-VALUES (" + TrackingStatus.Unprocessed + @",'')
+VALUES (" + TrackingState.Unprocessed + @",'')
 INSERT INTO dbo.TrackingStatusRows (Id, Name) 
-VALUES (" + TrackingStatus.Unstarted + @",'')
+VALUES (" + TrackingState.Unstarted + @",'')
 SET IDENTITY_INSERT dbo.TrackingStatusRows OFF;");
 
             Sql(@"

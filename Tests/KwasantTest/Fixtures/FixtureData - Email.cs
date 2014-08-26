@@ -1,6 +1,5 @@
-﻿using Data.Constants;
-using Data.Entities;
-using Data.Entities.Constants;
+﻿using Data.Entities;
+using Data.States;
 
 namespace KwasantTest.Fixtures
 {
@@ -20,7 +19,18 @@ namespace KwasantTest.Fixtures
 
         }
 
-       
+        public EmailDO TestEmail3()
+        {
+
+            EmailDO curEmailDO = new EmailDO();
+            curEmailDO.Id = 3;
+            curEmailDO.From = TestEmailAddress3();
+            curEmailDO.AddEmailRecipient(EmailParticipantType.To, TestEmailAddress3());
+            curEmailDO.Subject = "Main Subject";
+            curEmailDO.HTMLText = "This Email is intended to be used with KwasantIntegration account ";
+            return curEmailDO;
+
+        }
 
     }
 }

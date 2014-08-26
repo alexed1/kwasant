@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using Daemons;
-using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.States;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
@@ -27,7 +27,7 @@ namespace KwasantTest.Daemons
             BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
             TrackingStatusRepository trackingStatusRepository = uow.TrackingStatusRepository;
             var bookingRequestDO = new BookingRequestDO();
-            bookingRequestDO.BookingRequestStateID = BookingRequestState.Unprocessed;
+            bookingRequestDO.BookingRequestState = BookingRequestState.Unprocessed;
             bookingRequestDO.User = new FixtureData().TestUser1();
             bookingRequestRepo.Add(bookingRequestDO);
 

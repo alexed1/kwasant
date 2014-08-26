@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.Entities.Constants;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -12,9 +12,9 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("NegotiationState")]
-        public int NegotiationStateID { get; set; }
-        public NegotiationStateRow NegotiationState { get; set; }
+        [ForeignKey("NegotiationStateTemplate")]
+        public int NegotiationState { get; set; }
+        public _NegotiationStateTemplate NegotiationStateTemplate { get; set; }
        
         public string Name { get; set; }
 
@@ -25,8 +25,8 @@ namespace Data.Entities
         public int BookingRequestID { get; set; }
         public virtual BookingRequestDO BookingRequest { get; set; }
 
-        //[InverseProperty("Negotiation")]
-        //public virtual List<AttendeeDO> Attendees { get; set; }
+        [InverseProperty("Negotiation")]
+        public virtual List<AttendeeDO> Attendees { get; set; }
 
         [InverseProperty("Negotiation")]
         public virtual List<QuestionDO> Questions { get; set; }
@@ -35,6 +35,7 @@ namespace Data.Entities
         public NegotiationDO ()
         {
             Questions = new List<QuestionDO>();
+            Attendees = new List<AttendeeDO>();
         }
 
 

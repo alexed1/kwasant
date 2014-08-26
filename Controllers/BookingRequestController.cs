@@ -3,15 +3,13 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using KwasantCore.Services;
 using StructureMap;
-using Utilities;
-using Utilities.Logging;
 using System.Net.Mail;
-using Data.Infrastructure.StructureMap;
 using System;
 using Data.Repositories;
 using Data.Infrastructure;
@@ -26,7 +24,7 @@ namespace KwasantWeb.Controllers
         private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
-
+        
         public BookingRequestController()
         {
             _datatables = new DataTablesPackager();
@@ -81,10 +79,10 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.BookingRequestStateID = Data.Constants.BookingRequestState.Processed;
+                bookingRequestDO.BookingRequestState = BookingRequestState.Processed;
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
-                AlertManager.BookingRequestStateChange(bookingRequestDO, "Processed");
+                AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -95,10 +93,10 @@ namespace KwasantWeb.Controllers
              using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
              {
                  BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                 bookingRequestDO.BookingRequestStateID = Data.Constants.BookingRequestState.Invalid;
+                 bookingRequestDO.BookingRequestState = BookingRequestState.Invalid;
                  bookingRequestDO.User = bookingRequestDO.User;
                  uow.SaveChanges();
-                 AlertManager.BookingRequestStateChange(bookingRequestDO, "Invalid");
+                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
                  return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
              }
          }

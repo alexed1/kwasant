@@ -1,16 +1,15 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
-using System.Web.Mvc;
-using Data.Constants;
 using Data.Entities;
-using Data.Entities.Constants;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
-using Data.Validators;
+using Data.States;
+using Data.Validations;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
@@ -18,10 +17,8 @@ using RazorEngine;
 using StructureMap;
 using Microsoft.WindowsAzure;
 using KwasantCore.Services;
-using StructureMap.Graph;
 using Utilities;
 using Encoding = System.Text.Encoding;
-using EventStatus = Data.Constants.EventStatus;
 
 namespace KwasantCore.Managers
 {
@@ -34,19 +31,52 @@ namespace KwasantCore.Managers
         }
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
-        public void NewCustomerWorkflow(IUnitOfWork uow, DateTime createdDate, UserDO userDO)
+        public void NewCustomerWorkflow(UserDO curUser)
         {
-            GenerateWelcomeEmail(uow, userDO);  
+            GenerateWelcomeEmail(curUser);  
         }
 
-        public void GenerateWelcomeEmail(IUnitOfWork uow, UserDO curUser)
+        public void GenerateWelcomeEmail(UserDO user)
         {
-            EmailDO curEmail = new EmailDO();
-            curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
-            curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
-            curEmail.Subject = "Welcome to Kwasant";
-            Email _email = new Email(uow);
-            _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                // WARNING: 'user' parameter must not be used as reference in scope of this UnitOfWork as it is attached to another UnitOfWork
+                var curUser = uow.UserRepository.GetByKey(user.Id);
+                EmailDO curEmail = new EmailDO();
+                curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
+                curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
+                curEmail.Subject = "Welcome to Kwasant";
+                Email _email = new Email(uow);
+                _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null);
+                uow.SaveChanges();
+            }
+        }
+
+        public void DispatchNegotiationRequests(IUnitOfWork uow, int negotiationID)
+        {
+            DispatchNegotiationRequests(uow, uow.NegotiationsRepository.GetByKey(negotiationID));
+        }
+
+        public void DispatchNegotiationRequests(IUnitOfWork uow, NegotiationDO negotiationDO)
+        {
+            if (negotiationDO.Attendees == null)
+                return;
+
+            foreach (var attendee in negotiationDO.Attendees)
+            {
+                var emailDO = new EmailDO();
+                emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
+                emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
+                emailDO.Subject = "Welcome to Kwasant";
+                var htmlText = String.Format("Please click <a href='{0}NegotiationResponse/View?negotiationID={1}'>here</a> to answer some questions about your upcoming event.", Server.ServerUrl, negotiationDO.Id);
+
+                emailDO.HTMLText = htmlText;
+                emailDO.PlainText = "Please click here: " + String.Format("{0}NegotiationResponse/View?negotiationID={1}", Server.ServerUrl, negotiationDO.Id);
+                emailDO.EmailStatus = EmailState.Queued;
+
+                uow.EnvelopeRepository.CreateGmailEnvelope(emailDO);
+                uow.EmailRepository.Add(emailDO);
+            }
         }
 
         public void DispatchInvitations(IUnitOfWork uow, EventDO eventDO)
@@ -57,11 +87,11 @@ namespace KwasantCore.Managers
             //eventDO.EndDate = eventDO.EndDate.ToOffset(createdDate.Offset);
 
             var t = Utilities.Server.ServerUrl;
-            switch (eventDO.EventStatusID)
+            switch (eventDO.EventStatus)
             {
-                case EventStatus.Booking:
+                case EventState.Booking:
                     {
-                        eventDO.EventStatusID = EventStatus.DispatchCompleted;
+                        eventDO.EventStatus = EventState.DispatchCompleted;
 
                         var calendar = Event.GenerateICSCalendarStructure(eventDO);
                         foreach (var attendeeDO in eventDO.Attendees)
@@ -74,12 +104,12 @@ namespace KwasantCore.Managers
 
                         break;
                     }
-                case EventStatus.ReadyForDispatch:
-                case EventStatus.DispatchCompleted:
+                case EventState.ReadyForDispatch:
+                case EventState.DispatchCompleted:
                     //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
                     if (EventHasChanged(uow, eventDO))
                     {
-                        eventDO.EventStatusID = EventStatus.DispatchCompleted;
+                        eventDO.EventStatus = EventState.DispatchCompleted;
                         var calendar = Event.GenerateICSCalendarStructure(eventDO);
 
                         var newAttendees = eventDO.Attendees.Where(a => a.Id == 0).ToList();
@@ -99,7 +129,7 @@ namespace KwasantCore.Managers
                     }
                     break;
 
-                case EventStatus.ProposedTimeSlot:
+                case EventState.ProposedTimeSlot:
                     //Do nothing
                     break;
                 default:
@@ -147,7 +177,8 @@ namespace KwasantCore.Managers
             toEmailAddress.Name = attendeeDO.Name;
             outboundEmail.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
 
-            var userID = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress).Id;
+            var user = new User();
+            var userID = user.GetOrCreateFromBR(uow, attendeeDO.EmailAddress).Id;
             
             if (isUpdate)
             {
@@ -164,7 +195,7 @@ namespace KwasantCore.Managers
             }
 
             //prepare the outbound email
-            outboundEmail.EmailStatusID = EmailStatus.Queued;
+            outboundEmail.EmailStatus = EmailState.Queued;
             if (eventDO.Emails == null)
                 eventDO.Emails = new List<EmailDO>();
 
@@ -238,16 +269,16 @@ namespace KwasantCore.Managers
             CommunicationConfigurationRepository communicationConfigurationRepo = uow.CommunicationConfigurationRepository;
             foreach (CommunicationConfigurationDO communicationConfig in communicationConfigurationRepo.GetAll().ToList())
             {
-                if (communicationConfig.CommunicationTypeID == CommunicationType.Sms)
+                if (communicationConfig.CommunicationType == CommunicationType.Sms)
                 {
                     SendBRSMSes(bookingRequests);
-                } else if (communicationConfig.CommunicationTypeID == CommunicationType.Email)
+                } else if (communicationConfig.CommunicationType == CommunicationType.Email)
                 {
                     SendBREmails(communicationConfig.ToAddress, bookingRequests, uow);
                 }
                 else
                 {
-                    throw new Exception(String.Format("Invalid communication type '{0}'", communicationConfig.CommunicationTypeID));
+                    throw new Exception(String.Format("Invalid communication type '{0}'", communicationConfig.CommunicationType));
                 }
             }
             uow.SaveChanges();
@@ -273,7 +304,7 @@ namespace KwasantCore.Managers
                 {
                     Subject = "New booking request!",
                     HTMLText = String.Format(message, bookingRequest.From.Address),
-                    EmailStatusID = EmailStatus.Queued
+                    EmailStatus = EmailState.Queued
                 };
 
                 outboundEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress("scheduling@kwasant.com", "Kwasant Scheduling Services");

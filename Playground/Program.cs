@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using Daemons;
 using Data.Entities;
-using Data.Infrastructure;
 using KwasantCore.StructureMap;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
-using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using Utilities;
 
 namespace Playground

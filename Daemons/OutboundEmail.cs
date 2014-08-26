@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Linq;
 using Daemons.EventExposers;
-using Data.Constants;
 using Data.Entities;
-using Data.Entities.Constants;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers;
 using StructureMap;
 using Utilities.Logging;
 using Microsoft.WindowsAzure;
 using Data.Infrastructure;
+using System.Collections.Generic;
 
 namespace Daemons
 {
@@ -35,7 +35,7 @@ namespace Daemons
                     return;
                 }
 
-                emailToUpdate.EmailStatusID = EmailStatus.Sent;
+                emailToUpdate.EmailStatus = EmailState.Sent;
                 unitOfWork.SaveChanges();
             });
 
@@ -55,7 +55,7 @@ namespace Daemons
                 Logger.GetLogger()
                     .Error(String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason));
 
-                emailToUpdate.EmailStatusID = EmailStatus.SendRejected;
+                emailToUpdate.EmailStatus = EmailState.SendRejected;
                 unitOfWork.SaveChanges();
             });
 
@@ -77,7 +77,7 @@ namespace Daemons
                         .Error(String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}",
                             errorCode, name, message, emailID));
 
-                    emailToUpdate.EmailStatusID = EmailStatus.SendCriticalError;
+                    emailToUpdate.EmailStatus = EmailState.SendCriticalError;
                     unitOfWork.SaveChanges();
                 });
 
@@ -94,7 +94,7 @@ namespace Daemons
                     return;
                 }
 
-                emailToUpdate.EmailStatusID = EmailStatus.Sent;
+                emailToUpdate.EmailStatus = EmailState.Sent;
                 unitOfWork.SaveChanges();
             });
 
@@ -114,7 +114,7 @@ namespace Daemons
                 Logger.GetLogger()
                     .Error(String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason));
 
-                emailToUpdate.EmailStatusID = EmailStatus.SendRejected;
+                emailToUpdate.EmailStatus = EmailState.SendRejected;
                 unitOfWork.SaveChanges();
             });
 
@@ -136,14 +136,14 @@ namespace Daemons
                         .Error(String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}",
                             errorCode, name, message, emailID));
 
-                    emailToUpdate.EmailStatusID = EmailStatus.SendCriticalError;
+                    emailToUpdate.EmailStatus = EmailState.SendCriticalError;
                     unitOfWork.SaveChanges();
                 });
         }
 
         public override int WaitTimeBetweenExecution
         {
-            get { return (int) TimeSpan.FromSeconds(10).TotalMilliseconds; }
+            get { return (int)TimeSpan.FromSeconds(10).TotalMilliseconds; }
         }
 
         protected override void Run()
@@ -158,35 +158,55 @@ namespace Daemons
                 EventRepository eventRepository = unitOfWork.EventRepository;
                 CommunicationManager _comm = new CommunicationManager();
                 var numSent = 0;
-                foreach (EnvelopeDO envelope in envelopeRepository.FindList(e => e.Email.EmailStatusID == EmailStatus.Queued))
+                foreach (EnvelopeDO curEnvelopeDO in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
                 {
                     using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         try
                         {
+                            // we have to query EnvelopeDO one more time to have it loaded in subUow
+                            var envelope = subUow.EnvelopeRepository.GetByKey(curEnvelopeDO.Id);
                             IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
                             if (CloudConfigurationManager.GetSetting("ArchiveOutboundEmail") == "true")
                             {
-                                EmailAddressDO outboundemailaddress = new EmailAddressDO(CloudConfigurationManager.GetSetting("ArchiveEmailAddress"));
+                                EmailAddressDO outboundemailaddress = subUow.EmailAddressRepository.GetOrCreateEmailAddress(CloudConfigurationManager.GetSetting("ArchiveEmailAddress"), "Outbound Archive");
                                 envelope.Email.AddEmailRecipient(EmailParticipantType.Bcc, outboundemailaddress);
                             }
+
+                            //Removing email address which are not test account in debug mode
+                            #if DEBUG
+                            {
+                                if (RemoveRecipients(envelope.Email.Recipients.ToList(), envelope, subUow))
+                                {
+                                    Logger.GetLogger().Info("Removed one or more email recipients because they were not test accounts");
+                                }
+                            }
+                            #endif
                             packager.Send(envelope);
                             numSent++;
 
-                            var email = subUow.EmailRepository.GetQuery().First(e => e.Id == envelope.Email.Id); // probably "= envelope.Email" will work now...
-                            email.EmailStatusID = EmailStatus.Dispatched;
+                            var email = envelope.Email; // subUow.EmailRepository.GetQuery().First(e => e.Id == envelope.Email.Id);
+                            email.EmailStatus = EmailState.Dispatched;
                             subUow.SaveChanges();
-                            string customerId = subUow.UserRepository.GetAll().Where(e => e.EmailAddress.Address == email.Recipients.First(c => c.EmailParticipantTypeID == EmailParticipantType.To).EmailAddress.Address).First().Id;
-                            AlertManager.EmailSent(email.Id, customerId);
+
+                            foreach (var recipient in email.To)
+                            {
+                                var curUser = subUow.UserRepository.GetQuery()
+                                    .FirstOrDefault(u => u.EmailAddressID == recipient.Id);
+                                if (curUser != null)
+                                {
+                                    AlertManager.EmailSent(email.Id, curUser.Id);
+                                }
+                            }
                         }
                         catch (StructureMapConfigurationException ex)
                         {
-                            Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", envelope.Handler);
-                            throw new UnknownEmailPackagerException(string.Format("Unknown email packager: {0}", envelope.Handler), ex);
+                            Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", curEnvelopeDO.Handler);
+                            throw new UnknownEmailPackagerException(string.Format("Unknown email packager: {0}", curEnvelopeDO.Handler), ex);
                         }
                     }
                 }
-                
+
                 if (numSent == 0)
                 {
                     logString = "nothing sent";
@@ -198,6 +218,23 @@ namespace Daemons
 
                 Logger.GetLogger().Info(logString);
             }
+        }
+        private bool RemoveRecipients(List<RecipientDO> recipientList, EnvelopeDO envelope, IUnitOfWork uow)
+        {
+            bool isRecipientRemoved = false;
+            foreach (RecipientDO recipient in recipientList)
+            {
+                UserDO user = uow.UserRepository.FindOne(e => e.EmailAddress.Address == recipient.EmailAddress.Address);
+                if (user != null)
+                {
+                    if (!user.TestAccount)
+                    {
+                        envelope.Email.Recipients.RemoveAll(s => s.EmailAddress.Address == recipient.EmailAddress.Address);
+                        isRecipientRemoved = true;
+                    }
+                }
+            }
+            return isRecipientRemoved;
         }
     }
 }

@@ -37,12 +37,17 @@ namespace KwasantCore.Managers.APIManager.Packagers
             if (handler != null) handler(errorCode, name, message, emailID); ;
         }
 
+        //Note that at the moment, we actually are submitting through SendGrid, not Gmail.
         public void Send(EnvelopeDO envelope)
         {
             if (envelope == null)
                 throw new ArgumentNullException("envelope");
             if (!string.Equals(envelope.Handler, EnvelopeDO.GmailHander))
                 throw new ArgumentException("This envelope should not be handled with Gmail.", "envelope");
+            if (envelope.Email == null)
+                throw new ArgumentException("This envelope has no Email.", "envelope");
+            if (envelope.Email.Recipients.Count == 0)
+                throw new ArgumentException("This envelope has no recipients.", "envelope");
             
             var email = envelope.Email;
             if (email == null)

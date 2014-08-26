@@ -1,6 +1,5 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
-using Data.Validators;
 
 namespace Data.Repositories
 {

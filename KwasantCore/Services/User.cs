@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Validators;
 using FluentValidation;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -20,10 +20,6 @@ namespace KwasantCore.Services
 {
     public class User
     {
-
-
-      
-
         private static IAuthenticationManager AuthenticationManager
         {
             get
@@ -32,18 +28,48 @@ namespace KwasantCore.Services
             }
         }
 
+        public UserDO GetOrCreateFromBR(IUnitOfWork uow, EmailAddressDO emailAddressDO)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (emailAddressDO == null)
+                throw new ArgumentNullException("emailAddressDO");
+            UserDO curUser = Get(uow, emailAddressDO);
+            if (curUser == null)
+            {
+                curUser = uow.UserRepository.CreateFromEmail(emailAddressDO);
+               
+            }
+            return curUser;
+        }
+
+        public UserDO Get(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
+        {
+            if (bookingRequestDO == null)
+                throw new ArgumentNullException("bookingRequestDO");
+            return Get(uow, bookingRequestDO.From);
+        }
+
+        public UserDO Get(IUnitOfWork uow, EmailAddressDO emailAddressDO)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (emailAddressDO == null)
+                throw new ArgumentNullException("emailAddressDO");
+            return uow.UserRepository.GetByEmailAddress(emailAddressDO);
+        }
+
+
         public UserDO Register (IUnitOfWork uow, string userName, string password, string role)
         {
-            var userDO = new UserDO();
-            userDO.FirstName = userName;
-            userDO.LastName = userName;
-            userDO.UserName = userName;
-            userDO.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
-            uow.UserRepository.Add(userDO);
-            uow.CalendarRepository.CheckUserHasCalendar(userDO);
 
-            UserValidator curUserValidator = new UserValidator();
-            curUserValidator.ValidateAndThrow(userDO);
+            EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
+             
+            var userDO =uow.UserRepository.CreateFromEmail(
+                emailAddressDO:  curEmailAddress,
+                userName: userName,
+                firstName: userName,
+                lastName: userName);
 
             UserManager<UserDO> userManager = GetUserManager(uow);;
             IdentityResult result = userManager.Create(userDO, password);

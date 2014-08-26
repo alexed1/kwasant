@@ -3,14 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
-using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
-using StructureMap.TypeRules;
 
 namespace Data.Infrastructure.StructureMap
 {
@@ -41,7 +39,7 @@ namespace Data.Infrastructure.StructureMap
             AssertConstraints();
             
             foreach (var newBookingRequestDO in _addedEntities.OfType<BookingRequestDO>())
-                AlertManager.BookingRequestCreated(this.UnitOfWork, newBookingRequestDO);
+                AlertManager.BookingRequestCreated(newBookingRequestDO);
             
             return 1;
         }

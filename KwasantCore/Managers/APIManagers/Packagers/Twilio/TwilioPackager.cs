@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.WindowsAzure;
 using Twilio;
-using Utilities.Logging;
 
 namespace KwasantCore.Managers.APIManager.Packagers.Twilio
 {

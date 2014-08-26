@@ -5,16 +5,16 @@ namespace KwasantWeb.App_Start
 {
     public class RouteConfig
     {
-        public const string ShowClarificationResponseUrl = "crr";
+        public const string ShowNegotiationResponseUrl = "crr";
 
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
-                name: "ShowClarificationResponse",
-                url: ShowClarificationResponseUrl,
-                defaults: new { controller = "ClarificationRequest", action = "ShowClarificationResponse", enc = UrlParameter.Optional });
+                name: "ShowNegotiationResponse",
+                url: ShowNegotiationResponseUrl,
+                defaults: new { controller = "ClarificationRequest", action = "ShowNegotiationResponse", enc = UrlParameter.Optional });
 
             routes.MapRoute(
                 name: "Default",

@@ -10,7 +10,7 @@ using KwasantCore.Services;
 using KwasantCore.Managers;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
-using KwasantWeb.ViewModels;
+using Utilities;
 using Utilities.Logging;
 
 namespace KwasantWeb
@@ -48,6 +48,7 @@ namespace KwasantWeb
                     throw new Exception("Invalid BasePageURL (check web.config)");
             }
 
+            Utilities.Server.IsProduction = ConfigRepository.Get<bool>("IsProduction");
 
             CommunicationManager curCommManager = new CommunicationManager();
             curCommManager.SubscribeToAlerts();

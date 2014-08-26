@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Interfaces;
-using StructureMap;
 
 namespace KwasantCore.Services
 {
@@ -41,7 +40,12 @@ namespace KwasantCore.Services
         public void ManageEventAttendeeList(IUnitOfWork uow, EventDO eventDO, string curAttendees)
         {
             List<AttendeeDO> existingAttendeeSet = eventDO.Attendees ?? new List<AttendeeDO>();
-            List<AttendeeDO> newAttendees = ManageAttendeeList( uow, existingAttendeeSet,  curAttendees);
+            if (String.IsNullOrEmpty(curAttendees))
+                curAttendees = String.Empty;
+
+            var attendees = curAttendees.Split(',').ToList();
+
+            List<AttendeeDO> newAttendees = ManageAttendeeList(uow, existingAttendeeSet, attendees);
             foreach (var attendee in newAttendees)
             {
                 attendee.Event = eventDO;
@@ -50,26 +54,23 @@ namespace KwasantCore.Services
             }         
         }
 
-        public void ManageNegotiationAttendeeList(IUnitOfWork uow, NegotiationDO curNegDO, string curAttendees)
+        public void ManageNegotiationAttendeeList(IUnitOfWork uow, NegotiationDO negotiationDO, List<String> attendees)
         {
-            //List<AttendeeDO> existingAttendeeSet = curNegDO.Attendees ?? new List<AttendeeDO>();
-            //List<AttendeeDO> newAttendees = ManageAttendeeList(uow, existingAttendeeSet, curAttendees);
-            //foreach (var attendee in newAttendees)
-            //{
-            //    attendee.Negotiation = curNegDO;
-            //    uow.AttendeeRepository.Add(attendee);
-            //}
+            List<AttendeeDO> existingAttendeeSet = negotiationDO.Attendees ?? new List<AttendeeDO>();
+            
+            List<AttendeeDO> newAttendees = ManageAttendeeList(uow, existingAttendeeSet, attendees);
+            foreach (var attendee in newAttendees)
+            {
+                attendee.Negotiation = negotiationDO;
+                attendee.NegotiationID = negotiationDO.Id;
+                uow.AttendeeRepository.Add(attendee);
+            }
         }
-        
-        public List<AttendeeDO> ManageAttendeeList(IUnitOfWork uow, List<AttendeeDO> existingAttendeeSet, string curAttendees)
+
+        public List<AttendeeDO> ManageAttendeeList(IUnitOfWork uow, List<AttendeeDO> existingAttendeeSet, List<String> attendees)
         {
             List<AttendeeDO> newAttendees = new List<AttendeeDO>();
-            if (String.IsNullOrEmpty(curAttendees))
-                curAttendees = String.Empty;
-
-            var attendees = curAttendees.Split(',').ToList();
-
-
+            
             var attendeesToDelete = existingAttendeeSet.Where(attendee => !attendees.Contains(attendee.EmailAddress.Address)).ToList();
             foreach (var attendeeToDelete in attendeesToDelete)
                 uow.AttendeeRepository.Remove(attendeeToDelete);

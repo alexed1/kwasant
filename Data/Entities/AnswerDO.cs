@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.Constants;
-using Data.Entities.Constants;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -15,12 +14,11 @@ namespace Data.Entities
         public int QuestionID { get; set; }
         public virtual QuestionDO Question { get; set; }
 
-        [ForeignKey("AnswerStatus")]
-        public int AnswerStatusID { get; set; }
-        public AnswerStatusRow AnswerStatus { get; set; }
+        [ForeignKey("AnswerStatusTemplate")]
+        public int AnswerStatus { get; set; }
+        public _AnswerStatusTemplate AnswerStatusTemplate { get; set; }
         
         public virtual UserDO User { get; set; }
-        public string ObjectsType { get; set; }
         public string Text { get; set; }
 
         

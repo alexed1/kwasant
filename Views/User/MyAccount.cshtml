@@ -1,10 +1,10 @@
-﻿@model KwasantWeb.ViewModels.ManageUserViewModel
+﻿@model KwasantWeb.ViewModels.ManageUserVM
 
 @{
     ViewBag.Title = "My Account";
 }
 
-<h2>@ViewBag.Title.</h2>
+<h2>@ViewBag.Title</h2>
 
 <div id="permission-status" class="text-success"></div>
 <div class="row">
@@ -16,8 +16,8 @@
                 @Html.ActionLink(
                     string.Format("Grant Access to {0} Calendar", remoteCalendar.Provider), 
                     "GrantRemoteCalendarAccess", 
-                    new { providerName = remoteCalendar.Provider }, 
-                    new { @class = "btn btn-default" })
+                    new { providerName = remoteCalendar.Provider },
+					new { @class = "custom-btn glyphicon glyphicon-user" })
             }
             else
             {
@@ -25,7 +25,7 @@
                     string.Format("Revoke Access to {0} Calendar", remoteCalendar.Provider),
                     "RevokeRemoteCalendarAccess",
                     new {providerName = remoteCalendar.Provider},
-                    new {@class = "btn btn-default"})
+					new { @class = "custom-btn glyphicon glyphicon-user" })
             }
             <br/>
         }

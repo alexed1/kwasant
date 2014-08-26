@@ -1,4 +1,4 @@
-﻿@model KwasantWeb.ViewModels.EventViewModel
+﻿@model KwasantWeb.ViewModels.EventVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @section immediateScripts
 {
@@ -115,15 +115,29 @@
 		}
 		<div class="space form-actions">
 			<input id="btnSave" type="submit" value="OK" class="btn btn-default pull-left" />
-			<a href="javascript:closeWithUnsavedDataCheck(modifiedState);" class="cancel-btn pull-left">Cancel</a>
+		    <a href="javascript:closeWithUnsavedDataCheck(modifiedState);" class="cancel-btn pull-left">Cancel</a>
+            <a href="javascript:deleteEvent();" style="margin-left:15px;" class="delete-btn pull-left">Delete</a>
 		</div>
 	</form>
 </div>
 
 	<script type="text/javascript">
-		var modifiedState = { modified: false };
-		var fromdata;
-		var todata;
+	    var modifiedState = { modified: false };
+	    var fromdata;
+	    var todata;
+
+	    function deleteEvent() {
+	        $(function() {
+	            Kwasant.IFrame.Display('/Event/DeleteEvent/?eventID=@Model.Id',
+	            {
+	                modal: true,
+	                callback: function(result) {
+	                    if (result)
+	                        close();
+	                }
+	            });
+	        }());
+        }
 
 		$(document).ready(function () {
 			$(".form-control").change(function () {

@@ -2,7 +2,7 @@
 using System.Linq;
 using Data.Interfaces;
 using Data.Entities;
-using Data.Validators;
+using Data.Validations;
 using FluentValidation;
 
 namespace Data.Repositories
