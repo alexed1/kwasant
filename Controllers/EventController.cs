@@ -181,7 +181,6 @@ namespace KwasantWeb.Controllers
             }
         }
 
-/*
         public ActionResult MoveEvent(int eventID, String newStart, String newEnd, bool requiresConfirmation = true, bool mergeEvents = false)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -197,14 +196,12 @@ namespace KwasantWeb.Controllers
 
                 evm.StartDate = DateTime.Parse(newStart, CultureInfo.InvariantCulture, 0).ToUniversalTime();
                 evm.EndDate = DateTime.Parse(newEnd, CultureInfo.InvariantCulture, 0).ToUniversalTime();
-
-                if(requiresConfirmation)
-                    return View("~/Views/Event/ConfirmChanges.cshtml", evm);
                 
-                return ProcessConfirmedEvent(evm, mergeEvents);
+                return ProcessChangedEvent(evm, 
+                    confStatus: requiresConfirmation ? ConfirmationStatus.Unconfirmed : ConfirmationStatus.Unnecessary, 
+                    mergeEvents: mergeEvents);
             }
         }
-*/
 
         public ActionResult ConfirmChanges(EventVM eventVM)
         {

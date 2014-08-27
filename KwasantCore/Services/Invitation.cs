@@ -40,6 +40,7 @@ namespace KwasantCore.Services
                 curEvent.Attendees = new List<AttendeeDO>();
 
             InvitationDO curInvitation = new InvitationDO();
+            curInvitation.ConfirmationStatus = ConfirmationStatus.Unnecessary;
 
             //configure the sender information
             var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
@@ -76,6 +77,7 @@ namespace KwasantCore.Services
 
         private InvitationDO GenerateInitialInvite(InvitationDO curInvitation, EventDO curEvent, string userID)
         {
+            curInvitation.InvitationType = InvitationType.InitialInvite;
             curInvitation.Subject = String.Format(ConfigRepository.Get("emailSubject"), GetOriginatorName(curEvent), curEvent.Summary, curEvent.StartDate);
             curInvitation.HTMLText = GetEmailHTMLTextForNew(curEvent, userID);
             curInvitation.PlainText = GetEmailPlainTextForNew(curEvent, userID);
@@ -84,6 +86,7 @@ namespace KwasantCore.Services
 
         private InvitationDO GenerateChangeNotification(InvitationDO curInvitation, EventDO curEvent, string userID)
         {
+            curInvitation.InvitationType = InvitationType.ChangeNotification;
             curInvitation.Subject = String.Format(ConfigRepository.Get("emailSubjectUpdated"), GetOriginatorName(curEvent), curEvent.Summary, curEvent.StartDate);
             curInvitation.HTMLText = GetEmailHTMLTextForUpdate(curEvent, userID);
             curInvitation.PlainText = GetEmailPlainTextForUpdate(curEvent, userID);

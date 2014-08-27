@@ -69,8 +69,6 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("uow");
             if (eventDO == null)
                 throw new ArgumentNullException("eventDO");
-            if (newAttendees == null)
-                throw new ArgumentNullException("newAttendees");
             if (existingAttendees == null)
                 throw new ArgumentNullException("existingAttendees");
 
@@ -112,10 +110,25 @@ namespace KwasantCore.Services
             //var createdDate = eventDO.BookingRequest.DateCreated;
             //eventDO.StartDate = eventDO.StartDate.ToOffset(createdDate.Offset);
             //eventDO.EndDate = eventDO.EndDate.ToOffset(createdDate.Offset);
+            if (existingAttendees == null)
+                throw new ArgumentNullException("existingAttendees");
             var invitations = new List<InvitationDO>();
             Invitation invitation = new Invitation();
-            invitations.AddRange(newAttendees.Select(newAttendee => invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO)).Where(i => i != null));
-            invitations.AddRange(existingAttendees.Select(existingAttendee => invitation.Generate(uow, InvitationType.ChangeNotification, existingAttendee, eventDO)).Where(i => i != null));
+            if (eventDO.EventStatus == EventState.Booking)
+            {
+                invitations.AddRange(existingAttendees
+                    .Union(newAttendees ?? Enumerable.Empty<AttendeeDO>())
+                    .Select(newAttendee => invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO))
+                    .Where(i => i != null));
+            }
+            else
+            {
+                if (newAttendees != null)
+                {
+                    invitations.AddRange(newAttendees.Select(newAttendee => invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO)).Where(i => i != null));
+                }
+                invitations.AddRange(existingAttendees.Select(existingAttendee => invitation.Generate(uow, InvitationType.ChangeNotification, existingAttendee, eventDO)).Where(i => i != null));
+            }
 
             return invitations;
 /*
@@ -174,7 +187,14 @@ namespace KwasantCore.Services
         private EventDO Update(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, List<AttendeeDO> updatedAttendees, out List<AttendeeDO> newAttendees, out List<AttendeeDO> existingAttendees)
         {
             newAttendees = UpdateAttendees(uow, eventDO, updatedAttendees);
-            existingAttendees = updatedAttendees.Except(newAttendees).ToList();
+            if (newAttendees != null)
+            {
+                existingAttendees = updatedAttendees.Except(newAttendees).ToList();
+            }
+            else
+            {
+                existingAttendees = updatedAttendees.ToList();
+            }
             eventDO = _mappingEngine.Map(updatedEventInfo, eventDO);
             if (/*newAttendees != null || */uow.IsEntityModified(eventDO))
             {
