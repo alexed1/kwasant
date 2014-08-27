@@ -12,5 +12,9 @@ namespace Data.Entities
         public String Activity { get; set; }
         public int Priority { get; set; }
         public string Notes { get; set; }
+        public int ObjectId { get; set; }
+        public string CustomerId { get; set; }
+        public string BookerId { get; set; } 
+
     }
 }
