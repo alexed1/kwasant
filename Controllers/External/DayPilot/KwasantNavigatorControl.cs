@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
 using DayPilot.Web.Mvc;
-using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Navigator;
 using KwasantWeb.Controllers.External.DayPilot.Providers;
 

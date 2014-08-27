@@ -6,7 +6,6 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using StructureMap;
 using Utilities;
-using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace KwasantCore.Services
 {

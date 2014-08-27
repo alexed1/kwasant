@@ -2,17 +2,59 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-    <h2>Kwasant Admin Console</h2>
-    @Html.ActionLink("Show Booking Requests", "Index", "BookingRequest", null, new { @class = "" })
+<h2>Kwasant Admin Console</h2>
+@*@Html.ActionLink("Show Booking Requests", "Index", "BookingRequest", null, new { @class = "" })
     <p></p>
 @Html.ActionLink("Show Incident Report", "Index", "Report", new { type = "incident" }, new { @class = "" })
-<p></p>
+    <p></p>
 @Html.ActionLink("Show Usage Report", "Index", "Report", new { type = "usage" }, new { @class = "" })
     <p></p>
-@Html.ActionLink("View History ", "History", "Report", new { area = "" }, new { @class = "" })
-    <p></p>
-@Html.ActionLink("View User Administer", "ShowUserQueryForm", "User", new { area = "" }, new { @class = "" })
-    <p></p>
-@Html.ActionLink("Add User", "ShowAddUser", "User", new { area = "" }, new { @class = "" })
-    <p></p>
-<a href="/Website/index.aspx">Go to kwasant.com</a>.
+@Html.ActionLink("View History ", "History", "Report", new{area=""}, new { @class = "" })
+    <p></p>*@
+<nav class="navbar navbar-default top-toolbar-section" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown"><a id="btnBookingRequest">Booking Requests</a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Show All", "Index", "BookingRequest", null, new { @class = "" })</li>
+                    </ul>
+                </li>
+                <li class="dropdown"><a id="btnReports">Reports</a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Show Incidents", "Index", "Report", new { type = "incident" }, new { @class = "" }) </li>
+                        <li>@Html.ActionLink("Show Usage", "Index", "Report", new { type = "usage" }, new { @class = "" }) </li>
+                        <li>@Html.ActionLink("Show History", "History", "Report", new{area=""}, new { @class = "" }) </li>
+                    </ul>
+                </li>
+                <li class="dropdown"><a id="btnUsers">Users</a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Show All", "Index", "User")</li>
+                        <li>@Html.ActionLink("Administer", "ShowUserQueryForm", "User")</li>
+                        <li>@Html.ActionLink("Add User", "ShowAddUser", "User")</li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+<a href="/Website/index.aspx">Go to kwasant.com</a>
+<script type="text/javascript">
+ $(document).ready(function() {
+        
+        $('.navbar .dropdown').hover(function() {
+            $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
+        }, function() {
+            $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105)
+        });
+    });
+</script>

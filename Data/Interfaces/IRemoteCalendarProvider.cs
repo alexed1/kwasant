@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using Data.Entities;
 using Data.States.Templates;
 
 namespace Data.Interfaces

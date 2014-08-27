@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Validators;
 using FluentValidation;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;

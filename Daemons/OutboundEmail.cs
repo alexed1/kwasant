@@ -22,6 +22,8 @@ namespace Daemons
 
         public OutboundEmail()
         {
+
+            #region RegisterEvent Calls
             RegisterEvent<string, int>(MandrillPackagerEventHandler.EmailSent, (id, emailID) =>
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
@@ -139,6 +141,7 @@ namespace Daemons
                     emailToUpdate.EmailStatus = EmailState.SendCriticalError;
                     unitOfWork.SaveChanges();
                 });
+            #endregion
         }
 
         public override int WaitTimeBetweenExecution

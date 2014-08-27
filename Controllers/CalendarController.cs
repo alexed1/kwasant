@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -49,6 +50,28 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        public ActionResult GetSpecificCalendar(int calendarID)
+        {
+            if (calendarID <= 0)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var calendarRepository = uow.CalendarRepository;
+                var calendarDO = calendarRepository.GetByKey(calendarID);
+                if (calendarDO == null)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                return View("~/Views/Negotiation/EventWindows.cshtml", new EventWindowVM
+                {
+                    ActiveCalendarID = calendarID,
+                    ClickEditEnabled = false,
+                    MergeEvents = true,
+                    RequiresConfirmation = false
+                });
+            }
+        }
+
         public ActionResult GetNegotiationCalendars(int calendarID)
         {
             if (calendarID <= 0)
@@ -80,7 +103,10 @@ namespace KwasantWeb.Controllers
                 return View("~/Views/Negotiation/EventWindows.cshtml", new EventWindowVM
                 {
                     LinkedCalendarIDs = calendarsViaNegotiationRequest.Select(c => c.Id).Union(new[] { calendarID }).Distinct().ToList(),
-                    ActiveCalendarID = calendarID
+                    ActiveCalendarID = calendarID,
+                    ClickEditEnabled = false,
+                    MergeEvents = true,
+                    RequiresConfirmation = false
                 });
             }
         }
@@ -93,7 +119,7 @@ namespace KwasantWeb.Controllers
             //calendarIDs will be blank when calendar widget is initialized from views like "ShowEvents", else should not be blank
             if (calendarIDs != "")
             {
-                var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+                var ids = calendarIDs.Split(',').Where(c => !String.IsNullOrEmpty(c)).Select(int.Parse).ToArray();
                 return new KwasantCalendarController(new EventDataProvider(true, ids)).CallBack(this);
             }
             return new KwasantCalendarController(new EventDataProvider(false, new int { })).CallBack(this);
@@ -103,7 +129,7 @@ namespace KwasantWeb.Controllers
         {
             if (calendarIDs != "")
             {
-                var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+                var ids = calendarIDs.Split(',').Where(c => !String.IsNullOrEmpty(c)).Select(int.Parse).ToArray();
                 return new KwasantMonthController(new EventDataProvider(true, ids)).CallBack(this);
             }
             return new KwasantMonthController(new EventDataProvider(false, new int { })).CallBack(this);
@@ -113,11 +139,17 @@ namespace KwasantWeb.Controllers
         {
             if (calendarIDs != "")
             {
-                var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+                var ids = calendarIDs.Split(',').Where(c => !String.IsNullOrEmpty(c)).Select(int.Parse).ToArray();
                 return new KwasantNavigatorControl(new EventDataProvider(true, ids)).CallBack(this);
             }
             return new KwasantNavigatorControl(new EventDataProvider(false, new int { })).CallBack(this);
         }
+
+        //public ActionResult GetEvents(string calendarIDs)
+        //{
+        //    var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
+        //    return new KwasantCalendarController(new EventDataProvider(true, ids)).GetEvents();
+        //}
 
         public ActionResult Rtl()
         {

@@ -1,15 +1,15 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
-using System.Web.Mvc;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Data.Validators;
+using Data.Validations;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
@@ -17,7 +17,6 @@ using RazorEngine;
 using StructureMap;
 using Microsoft.WindowsAzure;
 using KwasantCore.Services;
-using StructureMap.Graph;
 using Utilities;
 using Encoding = System.Text.Encoding;
 
@@ -50,6 +49,33 @@ namespace KwasantCore.Managers
                 Email _email = new Email(uow);
                 _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null);
                 uow.SaveChanges();
+            }
+        }
+
+        public void DispatchNegotiationRequests(IUnitOfWork uow, int negotiationID)
+        {
+            DispatchNegotiationRequests(uow, uow.NegotiationsRepository.GetByKey(negotiationID));
+        }
+
+        public void DispatchNegotiationRequests(IUnitOfWork uow, NegotiationDO negotiationDO)
+        {
+            if (negotiationDO.Attendees == null)
+                return;
+
+            foreach (var attendee in negotiationDO.Attendees)
+            {
+                var emailDO = new EmailDO();
+                emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
+                emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
+                emailDO.Subject = "Welcome to Kwasant";
+                var htmlText = String.Format("Please click <a href='{0}NegotiationResponse/View?negotiationID={1}'>here</a> to answer some questions about your upcoming event.", Server.ServerUrl, negotiationDO.Id);
+
+                emailDO.HTMLText = htmlText;
+                emailDO.PlainText = "Please click here: " + String.Format("{0}NegotiationResponse/View?negotiationID={1}", Server.ServerUrl, negotiationDO.Id);
+                emailDO.EmailStatus = EmailState.Queued;
+
+                uow.EnvelopeRepository.CreateGmailEnvelope(emailDO);
+                uow.EmailRepository.Add(emailDO);
             }
         }
 

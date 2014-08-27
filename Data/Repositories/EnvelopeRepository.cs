@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Validators;
+using Data.Validations;
 using FluentValidation;
 
 namespace Data.Repositories

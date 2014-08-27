@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using System.Net;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.Exceptions;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantWeb.ViewModels;
@@ -17,7 +16,7 @@ using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using System.Linq;
-using Data.Validators;
+using Data.Validations;
 
 namespace KwasantWeb.Controllers
 {

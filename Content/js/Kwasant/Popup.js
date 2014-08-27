@@ -33,6 +33,9 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
         if (typeof(options.callback) !== 'function')
             options.callback = null;
 
+        if (typeof(options.statechange) !== 'function')
+            options.statechange = null;
+
         if (options.displayLoadingSpinner === undefined)
             options.displayLoadingSpinner = true;
        
@@ -79,6 +82,18 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
         });
     };
     
+    Kwasant.IFrame.RegisterStateChangeEvent = function (iframe, callback) {
+        //Since we're working in iframes, we have different copies of our popup object. We want to make sure we always use the top documents object when firing events
+        if (document !== top.document) {
+            top.Kwasant.IFrame.RegisterStateChangeEvent(iframe, callback);
+            return;
+        }
+
+        $(document.body).on('stateChange', function (document, args) {
+            callback(args.args);
+        });
+    };
+    
     Kwasant.IFrame.PopupsActive = function () {
         return activePopups.length > 0;
     };
@@ -93,6 +108,18 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
         }
 
         parent.$('body').trigger('popupFormClosing', { document: doc, args: args });
+    };
+    
+    Kwasant.IFrame.DispatchStateChange = function (args, doc) {
+        if (doc == null)
+            doc = document;
+
+        if (document !== top.document) {
+            top.Kwasant.IFrame.StateChange(args, doc);
+            return;
+        }
+
+        parent.$('body').trigger('stateChange', { document: doc, args: args });
     };
 
     function close(document, args) {
@@ -242,6 +269,8 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
                 });
 
                 Kwasant.IFrame.RegisterCloseEvent(that, options.callback);
+                Kwasant.IFrame.RegisterStateChangeEvent(that, options.statechange);
+
             }
         });
 

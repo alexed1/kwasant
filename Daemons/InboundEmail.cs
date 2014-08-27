@@ -15,7 +15,7 @@ namespace Daemons
 {
     public class InboundEmail : Daemon
     {
-        private  ImapClient _client;
+        private IImapClient _client;
         public string username;
         public string password;
 
@@ -26,7 +26,7 @@ namespace Daemons
         }
 
         //be careful about using this form. can get into problems involving disposal.
-        public InboundEmail(ImapClient client)
+        public InboundEmail(IImapClient client)
         {
             _client = client;
         }
@@ -65,7 +65,7 @@ namespace Daemons
 
         protected override void Run()
         {
-            ImapClient client;
+            IImapClient client;
             try
             {
                 client = _client ?? new ImapClient(GetIMAPServer(), GetIMAPPort(), UseSSL());
