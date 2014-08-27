@@ -30,7 +30,7 @@ namespace Daemons
             {
                 //Process Timing Out BR status "CheckedOut" to "Unprocessed"
                 int maxBRIdleMinutes = Convert.ToInt32(ConfigRepository.Get<string>("MaxBRIdle"));
-                DateTimeOffset idleTimeLimit = DateTimeOffset.Now.AddMinutes(-maxBRIdleMinutes);
+                DateTimeOffset idleTimeLimit = DateTimeOffset.Now.Subtract(new TimeSpan(0, maxBRIdleMinutes, 0));
                 List<BookingRequestDO> staleBRList = new List<BookingRequestDO>();
 
                 staleBRList = uow.BookingRequestRepository.GetAll().Where(x => x.BookingRequestState == BookingRequestState.CheckedOut && x.LastUpdated.DateTime < idleTimeLimit.DateTime ).ToList();
@@ -53,8 +53,8 @@ namespace Daemons
 
                 CommunicationManager cm = new CommunicationManager();
                 cm.ProcessBRNotifications(unprocessedBookingRequests);
-                unprocessedBookingRequests.ForEach(br => ts.SetStatus(TrackingType.BookingState, br, TrackingState.Processed));
-
+                //unprocessedBookingRequests.ForEach(br => ts.SetStatus(TrackingType.BookingState, br, TrackingState.Processed));
+                ts.SetStatus();
                 uow.SaveChanges();
 
             }

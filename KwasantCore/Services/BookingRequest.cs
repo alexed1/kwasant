@@ -138,32 +138,33 @@ namespace KwasantCore.Services
                   }).ToList();
         }
 
-      
 
-        public void Timeout(IUnitOfWork uow,BookingRequestDO currbookingRequestDO)
+
+        public void Timeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
         {
-            
-                string bookerId = currbookingRequestDO.BookerId;
-                currbookingRequestDO.BookingRequestState = BookingRequestState.Unprocessed;
-                currbookingRequestDO.BookerId = null;
-                currbookingRequestDO.User = currbookingRequestDO.User;
-                uow.SaveChanges();
-                currbookingRequestDO.BookerId = bookerId;
 
-                AlertManager.BookingRequestProcessingTimeout(currbookingRequestDO);
-                Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + currbookingRequestDO.Id);
-                currbookingRequestDO.BookerId = null;
-                // Send mail to Booker
-                UserDO userDO = new UserDO();
-                userDO = uow.UserRepository.GetByKey(bookerId);
-                EmailAddressDO emailAddressDO = new EmailAddressDO(userDO.EmailAddress.Address);
-                Email email = new Email(uow);
-                string message = "BookingRequest ID :" + currbookingRequestDO.Id + " Timed Out";
-                EmailDO emailDO = email.GenerateBookerMessage(emailAddressDO, message);
-                emailDO.Subject = "BookingRequest Timeout";
-                email.Send(emailDO);
-                uow.SaveChanges();
+            string bookerId = bookingRequestDO.BookerId;
+            bookingRequestDO.BookingRequestState = BookingRequestState.Unprocessed;
+            bookingRequestDO.BookerId = null;
+            bookingRequestDO.User = bookingRequestDO.User;
+            uow.SaveChanges();
+            bookingRequestDO.BookerId = bookerId;
+
+            AlertManager.BookingRequestProcessingTimeout(bookingRequestDO);
+            Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + bookingRequestDO.Id);
+            bookingRequestDO.BookerId = null;
+            // Send mail to Booker
+            UserDO userDO = new UserDO();
+            userDO = uow.UserRepository.GetByKey(bookerId);
+            EmailAddressDO emailAddressDO = new EmailAddressDO(userDO.EmailAddress.Address);
+            Email email = new Email(uow);
+            string message = "BookingRequest ID :" + bookingRequestDO.Id + " Timed Out";
+            EmailDO emailDO = email.GenerateBookerMessage(emailAddressDO, message);
+            emailDO.Subject = "BookingRequest Timeout";
+            email.Send(emailDO);
+            uow.SaveChanges();
         }
+
 
 
     }

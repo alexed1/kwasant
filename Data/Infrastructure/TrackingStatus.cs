@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using StructureMap;
 
 namespace Data.Infrastructure
 {
@@ -118,5 +120,34 @@ namespace Data.Infrastructure
         {
             DeleteCustomField(entityDO, cf => cf.TrackingType == type);
         }
+
+        public void SetStatus()
+        {
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                List<BookingRequestDO> bookingRequestStatusList = uow.BookingRequestRepository.GetAll().ToList();
+                TrackingStatusDO trackingStatusDO = new TrackingStatusDO();
+                foreach (var bookingRequest in bookingRequestStatusList)
+                {
+                    trackingStatusDO = uow.TrackingStatusRepository.GetAll().Where(ts => ts.Id == bookingRequest.Id).FirstOrDefault();
+                    if (trackingStatusDO == null)
+                    {
+                        trackingStatusDO = new TrackingStatusDO();
+                        trackingStatusDO.Id = bookingRequest.Id;
+                        trackingStatusDO.ForeignTableName = "BookingRequestDO";
+                        trackingStatusDO.TrackingType = TrackingType.BookingState;
+                        trackingStatusDO.TrackingStatus = TrackingType.TestState;
+                        uow.TrackingStatusRepository.Add(trackingStatusDO);
+                    }
+                    else
+                    {
+                        trackingStatusDO.TrackingType = TrackingType.BookingState;
+                        trackingStatusDO.TrackingStatus = TrackingType.TestState;
+                    }
+                    uow.SaveChanges();
+                }
+            }
+        }
+
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using Daemons;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -10,9 +11,11 @@ using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
+using KwasantTest.Daemons;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using Utilities;
 
 namespace KwasantTest.Services
 {
@@ -27,7 +30,7 @@ namespace KwasantTest.Services
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-
+            ConfigRepository.Set("MaxBRIdle", "1");
             _fixture = new FixtureData();
         }
 
@@ -228,5 +231,40 @@ namespace KwasantTest.Services
             List<Object> requests = (new BookingRequest()).GetAllByUserId(_uow.BookingRequestRepository, 0, 10, _uow.BookingRequestRepository.GetAll().FirstOrDefault().User.Id);
             Assert.AreEqual(1, requests.Count);
         }
+
+        [Category("BRM")]
+        public void GetStaleBookingRequestsTest2()
+        {
+
+            // MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { };
+            MailMessage message = new MailMessage(new MailAddress("bijendra@inwizards.com", "Mister Customer"), new MailAddress("bijendra@inwizards.com", "Bookit Services")) { };
+            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            bookingRequest.User = _fixture.TestUser1();
+            (new BookingRequest()).Process(_uow, bookingRequest);
+
+            bookingRequest.BookingRequestState = BookingRequestState.CheckedOut;
+            bookingRequest.BookerId = bookingRequest.User.Id;
+            bookingRequest.LastUpdated = DateTimeOffset.Now;
+            _uow.SaveChanges();
+
+            int maxIdleMinutes = 1; int minutes = 0; ;
+            bool check = true;
+            while (check)
+            {
+                System.Threading.Thread.Sleep(70000);
+                minutes = minutes + 1;
+                if (maxIdleMinutes == minutes)
+                {
+                    var om = new OperationsMonitor();
+                    DaemonTests.RunDaemonOnce(om);
+                    break;
+                }
+            }
+
+            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.BookingRequestState == BookingRequestState.Unprocessed);
+            Assert.AreEqual(1, requestNow.Count());
+        }
+
     }
 }
