@@ -77,7 +77,7 @@ namespace Data.Entities
 
         void ICreateHook.AfterCreate()
         {
-            AlertManager.CustomerCreated(this);
+            AlertManager.CustomerCreated(this.Id);
         }
     }
 }

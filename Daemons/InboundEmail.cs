@@ -116,14 +116,15 @@ namespace Daemons
                 try
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, messageInfo.Message);
+                    
                     //assign the owner of the booking request to be the owner of the From address
 
                     (new BookingRequest()).Process(unitOfWork, bookingRequest);
 
                     unitOfWork.SaveChanges();
 
-                    AlertManager.BookingRequestCreated(bookingRequest);
-                    AlertManager.EmailReceived(bookingRequest, bookingRequest.User);
+                    AlertManager.BookingRequestCreated(bookingRequest.Id);
+                    AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
                 }
                 catch (Exception e)
                 {
