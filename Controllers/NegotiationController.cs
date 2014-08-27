@@ -80,7 +80,10 @@ namespace KwasantWeb.Controllers
                 NegotiationDO negotiationDO;
                 if (value.Id == null)
                 {
-                    negotiationDO = new NegotiationDO();
+                    negotiationDO = new NegotiationDO
+                    {
+                        DateCreated = DateTime.Now
+                    };
                     uow.NegotiationsRepository.Add(negotiationDO);
                 }
                 else

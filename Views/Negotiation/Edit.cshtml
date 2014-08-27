@@ -143,6 +143,29 @@
         var spinner = Kwasant.IFrame.DisplaySpinner();
 
         var negotiation = getNegotiationData();
+        
+        //Do checks here.
+        var validationErrors = [];
+        $.each(negotiation.Questions, function(index, obj) {
+            if (obj.Text === undefined ||
+                obj.Text === null ||
+                obj.Text === '') {
+                validationErrors.push('Please provide text for every question.');
+            }
+        });
+        
+        if (validationErrors.length > 0) {
+            var errorMessage = "Please resolve the following issues before saving: \n";
+
+            $.each(validationErrors, function(index, error) {
+                errorMessage += "\n - " + error;
+            });
+
+            alert(errorMessage);
+            spinner.hide();
+            return;
+        }
+
         $.ajax({
             type: "POST",
             dataType: 'json',

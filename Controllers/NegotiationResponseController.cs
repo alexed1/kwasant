@@ -27,7 +27,7 @@ namespace KwasantWeb.Controllers
             {
                 var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (negotiationDO == null)
-                    throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
+                    throw new HttpException(404, "Negotiation not found.");
 
                 //Temporary for now, perhaps it can be a parameter (if they see the 'already answered page', maybe they want to force-change their answers).
                 var checkAlreadyAnswered = false;

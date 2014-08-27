@@ -289,6 +289,7 @@
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="KwasantHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\CalendarVM.cs" />
     <Compile Include="ViewModels\EventVM.cs" />
     <Compile Include="ViewModels\MyAccountVM.cs" />
@@ -534,8 +535,6 @@
     <Content Include="Content\templates\inline_html_template_v1.html" />
     <Content Include="Content\templates\googletemplate1.html" />
     <Compile Include="Controllers\External\DayPilot\Providers\EventCalendarController.cs" />
-    <Content Include="Errors\DefaultError.html" />
-    <Content Include="Errors\404.html" />
     <Content Include="Index.aspx" />
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
@@ -748,6 +747,7 @@
     <Content Include="Views\Calendar\GetNegotiationCalendars.cshtml" />
     <Content Include="Views\Negotiation\EventWindows.cshtml" />
     <Content Include="Views\NegotiationResponse\View.cshtml" />
+    <Content Include="Views\Shared\404.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

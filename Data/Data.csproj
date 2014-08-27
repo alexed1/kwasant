@@ -187,6 +187,10 @@
     <Compile Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.Designer.cs">
       <DependentUpon>201408251234014_AddCascadeForAttendeeOnNegotiations.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408271520005_AddDateCreatedToNegotiationDO.cs" />
+    <Compile Include="Migrations\201408271520005_AddDateCreatedToNegotiationDO.Designer.cs">
+      <DependentUpon>201408271520005_AddDateCreatedToNegotiationDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
@@ -829,6 +833,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.resx">
       <DependentUpon>201408251234014_AddCascadeForAttendeeOnNegotiations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408271520005_AddDateCreatedToNegotiationDO.resx">
+      <DependentUpon>201408271520005_AddDateCreatedToNegotiationDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

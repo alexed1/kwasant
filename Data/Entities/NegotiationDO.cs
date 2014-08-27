@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.States.Templates;
@@ -31,6 +32,7 @@ namespace Data.Entities
         [InverseProperty("Negotiation")]
         public virtual List<QuestionDO> Questions { get; set; }
 
+        public DateTime DateCreated { get; set; }
 
         public NegotiationDO ()
         {
