@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Data.Validators;
+using Data.Validations;
 using KwasantCore.Managers;
 using RazorEngine;
 using Utilities;
@@ -54,7 +51,7 @@ namespace KwasantCore.Services
             curInvitation.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
 
             var user = new User();
-            var userID = user.GetOrCreate(uow, curAttendee.EmailAddress).Id;
+            var userID = user.GetOrCreateFromBR(uow, curAttendee.EmailAddress).Id;
 
             if (curType == InvitationType.ChangeNotification)
             {

@@ -242,7 +242,7 @@ namespace KwasantWeb.Controllers
 */
 
         [HttpPost]
-        public ActionResult ProcessChangedEvent(EventEditVM curEventVM, int confStatus = ConfirmationStatus.Unconfirmed, bool mergeEvents = false)
+        public ActionResult ProcessChangedEvent(EventVM curEventVM, int confStatus = ConfirmationStatus.Unconfirmed, bool mergeEvents = false)
         {
             if (confStatus == ConfirmationStatus.Unconfirmed)
             {

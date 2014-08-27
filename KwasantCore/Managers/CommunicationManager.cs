@@ -52,7 +52,6 @@ namespace KwasantCore.Managers
             }
         }
 
-/*
         public void DispatchNegotiationRequests(IUnitOfWork uow, int negotiationID)
         {
             DispatchNegotiationRequests(uow, uow.NegotiationsRepository.GetByKey(negotiationID));
@@ -80,6 +79,7 @@ namespace KwasantCore.Managers
             }
         }
 
+/*
         public void DispatchInvitations(IUnitOfWork uow, EventDO eventDO)
         {
             //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
