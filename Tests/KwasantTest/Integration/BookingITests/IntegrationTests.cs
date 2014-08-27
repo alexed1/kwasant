@@ -191,7 +191,6 @@ namespace KwasantTest.Integration.BookingITests
 
         public EventDO CreateTestEvent(BookingRequestDO testBR)
         {
-            EventDO eventDO;
             //Programmatically create an event that matches (more or less) the provide booking request
             if (testBR != null)
             {
@@ -199,11 +198,11 @@ namespace KwasantTest.Integration.BookingITests
                 var startString = lines[1].Remove(0, _startPrefix.Length);
                 var endString = lines[2].Remove(0, _endPrefix.Length);
                 var e = new Event();
-                eventDO = e.Create(_uow, testBR.Id, startString, endString);
+                EventDO eventDO = e.Create(_uow, testBR.Id, startString, endString);
                 eventDO.CreatedByID = "1";
                 eventDO.Description = "test event description";
                 _uow.EventRepository.Add(eventDO);
-                e.Process(_uow, eventDO);
+                e.Process(_uow, eventDO, eventDO.Attendees, new List<AttendeeDO>());
                 _uow.SaveChanges();
                 return eventDO;
             }

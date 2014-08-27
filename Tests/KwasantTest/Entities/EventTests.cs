@@ -19,7 +19,7 @@ namespace KwasantTest.Entities
         public IUnitOfWork _uow;
         private FixtureData _fixture;
         private Event _event;
-        private CommunicationManager _comm;
+        private Invitation _invitation;
 
         [SetUp]
         public void Setup()
@@ -29,7 +29,7 @@ namespace KwasantTest.Entities
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixture = new FixtureData();
             _event = new Event();
-            _comm = new CommunicationManager();
+            _invitation = new Invitation();
             
         }
 
@@ -54,13 +54,13 @@ namespace KwasantTest.Entities
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curEvent.Process(uow, eventDO);
+                curEvent.Process(uow, eventDO, eventDO.Attendees, new List<AttendeeDO>());
                 uow.SaveChanges();
             }
 
             //Verify emails created in memory
             EmailDO resultEmail = eventDO.Emails[0];
-            string expectedSubject = string.Format("Invitation from: " + _comm.GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +eventDO.StartDate);
+            string expectedSubject = string.Format("Invitation from: " + _invitation.GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +eventDO.StartDate);
             Assert.AreEqual(expectedSubject, resultEmail.Subject);
 
             //Verify emails stored to disk properly
