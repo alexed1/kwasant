@@ -281,11 +281,11 @@ td .custom-btn:first-child {
 
 /*General Styles*/
 
-html.ifarme-body {
+html.iframe-body {
     height: auto;
 }
 
-html.ifarme-body body {
+html.iframe-body body {
     min-height: inherit;
     height: auto;
 }
@@ -727,16 +727,16 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
 
 /* Data Tables customize pagination styles */
 
-.body-content .dataTables_wrapper .dataTables_paginate .paginate_button, .ifarme-body .dataTables_wrapper .dataTables_paginate .paginate_button {
+.body-content .dataTables_wrapper .dataTables_paginate .paginate_button, .iframe-body .dataTables_wrapper .dataTables_paginate .paginate_button {
 	transition: all ease-in-out .3s;	
 }
 
-.body-content .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover, .ifarme-body .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+.body-content .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover, .iframe-body .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
 	background: #0e0e0e;
 	color: #fff!important;	
 }
 
-.body-content .dataTables_wrapper .dataTables_paginate .paginate_button.current, .ifarme-body .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+.body-content .dataTables_wrapper .dataTables_paginate .paginate_button.current, .iframe-body .dataTables_wrapper .dataTables_paginate .paginate_button.current {
 	background: #d85e17!important;
 	border-color: #ff6207!important;
 	color: #fff!important;
@@ -1093,12 +1093,12 @@ body.email-info-section .email-content {
 	margin-bottom: 0;
 }
 
-.ifarme-body .history-view-event .dataTables_info {
+.iframe-body .history-view-event .dataTables_info {
 	width: 100%;
 
 }
 
-.ifarme-body .history-view-event .dataTables_paginate.paging_simple_numbers {
+.iframe-body .history-view-event .dataTables_paginate.paging_simple_numbers {
 	width: 100%;	
 }
 
@@ -1221,7 +1221,6 @@ today-calendar-tbl .first-col {
 }
 .negotiationsidebar .negotiation-mrbottom {
 	margin-bottom: 10px;
-	border-bottom: 1px solid #d85e17;
 }
 .negotiationsidebar .clear {
     clear:both;

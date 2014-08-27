@@ -152,15 +152,9 @@ namespace KwasantWeb.Controllers
                 }
 
                 var communicationManager = new CommunicationManager();
-
+                communicationManager.DispatchNegotiationRequests(uow, negotiationDO.Id);
                 uow.SaveChanges();
-
-                using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    communicationManager.DispatchNegotiationRequests(subUow, negotiationDO.Id);
-                    subUow.SaveChanges();
-                }
-
+                
                 return Json(negotiationDO.Id, JsonRequestBehavior.AllowGet);
             }
         }
@@ -169,9 +163,17 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
-                uow.NegotiationsRepository.Remove(negotiationDO);
-                uow.SaveChanges();
+                //var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+                //uow.NegotiationsRepository.Remove(negotiationDO);
+                //uow.SaveChanges();
+
+                NegotiationDO negotiationDO = uow.NegotiationsRepository.FindOne(n => n.Id == negotiationID);
+                if (negotiationDO != null)
+                {
+                    negotiationDO.NegotiationState = NegotiationState.Invalid;
+                    uow.SaveChanges();
+                }
+                
             }
             return Json(true, JsonRequestBehavior.AllowGet);
         }
