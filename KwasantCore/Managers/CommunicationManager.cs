@@ -198,27 +198,6 @@ namespace KwasantCore.Managers
             //Stub method for now
             return true;
         }
-        
-        private static void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)
-        {
-            iCalendarSerializer serializer = new iCalendarSerializer(iCal);
-            string fileToAttach = serializer.Serialize(iCal);
-
-            AttachmentDO attachmentDO = GetAttachment(fileToAttach);
-
-            attachmentDO.Email = emailDO;
-            emailDO.Attachments.Add(attachmentDO);
-        }
-
-
-        private static AttachmentDO GetAttachment(string fileToAttach)
-        {
-            return Email.CreateNewAttachment(
-                new System.Net.Mail.Attachment(
-                    new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
-                    new ContentType { MediaType = "application/ics", Name = "invite.ics" }
-                    ) { TransferEncoding = TransferEncoding.Base64 });
-        }
 
         public void ProcessBRNotifications(IList<BookingRequestDO> bookingRequests)
         {

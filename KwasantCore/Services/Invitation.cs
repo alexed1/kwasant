@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Mime;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Data.Validations;
 using KwasantCore.Managers;
+using KwasantICS.DDay.iCal;
+using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using RazorEngine;
 using Utilities;
+using Encoding = System.Text.Encoding;
 
 namespace KwasantCore.Services
 {
@@ -68,6 +73,9 @@ namespace KwasantCore.Services
             if (curEvent.Emails == null)
                 curEvent.Emails = new List<EmailDO>();
 
+            var calendar = Event.GenerateICSCalendarStructure(curEvent);
+            AttachCalendarToEmail(calendar, curInvitation);
+
             curEvent.Emails.Add(curInvitation);
 
             uow.InvitationRepository.Add(curInvitation);
@@ -91,6 +99,27 @@ namespace KwasantCore.Services
             curInvitation.HTMLText = GetEmailHTMLTextForUpdate(curEvent, userID);
             curInvitation.PlainText = GetEmailPlainTextForUpdate(curEvent, userID);
             return curInvitation;
+        }
+
+        private void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)
+        {
+            iCalendarSerializer serializer = new iCalendarSerializer(iCal);
+            string fileToAttach = serializer.Serialize(iCal);
+
+            AttachmentDO attachmentDO = GetAttachment(fileToAttach);
+
+            attachmentDO.Email = emailDO;
+            emailDO.Attachments.Add(attachmentDO);
+        }
+
+
+        private AttachmentDO GetAttachment(string fileToAttach)
+        {
+            return Email.CreateNewAttachment(
+                new System.Net.Mail.Attachment(
+                    new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
+                    new ContentType { MediaType = "application/ics", Name = "invite.ics" }
+                    ) { TransferEncoding = TransferEncoding.Base64 });
         }
 
         //if we have a first name and last name, use them together

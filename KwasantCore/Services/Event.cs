@@ -131,57 +131,6 @@ namespace KwasantCore.Services
             }
 
             return invitations;
-/*
-            var t = Utilities.Server.ServerUrl;
-            switch (eventDO.EventStatus)
-            {
-                case EventState.Booking:
-                    {
-                        eventDO.EventStatus = EventState.DispatchCompleted;
-
-                        var calendar = Event.GenerateICSCalendarStructure(eventDO);
-                        foreach (var attendeeDO in eventDO.Attendees)
-                        {
-                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, false);
-                            var email = new Email(uow, emailDO);
-                            AttachCalendarToEmail(calendar, emailDO);
-                            email.Send();
-                        }
-
-                        break;
-                    }
-                case EventState.ReadyForDispatch:
-                case EventState.DispatchCompleted:
-                    //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
-                    if (EventHasChanged(uow, eventDO))
-                    {
-                        eventDO.EventStatus = EventState.DispatchCompleted;
-                        var calendar = Event.GenerateICSCalendarStructure(eventDO);
-
-                        var newAttendees = eventDO.Attendees.Where(a => a.Id == 0).ToList();
-
-                        foreach (var attendeeDO in eventDO.Attendees)
-                        {
-                            //Id > 0 means it's an existing attendee, so we need to send the 'update' email to them.
-                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, !newAttendees.Contains(attendeeDO));
-                            var email = new Email(uow, emailDO);
-                            AttachCalendarToEmail(calendar, emailDO);
-                            email.Send();
-                        }
-                    }
-                    else
-                    {
-                        //If the event hasn't changed - we don't need a new email..?
-                    }
-                    break;
-
-                case EventState.ProposedTimeSlot:
-                    //Do nothing
-                    break;
-                default:
-                    throw new Exception("Invalid event status");
-            }
-*/
         }
 
         private EventDO Update(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, List<AttendeeDO> updatedAttendees, out List<AttendeeDO> newAttendees, out List<AttendeeDO> existingAttendees)
@@ -196,7 +145,7 @@ namespace KwasantCore.Services
                 existingAttendees = updatedAttendees.ToList();
             }
             eventDO = _mappingEngine.Map(updatedEventInfo, eventDO);
-            if (/*newAttendees != null || */uow.IsEntityModified(eventDO))
+            if (newAttendees != null || uow.IsEntityModified(eventDO))
             {
                 return eventDO;
             }

@@ -208,36 +208,6 @@ namespace KwasantWeb.Controllers
             return View(eventVM);
         }
 
-/*
-        //processes events that have been entered into the form and confirmed
-        public ActionResult ProcessConfirmedEvent(EventVM eventVM, bool mergeEvents = false)
-        {
-            using (var uow = GetUnitOfWork())
-            {
-                if (eventVM.Id == 0)
-                    throw new ApplicationException("event should have been created and saved in #new, so Id should not be zero");
-
-                EventDO existingEvent = uow.EventRepository.GetByKey(eventVM.Id);
-
-                if (existingEvent == null)
-                    throw new ApplicationException("should not be able to call this Update method with an ID that doesn't match an existing event");
-
-                Mapper.Map(eventVM, existingEvent);
-                existingEvent.SyncStatus = EventSyncState.SyncWithExternal;
-                _attendee.ManageEventAttendeeList(uow, existingEvent, eventVM.Attendees);
-
-                _event.Process(uow, existingEvent);
-
-                if (mergeEvents)
-                    MergeTimeSlots(uow, existingEvent);
-                
-                uow.SaveChanges();
-
-                return JavaScript(SimpleJsonSerializer.Serialize(true));
-            }
-        }
-*/
-
         [HttpPost]
         public ActionResult ProcessChangedEvent(EventVM curEventVM, int confStatus = ConfirmationStatus.Unconfirmed, bool mergeEvents = false)
         {
