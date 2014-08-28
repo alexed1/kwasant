@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Managers;
+using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -15,16 +16,22 @@ namespace KwasantWeb.Controllers
     public class NegotiationResponseController : Controller
     {
         private const bool EnforceUserInAttendees = true;
+        private User _user;
+        public NegotiationResponseController()
+        {
+            _user = new User();
+
+        }
 
         [KwasantAuthorize(Roles = "Customer")]
         public ActionResult View(int negotiationID)
         {
-            ConfirmUserInAttendees(negotiationID);
-
             var userID = User.Identity.GetUserId();
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                AuthenticateUser(uow, negotiationID);
+               
+
                 var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (negotiationDO == null)
                     throw new HttpException(404, "Negotiation not found.");
@@ -120,7 +127,7 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult ProcessResponse(NegotiationResponsePostData value)
         {
-            ConfirmUserInAttendees(value.NegotiationID);
+           
 
             var userID = User.Identity.GetUserId();
 
@@ -128,6 +135,7 @@ namespace KwasantWeb.Controllers
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
+                    AuthenticateUser(uow, value.NegotiationID);
                     foreach (var response in value.Responses)
                     {
                         var questionResponse = uow.QuestionResponseRepository.GetQuery().FirstOrDefault(qr => qr.QuestionID == response.QuestionID);
@@ -150,6 +158,16 @@ namespace KwasantWeb.Controllers
             return View();
         }
 
+        public void AuthenticateUser(IUnitOfWork uow, int negotiationID)
+        {
+            //If this is a regular customer, verify that they're an attendee
+            var userID = User.Identity.GetUserId();
+            if (!_user.VerifyMinimumRole("Booker", userID, uow))
+                ConfirmUserInAttendees(negotiationID);
+        }
+
+
+        //verify that the person trying to view this negotiation is one of the attendees.
         public void ConfirmUserInAttendees(int negotiationID)
         {
             if (!EnforceUserInAttendees)
@@ -166,7 +184,7 @@ namespace KwasantWeb.Controllers
 
                 var existingUserDO = uow.UserRepository.GetQuery().Where(u => u.Id == currentUserID).FirstOrDefault();
                 if (existingUserDO == null)
-                    throw new HttpException(404, "User not found.");
+                    throw new HttpException(404, "We don't have a User record for you. ");
 
                 var currentUserEmail = existingUserDO.EmailAddress.Address.ToLower();
 
@@ -174,7 +192,7 @@ namespace KwasantWeb.Controllers
                     if (attendee.EmailAddress.Address.ToLower() == currentUserEmail)
                         return;
 
-                throw new HttpException(404, "Negotiation not found.");
+                throw new HttpException(404, "You're not authorized to view information about this Negotiation");
             }
         }
 

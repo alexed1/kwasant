@@ -161,5 +161,37 @@ namespace KwasantCore.Services
 
             return um;
         }
+
+
+        //
+        //get roles for this User
+        //if at least one role meets or exceeds the provided level, return true, else false
+        public bool VerifyMinimumRole(string minAuthLevel, string curUserId, IUnitOfWork uow)
+        {
+            var um = GetUserManager(uow);
+            var roles = um.GetRoles(curUserId);
+            String[] acceptableRoles = {};
+            switch (minAuthLevel)
+            {
+                case "Customer":
+                    acceptableRoles = new[] {"Customer", "Booker", "Admin"};
+                    break;
+                case "Booker":
+                    acceptableRoles = new[] {"Booker", "Admin"};
+                    break;
+                case "Admin":
+                    acceptableRoles = new[] {"Admin"};
+                    break;
+            }
+            //if any of the roles that this user belongs to are contained in the current set of acceptable roles, return true
+            if (roles.Any(role => acceptableRoles.Contains(role)))
+                        return true;
+                    return false;
+         
+
+        }
+
+
+
     }
 }
