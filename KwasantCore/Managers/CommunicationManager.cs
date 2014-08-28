@@ -67,7 +67,7 @@ namespace KwasantCore.Managers
                 var emailDO = new EmailDO();
                 emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
-                emailDO.Subject = "Welcome to Kwasant";
+                emailDO.Subject = "Regarding:" + negotiationDO.Name;
                 var htmlText = String.Format("Please click <a href='{0}NegotiationResponse/View?negotiationID={1}'>here</a> to answer some questions about your upcoming event.", Server.ServerUrl, negotiationDO.Id);
 
                 emailDO.HTMLText = htmlText;
