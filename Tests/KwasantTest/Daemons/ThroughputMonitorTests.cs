@@ -25,7 +25,7 @@ namespace KwasantTest.Daemons
             ConfigRepository.Set("ThroughputCheckingEndTime", DateTime.Now.Add(new TimeSpan(0, 1, 0, 0)).ToUniversalTime().ToString("hh:mm") + "z");
         }
 
-        [Test]
+        [Test, Ignore]
         public void TestThroughputManagerExpired()
         {
             var smsPackager = new Mock<ISMSPackager>();
