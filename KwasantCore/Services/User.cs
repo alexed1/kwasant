@@ -16,8 +16,6 @@ using System.Web;
 using Data.Entities;
 using StructureMap;
 using Utilities;
-using KwasantWeb.ViewModels;
-
 using KwasantCore.Helper;
 
 
