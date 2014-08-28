@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
+using System.Net.Security;
 using Daemons;
 using Data.Interfaces;
 using KwasantCore.StructureMap;
@@ -24,7 +25,7 @@ namespace KwasantTest.Daemons
         [Test]
         public void TestInboundEmail()
         {
-            var clientMock = new Mock<ImapClient>();
+            var clientMock = new Mock<IImapClient>();
 
             const string testFromEmailAddress = "test.user@gmail.com";
             const string testSubject = "Test Subject";
@@ -38,11 +39,12 @@ namespace KwasantTest.Daemons
                 Body = testBody,
             };
             
+            
             mailMessage.To.Add(new MailAddress(testToEmailAddress));
 
-
+            clientMock.Setup(c => c.ListMailboxes()).Returns(new List<String> { "MockedMailbox"});
             clientMock.Setup(c => c.Search(It.IsAny<SearchCondition>(), It.IsAny<String>())).Returns(new List<uint> { 1 });
-            clientMock.Setup(c => c.GetMessage(1, true, null)).Returns(mailMessage);
+            clientMock.Setup(c => c.GetMessage(1, true, It.IsAny<String>())).Returns(mailMessage);
 
             var ie = new InboundEmail(clientMock.Object);
             DaemonTests.RunDaemonOnce(ie);

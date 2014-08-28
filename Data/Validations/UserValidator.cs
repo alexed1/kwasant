@@ -1,7 +1,7 @@
 ﻿using Data.Entities;
 using FluentValidation;
 
-namespace Data.Validators
+namespace Data.Validations
 {
   public class UserValidator: AbstractValidator<UserDO>
     {

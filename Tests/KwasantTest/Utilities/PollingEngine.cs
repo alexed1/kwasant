@@ -113,13 +113,13 @@ namespace KwasantTest.Utilities
             //run inbound daemon, checking for a generated BookingRequest, until success or timeout
             using (var timer = this.CreateTimer(maxPollingTime, "Polling"))
             {
-                BookingRequestDO request;
-                do
-                {
+            BookingRequestDO request;
+            do
+            {
                     if (inboundDaemon != null && targetType == "intake")
                     {
                         //querying one of our intake accounts. Might need to kick the Daemon, like getting a car engine to turn over
-                        DaemonTests.RunDaemonOnce(inboundDaemon);
+                DaemonTests.RunDaemonOnce(inboundDaemon);
                     }
                     else
                     {
@@ -127,7 +127,7 @@ namespace KwasantTest.Utilities
                     }
 
                     queryResults = injectedQuery(targetCriteria, unreadMessages).ToList();
-                    Console.WriteLine(String.Format("queryResults count is {0}", queryResults.Count()));
+                    //Console.WriteLine(String.Format("queryResults count is {0}", queryResults.Count()));
                 } while (queryResults.Count == 0 && !timer.TimedOut);
             }
             return queryResults;
@@ -190,12 +190,12 @@ namespace KwasantTest.Utilities
                 new CalendarDO()    {
                         Id=1,
                         Name="test"
-                }
+    }
             };
             CalendarDO t = new CalendarDO();
             t.Name = "test";
             t.Id = 1;
             _uow.UserRepository.Add(currUserDO);
-        }
+}
     }
 }

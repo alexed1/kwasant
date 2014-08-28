@@ -5,13 +5,11 @@ using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Google.Apis.Auth.OAuth2.Mvc;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
@@ -86,7 +84,7 @@ namespace KwasantWeb.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult Confirm(RegisterViewModel model)
+        public ActionResult Confirm(RegisterVM model)
         {
             return View(model);
         }
@@ -94,7 +92,7 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public  ActionResult Register(RegisterViewModel model)
+        public  ActionResult Register(RegisterVM model)
         {
             try
             {
@@ -126,7 +124,7 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
+        public async Task<ActionResult> Login(LoginVM model, string returnUrl)
         {
             try
             {

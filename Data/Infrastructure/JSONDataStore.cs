@@ -2,10 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Interfaces;
 using Google.Apis.Util.Store;
 using Newtonsoft.Json;
-using StructureMap;
 
 namespace Data.Infrastructure
 {

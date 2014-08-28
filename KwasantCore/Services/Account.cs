@@ -6,7 +6,6 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using StructureMap;
 using Utilities;
-using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace KwasantCore.Services
 {
@@ -59,10 +58,10 @@ namespace KwasantCore.Services
 
                 uow.SaveChanges();
 
-                if (newUserDO != null)
-                {
-                    AlertManager.CustomerCreated(newUserDO);
-                }
+                //if (newUserDO != null)
+                //{
+                //    AlertManager.CustomerCreated(newUserDO);
+                //}
 
                 return curRegStatus;
             }

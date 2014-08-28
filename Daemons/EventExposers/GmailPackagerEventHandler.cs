@@ -1,5 +1,4 @@
 ﻿using KwasantCore.Managers.APIManager.Packagers;
-using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 
 namespace Daemons.EventExposers
 {

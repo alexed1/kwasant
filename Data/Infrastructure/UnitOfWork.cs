@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity.Validation;
 using System.Linq;
@@ -118,17 +117,7 @@ namespace Data.Infrastructure
                 return _remoteCalendarLinkRepository ?? (_remoteCalendarLinkRepository = new RemoteCalendarLinkRepository(this));
             }
         }
-
-        private ClarificationRequestRepository _clarificationRequestRepository;
-
-        public ClarificationRequestRepository ClarificationRequestRepository
-        {
-            get
-            {
-                return _clarificationRequestRepository ?? (_clarificationRequestRepository = new ClarificationRequestRepository(this));
-            }
-        }
-
+        
         private CommunicationConfigurationRepository _communicationConfigurationRepository;
 
         public CommunicationConfigurationRepository CommunicationConfigurationRepository
@@ -268,6 +257,36 @@ namespace Data.Infrastructure
             }
         }
 
+        private QuestionRepository _questionRepository;
+
+        public QuestionRepository QuestionRepository
+        {
+            get
+            {
+                return _questionRepository ?? (_questionRepository = new QuestionRepository(this));
+            }
+        }
+
+        private AnswerRepository _answerRepository;
+
+        public AnswerRepository AnswerRepository
+        {
+            get
+            {
+                return _answerRepository ?? (_answerRepository = new AnswerRepository(this));
+            }
+        }
+
+        private QuestionResponseRepository _questionResponseRepository;
+
+        public QuestionResponseRepository QuestionResponseRepository
+        {
+            get
+            {
+                return _questionResponseRepository ?? (_questionResponseRepository = new QuestionResponseRepository(this));
+            }
+        }
+
 
         private NegotiationsRepository _negotiationsRepository;
 
@@ -289,15 +308,6 @@ namespace Data.Infrastructure
             }
         }
 
-        private AnswersRepository _answersRepository;
-
-        public AnswersRepository AnswersRepository
-        {
-            get
-            {
-                return _answersRepository ?? (_answersRepository = new AnswersRepository(this));
-            }
-        }
         public void Save()
         {
             _context.SaveChanges();

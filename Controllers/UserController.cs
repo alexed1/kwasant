@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using System.Net;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.Exceptions;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantWeb.ViewModels;
@@ -47,7 +46,7 @@ namespace KwasantWeb.Controllers
             User currUser = new User();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-              
+
                 UserData currUserData = currUser.Query(uow, userId)[0];
                 UserVM currUserVM = new UserVM { User = currUserData.User, Role = currUserData.Role, RoleId = currUserData.RoleId };
                 return View(currUserVM);
@@ -109,8 +108,8 @@ namespace KwasantWeb.Controllers
                 var remoteCalendarProviders = uow.RemoteCalendarProviderRepository.GetAll();
                 var tuple = new Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>(curUserDO, remoteCalendarProviders);
                 
-                var curManageUserViewModel = AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserViewModel>(tuple);
-                return View(curManageUserViewModel);
+                var curManageUserVM = AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserVM>(tuple);
+                return View(curManageUserVM);
             }
         }
 

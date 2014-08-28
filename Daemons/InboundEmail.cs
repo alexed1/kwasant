@@ -15,7 +15,7 @@ namespace Daemons
 {
     public class InboundEmail : Daemon
     {
-        private  ImapClient _client;
+        private IImapClient _client;
         public string username;
         public string password;
 
@@ -26,7 +26,7 @@ namespace Daemons
         }
 
         //be careful about using this form. can get into problems involving disposal.
-        public InboundEmail(ImapClient client)
+        public InboundEmail(IImapClient client)
         {
             _client = client;
         }
@@ -65,7 +65,7 @@ namespace Daemons
 
         protected override void Run()
         {
-            ImapClient client;
+            IImapClient client;
             try
             {
                 client = _client ?? new ImapClient(GetIMAPServer(), GetIMAPPort(), UseSSL());
@@ -116,14 +116,15 @@ namespace Daemons
                 try
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, messageInfo.Message);
+                    
                     //assign the owner of the booking request to be the owner of the From address
 
                     (new BookingRequest()).Process(unitOfWork, bookingRequest);
 
                     unitOfWork.SaveChanges();
 
-                    AlertManager.BookingRequestCreated(bookingRequest);
-                    AlertManager.EmailReceived(bookingRequest, bookingRequest.User);
+                    AlertManager.BookingRequestCreated(bookingRequest.Id);
+                    AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
                 }
                 catch (Exception e)
                 {

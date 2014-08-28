@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using FluentValidation.Validators;
 
-
-namespace Data.Validators
+namespace Data.Validations
 {
     
 

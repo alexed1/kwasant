@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Validators;
 using FluentValidation;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -31,7 +30,7 @@ namespace KwasantCore.Services
             }
         }
 
-        public UserDO GetOrCreate(IUnitOfWork uow, EmailAddressDO emailAddressDO)
+        public UserDO GetOrCreateFromBR(IUnitOfWork uow, EmailAddressDO emailAddressDO)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -40,8 +39,8 @@ namespace KwasantCore.Services
             UserDO curUser = Get(uow, emailAddressDO);
             if (curUser == null)
             {
-                var id = Create(emailAddressDO.Address);
-                curUser = uow.UserRepository.GetByKey(id);
+                curUser = uow.UserRepository.CreateFromEmail(emailAddressDO);
+               
             }
             return curUser;
         }
@@ -62,53 +61,14 @@ namespace KwasantCore.Services
             return uow.UserRepository.GetByEmailAddress(emailAddressDO);
         }
 
-        /// <summary>
-        /// Creates a user with passed email address in a separate UnitOfWork.
-        /// </summary>
-        /// <returns>
-        /// Returns created user's ID.
-        /// </returns>
-        /// <remarks>
-        /// Doesn't return the created user entity object as anyway it would belong to closed UnitOfWork instantiated inside.
-        /// </remarks>
-        /// <param name="emailAddress"></param>
-        public string Create(string emailAddress)
-        {
-            if (string.IsNullOrEmpty(emailAddress))
-                throw new ArgumentNullException("emailAddress");
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress);
-                var curUser = Create(uow, curEmailAddress);
-                uow.SaveChanges();
-                AlertManager.CustomerCreated(curUser);
-                return curUser.Id;
-            }
-        }
-
-        private UserDO Create(IUnitOfWork uow, EmailAddressDO emailAddressDO,
-            string userName = null, string firstName = null, string lastName = null)
-        {
-            Debug.Assert(uow != null);
-            Debug.Assert(emailAddressDO != null);
-            var curUser = new UserDO
-            {
-                UserName = userName ?? emailAddressDO.Address,
-                FirstName = firstName ?? emailAddressDO.Name,
-                LastName = lastName ?? string.Empty,
-                EmailAddress = emailAddressDO
-            };
-            UserValidator curUserValidator = new UserValidator();
-            curUserValidator.ValidateAndThrow(curUser);
-            uow.UserRepository.Add(curUser);
-            uow.CalendarRepository.CheckUserHasCalendar(curUser);
-            return curUser;
-        }
 
         public UserDO Register(IUnitOfWork uow, string userName, string password, string role)
         {
-            var userDO = Create(uow,
-                emailAddressDO: uow.EmailAddressRepository.GetOrCreateEmailAddress(userName),
+
+            EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
+             
+            var userDO =uow.UserRepository.CreateFromEmail(
+                emailAddressDO:  curEmailAddress,
                 userName: userName,
                 firstName: userName,
                 lastName: userName);
@@ -205,39 +165,15 @@ namespace KwasantCore.Services
         }
 
 
-       
-
-        //public List<UserVM> Query(IUnitOfWork uow, String userId)
-        //{
-        //    List<UserVM> currUserVMs = new List<UserVM>();
-
-        //    if (uow.UserRepository == null)
-        //        return currUserVMs;
-
-        //    var currUserManager = User.GetUserManager(uow);
-        //    currUserVMs = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null)
-        //       .Select(
-        //            u =>
-        //                new UserVM
-        //                {
-        //                    User = new UserDO { Id = u.Id, FirstName = u.FirstName, LastName = u.LastName, EmailAddress = u.EmailAddress },
-        //                    RoleId = u.Roles.ToList()[0].RoleId,
-        //                    Role = currUserManager.GetRoles(u.Id).ToList()[0]
-        //                })
-        //        .ToList();
-        //    return currUserVMs;
-        //}
-
 
         public List<UserData> Query(IUnitOfWork uow, String userId)
         {
-            List<UserData> currUserVMs = new List<UserData>();
-
+            List<UserData> currUserDataList = new List<UserData>();
             if (uow.UserRepository == null)
-                return currUserVMs;
+                return currUserDataList;
 
             var currUserManager = User.GetUserManager(uow);
-            currUserVMs = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null)
+            currUserDataList = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null)
                .Select(
                     u =>
                         new UserData
@@ -247,7 +183,7 @@ namespace KwasantCore.Services
                             Role = currUserManager.GetRoles(u.Id).ToList()[0]
                         })
                 .ToList();
-            return currUserVMs;
+            return currUserDataList;
         }
     }
 }

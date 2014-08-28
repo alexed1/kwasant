@@ -14,7 +14,6 @@ namespace Data.Interfaces
         BookingRequestRepository BookingRequestRepository { get; }
         BookingRequestStatusRepository BookingRequestStatusRepository { get; }
         CalendarRepository CalendarRepository { get; }
-        ClarificationRequestRepository ClarificationRequestRepository { get; }
         CommunicationConfigurationRepository CommunicationConfigurationRepository { get; }
         EmailRepository EmailRepository { get; }
         EnvelopeRepository EnvelopeRepository { get; }
@@ -30,8 +29,10 @@ namespace Data.Interfaces
         IncidentRepository IncidentRepository { get; }
         NegotiationsRepository NegotiationsRepository { get; }
         QuestionsRepository QuestionsRepository { get; }
-        AnswersRepository AnswersRepository { get; }
         FactRepository FactRepository { get; }
+        QuestionRepository QuestionRepository { get; }
+        AnswerRepository AnswerRepository { get; }
+        QuestionResponseRepository QuestionResponseRepository { get; }
 
         /// <summary>
         /// Call this to commit the unit of work

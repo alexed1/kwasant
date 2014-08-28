@@ -1,15 +1,15 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
-using System.Web.Mvc;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Data.Validators;
+using Data.Validations;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
@@ -17,7 +17,6 @@ using RazorEngine;
 using StructureMap;
 using Microsoft.WindowsAzure;
 using KwasantCore.Services;
-using StructureMap.Graph;
 using Utilities;
 using Encoding = System.Text.Encoding;
 
@@ -32,17 +31,17 @@ namespace KwasantCore.Managers
         }
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
-        public void NewCustomerWorkflow(UserDO curUser)
+        public void NewCustomerWorkflow(string curUserId)
         {
-            GenerateWelcomeEmail(curUser);  
+            GenerateWelcomeEmail(curUserId);  
         }
 
-        public void GenerateWelcomeEmail(UserDO user)
+        public void GenerateWelcomeEmail(string curUserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 // WARNING: 'user' parameter must not be used as reference in scope of this UnitOfWork as it is attached to another UnitOfWork
-                var curUser = uow.UserRepository.GetByKey(user.Id);
+                var curUser = uow.UserRepository.GetByKey(curUserId);
                 EmailDO curEmail = new EmailDO();
                 curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
@@ -50,6 +49,33 @@ namespace KwasantCore.Managers
                 Email _email = new Email(uow);
                 _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null);
                 uow.SaveChanges();
+            }
+        }
+
+        public void DispatchNegotiationRequests(IUnitOfWork uow, int negotiationID)
+        {
+            DispatchNegotiationRequests(uow, uow.NegotiationsRepository.GetByKey(negotiationID));
+        }
+
+        public void DispatchNegotiationRequests(IUnitOfWork uow, NegotiationDO negotiationDO)
+        {
+            if (negotiationDO.Attendees == null)
+                return;
+
+            foreach (var attendee in negotiationDO.Attendees)
+            {
+                var emailDO = new EmailDO();
+                emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
+                emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
+                emailDO.Subject = "Welcome to Kwasant";
+                var htmlText = String.Format("Please click <a href='{0}NegotiationResponse/View?negotiationID={1}'>here</a> to answer some questions about your upcoming event.", Server.ServerUrl, negotiationDO.Id);
+
+                emailDO.HTMLText = htmlText;
+                emailDO.PlainText = "Please click here: " + String.Format("{0}NegotiationResponse/View?negotiationID={1}", Server.ServerUrl, negotiationDO.Id);
+                emailDO.EmailStatus = EmailState.Queued;
+
+                uow.EnvelopeRepository.CreateGmailEnvelope(emailDO);
+                uow.EmailRepository.Add(emailDO);
             }
         }
 
@@ -152,7 +178,7 @@ namespace KwasantCore.Managers
             outboundEmail.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
 
             var user = new User();
-            var userID = user.GetOrCreate(uow, attendeeDO.EmailAddress).Id;
+            var userID = user.GetOrCreateFromBR(uow, attendeeDO.EmailAddress).Id;
             
             if (isUpdate)
             {
