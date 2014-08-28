@@ -34,6 +34,10 @@ namespace Data.Infrastructure
         public delegate void BookingRequestStateChangeHandler(int bookingRequestId);
         public static event BookingRequestStateChangeHandler AlertBookingRequestStateChange;
 
+        public delegate void BookingRequestTimeoutStateChangeHandler(BookingRequestDO bookingRequestDO);
+        public static event BookingRequestTimeoutStateChangeHandler AlertBookingRequestProcessingTimeout;
+
+
         #region Method
         
         /// <summary>
@@ -78,6 +82,12 @@ namespace Data.Infrastructure
             if (AlertBookingRequestStateChange != null)
                 AlertBookingRequestStateChange(bookingRequestId);
         }
+        public static void BookingRequestProcessingTimeout(BookingRequestDO bookingRequestDO)
+        {
+            if (AlertBookingRequestProcessingTimeout != null)
+                AlertBookingRequestProcessingTimeout(bookingRequestDO);
+        }
+
         #endregion
     }
 
@@ -93,6 +103,7 @@ namespace Data.Infrastructure
             AlertManager.AlertBookingRequestCreated += ProcessBookingRequestCreated;
             AlertManager.AlertBookingRequestStateChange += ProcessBookingRequestStateChange;
             AlertManager.AlertCustomerCreated += NewCustomerCreated;
+            AlertManager.AlertBookingRequestProcessingTimeout += ProcessTimeout;
         }
 
         private void NewCustomerCreated(string curUserId)
@@ -225,5 +236,22 @@ namespace Data.Infrastructure
                 Logger.GetLogger().Info(curAction.Data);
             uow.FactRepository.Add(curAction);
         }
+        public void ProcessTimeout(BookingRequestDO bookingRequestDO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "BookingRequest";
+                incidentDO.SecondaryCategory = "Processing";
+                incidentDO.CreateTime = DateTime.Now;
+                incidentDO.Activity = "TimeOut";
+                incidentDO.ObjectId = bookingRequestDO.Id;
+                incidentDO.CustomerId = bookingRequestDO.User.Id;
+                incidentDO.BookerId = bookingRequestDO.BookerId;
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+            }
+        }
+
     }
 }
