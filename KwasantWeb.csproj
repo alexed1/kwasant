@@ -417,10 +417,10 @@
     <Content Include="Content\DataTables-1.10.0\media\images\sort_desc.png" />
     <Content Include="Content\DataTables-1.10.0\media\images\sort_desc_disabled.png" />
     <Content Include="Content\img\ajax-loader.gif" />
-    <Content Include="Content\img\backgrounds\background-test9.jpg" />
+    <Content Include="Content\img\backgrounds\background_coffee.jpg" />
+    <Content Include="Content\img\backgrounds\background_coffee_and_croissant.jpg" />
+    <Content Include="Content\img\backgrounds\background_coffe_and_phone.jpg" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
-    <Content Include="Content\img\backgrounds\homepage89.png" />
-    <Content Include="Content\img\backgrounds\homepagesecond.jpg" />
     <Content Include="Content\img\backgrounds\ie-black-bg.png" />
     <Content Include="Content\img\Croissant\croissant_nolic.jpg" />
     <Content Include="Content\img\Cross.png" />
