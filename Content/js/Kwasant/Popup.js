@@ -241,7 +241,10 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
                     that.css('left', leftPos);
 
                     that.css('width', iframeWidth + 'px');
+                    that.css('minWidth', iframeWidth + 'px');
+                    
                     that.css('height', iframeHeight + 'px');
+                    that.css('minHeight', iframeHeight + 'px');
                 };
 
                 if (options.pinned) {
