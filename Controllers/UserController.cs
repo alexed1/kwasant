@@ -16,6 +16,8 @@ using ViewModel.Models;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
 
+using KwasantCore.Helper;
+
 namespace KwasantWeb.Controllers
 {
     [KwasantAuthorize(Roles = "Customer")]
@@ -26,11 +28,12 @@ namespace KwasantWeb.Controllers
         {
             string userId = "";
             User currUser = new User();
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                List<UserVM> currUserVM = currUser.Query(uow, userId);
-                return View(currUserVM);
+                List<UserVM> currUserVMs = new List<UserVM>();
+                List<UserData> currUserDataList = currUser.Query(uow, userId);
+                currUserDataList.ForEach(e => currUserVMs.Add(new UserVM { User = e.User, Role = e.Role, RoleId = e.RoleId }));
+                return View(currUserVMs);
             }
         }
 
@@ -44,7 +47,9 @@ namespace KwasantWeb.Controllers
             User currUser = new User();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                UserVM currUserVM = currUser.Query(uow, userId)[0];
+              
+                UserData currUserData = currUser.Query(uow, userId)[0];
+                UserVM currUserVM = new UserVM { User = currUserData.User, Role = currUserData.Role, RoleId = currUserData.RoleId };
                 return View(currUserVM);
             }
         }

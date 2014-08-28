@@ -18,6 +18,8 @@ using StructureMap;
 using Utilities;
 using KwasantWeb.ViewModels;
 
+using KwasantCore.Helper;
+
 
 namespace KwasantCore.Services
 {
@@ -207,9 +209,31 @@ namespace KwasantCore.Services
 
        
 
-        public List<UserVM> Query(IUnitOfWork uow, String userId)
+        //public List<UserVM> Query(IUnitOfWork uow, String userId)
+        //{
+        //    List<UserVM> currUserVMs = new List<UserVM>();
+
+        //    if (uow.UserRepository == null)
+        //        return currUserVMs;
+
+        //    var currUserManager = User.GetUserManager(uow);
+        //    currUserVMs = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null)
+        //       .Select(
+        //            u =>
+        //                new UserVM
+        //                {
+        //                    User = new UserDO { Id = u.Id, FirstName = u.FirstName, LastName = u.LastName, EmailAddress = u.EmailAddress },
+        //                    RoleId = u.Roles.ToList()[0].RoleId,
+        //                    Role = currUserManager.GetRoles(u.Id).ToList()[0]
+        //                })
+        //        .ToList();
+        //    return currUserVMs;
+        //}
+
+
+        public List<UserData> Query(IUnitOfWork uow, String userId)
         {
-            List<UserVM> currUserVMs = new List<UserVM>();
+            List<UserData> currUserVMs = new List<UserData>();
 
             if (uow.UserRepository == null)
                 return currUserVMs;
@@ -218,7 +242,7 @@ namespace KwasantCore.Services
             currUserVMs = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null)
                .Select(
                     u =>
-                        new UserVM
+                        new UserData
                         {
                             User = new UserDO { Id = u.Id, FirstName = u.FirstName, LastName = u.LastName, EmailAddress = u.EmailAddress },
                             RoleId = u.Roles.ToList()[0].RoleId,
@@ -227,8 +251,5 @@ namespace KwasantCore.Services
                 .ToList();
             return currUserVMs;
         }
-      
-        
-
     }
 }
