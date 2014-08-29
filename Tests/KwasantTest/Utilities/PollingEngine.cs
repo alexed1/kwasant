@@ -127,7 +127,7 @@ namespace KwasantTest.Utilities
                     }
 
                     queryResults = injectedQuery(targetCriteria, unreadMessages).ToList();
-                    Console.WriteLine(String.Format("queryResults count is {0}", queryResults.Count()));
+                    //Console.WriteLine(String.Format("queryResults count is {0}", queryResults.Count()));
                 } while (queryResults.Count == 0 && !timer.TimedOut);
             }
             return queryResults;

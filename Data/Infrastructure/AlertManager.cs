@@ -13,13 +13,13 @@ namespace Data.Infrastructure
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
     {       
-        public delegate void CustomerCreatedHandler(UserDO curUser);
+        public delegate void CustomerCreatedHandler(string curUserId);
         public static event CustomerCreatedHandler AlertCustomerCreated;
 
-        public delegate void BookingRequestCreatedHandler(BookingRequestDO bookingRequest);
+        public delegate void BookingRequestCreatedHandler(int bookingRequestId);
         public static event BookingRequestCreatedHandler AlertBookingRequestCreated;
 
-        public delegate void EmailReceivedHandler(EmailDO email, UserDO customer);
+        public delegate void EmailReceivedHandler(int emailId, string customerId);
         public static event EmailReceivedHandler AlertEmailReceived;
 
         public delegate void EventBookedHandler(int eventId, string customerId);
@@ -43,22 +43,22 @@ namespace Data.Infrastructure
         /// <summary>
         /// Publish Customer Created event
         /// </summary>
-        public static void CustomerCreated(UserDO curUser)
+        public static void CustomerCreated(string curUserId)
         {
             if (AlertCustomerCreated != null)
-                AlertCustomerCreated(curUser);
+                AlertCustomerCreated(curUserId);
         }
 
-        public static void BookingRequestCreated(BookingRequestDO bookingRequest)
+        public static void BookingRequestCreated(int bookingRequestId)
         {
             if (AlertBookingRequestCreated != null)
-                AlertBookingRequestCreated(bookingRequest);
+                AlertBookingRequestCreated(bookingRequestId);
         }
             
-        public static void EmailReceived(EmailDO email, UserDO customer)
+        public static void EmailReceived(int emailId, string customerId)
         {
             if (AlertEmailReceived != null)
-                AlertEmailReceived(email, customer);
+                AlertEmailReceived(emailId, customerId);
         }
         public static void EventBooked(int eventId, string customerId)
         {
@@ -106,7 +106,7 @@ namespace Data.Infrastructure
             AlertManager.AlertBookingRequestProcessingTimeout += ProcessTimeout;
         }
 
-        private void NewCustomerCreated(UserDO curUser)
+        private void NewCustomerCreated(string curUserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -116,17 +116,17 @@ namespace Data.Infrastructure
                                            PrimaryCategory = "User",
                                            SecondaryCategory = "Customer",
                                            Activity = "Created",
-                                           CustomerId = curUser.Id,
+                                           CustomerId = curUserId,
                                            CreateDate = DateTimeOffset.Now,
                                            ObjectId = 0,
-                                           Data = string.Format("User with email {0} created from: {1}", curUser.EmailAddress.Address, new StackTrace())
+                                           Data = string.Format("User with email {0} created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
                                        };
                 AddFact(uow, curAction);
                 uow.SaveChanges();
             }
         }
 
-        public void NewEmailReceived(EmailDO email, UserDO customer)
+        public void NewEmailReceived(int emailId, string customerId)
         {
             FactDO curAction = new FactDO()
             {
@@ -134,9 +134,9 @@ namespace Data.Infrastructure
                 PrimaryCategory = "Email",
                 SecondaryCategory = "Intake",
                 Activity = "Received",
-                CustomerId = customer.Id,
+                CustomerId = customerId,
                 CreateDate = DateTimeOffset.Now,
-                ObjectId = email.Id
+                ObjectId = emailId
             };
             SaveFact(curAction);
         }
@@ -168,7 +168,7 @@ namespace Data.Infrastructure
             };
             SaveFact(curAction);
         }
-        public void ProcessBookingRequestCreated(BookingRequestDO bookingRequest)
+        public void ProcessBookingRequestCreated(int bookingRequestId) 
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -178,9 +178,9 @@ namespace Data.Infrastructure
                                            PrimaryCategory = "Email",
                                            SecondaryCategory = "BookingRequest",
                                            Activity = "Created",
-                                           CustomerId = bookingRequest.User.Id,
+                                           CustomerId = uow.BookingRequestRepository.GetByKey(bookingRequestId).User.Id,
                                            CreateDate = DateTimeOffset.Now,
-                                           ObjectId = bookingRequest.Id
+                                           ObjectId = bookingRequestId
                                        };
                 curAction.Data = curAction.Name + ": ID= " + curAction.ObjectId;
                 AddFact(uow, curAction);
