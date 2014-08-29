@@ -30,7 +30,7 @@ namespace KwasantTest.Services
             const string testBody = "Test SMS";
 
             var twil = ObjectFactory.GetInstance<ISMSPackager>();
-            var res = twil.SendSMS(ConfigRepository.Get<string>("TwilioToNumber"), testBody);
+            var res = twil.SendSMS(ObjectFactory.GetInstance<IConfigRepository>().Get<string>("TwilioToNumber"), testBody);
 
             Assert.AreEqual(testBody, res.Body);
             Assert.Null(res.RestException);

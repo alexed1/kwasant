@@ -151,12 +151,11 @@ namespace KwasantWeb.Controllers
                     calendar.Negotiation = negotiationDO;
                 }
 
-                var communicationManager = new CommunicationManager();
-
                 uow.SaveChanges();
 
                 using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
+                    var communicationManager = ObjectFactory.GetInstance<CommunicationManager>();
                     communicationManager.DispatchNegotiationRequests(subUow, negotiationDO.Id);
                     subUow.SaveChanges();
                 }
