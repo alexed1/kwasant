@@ -39,48 +39,47 @@
         $('#attendeesSel').select2('data', data);
 
         @{
-                @:var question;
-                        @:var answer;
-                        foreach (var question in Model.Questions)
+            @:var question;
+            @:var answer;
+            foreach (var question in Model.Questions)
+            {
+                @:question = $(addQuestion(true));
+
+                @:question.attr('questionID', @question.Id);
+                @:question.attr('calendarID', @(question.CalendarID == null ? "null" : question.CalendarID.ToString()));
+                @:question.attr('questionStatus', @question.Status);
+                @:question.find('#questionText').val("@question.Text");
+                @:question.find('input[type="radio"][group="questionType"]').filter(function () { return $(this).val() === "@question.AnswerType"; }).get(0).checked = true;
+                    
+                foreach (var answer in question.Answers)
                 {
-                    @:question = $(addQuestion(true));
-
-
-
-                    @:question.attr('questionID', @question.Id);
-                            @:question.attr('calendarID', @(question.CalendarID == null ? "null" : question.CalendarID.ToString()));
-                            @:question.attr('questionStatus', @question.Status);
-                            @:question.find('#questionText').val("@question.Text");
-                            @:question.find('input[type="radio"][group="questionType"]').filter(function () { return $(this).val() === "@question.AnswerType"; }).get(0).checked = true;
-                            foreach (var answer in question.Answers)
+                    @:answer = $(addAnswer(question, true));
+                    @:answer.attr('answerID', @answer.Id);
+                    if (!String.IsNullOrEmpty(answer.Text))
                     {
-                        @:answer = $(addAnswer(question, true));
-                                @:answer.attr('answerID', @answer.Id);
-                                if (!String.IsNullOrEmpty(answer.Text))
-                        {
-                            @:answer.find('#answerText').val('@answer.Text');
-                                    @:answer.find('#answerStatus').val('@answer.Status');
-                                }
+                        @:answer.find('#answerText').val('@answer.Text');
+                        @:answer.find('#answerStatus').val('@answer.Status');
+                    }
 
-                        @:questionEventWindows = [];
-                                foreach (var calendarEvent in question.CalendarEvents)
-                        {
-                            @:var startDate = new Date(@calendarEvent.StartDate.Year, (@calendarEvent.StartDate.Month - 1), @calendarEvent.StartDate.Day, @calendarEvent.StartDate.Hour, @calendarEvent.StartDate.Minute, @calendarEvent.StartDate.Millisecond)
-                                    @:var endDate = new Date(@calendarEvent.EndDate.Year, (@calendarEvent.EndDate.Month - 1), @calendarEvent.EndDate.Day, @calendarEvent.EndDate.Hour, @calendarEvent.EndDate.Minute, @calendarEvent.EndDate.Millisecond)
+                    @:questionEventWindows = [];
+                    foreach (var calendarEvent in question.CalendarEvents)
+                    {
+                        @:var startDate = new Date(@calendarEvent.StartDate.Year, (@calendarEvent.StartDate.Month - 1), @calendarEvent.StartDate.Day, @calendarEvent.StartDate.Hour, @calendarEvent.StartDate.Minute, @calendarEvent.StartDate.Millisecond)
+                        @:var endDate = new Date(@calendarEvent.EndDate.Year, (@calendarEvent.EndDate.Month - 1), @calendarEvent.EndDate.Day, @calendarEvent.EndDate.Hour, @calendarEvent.EndDate.Minute, @calendarEvent.EndDate.Millisecond)
 
-    						@:questionEventWindows.push({
-            @:  startDate: startDate.toDateString(),
+    					@:questionEventWindows.push({
+                            @:  startDate: startDate.toDateString(),
                             @:  startTime: startDate.getHours() + ':' + startDate.getMinutes(),
     						@:
                             @:  endDate: endDate.toDateString(),
                             @:  endTime: endDate.getHours() + ':' + endDate.getMinutes(),
-                                        @:});
-
-                        }
+                        @:});
+                    }
+                        
                     @:renderEvents(answer, questionEventWindows);
-                            }
                 }
             }
+        }
     });
 
     var negID = @(Model.Id == null ? "null" : Model.Id.ToString());
@@ -260,11 +259,14 @@
 
     function addAnswer(obj, immediate) {
         var parentBox = $(obj).closest('.questionBox');
-        var selectedType = parentBox.find('input[type="radio"][group="questionType"]').filter(function() {
+        var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
+        
+        var selectedType = eventTypeButtons.filter(function() {
             return $(this).get(0).checked;
         });
-        var clonedHTML;
+        var clonedHTML = null;
         var eventType = selectedType.val();
+        
         if (eventType === "Text") {
             clonedHTML = $('#textAnswerContainer').clone();
             parentBox.find('#appendanswerId').append(clonedHTML);
@@ -282,7 +284,7 @@
         }
 
         parentBox.find('#divAddAnswer').hide();
-        var eventTypeButtons = parentBox.find('input[type="radio"][group="questionType"]');
+        
         eventTypeButtons.prop('disabled', true);
         eventTypeButtons.prop('title', 'Unable to change question type while answers exist.');
 

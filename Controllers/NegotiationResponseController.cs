@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Managers;
 using KwasantWeb.ViewModels;
@@ -21,28 +19,14 @@ namespace KwasantWeb.Controllers
         {
             ConfirmUserInAttendees(negotiationID);
 
-            var userID = User.Identity.GetUserId();
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (negotiationDO == null)
                     throw new HttpException(404, "Negotiation not found.");
 
-                //Temporary for now, perhaps it can be a parameter (if they see the 'already answered page', maybe they want to force-change their answers).
-                var checkAlreadyAnswered = false;
-
-                var questionIDs = negotiationDO.Questions.Select(q => q.Id).Distinct().ToList();
-                var alreadyAnsweredQuestions = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.UserID == userID && questionIDs.Contains(qr.QuestionID)).ToList();
-                if (checkAlreadyAnswered)
-                {
-                    if (alreadyAnsweredQuestions.Select(aq => aq.QuestionID).Distinct().Count() == questionIDs.Count)
-                    {
-                        //Answered everything already
-                        return View("~/Views/ClarificationResponse/AllAnswered.cshtml");
-                    }
-                }
-
+                var answerIDs = negotiationDO.Questions.SelectMany(q => q.Answers.Select(a => a.Id)).ToList();
+                var userAnswerIDs = uow.QuestionResponseRepository.GetQuery().Where(qr => answerIDs.Contains(qr.AnswerID)).Select(a => a.AnswerID).ToList();
 
                 var model = new NegotiationResponseVM
                 {
@@ -54,8 +38,6 @@ namespace KwasantWeb.Controllers
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
                     {
-                        var answeredQuestions = alreadyAnsweredQuestions.Where(aq => aq.QuestionID == q.Id).ToList();
-                        var linkedCalendar = answeredQuestions.Select(aq => aq.Calendar).FirstOrDefault();
                         return (NegotiationQuestionVM) new NegotiationResponseQuestionVM
                         {
                             AnswerType = q.AnswerType,
@@ -63,34 +45,9 @@ namespace KwasantWeb.Controllers
                             Status = q.QuestionStatus,
                             Text = q.Text,
                             
-                            //The following three properties let us setup the page with their existing answers, if they've already provided some answers
-                            //It also doubles as selecting the first answer if no previous answer was picked (having a radio button unchecked by default is ugly)
-                            SelectedAnswerID =
-                                //If we have a selected answer, use that
-                                answeredQuestions.Select(aq => aq.AnswerID).FirstOrDefault() ??
-
-                                //Otherwise, if we have no entered text, and no calendar
-                                (String.IsNullOrEmpty(answeredQuestions.Select(aq => aq.Text).FirstOrDefault()) &&
-                                 (linkedCalendar != null)
-                                
-                                    //Then use the first answer
-                                    ? q.Answers.Select(a => a.Id).FirstOrDefault() 
-                                
-                                    //Otherwise, since we have selected text or a calendar, we use null (no answer ID selected)
-                                    : (int?) null),
-
-                            SelectedCalendarID = linkedCalendar == null ? (int?)null : linkedCalendar.Id,
-                            SelectedText = answeredQuestions.Select(aq => aq.Text).FirstOrDefault(),
-
                             NegotiationId = negotiationDO.Id,
 
-                            CalendarEvents = linkedCalendar == null
-                                ? new List<QuestionCalendarEventVM>()
-                                : linkedCalendar.Events.Select(e => new QuestionCalendarEventVM
-                                {
-                                    StartDate = e.StartDate,
-                                    EndDate = e.EndDate
-                                }).ToList(),
+                            CalendarEvents = new List<QuestionCalendarEventVM>(),
 
                             CalendarID = q.CalendarID,
                             Answers = q.Answers.Select(a =>
@@ -98,15 +55,9 @@ namespace KwasantWeb.Controllers
                                 {
                                     Status = a.AnswerStatus,
                                     Id = a.Id,
+                                    Selected = userAnswerIDs.Contains(a.Id),
                                     QuestionId = q.Id,
                                     Text = a.Text,
-                                    CalendarEvents = q.Calendar == null
-                                        ? new List<QuestionCalendarEventVM>()
-                                        : q.Calendar.Events.Select(e => new QuestionCalendarEventVM
-                                        {
-                                            StartDate = e.StartDate,
-                                            EndDate = e.EndDate
-                                        }).ToList(),
                                 }).ToList()
                         };
                     }).ToList()
@@ -124,28 +75,30 @@ namespace KwasantWeb.Controllers
 
             var userID = User.Identity.GetUserId();
 
-            if (value.Responses != null)
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    foreach (var response in value.Responses)
-                    {
-                        var questionResponse = uow.QuestionResponseRepository.GetQuery().FirstOrDefault(qr => qr.QuestionID == response.QuestionID);
-                        if (questionResponse == null)
-                        {
-                            questionResponse = new QuestionResponseDO();
-                            uow.QuestionResponseRepository.Add(questionResponse);
-                        }
+            //To be re-done
+            //if (value.Responses != null)
+            //{
+            //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //    {
+            //        var negDO = uow.NegotiationsRepository.GetByKey(value.NegotiationID);
+            //        var availableAnswers = negDO.
+            //        foreach (var response in value.Responses)
+            //        {
+                        
+            //            var questionResponse = uow.QuestionResponseRepository.GetQuery().FirstOrDefault(qr => qr.QuestionID == response.QuestionID);
+            //            if (questionResponse == null)
+            //            {
+            //                questionResponse = new QuestionResponseDO();
+            //                uow.QuestionResponseRepository.Add(questionResponse);
+            //            }
 
-                        questionResponse.QuestionID = response.QuestionID;
-                        questionResponse.AnswerID = response.AnswerID;
-                        questionResponse.CalendarID = response.CalendarID;
-                        questionResponse.Text = response.Response;
-                        questionResponse.UserID = userID;
-                    }
-                    uow.SaveChanges();
-                }
-            }
+            //            questionResponse.QuestionID = response.QuestionID;
+            //            questionResponse.AnswerID = response.AnswerID;
+            //            questionResponse.UserID = userID;
+            //        }
+            //        uow.SaveChanges();
+            //    }
+            //}
 
             return View();
         }
@@ -164,7 +117,7 @@ namespace KwasantWeb.Controllers
                 var attendees = negotiationDO.Attendees;
                 var currentUserID = User.Identity.GetUserId();
 
-                var existingUserDO = uow.UserRepository.GetQuery().Where(u => u.Id == currentUserID).FirstOrDefault();
+                var existingUserDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == currentUserID);
                 if (existingUserDO == null)
                     throw new HttpException(404, "User not found.");
 
@@ -187,9 +140,7 @@ namespace KwasantWeb.Controllers
         public class NegotiationQuestionAnswerPair
         {
             public int QuestionID { get; set; }
-            public int? AnswerID { get; set; }
-            public int? CalendarID { get; set; }
-            public String Response { get; set; }
+            public int AnswerID { get; set; }
         }
 	}
 }
