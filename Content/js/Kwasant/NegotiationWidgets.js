@@ -69,6 +69,8 @@
     function buildBaseWidget() {
         that.empty();
 
+        that.addClass('negotiationsidebar');
+
         that.append('<h4>Negotiation<h4>');
 
         var baseInfoDiv = $('<div></div>')
@@ -118,7 +120,6 @@
         baseInfoDiv.append(baseInfoTable);
         
         var questionHolder = $('<div></div>');
-        baseInfoDiv.append(questionHolder);
         
         nodes.QuestionHolder = questionHolder;
 
@@ -131,12 +132,12 @@
             .addClass('form-group')
             .addClass('handIcon')
             .click(function() {
-                addQuestion(); //Make it nice and slide down
+                addQuestion();
             });
         
-        baseInfoDiv.append(addQuestionSpan);
-
         that.append(baseInfoDiv);
+        that.append(questionHolder);
+        that.append(addQuestionSpan);
 
         nodes.Name = nameInput;
         nodes.Attendees = attendeesInput;
@@ -183,68 +184,68 @@
             .addClass('questionBox')
             .append(
                 $('<table />')
-                .css('width', '100%')
-                .append(
-                    $('<tr />')
-                    .append(                    
-                        $('<td />')
-                        .append(
-                            $('<label />')
-                            .val('Question: ')
-                        )
-                    ).append(
-                        $('<td />')
-                        .append(
-                            questionName
-                        )
-                    ).append(
-                        $('<td />')
-                        .append(
-                            $('<img src="/Content/img/Cross.png"></img>')
-                            .addClass('handIcon')
-                            .click(function() {
-                                questionObject.RemoveMe();
-                            })
-                        )
-                    )
-                )
-                .append(
-                    $('<tr />')
+                    .css('width', '100%')
                     .append(
-                        $('<td />')
-                    ).append(
-                        $('<td />')
-                        .append(
-                            $('<label>Type:</label>')
-                        )
-                        .append(
-                            $('<label></label>')
+                        $('<tr />')
                             .append(
-                                questionTypeText
-                            ).append("Text")
-                        ).append(
-                            $('<label></label>')
-                            .append(
-                                questionTypeCalendar
-                            ).append("Timeslot")
-                        )
+                                $('<td />')
+                                    .append(
+                                        $('<label>Question: </label>')
+                                    )
+                            ).append(
+                                $('<td />')
+                                    .css('width', '100%')
+                                    .append(
+                                        questionName
+                                    )
+                            ).append(
+                                $('<td />')
+                                    .append(
+                                        $('<img src="/Content/img/Cross.png"></img>')
+                                            .addClass('handIcon')
+                                            .click(function() {
+                                                questionObject.RemoveMe();
+                                            })
+                                    )
+                            )
                     )
-                )
+                    .append(
+                        $('<tr />')
+                            .append(
+                                $('<td />')
+                            ).append(
+                                $('<td />')
+                                    .append(
+                                        $('<label>Type:</label>')
+                                    )
+                                    .append(
+                                        $('<label></label>')
+                                            .append(
+                                                questionTypeText
+                                            ).append("Text")
+                                    ).append(
+                                        $('<label></label>')
+                                            .append(
+                                                questionTypeCalendar
+                                            ).append("Timeslot")
+                                    )
+                            )
+                    )
             )
             .append(
                 answerHolder
             )
             .append(
                 $('<span>')
-                .addClass('form-group')
-                .addClass('handIcon')
-                .click(function () { questionObject.addAnswer(); })
-                .append(
-                    $('<img src="/Content/img/plus.png" />')
-                ).append(
-                    $('<label>Add Answer</label>')
+                    .addClass('form-group')
                     .addClass('handIcon')
-                )
+                    .click(function() { questionObject.addAnswer(); })
+                    .append(
+                        $('<img src="/Content/img/plus.png" />')
+                    ).append(
+                        $('<label>Add Answer</label>')
+                            .addClass('handIcon')
+                    )
             );
         
         questionObject.Node = questionDiv;
@@ -308,7 +309,7 @@
             .val(answerInitValues.Text);
         var answerDiv =
             $('<div />')
-            .addClass('answerBox')
+                .addClass('answerBox')
                 .append(
                     $('<table />')
                         .css('width', '100%')
@@ -316,12 +317,10 @@
                             $('<tr />')
                                 .append(
                                     $('<td />')
-                                        .append(
-                                            $('<img src="/Content/img/minus.png" />')
-                                                .addClass('handIcon')
-                                        )
+                                        
                                 ).append(
                                     $('<td />')
+                                        .css('width', '100%')
                                         .append(
                                             answerText
                                         )
@@ -354,7 +353,110 @@
         return answerObject;
     }
     function createCalendarAnswerObject(answerInitValues) {
-        alert('Calendar...');
+        var answerObject = {};
+        answerObject.CalendarID = answerInitValues.CalendarID;
+
+        var topDiv = $('<div>');
+        var renderer = $('<div>')
+            .addClass('eventWindowRendererTemplate');
+
+        renderer.hide();
+
+        var answerDiv =
+            $('<div />')
+                .addClass('eventWindowAnswerBox')
+                .append(
+                    $('<table />')
+                        .css('width', '100%')
+                        .append(
+                            $('<tr />')
+                                .append(
+                                    $('<td />')
+                                    .css('width', '100%')
+                                    .append(
+                                        $('<a>Edit Event Windows</a>')
+                                        .addClass('cancel-btn')
+                                        .addClass('pull-left')
+                                        .addClass('handIcon')
+                                        .css('margin-top', '10px')
+                                        .css('margin-bottom', '20px')
+                                        .css('width', '100%')
+                                        .click(function() {
+                                            answerObject.OpenEventWindowSelection();
+                                        })
+                                    )
+                                ).append(
+                                    $('<td />')
+                                        .append(
+                                            $('<img src="/Content/img/Cross.png" />')
+                                                .addClass('handIcon')
+                                                .click(function () {
+                                                    answerObject.RemoveMe();
+                                                })
+                                        )
+                                )
+                        )
+                );
+
+        answerObject.RenderEvents = function(events) {
+            renderer.empty();
+
+            if (events.length == 0)
+                renderer.append('No events.');
+            
+            for (var i = 0; i < events.length; i++) {
+                var currEvent = events[i];
+                var eventStr = currEvent.startDate + ' ' + currEvent.startTime + ' - ' + currEvent.endTime
+
+                var clonedHTML = $('<div>');
+                clonedHTML.html(eventStr);
+
+                renderer.append(clonedHTML);
+            }
+            
+            renderer.show();
+        };
+
+        answerObject.OpenEventWindowSelection = function () {
+            var _that = this;
+            
+            var launchCalendar = function(calID) {
+                _that.CalendarID = calID;
+                var padMins = function(mins) {
+                    if (mins < 10)
+                        return mins + '0';
+                    return mins;
+                };   
+
+                Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID,
+                    {
+                        horizontalAlign: 'left',
+                        callback: function(result) {
+                            _that.RenderEvents($.map(result.events, function (elem, index) {
+                                return {
+                                    startDate: elem.start.d.toDateString(),
+                                    startTime: padMins(elem.start.getHours()) + ':' + padMins(elem.start.getMinutes()),
+
+                                    endDate: elem.end.d.toDateString(),
+                                    endTime: padMins(elem.end.getHours()) + ':' + padMins(elem.end.getMinutes())
+                                };
+                            }));
+                        }
+                    });
+            };
+
+            if (this.CalendarID == null) {
+                Kwasant.IFrame.DispatchUrlRequest('/Question/EditTimeslots?calendarID=null&negotiationID=' + initValues.NegotiationID, launchCalendar);
+            } else {
+                launchCalendar(_that.CalendarID);
+            }
+        };
+
+        topDiv.append(renderer);
+        topDiv.append(answerDiv);
+
+        answerObject.Node = topDiv;
+        return answerObject;
     }
 
 }(jQuery));
