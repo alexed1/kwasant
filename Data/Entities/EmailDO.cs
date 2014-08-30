@@ -19,6 +19,7 @@ namespace Data.Entities
         public String PlainText { get; set; }
         public DateTimeOffset DateReceived { get; set; }
         public DateTimeOffset DateCreated { get; set; }
+        public DateTimeOffset LastUpdated { get; set; } 
 
         [ForeignKey("EmailStatusTemplate")]
         public int EmailStatus { get; set; }

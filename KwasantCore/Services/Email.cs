@@ -231,7 +231,27 @@ namespace KwasantCore.Services
             };
         }
 
+        public EmailDO GenerateBookerMessage(EmailAddressDO emailAddressDO, string message,string subject)
+        {
+            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+            emailAddressValidator.ValidateAndThrow(emailAddressDO);
 
+            return new EmailDO()
+            {
+                From = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress("info@kwasant.com")),
+                Recipients = new List<RecipientDO>()
+                                         {
+                                              new RecipientDO()
+                                                 {
+                                                     EmailAddress = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress(emailAddressDO.Address)),
+                                                       EmailParticipantType = EmailParticipantType.To
+                                                 }
+                                         },
+                Subject = subject,
+                PlainText = message,
+                HTMLText = message
+            };
+        }
        
 
     }
