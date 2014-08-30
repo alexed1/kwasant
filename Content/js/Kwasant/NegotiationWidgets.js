@@ -573,14 +573,25 @@
             if (events === null || events === undefined || events.length == 0) {
                 renderer.append('No events.');
             } else {
+                var sortFunc = function(left, right) {
+                    var leftHours = left.startDate.getHours();
+                    var rightHours = right.startDate.getHours();
+                    return leftHours - rightHours;
+                };
+                events.sort(sortFunc);
+
                 for (var i = 0; i < events.length; i++) {
                     var currEvent = events[i];
-                    
-                    var startDateString = currEvent.startDate.toDateString();
-                    var startDateTime = padMins(currEvent.startDate.getHours()) + ':' + padMins(currEvent.startDate.getMinutes());
-                    
-                    var endDateTime = padMins(currEvent.endDate.getHours()) + ':' + padMins(currEvent.endDate.getMinutes());
 
+                    var startDateString;
+                    if (currEvent.startDate.toDateString === undefined) {
+                        startDateString = currEvent.startDate.d.toDateString();
+                    } else {
+                        startDateString = currEvent.startDate.toDateString();
+                    }
+
+                    var startDateTime = padMins(currEvent.startDate.getHours()) + ':' + padMins(currEvent.startDate.getMinutes());
+                    var endDateTime = padMins(currEvent.endDate.getHours()) + ':' + padMins(currEvent.endDate.getMinutes());
                     var eventStr = startDateString + ' ' + startDateTime + ' - ' + endDateTime;
 
                     var clonedHTML = $('<div>');
@@ -605,8 +616,8 @@
                         callback: function(result) {
                             _that.RenderEvents($.map(result.events, function (elem) {
                                 return {
-                                    startDate: elem.start.d,
-                                    endDate: elem.end.d
+                                    startDate: elem.start,
+                                    endDate: elem.end
                                 };
                             }));
                         }
