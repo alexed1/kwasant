@@ -367,6 +367,7 @@
     <Content Include="Content\css\daypilot\scheduler_transparent.css" />
     <Content Include="Content\css\daypilot\scheduler_white.css" />
     <Content Include="Content\css\frontcss\main.css" />
+    <Content Include="Content\css\NegotiationWidgets.css" />
     <Content Include="Content\css\temp\temp.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.min.css" />

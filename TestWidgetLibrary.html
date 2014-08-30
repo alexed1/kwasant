@@ -70,9 +70,41 @@
         <script type="text/javascript">
             var wid;
             $(function () {
-                wid = $('#questions').NegotiationWidget(null, {
+                var settings = {                    
+                    DisplayMode: 'view',
+                    AllowModifyAnswer: true,
+                };
+
+                var startDate = new Date();
+                var endDate = new Date();
+                endDate.setHours(endDate.getHours() + 1);
+
+                wid = $('#questions').NegotiationWidget(settings, {
                     Name: 'New Negotiation',
-                    Attendees: ['rjrudman@gmail.com']
+                    Attendees: ['rjrudman@gmail.com'],
+                    Questions: [
+                        {
+                            Id: 1,
+                            Text: 'Hello',
+                            Type: 'Timeslot',
+                            Answers: [
+                                {
+                                    Id: 1,
+                                    QuestionID: 1,
+                                    Text: 'Testing...',
+                                    CalendarEvents: [
+                                        {
+                                            startDate: startDate.toDateString(),
+                                            startTime: startDate.getHours() + ':' + startDate.getMinutes(),
+                
+                                            endDate: endDate.toDateString(),
+                                            endTime: endDate.getHours() + ':' + endDate.getMinutes(),
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
                 });
             });
             

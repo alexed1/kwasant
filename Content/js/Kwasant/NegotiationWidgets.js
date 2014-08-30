@@ -15,13 +15,18 @@
 
     $.fn.NegotiationWidget = function (options, initialValues) {
         that = this;
-        settings = $.extend({            
-            AllowAddQuestion: false,
-            AllowModifyQuestion: false,
-            AllowDeleteQuestion: false,
+        settings = $.extend({
+            DisplayMode: 'edit',
+
+            AllowModifyNegotiationRequest: true,
+
+            AllowAddQuestion: true,
+            AllowModifyQuestion: true,
+            AllowDeleteQuestion: true,
 
             AllowAddAnswer: true,
-            AllowDeleteAnswer: false,
+            AllowModifyAnswer: true,
+            AllowDeleteAnswer: true,
         }, options);
 
         initValues = $.extend({            
@@ -115,6 +120,11 @@
             width: '100%',
         });
         attendeesInput.select2('data', initValues.Attendees);
+        
+        if (!settings.AllowModifyNegotiationRequest) {
+            nameInput.attr('disabled', 'disabled');
+            attendeesInput.attr('disabled', 'disabled');
+        }
             
         baseInfoTable.append(attendeesRow);
         baseInfoDiv.append(baseInfoTable);
@@ -134,6 +144,9 @@
             .click(function() {
                 addQuestion();
             });
+
+        if (!settings.AllowAddQuestion)
+            addQuestionSpan.hide();
         
         that.append(baseInfoDiv);
         that.append(questionHolder);
@@ -141,11 +154,24 @@
 
         nodes.Name = nameInput;
         nodes.Attendees = attendeesInput;
+        
+        if (initValues.Questions !== null && initValues.Questions !== undefined) {
+            for (var i = 0; i < initValues.Questions.length; i++) {
+                var questionValues = initValues.Questions[i];
+                addQuestion(questionValues, true);
+            }
+        }
+
     }
     
-    function addQuestion(initialValues) {
-        var questionInitValues = $.extend({            
-            Name: 'Enter question text'
+    function addQuestion(initialValues, immediate) {
+        if (immediate === undefined)
+            immediate = false;
+        
+        var questionInitValues = $.extend({
+            Id: 0,
+            Type: 'Text',
+            Text: 'Enter question text'
         }, initialValues);
 
         var questionObject = createQuestionObject(questionInitValues);
@@ -153,7 +179,19 @@
         questionNode.hide();
         
         nodes.QuestionHolder.append(questionNode);
-        questionNode.slideDown();
+
+        if (immediate)
+            questionNode.show();
+        else
+            questionNode.slideDown();
+        
+        if (questionInitValues.Answers !== null && questionInitValues.Answers !== undefined) {
+            for (var i = 0; i < questionInitValues.Answers.length; i++) {
+                var answerValues = questionInitValues.Answers[i];
+                questionObject.addAnswer(answerValues, true);
+            }
+        }
+
         return questionObject;
     }
     
@@ -173,12 +211,69 @@
         if (questionInitValues.Type == 'Timeslot')
             questionTypeCalendar.get(0).checked = true;
         else
-            questionTypeText.get(0).checked = true; 
-            
+            questionTypeText.get(0).checked = true;
+
+        var edittableType;
+        if (settings.AllowModifyQuestion) {
+            edittableType =
+                $('<td />')
+                    .append(
+                        $('<label>Type:</label>')
+                    )
+                    .append(
+                        $('<label></label>')
+                            .append(
+                                questionTypeText
+                            ).append("Text")
+                    ).append(
+                        $('<label></label>')
+                            .append(
+                                questionTypeCalendar
+                            ).append("Timeslot")
+                    );
+        } else {
+            edittableType =
+                $('<td />')
+                    .append(
+                        $('<label>Type:</label>')
+                    )
+                    .append(
+                        $('<label></label>')
+                            .append(questionInitValues.Type)
+                    );
+        }
+
+
         var questionName = $('<input type="text" />')
             .addClass('form-control')
             .addClass('col-md-1')
-            .val(questionInitValues.Name);
+            .val(questionInitValues.Text);
+
+        var removeMeIcon = $('<img src="/Content/img/Cross.png"></img>')
+            .addClass('handIcon')
+            .click(function() {
+                questionObject.RemoveMe();
+            });
+
+        var addAnswerSpan = $('<span>')
+            .addClass('form-group')
+            .addClass('handIcon')
+            .click(function() { questionObject.addAnswer(); })
+            .append(
+                $('<img src="/Content/img/plus.png" />')
+            ).append(
+                $('<label>Add Answer</label>')
+                    .addClass('handIcon')
+            );
+
+        if (!settings.AllowDeleteQuestion && questionInitValues.Id > 0)
+            removeMeIcon.hide();
+
+        if (!settings.AllowAddAnswer && questionInitValues.Id > 0)
+            addAnswerSpan.hide();
+
+        if (!settings.AllowModifyQuestion)
+            questionName.attr('disabled', 'disabled');
 
         var questionDiv = $('<div></div>')
             .addClass('questionBox')
@@ -201,11 +296,7 @@
                             ).append(
                                 $('<td />')
                                     .append(
-                                        $('<img src="/Content/img/Cross.png"></img>')
-                                            .addClass('handIcon')
-                                            .click(function() {
-                                                questionObject.RemoveMe();
-                                            })
+                                        removeMeIcon
                                     )
                             )
                     )
@@ -214,21 +305,7 @@
                             .append(
                                 $('<td />')
                             ).append(
-                                $('<td />')
-                                    .append(
-                                        $('<label>Type:</label>')
-                                    )
-                                    .append(
-                                        $('<label></label>')
-                                            .append(
-                                                questionTypeText
-                                            ).append("Text")
-                                    ).append(
-                                        $('<label></label>')
-                                            .append(
-                                                questionTypeCalendar
-                                            ).append("Timeslot")
-                                    )
+                                edittableType
                             )
                     )
             )
@@ -236,16 +313,7 @@
                 answerHolder
             )
             .append(
-                $('<span>')
-                    .addClass('form-group')
-                    .addClass('handIcon')
-                    .click(function() { questionObject.addAnswer(); })
-                    .append(
-                        $('<img src="/Content/img/plus.png" />')
-                    ).append(
-                        $('<label>Add Answer</label>')
-                            .addClass('handIcon')
-                    )
+                addAnswerSpan
             );
         
         questionObject.Node = questionDiv;
@@ -267,10 +335,27 @@
                 Answers: answers
             };
         };
+        
         questionObject.AnswerHolder = answerHolder;
+        questionObject.Id = questionInitValues.Id;
 
-        questionObject.addAnswer = function (initialValues) {
+        var adjustRadioButtonEnabled = function() {
+            if (questionObject.Answers.length == 0) {
+                questionTypeText.removeAttr('disabled');
+                questionTypeCalendar.removeAttr('disabled');
+            } else {
+                questionTypeText.attr('disabled', 'disabled');
+                questionTypeCalendar.attr('disabled', 'disabled');
+            }
+        };
+
+        questionObject.addAnswer = function (initialValues, immediate) {
+            if (immediate === undefined)
+                immediate = false;
+
             var answerInitValues = $.extend({
+                Id: 0,
+                QuestionID: this.Id,
                 Text: 'Enter answer text'
             }, initialValues);
 
@@ -286,15 +371,28 @@
             answerNode.hide();
 
             this.AnswerHolder.append(answerNode);
-            answerNode.slideDown();
+            if (immediate)
+                answerNode.show();
+            else
+                answerNode.slideDown();
+
+            adjustRadioButtonEnabled();
+            
             return answerObject;
+        };
+        
+        questionObject.removeAnswer = function (answerObject) {
+            this.Answers.splice(this.Answers.indexOf(answerObject), 1);
+            answerObject.Node.slideUp();
+
+            adjustRadioButtonEnabled();
         };
 
         questionObject.RemoveMe = function () {
             nodes.Questions.splice(nodes.Questions.indexOf(questionObject), 1);
             questionDiv.slideUp();
         };
-
+        
         nodes.Questions.push(questionObject);
         
         return questionObject;
@@ -302,11 +400,21 @@
     
     function createTextAnswerObject(question, answerInitValues) {
         var answerObject = {};
-        
+
+        var radioSelect = $('<input type="radio"/>')
+            .attr('name', answerInitValues.QuestionID);
+
+        if (settings.DisplayMode != 'view')
+            radioSelect.hide();
+
         var answerText = $('<input />')
             .addClass('form-control')
             .addClass('col-md-1')
             .val(answerInitValues.Text);
+
+        if (!settings.AllowModifyAnswer && answerInitValues.Id > 0)
+            answerText.attr('disabled', 'disabled');
+
         var answerDiv =
             $('<div />')
                 .addClass('answerBox')
@@ -317,7 +425,9 @@
                             $('<tr />')
                                 .append(
                                     $('<td />')
-                                        
+                                        .append(
+                                            radioSelect
+                                        )
                                 ).append(
                                     $('<td />')
                                         .css('width', '100%')
@@ -345,20 +455,48 @@
         };
 
         answerObject.RemoveMe = function () {
-            this.Question.Answers.splice(this.Question.Answers.indexOf(answerObject), 1);
-            answerDiv.slideUp();
+            this.Question.removeAnswer(answerObject);
         };
 
         answerObject.Node = answerDiv;
         return answerObject;
     }
-    function createCalendarAnswerObject(answerInitValues) {
+    
+    function createCalendarAnswerObject(question, answerInitValues) {
         var answerObject = {};
         answerObject.CalendarID = answerInitValues.CalendarID;
 
+        var radioSelect = $('<input type="radio"/>')
+            .attr('name', answerInitValues.QuestionID);
+
+        if (settings.DisplayMode != 'view')
+            radioSelect.hide();
+
         var topDiv = $('<div>');
         var renderer = $('<div>')
-            .addClass('eventWindowRendererTemplate');
+            .addClass('eventWindowRendererTemplate')
+            .css('overflow', 'auto');
+
+        var group = $('<div>')
+            .css('line-height', 1);
+        
+        var editEventWindowsButton = $('<a>Edit Event Windows</a>')
+            .addClass('cancel-btn')
+            .addClass('handIcon')
+            .css('margin', '10px')
+            .css('width', '100%')
+            .click(function() {
+                answerObject.OpenEventWindowSelection();
+            });
+
+        if (!settings.AllowModifyAnswer && answerInitValues.Id > 0)
+            editEventWindowsButton.hide();
+
+        group.append(renderer);
+        group.append($('<br/>'));
+        group.append(editEventWindowsButton);
+        group.append($('<br/>'));
+        group.append($('<br/>'));
 
         renderer.hide();
 
@@ -372,18 +510,14 @@
                             $('<tr />')
                                 .append(
                                     $('<td />')
+                                        .append(
+                                            radioSelect
+                                        )
+                                ).append(
+                                    $('<td />')
                                     .css('width', '100%')
                                     .append(
-                                        $('<a>Edit Event Windows</a>')
-                                        .addClass('cancel-btn')
-                                        .addClass('pull-left')
-                                        .addClass('handIcon')
-                                        .css('margin-top', '10px')
-                                        .css('margin-bottom', '20px')
-                                        .css('width', '100%')
-                                        .click(function() {
-                                            answerObject.OpenEventWindowSelection();
-                                        })
+                                        group
                                     )
                                 ).append(
                                     $('<td />')
@@ -432,7 +566,7 @@
                     {
                         horizontalAlign: 'left',
                         callback: function(result) {
-                            _that.RenderEvents($.map(result.events, function (elem, index) {
+                            _that.RenderEvents($.map(result.events, function (elem) {
                                 return {
                                     startDate: elem.start.d.toDateString(),
                                     startTime: padMins(elem.start.getHours()) + ':' + padMins(elem.start.getMinutes()),
@@ -451,9 +585,23 @@
                 launchCalendar(_that.CalendarID);
             }
         };
+        
+        answerObject.Question = question;
+        answerObject.RemoveMe = function () {
+            this.Question.removeAnswer(this);
+        };
+        
+        answerObject.getValues = function () {
+            return {
+                CalendarID: this.CalendarID,
+            };
+        };
 
-        topDiv.append(renderer);
         topDiv.append(answerDiv);
+        
+        if (answerInitValues.CalendarEvents !== null && answerInitValues.CalendarEvents !== undefined) {
+            answerObject.RenderEvents(answerInitValues.CalendarEvents);
+        }
 
         answerObject.Node = topDiv;
         return answerObject;
