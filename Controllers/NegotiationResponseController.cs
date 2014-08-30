@@ -4,6 +4,7 @@ using System.Web;
 using System.Web.Mvc;
 using Data.Interfaces;
 using KwasantCore.Managers;
+using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -17,7 +18,7 @@ namespace KwasantWeb.Controllers
         [KwasantAuthorize(Roles = "Customer")]
         public ActionResult View(int negotiationID)
         {
-            ConfirmUserInAttendees(negotiationID);
+            AuthenticateUser(negotiationID);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -68,64 +69,50 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult ProcessResponse(NegotiationResponsePostData value)
         {
-            ConfirmUserInAttendees(value.NegotiationID);
+            AuthenticateUser(value.NegotiationID);
 
             var userID = User.Identity.GetUserId();
-
-            //To be re-done
-            //if (value.Responses != null)
-            //{
-            //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            //    {
-            //        var negDO = uow.NegotiationsRepository.GetByKey(value.NegotiationID);
-            //        var availableAnswers = negDO.
-            //        foreach (var response in value.Responses)
-            //        {
-                        
-            //            var questionResponse = uow.QuestionResponseRepository.GetQuery().FirstOrDefault(qr => qr.QuestionID == response.QuestionID);
-            //            if (questionResponse == null)
-            //            {
-            //                questionResponse = new QuestionResponseDO();
-            //                uow.QuestionResponseRepository.Add(questionResponse);
-            //            }
-
-            //            questionResponse.QuestionID = response.QuestionID;
-            //            questionResponse.AnswerID = response.AnswerID;
-            //            questionResponse.UserID = userID;
-            //        }
-            //        uow.SaveChanges();
-            //    }
-            //}
-
+            
             return View();
         }
 
-        public void ConfirmUserInAttendees(int negotiationID)
+        public void AuthenticateUser(int negotiationID)
+        {
+            //If this is a regular customer, verify that they're an attendee
+            var userID = User.Identity.GetUserId();
+            var user = new User();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (!user.VerifyMinimumRole("Booker", userID, uow))
+                    ConfirmUserInAttendees(uow, negotiationID);
+            }
+        }
+
+
+        //verify that the person trying to view this negotiation is one of the attendees.
+        public void ConfirmUserInAttendees(IUnitOfWork uow, int negotiationID)
         {
             if (!EnforceUserInAttendees)
                 return;
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
-                if(negotiationDO == null)
-                    throw new HttpException(404, "Negotiation not found.");
-
-                var attendees = negotiationDO.Attendees;
-                var currentUserID = User.Identity.GetUserId();
-
-                var existingUserDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == currentUserID);
-                if (existingUserDO == null)
-                    throw new HttpException(404, "User not found.");
-
-                var currentUserEmail = existingUserDO.EmailAddress.Address.ToLower();
-
-                foreach(var attendee in attendees)
-                    if (attendee.EmailAddress.Address.ToLower() == currentUserEmail)
-                        return;
-
+            var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+            if (negotiationDO == null)
                 throw new HttpException(404, "Negotiation not found.");
-            }
+
+            var attendees = negotiationDO.Attendees;
+            var currentUserID = User.Identity.GetUserId();
+
+            var existingUserDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == currentUserID);
+            if (existingUserDO == null)
+                throw new HttpException(404, "We don't have a User record for you. ");
+
+            var currentUserEmail = existingUserDO.EmailAddress.Address.ToLower();
+
+            foreach (var attendee in attendees)
+                if (attendee.EmailAddress.Address.ToLower() == currentUserEmail)
+                    return;
+
+            throw new HttpException(404, "You're not authorized to view information about this Negotiation");
         }
 
         public class NegotiationResponsePostData
