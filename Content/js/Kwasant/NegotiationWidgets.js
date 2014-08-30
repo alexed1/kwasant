@@ -415,6 +415,15 @@
         if (!settings.AllowModifyAnswer && answerInitValues.Id > 0)
             answerText.attr('disabled', 'disabled');
 
+        var deleteButton = $('<img src="/Content/img/Cross.png" />')
+            .addClass('handIcon')
+            .click(function() {
+                answerObject.RemoveMe();
+            });
+
+        if (!settings.AllowDeleteAnswer && answerInitValues.Id > 0)
+            deleteButton.hide();
+
         var answerDiv =
             $('<div />')
                 .addClass('answerBox')
@@ -437,11 +446,7 @@
                                 ).append(
                                     $('<td />')
                                         .append(
-                                            $('<img src="/Content/img/Cross.png" />')
-                                                .addClass('handIcon')
-                                                .click(function() {
-                                                    answerObject.RemoveMe();
-                                                })
+                                            deleteButton
                                         )
                                 )
                         )
@@ -474,12 +479,21 @@
 
         var topDiv = $('<div>');
         var renderer = $('<div>')
-            .addClass('eventWindowRendererTemplate')
-            .css('overflow', 'auto');
+            .addClass('eventWindowRendererTemplate');
 
         var group = $('<div>')
-            .css('line-height', 1);
+            .css('padding-bottom', '10px')
+            .css('min-height', '65px');
+
+        var deleteButton = $('<img src="/Content/img/Cross.png" />')
+            .addClass('handIcon')
+            .click(function() {
+                answerObject.RemoveMe();
+            });
         
+        if (!settings.AllowDeleteAnswer && answerInitValues.Id > 0)
+            deleteButton.hide();
+
         var editEventWindowsButton = $('<a>Edit Event Windows</a>')
             .addClass('cancel-btn')
             .addClass('handIcon')
@@ -493,12 +507,7 @@
             editEventWindowsButton.hide();
 
         group.append(renderer);
-        group.append($('<br/>'));
         group.append(editEventWindowsButton);
-        group.append($('<br/>'));
-        group.append($('<br/>'));
-
-        renderer.hide();
 
         var answerDiv =
             $('<div />')
@@ -522,11 +531,7 @@
                                 ).append(
                                     $('<td />')
                                         .append(
-                                            $('<img src="/Content/img/Cross.png" />')
-                                                .addClass('handIcon')
-                                                .click(function () {
-                                                    answerObject.RemoveMe();
-                                                })
+                                            deleteButton
                                         )
                                 )
                         )
@@ -535,19 +540,20 @@
         answerObject.RenderEvents = function(events) {
             renderer.empty();
 
-            if (events.length == 0)
+            if (events === null || events === undefined || events.length == 0) {
                 renderer.append('No events.');
-            
-            for (var i = 0; i < events.length; i++) {
-                var currEvent = events[i];
-                var eventStr = currEvent.startDate + ' ' + currEvent.startTime + ' - ' + currEvent.endTime
+            } else {
+                for (var i = 0; i < events.length; i++) {
+                    var currEvent = events[i];
+                    var eventStr = currEvent.startDate + ' ' + currEvent.startTime + ' - ' + currEvent.endTime
 
-                var clonedHTML = $('<div>');
-                clonedHTML.html(eventStr);
+                    var clonedHTML = $('<div>');
+                    clonedHTML.html(eventStr);
 
-                renderer.append(clonedHTML);
+                    renderer.append(clonedHTML);
+                }
             }
-            
+
             renderer.show();
         };
 
@@ -599,9 +605,7 @@
 
         topDiv.append(answerDiv);
         
-        if (answerInitValues.CalendarEvents !== null && answerInitValues.CalendarEvents !== undefined) {
-            answerObject.RenderEvents(answerInitValues.CalendarEvents);
-        }
+        answerObject.RenderEvents(answerInitValues.CalendarEvents);
 
         answerObject.Node = topDiv;
         return answerObject;
