@@ -58,10 +58,10 @@
             }
 
             var initialValues = {
-                Id: @Model.Id,
+                Id: @(Model.Id == null? "null" : Model.Id.ToString()),
                 BookingRequestID: @Model.BookingRequestID,
                 Name: '@Model.Name',
-                Attendees: [@Html.Raw(String.Join(",", Model.Attendees.Select(a => "'" + a + "'")))],
+                Attendees: [@Html.Raw(String.Join(",", Model.Attendees.Where(a => !String.IsNullOrEmpty(a)).Select(a => "'" + a + "'")))],
                 Questions: questions
             };
 

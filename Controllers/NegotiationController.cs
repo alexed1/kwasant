@@ -174,6 +174,9 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+                foreach (var calendar in negotiationDO.Calendars)
+                    calendar.NegotiationID = null;
+
                 uow.NegotiationsRepository.Remove(negotiationDO);
                 uow.SaveChanges();
             }
