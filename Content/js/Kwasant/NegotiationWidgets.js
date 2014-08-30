@@ -2,8 +2,7 @@
     
     var that;
     var settings;
-    var initValues;
-
+    
     var nodes = {
         Name: null,
         Attendees: null,
@@ -31,7 +30,8 @@
             AllowDeleteAnswer: true,
         }, options);
 
-        initValues = $.extend({            
+        var initValues = $.extend({
+            Id: 0,
             Name: 'Negotiation 1',
             Attendees: '',
         }, initialValues);
@@ -53,10 +53,12 @@
             initValues.Attendees = sanitizedAttendees;
         }
 
-        buildBaseWidget();
+        buildBaseWidget(initValues);
 
         this.getValues = function() {
             var returnNeg = {};
+            returnNeg.Id = initValues.Id,
+            returnNeg.BookingRequestID = initValues.BookingRequestID,
             returnNeg.Name = nodes.Name.val();
             returnNeg.Attendees = nodes.Attendees.val();
             returnNeg.Questions = [];
@@ -73,10 +75,11 @@
         return this;
     };
     
-    function buildBaseWidget() {
+    function buildBaseWidget(initValues) {
         that.empty();
 
         that.addClass('negotiationsidebar');
+        that.css('height', '100%');
 
         that.append('<h4>Negotiation<h4>');
 
@@ -337,9 +340,10 @@
                 answers.push(answer.getValues());
             }
             return {
-                Name: questionName.val(),
-                Type: this.getQuestionType(),
-                Answers: answers
+                Id: questionInitValues.Id,
+                Text: questionName.val(),
+                Answers: answers,
+                AnswerType: this.getQuestionType(),
             };
         };
         
@@ -473,6 +477,7 @@
         answerObject.Question = question;
         answerObject.getValues = function () {
             return {
+                Id: answerInitValues.Id,
                 Text: answerText.val()
             };
         };

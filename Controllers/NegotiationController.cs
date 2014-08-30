@@ -27,7 +27,6 @@ namespace KwasantWeb.Controllers
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
                     BookingRequestID = negotiationDO.BookingRequestID,
-                    State = negotiationDO.NegotiationState,
 
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
@@ -35,7 +34,6 @@ namespace KwasantWeb.Controllers
                         {
                             AnswerType = q.AnswerType,
                             Id = q.Id,
-                            Status = q.QuestionStatus,
                             Text = q.Text,
                             NegotiationId = negotiationDO.Id,
                             CalendarEvents = q.Calendar == null ? new List<QuestionCalendarEventVM>() : q.Calendar.Events.Select(e => new QuestionCalendarEventVM
@@ -48,7 +46,6 @@ namespace KwasantWeb.Controllers
                             Answers = q.Answers.Select(a =>
                                 new NegotiationAnswerVM
                                 {
-                                    Status = a.AnswerStatus,
                                     Id = a.Id,
                                     QuestionId = q.Id,
                                     Text = a.Text
@@ -68,7 +65,6 @@ namespace KwasantWeb.Controllers
             {
                 Name = "Negotiation 1",
                 BookingRequestID = bookingRequestID,
-                State = NegotiationState.InProcess,
             });
         }
 
@@ -90,7 +86,9 @@ namespace KwasantWeb.Controllers
                     negotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
 
                 negotiationDO.Name = value.Name;
-                negotiationDO.NegotiationState = value.State;
+                if (negotiationDO.NegotiationState == 0)
+                    negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
+
                 negotiationDO.BookingRequestID = value.BookingRequestID;
 
                 var attendee = new Attendee();
@@ -118,7 +116,9 @@ namespace KwasantWeb.Controllers
 
                     questionDO.Negotiation = negotiationDO;
                     questionDO.AnswerType = question.AnswerType;
-                    questionDO.QuestionStatus = question.Status;
+                    if (questionDO.QuestionStatus == 0)
+                        questionDO.QuestionStatus = QuestionState.Unanswered;
+                    
                     questionDO.Text = question.Text;
                     questionDO.CalendarID = question.CalendarID;
 
@@ -142,7 +142,9 @@ namespace KwasantWeb.Controllers
                             answerDO = uow.AnswerRepository.GetByKey(answer.Id);
 
                         answerDO.Question = questionDO;
-                        answerDO.AnswerStatus = answer.Status;
+                        if (answerDO.AnswerStatus == 0)
+                            answerDO.AnswerStatus = AnswerState.Proposed;
+                        
                         answerDO.Text = answer.Text;
                     }
                 }

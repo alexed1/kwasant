@@ -28,7 +28,7 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
             options.modal = false;
         
         if (options.pinned === undefined)
-            options.pinned = true;
+            options.pinned = false;
 
         if (typeof(options.callback) !== 'function')
             options.callback = null;

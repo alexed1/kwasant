@@ -33,7 +33,6 @@ namespace KwasantWeb.Controllers
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
                     BookingRequestID = negotiationDO.BookingRequestID,
-                    State = negotiationDO.NegotiationState,
 
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
@@ -42,7 +41,6 @@ namespace KwasantWeb.Controllers
                         {
                             AnswerType = q.AnswerType,
                             Id = q.Id,
-                            Status = q.QuestionStatus,
                             Text = q.Text,
                             
                             NegotiationId = negotiationDO.Id,
@@ -53,7 +51,6 @@ namespace KwasantWeb.Controllers
                             Answers = q.Answers.Select(a =>
                                 (NegotiationAnswerVM) new NegotiationResponseAnswerVM
                                 {
-                                    Status = a.AnswerStatus,
                                     Id = a.Id,
                                     Selected = userAnswerIDs.Contains(a.Id),
                                     QuestionId = q.Id,
