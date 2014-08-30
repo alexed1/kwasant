@@ -207,6 +207,10 @@
     <Compile Include="Migrations\201408291408315_CleanupResponseModel.Designer.cs">
       <DependentUpon>201408291408315_CleanupResponseModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408301646170_Sync.30.08.2014.cs" />
+    <Compile Include="Migrations\201408301646170_Sync.30.08.2014.Designer.cs">
+      <DependentUpon>201408301646170_Sync.30.08.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
@@ -864,6 +868,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408291408315_CleanupResponseModel.resx">
       <DependentUpon>201408291408315_CleanupResponseModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408301646170_Sync.30.08.2014.resx">
+      <DependentUpon>201408301646170_Sync.30.08.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
