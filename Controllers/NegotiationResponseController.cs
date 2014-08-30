@@ -72,12 +72,15 @@ namespace KwasantWeb.Controllers
 
         [KwasantAuthorize(Roles = "Customer")]
         [HttpPost]
-        public ActionResult ProcessResponse(NegotiationResponsePostData value)
+        public ActionResult ProcessResponse(NegotiationVM value)
         {
-            AuthenticateUser(value.NegotiationID);
+            if (!value.Id.HasValue)
+                throw new HttpException(400, "Invalid parameter");
+
+            AuthenticateUser(value.Id.Value);
 
             var userID = User.Identity.GetUserId();
-            
+
             return View();
         }
 
@@ -120,16 +123,5 @@ namespace KwasantWeb.Controllers
             throw new HttpException(404, "You're not authorized to view information about this Negotiation");
         }
 
-        public class NegotiationResponsePostData
-        {
-            public int NegotiationID { get; set; }
-            public List<NegotiationQuestionAnswerPair> Responses { get; set; }
-        }
-
-        public class NegotiationQuestionAnswerPair
-        {
-            public int QuestionID { get; set; }
-            public int AnswerID { get; set; }
-        }
 	}
 }

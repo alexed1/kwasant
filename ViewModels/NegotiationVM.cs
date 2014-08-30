@@ -39,6 +39,7 @@ namespace KwasantWeb.ViewModels
         public string UserId { get; set; }
         public string Text { get; set; }
         public int? CalendarID { get; set; }
+        public bool Selected { get; set; }
 
         public List<QuestionCalendarEventVM> CalendarEvents { get; set; }
     }

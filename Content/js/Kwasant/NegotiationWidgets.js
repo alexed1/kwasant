@@ -82,8 +82,6 @@
         that.addClass('negotiationsidebar');
         that.css('height', '100%');
 
-        that.append('<h4>Negotiation<h4>');
-
         var baseInfoDiv = $('<div></div>')
             .addClass('form-group')
             .addClass('negotiation-mrbottom');
@@ -479,7 +477,8 @@
         answerObject.getValues = function () {
             return {
                 Id: answerInitValues.Id,
-                Text: answerText.val()
+                Text: answerText.val(),
+                Selected: radioSelect.get(0).checked
             };
         };
 
@@ -569,6 +568,11 @@
                     return mins + '0';
                 return mins;
             };
+            var padHours = function(hours) {
+                if (hours < 10)
+                    return '0' + hours;
+                return hours;
+            };
 
             if (events === null || events === undefined || events.length == 0) {
                 renderer.append('No events.');
@@ -590,8 +594,8 @@
                         startDateString = currEvent.startDate.toDateString();
                     }
 
-                    var startDateTime = padMins(currEvent.startDate.getHours()) + ':' + padMins(currEvent.startDate.getMinutes());
-                    var endDateTime = padMins(currEvent.endDate.getHours()) + ':' + padMins(currEvent.endDate.getMinutes());
+                    var startDateTime = padHours(currEvent.startDate.getHours()) + ':' + padMins(currEvent.startDate.getMinutes());
+                    var endDateTime = padHours(currEvent.endDate.getHours()) + ':' + padMins(currEvent.endDate.getMinutes());
                     var eventStr = startDateString + ' ' + startDateTime + ' - ' + endDateTime;
 
                     var clonedHTML = $('<div>');
@@ -635,10 +639,12 @@
         answerObject.RemoveMe = function () {
             this.Question.removeAnswer(this);
         };
-        
-        answerObject.getValues = function () {
+
+        answerObject.getValues = function() {
             return {
+                Id: answerInitValues.Id,
                 CalendarID: this.CalendarID,
+                Selected: radioSelect.get(0).checked
             };
         };
 

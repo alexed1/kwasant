@@ -1,5 +1,4 @@
-﻿@using Data.States
-@model KwasantWeb.ViewModels.NegotiationVM
+﻿@model KwasantWeb.ViewModels.NegotiationVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @section bodyStyle {overflow-y:scroll;}
 @section immediateScripts
@@ -18,7 +17,7 @@
         var widget;
         $(function() {
             var settings = {
-                
+
             };
 
             var questions = [
@@ -152,6 +151,7 @@
 }
 
 <form id="f" class="negotiationsidebar">
+    <h4>Negotiation</h4>
     <div id="negotiation"></div>
 
     <div class="space form-actions negotiation-form-actions">
