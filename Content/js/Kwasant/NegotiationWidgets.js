@@ -18,6 +18,8 @@
         settings = $.extend({
             DisplayMode: 'edit',
 
+            MaxAdditionalAnswers: -1,
+
             AllowModifyNegotiationRequest: true,
 
             AllowAddQuestion: true,
@@ -251,14 +253,19 @@
 
         var removeMeIcon = $('<img src="/Content/img/Cross.png"></img>')
             .addClass('handIcon')
-            .click(function() {
+            .click(function () {
+                numAnswersAdded--;
                 questionObject.RemoveMe();
+                
             });
 
         var addAnswerSpan = $('<span>')
             .addClass('form-group')
             .addClass('handIcon')
-            .click(function() { questionObject.addAnswer(); })
+            .click(function () {
+                numAnswersAdded++;
+                questionObject.addAnswer();
+            })
             .append(
                 $('<img src="/Content/img/plus.png" />')
             ).append(
@@ -349,6 +356,8 @@
             }
         };
 
+        var numAnswersAdded = 0;
+
         questionObject.addAnswer = function (initialValues, immediate) {
             if (immediate === undefined)
                 immediate = false;
@@ -377,13 +386,22 @@
                 answerNode.slideDown();
 
             adjustRadioButtonEnabled();
-            
+
+            if (settings.MaxAdditionalAnswers != -1 && numAnswersAdded >= settings.MaxAdditionalAnswers) {
+                addAnswerSpan.hide();
+            }
+
             return answerObject;
         };
         
         questionObject.removeAnswer = function (answerObject) {
             this.Answers.splice(this.Answers.indexOf(answerObject), 1);
             answerObject.Node.slideUp();
+
+            numAnswersAdded--;
+            if (settings.MaxAdditionalAnswers == -1 || numAnswersAdded < settings.MaxAdditionalAnswers) {
+                addAnswerSpan.show();
+            }
 
             adjustRadioButtonEnabled();
         };

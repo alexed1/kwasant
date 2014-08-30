@@ -71,9 +71,6 @@
             var wid;
             $(function () {
                 var settings = {                    
-                    DisplayMode: 'view',
-                    AllowModifyAnswer: false,
-                    AllowDeleteAnswer: false,
                 };
 
                 var startDate = new Date();
@@ -86,13 +83,29 @@
                     Questions: [
                         {
                             Id: 1,
-                            Text: 'Hello',
-                            Type: 'Timeslot',
+                            Text: 'Where would you like to meet?',
+                            Type: 'Text',
                             Answers: [
                                 {
                                     Id: 1,
                                     QuestionID: 1,
-                                    Text: 'Testing...',
+                                    Text: 'Starbucks'
+                                },
+                                {
+                                    Id: 2,
+                                    QuestionID: 1,
+                                    Text: 'Coffee House'
+                                }
+                            ]
+                        },
+                        {
+                            Id: 2,
+                            Text: 'When?',
+                            Type: 'Timeslot',
+                            Answers: [
+                                {
+                                    Id: 3,
+                                    QuestionID: 2,                                    
                                     CalendarEvents: [
                                         {
                                             startDate: startDate.toDateString(),
