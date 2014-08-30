@@ -28,6 +28,7 @@
             var answers;
             var currentQuestion;
             var currentAnswer;
+            var calendarEvents;
             @{
                 foreach (var question in Model.Questions)
                 {
@@ -46,6 +47,19 @@
                         }
                         if (question.AnswerType == "Timeslot")
                         {
+                            @:calendarEvents = [];
+                            foreach (var calendarEvent in answer.CalendarEvents)
+                            {
+                                @:var startDate = new Date(@calendarEvent.StartDate.Year, (@calendarEvent.StartDate.Month - 1), @calendarEvent.StartDate.Day, @calendarEvent.StartDate.Hour, @calendarEvent.StartDate.Minute, @calendarEvent.StartDate.Millisecond)
+                                @:var endDate = new Date(@calendarEvent.EndDate.Year, (@calendarEvent.EndDate.Month - 1), @calendarEvent.EndDate.Day, @calendarEvent.EndDate.Hour, @calendarEvent.EndDate.Minute, @calendarEvent.EndDate.Millisecond)
+
+    					        @:calendarEvents.push({
+                                    @:  startDate: startDate,
+                                    @:  endDate: endDate
+                                @:});
+                            }
+                            @:currentAnswer.CalendarEvents = calendarEvents;
+                            @:currentAnswer.CalendarID = @answer.CalendarID;
                             //Add event windows here... 
                         }
                         @:currentAnswer.QuestionID = @question.Id;

@@ -45,15 +45,20 @@ namespace KwasantWeb.Controllers
                             Text = q.Text,
                             
                             NegotiationId = negotiationDO.Id,
-
-                            CalendarEvents = new List<QuestionCalendarEventVM>(),
-
-                            CalendarID = q.CalendarID,
+                            
                             Answers = q.Answers.Select(a =>
                                 (NegotiationAnswerVM) new NegotiationResponseAnswerVM
                                 {
                                     Id = a.Id,
                                     Selected = userAnswerIDs.Contains(a.Id),
+                                    CalendarEvents = a.Calendar == null ? new List<QuestionCalendarEventVM>() : a.Calendar.Events.Select(e => new QuestionCalendarEventVM
+                                    {
+                                        StartDate = e.StartDate,
+                                        EndDate = e.EndDate
+                                    }).ToList(),
+
+                                    CalendarID = a.CalendarID,
+
                                     QuestionId = q.Id,
                                     Text = a.Text,
                                 }).ToList()

@@ -211,6 +211,10 @@
     <Compile Include="Migrations\201408301646170_Sync.30.08.2014.Designer.cs">
       <DependentUpon>201408301646170_Sync.30.08.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408301723490_LinkCalendarsToAnswerInstead.cs" />
+    <Compile Include="Migrations\201408301723490_LinkCalendarsToAnswerInstead.Designer.cs">
+      <DependentUpon>201408301723490_LinkCalendarsToAnswerInstead.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
@@ -871,6 +875,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408301646170_Sync.30.08.2014.resx">
       <DependentUpon>201408301646170_Sync.30.08.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408301723490_LinkCalendarsToAnswerInstead.resx">
+      <DependentUpon>201408301723490_LinkCalendarsToAnswerInstead.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

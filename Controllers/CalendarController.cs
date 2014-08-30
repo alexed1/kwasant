@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
@@ -25,7 +26,7 @@ namespace KwasantWeb.Controllers
         public ActionResult Index(int id = 0)
         {
             if (id <= 0)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                throw new HttpException(400, "Booking request not found");
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -33,7 +34,7 @@ namespace KwasantWeb.Controllers
                 var bookingRequestDO = bookingRequestRepository.GetByKey(id);
 
                 if (bookingRequestDO == null)
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    throw new HttpException(400, "Booking request not found");
 
                 var linkedNegotiationID = bookingRequestDO.Negotiations.Select(n => (int?)n.Id).FirstOrDefault();
 

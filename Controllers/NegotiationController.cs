@@ -36,19 +36,20 @@ namespace KwasantWeb.Controllers
                             Id = q.Id,
                             Text = q.Text,
                             NegotiationId = negotiationDO.Id,
-                            CalendarEvents = q.Calendar == null ? new List<QuestionCalendarEventVM>() : q.Calendar.Events.Select(e => new QuestionCalendarEventVM
-                            {
-                                StartDate = e.StartDate,
-                                EndDate = e.EndDate
-                            }).ToList(),
                             
-                            CalendarID = q.CalendarID,
                             Answers = q.Answers.Select(a =>
                                 new NegotiationAnswerVM
                                 {
                                     Id = a.Id,
                                     QuestionId = q.Id,
-                                    Text = a.Text
+                                    Text = a.Text,
+                                    CalendarID = a.CalendarID,
+                            
+                                    CalendarEvents = a.Calendar == null ? new List<QuestionCalendarEventVM>() : a.Calendar.Events.Select(e => new QuestionCalendarEventVM
+                                    {
+                                        StartDate = e.StartDate,
+                                        EndDate = e.EndDate
+                                    }).ToList(),
                                 }).ToList()
                         }
                         ).ToList()
@@ -120,7 +121,6 @@ namespace KwasantWeb.Controllers
                         questionDO.QuestionStatus = QuestionState.Unanswered;
                     
                     questionDO.Text = question.Text;
-                    questionDO.CalendarID = question.CalendarID;
 
                     var proposedAnswerIDs = question.Answers.Select(a => a.Id);
                     //Delete the existing answers which no longer exist in our proposed negotiation
@@ -141,6 +141,7 @@ namespace KwasantWeb.Controllers
                         else
                             answerDO = uow.AnswerRepository.GetByKey(answer.Id);
 
+                        answerDO.CalendarID = answer.CalendarID;
                         answerDO.Question = questionDO;
                         if (answerDO.AnswerStatus == 0)
                             answerDO.AnswerStatus = AnswerState.Proposed;
@@ -149,7 +150,7 @@ namespace KwasantWeb.Controllers
                     }
                 }
 
-                var calendarIDs = value.Questions.Select(a => a.CalendarID).Where(c => c != null).ToList();
+                var calendarIDs = value.Questions.SelectMany(q => q.Answers.Select(a => a.CalendarID)).Where(c => c != null).ToList();
                 var calendars = uow.CalendarRepository.GetQuery().Where(c => c.NegotiationID == null && calendarIDs.Contains(c.Id));
                 foreach (var calendar in calendars)
                 {
@@ -176,6 +177,8 @@ namespace KwasantWeb.Controllers
                 var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
                 foreach (var calendar in negotiationDO.Calendars)
                     calendar.NegotiationID = null;
+                foreach (var calendar in negotiationDO.Questions.SelectMany(q => q.Answers.Select(a => a.Calendar)))
+                    uow.CalendarRepository.Remove(calendar);
 
                 uow.NegotiationsRepository.Remove(negotiationDO);
                 uow.SaveChanges();

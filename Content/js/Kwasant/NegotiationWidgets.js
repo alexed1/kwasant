@@ -2,6 +2,7 @@
     
     var that;
     var settings;
+    var initValues;
     
     var nodes = {
         Name: null,
@@ -30,7 +31,7 @@
             AllowDeleteAnswer: true,
         }, options);
 
-        var initValues = $.extend({
+        initValues = $.extend({
             Id: 0,
             Name: 'Negotiation 1',
             Attendees: '',
@@ -53,7 +54,7 @@
             initValues.Attendees = sanitizedAttendees;
         }
 
-        buildBaseWidget(initValues);
+        buildBaseWidget();
 
         this.getValues = function() {
             var returnNeg = {};
@@ -75,7 +76,7 @@
         return this;
     };
     
-    function buildBaseWidget(initValues) {
+    function buildBaseWidget() {
         that.empty();
 
         that.addClass('negotiationsidebar');
@@ -563,12 +564,24 @@
         answerObject.RenderEvents = function(events) {
             renderer.empty();
 
+            var padMins = function (mins) {
+                if (mins < 10)
+                    return mins + '0';
+                return mins;
+            };
+
             if (events === null || events === undefined || events.length == 0) {
                 renderer.append('No events.');
             } else {
                 for (var i = 0; i < events.length; i++) {
                     var currEvent = events[i];
-                    var eventStr = currEvent.startDate + ' ' + currEvent.startTime + ' - ' + currEvent.endTime
+                    
+                    var startDateString = currEvent.startDate.toDateString();
+                    var startDateTime = padMins(currEvent.startDate.getHours()) + ':' + padMins(currEvent.startDate.getMinutes());
+                    
+                    var endDateTime = padMins(currEvent.endDate.getHours()) + ':' + padMins(currEvent.endDate.getMinutes());
+
+                    var eventStr = startDateString + ' ' + startDateTime + ' - ' + endDateTime;
 
                     var clonedHTML = $('<div>');
                     clonedHTML.html(eventStr);
@@ -585,11 +598,6 @@
             
             var launchCalendar = function(calID) {
                 _that.CalendarID = calID;
-                var padMins = function(mins) {
-                    if (mins < 10)
-                        return mins + '0';
-                    return mins;
-                };   
 
                 Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID,
                     {
@@ -597,11 +605,8 @@
                         callback: function(result) {
                             _that.RenderEvents($.map(result.events, function (elem) {
                                 return {
-                                    startDate: elem.start.d.toDateString(),
-                                    startTime: padMins(elem.start.getHours()) + ':' + padMins(elem.start.getMinutes()),
-
-                                    endDate: elem.end.d.toDateString(),
-                                    endTime: padMins(elem.end.getHours()) + ':' + padMins(elem.end.getMinutes())
+                                    startDate: elem.start.d,
+                                    endDate: elem.end.d
                                 };
                             }));
                         }
