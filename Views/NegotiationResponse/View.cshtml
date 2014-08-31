@@ -133,15 +133,28 @@
 @Styles.Render("~/bundles/css/select2")
     @Styles.Render("~/bundles/css/backendcss")
 
+    <style type="text/css">
+        .ourBox {
+            padding: 15px;
+            width: 630px;
+            margin: 0 auto;
+            -webkit-box-shadow: 0px 0px 54px 10px rgba(0,0,0,0.75);
+            -moz-box-shadow: 0px 0px 54px 10px rgba(0,0,0,0.75);
+            box-shadow: 0px 0px 54px 10px rgba(0,0,0,0.75);
+        }
+                                                                                                               
+    </style>
 }
 
-<h2>We need clarification about the following to finish booking your event:</h2>
-<form id="f" class="negotiationsidebar">
-    <div id="negotiation"></div>
 
-    <div class="space form-actions negotiation-form-actions">
-        <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="submitResponse()" />
 
-        <a href="javascript:close();" class="cancel-btn pull-left">Cancel</a>
-    </div>
-</form>
+<div style="padding:15px;">
+    <form id="f" class="negotiationsidebar ourBox">
+        <h2>We need clarification about the following <br />to finish booking your event</h2>
+        <div id="negotiation"></div>
+
+        <div class="space form-actions negotiation-form-actions" style="display:inline-block">
+            <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="submitResponse()" />
+        </div>
+    </form>
+</div>

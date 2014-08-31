@@ -12,6 +12,11 @@
     margin: 10px;
     border-style: solid;
     border-width: 1px;
+
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
 }
 .eventWindowAnswerBox {
     border-color: #D3B9B9;
@@ -19,6 +24,11 @@
     margin: 10px;
     border-style: solid;
     border-width: 1px;
+
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
 }
 .eventWindowRendererTemplate {
     border-color: #D3B9B9;

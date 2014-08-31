@@ -24,7 +24,7 @@ namespace KwasantWeb.Controllers
             return View(GetNegotiationVM(negotiationID));
         }
 
-        private static NegotiationVM GetNegotiationVM(int negotiationID)
+        private static NegotiationVM GetNegotiationVM(int negotiationID, bool sortByVotes = false)
         {
             NegotiationVM model;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -50,7 +50,9 @@ namespace KwasantWeb.Controllers
                                 {
                                     Id = a.Id,
                                     Text = a.Text,
+                                    AnswerState = a.AnswerStatus,
                                     CalendarID = a.CalendarID,
+                                    VotedBy = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.AnswerID == a.Id).Select(qr => qr.User.FirstName + " " + qr.User.LastName).ToList(),
                                     CalendarEvents =
                                         a.Calendar == null
                                             ? new List<QuestionCalendarEventVM>()
@@ -59,7 +61,12 @@ namespace KwasantWeb.Controllers
                                                 StartDate = e.StartDate,
                                                 EndDate = e.EndDate
                                             }).ToList(),
-                                }).ToList()
+                                })
+                                .OrderByDescending(a =>
+                                    sortByVotes ? 
+                                    (1 - a.Id) : a.VotedBy.Count
+                                )
+                                .ToList()
                         }
                         ).ToList()
                 };
@@ -149,11 +156,9 @@ namespace KwasantWeb.Controllers
                         else
                             answerDO = uow.AnswerRepository.GetByKey(answer.Id);
 
+                        answerDO.AnswerStatus = answer.AnswerState;
                         answerDO.CalendarID = answer.CalendarID;
                         answerDO.Question = questionDO;
-                        if (answerDO.AnswerStatus == 0)
-                            answerDO.AnswerStatus = AnswerState.Proposed;
-                        
                         answerDO.Text = answer.Text;
                     }
                 }

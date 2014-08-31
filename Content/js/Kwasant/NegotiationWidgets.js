@@ -17,6 +17,10 @@
         that = this;
         settings = $.extend({
             DisplayMode: 'edit',
+            
+            //Based on AnswerState.cs - this is overridable via the options
+            AnswerProposedStatus: 2, 
+            AnswerSelectedStatus: 3,
 
             MaxAdditionalAnswers: -1,
 
@@ -218,9 +222,7 @@
         else
             questionTypeText.get(0).checked = true;
 
-        var edittableType;
-        if (settings.AllowModifyQuestion) {
-            edittableType =
+        var edittableType =
                 $('<td />')
                     .append(
                         $('<label>Type:</label>')
@@ -236,18 +238,9 @@
                                 questionTypeCalendar
                             ).append("Timeslot")
                     );
-        } else {
-            edittableType =
-                $('<td />')
-                    .append(
-                        $('<label>Type:</label>')
-                    )
-                    .append(
-                        $('<label></label>')
-                            .append(questionInitValues.Type)
-                    );
-        }
-
+        if (!settings.AllowModifyQuestion) {
+            edittableType.hide();
+        } 
 
         var questionName = $('<input type="text" />')
             .addClass('form-control')
@@ -368,6 +361,8 @@
 
             var answerInitValues = $.extend({
                 Id: 0,
+                VotedBy: [],
+                AnswerState: settings.AnswerProposedStatus,
                 Selected: this.Answers.length == 0 ? true: false,
                 QuestionGUID: questionInitValues.QuestionGUID,
                 Text: 'Enter answer text'
@@ -398,7 +393,16 @@
 
             return answerObject;
         };
-        
+
+        questionObject.UnselectOtherAnswers = function(exceptObject) {
+            for (var i = 0; i < this.Answers.length; i++) {
+                var currAnswer = this.Answers[i];
+                if (currAnswer !== exceptObject) {
+                    currAnswer.unmarkMeSelected();
+                }
+            }
+        };
+
         questionObject.removeAnswer = function (answerObject) {
             this.Answers.splice(this.Answers.indexOf(answerObject), 1);
             answerObject.Node.slideUp();
@@ -423,6 +427,7 @@
     
     function createTextAnswerObject(question, answerInitValues) {
         var answerObject = {};
+        answerObject.AnswerState = answerInitValues.AnswerState;
 
         var radioSelect = $('<input type="radio"/>')
             .attr('name', answerInitValues.QuestionGUID);
@@ -449,6 +454,66 @@
             .click(function() {
                 answerObject.RemoveMe();
             });
+
+        var peopleWhoVoted = 'No one voted for this answer.';
+        for (var i = 0; i < answerInitValues.VotedBy.length; i++) {
+            if (i > 0)
+                peopleWhoVoted += ', ';
+            else
+                peopleWhoVoted = 'The following people voted for this answer: ';
+            
+            peopleWhoVoted += answerInitValues.VotedBy[i];
+        }
+
+        var votesIcon = $('<label>')
+            .append(answerInitValues.VotedBy.length);
+
+        answerObject.markMeSelected = function() {
+            answerDiv
+                .css('background-color', 'rgb(183, 228, 195)');
+            question.UnselectOtherAnswers(answerObject);
+
+            answerObject.AnswerState = settings.AnswerSelectedStatus;
+
+            btnMarkProposed
+                .val('Unmark as selected')
+                .css('background-color', '#E01E26')
+                .unbind('click')
+                .click(function() {
+                    answerObject.unmarkMeSelected();
+                });
+        };
+
+        answerObject.unmarkMeSelected = function() {
+            answerDiv
+                .css('background-color', '');
+            
+            answerObject.AnswerState = settings.AnswerProposedStatus;
+            
+            btnMarkProposed
+                .val('Mark as selected')
+                .css('background-color', '#3cc05e')
+                .unbind('click')
+                .click(function () {
+                    answerObject.markMeSelected();
+                });
+        };
+        
+        var btnMarkProposed = $('<input type="button"/>')
+            .val('Mark as selected')
+            .addClass('btn')
+            .addClass('handIcon')
+            .css('background-color', '#3cc05e')
+            .css('border-width', '0')
+            .css('margin', '5px')
+            .click(function () {
+                answerObject.markMeSelected();
+            });
+
+        if (settings.DisplayMode != 'review') {
+            votesIcon.hide();
+            btnMarkProposed.hide();
+        }
 
         if (!settings.AllowDeleteAnswer && answerInitValues.Id > 0)
             deleteButton.hide();
@@ -477,14 +542,27 @@
                                         .append(
                                             deleteButton
                                         )
+                                ).append(
+                                    $('<td />')
+                                        .append(
+                                            votesIcon
+                                        )
                                 )
                         )
+                ).append(
+                    $('<div />')
+                        .append(btnMarkProposed)
                 );
+
+
+        if (settings.DisplayMode == 'review')
+            answerDiv.attr('title', peopleWhoVoted);
 
         answerObject.Question = question;
         answerObject.getValues = function () {
             return {
                 Id: answerInitValues.Id,
+                AnswerState: answerObject.AnswerState,
                 Text: answerText.val(),
                 Selected: radioSelect.get(0).checked
             };
@@ -494,6 +572,9 @@
             this.Question.removeAnswer(answerObject);
         };
 
+        if (answerObject.AnswerState == settings.AnswerSelectedStatus)
+            answerObject.markMeSelected();
+
         answerObject.Node = answerDiv;
         return answerObject;
     }
@@ -501,6 +582,7 @@
     function createCalendarAnswerObject(question, answerInitValues) {
         var answerObject = {};
         answerObject.CalendarID = answerInitValues.CalendarID;
+        answerObject.AnswerState = answerInitValues.AnswerState;
 
         var radioSelect = $('<input type="radio"/>')
             .attr('name', answerInitValues.QuestionGUID);
@@ -527,6 +609,67 @@
             .click(function() {
                 answerObject.RemoveMe();
             });
+        
+
+        var peopleWhoVoted = 'No one voted for this answer.';
+        for (var i = 0; i < answerInitValues.VotedBy.length; i++) {
+            if (i > 0)
+                peopleWhoVoted += ', ';
+            else
+                peopleWhoVoted = 'The following people voted for this answer: ';
+
+            peopleWhoVoted += answerInitValues.VotedBy[i];
+        }
+
+        var votesIcon = $('<label>')
+            .append(answerInitValues.VotedBy.length);
+        
+        answerObject.markMeSelected = function () {
+            answerDiv
+                .css('background-color', 'rgb(183, 228, 195)');
+            question.UnselectOtherAnswers(answerObject);
+
+            answerObject.AnswerState = settings.AnswerSelectedStatus;
+
+            btnMarkProposed
+                .val('Unmark as selected')
+                .css('background-color', '#E01E26')
+                .unbind('click')
+                .click(function () {
+                    answerObject.unmarkMeSelected();
+                });
+        };
+
+        answerObject.unmarkMeSelected = function () {
+            answerDiv
+                .css('background-color', '');
+
+            answerObject.AnswerState = settings.AnswerProposedStatus;
+
+            btnMarkProposed
+                .val('Mark as selected')
+                .css('background-color', '#3cc05e')
+                .unbind('click')
+                .click(function () {
+                    answerObject.markMeSelected();
+                });
+        };
+
+        var btnMarkProposed = $('<input type="button"/>')
+            .val('Mark as selected')
+            .addClass('btn')
+            .addClass('handIcon')
+            .css('background-color', '#3cc05e')
+            .css('border-width', '0')
+            .css('margin', '5px')
+            .click(function () {
+                answerObject.markMeSelected();
+            });
+        
+        if (settings.DisplayMode != 'review') {
+            votesIcon.hide();
+            btnMarkProposed.hide();
+        }
         
         if (!settings.AllowDeleteAnswer && answerInitValues.Id > 0)
             deleteButton.hide();
@@ -570,9 +713,21 @@
                                         .append(
                                             deleteButton
                                         )
+                                ).append(
+                                    $('<td />')
+                                        .append(
+                                            votesIcon
+                                        )
                                 )
                         )
+                ).append(
+                    $('<div />')
+                        .append(btnMarkProposed)
                 );
+        
+
+        if (settings.DisplayMode == 'review')
+            answerDiv.attr('title', peopleWhoVoted);
 
         answerObject.RenderEvents = function(events) {
             renderer.empty();
@@ -662,6 +817,7 @@
         answerObject.getValues = function() {
             return {
                 Id: answerInitValues.Id,
+                AnswerState: this.AnswerState,
                 CalendarID: this.CalendarID,
                 Selected: radioSelect.get(0).checked
             };
@@ -670,6 +826,9 @@
         topDiv.append(answerDiv);
         
         answerObject.RenderEvents(answerInitValues.CalendarEvents);
+
+        if (answerObject.AnswerState == settings.AnswerSelectedStatus)
+            answerObject.markMeSelected();
 
         answerObject.Node = topDiv;
         return answerObject;

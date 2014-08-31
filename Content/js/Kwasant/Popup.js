@@ -228,6 +228,9 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
                         topPos = scrollTop + (winH - that.height()) - getScrollbarWidth() - sidePadding;
                     }
 
+                    if (topPos < 10)
+                        topPos = 10;
+
                     var leftPos;
                     if (options.horizontalAlign === 'right') {
                         leftPos = scrollLeft + (winW - that.width()) - getScrollbarWidth() - sidePadding;
