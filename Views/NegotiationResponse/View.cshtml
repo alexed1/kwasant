@@ -33,7 +33,7 @@
                 AllowDeleteAnswer: false,
             };
 
-            var questions = [                
+            var questions = [
             ];
 
             var answers;
@@ -52,6 +52,7 @@
                     {
                         @:currentAnswer = {};
                         @:currentAnswer.Id = @answer.Id
+                        @:currentAnswer.Selected = @Html.Raw(answer.Selected ? "true" : "false");
                         if (question.AnswerType == "Text")
                         {
                             @:currentAnswer.Text = '@answer.Text';
@@ -95,8 +96,29 @@
         });
 
         function submitResponse() {
-            var res = widget.getValues();
-            var t = 0;
+            var spinner = Kwasant.IFrame.DisplaySpinner();
+            var negotiation = widget.getValues();
+
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                contentType: 'application/json',
+                url: '@Url.Action("ProcessResponse", "NegotiationResponse")',
+                data: JSON.stringify(negotiation)
+            })
+                .always(function(result) {
+                    if (spinner !== null) {
+                        spinner.hide();
+                    }
+
+                    if (result === undefined || result === null || result.responseText === undefined || result.responseText === null) {
+                        alert('An error occured on the server. Your changes have not been saved.');
+                    } else {
+                        var newDoc = document.open("text/html", "replace");
+                        newDoc.write(result.responseText);
+                        newDoc.close();
+                    }
+                });
         }
     </script>
 }

@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
@@ -43,9 +46,7 @@ namespace KwasantWeb.Controllers
                             AnswerType = q.AnswerType,
                             Id = q.Id,
                             Text = q.Text,
-                            
-                            NegotiationId = negotiationDO.Id,
-                            
+
                             Answers = q.Answers.Select(a =>
                                 (NegotiationAnswerVM) new NegotiationResponseAnswerVM
                                 {
@@ -59,7 +60,6 @@ namespace KwasantWeb.Controllers
 
                                     CalendarID = a.CalendarID,
 
-                                    QuestionId = q.Id,
                                     Text = a.Text,
                                 }).ToList()
                         };
@@ -81,7 +81,75 @@ namespace KwasantWeb.Controllers
 
             var userID = User.Identity.GetUserId();
 
-            return View();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (value.Id == null)
+                    throw new HttpException(404, "Negotiation not found");
+                
+                //Here we add/update questions based on our proposed negotiation
+                foreach (var question in value.Questions)
+                {
+                    if (question.Id == 0)
+                        throw new HttpException(400, "Invalid parameter: Id of question cannot be 0.");
+                    
+                    var questionDO = uow.QuestionRepository.GetByKey(question.Id);
+
+
+                    var currentSelectedAnswers = new List<AnswerDO>();
+                    //Previous answers are read-only, we only allow updating of new answers
+                    foreach (var answer in question.Answers)
+                    {
+                        AnswerDO answerDO;
+                        if (answer.Id == 0)
+                        {
+                            answerDO = new AnswerDO();
+                            uow.AnswerRepository.Add(answerDO);
+
+                            answerDO.CalendarID = answer.CalendarID;
+                            answerDO.Question = questionDO;
+                            if (answerDO.AnswerStatus == 0)
+                                answerDO.AnswerStatus = AnswerState.Proposed;
+
+                            answerDO.Text = answer.Text;
+                        } else
+                        {
+                            answerDO = uow.AnswerRepository.GetByKey(answer.Id);
+                        }
+                        if (answer.Selected)
+                            currentSelectedAnswers.Add(answerDO);
+                    }
+
+                    var previousAnswers = uow.QuestionResponseRepository.GetQuery()
+                        .Where(qr =>
+                            qr.Answer.QuestionID == question.Id &&
+                            qr.UserID == userID).ToList();
+
+                    var previousAnswerIds = previousAnswers.Select(a => a.AnswerID).ToList();
+
+                    var currentSelectedAnswerIDs = question.Answers.Where(a => a.Selected).Select(a => a.Id).ToList();
+
+                    //First, remove old answers
+                    foreach (var previousAnswer in previousAnswers.Where(previousAnswer => !currentSelectedAnswerIDs.Contains(previousAnswer.AnswerID)))
+                    {
+                        uow.QuestionResponseRepository.Remove(previousAnswer);
+                    }
+
+                    //Add new answers
+                    foreach (var currentSelectedAnswer in currentSelectedAnswers.Where(a => !previousAnswerIds.Contains(a.Id)))
+                    {
+                        var newAnswer = new QuestionResponseDO
+                        {
+                            Answer = currentSelectedAnswer,
+                            UserID = userID
+                        };
+                        uow.QuestionResponseRepository.Add(newAnswer);
+                    }
+                }
+
+                uow.SaveChanges();
+
+                return View();
+            }
         }
 
         public void AuthenticateUser(int negotiationID)

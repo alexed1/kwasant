@@ -101,7 +101,8 @@
                 var errorMessage = "Please resolve the following issues before saving: \n";
 
                 $.each(validationErrors, function(index, error) {
-                    errorMessage += "\n - " + error;
+                    if (errorMessage.indexOf(error) < 0) //Don't do duplicate error messages...
+                        errorMessage += "\n - " + error;
                 });
 
                 alert(errorMessage);

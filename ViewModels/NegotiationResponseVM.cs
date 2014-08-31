@@ -14,6 +14,6 @@ namespace KwasantWeb.ViewModels
 
     public class NegotiationResponseAnswerVM : NegotiationAnswerVM
     {
-        public bool Selected { get; set; }
+
     }
 }

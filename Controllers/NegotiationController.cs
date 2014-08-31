@@ -35,13 +35,11 @@ namespace KwasantWeb.Controllers
                             AnswerType = q.AnswerType,
                             Id = q.Id,
                             Text = q.Text,
-                            NegotiationId = negotiationDO.Id,
                             
                             Answers = q.Answers.Select(a =>
                                 new NegotiationAnswerVM
                                 {
                                     Id = a.Id,
-                                    QuestionId = q.Id,
                                     Text = a.Text,
                                     CalendarID = a.CalendarID,
                             

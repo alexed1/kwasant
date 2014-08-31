@@ -174,6 +174,7 @@
         
         var questionInitValues = $.extend({
             Id: 0,
+            QuestionGUID: guid(),
             Type: 'Text',
             Text: 'Enter question text'
         }, initialValues);
@@ -367,7 +368,8 @@
 
             var answerInitValues = $.extend({
                 Id: 0,
-                QuestionID: this.Id,
+                Selected: this.Answers.length == 0 ? true: false,
+                QuestionGUID: questionInitValues.QuestionGUID,
                 Text: 'Enter answer text'
             }, initialValues);
 
@@ -423,7 +425,13 @@
         var answerObject = {};
 
         var radioSelect = $('<input type="radio"/>')
-            .attr('name', answerInitValues.QuestionID);
+            .attr('name', answerInitValues.QuestionGUID);
+
+        if (answerInitValues.Id == 0)
+            radioSelect.click();
+
+        if (answerInitValues.Selected)
+            radioSelect.attr('checked', true);
 
         if (settings.DisplayMode != 'view')
             radioSelect.hide();
@@ -495,7 +503,13 @@
         answerObject.CalendarID = answerInitValues.CalendarID;
 
         var radioSelect = $('<input type="radio"/>')
-            .attr('name', answerInitValues.QuestionID);
+            .attr('name', answerInitValues.QuestionGUID);
+
+        if (answerInitValues.Id == 0)
+            radioSelect.click();
+
+        if (answerInitValues.Selected)
+            radioSelect.attr('checked', true);
 
         if (settings.DisplayMode != 'view')
             radioSelect.hide();
@@ -617,8 +631,13 @@
                 Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID,
                     {
                         horizontalAlign: 'left',
-                        callback: function(result) {
-                            _that.RenderEvents($.map(result.events, function (elem) {
+                        callback: function (result) {
+                            var filteredEvents = $.grep(result.events, function(elem) {
+                                if (elem.tag[0] == calID)
+                                    return true;
+                                return false;
+                            });
+                            _that.RenderEvents($.map(filteredEvents, function (elem) {
                                 return {
                                     startDate: elem.start,
                                     endDate: elem.end
@@ -629,7 +648,7 @@
             };
 
             if (this.CalendarID == null) {
-                Kwasant.IFrame.DispatchUrlRequest('/Question/EditTimeslots?calendarID=null&negotiationID=' + initValues.NegotiationID, launchCalendar);
+                Kwasant.IFrame.DispatchUrlRequest('/Question/EditTimeslots?calendarID=null&negotiationID=' + initValues.Id, launchCalendar);
             } else {
                 launchCalendar(_that.CalendarID);
             }
