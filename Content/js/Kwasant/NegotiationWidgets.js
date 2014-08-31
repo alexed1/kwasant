@@ -433,7 +433,7 @@
         if (answerInitValues.Selected)
             radioSelect.attr('checked', true);
 
-        if (settings.DisplayMode != 'view')
+        if (settings.DisplayMode != 'reply')
             radioSelect.hide();
 
         var answerText = $('<input />')
@@ -511,7 +511,7 @@
         if (answerInitValues.Selected)
             radioSelect.attr('checked', true);
 
-        if (settings.DisplayMode != 'view')
+        if (settings.DisplayMode != 'reply')
             radioSelect.hide();
 
         var topDiv = $('<div>');

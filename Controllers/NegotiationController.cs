@@ -16,18 +16,28 @@ namespace KwasantWeb.Controllers
     {        
         public ActionResult Edit(int negotiationID)
         {
+            return View(GetNegotiationVM(negotiationID));
+        }
+
+        public ActionResult Review(int negotiationID)
+        {
+            return View(GetNegotiationVM(negotiationID));
+        }
+
+        private static NegotiationVM GetNegotiationVM(int negotiationID)
+        {
+            NegotiationVM model;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (negotiationDO == null)
                     throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
-                
-                var model = new NegotiationVM
+
+                model = new NegotiationVM
                 {
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
                     BookingRequestID = negotiationDO.BookingRequestID,
-
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
                         new NegotiationQuestionVM
@@ -35,26 +45,26 @@ namespace KwasantWeb.Controllers
                             AnswerType = q.AnswerType,
                             Id = q.Id,
                             Text = q.Text,
-                            
                             Answers = q.Answers.Select(a =>
                                 new NegotiationAnswerVM
                                 {
                                     Id = a.Id,
                                     Text = a.Text,
                                     CalendarID = a.CalendarID,
-                            
-                                    CalendarEvents = a.Calendar == null ? new List<QuestionCalendarEventVM>() : a.Calendar.Events.Select(e => new QuestionCalendarEventVM
-                                    {
-                                        StartDate = e.StartDate,
-                                        EndDate = e.EndDate
-                                    }).ToList(),
+                                    CalendarEvents =
+                                        a.Calendar == null
+                                            ? new List<QuestionCalendarEventVM>()
+                                            : a.Calendar.Events.Select(e => new QuestionCalendarEventVM
+                                            {
+                                                StartDate = e.StartDate,
+                                                EndDate = e.EndDate
+                                            }).ToList(),
                                 }).ToList()
                         }
                         ).ToList()
                 };
-
-                return View(model);
             }
+            return model;
         }
 
 

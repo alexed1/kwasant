@@ -53,6 +53,7 @@
 	                    </li>
 	                    <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
 	                        <ul class="dropdown-menu">
+	                            <li><a id="liReview" onclick="getNegotiationReview(); " href="#">Review</a></li>
 	                            <li><a id="liCreateOrEditNegotiation" onclick="getNegotiationWindow();" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
 	                            <li id="liDeleteNegotiation"><a id="btnDeleteNegotiatoin" onclick="deleteActiveNegotiation(linkedNegotiationID);" href="#">Delete</a></li>
 	                        </ul>
@@ -357,6 +358,20 @@
         }, 5 * 1000);
     }
 
+    function getNegotiationReview() {
+        Kwasant.IFrame.Display('/Negotiation/Review?negotiationID=' + linkedNegotiationID,
+                {
+                    horizontalAlign: 'right',
+                    minHeight: 700,
+                    minWidth: 300,
+                    callback: function(result) {
+                        if (result)
+                            displayNegotiation('Your negotiation was successfully updated');
+                    }
+                });
+    }
+    
+
     function getNegotiationWindow() {
         if (linkedNegotiationID != null) {
             Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID,
@@ -408,8 +423,10 @@
     
     function updateCreateDeleteButtons() {
         if (linkedNegotiationID == null) {
+            $('#liReview').hide();
             $('#liDeleteNegotiation').hide();
         } else {
+            $('#liReview').show();
             $('#liDeleteNegotiation').show();
         }
     }

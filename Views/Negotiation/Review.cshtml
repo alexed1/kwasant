@@ -1,12 +1,11 @@
 ﻿@model KwasantWeb.ViewModels.NegotiationVM
-@{ Layout = "~/Views/Shared/_Layout.cshtml"; }
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@section bodyStyle {overflow-y:scroll;}
 @section immediateScripts
 {
     @Scripts.Render("~/bundles/js/jquery")
-    @Scripts.Render("~/bundles/js/select2")
-    
+    @Scripts.Render("~/bundles/js/select2")    
     @Scripts.Render("~/bundles/js/jqueryvalidate")
-    
 
     <script src="/Content/js/common.js" type="text/javascript"></script>
     <script src="/Content/js/Kwasant/Popup.js"></script>
@@ -14,26 +13,15 @@
 
     <script src="/Content/js/Kwasant/NegotiationWidgets.js" type="text/javascript"></script>
 
-    <script type="text/javascript">
+    <script>
         var widget;
         $(function() {
             var settings = {
-                DisplayMode: 'reply',
 
-                MaxAdditionalAnswers: 1,
-
-                AllowModifyNegotiationRequest: false,
-
-                AllowAddQuestion: false,
-                AllowModifyQuestion: false,
-                AllowDeleteQuestion: false,
-
-                AllowAddAnswer: true,
-                AllowModifyAnswer: false,
-                AllowDeleteAnswer: false,
             };
 
             var questions = [
+                
             ];
 
             var answers;
@@ -52,7 +40,6 @@
                     {
                         @:currentAnswer = {};
                         @:currentAnswer.Id = @answer.Id
-                        @:currentAnswer.Selected = @Html.Raw(answer.Selected ? "true" : "false");
                         if (question.AnswerType == "Text")
                         {
                             @:currentAnswer.Text = '@answer.Text';
@@ -65,9 +52,9 @@
                                 @:var startDate = new Date(@calendarEvent.StartDate.Year, (@calendarEvent.StartDate.Month - 1), @calendarEvent.StartDate.Day, @calendarEvent.StartDate.Hour, @calendarEvent.StartDate.Minute, @calendarEvent.StartDate.Millisecond)
                                 @:var endDate = new Date(@calendarEvent.EndDate.Year, (@calendarEvent.EndDate.Month - 1), @calendarEvent.EndDate.Day, @calendarEvent.EndDate.Hour, @calendarEvent.EndDate.Minute, @calendarEvent.EndDate.Millisecond)
 
-                                @:calendarEvents.push({
-                                @:  startDate: startDate,
-                                @:  endDate: endDate
+    					        @:calendarEvents.push({
+                                    @:  startDate: startDate,
+                                    @:  endDate: endDate
                                 @:});
                             }
                             @:currentAnswer.CalendarEvents = calendarEvents;
@@ -84,7 +71,7 @@
             }
 
             var initialValues = {
-                Id: @(Model.Id == null ? "null" : Model.Id.ToString()),
+                Id: @(Model.Id == null? "null" : Model.Id.ToString()),
                 BookingRequestID: @Model.BookingRequestID,
                 Name: '@Model.Name',
                 Attendees: [@Html.Raw(String.Join(",", Model.Attendees.Where(a => !String.IsNullOrEmpty(a)).Select(a => "'" + a + "'")))],
@@ -94,53 +81,82 @@
 
             widget = $('#negotiation').NegotiationWidget(settings, initialValues);
         });
-
-        function submitResponse() {
+        
+        function submitNegotiation() {
             var spinner = Kwasant.IFrame.DisplaySpinner();
+
             var negotiation = widget.getValues();
+        
+            //Do checks here.
+            var validationErrors = [];
+            $.each(negotiation.Questions, function(index, obj) {
+                if (obj.Text === undefined ||
+                    obj.Text === null ||
+                    obj.Text === '') {
+                    validationErrors.push('Please provide text for every question.');
+                }
+            });
+        
+            if (validationErrors.length > 0) {
+                var errorMessage = "Please resolve the following issues before saving: \n";
+
+                $.each(validationErrors, function(index, error) {
+                    if (errorMessage.indexOf(error) < 0) //Don't do duplicate error messages...
+                        errorMessage += "\n - " + error;
+                });
+
+                alert(errorMessage);
+                spinner.hide();
+                return;
+            }
 
             $.ajax({
                 type: "POST",
                 dataType: 'json',
                 contentType: 'application/json',
-                url: '@Url.Action("ProcessResponse", "NegotiationResponse")',
+                url: '/Negotiation/ProcessSubmittedForm',
                 data: JSON.stringify(negotiation)
             })
-                .always(function(result) {
-                    if (spinner !== null) {
-                        spinner.hide();
-                    }
-
-                    if (result === undefined || result === null || result.responseText === undefined || result.responseText === null) {
-                        alert('An error occured on the server. Your changes have not been saved.');
-                    } else {
-                        var newDoc = document.open("text/html", "replace");
-                        newDoc.write(result.responseText);
-                        newDoc.close();
-                    }
-                });
+            .success(function(negotiationID) {
+                Kwasant.IFrame.CloseMe(negotiationID);
+            })
+            .fail(function() {
+                alert('An error occured on the server. Your changes have not been saved.');
+            })
+            .always(function() {
+                if (spinner !== null) {
+                    spinner.hide();
+                }
+            });
         }
     </script>
 }
 @section scripts
 {
-    @Scripts.Render("~/bundles/js/modernizr")
-    @Scripts.Render("~/bundles/js/bootstrap")
+	@Scripts.Render("~/bundles/js/moment")
+	@Scripts.Render("~/bundles/js/bootstraptransition")
+	@Scripts.Render("~/bundles/js/collapse")	
+	@Scripts.Render("~/bundles/js/bootstrap")
+	@Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
+    @Scripts.Render("~/bundles/js/modernizr")	
+    @Scripts.Render("~/bundles/js/common")
 }
 @section styles
 {
     @Styles.Render("~/bundles/css/bootstrap30")
-@Styles.Render("~/bundles/css/select2")
     @Styles.Render("~/bundles/css/backendcss")
-
+    @Styles.Render("~/bundles/css/select2")
+    @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
+	@Styles.Render("~/bundles/css/temp")
+    <link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
 }
 
-<h2>We need clarification about the following to finish booking your event:</h2>
 <form id="f" class="negotiationsidebar">
+    <h4>Negotiation</h4>
     <div id="negotiation"></div>
 
     <div class="space form-actions negotiation-form-actions">
-        <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="submitResponse()" />
+        <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="submitNegotiation()" />
 
         <a href="javascript:close();" class="cancel-btn pull-left">Cancel</a>
     </div>
