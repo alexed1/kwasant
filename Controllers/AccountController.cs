@@ -98,7 +98,7 @@ namespace KwasantWeb.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    RegistrationStatus curRegStatus = new Account().Register(model.Email.Trim(), model.Password.Trim());
+                    RegistrationStatus curRegStatus = new Account().ProcessRegistrationRequest(model.Email.Trim(), model.Password.Trim());
                     if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", "You are already registered with us. Please login.");
@@ -132,7 +132,7 @@ namespace KwasantWeb.Controllers
                 {
 
                     string username = model.Email.Trim();
-                    LoginStatus curLoginStatus = await new Account().Login(username, model.Password, model.RememberMe);
+                    LoginStatus curLoginStatus = await new Account().ProcessLoginRequest(username, model.Password, model.RememberMe);
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:

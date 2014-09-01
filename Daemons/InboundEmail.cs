@@ -15,45 +15,48 @@ namespace Daemons
 {
     public class InboundEmail : Daemon
     {
-        private IImapClient _client;
+        private readonly IImapClient _client;
+        private readonly IConfigRepository _configRepository;
         public string username;
         public string password;
 
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
+            : this(null, ObjectFactory.GetInstance<IConfigRepository>())
         {
           
         }
 
         //be careful about using this form. can get into problems involving disposal.
-        public InboundEmail(IImapClient client)
+        public InboundEmail(IImapClient client, IConfigRepository configRepository)
         {
             _client = client;
+            _configRepository = configRepository;
         }
 
-        
-        private static string GetIMAPServer()
+
+        private string GetIMAPServer()
         {
-            return ConfigRepository.Get("InboundEmailHost");
+            return _configRepository.Get("InboundEmailHost");
         }
 
-        private static int GetIMAPPort()
+        private int GetIMAPPort()
         {
-            return ConfigRepository.Get<int>("InboundEmailPort");
+            return _configRepository.Get<int>("InboundEmailPort");
         }
 
-        private static string GetUserName()
+        private string GetUserName()
         {
-            return ConfigRepository.Get("INBOUND_EMAIL_USERNAME");
+            return _configRepository.Get("INBOUND_EMAIL_USERNAME");
         }
-        private static string GetPassword()
+        private string GetPassword()
         {
-            return ConfigRepository.Get("INBOUND_EMAIL_PASSWORD");
+            return _configRepository.Get("INBOUND_EMAIL_PASSWORD");
         }
 
-        private static bool UseSSL()
+        private bool UseSSL()
         {
-            return ConfigRepository.Get<bool>("InboundEmailUseSSL");
+            return _configRepository.Get<bool>("InboundEmailUseSSL");
         }
 
         
@@ -116,14 +119,15 @@ namespace Daemons
                 try
                 {
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, messageInfo.Message);
+                    
                     //assign the owner of the booking request to be the owner of the From address
 
                     (new BookingRequest()).Process(unitOfWork, bookingRequest);
 
                     unitOfWork.SaveChanges();
 
-                    AlertManager.BookingRequestCreated(bookingRequest);
-                    AlertManager.EmailReceived(bookingRequest, bookingRequest.User);
+                    AlertManager.BookingRequestCreated(bookingRequest.Id);
+                    AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
                 }
                 catch (Exception e)
                 {

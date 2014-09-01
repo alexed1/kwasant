@@ -6,6 +6,7 @@ using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
+using StructureMap;
 
 namespace KwasantTest.Services
 {
@@ -23,9 +24,9 @@ namespace KwasantTest.Services
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
 
             _fixture = new FixtureData();
-            _event = new Event();
-            _invitation = new Invitation();
-            _comm = new CommunicationManager();
+            _event = ObjectFactory.GetInstance<Event>();
+            _invitation = ObjectFactory.GetInstance<Invitation>();
+            _comm = ObjectFactory.GetInstance<CommunicationManager>();
         }
 
         [Test]

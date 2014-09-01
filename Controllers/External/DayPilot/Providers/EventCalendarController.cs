@@ -64,7 +64,7 @@ namespace KwasantWeb.Controllers.External.DayPilot.Providers
                     Id = e.Id,
                     GroupingID = e.CalendarID.ToString(),
                     IsAllDay = e.IsAllDay,
-                    Tag = "Event"
+                    CalendarID = e.CalendarID,
                 }).ToList();
             }
         }

@@ -20,6 +20,7 @@ namespace KwasantTest.Integration.BookingITests
     public class IntegrationTests
     {
         private IUnitOfWork _uow;
+        private IConfigRepository _configRepository;
         private string _outboundIMAPUsername;
         private string _outboundIMAPPassword;
         private string _archivePollEmail;
@@ -38,12 +39,12 @@ namespace KwasantTest.Integration.BookingITests
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+            _outboundIMAPUsername = _configRepository.Get("OutboundUserName");
+            _outboundIMAPPassword = _configRepository.Get("OutboundUserPassword");
 
-            _outboundIMAPUsername = ConfigRepository.Get("OutboundUserName");
-            _outboundIMAPPassword = ConfigRepository.Get("OutboundUserPassword");
-
-            _archivePollEmail = ConfigRepository.Get("ArchivePollEmailAddress");
-            _archivePollPassword = ConfigRepository.Get("ArchivePollEmailPassword");
+            _archivePollEmail = _configRepository.Get("ArchivePollEmailAddress");
+            _archivePollPassword = _configRepository.Get("ArchivePollEmailPassword");
             _emailService= new Email(_uow);
           
            _startPrefix = "Start:";
@@ -197,7 +198,7 @@ namespace KwasantTest.Integration.BookingITests
                 var lines = testBR.HTMLText.Split(new[] {"\r\n"}, StringSplitOptions.None);
                 var startString = lines[1].Remove(0, _startPrefix.Length);
                 var endString = lines[2].Remove(0, _endPrefix.Length);
-                var e = new Event();
+                var e = ObjectFactory.GetInstance<Event>();
                 EventDO eventDO = e.Create(_uow, testBR.Id, startString, endString);
                 eventDO.CreatedByID = "1";
                 eventDO.Description = "test event description";

@@ -56,7 +56,7 @@ namespace KwasantCore.Services
         /// </summary>
         public EnvelopeDO SendTemplate(string templateName, IEmail message, Dictionary<string, string> mergeFields)
         {
-            var envelope = _uow.EnvelopeRepository.CreateMandrillEnvelope(message, templateName, mergeFields);
+            var envelope = _uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
             message.EmailStatus = EmailState.Queued;
             _uow.EnvelopeRepository.Add(envelope);
             return envelope;
@@ -64,7 +64,7 @@ namespace KwasantCore.Services
 
         public EnvelopeDO Send()
         {
-            var envelope = _uow.EnvelopeRepository.CreateGmailEnvelope(_curEmailDO);
+            var envelope = _uow.EnvelopeRepository.ConfigurePlainEmail(_curEmailDO);
             _curEmailDO.EmailStatus = EmailState.Queued;
             _uow.EnvelopeRepository.Add(envelope);
             return envelope;
@@ -230,7 +230,27 @@ namespace KwasantCore.Services
             };
         }
 
+        public EmailDO GenerateBookerMessage(EmailAddressDO emailAddressDO, string message,string subject)
+        {
+            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+            emailAddressValidator.ValidateAndThrow(emailAddressDO);
 
+            return new EmailDO()
+            {
+                From = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress("info@kwasant.com")),
+                Recipients = new List<RecipientDO>()
+                                         {
+                                              new RecipientDO()
+                                                 {
+                                                     EmailAddress = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress(emailAddressDO.Address)),
+                                                       EmailParticipantType = EmailParticipantType.To
+                                                 }
+                                         },
+                Subject = subject,
+                PlainText = message,
+                HTMLText = message
+            };
+        }
        
 
     }

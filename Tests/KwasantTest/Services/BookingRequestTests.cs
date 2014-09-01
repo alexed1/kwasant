@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Mail;
+using Daemons;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -9,9 +11,12 @@ using Data.Repositories;
 using Data.States;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
+using KwasantTest.Daemons;
 using KwasantTest.Fixtures;
+using Moq;
 using NUnit.Framework;
 using StructureMap;
+using Utilities;
 
 namespace KwasantTest.Services
 {
@@ -20,12 +25,28 @@ namespace KwasantTest.Services
     {
         public IUnitOfWork _uow;
         private FixtureData _fixture;
+        private IConfigRepository _configRepository;
 
         [SetUp]
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
+            var configRepositoryMock = new Mock<IConfigRepository>();
+            configRepositoryMock
+                .Setup(c => c.Get<string>(It.IsAny<string>()))
+                .Returns<string>(key =>
+                {
+                    switch (key)
+                    {
+                        case "MaxBRIdle":
+                            return "1";
+                        default:
+                            return new ConfigRepository().Get<string>(key);
+                    }
+                });
+            _configRepository = configRepositoryMock.Object;
+            ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(_configRepository));
 
             _fixture = new FixtureData();
         }
@@ -38,6 +59,13 @@ namespace KwasantTest.Services
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
             (new BookingRequest()).Process(_uow, bookingRequest);
         }
+
+
+
+       
+
+        
+
 
         [Test]
         [Category("BRM")]
@@ -227,5 +255,38 @@ namespace KwasantTest.Services
             List<Object> requests = (new BookingRequest()).GetAllByUserId(_uow.BookingRequestRepository, 0, 10, _uow.BookingRequestRepository.GetAll().FirstOrDefault().User.Id);
             Assert.AreEqual(1, requests.Count);
         }
+
+        [Test]
+        [Category("BRM")]
+        public void TimeOutStaleBRTest()
+        {
+            var timeOut = TimeSpan.FromSeconds(65);
+            Stopwatch staleBRDuration = new Stopwatch();
+
+            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { };
+            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            (new BookingRequest()).Process(_uow, bookingRequest);
+
+            bookingRequest.BookingRequestState = BookingRequestState.CheckedOut;
+            bookingRequest.BookerId = bookingRequest.User.Id;
+            bookingRequest.LastUpdated = DateTimeOffset.Now;
+            _uow.SaveChanges();
+
+            staleBRDuration.Start();
+            do
+            {
+                var om = new OperationsMonitor();
+                DaemonTests.RunDaemonOnce(om);
+
+            } while (staleBRDuration.Elapsed < timeOut);
+            staleBRDuration.Stop();
+
+
+            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.BookingRequestState == BookingRequestState.Unprocessed);
+            Assert.AreEqual(1, requestNow.Count());
+
+        }
+
     }
 }

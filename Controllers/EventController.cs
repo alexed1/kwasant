@@ -26,8 +26,8 @@ namespace KwasantWeb.Controllers
 
         public EventController()
         {
-            _mappingEngine = Mapper.Engine; // TODO: inject dependency
-            _event = new Event(_mappingEngine);
+            _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>(); // TODO: inject dependency via a constructor parameter
+            _event = ObjectFactory.GetInstance<Event>();
             _attendee = new Attendee();
         }
 

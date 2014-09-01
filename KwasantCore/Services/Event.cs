@@ -9,6 +9,7 @@ using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using Utilities;
+using StructureMap;
 using IEvent = Data.Interfaces.IEvent;
 using AutoMapper;
 
@@ -17,17 +18,16 @@ namespace KwasantCore.Services
     public class Event : IEvent
     {
         private readonly IMappingEngine _mappingEngine;
+        private readonly Invitation _invitation;
 
-        public Event() : this(Mapper.Engine)
-        {
-            
-        }
-
-        public Event(IMappingEngine mappingEngine)
+        public Event(IMappingEngine mappingEngine, Invitation invitation)
         {
             if (mappingEngine == null)
                 throw new ArgumentNullException("mappingEngine");
+            if (invitation == null)
+                throw new ArgumentNullException("invitation");
             _mappingEngine = mappingEngine;
+            _invitation = invitation;
         }
 
         //this is called when a booker clicks on the calendar to create a new event. The form has not yet been filled out, so only 
@@ -73,10 +73,9 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("existingAttendees");
 
             var invitations = GenerateInvitations(uow, eventDO, newAttendees, existingAttendees);
-            var invitation = new Invitation();
             foreach (var invitationDO in invitations)
             {
-                invitation.Dispatch(uow, invitationDO);
+                _invitation.Dispatch(uow, invitationDO);
             }
             eventDO.EventStatus = EventState.DispatchCompleted;
         }
@@ -113,21 +112,20 @@ namespace KwasantCore.Services
             if (existingAttendees == null)
                 throw new ArgumentNullException("existingAttendees");
             var invitations = new List<InvitationDO>();
-            Invitation invitation = new Invitation();
             if (eventDO.EventStatus == EventState.Booking)
             {
                 invitations.AddRange(existingAttendees
                     .Union(newAttendees ?? Enumerable.Empty<AttendeeDO>())
-                    .Select(newAttendee => invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO))
+                    .Select(newAttendee => _invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO))
                     .Where(i => i != null));
             }
             else
             {
                 if (newAttendees != null)
                 {
-                    invitations.AddRange(newAttendees.Select(newAttendee => invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO)).Where(i => i != null));
+                    invitations.AddRange(newAttendees.Select(newAttendee => _invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO)).Where(i => i != null));
                 }
-                invitations.AddRange(existingAttendees.Select(existingAttendee => invitation.Generate(uow, InvitationType.ChangeNotification, existingAttendee, eventDO)).Where(i => i != null));
+                invitations.AddRange(existingAttendees.Select(existingAttendee => _invitation.Generate(uow, InvitationType.ChangeNotification, existingAttendee, eventDO)).Where(i => i != null));
             }
 
             return invitations;
@@ -182,8 +180,8 @@ namespace KwasantCore.Services
         {
             if (eventDO == null)
                 throw new ArgumentNullException("eventDO");
-            string fromEmail = ConfigRepository.Get("fromEmail");
-            string fromName = ConfigRepository.Get("fromName");
+            string fromEmail = ObjectFactory.GetInstance<IConfigRepository>().Get("fromEmail");
+            string fromName = ObjectFactory.GetInstance<IConfigRepository>().Get("fromName");
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();

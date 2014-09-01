@@ -21,7 +21,7 @@ namespace Data.Repositories
             base.Add(entity);
         }
 
-        public EnvelopeDO CreateGmailEnvelope(EmailDO email)
+        public EnvelopeDO ConfigurePlainEmail(EmailDO email)
         {
             var envelope = new EnvelopeDO()
             {
@@ -32,11 +32,11 @@ namespace Data.Repositories
             return envelope;
         }
 
-        public EnvelopeDO CreateMandrillEnvelope(IEmail email, string temlateName, IDictionary<string, string> mergeData)
+        public EnvelopeDO ConfigureTemplatedEmail(IEmail email, string templateName, IDictionary<string, string> mergeData)
         {
             var envelope = new EnvelopeDO()
             {
-                TemplateName = temlateName,
+                TemplateName = templateName,
                 Handler = EnvelopeDO.MandrillHander
             };
             ((IEnvelope) envelope).Email = email;

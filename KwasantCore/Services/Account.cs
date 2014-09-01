@@ -1,9 +1,14 @@
 using System;
 using System.Linq;
+using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using System.Web;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Microsoft.AspNet.Identity;
+using Microsoft.Owin.Security;
 using StructureMap;
 using Utilities;
 
@@ -11,13 +16,21 @@ namespace KwasantCore.Services
 {
     public class Account
     {
+        private static IAuthenticationManager AuthenticationManager
+        {
+            get
+            {
+                return HttpContext.Current.GetOwinContext().Authentication;
+            }
+        }
+
         /// <summary>
         /// Register account
         /// </summary>
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <returns></returns>
-        public RegistrationStatus Register(String email, String password)
+        public RegistrationStatus ProcessRegistrationRequest(String email, String password)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -46,34 +59,34 @@ namespace KwasantCore.Services
                     }
                     else
                     {
-                        newUserDO = Register(uow, email, password, "Customer");
+                        newUserDO = ProcessRegistrationRequest(uow, email, password, "Customer");
                         curRegStatus = RegistrationStatus.Successful;
                     }
                 }
                 else
                 {
-                    newUserDO = Register(uow, email, password, "Customer");
+                    newUserDO = ProcessRegistrationRequest(uow, email, password, "Customer");
                     curRegStatus = RegistrationStatus.Successful;
                 }
 
                 uow.SaveChanges();
 
-                if (newUserDO != null)
-                {
-                    AlertManager.CustomerCreated(newUserDO);
-                }
+                //if (newUserDO != null)
+                //{
+                //    AlertManager.CustomerCreated(newUserDO);
+                //}
 
                 return curRegStatus;
             }
         }
 
-        private UserDO Register(IUnitOfWork uow, string email, string password, string role)
+        private UserDO ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, string role)
         {
             var user = new User();
-            return user.Register(uow, email, password, role);
+            return Register(uow, email, password, role);
         }
 
-        public async Task<LoginStatus> Login(string username, string password, bool isPersistent)
+        public async Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -90,7 +103,7 @@ namespace KwasantCore.Services
                     {
                         if (userDO.EmailConfirmed)
                         {
-                            curLoginStatus = await new User().Login(uow, username, password, isPersistent);
+                            curLoginStatus = await Login(uow, username, password, isPersistent);
                         }
                     }
                 }
@@ -107,6 +120,63 @@ namespace KwasantCore.Services
         {
             new User().LogOff();
         }
+
+
+        public UserDO Register(IUnitOfWork uow, string userName, string password, string role)
+        {
+
+            EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
+
+            var userDO = uow.UserRepository.CreateFromEmail(
+                emailAddressDO: curEmailAddress,
+                userName: userName,
+                firstName: userName,
+                lastName: userName);
+
+            UserManager<UserDO> userManager = KwasantCore.Services.User.GetUserManager(uow); ;
+            IdentityResult result = userManager.Create(userDO, password);
+            if (result.Succeeded)
+            {
+                userManager.AddToRole(userDO.Id, role);
+            }
+            else
+            {
+                throw new ApplicationException("There was a problem trying to register you. Please try again.");
+            }
+
+            return userDO;
+        }
+
+        public async Task<LoginStatus> Login(IUnitOfWork uow, string username, string password, bool isPersistent)
+        {
+            LoginStatus curLogingStatus = LoginStatus.Successful;
+            UserManager<UserDO> curUserManager = KwasantCore.Services.User.GetUserManager(uow); ;
+            UserDO curUser = await curUserManager.FindAsync(username, password);
+            if (curUser != null)
+            {
+                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
+
+                ClaimsIdentity identity = await curUserManager.CreateIdentityAsync(curUser, DefaultAuthenticationTypes.ApplicationCookie);
+
+                if (identity.IsAuthenticated == false)
+                {
+                    throw new ApplicationException("There was an error logging in. Please try again later.");
+                }
+                AuthenticationManager.SignIn(new AuthenticationProperties
+                {
+                    IsPersistent = isPersistent
+                }, identity);
+            }
+            else
+            {
+                curLogingStatus = LoginStatus.InvalidCredential;
+            }
+
+            return curLogingStatus;
+        }
+
+
+
 
         //this doesn't seem to get called. let's watch for a while and then delete it
         //public void UpdateUser(UserDO userDO, IdentityUserRole identityUserRole)

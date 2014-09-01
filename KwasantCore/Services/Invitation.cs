@@ -17,6 +17,15 @@ namespace KwasantCore.Services
 {
     public class Invitation
     {
+        private readonly IConfigRepository _configRepository;
+
+        public Invitation(IConfigRepository configRepository)
+        {
+            if (configRepository == null)
+                throw new ArgumentNullException("configRepository");
+            _configRepository = configRepository;
+        }
+
         public void Dispatch(IUnitOfWork uow, InvitationDO curInvitation)
         {
             if (uow == null)
@@ -37,8 +46,8 @@ namespace KwasantCore.Services
             if (curEvent == null)
                 throw new ArgumentNullException("curEvent");
 
-            string fromEmail = ConfigRepository.Get("fromEmail");
-            string fromName = ConfigRepository.Get("fromName");
+            string fromEmail = _configRepository.Get("fromEmail");
+            string fromName = _configRepository.Get("fromName");
 
             var emailAddressRepository = uow.EmailAddressRepository;
             if (curEvent.Attendees == null)
@@ -86,7 +95,7 @@ namespace KwasantCore.Services
         private InvitationDO GenerateInitialInvite(InvitationDO curInvitation, EventDO curEvent, string userID)
         {
             curInvitation.InvitationType = InvitationType.InitialInvite;
-            curInvitation.Subject = String.Format(ConfigRepository.Get("emailSubject"), GetOriginatorName(curEvent), curEvent.Summary, curEvent.StartDate);
+            curInvitation.Subject = String.Format(_configRepository.Get("emailSubject"), GetOriginatorName(curEvent), curEvent.Summary, curEvent.StartDate);
             curInvitation.HTMLText = GetEmailHTMLTextForNew(curEvent, userID);
             curInvitation.PlainText = GetEmailPlainTextForNew(curEvent, userID);
             return curInvitation;
@@ -95,7 +104,7 @@ namespace KwasantCore.Services
         private InvitationDO GenerateChangeNotification(InvitationDO curInvitation, EventDO curEvent, string userID)
         {
             curInvitation.InvitationType = InvitationType.ChangeNotification;
-            curInvitation.Subject = String.Format(ConfigRepository.Get("emailSubjectUpdated"), GetOriginatorName(curEvent), curEvent.Summary, curEvent.StartDate);
+            curInvitation.Subject = String.Format(_configRepository.Get("emailSubjectUpdated"), GetOriginatorName(curEvent), curEvent.Summary, curEvent.StartDate);
             curInvitation.HTMLText = GetEmailHTMLTextForUpdate(curEvent, userID);
             curInvitation.PlainText = GetEmailPlainTextForUpdate(curEvent, userID);
             return curInvitation;
