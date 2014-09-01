@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <link href="/Content/css/additionalcss/bootstrap30/css/bootstrap3.0.css" rel="stylesheet" />
+
+    <link href="/Content/css/backendcss/default.css" rel="stylesheet" />
+
+    <link href="/Content/css/additionalcss/select2/select2.css" rel="stylesheet" />
+
+    <link href="/Content/css/additionalcss/bootstrap30/css/bootstrap-datetimepicker.css" rel="stylesheet" />
+
+    <link href="/Content/css/temp/temp.css" rel="stylesheet" />
+
+    <link href="/Content/css/additionalcss/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
+    <style type="text/css">
+        .questionBox {
+            border-color: #D3B9B9;
+            padding: 5px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border-style: solid;
+            border-width: 1px;
+        }
+
+        .answerBox {
+            border-color: #D3B9B9;
+            padding: 5px;
+            margin: 10px;
+            border-style: solid;
+            border-width: 1px;
+        }
+
+        .eventWindowAnswerBox {
+            border-color: #D3B9B9;
+            padding: 5px;
+            margin: 10px;
+            border-style: solid;
+            border-width: 1px;
+        }
+
+        .eventWindowRendererTemplate {
+            border-color: #D3B9B9;
+            padding: 5px;
+            margin: 10px;
+            border-style: solid;
+            border-width: 1px;
+        }
+
+        .handIcon {
+            cursor: pointer;
+        }
+    </style>
+
+    <script src="/Content/js/jquery.js" type="text/javascript"></script>
+    <script src="/Content/js/common.js" type="text/javascript"></script>
+    <script src="/Content/js/select2.js" type="text/javascript"></script>
+    
+    <link rel="stylesheet" type="text/css" href="/Content/css/NegotiationWidgets.css" />
+
+    <script src="/Content/js/Kwasant/NegotiationWidgets.js" type="text/javascript"></script>
+    <script src="/Content/js/Kwasant/Popup.js"></script>
+</head>
+    <body>
+        <a onclick="getValues();">Click me...</a>
+        <div id="questions">
+
+        </div>
+
+        <script type="text/javascript">
+            var wid;
+            $(function () {
+                var settings = {
+                    DisplayMode: 'review',
+
+                    AllowModifyNegotiationRequest: false,
+
+                    AllowAddQuestion: false,
+                    AllowModifyQuestion: false,
+                    AllowDeleteQuestion: false,
+
+                    AllowAddAnswer: false,
+                    AllowModifyAnswer: false,
+                    AllowDeleteAnswer: false,
+                };
+
+                var startDate = new Date();
+                var endDate = new Date();
+                endDate.setHours(endDate.getHours() + 1);
+
+                wid = $('#questions').NegotiationWidget(settings, {
+                    Name: 'New Negotiation',
+                    Attendees: ['rjrudman@gmail.com'],
+                    Questions: [
+                        {
+                            Id: 1,
+                            Text: 'Where would you like to meet?',
+                            Type: 'Text',
+                            Answers: [
+                                {
+                                    Id: 1,
+                                    QuestionID: 1,
+                                    Text: 'Starbucks'
+                                },
+                                {
+                                    Id: 2,
+                                    QuestionID: 1,
+                                    Text: 'Coffee House'
+                                }
+                            ]
+                        },
+                        {
+                            Id: 2,
+                            Text: 'When?',
+                            Type: 'Timeslot',
+                            Answers: [
+                                {
+                                    Id: 3,
+                                    QuestionID: 2,                                    
+                                    CalendarEvents: [
+                                        {
+                                            startDate: startDate.toDateString(),
+                                            startTime: startDate.getHours() + ':' + startDate.getMinutes(),
+                
+                                            endDate: endDate.toDateString(),
+                                            endTime: endDate.getHours() + ':' + endDate.getMinutes(),
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                });
+            });
+            
+            function getValues() {
+                var res = wid.getValues();
+                var t = 0;
+            }
+        </script>
+
+    </body>    
+</html>

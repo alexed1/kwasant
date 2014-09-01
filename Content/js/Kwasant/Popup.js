@@ -26,9 +26,9 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
 
         if (options.modal === undefined)
             options.modal = false;
-
+        
         if (options.pinned === undefined)
-            options.pinned = true;
+            options.pinned = false;
 
         if (typeof(options.callback) !== 'function')
             options.callback = null;
@@ -206,13 +206,19 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
 
                     var scrollTop = $(top).scrollTop();
                     var scrollLeft = $(top).scrollLeft();
+                    
+                    var iframeWidth = iframeDoc.get(0).body.offsetWidth + (options.paddingAmount * 2);
+                    var iframeHeight = iframeDoc.get(0).body.offsetHeight + (options.paddingAmount * 2);
 
-                    var iframeWidth = iframeDoc.get(0).body.offsetHeight + (options.paddingAmount * 2);
-                    var iframeHeight = iframeDoc.get(0).body.offsetWidth + (options.paddingAmount * 2);
+                    if (options.minWidth !== null && options.minWidth !== undefined && iframeWidth < options.minWidth)
+                        iframeWidth = options.minWidth;
+                    
+                    if (options.minHeight !== null && options.minHeight !== undefined && iframeHeight < options.minHeight)
+                        iframeHeight = options.minHeight;
 
                     var sidePadding = 2;
                     var topPos;
-                    iframeDoc.find('body').addClass('ifarme-body');
+                    iframeDoc.find('body').addClass('iframe-body');
 
                     if (options.verticalAlign === 'top') {
                         topPos = scrollTop + sidePadding;
@@ -221,6 +227,9 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
                     } else {
                         topPos = scrollTop + (winH - that.height()) - getScrollbarWidth() - sidePadding;
                     }
+
+                    if (topPos < 10)
+                        topPos = 10;
 
                     var leftPos;
                     if (options.horizontalAlign === 'right') {
@@ -234,8 +243,11 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
                     that.css('top', topPos);
                     that.css('left', leftPos);
 
-                    that.css('height', iframeWidth + 'px');
-                    that.css('width', iframeHeight + 'px');
+                    that.css('width', iframeWidth + 'px');
+                    that.css('minWidth', iframeWidth + 'px');
+                    
+                    that.css('height', iframeHeight + 'px');
+                    that.css('minHeight', iframeHeight + 'px');
                 };
 
                 if (options.pinned) {

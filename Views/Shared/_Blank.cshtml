@@ -5,7 +5,7 @@
     @RenderSection("styles", required: false)
     @RenderSection("immediateScripts", required: false)
 </head>
-<body class="view-popup-window" style="">
+<body class="view-popup-window" style="@RenderSection("bodyStyle", required: false)">
 	@RenderBody()
     @RenderSection("scripts", required: false)
 </body>
