@@ -30,6 +30,13 @@
                 </td>
             </tr>
             <tr>
+                <td>Email ID
+                </td>
+                <td>
+                    @Html.TextBoxFor(curUser => curUser.User.EmailAddress.Id, new { id = "emailId", disabled = "disabled" })
+                </td>
+            </tr>
+            <tr>
                 <td>Role
                 </td>
                 <td>
@@ -60,6 +67,7 @@
                 </td>
             </tr>
         </table>
+        <input id="hdnUserId" type="hidden" value="@Model.User.Id" />
     </fieldset>
 </div>
 <script>
@@ -67,9 +75,21 @@
     $(document).ready(function () {
         var table;
 
+        //following condition checking if user already exists then setting the view to edit mode
+        if ("@Model.UserRole" != "") {
+            toggleFields(true);
+        }
+
+        //Binding click function to cancel button
         $("#btnCancel").click(function () {
             if ($("#hdnUserId").val() != "") {
                 toggleFields(true);
+                $("#firstname").val("@Model.User.FirstName");
+                $("#lastname").val("@Model.User.LastName");
+                $("#email").val("@Model.User.EmailAddress.Address");
+            }
+            else {
+                window.location.href = "@Url.Action("Dashboard", "Admin")";
             }
         });
 
@@ -80,7 +100,7 @@
         //Binding click event handler to Save button.
         $("#btnSave").click(function () {
             $.ajax({
-                url: '@Url.Action("Edit", "User")',
+                url: '@Url.Action("Validate", "User")',
                 type: 'post',
                 data: $('#userInfoForm').serialize(),
                 success: function (response) {
@@ -89,20 +109,43 @@
                         $("#lblSaveError").html(JSON.parse(response).error);
                     }
                     else {
-                        createUpdateUser(confirm('Send an email to this user with their credentials?'));
+                        createUpdateUser();
                     }
                 }
             });
         });
 
         //Create or update user if all input values are valid.
-        function createUpdateUser(sendMail) {
+        function createUpdateUser() {
+            if ($("#hdnUserId").val() != "") {
+                updateUser();
+            }
+            else {
+                createUser();
+            }
+        }
+
+        //Create new user
+        function createUser() {
+            var sendMail = $("#chkSendEmail").is(':checked');
             $.ajax({
-                url: '@Url.Action("ProcessEdits", "User")',
+                url: '@Url.Action("AddFromForm", "User")',
                 type: 'post',
                 data: $('#userInfoForm').serialize() + "&sendEmail=" + sendMail,
                 success: function (response) {
-                    $("#lblSaveError").html("User saved successfully");
+                    window.location.href = "@Url.Action("Dashboard", "Admin")";
+                }
+            });
+        }
+
+        //Update existing user
+        function updateUser() {
+            $.ajax({
+                url: '@Url.Action("Update", "User")',
+                type: 'post',
+                data: $('#userInfoForm').serialize(),
+                success: function (response) {
+                    $("#lblSaveError").html("User updated successfully");
                     toggleFields(true);
                 }
             });
@@ -110,6 +153,7 @@
 
     });
 
+    //toggle fields state
     function toggleFields(state) {
         $("#firstname").prop("disabled", state);
         $("#lastname").prop("disabled", state);

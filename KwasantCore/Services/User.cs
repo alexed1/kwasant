@@ -15,6 +15,7 @@ using System.Web;
 using Data.Entities;
 using StructureMap;
 using Utilities;
+using Data.States;
 
 namespace KwasantCore.Services
 {
@@ -93,8 +94,8 @@ namespace KwasantCore.Services
             var userDO = uow.UserRepository.CreateFromEmail(
                 emailAddressDO: curEmailAddress,
                 userName: userName,
-                firstName: userName,
-                lastName: userName);
+                firstName: firstName,
+                lastName: lastName);
 
             UserManager<UserDO> userManager = GetUserManager(uow); ;
             IdentityResult result = userManager.Create(userDO, password);
@@ -228,7 +229,20 @@ namespace KwasantCore.Services
                   ).ToList();
         }
 
-        public void CreateOrUpdateUser(IUnitOfWork uow, UserDO curUser, string role, bool sendEmail) 
+        public void Create(IUnitOfWork uow, UserDO curUser, string role, bool sendEmail)
+        {
+            if (sendEmail)
+            {
+                EmailDO curEmail = new EmailDO();
+                curEmail.From = curUser.EmailAddress;
+                curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
+                curEmail.Subject = "User Settings Notification";
+                new Email(uow).SendTemplate("User_Settings_Notification", curEmail, null);
+            }
+            Register(uow, curUser.EmailAddress.Address, curUser.FirstName, curUser.LastName, "test@1234", role);
+        }
+
+        public void Update(IUnitOfWork uow, UserDO curUser, string role)
         {
             EmailAddressDO mailaddress = uow.EmailAddressRepository.GetAll().Where(e => e.Address == curUser.EmailAddress.Address).FirstOrDefault();
             if (mailaddress != null)
@@ -240,16 +254,6 @@ namespace KwasantCore.Services
                 var curManager = User.GetUserManager(uow);
                 curManager.AddToRole(existingUser.Id, role);
                 uow.SaveChanges();
-            }
-            else
-            {
-                Register(uow, curUser.EmailAddress.Address, curUser.FirstName, curUser.LastName, "test@1234", role);
-                uow.SaveChanges();
-                AlertManager.CustomerCreated(curUser);
-                //if (sendEmail)
-                //{
-                //    new KwasantCore.Managers.CommunicationManager().GenerateWelcomeEmail(curUser);
-                //}
             }
         }
     }

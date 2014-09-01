@@ -1,8 +1,5 @@
-﻿@model KwasantWeb.ViewModels.UserAdministerVM
+﻿@model KwasantWeb.ViewModels.UserQueryVM
 <div>
-    User :
-    <input id="txtemailid" type="text" value="@Model.User.EmailAddress.Address" />
-    <input id="btnChange" type="button" value="Change" />
     <input id="hdnUserId" type="hidden" value="@Model.User.Id" />
     <br />
     <br />
@@ -16,26 +13,6 @@
     </div>
 </div>
 <script>
-    //Binding click on change user button to display popup containing all users to choose.
-    $("#btnChange").click(function () {
-        var userDiv = $("#tduserblock");
-        var userId = $("#hdnUserId").val();
-
-        $.ajax({
-            cache: false,
-            type: "GET",
-            url: "@Url.Action("ChangeUser", "User")",
-            data: { "curUserId": userId },
-            success: function (data) {
-                userDiv.html('');
-                userDiv.html(data);
-            },
-            error: function () {
-                alert('Failed to retrieve users.');
-            }
-        });
-    });
-
     //Function to refresh calendars
     function refreshCalendar() {
         var visibleCalendarIDs;

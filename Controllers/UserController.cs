@@ -119,8 +119,53 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        public ActionResult ShowAddUser()
+        {
+            UserAdministerVM curUserAdminVM = new UserAdministerVM();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curUserAdminVM.User = new UserDO
+                {
+                    Id = "",
+                    EmailAddress = new EmailAddressDO() { Address = "" },
+                    FirstName = "",
+                    LastName = ""
+                };
+            }
+            return View(curUserAdminVM);
+        }
+
+        public ActionResult Validate(CreateUserVM curCreateUserVM)
+        {
+            UserDO curUser = curCreateUserVM.User;
+            string selectedRole = curCreateUserVM.UserRole;
+            
+            if (string.IsNullOrEmpty(curUser.EmailAddress.Address) || string.IsNullOrEmpty(curUser.FirstName) || string.IsNullOrEmpty(curUser.LastName) || string.IsNullOrEmpty(selectedRole))
+            {
+                var jsonErrorResult = Json(_datatables.Pack(new { Error = "All Fields are required" }), JsonRequestBehavior.AllowGet);
+                return jsonErrorResult;
+            }
+
+            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+            if (!(emailAddressValidator.Validate(curUser.EmailAddress).IsValid))
+            {
+                var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
+                return jsonErrorResult;
+            }
+            var jsonSuccessResult = Json(_datatables.Pack("valid"), JsonRequestBehavior.AllowGet);
+            return jsonSuccessResult;
+        }
+
         [KwasantAuthorize(Roles = "Admin")]
-        public ActionResult ShowUserQueryForm(UserAdministerVM curUserAdminVM)
+        public ActionResult Detail(String userId)
+        {
+            UserAdministerVM curUserAdminVM = new UserAdministerVM();
+            curUserAdminVM.User = _user.GetUser(userId);
+            return View(curUserAdminVM);
+        }
+
+        [KwasantAuthorize(Roles = "Admin")]
+        public ActionResult FindUser(UserAdministerVM curUserAdminVM)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -132,15 +177,15 @@ namespace KwasantWeb.Controllers
                     LastName = ""
                 };
             }
-            return View("Query", curUserAdminVM);
+            return View(curUserAdminVM);
         }
 
         [HttpPost]
-        public ActionResult FindUser(UserQueryVM curUserQueryVM)
+        public ActionResult RunQuery(UserQueryVM curUserQueryVM)
         {
             UserDO curUser = curUserQueryVM.User;
 
-            if (string.IsNullOrEmpty(curUser.EmailAddress.Address) && string.IsNullOrEmpty(curUser.FirstName) && string.IsNullOrEmpty(curUser.LastName)) 
+            if (string.IsNullOrEmpty(curUser.EmailAddress.Address) && string.IsNullOrEmpty(curUser.FirstName) && string.IsNullOrEmpty(curUser.LastName))
             {
                 var jsonErrorResult = Json(_datatables.Pack(new { Error = "Atleast one field is required" }), JsonRequestBehavior.AllowGet);
                 return jsonErrorResult;
@@ -162,74 +207,29 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public ActionResult GetCalendars(string curUserId)
-        {
-            UserAdministerVM curUserAdminVM = new UserAdministerVM();
-            curUserAdminVM.User = _user.GetUser(curUserId);
-            return PartialView("ShowCalendars", curUserAdminVM);
-
-        }
-
-        public ActionResult ChangeUser(string curUserId)
-        {
-            UserQueryVM curUserQueryVM = new UserQueryVM();
-            curUserQueryVM.User = _user.GetUser(curUserId);
-            return PartialView("ShowQuery", curUserQueryVM);
-        }
-
-        public ActionResult ShowAddUser()
-        {
-            UserAdministerVM curUserAdminVM = new UserAdministerVM();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                curUserAdminVM.User = new UserDO
-                {
-                    Id = "",
-                    EmailAddress = new EmailAddressDO() { Address = "" },
-                    FirstName = "",
-                    LastName = ""
-                };
-            }
-            return View(curUserAdminVM);
-        }
-
-        public ActionResult Edit(CreateUserVM curCreateUserVM)
-        {
-            UserDO curUser = curCreateUserVM.User;
-            string selectedRole = curCreateUserVM.UserRole;
-            
-            if (string.IsNullOrEmpty(curUser.EmailAddress.Address) || string.IsNullOrEmpty(curUser.FirstName) || string.IsNullOrEmpty(curUser.LastName) || string.IsNullOrEmpty(selectedRole))
-            {
-                var jsonErrorResult = Json(_datatables.Pack(new { Error = "All Fields are required" }), JsonRequestBehavior.AllowGet);
-                return jsonErrorResult;
-            }
-
-            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-            if (!(emailAddressValidator.Validate(curUser.EmailAddress).IsValid))
-            {
-                var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
-                return jsonErrorResult;
-            }
-            var jsonSuccessResult = Json(_datatables.Pack("valid"), JsonRequestBehavior.AllowGet);
-            return jsonSuccessResult;
-        }
-
-        public ActionResult ShowDetails(string curUserId)
-        {
-            CreateUserVM curUserAdminVM = new CreateUserVM();
-            curUserAdminVM.User = _user.GetUser(curUserId);
-            curUserAdminVM.UserRole = _user.GetRole(curUserId);
-            return PartialView("ShowDetails", curUserAdminVM);
-        }
-
-        public ActionResult ProcessEdits(CreateUserVM curCreateUserVM, bool sendEmail)
+        [HttpPost]
+        public ActionResult AddFromForm(CreateUserVM curCreateUserVM, bool sendEmail)
         {
             UserDO curUser = curCreateUserVM.User;
             string role = curCreateUserVM.Roles.Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _user.CreateOrUpdateUser(uow, curUser, role, sendEmail);
+                _user.Create(uow, curUser, role, sendEmail);
+            }
+            var jsonSuccessResult = Json(_datatables.Pack("User saved successfully."), JsonRequestBehavior.AllowGet);
+            return jsonSuccessResult;
+        }
+
+        [HttpPost]
+        public ActionResult Update(CreateUserVM curCreateUserVM)
+        {
+            UserDO curUser = curCreateUserVM.User;
+            string role = curCreateUserVM.Roles.Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _user.Update(uow, curUser, role);
             }
             var jsonSuccessResult = Json(_datatables.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
             return jsonSuccessResult;

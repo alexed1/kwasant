@@ -294,7 +294,6 @@
     <Compile Include="ViewModels\MyAccountVM.cs" />
     <Compile Include="ViewModels\CalendarShowVM.cs" />
     <Compile Include="ViewModels\CreateUserVM.cs" />
-    
     <Compile Include="Filters\RequestParamsEncryptedFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -318,7 +317,6 @@
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\RemoteCalendarVM.cs" />
     <Compile Include="ViewModels\UsersAdminVM.cs" />
-
     <Compile Include="ViewModels\UserAdministerVM.cs" />
     <Compile Include="ViewModels\UserQueryVM.cs" />
     <Compile Include="Webhooks\MandrillWebhookController.cs" />
@@ -753,13 +751,15 @@
     <Content Include="Views\Negotiation\_TextAnswer.cshtml" />
     <Content Include="Views\Calendar\GetNegotiationCalendars.cshtml" />
     <Content Include="Views\Negotiation\EventWindows.cshtml" />
-    <Content Include="Views\User\ShowCalendars.cshtml" />
+    <Content Include="Views\User\ChooseCalendars.cshtml" />
     <Content Include="Views\User\ShowQuery.cshtml" />
-    <Content Include="Views\User\Query.cshtml" />
-    <Content Include="Views\User\ShowEvents.cshtml" />
+    <Content Include="Views\User\ShowCalendarEvents.cshtml" />
     <Content Include="Views\User\ShowAddUser.cshtml" />
-    <Content Include="Views\User\ShowDetails.cshtml" />
+    <Content Include="Views\User\ShowUserDetails.cshtml" />
     <Content Include="Views\NegotiationResponse\View.cshtml" />
+    <Content Include="Views\User\FindUser.cshtml" />
+    <Content Include="Views\User\Detail.cshtml" />
+    <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
