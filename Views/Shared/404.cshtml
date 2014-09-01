@@ -59,13 +59,12 @@
             <div class="landing-welcome-area" style="margin-top: 0px; opacity: 1; display: block; top:250px; bottom:50px; overflow:auto;">
                 <div class="landing-welcome-inner">
                     <div id="logotext" class="text" style="margin:auto; float:none; cursor:default; width:100%;">
-                        <h1>Error</h1>
-                        <p>An unexpected error has occurred. Please contact the system administrator.<br />Sorry!
+                        <h1>Error: 404</h1>
+                        <p>@Model.Exception.Message
                             @if (Model != null && HttpContext.Current.IsDebuggingEnabled)
                             {
                                 <div style="overflow-wrap:break-word">
                                     <p>
-                                        <b>Exception:</b> @Html.Raw(Model.Exception.Message.StringCSharpLineBreakToHTMLLineBreak())<br />
                                         <b>Controller:</b> @Html.Raw(Model.ControllerName.StringCSharpLineBreakToHTMLLineBreak())<br />
                                         <b>Action:</b> @Html.Raw(Model.ActionName.StringCSharpLineBreakToHTMLLineBreak())
                                     </p>

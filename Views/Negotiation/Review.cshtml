@@ -17,7 +17,17 @@
         var widget;
         $(function() {
             var settings = {
+                DisplayMode: 'review',
 
+                AllowModifyNegotiationRequest: false,
+
+                AllowAddQuestion: false,
+                AllowModifyQuestion: false,
+                AllowDeleteQuestion: false,
+
+                AllowAddAnswer: false,
+                AllowModifyAnswer: false,
+                AllowDeleteAnswer: false,
             };
 
             var questions = [
@@ -40,6 +50,8 @@
                     {
                         @:currentAnswer = {};
                         @:currentAnswer.Id = @answer.Id
+                        @:currentAnswer.AnswerState = @answer.AnswerState
+                        @:currentAnswer.VotedBy = [@Html.Raw(String.Join(",", answer.VotedBy.Where(a => !String.IsNullOrEmpty(a)).Select(a => "'" + a + "'")))]
                         if (question.AnswerType == "Text")
                         {
                             @:currentAnswer.Text = '@answer.Text';

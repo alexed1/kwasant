@@ -76,15 +76,15 @@ namespace KwasantCore.Managers
                 var emailDO = new EmailDO();
                 emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
-                emailDO.Subject = "Welcome to Kwasant";
-                var htmlText = String.Format("Please click <a href='{0}NegotiationResponse/View?negotiationID={1}'>here</a> to answer some questions about your upcoming event.", Server.ServerUrl, negotiationDO.Id);
+                emailDO.Subject = "Regarding:" + negotiationDO.Name;
 
-                emailDO.HTMLText = htmlText;
-                emailDO.PlainText = "Please click here: " + String.Format("{0}NegotiationResponse/View?negotiationID={1}", Server.ServerUrl, negotiationDO.Id);
+                var responseUrl = String.Format("{0}NegotiationResponse/View?negotiationID={1}", 
+                    Server.ServerUrl, 
+                    negotiationDO.Id);
+
                 emailDO.EmailStatus = EmailState.Queued;
-
-                uow.EnvelopeRepository.CreateGmailEnvelope(emailDO);
                 uow.EmailRepository.Add(emailDO);
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "clarification_request_v3", new Dictionary<string, string>() { { "RESP_URL", responseUrl } });
             }
         }
 

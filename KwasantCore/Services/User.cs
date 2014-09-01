@@ -59,32 +59,6 @@ namespace KwasantCore.Services
             return uow.UserRepository.GetByEmailAddress(emailAddressDO);
         }
 
-
-        public UserDO Register (IUnitOfWork uow, string userName, string password, string role)
-        {
-
-            EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
-             
-            var userDO =uow.UserRepository.CreateFromEmail(
-                emailAddressDO:  curEmailAddress,
-                userName: userName,
-                firstName: userName,
-                lastName: userName);
-
-            UserManager<UserDO> userManager = GetUserManager(uow);;
-            IdentityResult result = userManager.Create(userDO, password);
-            if (result.Succeeded)
-            {
-                userManager.AddToRole(userDO.Id, role);
-            }
-            else
-            {
-                throw new ApplicationException("There was a problem trying to register you. Please try again.");
-            }
-
-            return userDO;
-        }
-
         public void UpdatePassword(IUnitOfWork uow, UserDO userDO, string password)
         {
             if (userDO != null)
@@ -98,34 +72,6 @@ namespace KwasantCore.Services
                     throw new ApplicationException("There was a problem trying to change your password. Please try again.");
                 }
             }
-        }
-
-        public async Task<LoginStatus> Login(IUnitOfWork uow, string username, string password, bool isPersistent)
-        {
-            LoginStatus curLogingStatus = LoginStatus.Successful;
-            UserManager<UserDO> curUserManager = GetUserManager(uow);;
-            UserDO curUser = await curUserManager.FindAsync(username, password);
-            if (curUser != null)
-            {
-                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-
-                ClaimsIdentity identity = await curUserManager.CreateIdentityAsync(curUser, DefaultAuthenticationTypes.ApplicationCookie);
-
-                if (identity.IsAuthenticated == false)
-                {
-                    throw new ApplicationException("There was an error logging in. Please try again later.");
-                }
-                AuthenticationManager.SignIn(new AuthenticationProperties
-                {
-                    IsPersistent = isPersistent
-                }, identity);
-            }
-            else
-            {
-                curLogingStatus = LoginStatus.InvalidCredential;
-            }
-
-            return curLogingStatus;
         }
 
         public void LogOff()
@@ -161,5 +107,37 @@ namespace KwasantCore.Services
 
             return um;
         }
+
+
+        //
+        //get roles for this User
+        //if at least one role meets or exceeds the provided level, return true, else false
+        public bool VerifyMinimumRole(string minAuthLevel, string curUserId, IUnitOfWork uow)
+        {
+            var um = GetUserManager(uow);
+            var roles = um.GetRoles(curUserId);
+            String[] acceptableRoles = {};
+            switch (minAuthLevel)
+            {
+                case "Customer":
+                    acceptableRoles = new[] {"Customer", "Booker", "Admin"};
+                    break;
+                case "Booker":
+                    acceptableRoles = new[] {"Booker", "Admin"};
+                    break;
+                case "Admin":
+                    acceptableRoles = new[] {"Admin"};
+                    break;
+            }
+            //if any of the roles that this user belongs to are contained in the current set of acceptable roles, return true
+            if (roles.Any(role => acceptableRoles.Contains(role)))
+                        return true;
+                    return false;
+         
+
+        }
+
+
+
     }
 }

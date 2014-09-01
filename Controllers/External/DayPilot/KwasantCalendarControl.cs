@@ -63,7 +63,7 @@ namespace KwasantWeb.Controllers.External.DayPilot
             DataTextField = GetPropertyName(ev => ev.Text);
             DataIdField = GetPropertyName(ev => ev.Id);
             DataAllDayField = GetPropertyName(ev => ev.IsAllDay);
-            DataTagFields = GetPropertyName(ev => ev.Tag);
+            DataTagFields = GetPropertyName(ev => ev.CalendarID);
 
             Events = _provider.LoadData();
         }
