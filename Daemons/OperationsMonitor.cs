@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Infrastructure;
@@ -6,7 +7,9 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using KwasantCore.Managers;
+using KwasantCore.Services;
 using StructureMap;
+using Utilities;
 
 namespace Daemons
 {
@@ -24,7 +27,17 @@ namespace Daemons
         protected override void Run()
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+            {  
+                //Process Timing Out BR status "CheckedOut" to "Unprocessed"
+                int maxBRIdleMinutes = Convert.ToInt32(ConfigRepository.Get<string>("MaxBRIdle"));
+
+                DateTimeOffset idleTimeLimit = DateTimeOffset.Now.Subtract(new TimeSpan(0, maxBRIdleMinutes, 0));
+                List<BookingRequestDO> staleBRList = new List<BookingRequestDO>();
+                staleBRList = uow.BookingRequestRepository.GetAll().Where(x => x.BookingRequestState == BookingRequestState.CheckedOut && x.LastUpdated.DateTime < idleTimeLimit.DateTime).ToList();
+                BookingRequest _br = new BookingRequest();
+                foreach (var br in staleBRList)
+                    _br.Timeout(uow, br);
+
                 BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
                 TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(bookingRequestRepo);
@@ -34,8 +47,11 @@ namespace Daemons
 
                 CommunicationManager cm = new CommunicationManager();
                 cm.ProcessBRNotifications(unprocessedBookingRequests);
-                unprocessedBookingRequests.ForEach(br => ts.SetStatus(TrackingType.BookingState, br, TrackingState.Processed));
+                //unprocessedBookingRequests.ForEach(br => ts.SetStatus(TrackingType.BookingState, br, TrackingState.Processed));
 
+                foreach (var unprocessedBR in unprocessedBookingRequests)
+                    ts.SetStatus(uow, unprocessedBR);
+                
                 uow.SaveChanges();
             }
         }

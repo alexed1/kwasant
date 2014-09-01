@@ -163,30 +163,6 @@
     <Compile Include="Migrations\201408201056135_ChangeEmailAddressMaxLength.Designer.cs">
       <DependentUpon>201408201056135_ChangeEmailAddressMaxLength.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201408210907370_ImplementResponses.cs" />
-    <Compile Include="Migrations\201408210907370_ImplementResponses.Designer.cs">
-      <DependentUpon>201408210907370_ImplementResponses.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408210953042_AddUserToResponse.cs" />
-    <Compile Include="Migrations\201408210953042_AddUserToResponse.Designer.cs">
-      <DependentUpon>201408210953042_AddUserToResponse.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408220936364_AddCascadeForAttendeeEvent.cs" />
-    <Compile Include="Migrations\201408220936364_AddCascadeForAttendeeEvent.Designer.cs">
-      <DependentUpon>201408220936364_AddCascadeForAttendeeEvent.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408221103162_Sync.22.08.2014.cs" />
-    <Compile Include="Migrations\201408221103162_Sync.22.08.2014.Designer.cs">
-      <DependentUpon>201408221103162_Sync.22.08.2014.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408251215414_Sync.25.08.2014.cs" />
-    <Compile Include="Migrations\201408251215414_Sync.25.08.2014.Designer.cs">
-      <DependentUpon>201408251215414_Sync.25.08.2014.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.cs" />
-    <Compile Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.Designer.cs">
-      <DependentUpon>201408251234014_AddCascadeForAttendeeOnNegotiations.cs</DependentUpon>
-    </Compile>
     <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
@@ -811,24 +787,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408201056135_ChangeEmailAddressMaxLength.resx">
       <DependentUpon>201408201056135_ChangeEmailAddressMaxLength.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408210907370_ImplementResponses.resx">
-      <DependentUpon>201408210907370_ImplementResponses.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408210953042_AddUserToResponse.resx">
-      <DependentUpon>201408210953042_AddUserToResponse.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408220936364_AddCascadeForAttendeeEvent.resx">
-      <DependentUpon>201408220936364_AddCascadeForAttendeeEvent.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408221103162_Sync.22.08.2014.resx">
-      <DependentUpon>201408221103162_Sync.22.08.2014.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408251215414_Sync.25.08.2014.resx">
-      <DependentUpon>201408251215414_Sync.25.08.2014.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.resx">
-      <DependentUpon>201408251234014_AddCascadeForAttendeeOnNegotiations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

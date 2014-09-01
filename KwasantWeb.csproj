@@ -289,6 +289,7 @@
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="KwasantHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\CalendarVM.cs" />
     <Compile Include="ViewModels\EventVM.cs" />
     <Compile Include="ViewModels\MyAccountVM.cs" />
@@ -370,6 +371,7 @@
     <Content Include="Content\css\daypilot\scheduler_transparent.css" />
     <Content Include="Content\css\daypilot\scheduler_white.css" />
     <Content Include="Content\css\frontcss\main.css" />
+    <Content Include="Content\css\NegotiationWidgets.css" />
     <Content Include="Content\css\temp\temp.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.min.css" />
@@ -421,10 +423,10 @@
     <Content Include="Content\DataTables-1.10.0\media\images\sort_desc.png" />
     <Content Include="Content\DataTables-1.10.0\media\images\sort_desc_disabled.png" />
     <Content Include="Content\img\ajax-loader.gif" />
-    <Content Include="Content\img\backgrounds\background-test9.jpg" />
+    <Content Include="Content\img\backgrounds\background_coffee.jpg" />
+    <Content Include="Content\img\backgrounds\background_coffee_and_croissant.jpg" />
+    <Content Include="Content\img\backgrounds\background_coffe_and_phone.jpg" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
-    <Content Include="Content\img\backgrounds\homepage89.png" />
-    <Content Include="Content\img\backgrounds\homepagesecond.jpg" />
     <Content Include="Content\img\backgrounds\ie-black-bg.png" />
     <Content Include="Content\img\Croissant\croissant_nolic.jpg" />
     <Content Include="Content\img\Cross.png" />
@@ -528,6 +530,7 @@
     <Content Include="Content\js\jquery.colorbox.js" />
     <Content Include="Content\js\jquery.js" />
     <Content Include="Content\js\jquery.validate.js" />
+    <Content Include="Content\js\Kwasant\NegotiationWidgets.js" />
     <Content Include="Content\js\Kwasant\Popup.js" />
     <Content Include="Content\js\main.js" />
     <Content Include="Content\js\modernizr.js" />
@@ -606,6 +609,7 @@
     <Content Include="Scripts\jquery-1.7.js" />
     <Content Include="Scripts\jquery-1.7.min.js" />
     <Content Include="shortcodes.html" />
+    <Content Include="TestWidgetLibrary.html" />
     <Content Include="Themes\areas.css" />
     <Content Include="Themes\areas\icons.png" />
     <Content Include="Themes\bubble_default.css" />
@@ -760,6 +764,8 @@
     <Content Include="Views\User\FindUser.cshtml" />
     <Content Include="Views\User\Detail.cshtml" />
     <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
+    <Content Include="Views\Shared\404.cshtml" />
+    <Content Include="Views\Negotiation\Review.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

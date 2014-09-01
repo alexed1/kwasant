@@ -61,7 +61,7 @@ namespace KwasantCore.Services
         }
 
 
-        public UserDO Register(IUnitOfWork uow, string userName, string password, string role)
+        public UserDO Register (IUnitOfWork uow, string userName, string password, string role)
         {
 
             EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
@@ -72,7 +72,7 @@ namespace KwasantCore.Services
                 firstName: userName,
                 lastName: userName);
 
-            UserManager<UserDO> userManager = GetUserManager(uow); ;
+            UserManager<UserDO> userManager = GetUserManager(uow);;
             IdentityResult result = userManager.Create(userDO, password);
             if (result.Succeeded)
             {
@@ -129,7 +129,7 @@ namespace KwasantCore.Services
         public async Task<LoginStatus> Login(IUnitOfWork uow, string username, string password, bool isPersistent)
         {
             LoginStatus curLogingStatus = LoginStatus.Successful;
-            UserManager<UserDO> curUserManager = GetUserManager(uow); ;
+            UserManager<UserDO> curUserManager = GetUserManager(uow);;
             UserDO curUser = await curUserManager.FindAsync(username, password);
             if (curUser != null)
             {
@@ -158,7 +158,7 @@ namespace KwasantCore.Services
         {
             AuthenticationManager.SignOut();
         }
-
+        
         //problem: this assumes a single role but we need support for multiple roles on one account
         //problem: the line between account and user is really murky. do we need both?
         public bool ChangeUserRole(IUnitOfWork uow, IdentityUserRole identityUserRole)
@@ -188,6 +188,38 @@ namespace KwasantCore.Services
             return um;
         }
 
+
+        //
+        //get roles for this User
+        //if at least one role meets or exceeds the provided level, return true, else false
+        public bool VerifyMinimumRole(string minAuthLevel, string curUserId, IUnitOfWork uow)
+        {
+            var um = GetUserManager(uow);
+            var roles = um.GetRoles(curUserId);
+            String[] acceptableRoles = {};
+            switch (minAuthLevel)
+            {
+                case "Customer":
+                    acceptableRoles = new[] {"Customer", "Booker", "Admin"};
+                    break;
+                case "Booker":
+                    acceptableRoles = new[] {"Booker", "Admin"};
+                    break;
+                case "Admin":
+                    acceptableRoles = new[] {"Admin"};
+                    break;
+            }
+            //if any of the roles that this user belongs to are contained in the current set of acceptable roles, return true
+            if (roles.Any(role => acceptableRoles.Contains(role)))
+                        return true;
+                    return false;
+         
+
+        }
+
+
+
+
         public UserDO GetUser(string curUserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -202,8 +234,8 @@ namespace KwasantCore.Services
                     FirstName = curUser.FirstName,
                     LastName = curUser.LastName
                 };
-            }
-        }
+    }
+}
 
         public string GetRole(string curUserId)
         {

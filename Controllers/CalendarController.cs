@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
@@ -25,7 +26,7 @@ namespace KwasantWeb.Controllers
         public ActionResult Index(int id = 0)
         {
             if (id <= 0)
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                throw new HttpException(400, "Booking request not found");
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -33,7 +34,7 @@ namespace KwasantWeb.Controllers
                 var bookingRequestDO = bookingRequestRepository.GetByKey(id);
 
                 if (bookingRequestDO == null)
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    throw new HttpException(400, "Booking request not found");
 
                 var linkedNegotiationID = bookingRequestDO.Negotiations.Select(n => (int?)n.Id).FirstOrDefault();
 
@@ -89,7 +90,7 @@ namespace KwasantWeb.Controllers
                 {
                     calendarsViaNegotiationRequest = calendarDO.Negotiation.Calendars;
                     var user = new User();
-                    var recipientAddresses = calendarDO.Negotiation.BookingRequest.Recipients.Select(r => r.EmailAddress) //Get email addresses for each recipient
+                    var recipientAddresses = calendarDO.Negotiation.Attendees.Select(r => r.EmailAddress) //Get email addresses for each recipient
                         .Select(a => user.Get(uow, a)).Where(u => u != null).SelectMany(u => u.Calendars).ToList(); //Grab the user from the email and find their calendars
                     
                     //Grab the user from the email and find their calendars
@@ -120,8 +121,8 @@ namespace KwasantWeb.Controllers
             if (calendarIDs != "")
             {
                 var ids = calendarIDs.Split(',').Where(c => !String.IsNullOrEmpty(c)).Select(int.Parse).ToArray();
-                return new KwasantCalendarController(new EventDataProvider(true, ids)).CallBack(this);
-            }
+            return new KwasantCalendarController(new EventDataProvider(true, ids)).CallBack(this);
+        }
             return new KwasantCalendarController(new EventDataProvider(false, new int { })).CallBack(this);
         }
 
@@ -130,8 +131,8 @@ namespace KwasantWeb.Controllers
             if (calendarIDs != "")
             {
                 var ids = calendarIDs.Split(',').Where(c => !String.IsNullOrEmpty(c)).Select(int.Parse).ToArray();
-                return new KwasantMonthController(new EventDataProvider(true, ids)).CallBack(this);
-            }
+            return new KwasantMonthController(new EventDataProvider(true, ids)).CallBack(this);
+        }
             return new KwasantMonthController(new EventDataProvider(false, new int { })).CallBack(this);
         }
 
@@ -140,8 +141,8 @@ namespace KwasantWeb.Controllers
             if (calendarIDs != "")
             {
                 var ids = calendarIDs.Split(',').Where(c => !String.IsNullOrEmpty(c)).Select(int.Parse).ToArray();
-                return new KwasantNavigatorControl(new EventDataProvider(true, ids)).CallBack(this);
-            }
+            return new KwasantNavigatorControl(new EventDataProvider(true, ids)).CallBack(this);
+        }
             return new KwasantNavigatorControl(new EventDataProvider(false, new int { })).CallBack(this);
         }
 

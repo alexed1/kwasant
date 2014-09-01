@@ -42,6 +42,8 @@ THE SOFTWARE.
     }
 }
 
+
+
 (function ($, moment) {
     if (typeof moment === 'undefined') {
         alert("momentjs is requried");
@@ -328,6 +330,7 @@ THE SOFTWARE.
             picker.viewDate = pMoment(picker.date).startOf("month");
             fillDate();
             fillTime();
+
         },
 
     fillDow = function () {
@@ -359,6 +362,7 @@ THE SOFTWARE.
         },
 
         fillDate = function () {
+
             pMoment.lang(picker.options.language);
             var year = picker.viewDate.year(),
                 month = picker.viewDate.month(),
@@ -416,6 +420,11 @@ THE SOFTWARE.
                         }
                     }
                 }
+              
+                if (prevMonth.isSame(pMoment({ y: picker.date.year(), M: picker.date.month(), d: picker.date.date() }))) {
+                    currActiveDay = '<td class="day active">' + prevMonth.date() + '</td>';
+                }
+                
                 row.append('<td class="day' + clsName + '">' + prevMonth.date() + '</td>');
                 prevMonth.add(1, "d");
             }
@@ -438,7 +447,6 @@ THE SOFTWARE.
                     $(months[i]).addClass('disabled');
                 }
             }
-
             html = '';
             year = parseInt(year / 10, 10) * 10;
             yearCont = picker.widget.find('.datepicker-years').find(
@@ -456,6 +464,7 @@ THE SOFTWARE.
                 year += 1;
             }
             yearCont.html(html);
+
         },
 
         fillHours = function () {
@@ -504,6 +513,7 @@ THE SOFTWARE.
                 html += '</tr>';
             }
             table.html(html);
+
         },
 
         fillSeconds = function () {
@@ -537,10 +547,13 @@ THE SOFTWARE.
         },
 
         click = function (e) {
+            currActiveDay = "";
+            currDateElement = e;
             e.stopPropagation();
             e.preventDefault();
             picker.unset = false;
             var target = $(e.target).closest('span, td, th'), month, year, step, day, oldDate = pMoment(picker.date);
+
             if (target.length === 1) {
                 if (!target.is('.disabled')) {
                     switch (target[0].nodeName.toLowerCase()) {
@@ -617,6 +630,7 @@ THE SOFTWARE.
                                 set();
                                 notifyChange(oldDate, e.type);
                             }
+
                             break;
                     }
                 }
@@ -699,9 +713,53 @@ THE SOFTWARE.
           if (!picker.date) picker.date = pMoment({ y: 1970 });
           set();
           fillTime();
+          if (currActiveDay != undefined)
+              setTimeWithoutCallDate();
+          else
+              click(currDateElement);
+
           notifyChange(oldDate, e.type);
           return rv;
       },
+
+       setTimeWithoutCallDate = function () {
+           var target = $(currActiveDay).closest('span, td, th'), month, year, step, day, oldDate = pMoment(picker.date);
+           if (target.is('.day')) {
+               day = parseInt(target.text(), 10) || 1;
+               month = picker.viewDate.month();
+               year = picker.viewDate.year();
+               if (target.is('.old')) {
+                   if (month === 0) {
+                       month = 11;
+                       year -= 1;
+                   } else {
+                       month -= 1;
+                   }
+               } else if (target.is('.new')) {
+                   if (month == 11) {
+                       month = 0;
+                       year += 1;
+                   } else {
+                       month += 1;
+                   }
+               }
+               picker.date = pMoment({
+                   y: year,
+                   M: month,
+                   d: day,
+                   h: picker.date.hours(),
+                   m: picker.date.minutes(),
+                   s: picker.date.seconds()
+               }
+               );
+               picker.viewDate = pMoment({
+                   y: year, M: month, d: Math.min(28, day)
+               });
+               fillDate();
+               set();
+               notifyChange(oldDate, e.type);
+           }
+       },
 
         stopEvent = function (e) {
             e.stopPropagation();
@@ -1159,4 +1217,7 @@ THE SOFTWARE.
             if (!data) $this.data('DateTimePicker', new DateTimePicker(this, options));
         });
     };
+
+    var currDateElement;
+    var currActiveDay;
 }));
