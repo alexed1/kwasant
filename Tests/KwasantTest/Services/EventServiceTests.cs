@@ -6,6 +6,7 @@ using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
+using StructureMap;
 
 namespace KwasantTest.Services
 {
@@ -23,7 +24,7 @@ namespace KwasantTest.Services
 
             _fixture = new FixtureData();
             _event = new Event();
-            _comm = new CommunicationManager();
+            _comm = ObjectFactory.GetInstance<CommunicationManager>();
         }
 
         [Test]

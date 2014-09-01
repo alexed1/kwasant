@@ -24,6 +24,15 @@ namespace KwasantCore.Managers
 {
     public class CommunicationManager
     {
+        private readonly IConfigRepository _configRepository;
+
+        public CommunicationManager(IConfigRepository configRepository)
+        {
+            if (configRepository == null)
+                throw new ArgumentNullException("configRepository");
+            _configRepository = configRepository;
+        }
+
         //Register for interesting events
         public void SubscribeToAlerts()
         {
@@ -159,8 +168,8 @@ namespace KwasantCore.Managers
 
         private EmailDO CreateInvitationEmail(IUnitOfWork uow, EventDO eventDO, AttendeeDO attendeeDO, bool isUpdate)
         {
-            string fromEmail = ConfigRepository.Get("fromEmail");
-            string fromName = ConfigRepository.Get("fromName");
+            string fromEmail = _configRepository.Get("fromEmail");
+            string fromName = _configRepository.Get("fromName");
 
             var emailAddressRepository = uow.EmailAddressRepository;
             if (eventDO.Attendees == null)
@@ -183,13 +192,13 @@ namespace KwasantCore.Managers
             if (isUpdate)
             {
 
-                outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubjectUpdated"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
+                outboundEmail.Subject = String.Format(_configRepository.Get("emailSubjectUpdated"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
                 outboundEmail.HTMLText = GetEmailHTMLTextForUpdate(eventDO, userID);
                 outboundEmail.PlainText = GetEmailPlainTextForUpdate(eventDO, userID);
             }
             else
             {
-                outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
+                outboundEmail.Subject = String.Format(_configRepository.Get("emailSubject"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
                 outboundEmail.HTMLText = GetEmailHTMLTextForNew(eventDO, userID);
                 outboundEmail.PlainText = GetEmailPlainTextForNew(eventDO, userID);
             }
@@ -342,6 +351,7 @@ namespace KwasantCore.Managers
 
     public class RazorViewModel
     {
+        public String EmailBasicText { get { return ObjectFactory.GetInstance<IConfigRepository>().Get("emailBasicText"); } }
         public String UserID { get; set; }
         public bool IsAllDay { get; set; }
         public DateTime StartDate { get; set; }

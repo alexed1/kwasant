@@ -21,7 +21,9 @@ namespace Data.Migrations
 
     public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasantDbContext>
     {
-        private Account _account;
+        private readonly Account _account;
+        private readonly IConfigRepository _configRepository;
+
         public MigrationConfiguration()
         {
             //Do not ever turn this on! It will break database upgrades
@@ -30,7 +32,7 @@ namespace Data.Migrations
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.KwasantDbContext";
             _account = new Account();
-
+            _configRepository = new ConfigRepository();
         }
 
         protected override void Seed(KwasantDbContext context)
@@ -134,7 +136,7 @@ namespace Data.Migrations
             }
         }
 
-        private static void SeedRemoteCalendarProviders(IUnitOfWork uow)
+        private void SeedRemoteCalendarProviders(IUnitOfWork uow)
         {
             var providers = new[]
                                 {
@@ -145,8 +147,8 @@ namespace Data.Migrations
                                             AppCreds = JsonConvert.SerializeObject(
                                                 new
                                                     {
-                                                        ClientId = ConfigRepository.Get("GoogleCalendarClientId"),
-                                                        ClientSecret = ConfigRepository.Get("GoogleCalendarClientSecret"),
+                                                        ClientId = _configRepository.Get("GoogleCalendarClientId"),
+                                                        ClientSecret = _configRepository.Get("GoogleCalendarClientSecret"),
                                                         Scopes = "https://www.googleapis.com/auth/calendar"
                                                     }),
                                             CalDAVEndPoint = "https://apidata.googleusercontent.com/caldav/v2"

@@ -29,7 +29,7 @@ namespace KwasantTest.Entities
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             _fixture = new FixtureData();
             _event = new Event();
-            _comm = new CommunicationManager();
+            _comm = ObjectFactory.GetInstance<CommunicationManager>();
             
         }
 

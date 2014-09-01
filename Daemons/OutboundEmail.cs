@@ -159,7 +159,6 @@ namespace Daemons
             {
                 EnvelopeRepository envelopeRepository = unitOfWork.EnvelopeRepository;
                 EventRepository eventRepository = unitOfWork.EventRepository;
-                CommunicationManager _comm = new CommunicationManager();
                 var numSent = 0;
                 foreach (EnvelopeDO curEnvelopeDO in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
                 {

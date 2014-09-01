@@ -19,6 +19,21 @@ namespace Daemons
     /// </summary>
     public class OperationsMonitor : Daemon
     {
+        private IConfigRepository _configRepository;
+
+        public OperationsMonitor()
+            : this(ObjectFactory.GetInstance<IConfigRepository>())
+        {
+            
+        }
+
+        private OperationsMonitor(IConfigRepository configRepository)
+        {
+            if (configRepository == null)
+                throw new ArgumentNullException("configRepository");
+            _configRepository = configRepository;
+        }
+
         public override int WaitTimeBetweenExecution
         {
             get { return 10000; }
@@ -29,7 +44,7 @@ namespace Daemons
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {  
                 //Process Timing Out BR status "CheckedOut" to "Unprocessed"
-                int maxBRIdleMinutes = Convert.ToInt32(ConfigRepository.Get<string>("MaxBRIdle"));
+                int maxBRIdleMinutes = Convert.ToInt32(_configRepository.Get<string>("MaxBRIdle"));
 
                 DateTimeOffset idleTimeLimit = DateTimeOffset.Now.Subtract(new TimeSpan(0, maxBRIdleMinutes, 0));
                 List<BookingRequestDO> staleBRList = new List<BookingRequestDO>();
@@ -45,7 +60,7 @@ namespace Daemons
                 if (!unprocessedBookingRequests.Any()) 
                     return;
 
-                CommunicationManager cm = new CommunicationManager();
+                CommunicationManager cm = ObjectFactory.GetInstance<CommunicationManager>();
                 cm.ProcessBRNotifications(unprocessedBookingRequests);
                 //unprocessedBookingRequests.ForEach(br => ts.SetStatus(TrackingType.BookingState, br, TrackingState.Processed));
 

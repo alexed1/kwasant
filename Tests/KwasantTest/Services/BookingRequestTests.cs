@@ -13,6 +13,7 @@ using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Daemons;
 using KwasantTest.Fixtures;
+using Moq;
 using NUnit.Framework;
 using StructureMap;
 using Utilities;
@@ -24,13 +25,28 @@ namespace KwasantTest.Services
     {
         public IUnitOfWork _uow;
         private FixtureData _fixture;
+        private IConfigRepository _configRepository;
 
         [SetUp]
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            ConfigRepository.Set("MaxBRIdle", "1");
+            var configRepositoryMock = new Mock<IConfigRepository>();
+            configRepositoryMock
+                .Setup(c => c.Get<string>(It.IsAny<string>()))
+                .Returns<string>(key =>
+                {
+                    switch (key)
+                    {
+                        case "MaxBRIdle":
+                            return "1";
+                        default:
+                            return new ConfigRepository().Get<string>(key);
+                    }
+                });
+            _configRepository = configRepositoryMock.Object;
+            ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(_configRepository));
 
             _fixture = new FixtureData();
         }

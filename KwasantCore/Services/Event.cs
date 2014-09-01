@@ -8,6 +8,7 @@ using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using Utilities;
+using StructureMap;
 using IEvent = Data.Interfaces.IEvent;
 
 namespace KwasantCore.Services
@@ -54,7 +55,7 @@ namespace KwasantCore.Services
         //in some cases, additional work is necessary to handle the changes
         public void Process(IUnitOfWork uow, EventDO eventDO)
         {            
-            new CommunicationManager().DispatchInvitations(uow, eventDO);
+            ObjectFactory.GetInstance<CommunicationManager>().DispatchInvitations(uow, eventDO);
         }
      
         public EventDO AddAttendee(UserDO curUserDO, EventDO curEvent)
@@ -69,8 +70,8 @@ namespace KwasantCore.Services
         {
             if (eventDO == null)
                 throw new ArgumentNullException("eventDO");
-            string fromEmail = ConfigRepository.Get("fromEmail");
-            string fromName = ConfigRepository.Get("fromName");
+            string fromEmail = ObjectFactory.GetInstance<IConfigRepository>().Get("fromEmail");
+            string fromName = ObjectFactory.GetInstance<IConfigRepository>().Get("fromName");
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();

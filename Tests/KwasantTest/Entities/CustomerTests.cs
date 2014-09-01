@@ -24,7 +24,7 @@ namespace KwasantTest.Models
             _fixture = new FixtureData();
 
             //initialize CommunicationManager and register for event
-            CommunicationManager commManager = new CommunicationManager();
+            CommunicationManager commManager = ObjectFactory.GetInstance<CommunicationManager>();
             commManager.SubscribeToAlerts();
         }
 

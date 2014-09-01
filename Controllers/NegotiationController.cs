@@ -174,7 +174,7 @@ namespace KwasantWeb.Controllers
 
                 using (var subUoW = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var communicationManager = new CommunicationManager();
+                    var communicationManager = ObjectFactory.GetInstance<CommunicationManager>();
                     communicationManager.DispatchNegotiationRequests(subUoW, negotiationDO.Id);
                     subUoW.SaveChanges();                    
                 }

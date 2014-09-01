@@ -4,19 +4,32 @@ using Microsoft.WindowsAzure;
 
 namespace Utilities
 {
-    public static class ConfigRepository
+    public interface IConfigRepository
     {
-        public static void Set(String key, String value)
+        String Get(String key);
+        String Get(String key, bool required);
+        T Get<T>(String key);
+        T Get<T>(String key, bool required);
+    }
+
+    public class ConfigRepository : IConfigRepository
+    {
+        public string Get(string key)
         {
-            ConfigurationManager.AppSettings[key] = value;
+            return Get(key, true);
         }
 
-        public static String Get(String key, bool required = true)
+        public String Get(String key, bool required)
         {
             return Get<String>(key, required);
         }
 
-        public static T Get<T>(String key, bool required = true)
+        public T Get<T>(string key)
+        {
+            return Get<T>(key, true);
+        }
+
+        public T Get<T>(String key, bool required)
         {
             var stringValue = CloudConfigurationManager.GetSetting(key);
 

@@ -11,6 +11,7 @@ using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
 using KwasantCore.Services;
 using StructureMap;
 using StructureMap.Configuration.DSL;
+using Utilities;
 
 namespace KwasantCore.StructureMap
 {
@@ -51,8 +52,9 @@ namespace KwasantCore.StructureMap
             public LiveMode()
             {
                 For<ISMSPackager>().Use(new TwilioPackager());
-                For<IEmailPackager>().Use(new GmailPackager()).Named(EnvelopeDO.GmailHander);
-                For<IEmailPackager>().Use(new MandrillPackager()).Named(EnvelopeDO.MandrillHander);
+                For<IConfigRepository>().Use<ConfigRepository>();
+                For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
+                For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);
 
                 For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
 
@@ -68,8 +70,9 @@ namespace KwasantCore.StructureMap
             public TestMode()
             {
                 //we need to run tests that "really send it". may want to also do some mocks
-                For<IEmailPackager>().Use(new GmailPackager()).Named(EnvelopeDO.GmailHander);
-                For<IEmailPackager>().Use(new MandrillPackager()).Named(EnvelopeDO.MandrillHander);
+                For<IConfigRepository>().Use<ConfigRepository>();
+                For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
+                For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);
 
                 For<IKwasantRoleStore>().Use(new MockedRoleStore());
                 For<IKwasantUserStore>().Use(new MockedUserStore());

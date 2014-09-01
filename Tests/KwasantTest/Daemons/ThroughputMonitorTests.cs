@@ -17,21 +17,43 @@ namespace KwasantTest.Daemons
     [TestFixture]
     public class ThroughputMonitorTests
     {
+        private IConfigRepository _configRepository;
+
+        private Func<DateTimeOffset> GetThroughputCheckingStartTime = () => DateTimeOffset.Now.AddHours(-1);
+        private Func<DateTimeOffset> GetThroughputCheckingEndTime = () => DateTimeOffset.Now.AddHours(1);
+
+        private Mock<ISMSPackager> _smsPackagerMock;
+
         [SetUp]
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-            ConfigRepository.Set("ThroughputCheckingStartTime", DateTime.Now.Subtract(new TimeSpan(0, 1, 0, 0)).ToUniversalTime().ToString("hh:mm") + "z");
-            ConfigRepository.Set("ThroughputCheckingEndTime", DateTime.Now.Add(new TimeSpan(0, 1, 0, 0)).ToUniversalTime().ToString("hh:mm") + "z");
+            
+            _smsPackagerMock = new Mock<ISMSPackager>();
+            ObjectFactory.Configure(a => a.For<ISMSPackager>().Use(_smsPackagerMock.Object));
+
+            var configRepositoryMock = new Mock<IConfigRepository>();
+            configRepositoryMock
+                .Setup(c => c.Get<string>(It.IsAny<string>()))
+                .Returns<string>(key =>
+                                     {
+                                         switch (key)
+                                         {
+                                             case "ThroughputCheckingStartTime":
+                                                 return GetThroughputCheckingStartTime().ToString();
+                                             case "ThroughputCheckingEndTime":
+                                                 return GetThroughputCheckingEndTime().ToString();
+                                             default:
+                                                 return new ConfigRepository().Get<string>(key);
+                                         }
+                                     });
+            _configRepository = configRepositoryMock.Object;
+            ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(_configRepository));
         }
 
-        [Test, Ignore]
+        [Test]
         public void TestThroughputManagerExpired()
         {
-            var smsPackager = new Mock<ISMSPackager>();
-
-            ObjectFactory.Configure(a => a.For<ISMSPackager>().Use(smsPackager.Object));
-
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();
             BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
             
@@ -46,18 +68,14 @@ namespace KwasantTest.Daemons
             var throughputMonitor = new ThroughputMonitor();
             DaemonTests.RunDaemonOnce(throughputMonitor);
 
-            smsPackager.Verify(s => s.SendSMS(It.IsAny<String>(), It.IsAny<String>()), () => Times.Exactly(1));
+            _smsPackagerMock.Verify(s => s.SendSMS(It.IsAny<String>(), It.IsAny<String>()), () => Times.Exactly(1));
         }
 
 
         [Test]
         public void TestThroughputManagerNotExpired()
         {
-            ConfigRepository.Set("ThroughputCheckingStartTime", DateTime.Now.Add(new TimeSpan(0, 1, 0, 0)).ToString("hh:mm") + "z");
-
-            var smsPackager = new Mock<ISMSPackager>();
-
-            ObjectFactory.Configure(a => a.For<ISMSPackager>().Use(smsPackager.Object));
+            GetThroughputCheckingStartTime = () => DateTimeOffset.Now.AddHours(1);
 
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();
             BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
@@ -73,7 +91,7 @@ namespace KwasantTest.Daemons
             var throughputMonitor = new ThroughputMonitor();
             DaemonTests.RunDaemonOnce(throughputMonitor);
 
-            smsPackager.Verify(s => s.SendSMS(It.IsAny<String>(), It.IsAny<String>()), Times.Never);
+            _smsPackagerMock.Verify(s => s.SendSMS(It.IsAny<String>(), It.IsAny<String>()), Times.Never);
 
         }
 
