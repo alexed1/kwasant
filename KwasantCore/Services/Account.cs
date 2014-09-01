@@ -58,10 +58,12 @@ namespace KwasantCore.Services
 
                 uow.SaveChanges();
 
-                //if (newUserDO != null)
-                //{
-                //    AlertManager.CustomerCreated(newUserDO);
-                //}
+                if (newUserDO != null)
+                {
+                    //AlertManager.CustomerCreated(newUserDO.Id);
+                    AlertManager.UserRegistration(newUserDO);
+                }
+                
 
                 return curRegStatus;
             }
