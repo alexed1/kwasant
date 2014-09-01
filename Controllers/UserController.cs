@@ -14,8 +14,7 @@ using StructureMap;
 using ViewModel.Models;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
-
-using KwasantCore.Helper;
+using System.Linq;
 
 namespace KwasantWeb.Controllers
 {
@@ -25,13 +24,28 @@ namespace KwasantWeb.Controllers
         [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Index()
         {
+            
             string userId = "";
             User currUser = new User();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 List<UserVM> currUserVMs = new List<UserVM>();
-                List<UserData> currUserDataList = currUser.Query(uow, userId);
-                currUserDataList.ForEach(e => currUserVMs.Add(new UserVM { User = e.User, Role = e.Role, RoleId = e.RoleId }));
+                List<UserDO> currUserDOs = currUser.Query(uow, userId);
+
+                var currUserManager = KwasantCore.Services.User.GetUserManager(uow);
+                currUserDOs.ForEach(u => currUserVMs.Add(new UserVM
+                {
+                    User = new UserDO
+                        {
+                            Id = u.Id,
+                            FirstName = u.FirstName,
+                            LastName = u.LastName,
+                            EmailAddress = u.EmailAddress
+                        }
+                    ,
+                    Role = currUserManager.GetRoles(u.Id)[0],
+                    RoleId = u.Roles.ToList()[0].RoleId
+                }));
                 return View(currUserVMs);
             }
         }
@@ -43,12 +57,23 @@ namespace KwasantWeb.Controllers
             if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            User currUser = new User();
+            User user = new User();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-
-                UserData currUserData = currUser.Query(uow, userId)[0];
-                UserVM currUserVM = new UserVM { User = currUserData.User, Role = currUserData.Role, RoleId = currUserData.RoleId };
+                var currUserManager = KwasantCore.Services.User.GetUserManager(uow);
+                UserDO currUserDOs = user.Query(uow, userId)[0];
+                UserVM currUserVM = new UserVM
+                {
+                    User = new UserDO
+                    {
+                        Id = currUserDOs.Id,
+                        FirstName = currUserDOs.FirstName,
+                        LastName = currUserDOs.LastName,
+                        EmailAddress = currUserDOs.EmailAddress
+                    },
+                    Role = currUserManager.GetRoles(currUserDOs.Id)[0],
+                    RoleId = currUserDOs.Roles.ToList()[0].RoleId
+                };
                 return View(currUserVM);
             }
         }
@@ -86,11 +111,11 @@ namespace KwasantWeb.Controllers
             try
             {
                 await ObjectFactory.GetInstance<CalendarSyncManager>().SyncNowAsync(this.GetUserId());
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception ex)
             {
-                return Json(new {success = false, error = ex.Message});
+                return Json(new { success = false, error = ex.Message });
             }
         }
 
@@ -107,7 +132,7 @@ namespace KwasantWeb.Controllers
                 }
                 var remoteCalendarProviders = uow.RemoteCalendarProviderRepository.GetAll();
                 var tuple = new Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>(curUserDO, remoteCalendarProviders);
-                
+
                 var curManageUserVM = AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserVM>(tuple);
                 return View(curManageUserVM);
             }

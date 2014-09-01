@@ -15,7 +15,6 @@ using System.Web;
 using Data.Entities;
 using StructureMap;
 using Utilities;
-using KwasantCore.Helper;
 
 
 namespace KwasantCore.Services
@@ -166,24 +165,18 @@ namespace KwasantCore.Services
 
 
 
-        public List<UserData> Query(IUnitOfWork uow, String userId)
+        public List<UserDO> Query(IUnitOfWork uow, String userId)
         {
-            List<UserData> currUserDataList = new List<UserData>();
+            List<UserDO> currUserDOs = new List<UserDO>();
             if (uow.UserRepository == null)
-                return currUserDataList;
+                return currUserDOs;
 
             var currUserManager = User.GetUserManager(uow);
-            currUserDataList = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null)
-               .Select(
-                    u =>
-                        new UserData
-                        {
-                            User = new UserDO { Id = u.Id, FirstName = u.FirstName, LastName = u.LastName, EmailAddress = u.EmailAddress },
-                            RoleId = u.Roles.ToList()[0].RoleId,
-                            Role = currUserManager.GetRoles(u.Id).ToList()[0]
-                        })
-                .ToList();
-            return currUserDataList;
+            currUserDOs = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null) .ToList();
+               
+            return currUserDOs;
         }
+
+        
     }
 }
