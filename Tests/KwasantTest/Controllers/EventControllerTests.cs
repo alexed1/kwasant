@@ -58,7 +58,7 @@ namespace KwasantTest.Controllers
                 Id=testEvent.Id
             };
             curEventVM.Attendees = "newattendee@kwasant.net";
-            curEventController.ProcessConfirmedEvent(curEventVM);
+            curEventController.ProcessChangedEvent(curEventVM, ConfirmationStatus.Confirmed);
 
 
         }

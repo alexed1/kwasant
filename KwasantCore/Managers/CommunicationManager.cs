@@ -88,6 +88,7 @@ namespace KwasantCore.Managers
             }
         }
 
+/*
         public void DispatchInvitations(IUnitOfWork uow, EventDO eventDO)
         {
             //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
@@ -145,27 +146,9 @@ namespace KwasantCore.Managers
                     throw new Exception("Invalid event status");
             }
         }
+*/
 
-        private String GetEmailHTMLTextForUpdate(EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.HTMLEventInvitation_Update, new RazorViewModel(eventDO, userID));
-        }
-
-        private String GetEmailPlainTextForUpdate(EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.PlainEventInvitation_Update, new RazorViewModel(eventDO, userID));
-        }
-
-        private String GetEmailHTMLTextForNew(EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO, userID));
-        }
-
-        private String GetEmailPlainTextForNew(EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO, userID));
-        }
-
+/*
         private EmailDO CreateInvitationEmail(IUnitOfWork uow, EventDO eventDO, AttendeeDO attendeeDO, bool isUpdate)
         {
             string fromEmail = _configRepository.Get("fromEmail");
@@ -214,6 +197,7 @@ namespace KwasantCore.Managers
 
             return outboundEmail;
         }
+*/
 
 
         
@@ -222,54 +206,6 @@ namespace KwasantCore.Managers
         {
             //Stub method for now
             return true;
-        }
-        
-        //if we have a first name and last name, use them together
-        //else if we have a first name only, use that
-        //else if we have just an email address, use the portion preceding the @ unless there's a name
-        //else throw
-        public string GetOriginatorName(EventDO curEventDO)
-        {
-            UserDO originator = curEventDO.CreatedBy;
-            string firstName = originator.FirstName;
-            string lastName = originator.LastName;
-            if (firstName != null)
-            {
-                if (lastName == null)
-                    return firstName;
-
-                return firstName + " " + lastName;
-            }
-
-            EmailAddressDO curEmailAddress = originator.EmailAddress;
-            if (curEmailAddress.Name != null)
-                return curEmailAddress.Name;
-
-            if (curEmailAddress.Address.IsEmailAddress())
-                return curEmailAddress.Address.Split(new[] { '@' })[0];
-
-            throw new ArgumentException("Failed to extract originator info from this Event. Something needs to be there.");
-        }
-
-        private static void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)
-        {
-            iCalendarSerializer serializer = new iCalendarSerializer(iCal);
-            string fileToAttach = serializer.Serialize(iCal);
-
-            AttachmentDO attachmentDO = GetAttachment(fileToAttach);
-
-            attachmentDO.Email = emailDO;
-            emailDO.Attachments.Add(attachmentDO);
-        }
-
-
-        private static AttachmentDO GetAttachment(string fileToAttach)
-        {
-            return Email.CreateNewAttachment(
-                new System.Net.Mail.Attachment(
-                    new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
-                    new ContentType { MediaType = "application/ics", Name = "invite.ics" }
-                    ) { TransferEncoding = TransferEncoding.Base64 });
         }
 
         public void ProcessBRNotifications(IList<BookingRequestDO> bookingRequests)
