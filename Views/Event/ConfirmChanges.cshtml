@@ -1,4 +1,5 @@
-﻿@using Newtonsoft.Json
+﻿@using Data.States
+@using Newtonsoft.Json
 @model KwasantWeb.ViewModels.EventVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @section immediateScripts
@@ -27,7 +28,7 @@
 	@Styles.Render("~/bundles/css/temp")
 }
 <div class="light-bg">
-	<form id="f" class="edit-event-form form" method="post" style="margin:10px" action="@Url.Action("ProcessConfirmedEvent", "Event")">
+	<form id="f" class="edit-event-form form" method="post" style="margin:10px" action="@Url.Action("ProcessChangedEvent", "Event", new { confStatus = ConfirmationStatus.Confirmed })">
 		<h3 class="with-border">Confirm Changes</h3>
 		<div>You are <b>@Html.Raw(Model.Id == 0 ? "creating a new" : "editing an existing")</b> event.</div>
 		<div style="@Html.Raw(Model.IsAllDay ? String.Empty : "display:none;")">

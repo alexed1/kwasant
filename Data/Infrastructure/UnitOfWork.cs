@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
 using System.Transactions;
@@ -178,7 +179,17 @@ namespace Data.Infrastructure
                 return _instructionRepository ?? (_instructionRepository = new InstructionRepository(this));
             }
         }
-        
+
+        private InvitationRepository _invitationRepository;
+
+        public InvitationRepository InvitationRepository
+        {
+            get
+            {
+                return _invitationRepository ?? (_invitationRepository = new InvitationRepository(this));
+            }
+        }
+
         private StoredFileRepository _storedFileRepository;
 
         public StoredFileRepository StoredFileRepository
@@ -365,6 +376,12 @@ namespace Data.Infrastructure
             OnEntitiesAdded(new EntitiesStateEventArgs(this, addedEntities));
             OnEntitiesModified(new EntitiesStateEventArgs(this, modifiedEntities));
             OnEntitiesDeleted(new EntitiesStateEventArgs(this, deletedEntities));
+        }
+
+        public bool IsEntityModified<TEntity>(TEntity entity) 
+            where TEntity : class
+        {
+            return _context.Entry(entity).State == EntityState.Modified;
         }
 
         public IDBContext Db
