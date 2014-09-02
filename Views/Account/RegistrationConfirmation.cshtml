@@ -1,0 +1,27 @@
+﻿@{
+     Layout = "~/Views/Shared/_Layout.cshtml";
+ 
+}
+
+  
+    <div class="row">
+        <div class="col-md-12">
+            <section id="loginform">
+               <fieldset>
+                 <h4 style="padding: 70px 0 150px 0;
+                  text-align: center;">  Thanks for signing up! Taking you now to the @Html.ActionLink("Login page", "Index", "Account", null, new { @class = "" })</h4>
+               </fieldset>
+            </section>
+        </div>
+        
+    </div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#dashboardLink').empty();
+    });
+
+</script>

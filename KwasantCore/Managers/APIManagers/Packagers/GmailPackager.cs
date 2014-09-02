@@ -10,6 +10,15 @@ namespace KwasantCore.Managers.APIManager.Packagers
 {
     public class GmailPackager : IEmailPackager
     {
+        private readonly IConfigRepository _configRepository;
+
+        public GmailPackager(IConfigRepository configRepository)
+        {
+            if (configRepository == null)
+                throw new ArgumentNullException("configRepository");
+            _configRepository = configRepository;
+        }
+
         public delegate void EmailSuccessArgs(int emailID);
         public static event EmailSuccessArgs EmailSent;
 
@@ -55,16 +64,16 @@ namespace KwasantCore.Managers.APIManager.Packagers
 
             try
             {
-                var smtpClient = new SmtpClient(ConfigRepository.Get("OutboundEmailHost"),
-                                                ConfigRepository.Get<int>("OutboundEmailPort"))
+                var smtpClient = new SmtpClient(_configRepository.Get("OutboundEmailHost"),
+                                                _configRepository.Get<int>("OutboundEmailPort"))
                 {
                     EnableSsl = true,
                     UseDefaultCredentials = false,
                     Credentials =
                         new NetworkCredential()
                         {
-                            UserName = ConfigRepository.Get("OutboundUserName"),
-                            Password = ConfigRepository.Get("OutboundUserPassword")
+                            UserName = _configRepository.Get("OutboundUserName"),
+                            Password = _configRepository.Get("OutboundUserPassword")
                         }
                 };
 
@@ -95,7 +104,7 @@ namespace KwasantCore.Managers.APIManager.Packagers
                 var htmlView = AlternateView.CreateAlternateViewFromString(email.HTMLText, Encoding.UTF8, "text/html");
                 var plainView = AlternateView.CreateAlternateViewFromString(email.PlainText, Encoding.UTF8, "text/plain");
 
-                if (!ConfigRepository.Get<bool>("compressEmail"))
+                if (!_configRepository.Get<bool>("compressEmail"))
                 {
                     htmlView.TransferEncoding = TransferEncoding.SevenBit;
                     plainView.TransferEncoding = TransferEncoding.SevenBit;

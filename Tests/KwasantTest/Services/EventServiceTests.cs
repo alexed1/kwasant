@@ -6,6 +6,7 @@ using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
+using StructureMap;
 
 namespace KwasantTest.Services
 {
@@ -15,6 +16,7 @@ namespace KwasantTest.Services
         private FixtureData _fixture;
         private IEvent _event;
         private CommunicationManager _comm;
+        private Invitation _invitation;
 
         [SetUp]
         public void Setup()
@@ -22,8 +24,9 @@ namespace KwasantTest.Services
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
 
             _fixture = new FixtureData();
-            _event = new Event();
-            _comm = new CommunicationManager();
+            _event = ObjectFactory.GetInstance<Event>();
+            _invitation = ObjectFactory.GetInstance<Invitation>();
+            _comm = ObjectFactory.GetInstance<CommunicationManager>();
         }
 
         [Test]
@@ -32,7 +35,7 @@ namespace KwasantTest.Services
         {
             EventDO curEvent = _fixture.TestEvent2();
 
-            string originator = _comm.GetOriginatorName(curEvent);
+            string originator = _invitation.GetOriginatorName(curEvent);
             Assert.AreNotEqual(originator, null);
         }
 
@@ -46,7 +49,7 @@ namespace KwasantTest.Services
             curOriginator.FirstName = null;
             curOriginator.LastName = null;
             curOriginator.EmailAddress.Name = "John Smallberries";
-            string originator = _comm.GetOriginatorName(curEvent);
+            string originator = _invitation.GetOriginatorName(curEvent);
             Assert.AreEqual(originator, curOriginator.EmailAddress.Name);
         }
 
@@ -61,7 +64,7 @@ namespace KwasantTest.Services
             curOriginator.LastName = null;
             curOriginator.EmailAddress.Name = null;
             curOriginator.EmailAddress.Address = "john@smallberries.com";
-            string originator = _comm.GetOriginatorName(curEvent);
+            string originator = _invitation.GetOriginatorName(curEvent);
             Assert.AreEqual(originator, "john");
         }
 
@@ -78,7 +81,7 @@ namespace KwasantTest.Services
             curOriginator.EmailAddress.Address = null;
             Assert.Throws<ValidationException>(() =>
             {
-                string originator = _comm.GetOriginatorName(curEvent);
+                string originator = _invitation.GetOriginatorName(curEvent);
             });
 
 
