@@ -228,7 +228,9 @@ namespace Data.Infrastructure
                     ts.Id,
                     ts.ForeignTableName
                 });
-
+            
+            modelBuilder.Entity<AnswerDO>()
+                .HasOptional(a => a.Event).WithMany().WillCascadeOnDelete();
 
             modelBuilder.Entity<QuestionDO>()
                 .HasMany(e => e.Answers)

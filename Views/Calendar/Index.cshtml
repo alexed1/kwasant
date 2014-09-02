@@ -55,7 +55,7 @@
 	                        <ul class="dropdown-menu">
 	                            <li><a id="liReview" onclick="getNegotiationReview(); " href="#">Review</a></li>
 	                            <li><a id="liCreateOrEditNegotiation" onclick="getNegotiationWindow();" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
-	                            <li id="liDeleteNegotiation"><a id="btnDeleteNegotiatoin" onclick="deleteActiveNegotiation(linkedNegotiationID);" href="#">Delete</a></li>
+	                            <li id="liResolveNegotiation"><a onclick="resolveActiveNegotiation(linkedNegotiationID);" href="#">Mark Resolved</a></li>
 	                        </ul>
 	                    </li>
 	                    <li class="dropdown"><a id="btnReport">Reports</a>
@@ -394,7 +394,7 @@
                         if (result) {
                             $('#liCreateOrEditNegotiation').html('Edit');
                             linkedNegotiationID = result;
-                            updateCreateDeleteButtons();
+                            updateCreateResolveButtons();
                             displayNegotiation('Your negotiation was successfully created');
                         }
                     }
@@ -402,18 +402,18 @@
         }
     }
 
-    function deleteActiveNegotiation(negotiationID)
+    function resolveActiveNegotiation(negotiationID)
     {
-        if (confirm("Are you sure you want to delete the negotiation?")) {
-            var url = "/Negotiation/Delete?negotiationID=" + negotiationID;
+        if (confirm("Are you sure you want to resolve this negotiation?")) {
+            var url = "/Negotiation/MarkResolved?negotiationID=" + negotiationID;
             Kwasant.IFrame.DispatchUrlRequest(url, function (data) {
                 if (!data) {
                     alert('An error occured on the server. Your changes were not saved.');
                 } else {
-                    displayNegotiation('Your negotiation was successfully deleted');
+                    displayNegotiation('Your negotiation was successfully resolved.');
                     linkedNegotiationID = null;
                     $('#liCreateOrEditNegotiation').html('Create');
-                    updateCreateDeleteButtons();
+                    updateCreateResolveButtons();
                 }
             });
         }       
@@ -421,18 +421,18 @@
 
     var linkedNegotiationID = @Html.Raw(Model.LinkedNegotiationID == null ? "null" : Model.LinkedNegotiationID.ToString());
     
-    function updateCreateDeleteButtons() {
+    function updateCreateResolveButtons() {
         if (linkedNegotiationID == null) {
             $('#liReview').hide();
-            $('#liDeleteNegotiation').hide();
+            $('#liResolveNegotiation').hide();
         } else {
             $('#liReview').show();
-            $('#liDeleteNegotiation').show();
+            $('#liResolveNegotiation').show();
         }
     }
   
     $(document).ready(function() {
-        updateCreateDeleteButtons();
+        updateCreateResolveButtons();
 
         $('.navbar .dropdown').hover(function() {
             $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);

@@ -26,6 +26,7 @@ namespace KwasantWeb.ViewModels
         }
 
         public int Id { get; set; }
+        public int? CalendarID { get; set; }
         public string Text { get; set; }
         public List<NegotiationAnswerVM> Answers { get; set; }
         public string AnswerType { get; set; }  
@@ -33,15 +34,24 @@ namespace KwasantWeb.ViewModels
 
     public class NegotiationAnswerVM
     {
+        public NegotiationAnswerVM()
+        {
+            VotedBy = new List<string>();
+        }
+
         public int Id { get; set; }
         public string UserId { get; set; }
         public string Text { get; set; }
-        public int? CalendarID { get; set; }
+        public int? EventID { get; set; }
+        public String EventStart { get; set; }
+        public String EventEnd { get; set; }
+
+        public DateTimeOffset? EventStartDate { get; set; }
+        public DateTimeOffset? EventEndDate { get; set; }
+        
         public bool Selected { get; set; }
         public int AnswerState { get; set; }
 
         public List<String> VotedBy { get; set; } 
-
-        public List<QuestionCalendarEventVM> CalendarEvents { get; set; }
     }
 }
