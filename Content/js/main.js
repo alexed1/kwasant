@@ -135,6 +135,7 @@ $(document).ready(function () {
 	$('img.video-screen').click(function (e) {
 		e.stopPropagation();
 		player.api('play');
+		$('.video-frame').css('visibility', 'visible');
 		$(this).fadeOut();
 	});
 	

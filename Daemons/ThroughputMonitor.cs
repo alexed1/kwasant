@@ -14,6 +14,20 @@ namespace Daemons
     /// </summary>
     public class ThroughputMonitor : Daemon
     {
+        private readonly IConfigRepository _configRepository;
+
+        public ThroughputMonitor()
+            : this(ObjectFactory.GetInstance<IConfigRepository>())
+        {
+        }
+
+        public ThroughputMonitor(IConfigRepository configRepository)
+        {
+            if (configRepository == null)
+                throw new ArgumentNullException("configRepository");
+            _configRepository = configRepository;
+        }
+
         public override int WaitTimeBetweenExecution
         {
             get { return 60*60*1000; } //1 hour
@@ -21,8 +35,8 @@ namespace Daemons
 
         protected override void Run()
         {
-            var startTimeStr = ConfigRepository.Get<string>("ThroughputCheckingStartTime");
-            var endTimeStr = ConfigRepository.Get<string>("ThroughputCheckingEndTime");
+            var startTimeStr = _configRepository.Get<string>("ThroughputCheckingStartTime");
+            var endTimeStr = _configRepository.Get<string>("ThroughputCheckingEndTime");
 
             var startTime = DateTimeOffset.Parse(startTimeStr);
             var endTime = DateTimeOffset.Parse(endTimeStr).AddDays(1);    //We need to add days - since the end time is in the morning (For example 8pm -> 4am).
@@ -49,7 +63,7 @@ namespace Daemons
 
                     if (oldBookingRequests.Any())
                     {
-                        string toNumber = ConfigRepository.Get<string>("TwilioToNumber");
+                        string toNumber = _configRepository.Get<string>("TwilioToNumber");
                         var tw = ObjectFactory.GetInstance<ISMSPackager>();
                         tw.SendSMS(toNumber, oldBookingRequests.Count() + " Booking requests are over-due by 30 minutes.");
                     }

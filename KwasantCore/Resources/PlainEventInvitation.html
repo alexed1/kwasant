@@ -1,5 +1,4 @@
 ﻿@{
-var basicText = Utilities.ConfigRepository.Get("emailBasicText");
 var time = Model.IsAllDay
                         ? "All day - " + Model.StartDate.ToString("ddd d MMM")
                         : Model.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " + Model.EndDate.ToString("hh:mm tt");
@@ -7,7 +6,7 @@ var time = Model.IsAllDay
 var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
 }
 
-@basicText
+@Model.EmailBasicText
 @Model.Summary
 @Model.Description
 *When*

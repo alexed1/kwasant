@@ -16,49 +16,62 @@ namespace KwasantWeb.Controllers
     {        
         public ActionResult Edit(int negotiationID)
         {
+            return View(GetNegotiationVM(negotiationID));
+        }
+
+        public ActionResult Review(int negotiationID)
+        {
+            return View(GetNegotiationVM(negotiationID));
+        }
+
+        private static NegotiationVM GetNegotiationVM(int negotiationID, bool sortByVotes = false)
+        {
+            NegotiationVM model;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (negotiationDO == null)
                     throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
-                
-                var model = new NegotiationVM
+
+                model = new NegotiationVM
                 {
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
                     BookingRequestID = negotiationDO.BookingRequestID,
-                    State = negotiationDO.NegotiationState,
-
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
                         new NegotiationQuestionVM
                         {
                             AnswerType = q.AnswerType,
                             Id = q.Id,
-                            Status = q.QuestionStatus,
                             Text = q.Text,
-                            NegotiationId = negotiationDO.Id,
-                            CalendarEvents = q.Calendar == null ? new List<QuestionCalendarEventVM>() : q.Calendar.Events.Select(e => new QuestionCalendarEventVM
-                            {
-                                StartDate = e.StartDate,
-                                EndDate = e.EndDate
-                            }).ToList(),
-                            
-                            CalendarID = q.CalendarID,
                             Answers = q.Answers.Select(a =>
                                 new NegotiationAnswerVM
                                 {
-                                    Status = a.AnswerStatus,
                                     Id = a.Id,
-                                    QuestionId = q.Id,
-                                    Text = a.Text
-                                }).ToList()
+                                    Text = a.Text,
+                                    AnswerState = a.AnswerStatus,
+                                    CalendarID = a.CalendarID,
+                                    VotedBy = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.AnswerID == a.Id).Select(qr => qr.User.FirstName + " " + qr.User.LastName).ToList(),
+                                    CalendarEvents =
+                                        a.Calendar == null
+                                            ? new List<QuestionCalendarEventVM>()
+                                            : a.Calendar.Events.Select(e => new QuestionCalendarEventVM
+                                            {
+                                                StartDate = e.StartDate,
+                                                EndDate = e.EndDate
+                                            }).ToList(),
+                                })
+                                .OrderByDescending(a =>
+                                    sortByVotes ? 
+                                    (1 - a.Id) : a.VotedBy.Count
+                                )
+                                .ToList()
                         }
                         ).ToList()
                 };
-
-                return View(model);
             }
+            return model;
         }
 
 
@@ -68,7 +81,6 @@ namespace KwasantWeb.Controllers
             {
                 Name = "Negotiation 1",
                 BookingRequestID = bookingRequestID,
-                State = NegotiationState.InProcess,
             });
         }
 
@@ -80,14 +92,19 @@ namespace KwasantWeb.Controllers
                 NegotiationDO negotiationDO;
                 if (value.Id == null)
                 {
-                    negotiationDO = new NegotiationDO();
+                    negotiationDO = new NegotiationDO
+                    {
+                        DateCreated = DateTime.Now
+                    };
                     uow.NegotiationsRepository.Add(negotiationDO);
                 }
                 else
                     negotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
 
                 negotiationDO.Name = value.Name;
-                negotiationDO.NegotiationState = value.State;
+                if (negotiationDO.NegotiationState == 0)
+                    negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
+
                 negotiationDO.BookingRequestID = value.BookingRequestID;
 
                 var attendee = new Attendee();
@@ -115,9 +132,10 @@ namespace KwasantWeb.Controllers
 
                     questionDO.Negotiation = negotiationDO;
                     questionDO.AnswerType = question.AnswerType;
-                    questionDO.QuestionStatus = question.Status;
+                    if (questionDO.QuestionStatus == 0)
+                        questionDO.QuestionStatus = QuestionState.Unanswered;
+                    
                     questionDO.Text = question.Text;
-                    questionDO.CalendarID = question.CalendarID;
 
                     var proposedAnswerIDs = question.Answers.Select(a => a.Id);
                     //Delete the existing answers which no longer exist in our proposed negotiation
@@ -138,27 +156,27 @@ namespace KwasantWeb.Controllers
                         else
                             answerDO = uow.AnswerRepository.GetByKey(answer.Id);
 
+                        answerDO.AnswerStatus = answer.AnswerState;
+                        answerDO.CalendarID = answer.CalendarID;
                         answerDO.Question = questionDO;
-                        answerDO.AnswerStatus = answer.Status;
                         answerDO.Text = answer.Text;
                     }
                 }
 
-                var calendarIDs = value.Questions.Select(a => a.CalendarID).Where(c => c != null).ToList();
+                var calendarIDs = value.Questions.SelectMany(q => q.Answers.Select(a => a.CalendarID)).Where(c => c != null).ToList();
                 var calendars = uow.CalendarRepository.GetQuery().Where(c => c.NegotiationID == null && calendarIDs.Contains(c.Id));
                 foreach (var calendar in calendars)
                 {
                     calendar.Negotiation = negotiationDO;
                 }
 
-                var communicationManager = new CommunicationManager();
-
                 uow.SaveChanges();
 
-                using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
+                using (var subUoW = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    communicationManager.DispatchNegotiationRequests(subUow, negotiationDO.Id);
-                    subUow.SaveChanges();
+                    var communicationManager = ObjectFactory.GetInstance<CommunicationManager>();
+                    communicationManager.DispatchNegotiationRequests(subUoW, negotiationDO.Id);
+                    subUoW.SaveChanges();                    
                 }
 
                 return Json(negotiationDO.Id, JsonRequestBehavior.AllowGet);
@@ -170,6 +188,11 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+                foreach (var calendar in negotiationDO.Calendars)
+                    calendar.NegotiationID = null;
+                foreach (var calendar in negotiationDO.Questions.SelectMany(q => q.Answers.Select(a => a.Calendar)))
+                    uow.CalendarRepository.Remove(calendar);
+
                 uow.NegotiationsRepository.Remove(negotiationDO);
                 uow.SaveChanges();
             }

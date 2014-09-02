@@ -10,6 +10,7 @@ using Moq;
 using NUnit.Framework;
 using S22.Imap;
 using StructureMap;
+using Utilities;
 
 namespace KwasantTest.Daemons
 {
@@ -46,7 +47,7 @@ namespace KwasantTest.Daemons
             clientMock.Setup(c => c.Search(It.IsAny<SearchCondition>(), It.IsAny<String>())).Returns(new List<uint> { 1 });
             clientMock.Setup(c => c.GetMessage(1, true, It.IsAny<String>())).Returns(mailMessage);
 
-            var ie = new InboundEmail(clientMock.Object);
+            var ie = new InboundEmail(clientMock.Object, ObjectFactory.GetInstance<IConfigRepository>());
             DaemonTests.RunDaemonOnce(ie);
 
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();

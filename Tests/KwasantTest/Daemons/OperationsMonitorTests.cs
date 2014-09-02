@@ -6,8 +6,10 @@ using Data.Repositories;
 using Data.States;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
+using Moq;
 using NUnit.Framework;
 using StructureMap;
+using Utilities;
 
 namespace KwasantTest.Daemons
 {
@@ -18,6 +20,20 @@ namespace KwasantTest.Daemons
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
+            var configRepositoryMock = new Mock<IConfigRepository>();
+            configRepositoryMock
+                .Setup(c => c.Get<string>(It.IsAny<string>()))
+                .Returns<string>(key =>
+                {
+                    switch (key)
+                    {
+                        case "MaxBRIdle":
+                            return "1";
+                        default:
+                            return new ConfigRepository().Get<string>(key);
+                    }
+                });
+            ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepositoryMock.Object));
         }
 
         [Test]

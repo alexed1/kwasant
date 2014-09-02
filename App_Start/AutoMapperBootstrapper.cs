@@ -26,9 +26,23 @@ namespace KwasantWeb.App_Start
                 .ForMember(eventDO => eventDO.EventStatus, opts => opts.Ignore());
 
             Mapper.CreateMap<EventDO, EventDO>()
+                .ForMember(eventDO => eventDO.ActivityStatus, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.Attendees, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.BookingRequest, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.BookingRequestID, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.Calendar, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.CalendarID, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.CreateType, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.CreateTypeTemplate, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.CreatedBy, opts => opts.Ignore())
-                .ForMember(eventDO => eventDO.CreatedByID, opts => opts.Ignore());
+                .ForMember(eventDO => eventDO.CreatedByID, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.DateCreated, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.Emails, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.EventStatus, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.EventStatusTemplate, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.Id, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.SyncStatus, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.SyncStatusTemplate, opts => opts.Ignore());
 
             Mapper.CreateMap<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserVM>()
                 .ForMember(mu => mu.HasLocalPassword, opts => opts.ResolveUsing(tuple => !string.IsNullOrEmpty(tuple.Item1.PasswordHash)))

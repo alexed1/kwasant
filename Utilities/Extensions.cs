@@ -19,6 +19,14 @@ namespace Utilities
             return new Uri(value);
         }
 
+        public static string StringCSharpLineBreakToHTMLLineBreak(this string value)
+        {
+            if (String.IsNullOrEmpty(value))
+                return value;
+
+            return value.Replace(Environment.NewLine, "<br/>");
+        }
+
         public static short ToShort(this string value)
         {
             short returnValue;

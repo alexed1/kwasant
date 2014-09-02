@@ -14,6 +14,7 @@ namespace KwasantWeb.Controllers.External.DayPilot.Providers
 
     public class DayPilotTimeslotInfo
     {
+        public int CalendarID { get; set; }
         public bool IsAllDay { get; set; }
         public String StartDate { get; set; }
         public String EndDate { get; set; }

@@ -289,6 +289,7 @@
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="KwasantHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\CalendarVM.cs" />
     <Compile Include="ViewModels\EventVM.cs" />
     <Compile Include="ViewModels\MyAccountVM.cs" />
@@ -366,6 +367,7 @@
     <Content Include="Content\css\daypilot\scheduler_transparent.css" />
     <Content Include="Content\css\daypilot\scheduler_white.css" />
     <Content Include="Content\css\frontcss\main.css" />
+    <Content Include="Content\css\NegotiationWidgets.css" />
     <Content Include="Content\css\temp\temp.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.min.css" />
@@ -417,19 +419,25 @@
     <Content Include="Content\DataTables-1.10.0\media\images\sort_desc.png" />
     <Content Include="Content\DataTables-1.10.0\media\images\sort_desc_disabled.png" />
     <Content Include="Content\img\ajax-loader.gif" />
-    <Content Include="Content\img\backgrounds\background-test9.jpg" />
+    <Content Include="Content\img\backgrounds\background_coffee.jpg" />
+    <Content Include="Content\img\backgrounds\background_coffee_and_croissant.jpg" />
+    <Content Include="Content\img\backgrounds\background_coffe_and_phone.jpg" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
-    <Content Include="Content\img\backgrounds\homepage89.png" />
-    <Content Include="Content\img\backgrounds\homepagesecond.jpg" />
     <Content Include="Content\img\backgrounds\ie-black-bg.png" />
     <Content Include="Content\img\Croissant\croissant_nolic.jpg" />
     <Content Include="Content\img\Cross.png" />
     <Content Include="Content\img\EmailLogo.png" />
     <Content Include="Content\img\favicon.ico" />
+    <Content Include="Content\img\icons\sort_asc.png" />
+    <Content Include="Content\img\icons\sort_asc_disabled.png" />
+    <Content Include="Content\img\icons\sort_both.png" />
+    <Content Include="Content\img\icons\sort_desc.png" />
+    <Content Include="Content\img\icons\sort_desc_disabled.png" />
     <Content Include="Content\img\Management\alexhead.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
+    <Content Include="Content\img\site\email-header.png" />
     <Content Include="Content\img\site\example_using_kwasant_email.png" />
     <Content Include="Content\img\site\from_this_to_this.png" />
     <Content Include="Content\img\site\How_it_works_diagram.png" />
@@ -437,6 +445,11 @@
     <Content Include="Content\img\site\logo.png" />
     <Content Include="Content\img\site\perfect-krawsant.jpg" />
     <Content Include="Content\img\site\perfect-krawsant.png" />
+    <Content Include="Content\img\temp\background-test9.jpg" />
+    <Content Include="Content\img\temp\homepage89.png" />
+    <Content Include="Content\img\temp\homepagesecond.jpg" />
+    <Content Include="Content\img\temp\kwasant-video-screen.png" />
+    <Content Include="Content\img\temp\kwasant_header.png" />
     <Content Include="Content\img\temp\old\background-match.jpg" />
     <Content Include="Content\img\temp\old\background-test5.jpg" />
     <Content Include="Content\img\temp\old\background-test6.jpg" />
@@ -524,6 +537,7 @@
     <Content Include="Content\js\jquery.colorbox.js" />
     <Content Include="Content\js\jquery.js" />
     <Content Include="Content\js\jquery.validate.js" />
+    <Content Include="Content\js\Kwasant\NegotiationWidgets.js" />
     <Content Include="Content\js\Kwasant\Popup.js" />
     <Content Include="Content\js\main.js" />
     <Content Include="Content\js\modernizr.js" />
@@ -534,8 +548,6 @@
     <Content Include="Content\templates\inline_html_template_v1.html" />
     <Content Include="Content\templates\googletemplate1.html" />
     <Compile Include="Controllers\External\DayPilot\Providers\EventCalendarController.cs" />
-    <Content Include="Errors\DefaultError.html" />
-    <Content Include="Errors\404.html" />
     <Content Include="Index.aspx" />
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
@@ -602,6 +614,7 @@
     <Content Include="Scripts\jquery-1.7.js" />
     <Content Include="Scripts\jquery-1.7.min.js" />
     <Content Include="shortcodes.html" />
+    <Content Include="TestWidgetLibrary.html" />
     <Content Include="Themes\areas.css" />
     <Content Include="Themes\areas\icons.png" />
     <Content Include="Themes\bubble_default.css" />
@@ -748,6 +761,8 @@
     <Content Include="Views\Calendar\GetNegotiationCalendars.cshtml" />
     <Content Include="Views\Negotiation\EventWindows.cshtml" />
     <Content Include="Views\NegotiationResponse\View.cshtml" />
+    <Content Include="Views\Shared\404.cshtml" />
+    <Content Include="Views\Negotiation\Review.cshtml" />
     <Content Include="Views\Account\RegistrationConfirmation.cshtml" />
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,7 @@
 	ViewBag.Title = "Event ";
 }
 @section styles{
+    @Styles.Render("~/bundles/css/backendcss")
     @Styles.Render("~/bundles/css/daypilot")
     
 }
@@ -106,7 +107,7 @@
                     @:return '';
                 }
             },
-            getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z&requiresConfirmation=@requiresConfirmation&mergeEvents=@mergeEvents'; },
+            getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
             getDeleteURL: function (id) { return '/Event/DeleteEvent/?eventID=' + id + '&requiresConfirmation=@requiresConfirmation'; },
             onEventNew: function(start, end) {
                 if (Kwasant.IFrame.PopupsActive()) {

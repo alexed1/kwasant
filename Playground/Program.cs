@@ -34,8 +34,9 @@ namespace Playground
 
         private static iCalendar GetCalendarObject(EventDO eventDO)
         {
-            string fromEmail = ConfigRepository.Get("fromEmail");
-            string fromName = ConfigRepository.Get("fromName");
+            IConfigRepository configRepository = new ConfigRepository();
+            string fromEmail = configRepository.Get("fromEmail");
+            string fromName = configRepository.Get("fromName");
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();

@@ -24,6 +24,15 @@ namespace KwasantCore.Managers
 {
     public class CommunicationManager
     {
+        private readonly IConfigRepository _configRepository;
+
+        public CommunicationManager(IConfigRepository configRepository)
+        {
+            if (configRepository == null)
+                throw new ArgumentNullException("configRepository");
+            _configRepository = configRepository;
+        }
+
         //Register for interesting events
         public void SubscribeToAlerts()
         {
@@ -67,18 +76,19 @@ namespace KwasantCore.Managers
                 var emailDO = new EmailDO();
                 emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
-                emailDO.Subject = "Welcome to Kwasant";
-                var htmlText = String.Format("Please click <a href='{0}NegotiationResponse/View?negotiationID={1}'>here</a> to answer some questions about your upcoming event.", Server.ServerUrl, negotiationDO.Id);
+                emailDO.Subject = "Regarding:" + negotiationDO.Name;
 
-                emailDO.HTMLText = htmlText;
-                emailDO.PlainText = "Please click here: " + String.Format("{0}NegotiationResponse/View?negotiationID={1}", Server.ServerUrl, negotiationDO.Id);
+                var responseUrl = String.Format("{0}NegotiationResponse/View?negotiationID={1}", 
+                    Server.ServerUrl, 
+                    negotiationDO.Id);
+
                 emailDO.EmailStatus = EmailState.Queued;
-
-                uow.EnvelopeRepository.CreateGmailEnvelope(emailDO);
                 uow.EmailRepository.Add(emailDO);
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "clarification_request_v3", new Dictionary<string, string>() { { "RESP_URL", responseUrl } });
             }
         }
 
+/*
         public void DispatchInvitations(IUnitOfWork uow, EventDO eventDO)
         {
             //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
@@ -136,31 +146,13 @@ namespace KwasantCore.Managers
                     throw new Exception("Invalid event status");
             }
         }
+*/
 
-        private String GetEmailHTMLTextForUpdate(EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.HTMLEventInvitation_Update, new RazorViewModel(eventDO, userID));
-        }
-
-        private String GetEmailPlainTextForUpdate(EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.PlainEventInvitation_Update, new RazorViewModel(eventDO, userID));
-        }
-
-        private String GetEmailHTMLTextForNew(EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO, userID));
-        }
-
-        private String GetEmailPlainTextForNew(EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO, userID));
-        }
-
+/*
         private EmailDO CreateInvitationEmail(IUnitOfWork uow, EventDO eventDO, AttendeeDO attendeeDO, bool isUpdate)
         {
-            string fromEmail = ConfigRepository.Get("fromEmail");
-            string fromName = ConfigRepository.Get("fromName");
+            string fromEmail = _configRepository.Get("fromEmail");
+            string fromName = _configRepository.Get("fromName");
 
             var emailAddressRepository = uow.EmailAddressRepository;
             if (eventDO.Attendees == null)
@@ -183,13 +175,13 @@ namespace KwasantCore.Managers
             if (isUpdate)
             {
 
-                outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubjectUpdated"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
+                outboundEmail.Subject = String.Format(_configRepository.Get("emailSubjectUpdated"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
                 outboundEmail.HTMLText = GetEmailHTMLTextForUpdate(eventDO, userID);
                 outboundEmail.PlainText = GetEmailPlainTextForUpdate(eventDO, userID);
             }
             else
             {
-                outboundEmail.Subject = String.Format(ConfigRepository.Get("emailSubject"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
+                outboundEmail.Subject = String.Format(_configRepository.Get("emailSubject"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
                 outboundEmail.HTMLText = GetEmailHTMLTextForNew(eventDO, userID);
                 outboundEmail.PlainText = GetEmailPlainTextForNew(eventDO, userID);
             }
@@ -205,6 +197,7 @@ namespace KwasantCore.Managers
 
             return outboundEmail;
         }
+*/
 
 
         
@@ -213,54 +206,6 @@ namespace KwasantCore.Managers
         {
             //Stub method for now
             return true;
-        }
-        
-        //if we have a first name and last name, use them together
-        //else if we have a first name only, use that
-        //else if we have just an email address, use the portion preceding the @ unless there's a name
-        //else throw
-        public string GetOriginatorName(EventDO curEventDO)
-        {
-            UserDO originator = curEventDO.CreatedBy;
-            string firstName = originator.FirstName;
-            string lastName = originator.LastName;
-            if (firstName != null)
-            {
-                if (lastName == null)
-                    return firstName;
-
-                return firstName + " " + lastName;
-            }
-
-            EmailAddressDO curEmailAddress = originator.EmailAddress;
-            if (curEmailAddress.Name != null)
-                return curEmailAddress.Name;
-
-            if (curEmailAddress.Address.IsEmailAddress())
-                return curEmailAddress.Address.Split(new[] { '@' })[0];
-
-            throw new ArgumentException("Failed to extract originator info from this Event. Something needs to be there.");
-        }
-
-        private static void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)
-        {
-            iCalendarSerializer serializer = new iCalendarSerializer(iCal);
-            string fileToAttach = serializer.Serialize(iCal);
-
-            AttachmentDO attachmentDO = GetAttachment(fileToAttach);
-
-            attachmentDO.Email = emailDO;
-            emailDO.Attachments.Add(attachmentDO);
-        }
-
-
-        private static AttachmentDO GetAttachment(string fileToAttach)
-        {
-            return Email.CreateNewAttachment(
-                new System.Net.Mail.Attachment(
-                    new MemoryStream(Encoding.UTF8.GetBytes(fileToAttach)),
-                    new ContentType { MediaType = "application/ics", Name = "invite.ics" }
-                    ) { TransferEncoding = TransferEncoding.Base64 });
         }
 
         public void ProcessBRNotifications(IList<BookingRequestDO> bookingRequests)
@@ -342,6 +287,7 @@ namespace KwasantCore.Managers
 
     public class RazorViewModel
     {
+        public String EmailBasicText { get { return ObjectFactory.GetInstance<IConfigRepository>().Get("emailBasicText"); } }
         public String UserID { get; set; }
         public bool IsAllDay { get; set; }
         public DateTime StartDate { get; set; }
