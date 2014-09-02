@@ -105,7 +105,8 @@ namespace KwasantWeb.Controllers
                     }
                     else
                     {
-                        return RedirectToAction("Index", "Home");
+                       // return RedirectToAction("Index", "Home");
+                        return View("RegistrationConfirmation");
                     }
                 }
             }

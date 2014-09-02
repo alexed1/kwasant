@@ -22,7 +22,9 @@ namespace KwasantWeb.Controllers
         public ActionResult View(int negotiationID)
         {
             AuthenticateUser(negotiationID);
-
+            
+            var userID = User.Identity.GetUserId();
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
@@ -30,7 +32,7 @@ namespace KwasantWeb.Controllers
                     throw new HttpException(404, "Negotiation not found.");
 
                 var answerIDs = negotiationDO.Questions.SelectMany(q => q.Answers.Select(a => a.Id)).ToList();
-                var userAnswerIDs = uow.QuestionResponseRepository.GetQuery().Where(qr => answerIDs.Contains(qr.AnswerID)).Select(a => a.AnswerID).ToList();
+                var userAnswerIDs = uow.QuestionResponseRepository.GetQuery().Where(qr => answerIDs.Contains(qr.AnswerID) && qr.UserID == userID).Select(a => a.AnswerID).ToList();
 
                 var model = new NegotiationResponseVM
                 {
@@ -46,22 +48,19 @@ namespace KwasantWeb.Controllers
                             AnswerType = q.AnswerType,
                             Id = q.Id,
                             Text = q.Text,
+                            CalendarID = q.CalendarID,
 
                             Answers = q.Answers.Select(a =>
                                 (NegotiationAnswerVM) new NegotiationResponseAnswerVM
                                 {
                                     Id = a.Id,
                                     Selected = userAnswerIDs.Contains(a.Id),
-                                    CalendarEvents = a.Calendar == null ? new List<QuestionCalendarEventVM>() : a.Calendar.Events.Select(e => new QuestionCalendarEventVM
-                                    {
-                                        StartDate = e.StartDate,
-                                        EndDate = e.EndDate
-                                    }).ToList(),
-
-                                    CalendarID = a.CalendarID,
+                                    EventID = a.EventID,
+                                    EventStartDate = a.Event == null ? (DateTimeOffset?)null : a.Event.StartDate,
+                                    EventEndDate = a.Event == null ? (DateTimeOffset?)null : a.Event.EndDate,
 
                                     Text = a.Text,
-                                }).ToList()
+                                }).OrderBy(a => a.EventStartDate).ThenBy(a => a.EventEndDate).ToList()
                         };
                     }).ToList()
                 };
@@ -105,12 +104,12 @@ namespace KwasantWeb.Controllers
                             answerDO = new AnswerDO();
                             uow.AnswerRepository.Add(answerDO);
 
-                            answerDO.CalendarID = answer.CalendarID;
                             answerDO.Question = questionDO;
                             if (answerDO.AnswerStatus == 0)
                                 answerDO.AnswerStatus = AnswerState.Proposed;
 
                             answerDO.Text = answer.Text;
+                            answerDO.EventID = answer.EventID;
                         } else
                         {
                             answerDO = uow.AnswerRepository.GetByKey(answer.Id);

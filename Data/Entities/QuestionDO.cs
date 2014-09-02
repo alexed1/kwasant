@@ -23,6 +23,10 @@ namespace Data.Entities
         
         public string Response { get; set; }
 
+        [ForeignKey("Calendar")]
+        public int? CalendarID { get; set; }
+        public virtual CalendarDO Calendar { get; set; }
+
         [ForeignKey("Negotiation"), Required]
         public int? NegotiationId { get; set; }
         public virtual NegotiationDO Negotiation { get; set; }

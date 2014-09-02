@@ -14,9 +14,9 @@ namespace Data.Entities
         public int QuestionID { get; set; }
         public virtual QuestionDO Question { get; set; }
 
-        [ForeignKey("Calendar")]
-        public int? CalendarID { get; set; }
-        public virtual CalendarDO Calendar { get; set; }
+        [ForeignKey("Event")]
+        public int? EventID { get; set; }
+        public virtual EventDO Event { get; set; }
 
         [ForeignKey("AnswerStatusTemplate")]
         public int AnswerStatus { get; set; }

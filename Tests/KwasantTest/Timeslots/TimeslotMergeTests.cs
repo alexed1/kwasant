@@ -71,11 +71,11 @@ namespace KwasantTest.Timeslots
             return calendarDO;
         }
 
-        private void SubmitNewTimeSlotToController(int timeSlotID, String startTime, String endTime)
+        private void SubmitNewTimeSlotToController(int EventID, String startTime, String endTime)
         {
             var controller = new EventController();
 
-            var res = controller.NewTimeSlot(timeSlotID, GetFormattedDateString(startTime), GetFormattedDateString(endTime), true);
+            var res = controller.NewTimeSlot(EventID, GetFormattedDateString(startTime), GetFormattedDateString(endTime), true);
             var converted = res as JavaScriptResult;
             if (converted == null)
                 throw new Exception("Invalid return type");
