@@ -185,6 +185,7 @@
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Email.cs" />
+    <Compile Include="Services\Invitation.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Role.cs" />
     <Compile Include="Services\UsersAdmin.cs" />

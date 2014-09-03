@@ -905,6 +905,7 @@ blockquote h2 i {
 .landing-welcome-area .landing-video iframe {
 	position: relative;
 	z-index: 2;	
+    visibility: hidden;
 }
 
 .lt-ie9 #logotext.text {

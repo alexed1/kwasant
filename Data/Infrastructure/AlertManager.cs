@@ -37,6 +37,8 @@ namespace Data.Infrastructure
         public delegate void BookingRequestTimeoutStateChangeHandler(BookingRequestDO bookingRequestDO);
         public static event BookingRequestTimeoutStateChangeHandler AlertBookingRequestProcessingTimeout;
 
+        public delegate void UserRegistrationHandler(UserDO curUser);
+        public static event UserRegistrationHandler AlertUserRegistration;
 
         #region Method
         
@@ -88,6 +90,12 @@ namespace Data.Infrastructure
                 AlertBookingRequestProcessingTimeout(bookingRequestDO);
         }
 
+
+        public static void UserRegistration(UserDO curUser)
+        {
+            if (AlertUserRegistration != null)
+                AlertUserRegistration(curUser);
+        }
         #endregion
     }
 
@@ -104,6 +112,7 @@ namespace Data.Infrastructure
             AlertManager.AlertBookingRequestStateChange += ProcessBookingRequestStateChange;
             AlertManager.AlertCustomerCreated += NewCustomerCreated;
             AlertManager.AlertBookingRequestProcessingTimeout += ProcessTimeout;
+            AlertManager.AlertUserRegistration += UserRegistration;
         }
 
         private void NewCustomerCreated(string curUserId)
@@ -251,6 +260,29 @@ namespace Data.Infrastructure
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
+        }
+
+
+        public void UserRegistration(UserDO curUser)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                FactDO curFactDO = new FactDO
+                {
+                    Name = "UserRegistration Created",
+                    PrimaryCategory = "User",
+                    SecondaryCategory = "User",
+                    Activity = "Created",
+                    CustomerId = curUser.Id,
+                    CreateDate = DateTimeOffset.Now,
+                    ObjectId = 0,
+                    Data = "User registrated with " + curUser.EmailAddress.Address
+                };
+                Logger.GetLogger().Info(curFactDO.Data);
+                uow.FactRepository.Add(curFactDO);
+                uow.SaveChanges();
+            }
+
         }
 
     }

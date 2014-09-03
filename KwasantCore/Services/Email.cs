@@ -31,9 +31,8 @@ namespace KwasantCore.Services
         /// 
 
         public Email()
+            : this(ObjectFactory.GetInstance<IUnitOfWork>())
         {
-            _uow = ObjectFactory.GetInstance<IUnitOfWork>(); ;
-            _curEventValidator = new EventValidator();
         }
         //this constructor enables the creation of an email that doesn't necessarily have anything to do with an Event. It gets called by the other constructors
         public Email(IUnitOfWork uow)

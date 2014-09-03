@@ -45,6 +45,7 @@
                     @:currentQuestion.Id = @question.Id
                     @:currentQuestion.Text = '@question.Text';
                     @:currentQuestion.Type = '@question.AnswerType';
+                    @:currentQuestion.CalendarID = @Html.Raw(question.CalendarID == null ? "null" : question.CalendarID.ToString());
                     @:answers = [];
                     foreach (var answer in question.Answers)
                     {
@@ -56,25 +57,17 @@
                         {
                             @:currentAnswer.Text = '@answer.Text';
                         }
-                        if (question.AnswerType == "Timeslot")
+                        
+                        @:currentAnswer.EventID = @answer.EventID
+                        if (answer.EventStartDate.HasValue)
                         {
-                            @:calendarEvents = [];
-                            foreach (var calendarEvent in answer.CalendarEvents)
-                            {
-                                @:var startDate = new Date(@calendarEvent.StartDate.Year, (@calendarEvent.StartDate.Month - 1), @calendarEvent.StartDate.Day, @calendarEvent.StartDate.Hour, @calendarEvent.StartDate.Minute, @calendarEvent.StartDate.Millisecond)
-                                @:var endDate = new Date(@calendarEvent.EndDate.Year, (@calendarEvent.EndDate.Month - 1), @calendarEvent.EndDate.Day, @calendarEvent.EndDate.Hour, @calendarEvent.EndDate.Minute, @calendarEvent.EndDate.Millisecond)
-
-    					        @:calendarEvents.push({
-                                    @:  startDate: startDate,
-                                    @:  endDate: endDate
-                                @:});
-                            }
-                            @:currentAnswer.CalendarEvents = calendarEvents;
-                            @:currentAnswer.CalendarID = @answer.CalendarID;
-                            //Add event windows here... 
+                            @:currentAnswer.EventStart = new Date(@answer.EventStartDate.Value.Year, (@answer.EventStartDate.Value.Month - 1), @answer.EventStartDate.Value.Day, @answer.EventStartDate.Value.Hour, @answer.EventStartDate.Value.Minute, @answer.EventStartDate.Value.Millisecond)
                         }
-                        @:currentAnswer.QuestionID = @question.Id;
-
+                        if (answer.EventEndDate.HasValue)
+                        {
+                            @:currentAnswer.EventEnd = new Date(@answer.EventEndDate.Value.Year, (@answer.EventEndDate.Value.Month - 1), @answer.EventEndDate.Value.Day, @answer.EventEndDate.Value.Hour, @answer.EventEndDate.Value.Minute, @answer.EventEndDate.Value.Millisecond)
+                        }
+                
                         @:answers.push(currentAnswer);
                     }
                     @:currentQuestion.Answers = answers;
