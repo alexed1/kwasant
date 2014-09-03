@@ -44,12 +44,13 @@
 						<li class="dropdown"><a id="btnUser">User</a>
                             <ul class="dropdown-menu">
                                  <li> @Html.ActionLink("Get All", "Index", "User") </li>
-                                 <li><a id="btnProcessed" onclick="checkBookerStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })','MarkAsProcessed');" href="#">Mark Processed</a></li>
+                                 @*<li><a id="btnProcessed" onclick="checkBookerStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })','MarkAsProcessed');" href="#">Mark Processed</a></li>*@
+                                <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
                             </ul>
     					</li>
                         <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
                              <ul class="dropdown-menu">
-                                <li><a id="liCreateOrEditNegotiation" onclick="checkBookerStatus(' ','Negotiation');" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
+                                <li><a id="liCreateOrEditNegotiation" onclick="getNegotiationWindow();" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
                                 <li id="liDeleteNegotiatoin"><a id="btnDeleteNegotiatoin" onclick="deleteActiveNegotiation(@Model.BookingRequestID);" href="#">Delete</a></li>
                             </ul>
                         </li>
@@ -111,8 +112,8 @@
                 return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + @Model.ActiveCalendarID)';
             },  
             getEditURL: function (id) {
-                
                 var bookingRequestID =$("#hdnrequestid").val();
+
                 return '/Event/Edit/?eventID=' + id + '&bookingrequestID='+ bookingRequestID;
         
             },
@@ -174,42 +175,29 @@
         return dateFormat;
     }
 
-    //this function will check the booker status and after that it will redirected according calledby.
-    function checkBookerStatus(path, calledBy)
-    {
-        var url="/BookingRequest/IsBookerValid/?id=" + '@Model.BookingRequestID';
-        $.get(url, null, function (response) {
-                if (response == "valid") {
-                    if(calledBy =="MarkAsProcessed")
-                    {
-                        //redirecting to Booking Request
-                        $.getJSON(path, function () {
-                            window.location.href = "@Url.Action("Index", "BookingRequest")";
-                        });
-                    }
-                    else if(calledBy =="Negotiation")
-                    {
-                        //Call Negotiationwindow method
-                        window.parent.getNegotiationWindow(bookingRequestId);
-                    }
-                    
-                } else {
-                    if (confirm("This BookingRequest is Owned by Booker: " + response + " \n Take Ownership of This BookingRequest?")) {
-                        if(calledBy =="MarkAsProcessed")
-                        {
-                            //redirecting to Booking Request
-                            $.getJSON(path, function () {
-                                window.location.href = "@Url.Action("Index", "BookingRequest")";
-                            });
-                        }
-                        else if(calledBy =="Negotiation")
-                        {
-                            //Call Negotiationwindow method
-                            window.parent.getNegotiationWindow('@Model.BookingRequestID');
-                        }
-                    }
+    //Mark processed function will execute on click to update the Request status to "Processed".
+    function updateStatus(path) {
+        $.getJSON(path, function (response) {
+            var oldOwner = response.Message;
+            var Id = $("#hdnrequestid").val();
+            if (response.Name == "DifferentOwner") 
+                ShowFailedOwnershipVerification(oldOwner, Id);
+            else 
+                window.location.href = "@Url.Action("Index", "BookingRequest")";
+        });
+    }
+
+    function ShowFailedOwnershipVerification(oldOwner, Id) {
+        if (confirm("This BookingRequest is Owned by Booker: " + oldOwner + " \n Take Ownership of This BookingRequest?")) {
+            $.ajax({
+                url: "/BookingRequest/ChangeOwner",
+                type: "GET",
+                data: { id: Id },
+                success: function (response) {
+                    alert(response);
                 }
-        });   
+            });
+        }
     }
 
     function HistoryClick(id) {
@@ -353,24 +341,46 @@
     }
 
     
-    function getNegotiationWindow(bookingRequestId) {
-            @{
-                if (Model.LinkedNegotiationID != null)
+    function getNegotiationWindow() {
+        if (linkedNegotiationID != null) {
+            var bookingRequestId = $("#hdnrequestid").val();
+            var url= '/Negotiation/Edit?negotiationID=' + linkedNegotiationID +'&bookingRequestID=' + bookingRequestId;
+            $.getJSON(url, function (response) {
+                var oldOwner = response.Message;
+                var Id = $("#hdnrequestid").val();
+                if (response.Name == "DifferentOwner") 
+                    ShowFailedOwnershipVerification(oldOwner, Id);
+                else 
                 {
-                    @:Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=@Model.LinkedNegotiationID&bookingRequestID=' + bookingRequestId,
-                        @:{
-                        @:  horizontalAlign: 'right',
-                        @:});
+                    Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID,
+                    {
+                        horizontalAlign: 'right',
+                        minHeight: 700,
+                        minWidth: 630,
+                        callback: function(result) {
+                            if (result)
+                                displayNegotiation('Your negotiation was successfully updated');
+                        }
+                    });
                 }
-                else
-                {
-                    @:Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestID',
-                        @:{
-                        @:  horizontalAlign: 'right',
-                        @:  callback: function (result) { if (result) $('#liCreateOrEditNegotiation').html('Edit'); }
-                        @:});
+            });
+           
+        } else {
+            Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestID',
+            {
+                horizontalAlign: 'right',
+                minHeight: 700,
+                minWidth: 300,
+                callback: function(result) {
+                    if (result) {
+                        $('#liCreateOrEditNegotiation').html('Edit');
+                        linkedNegotiationID = result;
+                        updateCreateResolveButtons();
+                        displayNegotiation('Your negotiation was successfully created');
+                    }
                 }
-            }
+            });
+        }
     }
 
     function deleteActiveNegotiation(bookingRequestId)
@@ -386,7 +396,9 @@
             });
         }       
     }
-  
+
+    var linkedNegotiationID = @Html.Raw(Model.LinkedNegotiationID == null ? "null" : Model.LinkedNegotiationID.ToString());
+
     $(document).ready(function() {
         //alert('@(Model.LinkedNegotiationID == null ? "Create" : "Edit")');
         var getNegotiationText = '@(Model.LinkedNegotiationID == null ? "Create" : "Edit")';

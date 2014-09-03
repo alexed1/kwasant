@@ -17,7 +17,7 @@ namespace KwasantCore.Services
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
             var user = new User();
-            bookingRequest.BookingRequestState = BookingRequestState.Unstarted;
+            bookingRequest.State = BookingRequestState.Unstarted;
             UserDO curUser = user.GetOrCreate(uow, bookingRequest.From);
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
@@ -54,7 +54,7 @@ namespace KwasantCore.Services
         {
             return
                 uow.BookingRequestRepository.GetAll()
-                    .Where(e => e.BookingRequestState == BookingRequestState.Unstarted)
+                    .Where(e => e.State == BookingRequestState.Unstarted)
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
@@ -137,8 +137,23 @@ namespace KwasantCore.Services
                   }).ToList();
         }
 
-       
-       
+        //VerifyOwnership
+        public string IsBookerValid(IUnitOfWork uow, int id, string CurrentBooker)
+        {
+
+            BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+            if (bookingRequestDO.BookerID != CurrentBooker)
+            {
+                if (bookingRequestDO.BookerID != null)
+                    return uow.UserRepository.GetByKey(bookingRequestDO.BookerID).FirstName;
+                else
+                    return "valid";
+            }
+            return "valid";
+
+        }
+
+
     }
     public struct BR_RelatedItems
     {

@@ -44,7 +44,7 @@ namespace Daemons
                         uow.BookingRequestRepository.GetQuery()
                             .Where(
                                 br =>
-                                    (br.BookingRequestState == BookingRequestState.Unstarted || br.BookingRequestState == BookingRequestState.Booking) &&
+                                    (br.State == BookingRequestState.Unstarted || br.State == BookingRequestState.Booking) &&
                                     br.DateCreated <= thirtyMinutesAgo)
                             .ToList();
 

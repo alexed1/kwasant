@@ -54,6 +54,7 @@ namespace KwasantWeb.Controllers
         }
 
         // GET: /BookingRequest/Details/5
+        [HttpGet]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -63,19 +64,16 @@ namespace KwasantWeb.Controllers
             BookingRequestDO bookingRequestDO = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                string CurrentBooker = this.GetUserId();
                 if (id != null)
                 {
                     bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                    bookingRequestDO.BookerID = this.GetUserId();
+                    bookingRequestDO.State = BookingRequestState.Booking;
                     bookingRequestDO.User = bookingRequestDO.User;
-                    //Update Last Time too....
-                    bookingRequestDO.BookingRequestState = BookingRequestState.Booking;
                     uow.SaveChanges();
-                    AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, this.GetUserId());
-                    AlertManager.BookingRequestOwnershipChange(bookingRequestDO.Id, this.GetUserId());
+                    AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, CurrentBooker);
                 }
             }
-
             if (bookingRequestDO == null)
             {
                 return HttpNotFound();
@@ -87,21 +85,33 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        
         [HttpGet]
-        public string IsBookerValid(int id)
+        public ActionResult ChangeOwner(int id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            string result = "";
+            try
             {
-                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                if (bookingRequestDO.BookerID != this.GetUserId())
+                string CurrentBooker = this.GetUserId();
+                BookingRequestDO bookingRequestDO = null;
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    if (bookingRequestDO.BookerID != null)
-                        return uow.UserRepository.GetByKey(bookingRequestDO.BookerID).FirstName;
-                    else
-                        return "valid";
+                    if (id != null)
+                    {
+                        bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                        bookingRequestDO.BookerID = CurrentBooker;
+                        bookingRequestDO.User = bookingRequestDO.User;
+                        uow.SaveChanges();
+                        AlertManager.BookingRequestOwnershipChange(bookingRequestDO.Id, CurrentBooker);
+                        result = "Booking request ownership changed successfully!";
+                    }
                 }
-                return "valid";
             }
+            catch (Exception)
+            {
+                result = "Sorry! Something went wrong.";
+            }
+            return Content(result);
         }
 
         [HttpGet]
@@ -109,17 +119,18 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string bookerId;
+                //call to VerifyOwnership 
+                string CurrentBooker = this.GetUserId();
+                string verifyOwnership = _br.IsBookerValid(uow, id, CurrentBooker);
+                if (verifyOwnership != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookerId = bookingRequestDO.BookerID;
-                bookingRequestDO.BookingRequestState = BookingRequestState.Resolved;
-                bookingRequestDO.BookerID = this.GetUserId();
+                bookingRequestDO.State = BookingRequestState.Resolved;
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
-                if (bookerId != this.GetUserId())
-                    AlertManager.BookingRequestOwnershipChange(bookingRequestDO.Id, this.GetUserId());
-
+                
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -129,16 +140,17 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string bookerId;
+                //call to VerifyOwnership 
+                string CurrentBooker = this.GetUserId();
+                string verifyOwnership = _br.IsBookerValid(uow, id, CurrentBooker);
+                if (verifyOwnership != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookerId = bookingRequestDO.BookerID;
-                bookingRequestDO.BookingRequestState = BookingRequestState.Invalid;
-                bookingRequestDO.BookerID = this.GetUserId();
+                bookingRequestDO.State = BookingRequestState.Invalid;
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
-                if (bookerId != this.GetUserId())
-                    AlertManager.BookingRequestOwnershipChange(bookingRequestDO.Id, this.GetUserId());
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
         }

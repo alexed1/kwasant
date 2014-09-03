@@ -150,6 +150,10 @@
     <Compile Include="Migrations\201408221331374_Change_BookerId_Type_to_Factos.Designer.cs">
       <DependentUpon>201408221331374_Change_BookerId_Type_to_Factos.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409030805373_Change_BookingRequestState_to_State.cs" />
+    <Compile Include="Migrations\201409030805373_Change_BookingRequestState_to_State.Designer.cs">
+      <DependentUpon>201409030805373_Change_BookingRequestState_to_State.cs</DependentUpon>
+    </Compile>
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\ClarificationRequestState.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
@@ -766,6 +770,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408221331374_Change_BookerId_Type_to_Factos.resx">
       <DependentUpon>201408221331374_Change_BookerId_Type_to_Factos.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409030805373_Change_BookingRequestState_to_State.resx">
+      <DependentUpon>201409030805373_Change_BookingRequestState_to_State.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -9,6 +9,7 @@ using KwasantWeb.ViewModels;
 using StructureMap;
 using AutoMapper;
 using Data.Infrastructure;
+using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 
 
 namespace KwasantWeb.Controllers
@@ -17,41 +18,50 @@ namespace KwasantWeb.Controllers
     public class NegotiationController : Controller
     {
         private IMappingEngine _mappingEngine;
+        private BookingRequest _br;
 
         public NegotiationController()
         {
             _mappingEngine = Mapper.Engine; // should be injected
+            _br = new BookingRequest();
         }
 
         public ActionResult Edit(int negotiationID, int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
-                if (negotiationDO == null)
-                    throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
-
-                var model = _mappingEngine.Map<EditNegotiationVM>(negotiationDO);
-
-                // NOTE: code below is to add BookerID in BookingRequest if Another booker will loging
-                BookingRequestDO bookingRequestDO = null;
-                bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
-                if (bookingRequestDO.BookerID != this.GetUserId())
+                string CurrentBooker = this.GetUserId();
+                string verifyOwnership = _br.IsBookerValid(uow, bookingRequestID, CurrentBooker);
+                if (verifyOwnership != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+                else
                 {
-                    bookingRequestDO.BookerID = this.GetUserId();
-                    bookingRequestDO.User = bookingRequestDO.User;
-                    uow.SaveChanges();
-                    AlertManager.BookingRequestOwnershipChange(bookingRequestID, this.GetUserId());
-                }
+                    var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+                    if (negotiationDO == null)
+                        throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
 
-                return View(model);
+                    var model = _mappingEngine.Map<EditNegotiationVM>(negotiationDO);
+
+                    // NOTE: code below is to add BookerID in BookingRequest if Another booker will loging
+                    BookingRequestDO bookingRequestDO = null;
+                    bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+                    if (bookingRequestDO.BookerID != this.GetUserId())
+                    {
+                        bookingRequestDO.BookerID = this.GetUserId();
+                        bookingRequestDO.User = bookingRequestDO.User;
+                        uow.SaveChanges();
+                        AlertManager.BookingRequestOwnershipChange(bookingRequestID, this.GetUserId());
+                    }
+
+                    return View(model);
+                }
             }
         }
 
 
         public ActionResult Create(int bookingRequestID)
         {
-           
+
             return View("~/Views/Negotiation/Edit.cshtml", new EditNegotiationVM
             {
                 Name = "Negotiation 1",
