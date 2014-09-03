@@ -105,7 +105,6 @@ namespace Data.Infrastructure
 
             foreach (var createdEntity in createdEntityList)
             {
-                Console.WriteLine("created an Entity. Calling Create Hook");
                 createdEntity.Entity.AfterCreate();
             }
          
