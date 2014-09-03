@@ -83,7 +83,7 @@ namespace KwasantCore.Services
         //takes submitted form data and updates as necessary
         //in general, the new event data will simply overwrite the old data. 
         //in some cases, additional work is necessary to handle the changes
-        public void Process(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, List<AttendeeDO> updatedAttendees)
+        public void InviteAttendees(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, List<AttendeeDO> updatedAttendees)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");

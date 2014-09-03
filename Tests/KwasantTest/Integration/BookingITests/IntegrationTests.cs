@@ -203,7 +203,7 @@ namespace KwasantTest.Integration.BookingITests
                 eventDO.CreatedByID = "1";
                 eventDO.Description = "test event description";
                 _uow.EventRepository.Add(eventDO);
-                e.Process(_uow, eventDO, eventDO.Attendees, new List<AttendeeDO>());
+                e.InviteAttendees(_uow, eventDO, eventDO.Attendees, new List<AttendeeDO>());
                 _uow.SaveChanges();
                 return eventDO;
             }
