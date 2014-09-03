@@ -129,8 +129,7 @@ namespace KwasantTest.Daemons
                         EmailAddress = Email.GenerateEmailAddress(_uow, new MailAddress("joetest2@edelstein.org")),
                         EmailParticipantType = EmailParticipantType.To
                     }
-                };
-            emailAddress.Address = "joetest2@edelstein.org";
+                };            
             var role = new Role();
             role.Add(_uow, _fixtureData.TestRole());
             var u = new UserDO();
