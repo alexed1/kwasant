@@ -77,8 +77,7 @@ namespace KwasantTest.Integration.BookingITests
             _uow.UserRepository.Add(_fixture.TestUser3());
             _uow.EmailRepository.Add(testEmail);
             _uow.SaveChanges();
-            Console.WriteLine("Setup Objects Complete");
-
+            
             //EXECUTE
             BookingRequestDO foundBookingRequest = null;
             EmailDO eventEmail = null;
@@ -89,23 +88,17 @@ namespace KwasantTest.Integration.BookingITests
 
                 //make sure queued outbound email gets sent.
                 _polling.FlushOutboundEmailQueues();
-                Console.WriteLine("Sending of test BR Complete");
-
-
 
                 foundBookingRequest = PollForBookingRequest(testEmail, client, inboundDaemon);
                 if (foundBookingRequest != null)
                 {
-                    Console.WriteLine("Booking Request detected in intake");
                     EventDO testEvent = CreateTestEvent(foundBookingRequest);
-                    Console.WriteLine("Test Event Created");
 
                     //start the stopwatch measuring time from email send
                     using (_polling.NewTimer(_polling.requestToEmailTimeout, "BookingRequest to Invitation"))
                     {
                         //run the outbound daemon to send any outgoing invite(s)
                         _polling.FlushOutboundEmailQueues();
-                        Console.WriteLine("Beginning Polling...");
 
                         eventEmail = PollMailboxForEvent(testEmail, client, start, end);
                     }
