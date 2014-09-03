@@ -103,6 +103,7 @@
     <Compile Include="Controllers\BookingRequestControllerTests.cs" />
     <Compile Include="Controllers\CalendarControllerTests.cs" />
     <Compile Include="Controllers\EventControllerTests.cs" />
+    <Compile Include="Controllers\NegotiationControllerTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="Daemons\InboundEmailTests.cs" />
     <Compile Include="Daemons\ThroughputMonitorTests.cs" />
