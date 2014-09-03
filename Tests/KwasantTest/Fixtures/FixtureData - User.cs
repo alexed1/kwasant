@@ -7,7 +7,8 @@ namespace KwasantTest.Fixtures
         public UserDO TestUser1()
         {
             return new UserDO()
-            {                
+            {       
+                Id = "1",
                 FirstName = "Jack",
                 LastName = "Maginot",
                 EmailAddress = TestEmailAddress1() //note that some tests have Attendees that assume this won't change

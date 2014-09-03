@@ -94,7 +94,8 @@ namespace Data.Infrastructure.StructureMap
 
         private IEnumerable<object> GetAdds()
         {
-            foreach (var set in _cachedSets)
+            var sets = _cachedSets.ToList();
+            foreach (var set in sets)
             {
                 foreach (object row in set.Value as IEnumerable)
                 {
@@ -216,7 +217,11 @@ namespace Data.Infrastructure.StructureMap
         {
             if (!_cachedSets.ContainsKey(entityType))
             {
-                _cachedSets[entityType] = (IEnumerable<object>)Activator.CreateInstance(typeof(MockedDbSet<>).MakeGenericType(entityType), new[] { this });
+                var assemblyTypes = entityType.Assembly.GetTypes();
+                var subclassedSets = assemblyTypes.Where(a => a.IsSubclassOf(entityType) && entityType != a).ToList();
+                var otherSets = subclassedSets.Select(Set);
+
+                _cachedSets[entityType] = (IEnumerable<object>)Activator.CreateInstance(typeof(MockedDbSet<>).MakeGenericType(entityType), this, otherSets );
             }
             return _cachedSets[entityType];
         }

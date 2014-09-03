@@ -15,17 +15,31 @@ namespace Data.Infrastructure.StructureMap
         where TEntityType : class
     {
         private readonly IDBContext _dbContext;
+        private readonly IEnumerable<IEnumerable<object>> m_SubSets;
+
+        private IEnumerable<TEntityType> _mergedSets
+        {
+            get
+            {
+                foreach (var val in _set)
+                    yield return val;
+                foreach(var subSet in m_SubSets)
+                    foreach (var val in subSet.OfType<TEntityType>())
+                        yield return val;
+            }
+        }
         private HashSet<TEntityType> _set = new HashSet<TEntityType>();
 
-        public MockedDbSet(IDBContext dbContext)
+        public MockedDbSet(IDBContext dbContext, IEnumerable<IEnumerable<object>> subSets)
         {
             _dbContext = dbContext;
+            m_SubSets = subSets;
             _set = new HashSet<TEntityType>();
         }
 
         public IEnumerator<TEntityType> GetEnumerator()
         {
-            return _set.GetEnumerator();
+            return _mergedSets.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -37,7 +51,7 @@ namespace Data.Infrastructure.StructureMap
         {
             get
             {
-                return _set.AsQueryable().Expression;
+                return _mergedSets.AsQueryable().Expression;
             }
             private set { }
         }
@@ -46,7 +60,7 @@ namespace Data.Infrastructure.StructureMap
         {
             get
             {
-                return _set.AsQueryable().ElementType;
+                return _mergedSets.AsQueryable().ElementType;
             }
             private set { }
         }
@@ -54,7 +68,7 @@ namespace Data.Infrastructure.StructureMap
         {
             get
             {
-                return _set.AsQueryable().Provider;
+                return _mergedSets.AsQueryable().Provider;
             }
             private set { }
         }
@@ -73,14 +87,14 @@ namespace Data.Infrastructure.StructureMap
             {
                 string entityPrimaryKey = keyValues[0] as string;
                 Func<TEntityType, string> compiledSelector = GetEntityKeySelectorString().Compile();
-                return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+                return _mergedSets.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
             }
             else
             {
 
                 int entityPrimaryKey = (int)(keyValues[0]);
                 Func<TEntityType, int> compiledSelector = GetEntityKeySelectorInt().Compile();
-                return _set.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+                return _mergedSets.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
             }
 
 
