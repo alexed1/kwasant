@@ -63,7 +63,7 @@ namespace KwasantCore.Services
             return curEventDO;
         }
 
-        public void Process(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, List<AttendeeDO> existingAttendees)
+        public void InviteAttendees(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, List<AttendeeDO> existingAttendees)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -99,7 +99,7 @@ namespace KwasantCore.Services
             eventDO = Update(uow, eventDO, updatedEventInfo, updatedAttendees, out newAttendees, out existingAttendees);
             if (eventDO != null)
             {
-                Process(uow, eventDO, newAttendees, existingAttendees);
+                InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
             }
         }
      
