@@ -189,7 +189,7 @@
             CalendarID: initialValues.CalendarID,
             QuestionGUID: guid(),
             Type: 'Text',
-            Text: 'Enter question text'
+            Text: ''
         }, initialValues);
 
         var questionObject = createQuestionObject(questionInitValues);
@@ -235,7 +235,6 @@
 
             var launchCalendar = function (calID) {
                 _that.CalendarID = calID;
-
                 Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID,
                     {
                         horizontalAlign: 'left',
@@ -498,7 +497,7 @@
                 AnswerState: settings.AnswerProposedStatus,
                 Selected: this.Answers.length == 0 ? true: false,
                 QuestionGUID: questionInitValues.QuestionGUID,
-                Text: 'Enter answer text'
+                Text: ''
             }, initialValues);
 
             var answerObject;

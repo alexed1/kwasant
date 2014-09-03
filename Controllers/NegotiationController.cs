@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -80,11 +81,21 @@ namespace KwasantWeb.Controllers
 
         public ActionResult Create(int bookingRequestID)
         {
-            return View("~/Views/Negotiation/Edit.cshtml", new NegotiationVM
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Name = "Negotiation 1",
-                BookingRequestID = bookingRequestID,
-            });
+                return View("~/Views/Negotiation/Edit.cshtml", new NegotiationVM
+                {
+                    Name = "Negotiation 1",
+                    BookingRequestID = bookingRequestID,
+                    Attendees = new List<string>() { uow.BookingRequestRepository.GetByKey(bookingRequestID).User.EmailAddress.Address },
+                    Questions = new List<NegotiationQuestionVM>
+                    { new NegotiationQuestionVM
+                        {
+                            AnswerType = "Text"
+                        }
+                    }
+                });
+            }
         }
 
         [HttpPost]
