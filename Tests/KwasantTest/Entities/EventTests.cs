@@ -53,7 +53,7 @@ namespace KwasantTest.Entities
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _event.Process(uow, eventDO, eventDO.Attendees, new List<AttendeeDO>());
+                _event.InviteAttendees(uow, eventDO, eventDO.Attendees, new List<AttendeeDO>());
                 uow.SaveChanges();
             }
 

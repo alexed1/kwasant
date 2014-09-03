@@ -117,7 +117,7 @@ namespace KwasantTest.Managers
 
             // VERIFY
             Assert.AreEqual(1, _remoteCalendarEvents.Count, "One event must be in the remote storage after synchronization.");
-            var newEvent = Event.CreateEventFromICSCalendar(_remoteCalendarEvents[0]);
+            var newEvent = Event.CreateEventFromICSCalendar(_uow, _remoteCalendarEvents[0]);
             AssertEventsAreEqual(curEvent, newEvent);
         }
 
@@ -181,7 +181,7 @@ namespace KwasantTest.Managers
             Assert.AreEqual(1, localEvents.Length, "One event must be in the repository after synchronization.");
             Assert.AreEqual(1, _remoteCalendarEvents.Count, "One event must be in the remote storage after synchronization.");
             var newLocalEvent = localEvents[0];
-            var newRemoteEvent = Event.CreateEventFromICSCalendar(_remoteCalendarEvents[0]);
+            var newRemoteEvent = Event.CreateEventFromICSCalendar(_uow, _remoteCalendarEvents[0]);
             AssertEventsAreEqual(newLocalEvent, newRemoteEvent);
             AssertEventsAreEqual(curRemoteEvent, newRemoteEvent);
         }

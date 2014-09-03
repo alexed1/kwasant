@@ -103,11 +103,13 @@
     <Compile Include="Controllers\BookingRequestControllerTests.cs" />
     <Compile Include="Controllers\CalendarControllerTests.cs" />
     <Compile Include="Controllers\EventControllerTests.cs" />
+    <Compile Include="Controllers\NegotiationControllerTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="Daemons\InboundEmailTests.cs" />
     <Compile Include="Daemons\ThroughputMonitorTests.cs" />
     <Compile Include="Daemons\OperationsMonitorTests.cs" />
     <Compile Include="Daemons\OutboundEmailTests.cs" />
+    <Compile Include="Entities\EmailAddressTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="Fixtures\FixtureData - Attendee.cs" />
     <Compile Include="Fixtures\FixtureData - BookingRequest.cs" />

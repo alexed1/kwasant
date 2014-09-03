@@ -63,7 +63,7 @@ namespace KwasantCore.Services
             return curEventDO;
         }
 
-        public void Process(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, List<AttendeeDO> existingAttendees)
+        public void InviteAttendees(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, List<AttendeeDO> existingAttendees)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -83,7 +83,7 @@ namespace KwasantCore.Services
         //takes submitted form data and updates as necessary
         //in general, the new event data will simply overwrite the old data. 
         //in some cases, additional work is necessary to handle the changes
-        public void Process(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, List<AttendeeDO> updatedAttendees)
+        public void InviteAttendees(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, List<AttendeeDO> updatedAttendees)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -99,7 +99,7 @@ namespace KwasantCore.Services
             eventDO = Update(uow, eventDO, updatedEventInfo, updatedAttendees, out newAttendees, out existingAttendees);
             if (eventDO != null)
             {
-                Process(uow, eventDO, newAttendees, existingAttendees);
+                InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
             }
         }
      
@@ -215,7 +215,7 @@ namespace KwasantCore.Services
                     Role = "REQ-PARTICIPANT",
                     ParticipationStatus = ParticipationStatus.NeedsAction,
                     RSVP = true,
-                    Value = new Uri("mailto:" + attendee.EmailAddress),
+                    Value = new Uri("mailto:" + attendee.EmailAddress.Address),
                 });
                 attendee.Event = eventDO;
             }
@@ -228,7 +228,7 @@ namespace KwasantCore.Services
             return ddayCalendar;
         }
 
-        public static EventDO CreateEventFromICSCalendar(iCalendar iCalendar)
+        public static EventDO CreateEventFromICSCalendar(IUnitOfWork uow, iCalendar iCalendar)
         {
             if (iCalendar.Events.Count == 0)
                 throw new ArgumentException("iCalendar has no events.");
@@ -249,7 +249,7 @@ namespace KwasantCore.Services
                 Attendees = icsEvent.Attendees
                     .Select(a => new AttendeeDO()
                     {
-                        EmailAddress = new EmailAddressDO(a.Value.OriginalString.Remove(0, a.Value.Scheme.Length + 1)),
+                        EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(a.Value.OriginalString.Remove(0, a.Value.Scheme.Length + 1)),
                         Name = a.CommonName
                     })
                     .ToList(),

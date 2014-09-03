@@ -65,7 +65,7 @@
             returnNeg.Id = initValues.Id,
             returnNeg.BookingRequestID = initValues.BookingRequestID,
             returnNeg.Name = nodes.Name.val();
-            returnNeg.Attendees = nodes.Attendees.val();
+            returnNeg.Attendees = nodes.Attendees.val().split(',');
             returnNeg.Questions = [];
             
             for (var q = 0; q < nodes.Questions.length; q++) {

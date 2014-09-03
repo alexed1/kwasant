@@ -225,7 +225,7 @@ namespace KwasantWeb.Controllers
                 if (curEventDO == null)
                     throw new EntityNotFoundException<EventDO>();
                 List<AttendeeDO> updatedAttendeeList = _attendee.ConvertFromString(uow, curEventVM.Attendees);
-                _event.Process(uow, curEventDO, updatedEventInfo, updatedAttendeeList);
+                _event.InviteAttendees(uow, curEventDO, updatedEventInfo, updatedAttendeeList);
 
                 if (mergeEvents)
                     MergeTimeSlots(uow, curEventDO);

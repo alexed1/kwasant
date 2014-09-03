@@ -21,6 +21,17 @@ namespace KwasantTest.Entities
             _fixture = new FixtureData();
         }
 
+        [Test, ExpectedException(ExpectedMessage = "Duplicate values for 'EmailAddressID' on 'UserDO' are not allowed. Duplicated value: '1'")]
+        public void TestDuplicateUserEmailIDRejected()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.UserRepository.Add(new UserDO() { EmailAddressID = 1});
+                uow.UserRepository.Add(new UserDO() { EmailAddressID = 1 });
+                uow.SaveChanges();
+            }
+        }
+
         [Test]
         [Category("User")]
         public void CanAddUser()
