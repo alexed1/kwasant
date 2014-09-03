@@ -5,10 +5,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
+using Utilities;
 
 namespace Data.Infrastructure.StructureMap
 {
@@ -17,6 +19,23 @@ namespace Data.Infrastructure.StructureMap
         public MockedDBContext()
         {
             MigrationConfiguration.Seed(new UnitOfWork(this));
+
+            SetUnique<EmailAddressDO, String>(ea => ea.Address);
+            SetUnique<UserDO, int>(u => u.EmailAddressID);
+        }
+
+        private readonly Dictionary<Type, List<String>> m_UniqueProperties = new Dictionary<Type, List<String>>();
+        private void SetUnique<TOnType, TReturnType>(Expression<Func<TOnType, TReturnType>> expression)
+        {
+            var reflectionHelper = new ReflectionHelper<TOnType>();
+            var propName = reflectionHelper.GetPropertyName(expression);
+            lock (m_UniqueProperties)
+            {
+                if (!m_UniqueProperties.ContainsKey(typeof (TOnType)))
+                    m_UniqueProperties[typeof(TOnType)] = new List<String>();
+                
+                m_UniqueProperties[typeof(TOnType)].Add(propName);
+            }
         }
 
         private readonly Dictionary<Type, IEnumerable<object>> _cachedSets = new Dictionary<Type, IEnumerable<object>>();
@@ -90,6 +109,32 @@ namespace Data.Infrastructure.StructureMap
                     }
                 }
             }
+
+            lock (m_UniqueProperties)
+            {
+                foreach (var kvp in m_UniqueProperties)
+                {
+                    var set = Set(kvp.Key);
+
+                    foreach (var uniqueProperty in kvp.Value)
+                    {
+                        var propName = uniqueProperty;
+                        var param = Expression.Parameter(kvp.Key);
+                        var propExpr = Expression.Property(param, propName);
+                        var fullExpr = Expression.Lambda(propExpr, param);
+                        var compiled = fullExpr.Compile();
+
+                        var hashSet = new HashSet<dynamic>();
+                        foreach (var row in set)
+                        {
+                            var value = compiled.DynamicInvoke(row);
+                            if (hashSet.Contains(value))
+                                throw new Exception(String.Format("Duplicate values for '{0}' on '{1}' are not allowed. Duplicated value: '{2}'", propName, kvp.Key.Name, value));
+                            hashSet.Add(value);
+                        }
+                    }
+                }
+            }
         }
 
         private IEnumerable<object> GetAdds()
@@ -111,18 +156,6 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
-/*
-        public List<KwasantDbContext.PropertyChangeInformation> GetEntityModifications<T>(T entity) where T : class
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<KwasantDbContext.EntityChangeInformation> GetModifiedEntities()
-        {
-            throw new NotImplementedException();
-        }
-
-*/
         private void AssignIDs()
         {
             foreach (var set in _cachedSets)
