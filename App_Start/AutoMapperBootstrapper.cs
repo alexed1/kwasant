@@ -4,7 +4,6 @@ using System.Linq;
 using AutoMapper;
 using Data.Entities;
 using KwasantWeb.ViewModels;
-using ViewModel.Models;
 
 namespace KwasantWeb.App_Start
 {
@@ -53,6 +52,15 @@ namespace KwasantWeb.App_Start
                                          AccessGranted = tuple.Item1.IsRemoteCalendarAccessGranted(p.Name)
                                      })));
 
+            Mapper.CreateMap<EventDO, BR_RelatedItems>()
+                .ForMember(ri => ri.id, opts => opts.ResolveUsing(e => e.Id))
+                .ForMember(ri => ri.Type, opts => opts.UseValue("Event"))
+                .ForMember(ri => ri.Date, opts => opts.ResolveUsing(e => e.StartDate.ToString("M-d-yy hh:mm tt")));
+
+            Mapper.CreateMap<InvitationResponseDO, BR_RelatedItems>()
+                .ForMember(ri => ri.id, opts => opts.ResolveUsing(e => e.Id))
+                .ForMember(ri => ri.Type, opts => opts.UseValue("Invitation Response"))
+                .ForMember(ri => ri.Date, opts => opts.ResolveUsing(e => e.DateReceived.ToString("M-d-yy hh:mm tt")));
         }
     }
 }

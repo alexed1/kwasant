@@ -127,17 +127,6 @@ namespace KwasantCore.Services
             return null;
         }
 
-
-        public List<BR_RelatedItems> GetRelatedEvents(IUnitOfWork uow, int bookingRequestId)
-        {
-            return uow.EventRepository.GetAll().Where(e => e.BookingRequestID == bookingRequestId).Select(e => new BR_RelatedItems
-                  {
-                      id = e.Id,
-                      Type = "Event",
-                      Date = e.StartDate.ToString("M-d-yy hh:mm tt")
-                  }).ToList();
-        }
-
         public void Timeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
         {
             string bookerId = bookingRequestDO.BookerId;
@@ -164,12 +153,5 @@ namespace KwasantCore.Services
 
 
     }
-    public struct BR_RelatedItems
-    {
-        public int id { get; set; }
-        public string Date { get; set; }
-        public string Type { get; set; }
-    }
-
 
 }
