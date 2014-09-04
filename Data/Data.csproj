@@ -98,7 +98,9 @@
   <ItemGroup>
     <Compile Include="Authentication\Account.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
+    <Compile Include="Entities\InvitationResponseDO.cs" />
     <Compile Include="Entities\QuestionResponseDO.cs" />
+    <Compile Include="Interfaces\IInvitationResponse.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.Designer.cs">
       <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
@@ -163,6 +165,12 @@
     <Compile Include="Migrations\201408201056135_ChangeEmailAddressMaxLength.Designer.cs">
       <DependentUpon>201408201056135_ChangeEmailAddressMaxLength.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409021308504_AddInvitationResponse.cs" />
+    <Compile Include="Migrations\201409021308504_AddInvitationResponse.Designer.cs">
+      <DependentUpon>201409021308504_AddInvitationResponse.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\KwasantDbMigration.cs" />
+    <Compile Include="Repositories\InvitationResponseRepository.cs" />
     <Compile Include="Repositories\InvitationRepository.cs" />
     <Compile Include="Migrations\201408210907370_ImplementResponses.cs" />
     <Compile Include="Migrations\201408210907370_ImplementResponses.Designer.cs">
@@ -224,6 +232,7 @@
     <Compile Include="States\EventState.cs" />
     <Compile Include="States\EventSyncState.cs" />
     <Compile Include="States\InvitationType.cs" />
+    <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\Templates\_AnswerStatusTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
@@ -242,6 +251,7 @@
     <Compile Include="States\Templates\_EventCreateTypeTemplate.cs" />
     <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
     <Compile Include="States\Templates\_NegotiationStateTemplate.cs" />
+    <Compile Include="States\Templates\_ParticipationStatusTemplate.cs" />
     <Compile Include="States\Templates\_QuestionStatusTemplate.cs" />
     <Compile Include="States\Templates\_TrackingStatusTemplate.cs" />
     <Compile Include="States\Templates\_EventStatusTemplate.cs" />
@@ -879,6 +889,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408301723490_LinkCalendarsToAnswerInstead.resx">
       <DependentUpon>201408301723490_LinkCalendarsToAnswerInstead.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409021308504_AddInvitationResponse.resx">
+      <DependentUpon>201409021308504_AddInvitationResponse.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

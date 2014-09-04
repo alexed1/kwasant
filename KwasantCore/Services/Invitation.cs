@@ -48,6 +48,7 @@ namespace KwasantCore.Services
 
             string fromEmail = _configRepository.Get("fromEmail");
             string fromName = _configRepository.Get("fromName");
+            string replyToEmail = _configRepository.Get("replyToEmail");
 
             var emailAddressRepository = uow.EmailAddressRepository;
             if (curEvent.Attendees == null)
@@ -60,6 +61,9 @@ namespace KwasantCore.Services
             var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
             fromEmailAddr.Name = fromName;
             curInvitation.From = fromEmailAddr;
+
+            var replyToAddress = emailAddressRepository.GetOrCreateEmailAddress(replyToEmail);
+            curInvitation.ReplyTo = replyToAddress;
 
             var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(curAttendee.EmailAddress.Address);
             toEmailAddress.Name = curAttendee.Name;

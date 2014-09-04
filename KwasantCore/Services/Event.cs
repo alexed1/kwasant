@@ -12,6 +12,7 @@ using Utilities;
 using StructureMap;
 using IEvent = Data.Interfaces.IEvent;
 using AutoMapper;
+using ParticipationStatus = KwasantICS.DDay.iCal.ParticipationStatus;
 
 namespace KwasantCore.Services
 {

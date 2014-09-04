@@ -62,13 +62,17 @@ namespace Data.Entities
             }
         }
 
+        [ForeignKey("ReplyTo")]
+        public int? ReplyToID { get; set; }
+        public virtual EmailAddressDO ReplyTo { get; set; }
+
         public EmailDO()
         {
             Recipients = new List<RecipientDO>();
             Attachments = new List<AttachmentDO>();
             Events = new List<EventDO>();
-            DateCreated = DateTime.UtcNow;
-            DateReceived = DateTime.UtcNow;
+            DateCreated = DateTimeOffset.UtcNow;
+            DateReceived = DateTimeOffset.UtcNow;
         }
 
         public void AddEmailRecipient(int type, EmailAddressDO emailAddress)

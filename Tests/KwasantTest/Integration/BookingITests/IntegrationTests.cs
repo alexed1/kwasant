@@ -69,9 +69,7 @@ namespace KwasantTest.Integration.BookingITests
             string targetAddress = testEmail.To.First().Address;
             string targetPassword = "thorium65";
             ImapClient client = new ImapClient("imap.gmail.com", 993, targetAddress, targetPassword, AuthMethod.Login, true);
-            InboundEmail inboundDaemon = new InboundEmail();
-            inboundDaemon.username = targetAddress;
-            inboundDaemon.password = targetPassword;
+            InboundEmail inboundDaemon = new InboundEmail(ObjectFactory.GetInstance<IConfigRepository>(), client);
 
             //need to add user to pass OutboundEmail validation.
             _uow.UserRepository.Add(_fixture.TestUser3());
@@ -93,7 +91,7 @@ namespace KwasantTest.Integration.BookingITests
 
 
 
-                foundBookingRequest = PollForBookingRequest(testEmail, client, inboundDaemon);
+                foundBookingRequest = PollForBookingRequest(testEmail, inboundDaemon);
                 if (foundBookingRequest != null)
                 {
                     Console.WriteLine("Booking Request detected in intake");
@@ -121,11 +119,11 @@ namespace KwasantTest.Integration.BookingITests
         
         }
 
-        public BookingRequestDO PollForBookingRequest(EmailDO targetCriteria, ImapClient client, InboundEmail inboundDaemon)
+        public BookingRequestDO PollForBookingRequest(EmailDO targetCriteria, InboundEmail inboundDaemon)
         {
             PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindBookingRequest;
 
-            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "intake", client, inboundDaemon);
+            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "intake", null, inboundDaemon);
             BookingRequestDO foundBookingRequest = (BookingRequestDO)queryResults.FirstOrDefault();
             return foundBookingRequest;
         }

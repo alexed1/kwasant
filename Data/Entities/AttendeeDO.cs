@@ -1,7 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Interfaces;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -23,5 +25,9 @@ namespace Data.Entities
         [ForeignKey("Negotiation")]
         public int? NegotiationID { get; set; }
         public virtual NegotiationDO Negotiation { get; set; }
+
+        [ForeignKey("ParticipationStatusTemplate"), DefaultValue(0)]
+        public int ParticipationStatus { get; set; }
+        public _ParticipationStatusTemplate ParticipationStatusTemplate { get; set; }
     }
 }
