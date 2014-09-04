@@ -139,7 +139,7 @@ END:VCALENDAR",
               KwasantICS.DDay.iCal.ParticipationStatus.Accepted, curAttendee.EmailAddress.Address, curEvent.ExternalGUID);
 
             var attachmentStream = new MemoryStream(Encoding.UTF8.GetBytes(testInvitationResponseIcs));
-            _mailMessage.AlternateViews.Add(new AlternateView(attachmentStream, "application/ics"));
+            _mailMessage.AlternateViews.Add(new AlternateView(attachmentStream, "text/calendar"));
             _mailMessage.From = new MailAddress(curAttendee.EmailAddress.Address);
             
             var ie = new InboundEmail(ObjectFactory.GetInstance<IConfigRepository>(), _client);

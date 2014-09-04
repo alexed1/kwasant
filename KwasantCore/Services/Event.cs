@@ -84,7 +84,7 @@ namespace KwasantCore.Services
         //takes submitted form data and updates as necessary
         //in general, the new event data will simply overwrite the old data. 
         //in some cases, additional work is necessary to handle the changes
-        public void Process(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, List<AttendeeDO> updatedAttendees)
+        public void Process(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -92,12 +92,10 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("eventDO");
             if (updatedEventInfo == null)
                 throw new ArgumentNullException("updatedEventInfo");
-            if (updatedAttendees == null)
-                throw new ArgumentNullException("updatedAttendees");
 
             List<AttendeeDO> newAttendees; 
             List<AttendeeDO> existingAttendees;
-            eventDO = Update(uow, eventDO, updatedEventInfo, updatedAttendees, out newAttendees, out existingAttendees);
+            eventDO = Update(uow, eventDO, updatedEventInfo, out newAttendees, out existingAttendees);
             if (eventDO != null)
             {
                 Process(uow, eventDO, newAttendees, existingAttendees);
@@ -132,16 +130,16 @@ namespace KwasantCore.Services
             return invitations;
         }
 
-        private EventDO Update(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, List<AttendeeDO> updatedAttendees, out List<AttendeeDO> newAttendees, out List<AttendeeDO> existingAttendees)
+        private EventDO Update(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, out List<AttendeeDO> newAttendees, out List<AttendeeDO> existingAttendees)
         {
-            newAttendees = UpdateAttendees(uow, eventDO, updatedAttendees);
+            newAttendees = UpdateAttendees(uow, eventDO, updatedEventInfo.Attendees);
             if (newAttendees != null)
             {
-                existingAttendees = updatedAttendees.Except(newAttendees).ToList();
+                existingAttendees = updatedEventInfo.Attendees.Except(newAttendees).ToList();
             }
             else
             {
-                existingAttendees = updatedAttendees.ToList();
+                existingAttendees = updatedEventInfo.Attendees.ToList();
             }
             eventDO = _mappingEngine.Map(updatedEventInfo, eventDO);
             if (newAttendees != null || uow.IsEntityModified(eventDO))
@@ -160,10 +158,14 @@ namespace KwasantCore.Services
 
             var attendeesToDelete = eventDO.Attendees.Where(attendee => !updatedAttendeeList.Select(a => a.EmailAddress.Address).Contains(attendee.EmailAddress.Address)).ToList();
             foreach (var attendeeToDelete in attendeesToDelete)
+            {
+                eventDO.Attendees.Remove(attendeeToDelete);
                 uow.AttendeeRepository.Remove(attendeeToDelete);
+            }
 
             foreach (var attendee in updatedAttendeeList.Where(att => !eventDO.Attendees.Select(a => a.EmailAddress.Address).Contains(att.EmailAddress.Address)))
             {
+                eventDO.Attendees.Add(attendee);
                 newAttendees.Add(attendee);
             }
             return newAttendees.Any() ? newAttendees : null;
@@ -216,7 +218,7 @@ namespace KwasantCore.Services
                     Role = "REQ-PARTICIPANT",
                     ParticipationStatus = ParticipationStatus.NeedsAction,
                     RSVP = true,
-                    Value = new Uri("mailto:" + attendee.EmailAddress),
+                    Value = new Uri("mailto:" + attendee.EmailAddress.Address),
                 });
                 attendee.Event = eventDO;
             }

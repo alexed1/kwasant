@@ -98,7 +98,16 @@ namespace Daemons
             }
             
             Logger.GetLogger().Info(GetType().Name + " - Querying inbound accounts...");
-            var messageInfos = _clients.AsParallel().SelectMany(GetMessageInfos).ToArray();
+            InboundEmailMessageInfo[] messageInfos;
+            try
+            {
+                messageInfos = _clients.SelectMany(GetMessageInfos).ToArray();
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error("Error occured on querying... restarting.", ex);
+                return;
+            }
 
             string logString;
 
@@ -135,7 +144,7 @@ namespace Daemons
         private bool IsInvitationResponse(InboundEmailMessageInfo messageInfo)
         {
             var attachedCalendar = messageInfo.Message.AlternateViews
-                .FirstOrDefault(av => string.Equals(av.ContentType.MediaType, "application/ics", StringComparison.Ordinal));
+                .FirstOrDefault(av => string.Equals(av.ContentType.MediaType, "text/calendar", StringComparison.Ordinal));
             if (attachedCalendar != null)
             {
                 string content;

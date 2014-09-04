@@ -17,7 +17,7 @@ namespace KwasantCore.Services
         public void Process(IUnitOfWork uow, InvitationResponseDO curInvitationResponse)
         {
             var icsAttachment = curInvitationResponse.Attachments
-                .FirstOrDefault(a => string.Equals(a.Type, "application/ics", StringComparison.Ordinal));
+                .FirstOrDefault(a => string.Equals(a.Type, "text/calendar", StringComparison.Ordinal));
             if (icsAttachment == null)
                 throw new ArgumentException("Invitation response doesn't contain ics attachments.", "curInvitationResponse");
             iCalendarSerializer serializer = new iCalendarSerializer();
