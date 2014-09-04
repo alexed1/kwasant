@@ -618,6 +618,20 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
 	text-decoration: none;
 }
 
+/*Login section*/
+
+.login-section {
+    margin: 0 auto;
+    float: none;    
+}
+
+/*Registration section*/
+
+.registration-section {
+    margin: 0 auto;
+    float: none;    
+}
+
 
 /*Login forms*/
 

@@ -6,22 +6,26 @@ namespace KwasantTest.Fixtures
     {
         public UserDO TestUser1()
         {
+            var curEmailAddressDO = TestEmailAddress1();
             return new UserDO()
             {       
                 Id = "1",
                 FirstName = "Jack",
                 LastName = "Maginot",
-                EmailAddress = TestEmailAddress1() //note that some tests have Attendees that assume this won't change
+                EmailAddressID = curEmailAddressDO.Id,
+                EmailAddress = curEmailAddressDO //note that some tests have Attendees that assume this won't change
             };
         }
 
         public UserDO TestUser2()
         {
+            var curEmailAddressDO = TestEmailAddress5();
             return new UserDO()
             {
                 FirstName = "Rob",
                 LastName = "Maginot",
-                EmailAddress = TestEmailAddress5()
+                EmailAddressID = curEmailAddressDO.Id,
+                EmailAddress = curEmailAddressDO
             };
         }
 

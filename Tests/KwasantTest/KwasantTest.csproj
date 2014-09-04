@@ -109,6 +109,7 @@
     <Compile Include="Daemons\ThroughputMonitorTests.cs" />
     <Compile Include="Daemons\OperationsMonitorTests.cs" />
     <Compile Include="Daemons\OutboundEmailTests.cs" />
+    <Compile Include="Entities\EmailAddressTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="Fixtures\FixtureData - Attendee.cs" />
     <Compile Include="Fixtures\FixtureData - BookingRequest.cs" />

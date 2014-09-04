@@ -5,6 +5,7 @@ using DayPilot.Web.Mvc.Enums;
 using DayPilot.Web.Mvc.Events.Month;
 using DayPilot.Web.Mvc.Events.Common;
 using KwasantWeb.Controllers.External.DayPilot.Providers;
+using Utilities;
 
 namespace KwasantWeb.Controllers.External.DayPilot
 {
@@ -58,11 +59,12 @@ namespace KwasantWeb.Controllers.External.DayPilot
                 return;
             }
 
-            DataStartField = GetPropertyName(ev => ev.StartDate);
-            DataEndField = GetPropertyName(ev => ev.EndDate);
-            DataTextField = GetPropertyName(ev => ev.Text);
-            DataIdField = GetPropertyName(ev => ev.Id);
-            DataTagFields = GetPropertyName(ev => ev.Tag);
+            var reflectionHelper = new ReflectionHelper<DayPilotTimeslotInfo>();
+            DataStartField = reflectionHelper.GetPropertyName(ev => ev.StartDate);
+            DataEndField = reflectionHelper.GetPropertyName(ev => ev.EndDate);
+            DataTextField = reflectionHelper.GetPropertyName(ev => ev.Text);
+            DataIdField = reflectionHelper.GetPropertyName(ev => ev.Id);
+            DataTagFields = reflectionHelper.GetPropertyName(ev => ev.Tag);
 
             Events = _provider.LoadData();
         }
@@ -71,16 +73,6 @@ namespace KwasantWeb.Controllers.External.DayPilot
         {
             _provider.BeforeCellRender(e);
             base.OnBeforeEventRender(e);
-        }
-
-        //This creates a statically typed reference to our supplied property. If we change it in the future, it won't compile (so it won't break at runtime).
-        //Changing the property with tools like resharper will automatically update here.
-        private string GetPropertyName<T>(Expression<Func<DayPilotTimeslotInfo, T>> expression)
-        {
-            if (expression.Body.NodeType == ExpressionType.MemberAccess)
-                return (expression.Body as dynamic).Member.Name;
-
-            throw new Exception("Cannot contain complex expressions. An example of a supported expression is 'ev => ev.Id'");
         }
 
     }

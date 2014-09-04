@@ -102,10 +102,11 @@ namespace KwasantCore.Services
                     }
                     else
                     {
-                        if (userDO.EmailConfirmed)
-                        {
-                            curLoginStatus = await Login(uow, username, password, isPersistent);
-                        }
+                        //if (userDO.EmailConfirmed)
+                        //{
+                        //    curLoginStatus = await Login(uow, username, password, isPersistent);
+                        //}
+                        curLoginStatus = await Login(uow, username, password, isPersistent);
                     }
                 }
                 else

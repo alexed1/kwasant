@@ -127,7 +127,6 @@ namespace KwasantTest.Utilities
                     }
 
                     queryResults = injectedQuery(targetCriteria, unreadMessages).ToList();
-                    //Console.WriteLine(String.Format("queryResults count is {0}", queryResults.Count()));
                 } while (queryResults.Count == 0 && !timer.TimedOut);
             }
             return queryResults;
@@ -158,7 +157,6 @@ namespace KwasantTest.Utilities
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Error on converting MailMessage to EmailDO: {0}.", ex.Message);
                     client.AddMessageFlags(messageInfo.Uid, messageInfo.Mailbox, MessageFlag.Seen);
                 }
             }

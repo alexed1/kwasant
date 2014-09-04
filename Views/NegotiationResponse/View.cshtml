@@ -54,12 +54,10 @@
                         @:currentAnswer = {};
                         @:currentAnswer.Id = @answer.Id
                         @:currentAnswer.Selected = @Html.Raw(answer.Selected ? "true" : "false");
-                        if (question.AnswerType == "Text")
-                        {
-                            @:currentAnswer.Text = '@answer.Text';
-                        }
                         
-                        @:currentAnswer.EventID = @answer.EventID
+                        @:currentAnswer.Text = '@answer.Text';
+                        
+                        @:currentAnswer.EventID = @Html.Raw(answer.EventID.HasValue? answer.EventID.Value.ToString() : "null");
                         if (answer.EventStartDate.HasValue)
                         {
                             @:currentAnswer.EventStart = new Date(@answer.EventStartDate.Value.Year, (@answer.EventStartDate.Value.Month - 1), @answer.EventStartDate.Value.Day, @answer.EventStartDate.Value.Hour, @answer.EventStartDate.Value.Minute, @answer.EventStartDate.Value.Millisecond)
