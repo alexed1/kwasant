@@ -206,7 +206,10 @@
         if (questionInitValues.Answers !== null && questionInitValues.Answers !== undefined) {
             for (var i = 0; i < questionInitValues.Answers.length; i++) {
                 var answerValues = questionInitValues.Answers[i];
-                questionObject.addAnswer(answerValues, true);
+                if (!answerValues.EventID)
+                    questionObject.addTextAnswer(answerValues, true);
+                else 
+                    questionObject.addAnswer(answerValues, true);
             }
         }
 
@@ -347,7 +350,6 @@
                     selectEventWindowsButton.show();
                 }
                 
-                addAnswerSpan.hide();
             } else {
                 selectEventWindowsButton.hide();
                 
@@ -371,7 +373,7 @@
             .addClass('handIcon')
             .click(function () {
                 numAnswersAdded++;
-                questionObject.addAnswer();
+                questionObject.addTextAnswer();
             })
             .append(
                 $('<img src="/Content/img/plus.png" />')
@@ -483,6 +485,13 @@
 
         var numAnswersAdded = 0;
 
+        questionObject.addTextAnswer = function (initialValues, immediate) {
+            if (!initialValues)
+                initialValues = {};
+            initialValues.ForceTextAnswer = true;
+            this.addAnswer(initialValues, immediate);
+        };
+
         questionObject.addAnswer = function (initialValues, immediate) {
             if (immediate === undefined)
                 immediate = false;
@@ -502,8 +511,7 @@
             }, initialValues);
 
             var answerObject;
-            if (this.getQuestionType() == 'Timeslot') {
-
+            if (!initialValues.ForceTextAnswer && this.getQuestionType() == 'Timeslot') {
                 answerObject = createCalendarAnswerObject(this, answerInitValues);
             } else {
                 answerObject = createTextAnswerObject(this, answerInitValues);
