@@ -290,6 +290,7 @@
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="KwasantHandleErrorAttribute.cs" />
+    <Compile Include="ViewModels\BR_RelatedItems.cs" />
     <Compile Include="ViewModels\CalendarVM.cs" />
     <Compile Include="ViewModels\EventVM.cs" />
     <Compile Include="ViewModels\MyAccountVM.cs" />
