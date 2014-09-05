@@ -77,15 +77,28 @@
             var spinner = Kwasant.IFrame.DisplaySpinner();
 
             var negotiation = widget.getValues();
-        
-            //Do checks here.
+
             var validationErrors = [];
+            
+            if(negotiation.Questions.length == 0){
+                validationErrors.push('Negotiation should have atleast one question');
+            }
+
             $.each(negotiation.Questions, function(index, obj) {
                 if (obj.Text === undefined ||
                     obj.Text === null ||
                     obj.Text === '') {
                     validationErrors.push('Please provide text for every question.');
                 }
+                $.each(obj.Answers, function(index, objAnswer) {
+                    if(obj.AnswerType != "Timeslot"){
+                        if (objAnswer.Text === undefined ||
+                        objAnswer.Text === null ||
+                        objAnswer.Text === '') {
+                            validationErrors.push('Please provide text for every answer.');
+                        }
+                    }
+                });
             });
         
             if (validationErrors.length > 0) {
