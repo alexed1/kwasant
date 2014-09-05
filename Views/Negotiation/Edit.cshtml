@@ -33,7 +33,7 @@
                 {
                     @:currentQuestion = {};
                     @:currentQuestion.Id = @question.Id
-                    @:currentQuestion.Text = '@question.Text';
+                    @:currentQuestion.Text = '@Html.Raw(HttpUtility.JavaScriptStringEncode(question.Text))';
                     @:currentQuestion.Type = '@question.AnswerType';
                     @:currentQuestion.CalendarID = @Html.Raw(question.CalendarID == null ? "null" : question.CalendarID.ToString());
                     @:answers = [];
@@ -42,7 +42,7 @@
                         @:currentAnswer = {};
                         @:currentAnswer.Id = @answer.Id
                         
-                        @:currentAnswer.Text = '@answer.Text';
+                        @:currentAnswer.Text = '@Html.Raw(HttpUtility.JavaScriptStringEncode(answer.Text))';
                         
                         @:currentAnswer.EventID = @Html.Raw(answer.EventID.HasValue? answer.EventID.Value.ToString() : "null");
                         if (answer.EventStartDate.HasValue)
