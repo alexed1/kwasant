@@ -80,11 +80,11 @@ namespace KwasantWeb
             using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "";
-                incidentDO.SecondaryCategory = "";
+                incidentDO.PrimaryCategory = "Error";
+                incidentDO.SecondaryCategory = "UnhandledException";
                 incidentDO.CreateTime = DateTime.Now; ;
                 incidentDO.Notes = filterContext.Exception.Message;
-                incidentDO.Activity = "Error";
+                incidentDO.Activity = "Failure";
                 _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
             }
