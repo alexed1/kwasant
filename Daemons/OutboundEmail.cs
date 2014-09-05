@@ -80,6 +80,10 @@ namespace Daemons
                             errorCode, name, message, emailID));
 
                     emailToUpdate.EmailStatus = EmailState.SendCriticalError;
+                    AlertManager.ErrorEmailSendFailure();
+                    KwasantCore.Services.Email _email = new KwasantCore.Services.Email();
+                    _email.SendAlertEmail();
+
                     unitOfWork.SaveChanges();
                 });
 
@@ -139,6 +143,9 @@ namespace Daemons
                             errorCode, name, message, emailID));
 
                     emailToUpdate.EmailStatus = EmailState.SendCriticalError;
+                    AlertManager.ErrorEmailSendFailure();
+                    KwasantCore.Services.Email _email = new KwasantCore.Services.Email();
+                    _email.SendAlertEmail();
                     unitOfWork.SaveChanges();
                 });
             #endregion

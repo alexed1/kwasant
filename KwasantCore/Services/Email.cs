@@ -251,7 +251,41 @@ namespace KwasantCore.Services
                 HTMLText = message
             };
         }
-       
 
+        public EmailDO GenerateAlertEmailMessage(EmailAddressDO emailAddressDO, string message, string subject)
+        {
+            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+            emailAddressValidator.ValidateAndThrow(emailAddressDO);
+
+            return new EmailDO()
+            {
+                From = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress("info@kwasant.com")),
+                Recipients = new List<RecipientDO>()
+                                         {
+                                              new RecipientDO()
+                                                 {
+                                                     EmailAddress = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress("ops@kwasant.com")),
+                                                     EmailParticipantType = EmailParticipantType.To
+                                                 }
+                                         },
+                Subject = subject,
+                PlainText = message,
+                HTMLText = message
+            };
+        }
+
+        public void SendAlertEmail()
+        {
+            EmailAddressDO emailAddressDO = new EmailAddressDO("info@kwasant.com");
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Email email = new Email(uow);
+                string message = "Alert! Kwasant Error Reported: EmailSendFailure";
+                string subject = "Alert! Kwasant Error Reported: EmailSendFailure";
+                EmailDO emailDO = GenerateAlertEmailMessage(emailAddressDO, message, subject);
+                email.Send(emailDO);
+                uow.SaveChanges();
+            }
+        }
     }
 }
