@@ -127,6 +127,19 @@ namespace KwasantCore.Services
             return null;
         }
 
+        public IEnumerable<object> GetRelatedItems(IUnitOfWork uow, int bookingRequestId)
+        {
+            var events = uow.EventRepository
+                .GetAll()
+                .Where(e => e.BookingRequestID == bookingRequestId);
+            //removed clarification requests, as there is no longer a direct connection. we'll need to collect them for this json via negotiation objects
+            var invitationResponses = uow.InvitationResponseRepository
+                .GetAll()
+                .Where(e => e.Attendee != null && e.Attendee.Event != null &&
+                            e.Attendee.Event.BookingRequestID == bookingRequestId);
+            return Enumerable.Union<object>(events, invitationResponses);
+        }
+
         public void Timeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
         {
             string bookerId = bookingRequestDO.BookerId;

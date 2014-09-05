@@ -171,20 +171,10 @@ namespace KwasantWeb.Controllers
 
         public List<BR_RelatedItems> BuildRelatedItemsJSON(IUnitOfWork uow, int bookingRequestId, int start, int length)
         {
-            List<BR_RelatedItems> bR_RelatedItems = new List<BR_RelatedItems>();
-            var events = uow.EventRepository.GetAll()
-                .Where(e => e.BookingRequestID == bookingRequestId)
+            List<BR_RelatedItems> bR_RelatedItems = _br
+                .GetRelatedItems(uow, bookingRequestId)
                 .Select(AutoMapper.Mapper.Map<BR_RelatedItems>)
-                .ToArray();
-            //removed clarification requests, as there is no longer a direct connection. we'll need to collect them for this json via negotiation objects
-            bR_RelatedItems.AddRange(events);
-
-            var invitationResponses = uow.InvitationResponseRepository.GetAll()
-                .Where(e => e.Attendee != null && e.Attendee.Event != null && e.Attendee.Event.BookingRequestID == bookingRequestId)
-                .Select(AutoMapper.Mapper.Map<BR_RelatedItems>)
-                .ToArray();
-
-            bR_RelatedItems.AddRange(invitationResponses);
+                .ToList();
 
             recordcount = bR_RelatedItems.Count();
             return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();

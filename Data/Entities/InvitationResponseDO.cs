@@ -13,6 +13,6 @@ namespace Data.Entities
     {
         [ForeignKey("Attendee")]
         public int AttendeeId { get; set; }
-        public AttendeeDO Attendee { get; set; }
+        public virtual AttendeeDO Attendee { get; set; }
     }
 }
