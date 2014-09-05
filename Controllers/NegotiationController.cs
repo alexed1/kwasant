@@ -19,19 +19,21 @@ namespace KwasantWeb.Controllers
     {
         private IMappingEngine _mappingEngine;
         private BookingRequest _br;
-
+        private Booker _booker;
+        string _currBooker;
         public NegotiationController()
         {
             _mappingEngine = Mapper.Engine; // should be injected
             _br = new BookingRequest();
+            _booker = new Booker();
         }
 
         public ActionResult Edit(int negotiationID, int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string CurrentBooker = this.GetUserId();
-                string verifyOwnership = _br.IsBookerValid(uow, bookingRequestID, CurrentBooker);
+                _currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
                 if (verifyOwnership != "valid")
                     return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
                 else
@@ -41,18 +43,6 @@ namespace KwasantWeb.Controllers
                         throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
 
                     var model = _mappingEngine.Map<EditNegotiationVM>(negotiationDO);
-
-                    // NOTE: code below is to add BookerID in BookingRequest if Another booker will loging
-                    BookingRequestDO bookingRequestDO = null;
-                    bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
-                    if (bookingRequestDO.BookerID != this.GetUserId())
-                    {
-                        bookingRequestDO.BookerID = this.GetUserId();
-                        bookingRequestDO.User = bookingRequestDO.User;
-                        uow.SaveChanges();
-                        AlertManager.BookingRequestOwnershipChange(bookingRequestID, this.GetUserId());
-                    }
-
                     return View(model);
                 }
             }

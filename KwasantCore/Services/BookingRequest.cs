@@ -136,25 +136,8 @@ namespace KwasantCore.Services
                       Date = e.StartDate.ToString("M-d-yy hh:mm tt")
                   }).ToList();
         }
-
-        //VerifyOwnership
-        public string IsBookerValid(IUnitOfWork uow, int id, string CurrentBooker)
-        {
-
-            BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-            if (bookingRequestDO.BookerID != CurrentBooker)
-            {
-                if (bookingRequestDO.BookerID != null)
-                    return uow.UserRepository.GetByKey(bookingRequestDO.BookerID).FirstName;
-                else
-                    return "valid";
-            }
-            return "valid";
-
-        }
-
-
     }
+
     public struct BR_RelatedItems
     {
         public int id { get; set; }

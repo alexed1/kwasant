@@ -69,10 +69,10 @@
         }
     });
 
-    function ShowFailedOwnershipVerification(oldOwner, Id) {
-        if (confirm("This BookingRequest is Owned by Booker: " + oldOwner + " \n Take Ownership of This BookingRequest?")) {
+    function ShowFailedOwnershipVerification(bookingRequestOwner, Id) {
+        if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestOwner + " \n Take Ownership of This BookingRequest?")) {
             $.ajax({
-                url: "/BookingRequest/ChangeOwner",
+                url: "/BookingRequest/ProcessOwnerChange",
                 type: "GET",
                 data: { id: Id },
                 success: function (response) {
