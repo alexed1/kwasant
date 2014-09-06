@@ -180,8 +180,9 @@ namespace KwasantCore.Services
         {
             if (eventDO == null)
                 throw new ArgumentNullException("eventDO");
-            string fromEmail = ObjectFactory.GetInstance<IConfigRepository>().Get("fromEmail");
-            string fromName = ObjectFactory.GetInstance<IConfigRepository>().Get("fromName");
+            string fromEmail = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DelegateMode");
+            string fromName = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromName_DelegateMode");
+            fromName = String.Format(fromName, new Invitation(ObjectFactory.GetInstance<IConfigRepository>()).GetOriginatorName(eventDO));
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();
