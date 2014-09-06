@@ -52,7 +52,7 @@ namespace KwasantCore.Managers
                 // WARNING: 'user' parameter must not be used as reference in scope of this UnitOfWork as it is attached to another UnitOfWork
                 var curUser = uow.UserRepository.GetByKey(curUserId);
                 EmailDO curEmail = new EmailDO();
-                curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmailAddress("EmailFromAddress_DirectMode"), GetFromEmailAddress("EmailFromName_DirectMode"));
+                curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
                 curEmail.Subject = "Welcome to Kwasant";
                 Email _email = new Email(uow);
@@ -74,7 +74,7 @@ namespace KwasantCore.Managers
             foreach (var attendee in negotiationDO.Attendees)
             {
                 var emailDO = new EmailDO();
-                emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmailAddress("EmailFromAddress_DirectMode"), GetFromEmailAddress("EmailFromName_DirectMode"));
+                emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
                 //emailDO.Subject = "Regarding:" + negotiationDO.Name;
                 emailDO.Subject = "Need Your Response on " + negotiationDO.BookingRequest.User.FirstName + " "
@@ -263,15 +263,15 @@ namespace KwasantCore.Managers
         }
 
         //This is the default originator of outbound Kwasant emails
-        public static string GetFromEmailAddress(string mode)
-        {
-            string email = CloudConfigurationManager.GetSetting(mode);
-            if (email != null)
-            {
-                return email;
-            }
-            throw new ArgumentException("Missing value for" + "'" + mode + "'");
-        }
+        //public static string GetFromEmailAddress(string mode)
+        //{
+        //    string email = CloudConfigurationManager.GetSetting(mode);
+        //    if (email != null)
+        //    {
+        //        return email;
+        //    }
+        //    throw new ArgumentException("Missing value for" + "'" + mode + "'");
+        //}
 
         //public static string GetFromName(string mode)
         //{

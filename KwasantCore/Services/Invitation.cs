@@ -46,8 +46,17 @@ namespace KwasantCore.Services
             if (curEvent == null)
                 throw new ArgumentNullException("curEvent");
 
-            string fromEmail = _configRepository.Get("EmailFromAddress_DelegateMode");
-            string fromName = String.Format(_configRepository.Get("EmailFromName_DelegateMode"), GetOriginatorName(curEvent));
+            string fromEmail, fromName;
+            if (curAttendee.EmailAddress.Address == curEvent.BookingRequest.User.EmailAddress.Address)
+            {
+                fromEmail = _configRepository.Get("EmailFromAddress_DirectMode");
+                fromName = _configRepository.Get("EmailFromAddress_DirectMode");
+            }
+            else
+            {
+                fromEmail = _configRepository.Get("EmailFromAddress_DelegateMode");
+                fromName = String.Format(_configRepository.Get("EmailFromName_DelegateMode"), GetOriginatorName(curEvent));
+            }
 
             var emailAddressRepository = uow.EmailAddressRepository;
             if (curEvent.Attendees == null)
