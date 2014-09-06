@@ -9,6 +9,7 @@ using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
+using KwasantWeb.ViewModels.JsonConverters;
 using StructureMap;
 using System.Net.Mail;
 using System;
@@ -153,7 +154,7 @@ namespace KwasantWeb.Controllers
         [HttpGet]
         public ActionResult ShowRelatedItems(int bookingRequestId, int draw, int start, int length)
         {
-            List<BR_RelatedItems> obj = new List<BR_RelatedItems>();
+            List<RelatedItemShowVM> obj = new List<RelatedItemShowVM>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             { 
                 var jsonResult = Json(new
@@ -169,14 +170,14 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public List<BR_RelatedItems> BuildRelatedItemsJSON(IUnitOfWork uow, int bookingRequestId, int start, int length)
+        public List<RelatedItemShowVM> BuildRelatedItemsJSON(IUnitOfWork uow, int bookingRequestId, int start, int length)
         {
-            List<BR_RelatedItems> bR_RelatedItems = _br
+            List<RelatedItemShowVM> bR_RelatedItems = _br
                 .GetRelatedItems(uow, bookingRequestId)
-                .Select(AutoMapper.Mapper.Map<BR_RelatedItems>)
+                .Select(AutoMapper.Mapper.Map<RelatedItemShowVM>)
                 .ToList();
 
-            recordcount = bR_RelatedItems.Count();
+            recordcount = bR_RelatedItems.Count;
             return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();
         }
     }
