@@ -31,7 +31,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                String senderMailAddress = ConfigurationManager.AppSettings["fromEmail"];
+                String senderMailAddress = ConfigurationManager.AppSettings["EmailFromAddress_DirectMode"];
 
                 EmailDO emailDO = new EmailDO();
                 emailDO.AddEmailRecipient(EmailParticipantType.To, Email.GenerateEmailAddress(uow, new MailAddress(message.Destination)));
@@ -105,7 +105,8 @@ namespace KwasantWeb.Controllers
                     }
                     else
                     {
-                        return RedirectToAction("Index", "Home");
+                       // return RedirectToAction("Index", "Home");
+                        return View("RegistrationConfirmation");
                     }
                 }
             }

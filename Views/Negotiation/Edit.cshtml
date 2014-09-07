@@ -33,36 +33,27 @@
                 {
                     @:currentQuestion = {};
                     @:currentQuestion.Id = @question.Id
-                    @:currentQuestion.Text = '@question.Text';
+                    @:currentQuestion.Text = '@Html.Raw(HttpUtility.JavaScriptStringEncode(@question.Text))';
                     @:currentQuestion.Type = '@question.AnswerType';
+                    @:currentQuestion.CalendarID = @Html.Raw(question.CalendarID == null ? "null" : question.CalendarID.ToString());
                     @:answers = [];
                     foreach (var answer in question.Answers)
                     {
                         @:currentAnswer = {};
                         @:currentAnswer.Id = @answer.Id
-                        if (question.AnswerType == "Text")
+                        
+                        @:currentAnswer.Text = '@Html.Raw(HttpUtility.JavaScriptStringEncode(@answer.Text))';
+                        
+                        @:currentAnswer.EventID = @Html.Raw(answer.EventID.HasValue? answer.EventID.Value.ToString() : "null");
+                        if (answer.EventStartDate.HasValue)
                         {
-                            @:currentAnswer.Text = '@answer.Text';
+                            @:currentAnswer.EventStart = new Date(@answer.EventStartDate.Value.Year, (@answer.EventStartDate.Value.Month - 1), @answer.EventStartDate.Value.Day, @answer.EventStartDate.Value.Hour, @answer.EventStartDate.Value.Minute, @answer.EventStartDate.Value.Millisecond)
                         }
-                        if (question.AnswerType == "Timeslot")
+                        if (answer.EventEndDate.HasValue)
                         {
-                            @:calendarEvents = [];
-                            foreach (var calendarEvent in answer.CalendarEvents)
-                            {
-                                @:var startDate = new Date(@calendarEvent.StartDate.Year, (@calendarEvent.StartDate.Month - 1), @calendarEvent.StartDate.Day, @calendarEvent.StartDate.Hour, @calendarEvent.StartDate.Minute, @calendarEvent.StartDate.Millisecond)
-                                @:var endDate = new Date(@calendarEvent.EndDate.Year, (@calendarEvent.EndDate.Month - 1), @calendarEvent.EndDate.Day, @calendarEvent.EndDate.Hour, @calendarEvent.EndDate.Minute, @calendarEvent.EndDate.Millisecond)
-
-    					        @:calendarEvents.push({
-                                    @:  startDate: startDate,
-                                    @:  endDate: endDate
-                                @:});
-                            }
-                            @:currentAnswer.CalendarEvents = calendarEvents;
-                            @:currentAnswer.CalendarID = @answer.CalendarID;
-                            //Add event windows here... 
+                            @:currentAnswer.EventEnd = new Date(@answer.EventEndDate.Value.Year, (@answer.EventEndDate.Value.Month - 1), @answer.EventEndDate.Value.Day, @answer.EventEndDate.Value.Hour, @answer.EventEndDate.Value.Minute, @answer.EventEndDate.Value.Millisecond)
                         }
-                        @:currentAnswer.QuestionID = @question.Id;
-
+                
                         @:answers.push(currentAnswer);
                     }
                     @:currentQuestion.Answers = answers;
@@ -86,15 +77,28 @@
             var spinner = Kwasant.IFrame.DisplaySpinner();
 
             var negotiation = widget.getValues();
-        
-            //Do checks here.
+
             var validationErrors = [];
+            
+            if(negotiation.Questions.length == 0){
+                validationErrors.push('Negotiation should have atleast one question');
+            }
+
             $.each(negotiation.Questions, function(index, obj) {
                 if (obj.Text === undefined ||
                     obj.Text === null ||
                     obj.Text === '') {
                     validationErrors.push('Please provide text for every question.');
                 }
+                $.each(obj.Answers, function(index, objAnswer) {
+                    if(obj.AnswerType != "Timeslot"){
+                        if (objAnswer.Text === undefined ||
+                        objAnswer.Text === null ||
+                        objAnswer.Text === '') {
+                            validationErrors.push('Please provide text for every answer.');
+                        }
+                    }
+                });
             });
         
             if (validationErrors.length > 0) {

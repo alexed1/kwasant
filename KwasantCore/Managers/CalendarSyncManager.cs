@@ -208,7 +208,7 @@ namespace KwasantCore.Managers
             Func<EventDO, bool> eventPredictor = e => e.StartDate <= to && e.EndDate >= @from;
             var remoteEvents = await client.GetEventsAsync(calendarLink, @from, to);
             // filter out reccurring events
-            var incomingEvents = remoteEvents.Select(Event.CreateEventFromICSCalendar).Where(eventPredictor).ToArray();
+            var incomingEvents = remoteEvents.Select(cal => Event.CreateEventFromICSCalendar(uow, cal)).Where(eventPredictor).ToArray();
             var calendar = calendarLink.LocalCalendar;
             Debug.Assert(calendar != null, "No local calendar associated with this calendar link.");
             var owner = calendar.Owner;

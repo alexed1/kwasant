@@ -71,11 +71,12 @@ namespace KwasantCore.Services
 
                 uow.SaveChanges();
 
-                //if (newUserDO != null)
-                //{
-                //    AlertManager.CustomerCreated(newUserDO);
-                //}
-
+                if (newUserDO != null)
+                {
+                    //AlertManager.CustomerCreated(newUserDO);
+                    AlertManager.UserRegistration(newUserDO);
+                }
+               
                 return curRegStatus;
             }
         }
@@ -101,10 +102,11 @@ namespace KwasantCore.Services
                     }
                     else
                     {
-                        if (userDO.EmailConfirmed)
-                        {
-                            curLoginStatus = await Login(uow, username, password, isPersistent);
-                        }
+                        //if (userDO.EmailConfirmed)
+                        //{
+                        //    curLoginStatus = await Login(uow, username, password, isPersistent);
+                        //}
+                        curLoginStatus = await Login(uow, username, password, isPersistent);
                     }
                 }
                 else

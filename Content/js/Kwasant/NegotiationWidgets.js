@@ -36,7 +36,7 @@
         }, options);
 
         initValues = $.extend({
-            Id: 0,
+            Id: null,
             Name: 'Negotiation 1',
             Attendees: '',
         }, initialValues);
@@ -65,7 +65,7 @@
             returnNeg.Id = initValues.Id,
             returnNeg.BookingRequestID = initValues.BookingRequestID,
             returnNeg.Name = nodes.Name.val();
-            returnNeg.Attendees = nodes.Attendees.val();
+            returnNeg.Attendees = nodes.Attendees.val().split(',');
             returnNeg.Questions = [];
             
             for (var q = 0; q < nodes.Questions.length; q++) {
@@ -169,18 +169,27 @@
                 addQuestion(questionValues, true);
             }
         }
+        
+        if (settings.DisplayMode == 'reply') {
+            nameRow.hide();
+            attendeesRow.hide();
+        }
 
     }
     
     function addQuestion(initialValues, immediate) {
         if (immediate === undefined)
             immediate = false;
-        
+
+        if (initialValues === undefined || initialValues === null)
+            initialValues = {};
+
         var questionInitValues = $.extend({
             Id: 0,
+            CalendarID: initialValues.CalendarID,
             QuestionGUID: guid(),
             Type: 'Text',
-            Text: 'Enter question text'
+            Text: ''
         }, initialValues);
 
         var questionObject = createQuestionObject(questionInitValues);
@@ -197,7 +206,10 @@
         if (questionInitValues.Answers !== null && questionInitValues.Answers !== undefined) {
             for (var i = 0; i < questionInitValues.Answers.length; i++) {
                 var answerValues = questionInitValues.Answers[i];
-                questionObject.addAnswer(answerValues, true);
+                if (!answerValues.EventID)
+                    questionObject.addTextAnswer(answerValues, true);
+                else 
+                    questionObject.addAnswer(answerValues, true);
             }
         }
 
@@ -207,37 +219,111 @@
     function createQuestionObject(questionInitValues) {
         var questionObject = {};
 
+        questionObject.CalendarID = questionInitValues.CalendarID;
+
         var groupID = guid();
 
         var answerHolder = $('<div></div>');
 
         var questionTypeText = $('<input type="radio"/>')
-            .attr('name', groupID);
+            .attr('name', groupID)
+            .attr('QuestionType', 'Text');
 
         var questionTypeCalendar = $('<input type="radio"/>')
-            .attr('name', groupID);
+            .attr('name', groupID)
+            .attr('QuestionType', 'Timeslot');
 
-        if (questionInitValues.Type == 'Timeslot')
-            questionTypeCalendar.get(0).checked = true;
-        else
-            questionTypeText.get(0).checked = true;
+        questionObject.OpenEventWindowSelection = function () {
+            var _that = this;
 
+            var launchCalendar = function (calID) {
+                _that.CalendarID = calID;
+                Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID,
+                    {
+                        horizontalAlign: 'left',
+                        callback: function (result) {
+                            var filteredEvents = $.grep(result.events, function (elem) {
+                                if (elem.tag[0] == calID)
+                                    return true;
+                                return false;
+                            });
+                            
+                            //Here we need to find out which answers to leave, which to delete, and which to add
+                            var answersToAdd = [];
+                            var touchedAnswers = [];
+                            $.each(filteredEvents, function (i, event) {
+                                var foundMatchingAnswer = false;
+                                $.each(_that.Answers, function (j, answer) {
+                                    if (foundMatchingAnswer)
+                                        return;
+
+                                    if (answer.EventID == event.id) {
+                                        touchedAnswers.push(answer);
+                                        foundMatchingAnswer = true;
+                                    }
+                                });
+                                
+                                if (!foundMatchingAnswer) {
+                                    answersToAdd.push({
+                                        EventStart: event.start,
+                                        EventEnd: event.end,
+                                        EventID: event.id,
+                                        Type: _that.Type
+                                    });
+                                }
+                            });
+
+                            //We need to copy the array, because it's being modified
+                            var tmpAnswers = _that.Answers.slice(0);
+                            $.each(tmpAnswers, function (j, answer) {
+                                if ($.inArray(answer, touchedAnswers) == -1) {
+                                    //Remove it!
+                                    answer.RemoveMe();
+                                }
+                            });
+                            $.each(answersToAdd, function(k, newAnswer) {
+                                _that.addAnswer(newAnswer);
+                            });
+                        }
+                    });
+            };
+
+            if (this.CalendarID == null) {
+                Kwasant.IFrame.DispatchUrlRequest('/Question/EditTimeslots?calendarID=null&negotiationID=' + initValues.Id, launchCalendar);
+            } else {
+                launchCalendar(_that.CalendarID);
+            }
+        };
+        
+        var selectEventWindowsButton = $('<a>')
+            .addClass('handIcon')
+            .append('Select Times')
+            .click(function () { questionObject.OpenEventWindowSelection(); });
+
+        var radioButtons = [questionTypeText, questionTypeCalendar];
+
+
+        var topWidget = $('<div>');
         var edittableType =
-                $('<td />')
-                    .append(
-                        $('<label>Type:</label>')
-                    )
-                    .append(
-                        $('<label></label>')
-                            .append(
-                                questionTypeText
-                            ).append("Text")
-                    ).append(
-                        $('<label></label>')
-                            .append(
-                                questionTypeCalendar
-                            ).append("Timeslot")
-                    );
+            $('<td />')
+                .append(
+                    $('<label>Type:</label>')
+                )
+                .append(
+                    $('<label></label>')
+                        .append(
+                            questionTypeText
+                        ).append("Text")
+                ).append(
+                    $('<label></label>')
+                        .append(
+                            questionTypeCalendar
+                        ).append("Timeslot")
+                );
+
+        topWidget.append(edittableType);
+        topWidget.append(selectEventWindowsButton);
+        
         if (!settings.AllowModifyQuestion) {
             edittableType.hide();
         } 
@@ -255,19 +341,55 @@
                 
             });
 
+        var configureAnswerButton = function(isCalendar) {
+            if (isCalendar) {
+                if (settings.DisplayMode === 'review')
+                    selectEventWindowsButton.hide();
+                else {
+                    selectEventWindowsButton.show();
+                }
+                
+            } else {
+                selectEventWindowsButton.hide();
+                
+                if (settings.MaxAdditionalAnswers != -1 && numAnswersAdded >= settings.MaxAdditionalAnswers) {
+                    addAnswerSpan.hide();
+                } else if (settings.MaxAdditionalAnswers == -1 || numAnswersAdded < settings.MaxAdditionalAnswers) {
+                    addAnswerSpan.show();
+                }
+            }
+        };
+
+        $.each(radioButtons, function (index, elem) {
+            var closedFunc = function () {
+                reconfigureAnswerButton();
+            };
+            elem.change(closedFunc);
+        });
+
         var addAnswerSpan = $('<span>')
             .addClass('form-group')
             .addClass('handIcon')
             .click(function () {
                 numAnswersAdded++;
-                questionObject.addAnswer();
+                questionObject.addTextAnswer();
             })
             .append(
                 $('<img src="/Content/img/plus.png" />')
             ).append(
-                $('<label>Add Answer</label>')
-                    .addClass('handIcon')
+                $('<label>Add answer</label>')
+                .addClass('handIcon')
             );
+
+        var reconfigureAnswerButton = function() {
+            if (questionObject.getQuestionType() == 'Timeslot') {
+                questionTypeCalendar.get(0).checked = true;
+                configureAnswerButton(true);
+            } else {
+                questionTypeText.get(0).checked = true;
+                configureAnswerButton(false);
+            }
+        };
 
         if (!settings.AllowDeleteQuestion && questionInitValues.Id > 0)
             removeMeIcon.hide();
@@ -308,7 +430,7 @@
                             .append(
                                 $('<td />')
                             ).append(
-                                edittableType
+                                topWidget
                             )
                     )
             )
@@ -322,8 +444,14 @@
         questionObject.Node = questionDiv;
         questionObject.Answers = [];
 
-        questionObject.getQuestionType = function() {
-            return questionTypeText.get(0).checked ? 'Text' : 'Timeslot';
+        questionObject.getQuestionType = function () {
+            for (var i = 0; i < radioButtons.length; i++) {
+                var button = radioButtons[i];
+                if (button.get(0).checked) {
+                    return button.attr('QuestionType');
+                }
+            }
+            return 'Text';
         };
 
         questionObject.getValues = function () {
@@ -335,6 +463,7 @@
             return {
                 Id: questionInitValues.Id,
                 Text: questionName.val(),
+                CalendarID: this.CalendarID,
                 Answers: answers,
                 AnswerType: this.getQuestionType(),
             };
@@ -342,7 +471,7 @@
         
         questionObject.AnswerHolder = answerHolder;
         questionObject.Id = questionInitValues.Id;
-
+        
         var adjustRadioButtonEnabled = function() {
             if (questionObject.Answers.length == 0) {
                 questionTypeText.removeAttr('disabled');
@@ -355,25 +484,38 @@
 
         var numAnswersAdded = 0;
 
+        questionObject.addTextAnswer = function (initialValues, immediate) {
+            if (!initialValues)
+                initialValues = {};
+            initialValues.ForceTextAnswer = true;
+            this.addAnswer(initialValues, immediate);
+        };
+
         questionObject.addAnswer = function (initialValues, immediate) {
             if (immediate === undefined)
                 immediate = false;
 
+            if (initialValues === null || initialValues === undefined)
+                initialValues = {};
+
             var answerInitValues = $.extend({
                 Id: 0,
                 VotedBy: [],
+                StartDate: initialValues.StartDate,
+                EndDate: initialValues.EndDate,
                 AnswerState: settings.AnswerProposedStatus,
                 Selected: this.Answers.length == 0 ? true: false,
                 QuestionGUID: questionInitValues.QuestionGUID,
-                Text: 'Enter answer text'
+                Text: ''
             }, initialValues);
 
             var answerObject;
-            if (this.getQuestionType() == 'Timeslot') {
+            if (!initialValues.ForceTextAnswer && this.getQuestionType() == 'Timeslot') {
                 answerObject = createCalendarAnswerObject(this, answerInitValues);
             } else {
                 answerObject = createTextAnswerObject(this, answerInitValues);
             }
+            
             this.Answers.push(answerObject);
 
             var answerNode = answerObject.Node;
@@ -387,10 +529,8 @@
 
             adjustRadioButtonEnabled();
 
-            if (settings.MaxAdditionalAnswers != -1 && numAnswersAdded >= settings.MaxAdditionalAnswers) {
-                addAnswerSpan.hide();
-            }
-
+            reconfigureAnswerButton();
+          
             return answerObject;
         };
 
@@ -408,9 +548,8 @@
             answerObject.Node.slideUp();
 
             numAnswersAdded--;
-            if (settings.MaxAdditionalAnswers == -1 || numAnswersAdded < settings.MaxAdditionalAnswers) {
-                addAnswerSpan.show();
-            }
+
+            reconfigureAnswerButton();
 
             adjustRadioButtonEnabled();
         };
@@ -420,6 +559,17 @@
             questionDiv.slideUp();
         };
         
+
+        //Check radio buttons based on original settings
+        for (var i = 0; i < radioButtons.length; i++) {
+            var button = radioButtons[i];
+            if (button.attr('QuestionType') == questionInitValues.Type) {
+                button.get(0).checked = true;
+            }
+        }
+        
+        reconfigureAnswerButton();
+
         nodes.Questions.push(questionObject);
         
         return questionObject;
@@ -446,7 +596,7 @@
             .addClass('col-md-1')
             .val(answerInitValues.Text);
 
-        if (!settings.AllowModifyAnswer && answerInitValues.Id > 0)
+        if (answerInitValues.DisableManualEdit || (!settings.AllowModifyAnswer && answerInitValues.Id > 0))
             answerText.attr('disabled', 'disabled');
 
         var deleteButton = $('<img src="/Content/img/Cross.png" />')
@@ -515,7 +665,7 @@
             btnMarkProposed.hide();
         }
 
-        if (!settings.AllowDeleteAnswer && answerInitValues.Id > 0)
+        if (answerInitValues.DisableManualEdit || !settings.AllowDeleteAnswer && answerInitValues.Id > 0)
             deleteButton.hide();
 
         var answerDiv =
@@ -558,10 +708,11 @@
         if (settings.DisplayMode == 'review')
             answerDiv.attr('title', peopleWhoVoted);
 
+        answerObject.Id = answerInitValues.Id;
         answerObject.Question = question;
         answerObject.getValues = function () {
             return {
-                Id: answerInitValues.Id,
+                Id: answerObject.Id,
                 AnswerState: answerObject.AnswerState,
                 Text: answerText.val(),
                 Selected: radioSelect.get(0).checked
@@ -580,257 +731,45 @@
     }
     
     function createCalendarAnswerObject(question, answerInitValues) {
-        var answerObject = {};
-        answerObject.CalendarID = answerInitValues.CalendarID;
-        answerObject.AnswerState = answerInitValues.AnswerState;
 
-        var radioSelect = $('<input type="radio"/>')
-            .attr('name', answerInitValues.QuestionGUID);
+        var padMins = function (mins) {
+            if (mins < 10)
+                return mins + '0';
+            return mins;
+        };
+        var padHours = function (hours) {
+            if (hours < 10)
+                return '0' + hours;
+            return hours;
+        };
 
-        if (answerInitValues.Id == 0)
-            radioSelect.click();
-
-        if (answerInitValues.Selected)
-            radioSelect.attr('checked', true);
-
-        if (settings.DisplayMode != 'reply')
-            radioSelect.hide();
-
-        var topDiv = $('<div>');
-        var renderer = $('<div>')
-            .addClass('eventWindowRendererTemplate');
-
-        var group = $('<div>')
-            .css('padding-bottom', '10px')
-            .css('min-height', '65px');
-
-        var deleteButton = $('<img src="/Content/img/Cross.png" />')
-            .addClass('handIcon')
-            .click(function() {
-                answerObject.RemoveMe();
-            });
-        
-
-        var peopleWhoVoted = 'No one voted for this answer.';
-        for (var i = 0; i < answerInitValues.VotedBy.length; i++) {
-            if (i > 0)
-                peopleWhoVoted += ', ';
-            else
-                peopleWhoVoted = 'The following people voted for this answer: ';
-
-            peopleWhoVoted += answerInitValues.VotedBy[i];
+        var startDateString;
+        if (answerInitValues.EventStart.toDateString === undefined) {
+            startDateString = answerInitValues.EventStart.d.toDateString();
+        } else {
+            startDateString = answerInitValues.EventStart.toDateString();
         }
 
-        var votesIcon = $('<label>')
-            .append(answerInitValues.VotedBy.length);
+        var startDateTime = padHours(answerInitValues.EventStart.getHours()) + ':' + padMins(answerInitValues.EventStart.getMinutes());
+        var endDateTime = padHours(answerInitValues.EventEnd.getHours()) + ':' + padMins(answerInitValues.EventEnd.getMinutes());
+        var eventStr = startDateString + ' ' + startDateTime + ' - ' + endDateTime;
+
+        answerInitValues.Text = eventStr;
+        answerInitValues.DisableManualEdit = true;
+
+        var answerObject = createTextAnswerObject(question, answerInitValues);
+        answerObject.EventID = answerInitValues.EventID;
+        answerObject.EventStart = answerInitValues.EventStart;
+        answerObject.EventEnd = answerInitValues.EventEnd;
         
-        answerObject.markMeSelected = function () {
-            answerDiv
-                .css('background-color', 'rgb(183, 228, 195)');
-            question.UnselectOtherAnswers(answerObject);
-
-            answerObject.AnswerState = settings.AnswerSelectedStatus;
-
-            btnMarkProposed
-                .val('Unmark as selected')
-                .css('background-color', '#E01E26')
-                .unbind('click')
-                .click(function () {
-                    answerObject.unmarkMeSelected();
-                });
-        };
-
-        answerObject.unmarkMeSelected = function () {
-            answerDiv
-                .css('background-color', '');
-
-            answerObject.AnswerState = settings.AnswerProposedStatus;
-
-            btnMarkProposed
-                .val('Mark as selected')
-                .css('background-color', '#3cc05e')
-                .unbind('click')
-                .click(function () {
-                    answerObject.markMeSelected();
-                });
-        };
-
-        var btnMarkProposed = $('<input type="button"/>')
-            .val('Mark as selected')
-            .addClass('btn')
-            .addClass('handIcon')
-            .css('background-color', '#3cc05e')
-            .css('border-width', '0')
-            .css('margin', '5px')
-            .click(function () {
-                answerObject.markMeSelected();
-            });
-        
-        if (settings.DisplayMode != 'review') {
-            votesIcon.hide();
-            btnMarkProposed.hide();
-        }
-        
-        if (!settings.AllowDeleteAnswer && answerInitValues.Id > 0)
-            deleteButton.hide();
-
-        var editEventWindowsButton = $('<a>Edit Event Windows</a>')
-            .addClass('cancel-btn')
-            .addClass('handIcon')
-            .css('margin', '10px')
-            .css('width', '100%')
-            .click(function() {
-                answerObject.OpenEventWindowSelection();
-            });
-
-        if (!settings.AllowModifyAnswer && answerInitValues.Id > 0)
-            editEventWindowsButton.hide();
-
-        group.append(renderer);
-        group.append(editEventWindowsButton);
-
-        var answerDiv =
-            $('<div />')
-                .addClass('eventWindowAnswerBox')
-                .append(
-                    $('<table />')
-                        .css('width', '100%')
-                        .append(
-                            $('<tr />')
-                                .append(
-                                    $('<td />')
-                                        .append(
-                                            radioSelect
-                                        )
-                                ).append(
-                                    $('<td />')
-                                    .css('width', '100%')
-                                    .append(
-                                        group
-                                    )
-                                ).append(
-                                    $('<td />')
-                                        .append(
-                                            deleteButton
-                                        )
-                                ).append(
-                                    $('<td />')
-                                        .append(
-                                            votesIcon
-                                        )
-                                )
-                        )
-                ).append(
-                    $('<div />')
-                        .append(btnMarkProposed)
-                );
-        
-
-        if (settings.DisplayMode == 'review')
-            answerDiv.attr('title', peopleWhoVoted);
-
-        answerObject.RenderEvents = function(events) {
-            renderer.empty();
-
-            var padMins = function (mins) {
-                if (mins < 10)
-                    return mins + '0';
-                return mins;
-            };
-            var padHours = function(hours) {
-                if (hours < 10)
-                    return '0' + hours;
-                return hours;
-            };
-
-            if (events === null || events === undefined || events.length == 0) {
-                renderer.append('No events.');
-            } else {
-                var sortFunc = function(left, right) {
-                    var leftHours = left.startDate.getHours();
-                    var rightHours = right.startDate.getHours();
-                    return leftHours - rightHours;
-                };
-                events.sort(sortFunc);
-
-                for (var i = 0; i < events.length; i++) {
-                    var currEvent = events[i];
-
-                    var startDateString;
-                    if (currEvent.startDate.toDateString === undefined) {
-                        startDateString = currEvent.startDate.d.toDateString();
-                    } else {
-                        startDateString = currEvent.startDate.toDateString();
-                    }
-
-                    var startDateTime = padHours(currEvent.startDate.getHours()) + ':' + padMins(currEvent.startDate.getMinutes());
-                    var endDateTime = padHours(currEvent.endDate.getHours()) + ':' + padMins(currEvent.endDate.getMinutes());
-                    var eventStr = startDateString + ' ' + startDateTime + ' - ' + endDateTime;
-
-                    var clonedHTML = $('<div>');
-                    clonedHTML.html(eventStr);
-
-                    renderer.append(clonedHTML);
-                }
-            }
-
-            renderer.show();
-        };
-
-        answerObject.OpenEventWindowSelection = function () {
-            var _that = this;
-            
-            var launchCalendar = function(calID) {
-                _that.CalendarID = calID;
-
-                Kwasant.IFrame.Display('/Calendar/GetNegotiationCalendars?calendarID=' + calID,
-                    {
-                        horizontalAlign: 'left',
-                        callback: function (result) {
-                            var filteredEvents = $.grep(result.events, function(elem) {
-                                if (elem.tag[0] == calID)
-                                    return true;
-                                return false;
-                            });
-                            _that.RenderEvents($.map(filteredEvents, function (elem) {
-                                return {
-                                    startDate: elem.start,
-                                    endDate: elem.end
-                                };
-                            }));
-                        }
-                    });
-            };
-
-            if (this.CalendarID == null) {
-                Kwasant.IFrame.DispatchUrlRequest('/Question/EditTimeslots?calendarID=null&negotiationID=' + initValues.Id, launchCalendar);
-            } else {
-                launchCalendar(_that.CalendarID);
-            }
-        };
-        
-        answerObject.Question = question;
-        answerObject.RemoveMe = function () {
-            this.Question.removeAnswer(this);
-        };
-
+        answerObject.baseGetValues = answerObject.getValues;
         answerObject.getValues = function() {
-            return {
-                Id: answerInitValues.Id,
-                AnswerState: this.AnswerState,
-                CalendarID: this.CalendarID,
-                Selected: radioSelect.get(0).checked
-            };
+            var baseReturn = this.baseGetValues();
+            baseReturn.EventID = this.EventID;
+            
+            return baseReturn;
         };
 
-        topDiv.append(answerDiv);
-        
-        answerObject.RenderEvents(answerInitValues.CalendarEvents);
-
-        if (answerObject.AnswerState == settings.AnswerSelectedStatus)
-            answerObject.markMeSelected();
-
-        answerObject.Node = topDiv;
         return answerObject;
     }
 

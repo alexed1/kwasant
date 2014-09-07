@@ -64,7 +64,7 @@ namespace KwasantCore.Services
             return curEventDO;
         }
 
-        public void Process(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, List<AttendeeDO> existingAttendees)
+        public void InviteAttendees(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, List<AttendeeDO> existingAttendees)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -98,7 +98,7 @@ namespace KwasantCore.Services
             eventDO = Update(uow, eventDO, updatedEventInfo, out newAttendees, out existingAttendees);
             if (eventDO != null)
             {
-                Process(uow, eventDO, newAttendees, existingAttendees);
+                InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
             }
         }
      
@@ -183,8 +183,9 @@ namespace KwasantCore.Services
         {
             if (eventDO == null)
                 throw new ArgumentNullException("eventDO");
-            string fromEmail = ObjectFactory.GetInstance<IConfigRepository>().Get("fromEmail");
-            string fromName = ObjectFactory.GetInstance<IConfigRepository>().Get("fromName");
+            string fromEmail = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DelegateMode");
+            string fromName = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromName_DelegateMode");
+            fromName = String.Format(fromName, new Invitation(ObjectFactory.GetInstance<IConfigRepository>()).GetOriginatorName(eventDO));
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();
@@ -231,7 +232,7 @@ namespace KwasantCore.Services
             return ddayCalendar;
         }
 
-        public static EventDO CreateEventFromICSCalendar(iCalendar iCalendar)
+        public static EventDO CreateEventFromICSCalendar(IUnitOfWork uow, iCalendar iCalendar)
         {
             if (iCalendar.Events.Count == 0)
                 throw new ArgumentException("iCalendar has no events.");
@@ -252,7 +253,7 @@ namespace KwasantCore.Services
                 Attendees = icsEvent.Attendees
                     .Select(a => new AttendeeDO()
                     {
-                        EmailAddress = new EmailAddressDO(a.Value.OriginalString.Remove(0, a.Value.Scheme.Length + 1)),
+                        EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(a.Value.OriginalString.Remove(0, a.Value.Scheme.Length + 1)),
                         Name = a.CommonName
                     })
                     .ToList(),

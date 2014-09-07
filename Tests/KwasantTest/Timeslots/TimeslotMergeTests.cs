@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.Interfaces;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.StructureMap;
+using KwasantTest.Fixtures;
 using KwasantWeb.Controllers;
 using NUnit.Framework;
 using StructureMap;
@@ -14,10 +15,12 @@ namespace KwasantTest.Timeslots
     [TestFixture]
     public class TimeslotMergeTests
     {
+        private UserDO _user;
         [SetUp]
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
+            _user = new FixtureData().TestUser1();
         }
 
         private String GetFormattedDateString(String date)
@@ -58,24 +61,25 @@ namespace KwasantTest.Timeslots
             }
         }
 
-        private static CalendarDO CreateCalendarDO(IUnitOfWork uow, int calendarID)
+        private CalendarDO CreateCalendarDO(IUnitOfWork uow, int calendarID)
         {
+            
             var calendarDO = new CalendarDO()
             {
                 Id = calendarID,
                 Name = "Test Calendar",
-                OwnerID = "Test User",
-                Owner = new UserDO() {Id = "Test User"}
+                OwnerID = _user.Id,
+                Owner = _user
             };
             uow.CalendarRepository.Add(calendarDO);
             return calendarDO;
         }
 
-        private void SubmitNewTimeSlotToController(int timeSlotID, String startTime, String endTime)
+        private void SubmitNewTimeSlotToController(int EventID, String startTime, String endTime)
         {
             var controller = new EventController();
 
-            var res = controller.NewTimeSlot(timeSlotID, GetFormattedDateString(startTime), GetFormattedDateString(endTime), true);
+            var res = controller.NewTimeSlot(EventID, GetFormattedDateString(startTime), GetFormattedDateString(endTime), true);
             var converted = res as JavaScriptResult;
             if (converted == null)
                 throw new Exception("Invalid return type");

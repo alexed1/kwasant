@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.External.DayPilot;
@@ -36,7 +37,13 @@ namespace KwasantWeb.Controllers
                 if (bookingRequestDO == null)
                     throw new HttpException(400, "Booking request not found");
 
-                var linkedNegotiationID = bookingRequestDO.Negotiations.Select(n => (int?)n.Id).FirstOrDefault();
+                var linkedNegotiationID =
+                    bookingRequestDO.Negotiations.Where(
+                        n =>
+                            n.NegotiationState == NegotiationState.InProcess ||
+                            n.NegotiationState == NegotiationState.AwaitingClient)
+                        .Select(n => (int?) n.Id)
+                        .FirstOrDefault();
 
                 return View(new CalendarVM
                 {
@@ -132,12 +139,6 @@ namespace KwasantWeb.Controllers
             var ids = calendarIDs.Split(',').Where(c => !String.IsNullOrEmpty(c)).Select(int.Parse).ToArray();
             return new KwasantNavigatorControl(new EventDataProvider(true, ids)).CallBack(this);
         }
-
-        //public ActionResult GetEvents(string calendarIDs)
-        //{
-        //    var ids = calendarIDs.Split(',').Select(int.Parse).ToArray();
-        //    return new KwasantCalendarController(new EventDataProvider(true, ids)).GetEvents();
-        //}
 
         public ActionResult Rtl()
         {

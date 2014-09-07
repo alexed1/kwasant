@@ -38,7 +38,6 @@ namespace Data.Infrastructure.StructureMap
             public TestMode()
             {
                 For<IUnitOfWork>().Use(new UnitOfWork(new MockedDBContext()));
-                //For<IUserStore<UserDO>>().Use(a => a. new UserStore<UserDO>())
             }
         }
     }

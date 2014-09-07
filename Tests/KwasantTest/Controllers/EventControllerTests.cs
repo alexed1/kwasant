@@ -47,7 +47,10 @@ namespace KwasantTest.Controllers
         [Test, Category("EventController")]
         public void CanProcessConfirmedEvent()
         {
+            var user = _fixture.TestUser1();
             EventDO testEvent = _fixture.TestEvent1();
+            testEvent.CreatedBy = user;
+
             testEvent.EventStatus = EventState.ProposedTimeSlot; //a convenient way to get DispatchInvitations to do nothing. 
             _uow.EventRepository.Add(testEvent);
             _uow.SaveChanges();

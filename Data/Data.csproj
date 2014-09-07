@@ -50,6 +50,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Threading.Tasks">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
     </Reference>
@@ -67,6 +68,9 @@
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
       <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.2.0.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -223,6 +227,10 @@
     <Compile Include="Migrations\201408301723490_LinkCalendarsToAnswerInstead.cs" />
     <Compile Include="Migrations\201408301723490_LinkCalendarsToAnswerInstead.Designer.cs">
       <DependentUpon>201408301723490_LinkCalendarsToAnswerInstead.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409021727515_NewNegotiationStructure.cs" />
+    <Compile Include="Migrations\201409021727515_NewNegotiationStructure.Designer.cs">
+      <DependentUpon>201409021727515_NewNegotiationStructure.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
@@ -892,6 +900,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409021308504_AddInvitationResponse.resx">
       <DependentUpon>201409021308504_AddInvitationResponse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409021727515_NewNegotiationStructure.resx">
+      <DependentUpon>201409021727515_NewNegotiationStructure.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

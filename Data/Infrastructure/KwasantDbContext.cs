@@ -105,7 +105,6 @@ namespace Data.Infrastructure
 
             foreach (var createdEntity in createdEntityList)
             {
-                Console.WriteLine("created an Entity. Calling Create Hook");
                 createdEntity.Entity.AfterCreate();
             }
          
@@ -229,7 +228,9 @@ namespace Data.Infrastructure
                     ts.Id,
                     ts.ForeignTableName
                 });
-
+            
+            modelBuilder.Entity<AnswerDO>()
+                .HasOptional(a => a.Event).WithMany().WillCascadeOnDelete();
 
             modelBuilder.Entity<QuestionDO>()
                 .HasMany(e => e.Answers)

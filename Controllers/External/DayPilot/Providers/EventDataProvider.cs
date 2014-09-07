@@ -11,7 +11,7 @@ namespace KwasantWeb.Controllers.External.DayPilot.Providers
     public class EventDataProvider : IEventDataProvider
     {
         //This code randomly generates a colour for each key. This colour is persisted for the entire lifetime of the web application.
-        //The key currently used is 'EV' + ev.Id for events, and 'EW' + ew.EventWindowGroupID
+        //They key currently used is the calendar id
         //This makes each event a unique colour, and groups event windows in the same group together
         private static readonly Random Rand = new Random();
         private static readonly Dictionary<string, Color> PairedColours = new Dictionary<string, Color>();

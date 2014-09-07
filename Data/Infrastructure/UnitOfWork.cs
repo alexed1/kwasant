@@ -220,7 +220,7 @@ namespace Data.Infrastructure
             }
         }
         private FactRepository _FactRepository;
-
+        
         public FactRepository FactRepository
         {
             get
@@ -228,6 +228,7 @@ namespace Data.Infrastructure
                 return _FactRepository ?? (_FactRepository = new FactRepository(this));
             }
         }
+     
         private UserRepository _userRepository;
 
         public UserRepository UserRepository

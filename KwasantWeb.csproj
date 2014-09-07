@@ -268,7 +268,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AnswerController.cs" />
     <Compile Include="Controllers\External\DayPilot\KwasantCalendarControl.cs" />
-    <Compile Include="Controllers\External\DayPilot\Providers\ICalendarController.cs" />
+    <Compile Include="Controllers\External\DayPilot\Providers\IEventDataProvider.cs" />
     <Compile Include="Controllers\External\GoogleCalendar\AuthCallbackController.cs" />
     <Compile Include="Controllers\BookingRequestController.cs" />
     <Compile Include="Controllers\CalendarController.cs" />
@@ -311,7 +311,6 @@
     <Compile Include="ViewModels\ManageUserVM.cs" />
     <Compile Include="ViewModels\NegotiationResponseVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
-    <Compile Include="ViewModels\QuestionCalendarEventVM.cs" />
     <Compile Include="ViewModels\NegotiationVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\RemoteCalendarVM.cs" />
@@ -547,7 +546,7 @@
     <Content Include="Content\js\waypoints.js" />
     <Content Include="Content\templates\inline_html_template_v1.html" />
     <Content Include="Content\templates\googletemplate1.html" />
-    <Compile Include="Controllers\External\DayPilot\Providers\EventCalendarController.cs" />
+    <Compile Include="Controllers\External\DayPilot\Providers\EventDataProvider.cs" />
     <Content Include="Index.aspx" />
     <Content Include="newrelic\extensions\CoreInstrumentation.xml" />
     <Content Include="newrelic\NewRelic.Agent.Core.dll" />
@@ -763,6 +762,7 @@
     <Content Include="Views\NegotiationResponse\View.cshtml" />
     <Content Include="Views\Shared\404.cshtml" />
     <Content Include="Views\Negotiation\Review.cshtml" />
+    <Content Include="Views\Account\RegistrationConfirmation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
