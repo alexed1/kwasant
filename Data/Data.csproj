@@ -173,6 +173,10 @@
     <Compile Include="Migrations\201409021308504_AddInvitationResponse.Designer.cs">
       <DependentUpon>201409021308504_AddInvitationResponse.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409070912279_Sync.07.09.2014.cs" />
+    <Compile Include="Migrations\201409070912279_Sync.07.09.2014.Designer.cs">
+      <DependentUpon>201409070912279_Sync.07.09.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\InvitationResponseRepository.cs" />
     <Compile Include="Repositories\InvitationRepository.cs" />
@@ -903,6 +907,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409021727515_NewNegotiationStructure.resx">
       <DependentUpon>201409021727515_NewNegotiationStructure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409070912279_Sync.07.09.2014.resx">
+      <DependentUpon>201409070912279_Sync.07.09.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
