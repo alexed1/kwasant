@@ -690,6 +690,10 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
 	width: 15%;	
 }
 
+.table-with-action tr td:last-child {
+	white-space: nowrap;
+}
+
 .body-content table.data-table {
 	margin: 15px auto;	
 	border-bottom: 1px solid #0e0e0e;
@@ -1266,7 +1270,8 @@ today-calendar-tbl .first-col {
 	.site-header .mmenu ul li a:hover {
 		border: 0 none;
 	}
-}
+}           
+
 
 @media screen and (min-width: 1200px) {
     .container {
@@ -1275,6 +1280,24 @@ today-calendar-tbl .first-col {
 
     .col-md-6 {
         width: 600px !important;
+    }
+}
+
+@media screen and (max-width: 1023px) {
+    .table-with-action tr td:last-child {
+	    white-space: nowrap;
+    }
+}
+
+@media screen and (max-width: 991px) {
+
+    .table-with-action tr td:last-child button {
+	    font-size: 0;
+    }   
+
+    .custom-btn.glyphicon:before {
+        font-size: 16px; 
+        padding: 0;   
     }
 }
 
