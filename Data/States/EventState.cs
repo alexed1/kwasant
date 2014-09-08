@@ -7,5 +7,6 @@
         public const int DispatchCompleted = 3;
         public const int Deleted = 4;
         public const int ProposedTimeSlot = 5;
+        public const int Draft = 6;
     }
 }

@@ -98,7 +98,8 @@ namespace KwasantCore.Services
             eventDO = Update(uow, eventDO, updatedEventInfo, out newAttendees, out existingAttendees);
             if (eventDO != null)
             {
-                InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
+                if (eventDO.EventStatus != EventState.Draft)
+                    InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
             }
         }
      

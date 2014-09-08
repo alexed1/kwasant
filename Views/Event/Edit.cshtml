@@ -116,6 +116,7 @@
 		}
 		<div class="space form-actions">
 			<input id="btnSave" type="submit" value="OK" class="btn btn-default pull-left" />
+            <input id="btnDraft" type="submit" value="Draft" class="btn btn-default pull-left" />
 		    <a href="javascript:closeWithUnsavedDataCheck(modifiedState);" class="cancel-btn pull-left">Cancel</a>
             <a href="javascript:deleteEvent();" style="margin-left:15px;" class="delete-btn pull-left">Delete</a>
 		</div>
@@ -146,7 +147,28 @@
 			});
 		});
 
+		function updateDraftSummary(formEle){
+		    var summaryEle = $("#summary");
+		    if($(formEle).data('clicked') == "Draft"){
+		        if(summaryEle.val().indexOf("DRAFT:") == -1){
+		            summaryEle.val("DRAFT:" + summaryEle.val());
+		        }
+		    }
+		    else {
+		        if(summaryEle.val().indexOf("DRAFT:") != -1){
+		            summaryEle.val(summaryEle.val().replace("DRAFT:",""));
+		        }
+		    }
+		}
+
+		$('#f').on('click', 'input[type=submit]', function(e) {
+		    $(this.form).data('clicked', this.value);
+		});
+
 		$("#f").submit(function () {
+
+		    updateDraftSummary(this);
+
 			if (!modifiedState.modified) {
 				close();
 				return false;
