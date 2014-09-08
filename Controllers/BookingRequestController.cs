@@ -71,6 +71,7 @@ namespace KwasantWeb.Controllers
                 if (id != null)
                 {
                     bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                    bookingRequestDO.User = bookingRequestDO.User;
                     bookingRequestDO.State = BookingRequestState.Booking;
                     bookingRequestDO.BookerID = _currBooker;
                     uow.SaveChanges();
@@ -90,12 +91,12 @@ namespace KwasantWeb.Controllers
 
 
         [HttpGet]
-        public ActionResult ProcessOwnerChange(int id)
+        public ActionResult ProcessOwnerChange(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 _currBooker = this.GetUserId();
-                string result = _booker.ChangeOwner(uow, id, _currBooker);
+                string result = _booker.ChangeOwner(uow, bookingRequestId, _currBooker);
                 return Content(result);
             }
         }
@@ -112,6 +113,7 @@ namespace KwasantWeb.Controllers
                     return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
 
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                bookingRequestDO.User = bookingRequestDO.User;
                 bookingRequestDO.State = BookingRequestState.Resolved;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
@@ -132,6 +134,7 @@ namespace KwasantWeb.Controllers
                     return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
 
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                bookingRequestDO.User = bookingRequestDO.User;
                 bookingRequestDO.State = BookingRequestState.Invalid;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);

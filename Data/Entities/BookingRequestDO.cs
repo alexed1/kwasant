@@ -14,7 +14,7 @@ namespace Data.Entities
             Negotiations = new List<NegotiationDO>();
         }
 
-        //[Required]
+        [Required]
         public virtual UserDO User { get; set; }
 
         public virtual List<InstructionDO> Instructions { get; set; }

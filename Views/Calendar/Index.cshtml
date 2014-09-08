@@ -192,7 +192,7 @@
             $.ajax({
                 url: "/BookingRequest/ProcessOwnerChange",
                 type: "GET",
-                data: { id: bookingRequestId },
+                data: { bookingRequestId: bookingRequestId },
                 success: function (response) {
                     alert(response);
                 }
