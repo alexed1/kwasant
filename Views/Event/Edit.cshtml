@@ -147,16 +147,16 @@
 			});
 		});
 
-		function updateDraftSummary(formEle){
-		    var summaryEle = $("#summary");
-		    if($(formEle).data('clicked') == "Draft"){
-		        if(summaryEle.val().indexOf("DRAFT:") == -1){
-		            summaryEle.val("DRAFT:" + summaryEle.val());
+		function updateDraftSummary(formElmt){
+		    var summaryElmt = $("#summary");
+		    if($(formElmt).data('clicked') == "Draft"){
+		        if(summaryElmt.val().indexOf("DRAFT:") == -1){
+		            summaryElmt.val("DRAFT:" + summaryElmt.val());
 		        }
 		    }
 		    else {
-		        if(summaryEle.val().indexOf("DRAFT:") != -1){
-		            summaryEle.val(summaryEle.val().replace("DRAFT:",""));
+		        if(summaryElmt.val().indexOf("DRAFT:") != -1){
+		            summaryElmt.val(summaryElmt.val().replace("DRAFT:",""));
 		        }
 		    }
 		}
