@@ -63,7 +63,10 @@ namespace Daemons
 
         public override int WaitTimeBetweenExecution
         {
-            get { return (int)TimeSpan.FromSeconds(10).TotalMilliseconds; }
+            get
+            {
+                return (int)TimeSpan.FromSeconds(_configRepository.Get<int>("INBOUND_EMAIL_POLLTIME_SECONDS")).TotalMilliseconds;    
+            }
         }
 
         protected override void Run()
