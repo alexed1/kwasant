@@ -26,8 +26,16 @@
 			<div class="email-details with-border">
 				<table width="100%">
 					<tr>
-						<td class="displayLabel">Email:</td>
+						<td class="displayLabel">From:</td>
+						<td><%=GetFromPerson()%></td>
+					</tr>
+                    <tr>
+						<td class="displayLabel">From:</td>
 						<td><%=GetEmail()%></td>
+					</tr>
+                    <tr>
+						<td class="displayLabel">To:</td>
+						<td><%=GetTo()%></td>
 					</tr>
 					<tr>
 						<td class="displayLabel">CC:</td>
@@ -37,10 +45,7 @@
 						<td class="displayLabel">BCC:</td>
 						<td><%=GetBCC()%></td>
 					</tr>
-					<tr>
-						<td class="displayLabel">From:</td>
-						<td><%=GetFromPerson()%></td>
-					</tr>
+					
 					<tr>
 						<td class="displayLabel">Attachments:</td>
 						<td><%=GetAttachments()%></td>
