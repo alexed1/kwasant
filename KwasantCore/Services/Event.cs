@@ -98,7 +98,8 @@ namespace KwasantCore.Services
             eventDO = Update(uow, eventDO, updatedEventInfo, out newAttendees, out existingAttendees);
             if (eventDO != null)
             {
-                InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
+                if (eventDO.EventStatus != EventState.Draft)
+                    InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
             }
         }
      
@@ -183,9 +184,11 @@ namespace KwasantCore.Services
         {
             if (eventDO == null)
                 throw new ArgumentNullException("eventDO");
-            string fromEmail = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DelegateMode");
-            string fromName = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromName_DelegateMode");
-            fromName = String.Format(fromName, new Invitation(ObjectFactory.GetInstance<IConfigRepository>()).GetOriginatorName(eventDO));
+
+            IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+            string fromEmail = configRepository.Get("EmailFromAddress_DelegateMode");
+            string fromName = configRepository.Get("EmailFromName_DelegateMode");
+            fromName = String.Format(fromName, new Invitation(configRepository).GetOriginatorName(eventDO));
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();

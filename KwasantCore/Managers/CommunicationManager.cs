@@ -261,27 +261,6 @@ namespace KwasantCore.Managers
                 emailRepo.Add(outboundEmail);
             }
         }
-
-        //This is the default originator of outbound Kwasant emails
-        //public static string GetFromEmailAddress(string mode)
-        //{
-        //    string email = CloudConfigurationManager.GetSetting(mode);
-        //    if (email != null)
-        //    {
-        //        return email;
-        //    }
-        //    throw new ArgumentException("Missing value for" + "'" + mode + "'");
-        //}
-
-        //public static string GetFromName(string mode)
-        //{
-        //    string fromName = CloudConfigurationManager.GetSetting(mode);
-        //    if (fromName != null)
-        //    {
-        //        return fromName;
-        //    }
-        //    throw new ArgumentException("Missing value for" + "'" + mode + "'");
-        //}
     }
 
     public class RazorViewModel

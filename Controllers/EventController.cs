@@ -225,6 +225,8 @@ namespace KwasantWeb.Controllers
                 if (curEventDO == null)
                     throw new EntityNotFoundException<EventDO>();
                 updatedEventInfo.Attendees = _attendee.ConvertFromString(uow, curEventVM.Attendees);
+                curEventDO.EventStatus = updatedEventInfo.Summary.Contains("DRAFT") ? EventState.Draft : EventState.Booking;
+
                 _event.Process(uow, curEventDO, updatedEventInfo);
 
                 if (mergeEvents)

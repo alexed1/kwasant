@@ -54,13 +54,15 @@ namespace KwasantWeb.Controllers.External.DayPilot.Providers
                     var linkedUserIDs = providedCalendars.Select(c => c.OwnerID).ToList();
                     //providedCalendars = providedCalendars.Union(uow.CalendarRepository.GetQuery().Where(c => linkedUserIDs.Contains(c.OwnerID)));
                 }
-                    
+
                 return providedCalendars.SelectMany(c => c.Events).ToList().Select(e =>
                 new DayPilotTimeslotInfo
                 {
                     StartDate = e.StartDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff"),
                     EndDate = e.EndDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff"),
-                    Text = e.Summary,
+                    Text = e.EventStatus != Data.States.EventState.Draft ?
+                            (e.Summary != null ? e.Summary.Replace("DRAFT:", "") : e.Summary) :
+                            e.Summary,
                     Id = e.Id,
                     GroupingID = e.CalendarID.ToString(),
                     IsAllDay = e.IsAllDay,
