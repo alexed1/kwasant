@@ -4,11 +4,13 @@ using System.Linq;
 using Daemons;
 using Data.Entities;
 using Data.Interfaces;
+using FluentValidation.Internal;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantICS.DDay.iCal;
 using KwasantTest.Fixtures;
 using KwasantTest.Utilities;
+using Moq;
 using NUnit.Framework;
 using S22.Imap;
 using StructureMap;
@@ -70,8 +72,17 @@ namespace KwasantTest.Integration.BookingITests
             string targetPassword = "thorium65";
             ImapClient client = new ImapClient("imap.gmail.com", 993, targetAddress, targetPassword, AuthMethod.Login, true);
             InboundEmail inboundDaemon = new InboundEmail();
-            inboundDaemon.username = targetAddress;
-            inboundDaemon.password = targetPassword;
+            
+            var configRepositoryMock = new Mock<IConfigRepository>();
+            configRepositoryMock
+                .Setup(c => c.Get<string>("INBOUND_EMAIL_USERNAME"))
+                .Returns(targetAddress);
+
+            configRepositoryMock
+                .Setup(c => c.Get<string>("INBOUND_EMAIL_PASSWORD"))
+                .Returns(targetAddress);
+
+            ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepositoryMock.Object));
 
             //need to add user to pass OutboundEmail validation.
             _uow.UserRepository.Add(_fixture.TestUser3());
