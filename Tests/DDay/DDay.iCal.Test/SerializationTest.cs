@@ -473,7 +473,7 @@ namespace DDay.iCal.Test
         /// X-TRUMBA-CUSTOMFIELD;NAME="Event Type";ID=21;TYPE=number:Master Submissi
         ///  on Form Template
         /// </summary>
-        [Test, Category("DDay")] //Category(("Serialization"), Ignore]  //ignoring because it takes too bloody long
+        [Test, Category("DDay"), Ignore] //Category(("Serialization")]  //ignoring because it takes too bloody long
         public void Bug3363485()
         {
             SerializeTest("Bug3363485.ics", typeof(iCalendarSerializer));

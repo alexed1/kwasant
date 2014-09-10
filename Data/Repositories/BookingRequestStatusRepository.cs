@@ -3,7 +3,7 @@ using Data.States.Templates;
 
 namespace Data.Repositories
 {
-    public class BookingRequestStatusRepository : GenericRepository<_BookingRequestStateTemplate>, IBookingRequestStatusRepository
+    public class BookingRequestStatusRepository : GenericRepository<_BookingRequestStateTemplate>, IBookingRequestDOStatusRepository
     {
         public BookingRequestStatusRepository(IUnitOfWork uow)
             : base(uow)
@@ -13,7 +13,7 @@ namespace Data.Repositories
     }
 
 
-    public interface IBookingRequestStatusRepository : IGenericRepository<_BookingRequestStateTemplate>
+    public interface IBookingRequestDOStatusRepository : IGenericRepository<_BookingRequestStateTemplate>
     {
 
     }

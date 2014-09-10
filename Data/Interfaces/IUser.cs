@@ -8,7 +8,7 @@ namespace Data.Interfaces
     {
         string Id { get; set; }
         IEnumerable<BookingRequestDO> BookingRequests { get; set; }
-        IEmailAddress EmailAddress { get; }
+        IEmailAddressDO EmailAddress { get; }
 
         [InverseProperty("User")]
         IList<RemoteCalendarAuthDataDO> RemoteCalendarAuthData { get; set; }

@@ -6,7 +6,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class BookingRequestDO : EmailDO, IBookingRequest
+    public class BookingRequestDO : EmailDO
     {
         public BookingRequestDO()
         {

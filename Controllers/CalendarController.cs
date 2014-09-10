@@ -31,7 +31,7 @@ namespace KwasantWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IBookingRequestRepository bookingRequestRepository = uow.BookingRequestRepository;
+                IBookingRequestDORepository bookingRequestRepository = uow.BookingRequestRepository;
                 var bookingRequestDO = bookingRequestRepository.GetByKey(id);
 
                 if (bookingRequestDO == null)
