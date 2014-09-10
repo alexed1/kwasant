@@ -72,18 +72,9 @@ namespace KwasantTest.Integration.BookingITests
             string targetPassword = "thorium65";
             ImapClient client = new ImapClient("imap.gmail.com", 993, targetAddress, targetPassword, AuthMethod.Login, true);
             InboundEmail inboundDaemon = new InboundEmail();
+            inboundDaemon.UserName = targetAddress;
+            inboundDaemon.Password = targetPassword;
             
-            var configRepositoryMock = new Mock<IConfigRepository>();
-            configRepositoryMock
-                .Setup(c => c.Get<string>("INBOUND_EMAIL_USERNAME"))
-                .Returns(targetAddress);
-
-            configRepositoryMock
-                .Setup(c => c.Get<string>("INBOUND_EMAIL_PASSWORD"))
-                .Returns(targetAddress);
-
-            ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepositoryMock.Object));
-
             //need to add user to pass OutboundEmail validation.
             _uow.UserRepository.Add(_fixture.TestUser3());
             _uow.EmailRepository.Add(testEmail);

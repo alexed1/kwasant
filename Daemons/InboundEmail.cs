@@ -40,13 +40,16 @@ namespace Daemons
             return _configRepository.Get<int>("InboundEmailPort");
         }
 
+        public String UserName;
         private string GetUserName()
         {
-            return _configRepository.Get("INBOUND_EMAIL_USERNAME");
+            return UserName ?? _configRepository.Get("INBOUND_EMAIL_USERNAME");
         }
+
+        public String Password;
         private string GetPassword()
         {
-            return _configRepository.Get("INBOUND_EMAIL_PASSWORD");
+            return Password ??_configRepository.Get("INBOUND_EMAIL_PASSWORD");
         }
 
         private bool UseSSL()
