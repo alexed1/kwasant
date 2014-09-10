@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Infrastructure;
@@ -17,25 +14,13 @@ namespace Daemons
 {
     public class InboundEmail : Daemon
     {
-        private readonly IImapClient _client;
+        private IImapClient _client;
         private readonly IConfigRepository _configRepository;
         
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
         {
-            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            
-            try
-            {
-                _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), UseSSL());
-                string curUser = GetUserName();
-                string curPwd = GetPassword();
-                _client.Login(curUser, curPwd, AuthMethod.Login);
-            }
-            catch (Exception ex)
-            {
-                Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
-            }
+            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();   
         }
 
         //be careful about using this form. can get into problems involving disposal.
@@ -44,7 +29,6 @@ namespace Daemons
             _client = client;
             _configRepository = configRepository;
         }
-
 
         private string GetIMAPServer()
         {
@@ -78,11 +62,33 @@ namespace Daemons
             }
         }
 
-        private uint lastMessageUID = 0;
+        private IImapClient Client
+        {
+            get
+            {
+                if (_client != null)
+                    return _client;
+
+                try
+                {
+                    _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), UseSSL());
+                    string curUser = GetUserName();
+                    string curPwd = GetPassword();
+                    _client.Login(curUser, curPwd, AuthMethod.Login);
+                }
+                catch (Exception ex)
+                {
+                    Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
+                }
+
+                return _client;
+            }
+        }
+
         protected override void Run()
         {
-            GetUnreadMessages(_client);
-            _client.NewMessage += (sender, args) => GetUnreadMessages(args.Client);
+            GetUnreadMessages(Client);
+            Client.NewMessage += (sender, args) => GetUnreadMessages(args.Client);
         }
 
         private void GetUnreadMessages(IImapClient client)
