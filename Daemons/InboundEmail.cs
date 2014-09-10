@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -17,14 +19,23 @@ namespace Daemons
     {
         private readonly IImapClient _client;
         private readonly IConfigRepository _configRepository;
-        public string username;
-        public string password;
-
+        
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
-            : this(null, ObjectFactory.GetInstance<IConfigRepository>())
         {
-          
+            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+            
+            try
+            {
+                _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), UseSSL());
+                string curUser = GetUserName();
+                string curPwd = GetPassword();
+                _client.Login(curUser, curPwd, AuthMethod.Login);
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
+            }
         }
 
         //be careful about using this form. can get into problems involving disposal.
@@ -59,88 +70,55 @@ namespace Daemons
             return _configRepository.Get<bool>("InboundEmailUseSSL");
         }
 
-        
-
         public override int WaitTimeBetweenExecution
         {
             get
             {
-                return (int)TimeSpan.FromSeconds(_configRepository.Get<int>("INBOUND_EMAIL_POLLTIME_SECONDS")).TotalMilliseconds;    
+                return -1;
             }
         }
 
+        private uint lastMessageUID = 0;
         protected override void Run()
         {
-            IImapClient client;
+            GetUnreadMessages(_client);
+            _client.NewMessage += (sender, args) => GetUnreadMessages(args.Client);
+        }
+
+        private void GetUnreadMessages(IImapClient client)
+        {
+            var messages = client.GetMessages(client.Search(SearchCondition.Unseen()));
+            
+            foreach (var message in messages)
+                ProcessMessageInfo(message);
+        }
+
+        private static void ProcessMessageInfo(MailMessage messageInfo)
+        {
+            var logString = "Processing message with subject '" + messageInfo.Subject + "'";
+            Logger.GetLogger().Info(logString);
+            
+            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
+            BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
+
             try
             {
-                client = _client ?? new ImapClient(GetIMAPServer(), GetIMAPPort(), UseSSL());
-                string curUser = username ?? GetUserName();
-                string curPwd = password ?? GetPassword();
-                client.Login(curUser, curPwd, AuthMethod.Login );
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, messageInfo);
+
+                //assign the owner of the booking request to be the owner of the From address
+
+                (new BookingRequest()).Process(unitOfWork, bookingRequest);
+
+                unitOfWork.SaveChanges();
+
+                AlertManager.BookingRequestCreated(bookingRequest.Id);
+                AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
             }
-            catch (ConfigurationException ex)
+            catch (Exception e)
             {
-                Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
-                Stop();
-                return;
+                AlertManager.EmailProcessingFailure(messageInfo.Headers["Date"], e.Message);
+                Logger.GetLogger().Error(String.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Headers["Message-ID"]));
             }
-            catch (Exception ex)
-            {
-                Logger.GetLogger().Error("Error occured on startup... restarting.", ex);
-                return;
-            }
-
-            Logger.GetLogger().Info(GetType().Name + " - Querying inbound account...");
-            var allMessageInfos = client.ListMailboxes()
-                .SelectMany(mailbox => client
-                                           .Search(SearchCondition.Unseen(), mailbox)
-                                           .Select(uid => new { Mailbox = mailbox, Uid = uid, Message = client.GetMessage(uid, mailbox: mailbox) }))
-                .Where(messageInfo => messageInfo.Message.From != null)
-                .ToList();
-            var messageInfos = allMessageInfos
-                .Select(messageInfo => messageInfo.Message.Headers["Message-ID"])
-                .Distinct(StringComparer.Ordinal)
-                .Select(id => allMessageInfos.First(messageInfo => string.Equals(messageInfo.Message.Headers["Message-ID"], id, StringComparison.Ordinal)))
-                .ToList();
-
-
-            string logString;
-
-            //the difference in syntax makes it easy to have nonzero hits stand out visually in the log dashboard
-            if (messageInfos.Any())           
-                logString = GetType().Name + " - " + messageInfos.Count() + " emails found!";      
-            else
-                logString = GetType().Name + " - 0 emails found...";
-            Logger.GetLogger().Info(logString);
-
-            foreach (var messageInfo in messageInfos)
-            {
-                IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
-
-                try
-                {
-                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, messageInfo.Message);
-                    
-                    //assign the owner of the booking request to be the owner of the From address
-
-                    (new BookingRequest()).Process(unitOfWork, bookingRequest);
-
-                    unitOfWork.SaveChanges();
-
-                    AlertManager.BookingRequestCreated(bookingRequest.Id);
-                    AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
-                }
-                catch (Exception e)
-                {
-                    AlertManager.EmailProcessingFailure(messageInfo.Message.Headers["Date"], e.Message);
-                    Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Message.Headers["Message-ID"]));
-                    client.AddMessageFlags(messageInfo.Uid, messageInfo.Mailbox, MessageFlag.Seen);
-                }
-            }
-
-            client.Dispose();
         }
 
         protected override void CleanUp()
