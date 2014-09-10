@@ -17,7 +17,6 @@ namespace Data.Entities
             BookingRequests = new List<BookingRequestDO>();
             Calendars = new List<CalendarDO>();
             RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
-            AddDefaultCalendar();
         }
 
         public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
@@ -50,24 +49,6 @@ namespace Data.Entities
                      r.Provider != null &&
                      r.Provider.Name == providerName &&
                      r.HasAccessToken());
-        }
-
-        public void AddDefaultCalendar()
-        {
-            if (this == null)
-                throw new ArgumentNullException("curUser");
-
-            if (!Calendars.Any())
-            {
-                var curCalendar = new CalendarDO
-                {
-                    Name = "Default Calendar",
-                    Owner = this,
-                    OwnerID = Id
-                };
-                Calendars.Add(curCalendar);
-               
-            }
         }
 
         void ISaveHook.BeforeSave()

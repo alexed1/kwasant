@@ -285,6 +285,8 @@
     <Compile Include="Controllers\SchedulerController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="KwasantHandleErrorAttribute.cs" />
+    <Compile Include="ViewModels\CalendarShowVM.cs" />
+    <Compile Include="ViewModels\CreateUserVM.cs" />
     <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />
     <Compile Include="ViewModels\CalendarVM.cs" />
     <Compile Include="ViewModels\EventVM.cs" />
@@ -310,6 +312,8 @@
     <Compile Include="ViewModels\NegotiationVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\RemoteCalendarVM.cs" />
+    <Compile Include="ViewModels\UserAdministerVM.cs" />
+    <Compile Include="ViewModels\UserQueryVM.cs" />
     <Compile Include="ViewModels\UsersAdminVM.cs" />
     <Compile Include="Webhooks\MandrillWebhookController.cs" />
   </ItemGroup>
@@ -759,6 +763,14 @@
     <Content Include="Views\Shared\404.cshtml" />
     <Content Include="Views\Negotiation\Review.cshtml" />
     <Content Include="Views\Account\RegistrationConfirmation.cshtml" />
+    <Content Include="Views\User\ChooseCalendars.cshtml" />
+    <Content Include="Views\User\Detail.cshtml" />
+    <Content Include="Views\User\FindUser.cshtml" />
+    <Content Include="Views\User\ShowAddUser.cshtml" />
+    <Content Include="Views\User\ShowCalendarEvents.cshtml" />
+    <Content Include="Views\User\ShowQuery.cshtml" />
+    <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
+    <Content Include="Views\User\ShowUserDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

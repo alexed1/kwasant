@@ -18,6 +18,8 @@ namespace Data.Repositories
         {
             //_curValidator.ValidateAndThrow(entity); //fix this
             base.Add(entity);
+            AddDefaultCalendar(entity);
+
 /*
             // check default calendar
             UnitOfWork.CalendarRepository.CheckUserHasCalendar(entity);
@@ -53,6 +55,23 @@ namespace Data.Repositories
             _uow.CalendarRepository.CheckUserHasCalendar(curUser);
             return curUser;
 
+        }
+
+        public void AddDefaultCalendar(UserDO curUser)
+        {
+            if (curUser == null)
+                throw new ArgumentNullException("curUser");
+
+            if (!curUser.Calendars.Any())
+            {
+                var curCalendar = new CalendarDO
+                {
+                    Name = "Default Calendar",
+                    Owner = curUser,
+                    OwnerID = curUser.Id
+                };
+                curUser.Calendars.Add(curCalendar);
+            }
         }
 
 /*

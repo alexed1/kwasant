@@ -55,6 +55,9 @@ namespace Data.Migrations
             AddBookingRequest(unitOfWork);
 
             SeedRemoteCalendarProviders(unitOfWork);
+
+            AddCalendars(unitOfWork);
+            AddEvents(unitOfWork);
         }
 
         //Method to let us seed into memory as well
@@ -326,6 +329,84 @@ namespace Data.Migrations
             uow.BookingRequestRepository.Add(curBookingRequestDO);
         }
 
+        private void AddCalendars(IUnitOfWork uow)
+        {
+            if (!uow.CalendarRepository.GetAll().Where(e => e.Name == "Test Calendar 1").Any())
+            {
+                CreateCalendars("Test Calendar 1", "alexlucre1@gmail.com", uow);
+                CreateCalendars("Test Calendar 2", "alexlucre1@gmail.com", uow);
+            }
+        }
+
+        private void CreateCalendars(string calendarName,string curUserEmail, IUnitOfWork uow) 
+        {
+            UserDO curUser = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);
+            var curCalendar = new CalendarDO
+            {
+                Name = calendarName,
+                Owner = curUser,
+                OwnerID = curUser.Id
+            };
+            curUser.Calendars.Add(curCalendar);
+        }
+
+        private void AddEvents(IUnitOfWork uow)
+        {
+            if (!uow.EventRepository.GetAll().Where(e => e.Description == "Test Event 1").Any())
+            {
+                CreateEvents(uow, "alexlucre1@gmail.com", "Test Calendar 1");
+                CreateEvents(uow, "alexlucre1@gmail.com", "Test Calendar 2");
+            }
+        }
+        
+        //Creating 10 events for each calendar
+        private void CreateEvents(IUnitOfWork uow, string curUserEmail,string calendarName)
+        {
+            uow.SaveChanges();
+            int bookingRequestID, calendarID;
+
+            UserDO curUser = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);
+            bookingRequestID = uow.BookingRequestRepository.GetAll().Where(e => e.User.Id == curUser.Id).FirstOrDefault().Id;
+            calendarID = curUser.Calendars.Where(e => e.Name == calendarName).FirstOrDefault().Id;
+
+
+            for (int eventNumber = 1; eventNumber < 11; eventNumber++)
+            {
+                DateTimeOffset start = GetRandomEventStartTime();
+                DateTimeOffset end = start.AddMinutes(new Random().Next(30, 120));
+                EventDO createdEvent = new EventDO();
+                createdEvent.BookingRequestID = bookingRequestID;
+                createdEvent.CalendarID = calendarID;
+                createdEvent.StartDate = start;
+                createdEvent.EndDate = end;
+                createdEvent.Description = "Test Event " + eventNumber.ToString();
+                createdEvent.Summary = "Test Event " + eventNumber.ToString();
+                createdEvent.IsAllDay = false;
+                createdEvent.CreatedBy = curUser;
+                createdEvent.CreatedByID = curUser.Id;
+                createdEvent.DateCreated = DateTimeOffset.UtcNow;
+                createdEvent.EventStatus = EventState.Booking;
+                uow.EventRepository.Add(createdEvent);
+            }
+        }
+
+        //Getting random working time within next 3 days
+        private DateTimeOffset GetRandomEventStartTime()
+        {
+            TimeSpan timeSpan = DateTime.Now.AddDays(3) - DateTime.Now;
+            var randomTest = new Random();
+            TimeSpan newSpan = new TimeSpan(0, randomTest.Next(0, (int)timeSpan.TotalMinutes), 0);
+            DateTime newDate = DateTime.Now + newSpan;
+            while (newDate.TimeOfDay.Hours < 9)
+            {
+                newDate = newDate.Add(new TimeSpan(1, 0, 0));
+            }
+            while (newDate.TimeOfDay.Hours > 16)
+            {
+                newDate = newDate.Add(new TimeSpan(-1, 0, 0));
+            }
+            return newDate;
+        }
 
 
     }
