@@ -40,6 +40,12 @@ namespace Data.Infrastructure
         public delegate void UserRegistrationHandler(UserDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
+        public delegate void BookingRequestCheckedOutHandler(int bookingRequestId, string bookerId);
+        public static event BookingRequestCheckedOutHandler AlertBookingRequestCheckedOut;
+
+        public delegate void BookingRequestOwnershipChangeHandler(int bookingRequestId, string bookerId);
+        public static event BookingRequestOwnershipChangeHandler AlertBookingRequestOwnershipChange;
+
         #region Method
         
         /// <summary>
@@ -96,6 +102,18 @@ namespace Data.Infrastructure
             if (AlertUserRegistration != null)
                 AlertUserRegistration(curUser);
         }
+
+        public static void BookingRequestCheckedOut(int bookingRequestId, string bookerId)
+        {
+            if (AlertBookingRequestStateChange != null)
+                AlertBookingRequestCheckedOut(bookingRequestId, bookerId);
+        }
+
+        public static void BookingRequestOwnershipChange(int bookingRequestId, string bookerId)
+        {
+            if (AlertBookingRequestStateChange != null)
+                AlertBookingRequestOwnershipChange(bookingRequestId, bookerId);
+        }
         #endregion
     }
 
@@ -113,6 +131,8 @@ namespace Data.Infrastructure
             AlertManager.AlertCustomerCreated += NewCustomerCreated;
             AlertManager.AlertBookingRequestProcessingTimeout += ProcessTimeout;
             AlertManager.AlertUserRegistration += UserRegistration;
+            AlertManager.AlertBookingRequestCheckedOut += ProcessBookingRequestCheckedOut;
+            AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChange;
         }
 
         private void NewCustomerCreated(string curUserId)
@@ -283,6 +303,57 @@ namespace Data.Infrastructure
                 uow.SaveChanges();
             }
 
+        }
+
+        public void ProcessBookingRequestCheckedOut(int bookingRequestId, string bookerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
+                FactDO curAction = new FactDO()
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Ownership",
+                    Activity = "Checkout",
+                    CustomerId = bookingRequestDO.User.Id,
+                    ObjectId = bookingRequestDO.Id,
+                    BookerId = bookerId,
+                    Status = status,
+                    CreateDate = DateTimeOffset.Now,
+                };
+                curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
+                AddFact(uow, curAction);
+                uow.SaveChanges();
+            }
+        }
+
+        public void BookingRequestOwnershipChange(int bookingRequestId, string bookerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
+                FactDO curAction = new FactDO()
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Ownership",
+                    Activity = "Change",
+                    CustomerId = bookingRequestDO.User.Id,
+                    ObjectId = bookingRequestDO.Id,
+                    BookerId = bookerId,
+                    Status = status,
+                    CreateDate = DateTimeOffset.Now,
+                };
+                curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
+                AddFact(uow, curAction);
+                uow.SaveChanges();
+
+            }
         }
 
     }

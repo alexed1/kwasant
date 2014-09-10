@@ -10,14 +10,32 @@ using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
+using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 
 namespace KwasantWeb.Controllers
 {
     public class NegotiationController : Controller
-    {        
-        public ActionResult Edit(int negotiationID)
+    {
+        Booker _booker;
+        string _currBooker;
+        public NegotiationController()
         {
-            return View(GetNegotiationVM(negotiationID, a => a.EventStartDate, a => a.EventEndDate));
+            _booker = new Booker();
+        }
+       
+        public ActionResult Edit(int negotiationID, int bookingRequestID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
+                if (verifyOwnership != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+                else
+                {
+                    return View(GetNegotiationVM(negotiationID, a => a.EventStartDate, a => a.EventEndDate));
+                }
+            }
         }
 
         public ActionResult Review(int negotiationID)
