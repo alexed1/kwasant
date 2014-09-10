@@ -81,10 +81,12 @@ namespace KwasantWeb
             {
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "Error";
-                incidentDO.SecondaryCategory = "UnhandledException";
+                if (filterContext.Exception.Message.Contains("Validation failed"))
+                    incidentDO.SecondaryCategory = "ValidationException";
+                else
+                    incidentDO.SecondaryCategory = "ApplicationException";
                 incidentDO.CreateTime = DateTime.Now; ;
                 incidentDO.Notes = filterContext.Exception.Message;
-                incidentDO.Activity = "Failure";
                 _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
             }

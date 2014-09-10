@@ -44,19 +44,8 @@ namespace Daemons
             RegisterEvent<string, string, int>(MandrillPackagerEventHandler.EmailRejected, (id, reason, emailID) =>
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                EmailRepository emailRepository = unitOfWork.EmailRepository;
-                var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
-                if (emailToUpdate == null)
-                {
-                    Logger.GetLogger()
-                        .Error("Email id " + emailID +
-                               " recieved a callback saying it was rejected from Mandrill, but the email was not found in our database");
-                    return;
-                }
-
-                Logger.GetLogger()
-                    .Error(String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason));
-
+                string logMessage = String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason);
+                var emailToUpdate = ProcessMandrillError(logMessage, emailID);
                 emailToUpdate.EmailStatus = EmailState.SendRejected;
                 unitOfWork.SaveChanges();
             });
@@ -65,22 +54,13 @@ namespace Daemons
                 (errorCode, name, message, emailID) =>
                 {
                     IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                    EmailRepository emailRepository = unitOfWork.EmailRepository;
-                    var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
-                    if (emailToUpdate == null)
-                    {
-                        Logger.GetLogger()
-                            .Error("Email id " + emailID +
-                                   " recieved a callback saying it recieved a critical error from Mandrill, but the email was not found in our database");
-                        return;
-                    }
+                  
 
-                    Logger.GetLogger()
-                        .Error(String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}",
-                            errorCode, name, message, emailID));
+                    string logMessage = String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}", errorCode, name, message, emailID);
+                    var emailToUpdate = ProcessMandrillError(logMessage, emailID);
 
                     emailToUpdate.EmailStatus = EmailState.SendCriticalError;
-                    AlertManager.ErrorEmailSendFailure();
+                    AlertManager.Error_EmailSendFailure();
                     KwasantCore.Services.Email _email = new KwasantCore.Services.Email();
                     _email.SendAlertEmail();
 
@@ -107,19 +87,10 @@ namespace Daemons
             RegisterEvent<string, int>(GmailPackagerEventHandler.EmailRejected, (reason, emailID) =>
             {
                 IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                EmailRepository emailRepository = unitOfWork.EmailRepository;
-                var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
-                if (emailToUpdate == null)
-                {
-                    Logger.GetLogger()
-                        .Error("Email id " + emailID +
-                               " recieved a callback saying it was rejected from Gmail, but the email was not found in our database");
-                    return;
-                }
+               
 
-                Logger.GetLogger()
-                    .Error(String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason));
-
+                string logMessage = String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason);
+                var emailToUpdate = ProcessMandrillError(logMessage, emailID);
                 emailToUpdate.EmailStatus = EmailState.SendRejected;
                 unitOfWork.SaveChanges();
             });
@@ -128,22 +99,12 @@ namespace Daemons
                 (errorCode, name, message, emailID) =>
                 {
                     IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                    EmailRepository emailRepository = unitOfWork.EmailRepository;
-                    var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
-                    if (emailToUpdate == null)
-                    {
-                        Logger.GetLogger()
-                            .Error("Email id " + emailID +
-                                   " recieved a callback saying it recieved a critical error from Gmail, but the email was not found in our database");
-                        return;
-                    }
-
-                    Logger.GetLogger()
-                        .Error(String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}",
-                            errorCode, name, message, emailID));
+                    
+                    string logMessage = String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}", errorCode, name, message, emailID);
+                    var emailToUpdate = ProcessMandrillError(logMessage, emailID);
 
                     emailToUpdate.EmailStatus = EmailState.SendCriticalError;
-                    AlertManager.ErrorEmailSendFailure();
+                    AlertManager.Error_EmailSendFailure();
                     KwasantCore.Services.Email _email = new KwasantCore.Services.Email();
                     _email.SendAlertEmail();
                     unitOfWork.SaveChanges();
@@ -243,6 +204,20 @@ namespace Daemons
                 }
             }
             return isRecipientRemoved;
+        }
+
+
+        public EmailDO ProcessMandrillError(string logMessage, int emailID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var emailRepository = uow.EmailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
+                if (emailRepository == null)
+                {
+                    Logger.GetLogger().Error(logMessage);
+                }
+                return emailRepository;
+            }
         }
     }
 }

@@ -762,6 +762,8 @@
     <Content Include="Views\Shared\404.cshtml" />
     <Content Include="Views\Negotiation\Review.cshtml" />
     <Content Include="Views\Account\RegistrationConfirmation.cshtml" />
+    <Content Include="Views\Report\_History.cshtml" />
+    <Content Include="Views\Report\History.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

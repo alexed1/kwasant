@@ -40,8 +40,8 @@ namespace Data.Infrastructure
         public delegate void UserRegistrationHandler(UserDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
-        public delegate void ErrorEmailSendFailureHandler();
-        public static event ErrorEmailSendFailureHandler AlertErrorEmailSendFailure;
+        public delegate void Error_EmailSendFailureHandler();
+        public static event Error_EmailSendFailureHandler AlertError_EmailSendFailure;
 
         #region Method
         
@@ -100,10 +100,10 @@ namespace Data.Infrastructure
                 AlertUserRegistration(curUser);
         }
 
-        public static void ErrorEmailSendFailure()
+        public static void Error_EmailSendFailure()
         {
-            if (AlertErrorEmailSendFailure != null)
-                AlertErrorEmailSendFailure();
+            if (AlertError_EmailSendFailure != null)
+                AlertError_EmailSendFailure();
         }
 
         #endregion
@@ -123,7 +123,7 @@ namespace Data.Infrastructure
             AlertManager.AlertCustomerCreated += NewCustomerCreated;
             AlertManager.AlertBookingRequestProcessingTimeout += ProcessTimeout;
             AlertManager.AlertUserRegistration += UserRegistration;
-            AlertManager.AlertErrorEmailSendFailure += Error_EmailSendFailure;
+            AlertManager.AlertError_EmailSendFailure += Error_EmailSendFailure;
         }
 
         private void NewCustomerCreated(string curUserId)
