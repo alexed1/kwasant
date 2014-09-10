@@ -1,17 +1,26 @@
 ﻿using System;
+using Data.Interfaces;
 using KwasantCore.Services;
 using NUnit.Framework;
+using StructureMap;
 
 namespace KwasantTest.Services
 {
     [TestFixture]
     public class AttendeeTests
     {
+        private IEmailAddress _emailAddress;
+        [SetUp]
+        public void Setup()
+        {
+            _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+        }
+
+
         [Test]
         public void TestBasicEmail()
         {
-            var att = new Attendee();
-            var result = att.GetEmailAddresses("rjrudman@gmail.com");
+            var result=_emailAddress.ExtractFromString("rjrudman@gmail.com");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(String.Empty, result[0].Name);
@@ -21,8 +30,7 @@ namespace KwasantTest.Services
         [Test]
         public void TestMultipleBasicEmails()
         {
-            var att = new Attendee();
-            var result = att.GetEmailAddresses("rjrudman@gmail.com,otheremail@gmail.com");
+            var result=_emailAddress.ExtractFromString("rjrudman@gmail.com,otheremail@gmail.com");
 
             Assert.AreEqual(2, result.Count);
 
@@ -36,8 +44,7 @@ namespace KwasantTest.Services
         [Test]
         public void TestEmailWithName()
         {
-            var att = new Attendee();
-            var result = att.GetEmailAddresses("<Robert>rjrudman@gmail.com");
+            var result=_emailAddress.ExtractFromString("<Robert>rjrudman@gmail.com");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual("Robert", result[0].Name);
@@ -47,8 +54,7 @@ namespace KwasantTest.Services
         [Test]
         public void TestEmailWithFullName()
         {
-            var att = new Attendee();
-            var result = att.GetEmailAddresses("<Robert Robert>rjrudman@gmail.com");
+            var result=_emailAddress.ExtractFromString("<Robert Robert>rjrudman@gmail.com");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual("Robert Robert", result[0].Name);
@@ -58,8 +64,7 @@ namespace KwasantTest.Services
         [Test]
         public void TestNameWithNumbers()
         {
-            var att = new Attendee();
-            var result = att.GetEmailAddresses("<Robert23>rjrudman@gmail.com");
+            var result=_emailAddress.ExtractFromString("<Robert23>rjrudman@gmail.com");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual("Robert23", result[0].Name);
@@ -69,8 +74,7 @@ namespace KwasantTest.Services
         [Test]
         public void TestEmailNameWithNumbers()
         {
-            var att = new Attendee();
-            var result = att.GetEmailAddresses("rjrudman23@gmail.com");
+            var result=_emailAddress.ExtractFromString("rjrudman23@gmail.com");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(String.Empty, result[0].Name);
@@ -80,8 +84,7 @@ namespace KwasantTest.Services
         [Test]
         public void TestDomainlNameWithNumbers()
         {
-            var att = new Attendee();
-            var result = att.GetEmailAddresses("rjrudman@g23mail.com");
+            var result=_emailAddress.ExtractFromString("rjrudman@g23mail.com");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(String.Empty, result[0].Name);
@@ -91,8 +94,7 @@ namespace KwasantTest.Services
         [Test]
         public void TestInvalidTLD_Short()
         {
-            var att = new Attendee();
-            var result = att.GetEmailAddresses("rjrudman@gmail.c");
+            var result=_emailAddress.ExtractFromString("rjrudman@gmail.c");
 
             Assert.AreEqual(0, result.Count);
         }
@@ -102,7 +104,7 @@ namespace KwasantTest.Services
         {
             var att = new Attendee();
             //This is valid TLD - as per http://data.iana.org/TLD/tlds-alpha-by-domain.txt
-            var result = att.GetEmailAddresses("rjrudman@gmail.XN--CLCHC0EA0B2G2A9GCD");
+            var result = _emailAddress.ExtractFromString("rjrudman@gmail.XN--CLCHC0EA0B2G2A9GCD");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(String.Empty, result[0].Name);

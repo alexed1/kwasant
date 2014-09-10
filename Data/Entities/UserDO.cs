@@ -32,7 +32,7 @@ namespace Data.Entities
         public virtual EmailAddressDO EmailAddress { get; set; }
 
         [NotMapped]
-        IEmailAddress IUser.EmailAddress
+        IEmailAddressDO IUser.EmailAddress
         {
             get { return EmailAddress; }
         }

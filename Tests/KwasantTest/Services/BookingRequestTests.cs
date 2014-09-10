@@ -256,8 +256,9 @@ namespace KwasantTest.Services
             Assert.AreEqual(1, requests.Count);
         }
 
+        //This test takes too long see. KW-340. Temporarily ignoring it.
         [Test]
-        [Category("BRM")]
+        [Category("BRM"), Ignore]
         public void TimeOutStaleBRTest()
         {
             var timeOut = TimeSpan.FromSeconds(65);

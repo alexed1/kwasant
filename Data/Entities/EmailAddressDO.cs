@@ -5,7 +5,7 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class EmailAddressDO : IEmailAddress
+    public class EmailAddressDO : IEmailAddressDO
     {
         [Key]
         public int Id { get; set; }

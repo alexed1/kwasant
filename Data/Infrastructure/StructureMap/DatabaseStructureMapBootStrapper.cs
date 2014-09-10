@@ -12,10 +12,10 @@ namespace Data.Infrastructure.StructureMap
             public KwasantCoreRegistry()
             {
                 For<IAttachment>().Use<AttachmentDO>();
-                For<IAttendee>().Use<AttendeeDO>();
-                For<IBookingRequest>().Use<BookingRequestDO>();
+                For<IAttendeeDO>().Use<AttendeeDO>();
+                //For<IBookingRequestDO>().Use<BookingRequestDO>();
                 For<IEmail>().Use<EmailDO>();
-                For<IEmailAddress>().Use<EmailAddressDO>();
+                For<IEmailAddressDO>().Use<EmailAddressDO>();
                 For<IUser>().Use<UserDO>();
                 For<ICalendar>().Use<CalendarDO>();
                 For<IAspNetRoles>().Use<AspNetRolesDO>();
