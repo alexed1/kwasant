@@ -1,7 +1,8 @@
 ﻿@{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
+<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 <h2>Kwasant Admin Console</h2>
 @*@Html.ActionLink("Show Booking Requests", "Index", "BookingRequest", null, new { @class = "" })
     <p></p>
@@ -46,6 +47,18 @@
         </div>
     </div>
 </nav>
+
+<table id="tblIncident" class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 15%">Date</th>
+            <th style="width: 15%">Primary Category</th>
+            <th style="width: 15%">Secondary Category</th>
+            <th style="width: 10%">Activity</th>
+            <th style="width: 45%">Notes</th>
+        </tr>
+    </thead>
+</table>
 <a href="/Website/index.aspx">Go to kwasant.com</a>
 <script type="text/javascript">
  $(document).ready(function() {
@@ -55,5 +68,30 @@
         }, function() {
             $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105)
         });
-    });
+        $.getJSON("/Report/ShowReport", { queryPeriod: "", type: "fiveRecentIncident" }, showIncident);
+ });
+    // show 5 most Recent Incident on datatable
+     function showIncident(response) {
+         var table = $('#tblIncident').DataTable({
+             order: [0, 'desc'],
+             paging: false,
+             searching: false,
+             bLengthChange: false,
+             data: JSON.parse(response),
+             columns: [
+                 { data: 'create_time' },
+                 { data: 'primary_category' },
+                 { data: 'secondary_category' },
+                 { data: 'activity' },
+                 { data: 'notes' }
+             ],
+         });
+         $('#tblIncident_info').hide();
+     }
+     
+
+
+ 
+ 
+
 </script>

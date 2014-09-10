@@ -9,6 +9,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using StructureMap;
+using Utilities;
 using Utilities.Logging;
 
 namespace KwasantCore.Services
@@ -168,8 +169,13 @@ namespace KwasantCore.Services
             EmailAddressDO emailAddressDO = new EmailAddressDO(userDO.EmailAddress.Address);
             Email email = new Email(uow);
             string message = "BookingRequest ID :" + bookingRequestDO.Id + " Timed Out";
-            EmailDO emailDO = email.GenerateBookerMessage(emailAddressDO, message,"BookingRequest Timeout");
-            emailDO.Subject = "BookingRequest Timeout";
+            string subject = "BookingRequest Timeout";
+
+          //  EmailDO emailDO = email.GenerateBookerMessage(emailAddressDO, message,"BookingRequest Timeout");
+            string toRecipient = emailAddressDO.Address;
+            IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+            string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+            EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, subject, message, fromAddress, toRecipient);
             email.Send(emailDO);
             uow.SaveChanges();
         }

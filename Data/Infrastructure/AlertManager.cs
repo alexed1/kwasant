@@ -40,6 +40,9 @@ namespace Data.Infrastructure
         public delegate void UserRegistrationHandler(UserDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
+        public delegate void Error_EmailSendFailureHandler();
+        public static event Error_EmailSendFailureHandler AlertError_EmailSendFailure;
+
         #region Method
         
         /// <summary>
@@ -96,6 +99,13 @@ namespace Data.Infrastructure
             if (AlertUserRegistration != null)
                 AlertUserRegistration(curUser);
         }
+
+        public static void Error_EmailSendFailure()
+        {
+            if (AlertError_EmailSendFailure != null)
+                AlertError_EmailSendFailure();
+        }
+
         #endregion
     }
 
@@ -113,6 +123,7 @@ namespace Data.Infrastructure
             AlertManager.AlertCustomerCreated += NewCustomerCreated;
             AlertManager.AlertBookingRequestProcessingTimeout += ProcessTimeout;
             AlertManager.AlertUserRegistration += UserRegistration;
+            AlertManager.AlertError_EmailSendFailure += Error_EmailSendFailure;
         }
 
         private void NewCustomerCreated(string curUserId)
@@ -283,6 +294,20 @@ namespace Data.Infrastructure
                 uow.SaveChanges();
             }
 
+        }
+
+        public void Error_EmailSendFailure()
+        {
+            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Email";
+                incidentDO.SecondaryCategory = "Send";
+                incidentDO.CreateTime = DateTime.Now; ;
+                incidentDO.Activity = "Failure";
+                _uow.IncidentRepository.Add(incidentDO);
+                _uow.SaveChanges();
+            }
         }
 
     }
