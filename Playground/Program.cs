@@ -24,7 +24,7 @@ namespace Playground
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var firstUser = uow.UserRepository.GetQuery().First();
-                var tokenLink = at.GetAuthorizationTokenURL("www.google.com", firstUser);
+                var tokenLink = at.GetAuthorizationTokenURL(uow, "www.google.com", firstUser);
 
             }
         }
