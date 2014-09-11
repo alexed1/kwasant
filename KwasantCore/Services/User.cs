@@ -185,7 +185,7 @@ namespace KwasantCore.Services
                 curEmail.From = curUser.EmailAddress;
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
                 curEmail.Subject = "User Settings Notification";
-                new Email(uow).SendTemplate("User_Settings_Notification", curEmail, null);
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "User_Settings_Notification", null);
             }
             new Account().Register(uow, curUser.EmailAddress.Address, curUser.FirstName, curUser.LastName, "test@1234", role);
         }

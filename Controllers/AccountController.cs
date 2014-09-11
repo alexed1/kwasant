@@ -40,8 +40,7 @@ namespace KwasantWeb.Controllers
                 emailDO.Subject = message.Subject;
                 emailDO.HTMLText = message.Body;
 
-                Email userEmail = new Email(uow, emailDO);
-                userEmail.Send();
+                uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                 uow.SaveChanges();
             }
         }

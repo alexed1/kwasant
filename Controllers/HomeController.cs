@@ -83,7 +83,7 @@ namespace KwasantWeb.Controllers
                     Email email = new Email(uow);
                     emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
                     EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
-                    email.Send(emailDO);
+                    uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                     uow.SaveChanges();
                 }
                 result = "success";

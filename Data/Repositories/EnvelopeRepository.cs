@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using Data.Validations;
 using FluentValidation;
 
@@ -21,25 +24,29 @@ namespace Data.Repositories
             base.Add(entity);
         }
 
-        public EnvelopeDO ConfigurePlainEmail(EmailDO email)
+        public EnvelopeDO ConfigurePlainEmail(IEmail email)
         {
-            var envelope = new EnvelopeDO()
-            {
-                Email = email,
-                Handler = EnvelopeDO.GmailHander
-            };
-            UnitOfWork.EnvelopeRepository.Add(envelope);
-            return envelope;
+            if (email == null)
+                throw new ArgumentNullException("email");
+            return ConfigureEnvelope(email, EnvelopeDO.GmailHander);
         }
 
         public EnvelopeDO ConfigureTemplatedEmail(IEmail email, string templateName, IDictionary<string, string> mergeData)
         {
-            var envelope = new EnvelopeDO()
-            {
-                TemplateName = templateName,
-                Handler = EnvelopeDO.MandrillHander
-            };
-            ((IEnvelope) envelope).Email = email;
+            if (email == null)
+                throw new ArgumentNullException("email");
+            if (string.IsNullOrEmpty(templateName))
+                throw new ArgumentNullException("templateName", "Template name is null or empty.");
+            return ConfigureEnvelope(email, EnvelopeDO.MandrillHander, templateName, mergeData);
+        }
+
+        private EnvelopeDO ConfigureEnvelope(IEmail email, string handler, string templateName = null, IDictionary<string, string> mergeData = null)
+        {
+            Debug.Assert(email != null);
+
+            var envelope = new EnvelopeDO {Handler = handler};
+            ((IEnvelope)envelope).Email = email;
+            envelope.TemplateName = templateName;
             if (mergeData != null)
             {
                 foreach (var pair in mergeData)
@@ -47,7 +54,7 @@ namespace Data.Repositories
                     envelope.MergeData.Add(pair);
                 }
             }
-
+            email.EmailStatus = EmailState.Queued;
             UnitOfWork.EnvelopeRepository.Add(envelope);
             return envelope;
         }

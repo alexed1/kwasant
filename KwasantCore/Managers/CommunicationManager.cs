@@ -55,8 +55,7 @@ namespace KwasantCore.Managers
                 curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
                 curEmail.Subject = "Welcome to Kwasant";
-                Email _email = new Email(uow);
-                _email.SendTemplate("welcome_to_kwasant_v2", curEmail, null);
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "welcome_to_kwasant_v2", null);
                 uow.SaveChanges();
             }
         }
@@ -84,125 +83,13 @@ namespace KwasantCore.Managers
                     Server.ServerUrl, 
                     negotiationDO.Id);
 
-                emailDO.EmailStatus = EmailState.Queued;
                 uow.EmailRepository.Add(emailDO);
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "clarification_request_v3", new Dictionary<string, string>() { { "RESP_URL", responseUrl } });
+
+                string templateName = "clarification_request_v3";
+                
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, templateName, new Dictionary<string, string>() { { "RESP_URL", responseUrl } });
             }
         }
-
-/*
-        public void DispatchInvitations(IUnitOfWork uow, EventDO eventDO)
-        {
-            //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
-            //var createdDate = eventDO.BookingRequest.DateCreated;
-            //eventDO.StartDate = eventDO.StartDate.ToOffset(createdDate.Offset);
-            //eventDO.EndDate = eventDO.EndDate.ToOffset(createdDate.Offset);
-
-            var t = Utilities.Server.ServerUrl;
-            switch (eventDO.EventStatus)
-            {
-                case EventState.Booking:
-                    {
-                        eventDO.EventStatus = EventState.DispatchCompleted;
-
-                        var calendar = Event.GenerateICSCalendarStructure(eventDO);
-                        foreach (var attendeeDO in eventDO.Attendees)
-                        {
-                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, false);
-                            var email = new Email(uow, emailDO);
-                            AttachCalendarToEmail(calendar, emailDO);
-                            email.Send();
-                        }
-
-                        break;
-                    }
-                case EventState.ReadyForDispatch:
-                case EventState.DispatchCompleted:
-                    //Dispatched means this event was previously created. This is a standard event change. We need to figure out what kind of update message to send
-                    if (EventHasChanged(uow, eventDO))
-                    {
-                        eventDO.EventStatus = EventState.DispatchCompleted;
-                        var calendar = Event.GenerateICSCalendarStructure(eventDO);
-
-                        var newAttendees = eventDO.Attendees.Where(a => a.Id == 0).ToList();
-
-                        foreach (var attendeeDO in eventDO.Attendees)
-                        {
-                            //Id > 0 means it's an existing attendee, so we need to send the 'update' email to them.
-                            var emailDO = CreateInvitationEmail(uow, eventDO, attendeeDO, !newAttendees.Contains(attendeeDO));
-                            var email = new Email(uow, emailDO);
-                            AttachCalendarToEmail(calendar, emailDO);
-                            email.Send();
-                        }
-                    }
-                    else
-                    {
-                        //If the event hasn't changed - we don't need a new email..?
-                    }
-                    break;
-
-                case EventState.ProposedTimeSlot:
-                    //Do nothing
-                    break;
-                default:
-                    throw new Exception("Invalid event status");
-            }
-        }
-*/
-
-/*
-        private EmailDO CreateInvitationEmail(IUnitOfWork uow, EventDO eventDO, AttendeeDO attendeeDO, bool isUpdate)
-        {
-            string fromEmail = _configRepository.Get("fromEmail");
-            string fromName = _configRepository.Get("fromName");
-
-            var emailAddressRepository = uow.EmailAddressRepository;
-            if (eventDO.Attendees == null)
-                eventDO.Attendees = new List<AttendeeDO>();
-
-            EmailDO outboundEmail = new EmailDO();
-
-            //configure the sender information
-            var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
-            fromEmailAddr.Name = fromName;
-            outboundEmail.From = fromEmailAddr;
-
-            var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(attendeeDO.EmailAddress.Address);
-            toEmailAddress.Name = attendeeDO.Name;
-            outboundEmail.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
-
-            var user = new User();
-            var userID = user.GetOrCreateFromBR(uow, attendeeDO.EmailAddress).Id;
-            
-            if (isUpdate)
-            {
-
-                outboundEmail.Subject = String.Format(_configRepository.Get("emailSubjectUpdated"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
-                outboundEmail.HTMLText = GetEmailHTMLTextForUpdate(eventDO, userID);
-                outboundEmail.PlainText = GetEmailPlainTextForUpdate(eventDO, userID);
-            }
-            else
-            {
-                outboundEmail.Subject = String.Format(_configRepository.Get("emailSubject"), GetOriginatorName(eventDO), eventDO.Summary, eventDO.StartDate);
-                outboundEmail.HTMLText = GetEmailHTMLTextForNew(eventDO, userID);
-                outboundEmail.PlainText = GetEmailPlainTextForNew(eventDO, userID);
-            }
-
-            //prepare the outbound email
-            outboundEmail.EmailStatus = EmailState.Queued;
-            if (eventDO.Emails == null)
-                eventDO.Emails = new List<EmailDO>();
-
-            eventDO.Emails.Add(outboundEmail);
-
-            uow.EmailRepository.Add(outboundEmail);
-
-            return outboundEmail;
-        }
-*/
-
-
-        
 
         private bool EventHasChanged(IUnitOfWork uow, EventDO eventDO)
         {

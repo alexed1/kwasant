@@ -33,8 +33,7 @@ namespace KwasantCore.Services
             if (curInvitation == null)
                 throw new ArgumentNullException("curInvitation");
 
-            Email email = new Email(uow);
-            email.Send(curInvitation);
+            uow.EnvelopeRepository.ConfigurePlainEmail(curInvitation);
         }
 
         public InvitationDO Generate(IUnitOfWork uow, int curType, AttendeeDO curAttendee, EventDO curEvent)

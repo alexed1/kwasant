@@ -19,7 +19,6 @@ namespace KwasantCore.Services
     public class Email
     {
         private readonly IUnitOfWork _uow;
-        private EmailDO _curEmailDO;
         private EventValidator _curEventValidator;
         #region Constructor
 
@@ -29,22 +28,13 @@ namespace KwasantCore.Services
         /// Initialize EmailManager
         /// </summary>
         /// 
-
-        public Email()
-            : this(ObjectFactory.GetInstance<IUnitOfWork>())
-        {
-        }
         //this constructor enables the creation of an email that doesn't necessarily have anything to do with an Event. It gets called by the other constructors
         public Email(IUnitOfWork uow)
         {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
             _uow = uow;
             _curEventValidator = new EventValidator();
-        }
-
-        public Email(IUnitOfWork uow, EmailDO curEmailDO) : this(uow)
-        {
-            //should add validation here
-            _curEmailDO = curEmailDO;
         }
 
         #endregion
@@ -54,26 +44,16 @@ namespace KwasantCore.Services
         /// <summary>
         /// This implementation of Send uses the Mandrill API
         /// </summary>
+        [ObsoleteAttribute("Use directly uow.EnvelopeRepository.ConfigureTemplatedEmail method.")]
         public EnvelopeDO SendTemplate(string templateName, IEmail message, Dictionary<string, string> mergeFields)
         {
-            var envelope = _uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
-            message.EmailStatus = EmailState.Queued;
-            _uow.EnvelopeRepository.Add(envelope);
-            return envelope;
+            return _uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
         }
 
-        public EnvelopeDO Send()
+        [ObsoleteAttribute("Use directly uow.EnvelopeRepository.ConfigurePlainEmail method.")]
+        public EnvelopeDO Send(EmailDO emailDO)
         {
-            var envelope = _uow.EnvelopeRepository.ConfigurePlainEmail(_curEmailDO);
-            _curEmailDO.EmailStatus = EmailState.Queued;
-            _uow.EnvelopeRepository.Add(envelope);
-            return envelope;
-        }
-
-        public void Send(EmailDO emailDO)
-        {
-            _curEmailDO = emailDO;
-            Send();
+            return _uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
         }
 
         public static void InitialiseWebhook(String url)

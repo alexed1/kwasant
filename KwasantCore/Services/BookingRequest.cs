@@ -170,7 +170,7 @@ namespace KwasantCore.Services
             string message = "BookingRequest ID :" + bookingRequestDO.Id + " Timed Out";
             EmailDO emailDO = email.GenerateBookerMessage(emailAddressDO, message,"BookingRequest Timeout");
             emailDO.Subject = "BookingRequest Timeout";
-            email.Send(emailDO);
+            uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
             uow.SaveChanges();
         }
 

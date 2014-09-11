@@ -40,8 +40,7 @@ namespace KwasantTest.Services
             EmailDO _curEmailDO = _fixture.TestEmail1();
            
             //EXECUTE
-            Email curEmail = new Email(_uow, _curEmailDO);
-            curEmail.Send();
+            _uow.EnvelopeRepository.ConfigurePlainEmail(_curEmailDO);
             _uow.SaveChanges();
 
             //VERIFY
@@ -60,10 +59,10 @@ namespace KwasantTest.Services
             const string templateName = "test_template";
             
             // EXECUTE
-            var email = new Email(_uow);
-            email.SendTemplate(templateName,
-                               _curEmailDO,
-                               new Dictionary<string, string>() {{"test_key", "test_value"}});
+            _uow.EnvelopeRepository.ConfigureTemplatedEmail(_curEmailDO,
+                                                            templateName,
+                                                            new Dictionary<string, string>()
+                                                                {{"test_key", "test_value"}});
 
             // VERIFY
             var envelope = _uow.EnvelopeRepository.FindOne(e => e.Email.Id == _curEmailDO.Id);
@@ -84,7 +83,7 @@ namespace KwasantTest.Services
             var email = new Email(_uow);
 
             // VERIFY
-            Assert.Throws<ValidationException>(() => { email.Send(curEmailDO); _uow.SaveChanges(); }, "Email should fail to be sent as it is invalid.");
+            Assert.Throws<ValidationException>(() => { _uow.EnvelopeRepository.ConfigurePlainEmail(curEmailDO); _uow.SaveChanges(); }, "Email should fail to be sent as it is invalid.");
         }
 
         [Test]
@@ -96,10 +95,9 @@ namespace KwasantTest.Services
             curEmailDO.Subject = "";
 
             // EXECUTE
-            var email = new Email(_uow);
 
             // VERIFY
-            Assert.Throws<ValidationException>(() => email.SendTemplate("test_template", curEmailDO, null), "Email should fail to be sent as it is invalid.");
+            Assert.Throws<ValidationException>(() => _uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmailDO, "test_template", null), "Email should fail to be sent as it is invalid.");
         }
     }
 }
