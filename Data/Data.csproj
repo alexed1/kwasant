@@ -181,6 +181,10 @@
     <Compile Include="Migrations\201409101403296_Change_State_to_BookingRequest.Designer.cs">
       <DependentUpon>201409101403296_Change_State_to_BookingRequest.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409111335528_Sync.11.09.2014.cs" />
+    <Compile Include="Migrations\201409111335528_Sync.11.09.2014.Designer.cs">
+      <DependentUpon>201409111335528_Sync.11.09.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\InvitationResponseRepository.cs" />
     <Compile Include="Repositories\InvitationRepository.cs" />
@@ -917,6 +921,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409101403296_Change_State_to_BookingRequest.resx">
       <DependentUpon>201409101403296_Change_State_to_BookingRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409111335528_Sync.11.09.2014.resx">
+      <DependentUpon>201409111335528_Sync.11.09.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
