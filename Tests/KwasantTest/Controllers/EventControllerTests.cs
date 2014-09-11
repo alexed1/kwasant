@@ -44,7 +44,7 @@ namespace KwasantTest.Controllers
         //create eventvm with a new attendee string with an email, and with id 1 to match the event in the mockdb
         //call processconfirmedevent
         //should complete without an exception
-        [Test, Category("EventController"), Ignore]
+        [Test, Category("EventController")]
         public void CanProcessConfirmedEvent()
         {
             var user = _fixture.TestUser1();
