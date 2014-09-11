@@ -2667,17 +2667,17 @@ namespace DDay.iCal.Test
             }
         }
 
-        [Test, Category("DDay"),Ignore] //Category(("Recurrence")] //ignoring because it takes too bloody long
-        public void Bug3312617()
-        {
-            IICalendar calendar = iCalendar.LoadFromFile(@"Calendars\Recurrence\Bug3312617.ics").First();
-            iCalDateTime from = new iCalDateTime(2013, 1, 1, true);
-            iCalDateTime to = new iCalDateTime(2015, 12, 31, true);
+        //[Test, Category("DDay"),Ignore] //Category(("Recurrence")] //ignoring because it takes too bloody long
+        //public void Bug3312617()
+        //{
+        //    IICalendar calendar = iCalendar.LoadFromFile(@"Calendars\Recurrence\Bug3312617.ics").First();
+        //    iCalDateTime from = new iCalDateTime(2013, 1, 1, true);
+        //    iCalDateTime to = new iCalDateTime(2015, 12, 31, true);
 
-            IList<Occurrence> occurrences = calendar.GetOccurrences(from, to);
-            int daysDifference = to.Subtract(from).Days;
-            Assert.AreEqual(daysDifference, occurrences.Count);
-        }
+        //    IList<Occurrence> occurrences = calendar.GetOccurrences(from, to);
+        //    int daysDifference = to.Subtract(from).Days;
+        //    Assert.AreEqual(daysDifference, occurrences.Count);
+        //}
 
         /// <summary>
         /// Ensures that DURATION of zero, INTERVAL of zero, and COUNT of zero are all valid

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Mail;
+using System.Net.Sockets;
 using Daemons.InboundEmailHandlers;
 using Data.Entities;
 using Data.Infrastructure;
@@ -110,10 +111,20 @@ namespace Daemons
 
         private void GetUnreadMessages(IImapClient client)
         {
-            var messages = client.GetMessages(client.Search(SearchCondition.Unseen()));
+            try
+            {
+              var messages = client.GetMessages(client.Search(SearchCondition.Unseen()));
 
-            foreach (var message in messages)
-                ProcessMessageInfo(message);
+              foreach (var message in messages)
+                            ProcessMessageInfo(message);
+            }
+            catch (SocketException ex)  //we were getting strange socket errors after time, and it looks like a reset solves things
+            {
+                CleanUp();
+                _client = null; //this will get recreated the next time this daemon runs
+                AlertManager.EmailProcessingFailure(DateTime.Now.to_S(), "Got that SocketException");
+                Logger.GetLogger().Error("Hit SocketException. Trying to reset the IMAP Client.", ex);
+            }
         }
 
         private void ProcessMessageInfo(MailMessage messageInfo)
@@ -134,26 +145,9 @@ namespace Daemons
                     }
                     catch (Exception e)
                     {
-                        AlertManager.EmailProcessingFailure(messageInfo.Message.Headers["Date"], e.Message);
-                        Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}",
-                            messageInfo.Message.Headers["Message-ID"]));
-                        messageInfo.Client.AddMessageFlags(messageInfo.Uid, messageInfo.Mailbox, MessageFlag.Seen);
+                        AlertManager.EmailProcessingFailure(messageInfo.Headers["Date"], e.Message);
+                        Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Headers["Message-ID"]));
                     }
-                }
-            }
-            catch (SocketException ex)  //we were getting strange socket errors after time, and it looks like a reset solves things
-            {
-                CleanUp();
-                _client = null; //this will get recreated the next time this daemon runs
-                AlertManager.EmailProcessingFailure(DateTime.Now.to_S(), "Got that SocketException");
-                Logger.GetLogger().Error("Hit SocketException. Trying to reset the IMAP Client.", ex);
-
-            }
-
-            catch (Exception ex)
-            {
-                Logger.GetLogger().Error("Error occured on querying... restarting.", ex);
-            }
         }
 
         protected override void CleanUp()
