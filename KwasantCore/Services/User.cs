@@ -39,7 +39,7 @@ namespace KwasantCore.Services
             if (curUser == null)
             {
                 curUser = uow.UserRepository.CreateFromEmail(emailAddressDO);
-               
+
             }
             return curUser;
         }
@@ -64,7 +64,7 @@ namespace KwasantCore.Services
         {
             if (userDO != null)
             {
-                UserManager<UserDO> curUserManager = GetUserManager(uow);;
+                UserManager<UserDO> curUserManager = GetUserManager(uow); ;
 
                 curUserManager.RemovePassword(userDO.Id); //remove old password
                 var curResult = curUserManager.AddPassword(userDO.Id, password); // add new password
@@ -79,7 +79,7 @@ namespace KwasantCore.Services
         {
             AuthenticationManager.SignOut();
         }
-        
+
         //problem: this assumes a single role but we need support for multiple roles on one account
         //problem: the line between account and user is really murky. do we need both?
         public bool ChangeUserRole(IUnitOfWork uow, IdentityUserRole identityUserRole)
@@ -117,26 +117,26 @@ namespace KwasantCore.Services
         {
             var um = GetUserManager(uow);
             var roles = um.GetRoles(curUserId);
-            String[] acceptableRoles = {};
+            String[] acceptableRoles = { };
             switch (minAuthLevel)
             {
                 case "Customer":
-                    acceptableRoles = new[] {"Customer", "Booker", "Admin"};
+                    acceptableRoles = new[] { "Customer", "Booker", "Admin" };
                     break;
                 case "Booker":
-                    acceptableRoles = new[] {"Booker", "Admin"};
+                    acceptableRoles = new[] { "Booker", "Admin" };
                     break;
                 case "Admin":
-                    acceptableRoles = new[] {"Admin"};
+                    acceptableRoles = new[] { "Admin" };
                     break;
             }
             //if any of the roles that this user belongs to are contained in the current set of acceptable roles, return true
             if (roles.Any(role => acceptableRoles.Contains(role)))
-                        return true;
-                    return false;
+                return true;
+            return false;
         }
 
-        public UserDO GetUser(string curUserId)
+        public UserDO Get(string curUserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -177,35 +177,33 @@ namespace KwasantCore.Services
                   ).ToList();
         }
 
-        public void Create(IUnitOfWork uow, UserDO curUser, string role, bool sendEmail)
+        public void Create(IUnitOfWork uow, UserDO submittedUserData, string role, bool sendEmail)
         {
             if (sendEmail)
             {
-                EmailDO curEmail = new EmailDO();
-                curEmail.From = curUser.EmailAddress;
-                curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
-                curEmail.Subject = "User Settings Notification";
-                new Email(uow).SendTemplate("User_Settings_Notification", curEmail, null);
+                new Email().SendUserSettingsNotification(uow, submittedUserData);
             }
-            new Account().Register(uow, curUser.EmailAddress.Address, curUser.FirstName, curUser.LastName, "test@1234", role);
+            new Account().Register(uow, submittedUserData.EmailAddress.Address, submittedUserData.FirstName, submittedUserData.LastName, "test@1234", role);
         }
 
         public void Update(IUnitOfWork uow, UserDO curUser, string role)
         {
-            EmailAddressDO mailaddress = uow.EmailAddressRepository.GetAll().Where(e => e.Address == curUser.EmailAddress.Address).FirstOrDefault();
+            EmailAddressDO mailaddress = uow.EmailAddressRepository.GetAll().Where(e => e.Id == curUser.EmailAddress.Id).FirstOrDefault();
             if (mailaddress != null)
             {
-                UserDO existingUser = uow.UserRepository.GetAll().Where(e => e.EmailAddress.Address == curUser.EmailAddress.Address).FirstOrDefault();
+                UserDO existingUser = uow.UserRepository.GetAll().Where(e => e.EmailAddress.Id == curUser.EmailAddress.Id).FirstOrDefault();
                 existingUser.FirstName = curUser.FirstName;
                 existingUser.LastName = curUser.LastName;
                 existingUser.EmailAddress.Address = curUser.EmailAddress.Address;
                 var curManager = User.GetUserManager(uow);
+                IList<string> existingUserRoles = curManager.GetRoles(existingUser.Id);
+                foreach (string exisitingRole in existingUserRoles)
+                {
+                    curManager.RemoveFromRole(existingUser.Id, exisitingRole);
+                }
                 curManager.AddToRole(existingUser.Id, role);
                 uow.SaveChanges();
             }
         }
-
-
-
     }
 }

@@ -286,7 +286,7 @@
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="KwasantHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\CalendarShowVM.cs" />
-    <Compile Include="ViewModels\CreateUserVM.cs" />
+    <Compile Include="ViewModels\UserCreateVM.cs" />
     <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />
     <Compile Include="ViewModels\CalendarVM.cs" />
     <Compile Include="ViewModels\EventVM.cs" />

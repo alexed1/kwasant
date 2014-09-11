@@ -53,5 +53,38 @@ namespace KwasantTest.Entities
             }
         }
 
+
+        [Test, Ignore]
+        [Category("User")]
+        public void CanAddUserSericeMethod()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                UserDO testUser = _fixture.TestUser1();
+                uow.UserRepository.Add(testUser);
+                uow.SaveChanges();
+                var user = new User();
+                user.Create(uow, testUser, "Admin", false);
+                Assert.AreEqual(1, uow.UserRepository.GetAll().Count());
+
+            }
+        }
+
+        [Test, Ignore]
+        [Category("User")]
+        public void CanUpdateUser()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                UserDO testUser = _fixture.TestUser2();
+                uow.UserRepository.Add(testUser);
+                uow.SaveChanges();
+                testUser.FirstName = "Kwasant";
+                var user = new User();
+                user.Update(uow, testUser, "Admin");
+                Assert.AreEqual(1, uow.UserRepository.GetAll().Count());
+
+            }
+        }
     }
 }

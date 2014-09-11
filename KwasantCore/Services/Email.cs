@@ -92,6 +92,15 @@ namespace KwasantCore.Services
             Debug.WriteLine(results);
         }
 
+        public void SendUserSettingsNotification(IUnitOfWork uow, UserDO submittedUserData) 
+        {
+            EmailDO curEmail = new EmailDO();
+            curEmail.From = submittedUserData.EmailAddress;
+            curEmail.AddEmailRecipient(EmailParticipantType.To, submittedUserData.EmailAddress);
+            curEmail.Subject = "User Settings Notification";
+            new Email(uow).SendTemplate("User_Settings_Notification", curEmail, null);
+        }
+
         #endregion
 
       

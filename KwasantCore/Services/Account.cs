@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
 using StructureMap;
 using Utilities;
+using Utilities.Logging;
 
 namespace KwasantCore.Services
 {
@@ -59,13 +60,13 @@ namespace KwasantCore.Services
                     }
                     else
                     {
-                        newUserDO = ProcessRegistrationRequest(uow, email, password, "Customer");
+                        newUserDO = Register(uow, email, email, email, password, "Customer");
                         curRegStatus = RegistrationStatus.Successful;
                     }
                 }
                 else
                 {
-                    newUserDO = ProcessRegistrationRequest(uow, email, password, "Customer");
+                    newUserDO = Register(uow, email, email, email, password, "Customer");
                     curRegStatus = RegistrationStatus.Successful;
                 }
 
@@ -79,12 +80,6 @@ namespace KwasantCore.Services
                
                 return curRegStatus;
             }
-        }
-
-        private UserDO ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, string role)
-        {
-            var user = new User();
-            return Register(uow, email, email, email, password, role);
         }
 
         public async Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent)
@@ -126,26 +121,32 @@ namespace KwasantCore.Services
 
         public UserDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string role)
         {
-
-            EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
-
-            var userDO = uow.UserRepository.CreateFromEmail(
-                emailAddressDO: curEmailAddress,
-                userName: userName,
-                firstName: firstName,
-                lastName: lastName);
-
-            UserManager<UserDO> userManager = KwasantCore.Services.User.GetUserManager(uow); ;
-            IdentityResult result = userManager.Create(userDO, password);
-            if (result.Succeeded)
+            UserDO userDO = new UserDO();
+            try
             {
-                userManager.AddToRole(userDO.Id, role);
-            }
-            else
-            {
-                throw new ApplicationException("There was a problem trying to register you. Please try again.");
-            }
+                EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
 
+                userDO = uow.UserRepository.CreateFromEmail(
+                    emailAddressDO: curEmailAddress,
+                    userName: userName,
+                    firstName: firstName,
+                    lastName: lastName);
+
+                UserManager<UserDO> userManager = KwasantCore.Services.User.GetUserManager(uow); ;
+                IdentityResult result = userManager.Create(userDO, password);
+                if (result.Succeeded)
+                {
+                    userManager.AddToRole(userDO.Id, role);
+                }
+                else
+                {
+                    throw new ApplicationException("There was a problem trying to register you. Please try again.");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogRegistrationError(ex);
+            }
             return userDO;
         }
 
@@ -177,7 +178,29 @@ namespace KwasantCore.Services
             return curLogingStatus;
         }
 
+        public void LogRegistrationError(Exception ex)
+        {
+            IncidentDO incidentDO = new IncidentDO();
+            incidentDO.PrimaryCategory = "Error";
+            incidentDO.SecondaryCategory = "Processing";
+            incidentDO.CreateTime = DateTime.Now;
+            incidentDO.Activity = "Registration";
+            incidentDO.Notes = ex.Message;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+            }
 
+            string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
+                    incidentDO.PrimaryCategory,
+                    incidentDO.SecondaryCategory,
+                    incidentDO.Activity,
+                    incidentDO.ObjectId,
+                    incidentDO.CustomerId);
+
+            Logger.GetLogger().Info(logData);
+        }
 
 
         //this doesn't seem to get called. let's watch for a while and then delete it
