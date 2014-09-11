@@ -18,7 +18,7 @@ namespace KwasantTest.Fixtures
                                               HTMLText = "Booking request text",
                                               EmailStatus = EmailState.Unprocessed,
                                               DateReceived = DateTimeOffset.UtcNow,
-                                              BookingRequestState = BookingRequestState.Pending,
+                                              State = BookingRequestState.AwaitingClient,
                                               User = TestUser1()
                                           };
             return curBookingRequestDO;
