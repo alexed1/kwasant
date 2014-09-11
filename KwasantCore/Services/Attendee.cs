@@ -48,8 +48,11 @@ namespace KwasantCore.Services
 
         private List<AttendeeDO> ConvertFromStringList(IUnitOfWork uow, IList<String> curAttendees)
         {
+            EmailAddress emailAddress = new EmailAddress();
             if (curAttendees == null)
                 return new List<AttendeeDO>();
+
+
             return curAttendees
                 .Select(attendee => new AttendeeDO
                                         {
