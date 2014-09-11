@@ -26,11 +26,14 @@ namespace KwasantWeb.Controllers
         private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
+        string _currBooker;
+        Booker _booker;
         
         public BookingRequestController()
         {
             _datatables = new DataTablesPackager();
             _br = new BookingRequest();
+            _booker = new Booker();
         }
 
         // GET: /BookingRequest/
@@ -57,10 +60,20 @@ namespace KwasantWeb.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            _currBooker = this.GetUserId();
             BookingRequestDO bookingRequestDO = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);   
+                if (id != null)
+                {
+                    bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                    bookingRequestDO.User = bookingRequestDO.User;
+                    bookingRequestDO.State = BookingRequestState.Booking;
+                    bookingRequestDO.BookerId = _currBooker;
+                    bookingRequestDO.LastUpdated = DateTimeOffset.Now;
+                    uow.SaveChanges();
+                    AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, _currBooker);
+                }
             }
 
             if (bookingRequestDO == null)
@@ -74,17 +87,34 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult ProcessOwnerChange(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _currBooker = this.GetUserId();
+                string result = _booker.ChangeOwner(uow, bookingRequestId, _currBooker);
+                return Content(result);
+            }
+        }
 
         [HttpGet]
         public ActionResult MarkAsProcessed(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                //call to VerifyOwnership 
+                _currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, id, _currBooker);
+                if (verifyOwnership != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.BookingRequestState = BookingRequestState.Processed;
+                bookingRequestDO.State = BookingRequestState.Resolved;
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
+
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -94,8 +124,14 @@ namespace KwasantWeb.Controllers
          {
              using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
              {
+                 //call to VerifyOwnership
+                 _currBooker = this.GetUserId();
+                 string verifyOwnership = _booker.IsBookerValid(uow, id, _currBooker);
+                 if (verifyOwnership != "valid")
+                     return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+
                  BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                 bookingRequestDO.BookingRequestState = BookingRequestState.Invalid;
+                 bookingRequestDO.State = BookingRequestState.Invalid;
                  bookingRequestDO.User = bookingRequestDO.User;
                  uow.SaveChanges();
                  AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
