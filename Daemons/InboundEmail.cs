@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
+using System.Net.Sockets;
 using System.Text;
 using Daemons.InboundEmailHandlers;
 using Data.Entities;
@@ -87,14 +88,27 @@ namespace Daemons
             {
                 var allMessageInfos = _client.ListMailboxes()
                     .SelectMany(mailbox => _client
-                                               .Search(SearchCondition.Unseen(), mailbox)
-                                               .Select(uid => new { Client = _client, Mailbox = mailbox, Uid = uid, Message = _client.GetMessage(uid, mailbox: mailbox) }))
+                        .Search(SearchCondition.Unseen(), mailbox)
+                        .Select(
+                            uid =>
+                                new
+                                {
+                                    Client = _client,
+                                    Mailbox = mailbox,
+                                    Uid = uid,
+                                    Message = _client.GetMessage(uid, mailbox: mailbox)
+                                }))
                     .Where(messageInfo => messageInfo.Message.From != null)
                     .ToList();
                 var messageInfos = allMessageInfos
                     .Select(messageInfo => messageInfo.Message.Headers["Message-ID"])
                     .Distinct(StringComparer.Ordinal)
-                    .Select(id => allMessageInfos.First(messageInfo => string.Equals(messageInfo.Message.Headers["Message-ID"], id, StringComparison.Ordinal)))
+                    .Select(
+                        id =>
+                            allMessageInfos.First(
+                                messageInfo =>
+                                    string.Equals(messageInfo.Message.Headers["Message-ID"], id,
+                                        StringComparison.Ordinal)))
                     .ToList();
 
 
@@ -113,7 +127,7 @@ namespace Daemons
                     {
                         var handlerIndex = 0;
                         while (handlerIndex < _handlers.Length
-                            && !_handlers[handlerIndex].Process(messageInfo.Message))
+                               && !_handlers[handlerIndex].Process(messageInfo.Message))
                         {
                             handlerIndex++;
                         }
@@ -124,11 +138,20 @@ namespace Daemons
                     {
                         AlertManager.EmailProcessingFailure(messageInfo.Message.Headers["Date"], e.Message);
                         Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}",
-                                                               messageInfo.Message.Headers["Message-ID"]));
+                            messageInfo.Message.Headers["Message-ID"]));
                         messageInfo.Client.AddMessageFlags(messageInfo.Uid, messageInfo.Mailbox, MessageFlag.Seen);
                     }
                 }
             }
+            catch (SocketException ex)
+            {
+                CleanUp();
+                _client = CreateIntakeClient();
+                AlertManager.EmailProcessingFailure(DateTime.Now.to_S(), "Got that SocketException");
+                Logger.GetLogger().Error("Hit SocketException. Trying to reset the IMAP Client.", ex);
+
+            }
+
             catch (Exception ex)
             {
                 Logger.GetLogger().Error("Error occured on querying... restarting.", ex);
