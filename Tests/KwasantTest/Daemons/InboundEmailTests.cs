@@ -58,9 +58,10 @@ namespace KwasantTest.Daemons
             _mailMessage.From = new MailAddress(testFromEmailAddress);
             _mailMessage.To.Add(new MailAddress(testToEmailAddress));
             
-            var ie = new InboundEmail(ObjectFactory.GetInstance<IConfigRepository>(), _client);
             
+            var mailMessage = new MailMessage();
             mailMessage.To.Add(new MailAddress(testToEmailAddress));
+            var clientMock = new Mock<IImapClient>();
 
             clientMock.Setup(c => c.ListMailboxes()).Returns(new List<String> { "MockedMailbox"});
             clientMock.Setup(c => c.Search(It.IsAny<SearchCondition>(), It.IsAny<String>())).Returns(new List<uint> { 1 });
@@ -148,7 +149,7 @@ END:VCALENDAR",
             _mailMessage.AlternateViews.Add(new AlternateView(attachmentStream, "text/calendar"));
             _mailMessage.From = new MailAddress(curAttendee.EmailAddress.Address);
             
-            var ie = new InboundEmail(ObjectFactory.GetInstance<IConfigRepository>(), _client);
+            var ie = new InboundEmail();
 
             // EXECUTE
             DaemonTests.RunDaemonOnce(ie);
