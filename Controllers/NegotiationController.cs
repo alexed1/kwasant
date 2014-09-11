@@ -91,11 +91,7 @@ namespace KwasantWeb.Controllers
                     Questions = new List<NegotiationQuestionVM>
                     { new NegotiationQuestionVM
                         {
-                            Type = "Text",
-                            Answers = new List<NegotiationAnswerVM>()
-                                          {
-                                              new NegotiationAnswerVM() { EventStartDate = DateTimeOffset.Now, EventEndDate = DateTimeOffset.Now.AddHours(1), Text = "Alex's", VotedByList = new List<string>() { "A", "B" } }
-                                          }
+                            Type = "Text"
                         }
                     }
                 });
