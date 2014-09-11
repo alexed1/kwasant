@@ -26,27 +26,25 @@ namespace KwasantWeb.Controllers
         {
             
             string userId = "";
-            User currUser = new User();
+            User _user = new User();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                List<UserVM> currUserVMs = new List<UserVM>();
-                List<UserDO> currUserDOs = currUser.Query(uow, userId);
+                List<UserDO> userList = _user.Query(uow, userId);
+                UserShowAllVM userShowAllVM = new UserShowAllVM();
+                List<UserShowVM> userShowVMList = new List<UserShowVM>();
 
-                var currUserManager = KwasantCore.Services.User.GetUserManager(uow);
-                currUserDOs.ForEach(u => currUserVMs.Add(new UserVM
+                var userManager = KwasantCore.Services.User.GetUserManager(uow);
+                userList.ForEach(u => userShowVMList.Add(new UserShowVM
                 {
-                    User = new UserDO
-                        {
-                            Id = u.Id,
-                            FirstName = u.FirstName,
-                            LastName = u.LastName,
-                            EmailAddress = u.EmailAddress
-                        }
-                    ,
-                    Role = currUserManager.GetRoles(u.Id)[0],
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    EmailAddress = u.EmailAddress.Address,
+                    Role = userManager.GetRoles(u.Id)[0],
                     RoleId = u.Roles.ToList()[0].RoleId
                 }));
-                return View(currUserVMs);
+                userShowAllVM.Users = userShowVMList;
+                return View(userShowAllVM);
             }
         }
 
@@ -57,24 +55,21 @@ namespace KwasantWeb.Controllers
             if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            User user = new User();
+            User _user = new User();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var currUserManager = KwasantCore.Services.User.GetUserManager(uow);
-                UserDO currUserDOs = user.Query(uow, userId)[0];
-                UserVM currUserVM = new UserVM
+                var curUserManager = KwasantCore.Services.User.GetUserManager(uow);
+                UserDO curUser = _user.Query(uow, userId)[0];
+                UserShowVM userShowVM = new UserShowVM
                 {
-                    User = new UserDO
-                    {
-                        Id = currUserDOs.Id,
-                        FirstName = currUserDOs.FirstName,
-                        LastName = currUserDOs.LastName,
-                        EmailAddress = currUserDOs.EmailAddress
-                    },
-                    Role = currUserManager.GetRoles(currUserDOs.Id)[0],
-                    RoleId = currUserDOs.Roles.ToList()[0].RoleId
+                    Id = curUser.Id,
+                    FirstName = curUser.FirstName,
+                    LastName = curUser.LastName,
+                    EmailAddress = curUser.EmailAddress.Address,
+                    Role = curUserManager.GetRoles(curUser.Id)[0],
+                    RoleId = curUser.Roles.ToList()[0].RoleId
                 };
-                return View(currUserVM);
+                return View(userShowVM);
             }
         }
 

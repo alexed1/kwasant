@@ -1,4 +1,4 @@
-﻿@model List<KwasantWeb.ViewModels.UserVM>
+﻿@model KwasantWeb.ViewModels.UserShowAllVM
 @{
     ViewBag.Title = "Users";
 }
@@ -20,14 +20,14 @@
 			if (Model != null)
 			{
 
-				foreach (var item in Model)
+				foreach (var item in Model.Users)
 				{
 					<tr>
-						<td>@Html.DisplayFor(modelItem => item.User.FirstName)</td>
-						<td>@Html.DisplayFor(modelItem => item.User.LastName)</td>
-						<td>@Html.DisplayFor(modelItem => item.User.EmailAddress.Address)</td>
+						<td>@Html.DisplayFor(modelItem => item.FirstName)</td>
+						<td>@Html.DisplayFor(modelItem => item.LastName)</td>
+						<td>@Html.DisplayFor(modelItem => item.EmailAddress)</td>
 						<td>@Html.DisplayFor(modelItem => item.Role)</td>
-						<td>@Html.ActionLink("Details", "Details", new { userId = item.User.Id, roleId = item.RoleId }, new { @class = "custom-btn glyphicon glyphicon-user" })</td>
+						<td>@Html.ActionLink("Details", "Details", new { userId = item.Id, roleId = item.RoleId }, new { @class = "custom-btn glyphicon glyphicon-user" })</td>
 					</tr>
 				}
 			}

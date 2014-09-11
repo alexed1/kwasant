@@ -1,4 +1,4 @@
-﻿@model KwasantWeb.ViewModels.UserVM
+﻿@model KwasantWeb.ViewModels.UserShowVM
 
 @{
     ViewBag.Title = "User Details";
@@ -7,22 +7,22 @@
 	<h2>Details</h2>
 	<div class="title-actions">
 		@Html.ActionLink("Back to List", "Index", null, new { @class = "custom-btn glyphicon glyphicon-arrow-left" })
-		@Html.ActionLink("Edit", "Edit", "Account", new { userId = @Model.User.Id, roleId = @Model.RoleId }, new { @class = "custom-btn glyphicon glyphicon-pencil" })
+		@Html.ActionLink("Edit", "Edit", "Account", new { userId = @Model.Id, roleId = @Model.RoleId }, new { @class = "custom-btn glyphicon glyphicon-pencil" })
 	</div>	
 </div>
 <table class="data-table dataTable user-details-table">
 		@{
 			<tr>
 				<td>First Name:</td>
-				<td>@Model.User.FirstName</td>
+				<td>@Model.FirstName</td>
 			</tr>
 			<tr>
 				<td>Last Name:</td>
-				<td>@Model.User.LastName</td>
+				<td>@Model.LastName</td>
 			</tr>
 			<tr>
 				<td>Email Address:</td>
-				<td>@Model.User.EmailAddress.Address</td>
+				<td>@Model.EmailAddress</td>
 			</tr>
 			<tr>
 				<td>Role:</td>

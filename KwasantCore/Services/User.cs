@@ -167,14 +167,13 @@ namespace KwasantCore.Services
 
         public List<UserDO> Query(IUnitOfWork uow, String userId)
         {
-            List<UserDO> currUserDOs = new List<UserDO>();
+            List<UserDO> curUserList = new List<UserDO>();
             if (uow.UserRepository == null)
-                return currUserDOs;
+                return curUserList;
 
-            var currUserManager = User.GetUserManager(uow);
-            currUserDOs = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null) .ToList();
-               
-            return currUserDOs;
+            curUserList = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null).ToList();
+
+            return curUserList;
         }
 
         
