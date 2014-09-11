@@ -7,7 +7,7 @@
     @Scripts.Render("~/bundles/js/select2")    
     @Scripts.Render("~/bundles/js/jqueryvalidate")
 
-    <script src="/Content/js/common.js" type="text/javascript"></script>
+    <script src="/Content/js/KwasantCommon.js" type="text/javascript"></script>
     <script src="/Content/js/Kwasant/Popup.js"></script>
     <link rel="stylesheet" type="text/css" href="/Content/css/NegotiationWidgets.css" />
 
@@ -33,7 +33,7 @@
                 {
                     @:currentQuestion = {};
                     @:currentQuestion.Id = @question.Id
-                    @:currentQuestion.Text = '@question.Text';
+                    @:currentQuestion.Text = '@Html.Raw(HttpUtility.JavaScriptStringEncode(@question.Text))';
                     @:currentQuestion.Type = '@question.AnswerType';
                     @:currentQuestion.CalendarID = @Html.Raw(question.CalendarID == null ? "null" : question.CalendarID.ToString());
                     @:answers = [];
@@ -42,7 +42,7 @@
                         @:currentAnswer = {};
                         @:currentAnswer.Id = @answer.Id
                         
-                        @:currentAnswer.Text = '@answer.Text';
+                        @:currentAnswer.Text = '@Html.Raw(HttpUtility.JavaScriptStringEncode(@answer.Text))';
                         
                         @:currentAnswer.EventID = @Html.Raw(answer.EventID.HasValue? answer.EventID.Value.ToString() : "null");
                         if (answer.EventStartDate.HasValue)
@@ -77,15 +77,28 @@
             var spinner = Kwasant.IFrame.DisplaySpinner();
 
             var negotiation = widget.getValues();
-        
-            //Do checks here.
+
             var validationErrors = [];
+            
+            if(negotiation.Questions.length == 0){
+                validationErrors.push('Negotiation should have atleast one question');
+            }
+
             $.each(negotiation.Questions, function(index, obj) {
                 if (obj.Text === undefined ||
                     obj.Text === null ||
                     obj.Text === '') {
                     validationErrors.push('Please provide text for every question.');
                 }
+                $.each(obj.Answers, function(index, objAnswer) {
+                    if(obj.AnswerType != "Timeslot"){
+                        if (objAnswer.Text === undefined ||
+                        objAnswer.Text === null ||
+                        objAnswer.Text === '') {
+                            validationErrors.push('Please provide text for every answer.');
+                        }
+                    }
+                });
             });
         
             if (validationErrors.length > 0) {

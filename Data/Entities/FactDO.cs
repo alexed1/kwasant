@@ -21,7 +21,7 @@ namespace Data.Entities
 
         //ASP Identity GUID. Ugly.
         public string CustomerId { get; set; }
-        public int BookerId { get; set; }
+        public string BookerId { get; set; }
         public int AdminId { get; set; }
         public string Data { get; set; }
 

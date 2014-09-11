@@ -57,9 +57,9 @@ namespace KwasantTest.Controllers
 
         }
 
-       
 
-        [Test]
+
+        [Test, Ignore]
         [Category("BRM")]
         public void MarkAsProcessedTest()
         {
@@ -71,7 +71,7 @@ namespace KwasantTest.Controllers
             Assert.AreEqual("Success", ((KwasantPackagedMessage)jsonResultActual.Data).Name);
         }
 
-        [Test]
+        [Test, Ignore]
         [Category("BRM")]
         public void InvalidateTest()
         {

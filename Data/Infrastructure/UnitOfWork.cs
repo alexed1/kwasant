@@ -190,6 +190,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private InvitationResponseRepository _invitationResponseRepository;
+
+        public InvitationResponseRepository InvitationResponseRepository
+        {
+            get
+            {
+                return _invitationResponseRepository ?? (_invitationResponseRepository = new InvitationResponseRepository(this));
+            }
+        }
+
         private StoredFileRepository _storedFileRepository;
 
         public StoredFileRepository StoredFileRepository

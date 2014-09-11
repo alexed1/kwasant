@@ -12,6 +12,7 @@ using Utilities;
 using StructureMap;
 using IEvent = Data.Interfaces.IEvent;
 using AutoMapper;
+using ParticipationStatus = KwasantICS.DDay.iCal.ParticipationStatus;
 
 namespace KwasantCore.Services
 {
@@ -19,6 +20,7 @@ namespace KwasantCore.Services
     {
         private readonly IMappingEngine _mappingEngine;
         private readonly Invitation _invitation;
+        private readonly IBookingRequest _bookingRequest;
 
         public Event(IMappingEngine mappingEngine, Invitation invitation)
         {
@@ -28,6 +30,7 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("invitation");
             _mappingEngine = mappingEngine;
             _invitation = invitation;
+            _bookingRequest = ObjectFactory.GetInstance<IBookingRequest>();
         }
 
         //this is called when a booker clicks on the calendar to create a new event. The form has not yet been filled out, so only 
@@ -47,8 +50,10 @@ namespace KwasantCore.Services
             if (curCalendar == null)
                 throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");
 			
-			var attendee = new Attendee();
-            attendee.DetectEmailsFromBookingRequest(uow, curEventDO);
+			//var attendee = new Attendee();
+            //attendee.DetectEmailsFromBookingRequest(uow, curEventDO);
+
+            _bookingRequest.ExtractEmailAddresses(uow, curEventDO);
 
             curEventDO.EventStatus = EventState.Booking;
         }
@@ -83,7 +88,7 @@ namespace KwasantCore.Services
         //takes submitted form data and updates as necessary
         //in general, the new event data will simply overwrite the old data. 
         //in some cases, additional work is necessary to handle the changes
-        public void InviteAttendees(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, List<AttendeeDO> updatedAttendees)
+        public void Process(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -91,15 +96,14 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("eventDO");
             if (updatedEventInfo == null)
                 throw new ArgumentNullException("updatedEventInfo");
-            if (updatedAttendees == null)
-                throw new ArgumentNullException("updatedAttendees");
 
             List<AttendeeDO> newAttendees; 
             List<AttendeeDO> existingAttendees;
-            eventDO = Update(uow, eventDO, updatedEventInfo, updatedAttendees, out newAttendees, out existingAttendees);
+            eventDO = Update(uow, eventDO, updatedEventInfo, out newAttendees, out existingAttendees);
             if (eventDO != null)
             {
-                InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
+                if (eventDO.EventStatus != EventState.Draft)
+                    InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
             }
         }
      
@@ -131,16 +135,16 @@ namespace KwasantCore.Services
             return invitations;
         }
 
-        private EventDO Update(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, List<AttendeeDO> updatedAttendees, out List<AttendeeDO> newAttendees, out List<AttendeeDO> existingAttendees)
+        private EventDO Update(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, out List<AttendeeDO> newAttendees, out List<AttendeeDO> existingAttendees)
         {
-            newAttendees = UpdateAttendees(uow, eventDO, updatedAttendees);
+            newAttendees = UpdateAttendees(uow, eventDO, updatedEventInfo.Attendees);
             if (newAttendees != null)
             {
-                existingAttendees = updatedAttendees.Except(newAttendees).ToList();
+                existingAttendees = updatedEventInfo.Attendees.Except(newAttendees).ToList();
             }
             else
             {
-                existingAttendees = updatedAttendees.ToList();
+                existingAttendees = updatedEventInfo.Attendees.ToList();
             }
             eventDO = _mappingEngine.Map(updatedEventInfo, eventDO);
             if (newAttendees != null || uow.IsEntityModified(eventDO))
@@ -159,10 +163,14 @@ namespace KwasantCore.Services
 
             var attendeesToDelete = eventDO.Attendees.Where(attendee => !updatedAttendeeList.Select(a => a.EmailAddress.Address).Contains(attendee.EmailAddress.Address)).ToList();
             foreach (var attendeeToDelete in attendeesToDelete)
+            {
+                eventDO.Attendees.Remove(attendeeToDelete);
                 uow.AttendeeRepository.Remove(attendeeToDelete);
+            }
 
             foreach (var attendee in updatedAttendeeList.Where(att => !eventDO.Attendees.Select(a => a.EmailAddress.Address).Contains(att.EmailAddress.Address)))
             {
+                eventDO.Attendees.Add(attendee);
                 newAttendees.Add(attendee);
             }
             return newAttendees.Any() ? newAttendees : null;
@@ -180,8 +188,11 @@ namespace KwasantCore.Services
         {
             if (eventDO == null)
                 throw new ArgumentNullException("eventDO");
-            string fromEmail = ObjectFactory.GetInstance<IConfigRepository>().Get("fromEmail");
-            string fromName = ObjectFactory.GetInstance<IConfigRepository>().Get("fromName");
+
+            IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+            string fromEmail = configRepository.Get("EmailFromAddress_DelegateMode");
+            string fromName = configRepository.Get("EmailFromName_DelegateMode");
+            fromName = String.Format(fromName, new Invitation(configRepository).GetOriginatorName(eventDO));
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();

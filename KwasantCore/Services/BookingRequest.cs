@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,13 +13,22 @@ using Utilities.Logging;
 
 namespace KwasantCore.Services
 {
-    public class BookingRequest
-    {
 
+
+    public class BookingRequest :IBookingRequest
+    {
+        private IAttendee _attendee;
+        private IEmailAddress _emailAddress;
+
+        public BookingRequest()
+        {
+            _attendee = ObjectFactory.GetInstance<IAttendee>();
+            _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+        }
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
             var user = new User();
-            bookingRequest.BookingRequestState = BookingRequestState.Unprocessed;
+            bookingRequest.State = BookingRequestState.Unstarted;
             UserDO curUser = user.GetOrCreateFromBR(uow, bookingRequest.From);
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
@@ -27,7 +37,7 @@ namespace KwasantCore.Services
                 bookingRequest.Calendars.Add(calendar);
         }
 
-        public List<object> GetAllByUserId(IBookingRequestRepository curBookingRequestRepository, int start, int length, string userid)
+        public List<object> GetAllByUserId(IBookingRequestDORepository curBookingRequestRepository, int start, int length, string userid)
         {
             return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Skip(start).Take(length).Select(e =>
                             (object)new
@@ -39,12 +49,12 @@ namespace KwasantCore.Services
                             }).ToList();
         }
 
-        public int GetBookingRequestsCount(IBookingRequestRepository curBookingRequestRepository, string userid)
+        public int GetBookingRequestsCount(IBookingRequestDORepository curBookingRequestRepository, string userid)
         {
             return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Count();
         }
 
-        public string GetUserId(IBookingRequestRepository curBookingRequestRepository, int bookingRequestId)
+        public string GetUserId(IBookingRequestDORepository curBookingRequestRepository, int bookingRequestId)
         {
             return (from requests in curBookingRequestRepository.GetAll()
                     where requests.Id == bookingRequestId
@@ -55,7 +65,7 @@ namespace KwasantCore.Services
         {
             return
                 uow.BookingRequestRepository.GetAll()
-                    .Where(e => e.BookingRequestState == BookingRequestState.Unprocessed)
+                    .Where(e => e.State == BookingRequestState.Unstarted)
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
@@ -127,21 +137,23 @@ namespace KwasantCore.Services
             return null;
         }
 
-
-        public List<BR_RelatedItems> GetRelatedEvents(IUnitOfWork uow, int bookingRequestId)
+        public IEnumerable<object> GetRelatedItems(IUnitOfWork uow, int bookingRequestId)
         {
-            return uow.EventRepository.GetAll().Where(e => e.BookingRequestID == bookingRequestId).Select(e => new BR_RelatedItems
-                  {
-                      id = e.Id,
-                      Type = "Event",
-                      Date = e.StartDate.ToString("M-d-yy hh:mm tt")
-                  }).ToList();
+            var events = uow.EventRepository
+                .GetAll()
+                .Where(e => e.BookingRequestID == bookingRequestId);
+            //removed clarification requests, as there is no longer a direct connection. we'll need to collect them for this json via negotiation objects
+            var invitationResponses = uow.InvitationResponseRepository
+                .GetAll()
+                .Where(e => e.Attendee != null && e.Attendee.Event != null &&
+                            e.Attendee.Event.BookingRequestID == bookingRequestId);
+            return Enumerable.Union<object>(events, invitationResponses);
         }
 
         public void Timeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
         {
             string bookerId = bookingRequestDO.BookerId;
-            bookingRequestDO.BookingRequestState = BookingRequestState.Unprocessed;
+            bookingRequestDO.State = BookingRequestState.Unstarted;
             bookingRequestDO.BookerId = null;
             bookingRequestDO.User = bookingRequestDO.User;
             uow.SaveChanges();
@@ -163,13 +175,82 @@ namespace KwasantCore.Services
         }
 
 
-    }
-    public struct BR_RelatedItems
-    {
-        public int id { get; set; }
-        public string Date { get; set; }
-        public string Type { get; set; }
+
+        public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
+        {
+            //Add the booking request user
+            var curAttendeeDO = _attendee.Create(eventDO.BookingRequest.User);
+            eventDO.Attendees.Add(curAttendeeDO);
+            IEnumerable<ParsedEmailAddress> recips;
+
+
+
+            var emailAddresses = _emailAddress.ExtractFromString(eventDO.BookingRequest.HTMLText);
+            emailAddresses.AddRange(_emailAddress.ExtractFromString(eventDO.BookingRequest.PlainText));
+            emailAddresses.AddRange(_emailAddress.ExtractFromString(eventDO.BookingRequest.Subject));
+
+            //need to add the addresses of people cc'ed or on the To line of the BookingRequest
+            recips = from recip in eventDO.BookingRequest.Recipients
+                     select new ParsedEmailAddress { Name = recip.EmailAddress.Name, Email = recip.EmailAddress.Address };
+            emailAddresses.AddRange(recips);
+            //Explanation of the query before:
+            //First, we group by email (case insensitive).
+            //Then, for each group of emails, we want to pick the first one in the group with a name
+            //If none of the entries for an email have a name, we pick the first one we find
+
+            //Example, if we had:
+            //Test@gmail.com
+            //<Mr Sir>Test@gmail.com
+            //Test@gmail.com
+            //Rob@gmail.com
+            //TestTwo@gmail.com
+            //<TestTwo>TestTwo@gmail.com
+            //<TestTwoTwo>TestTwo@gmail.com
+
+            //We want to group it like this:
+            //Test@gmail.com
+            //  - Test@gmail.com
+            //  - <Mr Sir>Test@gmail.com
+            //  - Test@gmail.com
+            //Rob@gmail.com
+            //  - Rob@gmail.com
+            //TestTwo@gmail.com
+            //  - TestTwo@gmail.com
+            //  - <TestTwo>TestTwo@gmail.com
+            //  - <TestTwoTwo>TestTwo@gmail.com
+
+            //Then we apply the select to find the name
+            //This flattens the set to be this:
+            // <Mr Sir>Test@gmail.com
+            // Rob@gmail.com
+            // <TestTwo>TestTwo@gmail.com
+
+            //This ensures uniquness, and tries to find a name for each email provided
+
+            var uniqueEmails = emailAddresses.GroupBy(ea => ea.Email.ToLower()).Select(g =>
+            {
+                var potentialFirst = g.FirstOrDefault(e => !String.IsNullOrEmpty(e.Name));
+                if (potentialFirst == null)
+                    potentialFirst = g.First();
+                return potentialFirst;
+            });
+
+            //Convert back from the special ParsedEmailAddress type to our normal entity
+            IEnumerable<EmailAddressDO> addressList;         
+            addressList = uniqueEmails.Select(parsemail => new EmailAddressDO {Address = parsemail.Email, Name = parsemail.Name});
+
+            //we don't want addresses like "kwa@sant.com" added as attendees
+            addressList = _emailAddress.FilterOutDomains(addressList, "sant.com");
+
+            foreach (var email in addressList)
+            {         
+            var curAttendee = _attendee.Create(uow, email.Address, eventDO, email.Name);
+            eventDO.Attendees.Add(curAttendee);
+            }
     }
 
+
+
+    }
 
 }

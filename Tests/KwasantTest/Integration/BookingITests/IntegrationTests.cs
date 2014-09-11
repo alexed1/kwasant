@@ -91,7 +91,7 @@ namespace KwasantTest.Integration.BookingITests
                 //make sure queued outbound email gets sent.
                 _polling.FlushOutboundEmailQueues();
 
-                foundBookingRequest = PollForBookingRequest(testEmail, client, inboundDaemon);
+                foundBookingRequest = PollForBookingRequest(testEmail, inboundDaemon);
                 if (foundBookingRequest != null)
                 {
                     EventDO testEvent = CreateTestEvent(foundBookingRequest);
@@ -116,11 +116,11 @@ namespace KwasantTest.Integration.BookingITests
         
         }
 
-        public BookingRequestDO PollForBookingRequest(EmailDO targetCriteria, ImapClient client, InboundEmail inboundDaemon)
+        public BookingRequestDO PollForBookingRequest(EmailDO targetCriteria, InboundEmail inboundDaemon)
         {
             PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindBookingRequest;
 
-            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "intake", client, inboundDaemon);
+            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "intake", null, inboundDaemon);
             BookingRequestDO foundBookingRequest = (BookingRequestDO)queryResults.FirstOrDefault();
             return foundBookingRequest;
         }

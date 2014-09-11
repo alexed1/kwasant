@@ -80,6 +80,11 @@ namespace KwasantCore.Managers.APIManager.Packagers
                 var mailMessage = new MailMessage();
                 mailMessage.From = new MailAddress(email.From.Address, email.From.Name);
 
+                if (email.ReplyTo != null)
+                {
+                    mailMessage.ReplyToList.Add(new MailAddress(email.ReplyTo.Address, email.ReplyTo.Name));
+                }
+
                 foreach (var toEmail in email.To)
                 {
                     mailMessage.To.Add(new MailAddress(toEmail.Address, toEmail.Name));

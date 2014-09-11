@@ -52,7 +52,7 @@ namespace KwasantCore.Managers
                 // WARNING: 'user' parameter must not be used as reference in scope of this UnitOfWork as it is attached to another UnitOfWork
                 var curUser = uow.UserRepository.GetByKey(curUserId);
                 EmailDO curEmail = new EmailDO();
-                curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
+                curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
                 curEmail.Subject = "Welcome to Kwasant";
                 Email _email = new Email(uow);
@@ -74,9 +74,11 @@ namespace KwasantCore.Managers
             foreach (var attendee in negotiationDO.Attendees)
             {
                 var emailDO = new EmailDO();
-                emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(GetFromEmail(), GetFromName());
+                emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
-                emailDO.Subject = "Regarding:" + negotiationDO.Name;
+                //emailDO.Subject = "Regarding:" + negotiationDO.Name;
+                emailDO.Subject = "Need Your Response on " + negotiationDO.BookingRequest.User.FirstName + " "
+                    + (negotiationDO.BookingRequest.User.LastName != null ? negotiationDO.BookingRequest.User.LastName : "") + "event: " + negotiationDO.Name;
 
                 var responseUrl = String.Format("{0}NegotiationResponse/View?negotiationID={1}", 
                     Server.ServerUrl, 
@@ -258,30 +260,6 @@ namespace KwasantCore.Managers
 
                 emailRepo.Add(outboundEmail);
             }
-        }
-
-        //This is the default originator of outbound Kwasant emails
-        public static string GetFromEmail()
-        {
-            string email = CloudConfigurationManager.GetSetting("fromEmail");
-            if (email != null)
-            {
-                return email;
-            }
- 
-            throw new ArgumentException("Missing value for 'fromEmail'");
-  
-
-        }
-        public static string GetFromName()
-        {
-            string fromName = CloudConfigurationManager.GetSetting("fromName");
-            if (fromName != null)
-            {
-                return fromName;
-            }
-            throw new ArgumentException("Missing value for 'fromName'");
-
         }
     }
 

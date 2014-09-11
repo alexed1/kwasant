@@ -70,6 +70,9 @@
     <Compile Include="EventExposers\ExposedEvent.cs" />
     <Compile Include="EventExposers\MandrillPackagerEventHandler.cs" />
     <Compile Include="InboundEmail.cs" />
+    <Compile Include="InboundEmailHandlers\BookingRequestHandler.cs" />
+    <Compile Include="InboundEmailHandlers\IInboundEmailHandler.cs" />
+    <Compile Include="InboundEmailHandlers\InvitationResponseHandler.cs" />
     <Compile Include="OperationsMonitor.cs" />
     <Compile Include="OutboundEmail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

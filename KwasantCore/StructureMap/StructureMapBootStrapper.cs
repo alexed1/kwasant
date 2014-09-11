@@ -57,7 +57,9 @@ namespace KwasantCore.StructureMap
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
                 For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);
-
+                For<IBookingRequest>().Use<BookingRequest>();
+                For<IAttendee>().Use<Attendee>();
+                For<IEmailAddress>().Use<EmailAddress>();
                 For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
 
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
@@ -76,6 +78,9 @@ namespace KwasantCore.StructureMap
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
                 For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);
+                For<IBookingRequest>().Use<BookingRequest>();
+                For<IAttendee>().Use<Attendee>();
+                For<IEmailAddress>().Use<EmailAddress>();
 
                 For<IKwasantRoleStore>().Use(new MockedRoleStore());
                 For<IKwasantUserStore>().Use(new MockedUserStore());
