@@ -35,20 +35,14 @@ namespace KwasantTest.Entities
 
         //this is a core integration test: get the ics message through
         [Test]
-        [Category("Invitation"), Ignore]
+        [Category("Invitation")]
         public void Event_Dispatch_CanSendICS()
         {
             EventRepository eventRepo = _uow.EventRepository;
-            //AttendeeRepository attendeesRepo = _uow.AttendeeRepository;
-            //List<AttendeeDO> attendees =
-            //    new List<AttendeeDO>
-            //    {
-            //        _fixture.TestAttendee1(),
-            //        _fixture.TestAttendee2()
-            //    };
-            //attendees.ForEach(attendeesRepo.Add);
-
+            
             EventDO eventDO = _fixture.TestEvent4();
+            eventDO.BookingRequest = _fixture.TestBookingRequest1();
+           
             eventRepo.Add(eventDO);
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -59,30 +53,12 @@ namespace KwasantTest.Entities
 
             //Verify emails created in memory
             EmailDO resultEmail = eventDO.Emails[0];
-            string expectedSubject = string.Format("Invitation from: " + _invitation.GetOriginatorName(eventDO) + "- " + eventDO.Summary + " - " +eventDO.StartDate);
+            string expectedSubject = string.Format("Invitation from " + _invitation.GetOriginatorName(eventDO) + " -- " + eventDO.Summary + " - " + eventDO.StartDate.ToUniversalTime().ToString("ddd MMM dd, yyyy hh:mmtt - ") + eventDO.EndDate.ToUniversalTime().ToString("hh:mmtt") + " +00:00");
             Assert.AreEqual(expectedSubject, resultEmail.Subject);
 
             //Verify emails stored to disk properly
             EmailDO retrievedEmail = _uow.EmailRepository.GetQuery().First();
             Assert.AreEqual(expectedSubject, retrievedEmail.Subject);
-
-
-            //use imap to load unread messages from the test customer account
-            //verify that one of the messages is a proper ICS message
-            //retry every 15 seconds for 1 minute
-
-
-
-            //create an Email message addressed to the customer and attach the file.
-
-
-
-
-
-            //skip for v.1: add EmailID to outbound queue
-
-
-
         }
 
         [Test]

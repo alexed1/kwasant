@@ -1,13 +1,13 @@
 ﻿(function ($) {
-    
+
     var that;
     var settings;
     var initValues;
-    
+
     var nodes = {
         Name: null,
         Attendees: null,
-        
+
         QuestionHolder: null,
 
         Questions: []
@@ -17,9 +17,9 @@
         that = this;
         settings = $.extend({
             DisplayMode: 'edit',
-            
+
             //Based on AnswerState.cs - this is overridable via the options
-            AnswerProposedStatus: 2, 
+            AnswerProposedStatus: 2,
             AnswerSelectedStatus: 3,
 
             MaxAdditionalAnswers: -1,
@@ -40,7 +40,7 @@
             Name: 'Negotiation 1',
             Attendees: '',
         }, initialValues);
-        
+
         //Sanitize attendees
         if (initValues.Attendees != null) {
             var sanitizedAttendees = [];
@@ -60,14 +60,14 @@
 
         buildBaseWidget();
 
-        this.getValues = function() {
+        this.getValues = function () {
             var returnNeg = {};
             returnNeg.Id = initValues.Id,
             returnNeg.BookingRequestID = initValues.BookingRequestID,
             returnNeg.Name = nodes.Name.val();
             returnNeg.Attendees = nodes.Attendees.val().split(',');
             returnNeg.Questions = [];
-            
+
             for (var q = 0; q < nodes.Questions.length; q++) {
                 var question = nodes.Questions[q];
 
@@ -79,7 +79,7 @@
 
         return this;
     };
-    
+
     function buildBaseWidget() {
         that.empty();
 
@@ -98,7 +98,7 @@
             .addClass('form-control')
             .addClass('col-md-1')
             .val(initValues.Name);
-            
+
         var nameRow = $('<tr />')
                 .append($('<td />')
                     .append('&nbsp;<label>Name:</label>'))
@@ -108,37 +108,24 @@
         baseInfoTable.append(nameRow);
 
         /* Build the attendees input object */
-        var attendeesInput = $('<input type="hidden" />');
-            
+        var attendeesInput = $('<input type="hidden" id="attendeesSel" />');
+
         var attendeesRow = $('<tr />');
         attendeesRow.append($('<td />').append('&nbsp;<label>Attendees:</label>'));
         attendeesRow.append($('<td />').append(attendeesInput));
-            
-        attendeesInput.select2({
-            createSearchChoice: function (term) {
-                return { id: term, text: term };
-            },
-            validateFormat: function (term) {
-                if (!isEmail(term))
-                    return "Invalid Email";
-                return null;
-            },
-            multiple: true,
-            data: [],
-            width: '100%',
-        });
+        getValidEmailAddress(attendeesInput);
         attendeesInput.select2('data', initValues.Attendees);
         
         if (!settings.AllowModifyNegotiationRequest) {
             nameInput.attr('disabled', 'disabled');
             attendeesInput.attr('disabled', 'disabled');
         }
-            
+
         baseInfoTable.append(attendeesRow);
         baseInfoDiv.append(baseInfoTable);
-        
+
         var questionHolder = $('<div></div>');
-        
+
         nodes.QuestionHolder = questionHolder;
 
         var addQuestionSpan = $(' \
@@ -149,34 +136,34 @@
         </span>')
             .addClass('form-group')
             .addClass('handIcon')
-            .click(function() {
+            .click(function () {
                 addQuestion();
             });
 
         if (!settings.AllowAddQuestion)
             addQuestionSpan.hide();
-        
+
         that.append(baseInfoDiv);
         that.append(questionHolder);
         that.append(addQuestionSpan);
 
         nodes.Name = nameInput;
         nodes.Attendees = attendeesInput;
-        
+
         if (initValues.Questions !== null && initValues.Questions !== undefined) {
             for (var i = 0; i < initValues.Questions.length; i++) {
                 var questionValues = initValues.Questions[i];
                 addQuestion(questionValues, true);
             }
         }
-        
+
         if (settings.DisplayMode == 'reply') {
             nameRow.hide();
             attendeesRow.hide();
         }
 
     }
-    
+
     function addQuestion(initialValues, immediate) {
         if (immediate === undefined)
             immediate = false;
@@ -195,27 +182,27 @@
         var questionObject = createQuestionObject(questionInitValues);
         var questionNode = questionObject.Node;
         questionNode.hide();
-        
+
         nodes.QuestionHolder.append(questionNode);
 
         if (immediate)
             questionNode.show();
         else
             questionNode.slideDown();
-        
+
         if (questionInitValues.Answers !== null && questionInitValues.Answers !== undefined) {
             for (var i = 0; i < questionInitValues.Answers.length; i++) {
                 var answerValues = questionInitValues.Answers[i];
                 if (!answerValues.EventID)
                     questionObject.addTextAnswer(answerValues, true);
-                else 
+                else
                     questionObject.addAnswer(answerValues, true);
             }
         }
 
         return questionObject;
     }
-    
+
     function createQuestionObject(questionInitValues) {
         var questionObject = {};
 
@@ -247,7 +234,7 @@
                                     return true;
                                 return false;
                             });
-                            
+
                             //Here we need to find out which answers to leave, which to delete, and which to add
                             var answersToAdd = [];
                             var touchedAnswers = [];
@@ -262,7 +249,7 @@
                                         foundMatchingAnswer = true;
                                     }
                                 });
-                                
+
                                 if (!foundMatchingAnswer) {
                                     answersToAdd.push({
                                         EventStart: event.start,
@@ -281,7 +268,7 @@
                                     answer.RemoveMe();
                                 }
                             });
-                            $.each(answersToAdd, function(k, newAnswer) {
+                            $.each(answersToAdd, function (k, newAnswer) {
                                 _that.addAnswer(newAnswer);
                             });
                         }
@@ -294,7 +281,7 @@
                 launchCalendar(_that.CalendarID);
             }
         };
-        
+
         var selectEventWindowsButton = $('<a>')
             .addClass('handIcon')
             .append('Select Times')
@@ -323,10 +310,10 @@
 
         topWidget.append(edittableType);
         topWidget.append(selectEventWindowsButton);
-        
+
         if (!settings.AllowModifyQuestion) {
             edittableType.hide();
-        } 
+        }
 
         var questionName = $('<input type="text" />')
             .addClass('form-control')
@@ -338,20 +325,20 @@
             .click(function () {
                 numAnswersAdded--;
                 questionObject.RemoveMe();
-                
+
             });
 
-        var configureAnswerButton = function(isCalendar) {
+        var configureAnswerButton = function (isCalendar) {
             if (isCalendar) {
                 if (settings.DisplayMode === 'review')
                     selectEventWindowsButton.hide();
                 else {
                     selectEventWindowsButton.show();
                 }
-                
+
             } else {
                 selectEventWindowsButton.hide();
-                
+
                 if (settings.MaxAdditionalAnswers != -1 && numAnswersAdded >= settings.MaxAdditionalAnswers) {
                     addAnswerSpan.hide();
                 } else if (settings.MaxAdditionalAnswers == -1 || numAnswersAdded < settings.MaxAdditionalAnswers) {
@@ -381,7 +368,7 @@
                 .addClass('handIcon')
             );
 
-        var reconfigureAnswerButton = function() {
+        var reconfigureAnswerButton = function () {
             if (questionObject.getQuestionType() == 'Timeslot') {
                 questionTypeCalendar.get(0).checked = true;
                 configureAnswerButton(true);
@@ -440,7 +427,7 @@
             .append(
                 addAnswerSpan
             );
-        
+
         questionObject.Node = questionDiv;
         questionObject.Answers = [];
 
@@ -468,11 +455,11 @@
                 AnswerType: this.getQuestionType(),
             };
         };
-        
+
         questionObject.AnswerHolder = answerHolder;
         questionObject.Id = questionInitValues.Id;
-        
-        var adjustRadioButtonEnabled = function() {
+
+        var adjustRadioButtonEnabled = function () {
             if (questionObject.Answers.length == 0) {
                 questionTypeText.removeAttr('disabled');
                 questionTypeCalendar.removeAttr('disabled');
@@ -504,7 +491,7 @@
                 StartDate: initialValues.StartDate,
                 EndDate: initialValues.EndDate,
                 AnswerState: settings.AnswerProposedStatus,
-                Selected: this.Answers.length == 0 ? true: false,
+                Selected: this.Answers.length == 0 ? true : false,
                 QuestionGUID: questionInitValues.QuestionGUID,
                 Text: ''
             }, initialValues);
@@ -515,7 +502,7 @@
             } else {
                 answerObject = createTextAnswerObject(this, answerInitValues);
             }
-            
+
             this.Answers.push(answerObject);
 
             var answerNode = answerObject.Node;
@@ -530,11 +517,11 @@
             adjustRadioButtonEnabled();
 
             reconfigureAnswerButton();
-          
+
             return answerObject;
         };
 
-        questionObject.UnselectOtherAnswers = function(exceptObject) {
+        questionObject.UnselectOtherAnswers = function (exceptObject) {
             for (var i = 0; i < this.Answers.length; i++) {
                 var currAnswer = this.Answers[i];
                 if (currAnswer !== exceptObject) {
@@ -558,7 +545,7 @@
             nodes.Questions.splice(nodes.Questions.indexOf(questionObject), 1);
             questionDiv.slideUp();
         };
-        
+
 
         //Check radio buttons based on original settings
         for (var i = 0; i < radioButtons.length; i++) {
@@ -567,14 +554,14 @@
                 button.get(0).checked = true;
             }
         }
-        
+
         reconfigureAnswerButton();
 
         nodes.Questions.push(questionObject);
-        
+
         return questionObject;
     }
-    
+
     function createTextAnswerObject(question, answerInitValues) {
         var answerObject = {};
         answerObject.AnswerState = answerInitValues.AnswerState;
@@ -601,7 +588,7 @@
 
         var deleteButton = $('<img src="/Content/img/Cross.png" />')
             .addClass('handIcon')
-            .click(function() {
+            .click(function () {
                 answerObject.RemoveMe();
             });
 
@@ -611,14 +598,14 @@
                 peopleWhoVoted += ', ';
             else
                 peopleWhoVoted = 'The following people voted for this answer: ';
-            
+
             peopleWhoVoted += answerInitValues.VotedBy[i];
         }
 
         var votesIcon = $('<label>')
             .append(answerInitValues.VotedBy.length);
 
-        answerObject.markMeSelected = function() {
+        answerObject.markMeSelected = function () {
             answerDiv
                 .css('background-color', 'rgb(183, 228, 195)');
             question.UnselectOtherAnswers(answerObject);
@@ -629,17 +616,17 @@
                 .val('Unmark as selected')
                 .css('background-color', '#E01E26')
                 .unbind('click')
-                .click(function() {
+                .click(function () {
                     answerObject.unmarkMeSelected();
                 });
         };
 
-        answerObject.unmarkMeSelected = function() {
+        answerObject.unmarkMeSelected = function () {
             answerDiv
                 .css('background-color', '');
-            
+
             answerObject.AnswerState = settings.AnswerProposedStatus;
-            
+
             btnMarkProposed
                 .val('Mark as selected')
                 .css('background-color', '#3cc05e')
@@ -648,7 +635,7 @@
                     answerObject.markMeSelected();
                 });
         };
-        
+
         var btnMarkProposed = $('<input type="button"/>')
             .val('Mark as selected')
             .addClass('btn')
@@ -729,7 +716,7 @@
         answerObject.Node = answerDiv;
         return answerObject;
     }
-    
+
     function createCalendarAnswerObject(question, answerInitValues) {
 
         var padMins = function (mins) {
@@ -761,12 +748,12 @@
         answerObject.EventID = answerInitValues.EventID;
         answerObject.EventStart = answerInitValues.EventStart;
         answerObject.EventEnd = answerInitValues.EventEnd;
-        
+
         answerObject.baseGetValues = answerObject.getValues;
-        answerObject.getValues = function() {
+        answerObject.getValues = function () {
             var baseReturn = this.baseGetValues();
             baseReturn.EventID = this.EventID;
-            
+
             return baseReturn;
         };
 

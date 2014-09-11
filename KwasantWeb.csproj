@@ -263,6 +263,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AnswerController.cs" />
+    <Compile Include="Controllers\DataController.cs" />
     <Compile Include="Controllers\External\DayPilot\KwasantCalendarControl.cs" />
     <Compile Include="Controllers\External\DayPilot\Providers\IEventDataProvider.cs" />
     <Compile Include="Controllers\External\GoogleCalendar\AuthCallbackController.cs" />
@@ -522,7 +523,7 @@
     <Content Include="Content\js\bootstrap.js" />
     <Content Include="Content\js\KwasantCalendar.js" />
     <Content Include="Content\js\collapse.js" />
-    <Content Include="Content\js\common.js" />
+    <Content Include="Content\js\KwasantCommon.js" />
     <Content Include="Content\js\custom.js" />
     <Content Include="Content\js\Daypilot\daypilot-bubble.src.js" />
     <Content Include="Content\js\Daypilot\daypilot-calendar.src.js" />
@@ -778,6 +779,7 @@
     <Folder Include="Content\fonts\" />
     <Folder Include="Content\img\forms\" />
     <Folder Include="Views\CommunicationManager\" />
+    <Folder Include="Views\Data\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Configuration\Configuration.csproj">

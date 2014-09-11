@@ -226,7 +226,7 @@ namespace KwasantTest.Services
         public void ShowUnprocessedRequestTest()
         {
             object requests = (new BookingRequest()).GetUnprocessed(_uow);
-            object requestNow = _uow.BookingRequestRepository.GetAll().Where(e => e.BookingRequestState == BookingRequestState.Unprocessed).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
+            object requestNow = _uow.BookingRequestRepository.GetAll().Where(e => e.State == BookingRequestState.Unstarted).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
 
             Assert.AreEqual(requestNow, requests);
     }
@@ -240,10 +240,10 @@ namespace KwasantTest.Services
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
             (new BookingRequest()).Process(_uow, bookingRequest);
-            bookingRequest.BookingRequestState = BookingRequestState.Invalid;
+            bookingRequest.State = BookingRequestState.Invalid;
             _uow.SaveChanges();
 
-            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.BookingRequestState == BookingRequestState.Invalid);
+            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Invalid);
             Assert.AreEqual(1, requestNow.Count());
 }
 
@@ -269,7 +269,7 @@ namespace KwasantTest.Services
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
             (new BookingRequest()).Process(_uow, bookingRequest);
 
-            bookingRequest.BookingRequestState = BookingRequestState.CheckedOut;
+            bookingRequest.State = BookingRequestState.Booking;
             bookingRequest.BookerId = bookingRequest.User.Id;
             bookingRequest.LastUpdated = DateTimeOffset.Now;
             _uow.SaveChanges();
@@ -284,7 +284,7 @@ namespace KwasantTest.Services
             staleBRDuration.Stop();
 
 
-            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.BookingRequestState == BookingRequestState.Unprocessed);
+            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
             Assert.AreEqual(1, requestNow.Count());
 
         }

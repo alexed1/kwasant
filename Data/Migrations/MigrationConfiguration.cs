@@ -248,6 +248,11 @@ namespace Data.Migrations
             {
                 roleManager.Create(new IdentityRole("Customer"));
             }
+
+            if (roleManager.RoleExists("Booker") == false)
+            {
+                roleManager.Create(new IdentityRole("Booker"));
+            }
         }
 
         /// <summary>
@@ -321,7 +326,7 @@ namespace Data.Migrations
                 HTMLText = htmlText,
                 EmailStatus = EmailState.Unprocessed,
                 DateReceived = DateTimeOffset.UtcNow,
-                BookingRequestState = BookingRequestState.Unprocessed,
+                State = BookingRequestState.Unstarted,
                 User = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db as KwasantDbContext)).FindByName(curUserName)
             };
             foreach (var calendar in curBookingRequestDO.User.Calendars)

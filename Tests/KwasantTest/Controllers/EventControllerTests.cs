@@ -49,6 +49,7 @@ namespace KwasantTest.Controllers
         {
             var user = _fixture.TestUser1();
             EventDO testEvent = _fixture.TestEvent1();
+            testEvent.BookingRequest = _fixture.TestBookingRequest1();
             testEvent.CreatedBy = user;
 
             testEvent.EventStatus = EventState.ProposedTimeSlot; //a convenient way to get DispatchInvitations to do nothing. 
@@ -58,7 +59,8 @@ namespace KwasantTest.Controllers
             EventController curEventController = new EventController();
             var curEventVM = new EventVM
             {
-                Id=testEvent.Id
+                Id=testEvent.Id,
+                Summary = String.Empty
             };
             curEventVM.Attendees = "newattendee@kwasant.net";
             curEventController.ProcessChangedEvent(curEventVM, ConfirmationStatus.Confirmed);
