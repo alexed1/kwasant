@@ -25,7 +25,7 @@
             //This configuration supports two buttons (Invalid and Details) and several columns of data
             var table = $('#tblbookingrequest').DataTable({
                 data: JSON.parse(response),
-                order: [ 2, 'desc' ],
+                order: [2, 'desc'],
                 columns: [
                     { data: 'date_received' },
                     { data: 'from_address' },
@@ -40,7 +40,7 @@
 
             //This function will bind a click function on every button in table "tblbookingrequest"
             $('#tblbookingrequest tbody').on('click', 'button', function () {
-              
+
                 var data = table.row($(this).parents('tr')).data();
                 var parentcontrol = this;
                 //checking clicked button value for appropriate action this will be either "detail" or "invalid"
@@ -50,15 +50,23 @@
                         window.location.href = '@Url.Action("Details")' + "/" + data.id;
                         break;
                     case "invalid":
-                        //setting status of booking request to "INVALID" and removing the row
-                        $.getJSON("/BookingRequest/Invalidate?id=" + data.id, function (response) {
-                            var oldOwner = response.Message;
-                            var Id = data.id;
-                            if (response.Name == "DifferentOwner")
-                                ShowFailedOwnershipVerification(oldOwner, Id);
-                            else
-                                $(parentcontrol).parents('tr').remove();
-
+                        $.ajax({
+                            url: "/BookingRequest/VerifyOwnership",
+                            async: false,
+                            type: "GET",
+                            data: { bookingRequestId: data.id },
+                            success: function (response) {
+                                var oldOwner = response.Message;
+                                var Id = data.id;
+                                if (response.Name == "DifferentOwner")
+                                    ShowFailedOwnershipVerification(oldOwner, Id);
+                                else {
+                                    //setting status of booking request to "INVALID" and removing the row
+                                    $.getJSON("/BookingRequest/Invalidate?id=" + data.id, function () {
+                                        $(parentcontrol).parents('tr').remove();
+                                    });
+                                }
+                            }
                         });
                         break;
                     default:
