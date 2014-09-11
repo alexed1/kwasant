@@ -179,6 +179,7 @@
     </Compile>
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\Attendee.cs" />
+    <Compile Include="Services\Booker.cs" />
     <Compile Include="Services\Calendar.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Envelope.cs" />

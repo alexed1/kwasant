@@ -20,6 +20,7 @@ namespace KwasantCore.Services
     {
         private readonly IMappingEngine _mappingEngine;
         private readonly Invitation _invitation;
+        private readonly IBookingRequest _bookingRequest;
 
         public Event(IMappingEngine mappingEngine, Invitation invitation)
         {
@@ -29,6 +30,7 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("invitation");
             _mappingEngine = mappingEngine;
             _invitation = invitation;
+            _bookingRequest = ObjectFactory.GetInstance<IBookingRequest>();
         }
 
         //this is called when a booker clicks on the calendar to create a new event. The form has not yet been filled out, so only 
@@ -48,8 +50,10 @@ namespace KwasantCore.Services
             if (curCalendar == null)
                 throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");
 			
-			var attendee = new Attendee();
-            attendee.DetectEmailsFromBookingRequest(uow, curEventDO);
+			//var attendee = new Attendee();
+            //attendee.DetectEmailsFromBookingRequest(uow, curEventDO);
+
+            _bookingRequest.ExtractEmailAddresses(uow, curEventDO);
 
             curEventDO.EventStatus = EventState.Booking;
         }
@@ -98,7 +102,8 @@ namespace KwasantCore.Services
             eventDO = Update(uow, eventDO, updatedEventInfo, out newAttendees, out existingAttendees);
             if (eventDO != null)
             {
-                InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
+                if (eventDO.EventStatus != EventState.Draft)
+                    InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
             }
         }
      

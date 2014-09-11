@@ -48,7 +48,8 @@
 	                    <li class="dropdown"><a id="btnUser">User</a>
 	                        <ul class="dropdown-menu">
 	                            <li> @Html.ActionLink("Get All", "Index", "User") </li>
-	                            <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
+	                            @*<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>*@
+<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
 	                        </ul>
 	                    </li>
 	                    <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
@@ -202,9 +203,27 @@
 
     //Mark processed function will execute on click to update the Request status to "Processed".
     function updateStatus(path) {
-        $.getJSON(path, function () {
-            window.location.href = "@Url.Action("Index", "BookingRequest")";
+        $.getJSON(path, function (response) {
+            var oldOwner = response.Message;
+            var Id = $("#hdnrequestid").val();
+            if (response.Name == "DifferentOwner") 
+                ShowFailedOwnershipVerification(oldOwner, Id);
+            else 
+                window.location.href = "@Url.Action("Index", "BookingRequest")";
         });
+    }
+
+    function ShowFailedOwnershipVerification(bookingRequestOwner, bookingRequestId) {
+        if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestOwner + " \n Take Ownership of This BookingRequest?")) {
+            $.ajax({
+                url: "/BookingRequest/ProcessOwnerChange",
+                type: "GET",
+                data: { bookingRequestId: bookingRequestId },
+                success: function (response) {
+                    alert(response);
+                }
+            });
+        }
     }
 
     function HistoryClick(id) {
@@ -374,31 +393,50 @@
 
     function getNegotiationWindow() {
         if (linkedNegotiationID != null) {
-            Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID,
-                {
-                    horizontalAlign: 'right',
-                    minHeight: 700,
-                    minWidth: 630,
-                    callback: function(result) {
-                        if (result)
-                            displayNegotiation('Your negotiation was successfully updated');
+            var bookingRequestId = $("#hdnrequestid").val();
+            var url= '/Negotiation/Edit';
+            $.ajax({
+                url: url,
+                global: false,
+                type: 'Get',
+                data: {negotiationID:linkedNegotiationID,bookingRequestID:bookingRequestId},
+                async: false, 
+                success: function(response) {
+                    var oldOwner = response.Message;
+                    var Id = $("#hdnrequestid").val();
+                    if (response.Name == "DifferentOwner") 
+                        ShowFailedOwnershipVerification(oldOwner, Id);
+                    else 
+                    {
+                        Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID +'&bookingRequestID=' + bookingRequestId,
+                        {
+                            horizontalAlign: 'right',
+                            minHeight: 700,
+                            minWidth: 630,
+                            callback: function(result) {
+                                if (result)
+                                    displayNegotiation('Your negotiation was successfully updated');
+                            }
+                        });
                     }
-                });
+                }
+            });
+           
         } else {
             Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestID',
-                {
-                    horizontalAlign: 'right',
-                    minHeight: 700,
-                    minWidth: 300,
-                    callback: function(result) {
-                        if (result) {
-                            $('#liCreateOrEditNegotiation').html('Edit');
-                            linkedNegotiationID = result;
-                            updateCreateResolveButtons();
-                            displayNegotiation('Your negotiation was successfully created');
-                        }
+            {
+                horizontalAlign: 'right',
+                minHeight: 700,
+                minWidth: 300,
+                callback: function(result) {
+                    if (result) {
+                        $('#liCreateOrEditNegotiation').html('Edit');
+                        linkedNegotiationID = result;
+                        updateCreateResolveButtons();
+                        displayNegotiation('Your negotiation was successfully created');
                     }
-                });
+                }
+            });
         }
     }
 

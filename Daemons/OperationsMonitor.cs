@@ -48,11 +48,11 @@ namespace Daemons
 
                 DateTimeOffset idleTimeLimit = DateTimeOffset.Now.Subtract(new TimeSpan(0, maxBRIdleMinutes, 0));
                 List<BookingRequestDO> staleBRList = new List<BookingRequestDO>();
-                staleBRList = uow.BookingRequestRepository.GetAll().Where(x => x.BookingRequestState == BookingRequestState.CheckedOut && x.LastUpdated.DateTime < idleTimeLimit.DateTime).ToList();
+                staleBRList = uow.BookingRequestRepository.GetAll().Where(x => x.State == BookingRequestState.Booking && x.LastUpdated.DateTime < idleTimeLimit.DateTime).ToList();
                 BookingRequest _br = new BookingRequest();
                 foreach (var br in staleBRList)
                     _br.Timeout(uow, br);
-
+                
                 BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
                 TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(bookingRequestRepo);

@@ -177,6 +177,10 @@
     <Compile Include="Migrations\201409070912279_Sync.07.09.2014.Designer.cs">
       <DependentUpon>201409070912279_Sync.07.09.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409101403296_Change_State_to_BookingRequest.cs" />
+    <Compile Include="Migrations\201409101403296_Change_State_to_BookingRequest.Designer.cs">
+      <DependentUpon>201409101403296_Change_State_to_BookingRequest.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\InvitationResponseRepository.cs" />
     <Compile Include="Repositories\InvitationRepository.cs" />
@@ -588,7 +592,7 @@
     <Compile Include="Repositories\NegotiationsRepository.cs" />
     <Compile Include="Repositories\QuestionsRepository.cs" />
     <Compile Include="Repositories\StoredFileRepository.cs" />
-    <Compile Include="Interfaces\IEmailAddress.cs" />
+    <Compile Include="Interfaces\IEmailAddressDO.cs" />
     <Compile Include="Interfaces\IUnitOfWork.cs" />
     <Compile Include="Entities\AttachmentDO.cs" />
     <Compile Include="Entities\AttendeeDO.cs" />
@@ -910,6 +914,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409070912279_Sync.07.09.2014.resx">
       <DependentUpon>201409070912279_Sync.07.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409101403296_Change_State_to_BookingRequest.resx">
+      <DependentUpon>201409101403296_Change_State_to_BookingRequest.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

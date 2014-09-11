@@ -7,7 +7,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class AttendeeDO : IAttendee
+    public class AttendeeDO : IAttendeeDO
     {
         [Key]
         public int Id { get; set; }
