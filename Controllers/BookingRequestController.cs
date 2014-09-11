@@ -26,7 +26,6 @@ namespace KwasantWeb.Controllers
         private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
-        string _currBooker;
         Booker _booker;
         
         public BookingRequestController()
@@ -60,7 +59,7 @@ namespace KwasantWeb.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            _currBooker = this.GetUserId();
+            var currBooker = this.GetUserId();
             BookingRequestDO bookingRequestDO = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -69,10 +68,10 @@ namespace KwasantWeb.Controllers
                     bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                     bookingRequestDO.User = bookingRequestDO.User;
                     bookingRequestDO.State = BookingRequestState.Booking;
-                    bookingRequestDO.BookerId = _currBooker;
+                    bookingRequestDO.BookerId = currBooker;
                     bookingRequestDO.LastUpdated = DateTimeOffset.Now;
                     uow.SaveChanges();
-                    AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, _currBooker);
+                    AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
                 }
             }
 
@@ -92,8 +91,8 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _currBooker = this.GetUserId();
-                string result = _booker.ChangeOwner(uow, bookingRequestId, _currBooker);
+                var currBooker = this.GetUserId();
+                string result = _booker.ChangeOwner(uow, bookingRequestId, currBooker);
                 return Content(result);
             }
         }
@@ -104,8 +103,8 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //call to VerifyOwnership 
-                _currBooker = this.GetUserId();
-                string verifyOwnership = _booker.IsBookerValid(uow, id, _currBooker);
+                var currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
                 if (verifyOwnership != "valid")
                     return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
 
@@ -125,8 +124,8 @@ namespace KwasantWeb.Controllers
              using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
              {
                  //call to VerifyOwnership
-                 _currBooker = this.GetUserId();
-                 string verifyOwnership = _booker.IsBookerValid(uow, id, _currBooker);
+                 var currBooker = this.GetUserId();
+                 string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
                  if (verifyOwnership != "valid")
                      return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
 

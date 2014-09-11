@@ -46,9 +46,9 @@ namespace Data.Repositories
         public UserDO CreateFromEmail(EmailAddressDO emailAddressDO,
             string userName = null, string firstName = null, string lastName = null)
         {
-            var um = new UserManager<UserDO>(new UserStore<UserDO>(UnitOfWork.Db as KwasantDbContext));
             var password = Guid.NewGuid().ToString();
-            var hashedPassword = um.PasswordHasher.HashPassword(password);
+            var passwordHasher = new PasswordHasher();
+            var hashedPassword = passwordHasher.HashPassword(password);
 
             var curUser = new UserDO
             {
@@ -62,10 +62,14 @@ namespace Data.Repositories
             };
             UnitOfWork.UserRepository.Add(curUser);
 
-            var role = new AspNetUserRolesDO();
-            role.UserId = curUser.Id;
-            role.RoleId = UnitOfWork.AspNetRolesRepository.GetQuery().First(r => r.Name == "Customer").Id;
-            UnitOfWork.AspNetUserRolesRepository.Add(role);
+            var customerRole = UnitOfWork.AspNetRolesRepository.GetQuery().FirstOrDefault(r => r.Name == "Customer");
+            if (customerRole != null)
+            {
+                var role = new AspNetUserRolesDO();
+                role.UserId = curUser.Id;
+                role.RoleId = customerRole.Id;
+                UnitOfWork.AspNetUserRolesRepository.Add(role);    
+            }
             
             UserValidator curUserValidator = new UserValidator();
             curUserValidator.ValidateAndThrow(curUser);
