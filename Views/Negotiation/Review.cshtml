@@ -1,4 +1,5 @@
-﻿@model KwasantWeb.ViewModels.NegotiationVM
+﻿@using Newtonsoft.Json
+@model KwasantWeb.ViewModels.NegotiationVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @section bodyStyle {overflow-y:scroll;}
 @section immediateScripts
@@ -30,48 +31,7 @@
                 AllowDeleteAnswer: false,
             };
 
-            var questions = [
-                
-            ];
-
-            var answers;
-            var currentQuestion;
-            var currentAnswer;
-            var calendarEvents;
-            @{
-                foreach (var question in Model.Questions)
-                {
-                    @:currentQuestion = {};
-                    @:currentQuestion.Id = @question.Id
-                    @:currentQuestion.Text = '@question.Text';
-                    @:currentQuestion.Type = '@question.AnswerType';
-                    @:currentQuestion.CalendarID = @Html.Raw(question.CalendarID == null ? "null" : question.CalendarID.ToString());
-                    @:answers = [];
-                    foreach (var answer in question.Answers)
-                    {
-                        @:currentAnswer = {};
-                        @:currentAnswer.Id = @answer.Id
-                        @:currentAnswer.AnswerState = @answer.AnswerState
-                        @:currentAnswer.VotedBy = [@Html.Raw(String.Join(",", answer.VotedBy.Where(a => !String.IsNullOrEmpty(a)).Select(a => "'" + a + "'")))]
-                        
-                        @:currentAnswer.Text = '@answer.Text';
-                        
-                        @:currentAnswer.EventID = @Html.Raw(answer.EventID.HasValue? answer.EventID.Value.ToString() : "null");
-                        if (answer.EventStartDate.HasValue)
-                        {
-                            @:currentAnswer.EventStart = new Date(@answer.EventStartDate.Value.Year, (@answer.EventStartDate.Value.Month - 1), @answer.EventStartDate.Value.Day, @answer.EventStartDate.Value.Hour, @answer.EventStartDate.Value.Minute, @answer.EventStartDate.Value.Millisecond)
-                        }
-                        if (answer.EventEndDate.HasValue)
-                        {
-                            @:currentAnswer.EventEnd = new Date(@answer.EventEndDate.Value.Year, (@answer.EventEndDate.Value.Month - 1), @answer.EventEndDate.Value.Day, @answer.EventEndDate.Value.Hour, @answer.EventEndDate.Value.Minute, @answer.EventEndDate.Value.Millisecond)
-                        }
-                
-                        @:answers.push(currentAnswer);
-                    }
-                    @:currentQuestion.Answers = answers;
-                    @:questions.push(currentQuestion);
-                }
-            }
+            var questions = @Html.Raw(JsonConvert.SerializeObject(Model.Questions));
 
             var initialValues = {
                 Id: @(Model.Id == null? "null" : Model.Id.ToString()),

@@ -45,7 +45,7 @@ namespace KwasantWeb.Controllers
                     {
                         return (NegotiationQuestionVM) new NegotiationResponseQuestionVM
                         {
-                            AnswerType = q.AnswerType,
+                            Type = q.AnswerType,
                             Id = q.Id,
                             Text = q.Text,
                             CalendarID = q.CalendarID,

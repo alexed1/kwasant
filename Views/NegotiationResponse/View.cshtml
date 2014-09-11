@@ -46,7 +46,7 @@
                     @:currentQuestion = {};
                     @:currentQuestion.Id = @question.Id
                     @:currentQuestion.Text = '@question.Text';
-                    @:currentQuestion.Type = '@question.AnswerType';
+                    @:currentQuestion.Type = '@question.Type';
                     @:currentQuestion.CalendarID = @Html.Raw(question.CalendarID == null ? "null" : question.CalendarID.ToString());
                     @:answers = [];
                     foreach (var answer in question.Answers)
