@@ -37,9 +37,8 @@ namespace KwasantTest.Daemons
 
             _mailMessage = new MailMessage();
 
-            clientMock.Setup(c => c.ListMailboxes()).Returns(new List<String> {"MockedMailbox"});
-            clientMock.Setup(c => c.Search(It.IsAny<SearchCondition>(), It.IsAny<String>())).Returns(new List<uint> {1});
-            clientMock.Setup(c => c.GetMessage(1, true, It.IsAny<String>())).Returns(_mailMessage);
+            clientMock.Setup(c => c.GetMessages(It.IsAny<IEnumerable<uint>>(), true, null))
+                .Returns(new List<MailMessage> { _mailMessage });
 
             _client = clientMock.Object;
         }
@@ -53,22 +52,14 @@ namespace KwasantTest.Daemons
             const string testBody = "Test Body";
             const string testToEmailAddress = "test.recipient@gmail.com";
 
+
             _mailMessage.Body = testBody;
             _mailMessage.Subject = testSubject;
             _mailMessage.From = new MailAddress(testFromEmailAddress);
             _mailMessage.To.Add(new MailAddress(testToEmailAddress));
 
 
-            var mailMessage = new MailMessage();
-            mailMessage.To.Add(new MailAddress(testToEmailAddress));
-            var clientMock = new Mock<IImapClient>();
-
-            clientMock.Setup(c => c.ListMailboxes()).Returns(new List<String> {"MockedMailbox"});
-            clientMock.Setup(c => c.Search(It.IsAny<SearchCondition>(), It.IsAny<String>())).Returns(new List<uint> {1});
-            clientMock.Setup(c => c.GetMessages(It.IsAny<IEnumerable<uint>>(), true, null))
-                .Returns(new List<MailMessage> {mailMessage});
-
-            var ie = new InboundEmail(clientMock.Object, ObjectFactory.GetInstance<IConfigRepository>());
+            var ie = new InboundEmail(_client, ObjectFactory.GetInstance<IConfigRepository>());
             DaemonTests.RunDaemonOnce(ie);
 
             // VERIFY
@@ -88,7 +79,7 @@ namespace KwasantTest.Daemons
             }
         }
 
-        [Test, Ignore]
+        [Test]
         public void CanProcessInvitationResponse()
         {
             // SETUP
@@ -151,7 +142,7 @@ END:VCALENDAR",
             _mailMessage.AlternateViews.Add(new AlternateView(attachmentStream, "text/calendar"));
             _mailMessage.From = new MailAddress(curAttendee.EmailAddress.Address);
 
-            var ie = new InboundEmail();
+            var ie = new InboundEmail(_client, ObjectFactory.GetInstance<IConfigRepository>());
 
             // EXECUTE
             DaemonTests.RunDaemonOnce(ie);

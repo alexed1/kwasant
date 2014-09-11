@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Mail;
+using Daemons.InboundEmailHandlers;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -16,11 +17,18 @@ namespace Daemons
     {
         private IImapClient _client;
         private readonly IConfigRepository _configRepository;
+        private readonly IInboundEmailHandler[] _handlers;
         
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
         {
-            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();   
+            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+
+            _handlers = new IInboundEmailHandler[]
+                            {
+                                new InvitationResponseHandler(),
+                                new BookingRequestHandler(),
+                            };
         }
 
         //be careful about using this form. can get into problems involving disposal.
@@ -28,6 +36,12 @@ namespace Daemons
         {
             _client = client;
             _configRepository = configRepository;
+
+            _handlers = new IInboundEmailHandler[]
+                            {
+                                new InvitationResponseHandler(),
+                                new BookingRequestHandler(),
+                            };
         }
 
         private string GetIMAPServer()
@@ -102,31 +116,26 @@ namespace Daemons
                 ProcessMessageInfo(message);
         }
 
-        private static void ProcessMessageInfo(MailMessage messageInfo)
+        private void ProcessMessageInfo(MailMessage messageInfo)
         {
             var logString = "Processing message with subject '" + messageInfo.Subject + "'";
             Logger.GetLogger().Info(logString);
             
-            IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-            BookingRequestRepository bookingRequestRepo = unitOfWork.BookingRequestRepository;
-
             try
             {
-                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, messageInfo);
-
-                //assign the owner of the booking request to be the owner of the From address
-
-                (new BookingRequest()).Process(unitOfWork, bookingRequest);
-
-                unitOfWork.SaveChanges();
-
-                AlertManager.BookingRequestCreated(bookingRequest.Id);
-                AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+                var handlerIndex = 0;
+                while (handlerIndex < _handlers.Length
+                    && !_handlers[handlerIndex].Process(messageInfo))
+                {
+                    handlerIndex++;
+                }
+                if (handlerIndex >= _handlers.Length)
+                    throw new ApplicationException("Message hasn't been processed by any handler.");
             }
             catch (Exception e)
             {
                 AlertManager.EmailProcessingFailure(messageInfo.Headers["Date"], e.Message);
-                Logger.GetLogger().Error(String.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Headers["Message-ID"]));
+                Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Headers["Message-ID"]));
             }
         }
 
