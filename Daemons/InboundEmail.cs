@@ -143,10 +143,10 @@ namespace Daemons
                     }
                 }
             }
-            catch (SocketException ex)
+            catch (SocketException ex)  //we were getting strange socket errors after time, and it looks like a reset solves things
             {
                 CleanUp();
-                _client = CreateIntakeClient();
+                _client = null; //this will get recreated the next time this daemon runs
                 AlertManager.EmailProcessingFailure(DateTime.Now.to_S(), "Got that SocketException");
                 Logger.GetLogger().Error("Hit SocketException. Trying to reset the IMAP Client.", ex);
 

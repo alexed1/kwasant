@@ -2739,18 +2739,18 @@ namespace DDay.iCal.Test
             Assert.AreEqual(new DateTime(2013, 3, 6), occurrences.Last().Period.StartTime.Date);
         }
 
-        [Test, Category("DDay"), Ignore] //Category(("Recurrence")] //ignoring because it takes too bloody long
-        public void Bug3517553()
-        {
-            IICalendarCollection calendars = iCalendar.LoadFromFile(@"Calendars\Recurrence\Bug3517553.ics");
+        //[Test, Category("DDay"), Ignore] //Category(("Recurrence")] //ignoring because it takes too bloody long
+        //public void Bug3517553()
+        //{
+        //    IICalendarCollection calendars = iCalendar.LoadFromFile(@"Calendars\Recurrence\Bug3517553.ics");
             
-            DateTime from = new DateTime(2012, 1, 1);
-            DateTime to = from.AddDays(365);
-            IList<Occurrence> occurrences = calendars.GetOccurrences(from, to);
+        //    DateTime from = new DateTime(2012, 1, 1);
+        //    DateTime to = from.AddDays(365);
+        //    IList<Occurrence> occurrences = calendars.GetOccurrences(from, to);
 
-            // There are exactly 19 events (no recurrences) in the test file.
-            Assert.AreEqual(19, occurrences.Count);
-        }
+        //    // There are exactly 19 events (no recurrences) in the test file.
+        //    Assert.AreEqual(19, occurrences.Count);
+        //}
 
         /// <summary>
         /// Tests the iCal holidays downloaded from apple.com
