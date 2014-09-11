@@ -17,7 +17,7 @@ using KwasantWeb.Controllers.Helpers;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Customer")]
+    [KwasantAuthorize]
     public class UserController : Controller
     {
         [KwasantAuthorize(Roles = "Admin")]
