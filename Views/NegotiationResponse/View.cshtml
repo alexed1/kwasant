@@ -1,5 +1,6 @@
-﻿@using KwasantWeb.ViewModels
-@model KwasantWeb.ViewModels.NegotiationVM
+﻿@using Data.States
+@using KwasantWeb.ViewModels
+@model KwasantWeb.ViewModels.NegotiationResponseVM
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @section immediateScripts
 {
@@ -143,7 +144,12 @@
 
 <div style="padding:15px;">
     <form id="f" class="negotiationsidebar ourBox">
-        <h2>We need clarification about the following <br />to finish booking your event</h2>
+        <h2>
+            @Html.Raw(
+                Model.CommunicationMode == CommunicationMode.DIRECT
+                ? "Regarding " + Model.Name + ", please clarify the following"
+                                  : "Kwasant helps " + Model.OriginatingUser + "<br/> to schedule their calendar.<br/>Can you respond to the following:")
+        </h2>
         <div id="negotiation"></div>
 
         <div class="space form-actions negotiation-form-actions" style="display:inline-block">

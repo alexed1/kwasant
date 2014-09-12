@@ -75,6 +75,15 @@ namespace KwasantCore.Services
             }
         }
 
+        public CommunicationMode GetMode(UserDO userDO)
+        {
+            if (userDO.BookingRequests != null && userDO.BookingRequests.Any())
+                return CommunicationMode.DIRECT;
+            if(!String.IsNullOrEmpty(userDO.PasswordHash))
+                return CommunicationMode.DIRECT;
+            return CommunicationMode.DELEGATE;
+        }
+
         public void LogOff()
         {
             AuthenticationManager.SignOut();

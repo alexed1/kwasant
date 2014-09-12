@@ -22,11 +22,14 @@ namespace KwasantWeb.Controllers
         public ActionResult View(int negotiationID)
         {
             AuthenticateUser(negotiationID);
-            
+
+            var user = new User();
             var userID = User.Identity.GetUserId();
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var userDO = uow.UserRepository.GetByKey(userID);
+
                 var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (negotiationDO == null)
                     throw new HttpException(404, "Negotiation not found.");
@@ -34,11 +37,17 @@ namespace KwasantWeb.Controllers
                 var answerIDs = negotiationDO.Questions.SelectMany(q => q.Answers.Select(a => a.Id)).ToList();
                 var userAnswerIDs = uow.QuestionResponseRepository.GetQuery().Where(qr => answerIDs.Contains(qr.AnswerID) && qr.UserID == userID).Select(a => a.AnswerID).ToList();
 
+                var originatingUser = negotiationDO.BookingRequest.User.FirstName;
+                if (!String.IsNullOrEmpty(negotiationDO.BookingRequest.User.LastName))
+                    originatingUser += " " + negotiationDO.BookingRequest.User.LastName;
                 var model = new NegotiationResponseVM
                 {
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
                     BookingRequestID = negotiationDO.BookingRequestID,
+
+                    CommunicationMode = user.GetMode(userDO),
+                    OriginatingUser = originatingUser,
 
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
