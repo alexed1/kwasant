@@ -96,6 +96,7 @@ namespace Daemons
                 catch (Exception ex)
                 {
                     Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
+                    throw;
                 }
 
                 return _client;
