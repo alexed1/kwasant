@@ -87,20 +87,6 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult VerifyOwnership(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //call to VerifyOwnership 
-                _currBooker = this.GetUserId();
-                string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestId, _currBooker);
-                if (verifyOwnership != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
-                else
-                    return Json(new KwasantPackagedMessage { Name = "Success", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
-            }
-        }
 
         [HttpGet]
         public ActionResult ProcessOwnerChange(int bookingRequestId)
@@ -118,6 +104,12 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                //call to VerifyOwnership 
+                _currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, id, _currBooker);
+                if (verifyOwnership != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 bookingRequestDO.State = BookingRequestState.Resolved;
                 bookingRequestDO.User = bookingRequestDO.User;
@@ -133,6 +125,12 @@ namespace KwasantWeb.Controllers
          {
              using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
              {
+                 //call to VerifyOwnership 
+                 _currBooker = this.GetUserId();
+                 string verifyOwnership = _booker.IsBookerValid(uow, id, _currBooker);
+                 if (verifyOwnership != "valid")
+                     return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+
                  BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                  bookingRequestDO.State = BookingRequestState.Invalid;
                  bookingRequestDO.User = bookingRequestDO.User;

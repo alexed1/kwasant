@@ -203,22 +203,13 @@
 
     //Mark processed function will execute on click to update the Request status to "Processed".
     function updateStatus(path) {
-        var bookingRequestId= $("#hdnrequestid").val();
-        $.ajax({
-            url: "/BookingRequest/VerifyOwnership",
-            async: false,
-            type: "GET",
-            data: { bookingRequestId: bookingRequestId },
-            success: function (response) {
-                var oldOwner = response.Message;
-                if (response.Name == "DifferentOwner")
-                    ShowFailedOwnershipVerification(oldOwner, bookingRequestId);
-                else {
-                    $.getJSON(path, function (response) {
-                        window.location.href = "@Url.Action("Index", "BookingRequest")";
-                    });
-                }
-            }
+        $.getJSON(path, function (response) {
+            var oldOwner = response.Message;
+            var Id = $("#hdnrequestid").val();
+            if (response.Name == "DifferentOwner") 
+                ShowFailedOwnershipVerification(oldOwner, Id);
+            else 
+                window.location.href = "@Url.Action("Index", "BookingRequest")";
         });
     }
 
@@ -403,11 +394,11 @@
     function getNegotiationWindow() {
         if (linkedNegotiationID != null) {
             var bookingRequestId = $("#hdnrequestid").val();
-            var url= '/BookingRequest/VerifyOwnership';
+            var url= '/Negotiation/Edit';
             $.ajax({
                 url: url,
                 type: 'Get',
-                data: {bookingRequestId:bookingRequestId},
+                data: {negotiationID:linkedNegotiationID,bookingRequestID:bookingRequestId},
                 async: false, 
                 success: function(response) {
                     var oldOwner = response.Message;

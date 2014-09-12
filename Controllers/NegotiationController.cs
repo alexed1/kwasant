@@ -23,10 +23,15 @@ namespace KwasantWeb.Controllers
             _booker = new Booker();
         }
 
-        public ActionResult Edit(int negotiationID)
+        public ActionResult Edit(int negotiationID, int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                _currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
+                if (verifyOwnership != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+
                 return View(GetNegotiationVM(negotiationID, a => a.EventStartDate, a => a.EventEndDate));
             }
         }
