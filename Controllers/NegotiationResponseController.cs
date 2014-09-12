@@ -203,7 +203,7 @@ namespace KwasantWeb.Controllers
                 if (attendee.EmailAddress.Address.ToLower() == currentUserEmail)
                     return;
 
-            throw new HttpException(404, "You're not authorized to view information about this Negotiation");
+            throw new HttpException(403, "You're not authorized to view information about this Negotiation");
         }
 
 	}

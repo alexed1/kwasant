@@ -71,6 +71,7 @@ namespace KwasantCore.Managers
             if (negotiationDO.Attendees == null)
                 return;
 
+            var user = new User();
             foreach (var attendee in negotiationDO.Attendees)
             {
                 var emailDO = new EmailDO();
@@ -80,13 +81,15 @@ namespace KwasantCore.Managers
                 emailDO.Subject = "Need Your Response on " + negotiationDO.BookingRequest.User.FirstName + " "
                     + (negotiationDO.BookingRequest.User.LastName != null ? negotiationDO.BookingRequest.User.LastName : "") + "event: " + negotiationDO.Name;
 
-                var responseUrl = String.Format("{0}NegotiationResponse/View?negotiationID={1}", 
-                    Server.ServerUrl, 
+                var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", 
                     negotiationDO.Id);
+
+                var authToken = new AuthorizationToken();
+                var tokenURL = authToken.GetAuthorizationTokenURL(uow, responseUrl, user.GetOrCreateFromBR(uow, attendee.EmailAddress));
 
                 emailDO.EmailStatus = EmailState.Queued;
                 uow.EmailRepository.Add(emailDO);
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "clarification_request_v3", new Dictionary<string, string>() { { "RESP_URL", responseUrl } });
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "clarification_request_v3", new Dictionary<string, string>() { { "RESP_URL", tokenURL } });
             }
         }
 

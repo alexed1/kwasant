@@ -284,6 +284,7 @@
     <Compile Include="Controllers\QuestionController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
+    <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="KwasantHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\CalendarShowVM.cs" />
@@ -764,6 +765,8 @@
     <Content Include="Views\Shared\404.cshtml" />
     <Content Include="Views\Negotiation\Review.cshtml" />
     <Content Include="Views\Account\RegistrationConfirmation.cshtml" />
+    <Content Include="Views\TokenAuth\Index.cshtml" />
+    <Content Include="Views\Shared\403.cshtml" />
     <Content Include="Views\User\ChooseCalendars.cshtml" />
     <Content Include="Views\User\Detail.cshtml" />
     <Content Include="Views\User\FindUser.cshtml" />
