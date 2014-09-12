@@ -56,8 +56,7 @@ namespace KwasantCore.Services
             return curAttendees
                 .Select(attendee => new AttendeeDO
                                         {
-                                            EmailAddress = emailAddress.ConvertFromString(attendee, uow),
-                                            //EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee),
+                                            EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee, attendee),
                                             Name = attendee
                                         })
                 .ToList();

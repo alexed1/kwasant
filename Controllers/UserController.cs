@@ -20,7 +20,7 @@ using KwasantCore.Managers.APIManager.Packagers.DataTable;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Customer")]
+    [KwasantAuthorize]
     public class UserController : Controller
     {
         private DataTablesPackager _datatables;
