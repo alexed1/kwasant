@@ -243,6 +243,7 @@
     <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
+    <Compile Include="States\CommunicationMode.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
     <Compile Include="States\EventCreateType.cs" />
     <Compile Include="States\EventState.cs" />

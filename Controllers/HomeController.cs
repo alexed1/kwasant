@@ -13,6 +13,15 @@ namespace KwasantWeb.Controllers
 
     public class HomeController : Controller
     {
+        private readonly EmailAddress _emailAddress;
+        private readonly Email _email;
+
+        public HomeController()
+        {
+            _emailAddress = ObjectFactory.GetInstance<EmailAddress>();
+            _email = ObjectFactory.GetInstance<Email>();
+        }
+
         public ActionResult Index()
         {
             return Redirect("/");
@@ -76,13 +85,10 @@ namespace KwasantWeb.Controllers
                 EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
                 emailAddressValidator.ValidateAndThrow(emailAddressDO);
 
-                EmailAddress emailAddress = new EmailAddress();
-
                 using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    Email email = new Email(uow);
-                    emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
-                    EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
+                    _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
+                    EmailDO emailDO = _email.GenerateBasicMessage(uow, emailAddressDO, message);
                     uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                     uow.SaveChanges();
                 }

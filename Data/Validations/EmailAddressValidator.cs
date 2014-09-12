@@ -38,14 +38,23 @@ namespace Data.Validations
     public static class StringExtension
     {
         //validate that this string is a properly formed email address
-        public static Boolean IsEmailAddress(this string value)
+        public static void ValidateEmailAddress(this string value)
         {
             if (String.IsNullOrEmpty(value))
                 value = String.Empty;
 
             var curEmailAddressStringValidator = new EmailAddressStringValidator();
             curEmailAddressStringValidator.ValidateAndThrow(new EmailAddressStringValidator.EmailAddressWrapper(value));
-            return true;
+        }
+
+        //validate that this string is a properly formed email address
+        public static bool IsEmailAddress(this string value)
+        {
+            if (String.IsNullOrEmpty(value))
+                value = String.Empty;
+
+            var curEmailAddressStringValidator = new EmailAddressStringValidator();
+            return curEmailAddressStringValidator.Validate(new EmailAddressStringValidator.EmailAddressWrapper(value)).IsValid;
         }
     }
 }

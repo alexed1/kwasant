@@ -14,32 +14,24 @@ namespace KwasantWeb.Controllers
 {
     public class DataController : Controller
     {
-        EmailAddress _emailAddress;
+        readonly EmailAddress _emailAddress;
         EmailAddressValidator _emailAddressValidator;
 
         public DataController()
         {
-            _emailAddress = new EmailAddress();
+            _emailAddress = ObjectFactory.GetInstance<EmailAddress>();
             _emailAddressValidator = new EmailAddressValidator();
         }
 
         public ActionResult ValidateEmailAddress(string emailString)
         {
-            try
+            if (HttpUtility.UrlDecode(emailString).IsEmailAddress())
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    EmailAddressDO emailAddressDO = _emailAddress.ConvertFromString(HttpUtility.UrlDecode(emailString), uow);
-                    if (!(_emailAddressValidator.Validate(emailAddressDO).IsValid))
-                        return Json("Invalid email format", JsonRequestBehavior.AllowGet);
-                    else
-                        return Json(true, JsonRequestBehavior.AllowGet);
-                }
-
+                return Json(true, JsonRequestBehavior.AllowGet);
             }
-            catch (Exception ex)
+            else
             {
-                return Json(ex.Message, JsonRequestBehavior.AllowGet);
+                return Json("Invalid email format", JsonRequestBehavior.AllowGet);
             }
         }
 

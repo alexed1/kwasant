@@ -102,7 +102,6 @@ namespace KwasantTest.Services
         [Test]
         public void TestComplexTLD()
         {
-            var att = new Attendee();
             //This is valid TLD - as per http://data.iana.org/TLD/tlds-alpha-by-domain.txt
             var result = _emailAddress.ExtractFromString("rjrudman@gmail.XN--CLCHC0EA0B2G2A9GCD");
 

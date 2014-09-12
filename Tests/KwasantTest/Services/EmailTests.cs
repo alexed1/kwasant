@@ -80,7 +80,6 @@ namespace KwasantTest.Services
             curEmailDO.Subject = "";
 
             // EXECUTE
-            var email = new Email(_uow);
 
             // VERIFY
             Assert.Throws<ValidationException>(() => { _uow.EnvelopeRepository.ConfigurePlainEmail(curEmailDO); _uow.SaveChanges(); }, "Email should fail to be sent as it is invalid.");

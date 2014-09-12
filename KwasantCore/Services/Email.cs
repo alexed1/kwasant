@@ -18,8 +18,9 @@ namespace KwasantCore.Services
 {
     public class Email
     {
-        private readonly IUnitOfWork _uow;
         private EventValidator _curEventValidator;
+        private readonly EmailAddress _emailAddress;
+
         #region Constructor
 
 
@@ -29,11 +30,9 @@ namespace KwasantCore.Services
         /// </summary>
         /// 
         //this constructor enables the creation of an email that doesn't necessarily have anything to do with an Event. It gets called by the other constructors
-        public Email(IUnitOfWork uow)
+        public Email(EmailAddress emailAddress)
         {
-            if (uow == null)
-                throw new ArgumentNullException("uow");
-            _uow = uow;
+            _emailAddress = emailAddress;
             _curEventValidator = new EventValidator();
         }
 
@@ -45,15 +44,15 @@ namespace KwasantCore.Services
         /// This implementation of Send uses the Mandrill API
         /// </summary>
         [ObsoleteAttribute("Use directly uow.EnvelopeRepository.ConfigureTemplatedEmail method.")]
-        public EnvelopeDO SendTemplate(string templateName, IEmail message, Dictionary<string, string> mergeFields)
+        public EnvelopeDO SendTemplate(IUnitOfWork uow, string templateName, IEmail message, Dictionary<string, string> mergeFields)
         {
-            return _uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
+            return uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
         }
 
         [ObsoleteAttribute("Use directly uow.EnvelopeRepository.ConfigurePlainEmail method.")]
-        public EnvelopeDO Send(EmailDO emailDO)
+        public EnvelopeDO Send(IUnitOfWork uow, EmailDO emailDO)
         {
-            return _uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
+            return uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
         }
 
         public static void InitialiseWebhook(String url)
@@ -188,19 +187,19 @@ namespace KwasantCore.Services
 
 
 
-        public EmailDO GenerateBasicMessage(EmailAddressDO emailAddressDO, string message)
+        public EmailDO GenerateBasicMessage(IUnitOfWork uow, EmailAddressDO emailAddressDO, string message)
         {
             EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
             emailAddressValidator.ValidateAndThrow(emailAddressDO);
 
             return new EmailDO()
             {
-                From = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress(emailAddressDO.Address, emailAddressDO.Name)),
+                From = _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailAddressDO.Address, emailAddressDO.Name)),
                 Recipients = new List<RecipientDO>()
                                          {
                                               new RecipientDO()
                                                  {
-                                                       EmailAddress = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress("info@kwasant.com")),
+                                                       EmailAddress = _emailAddress.ConvertFromMailAddress(uow, new MailAddress("info@kwasant.com")),
                                                        EmailParticipantType = EmailParticipantType.To
                                                  }
                                          },
@@ -210,19 +209,19 @@ namespace KwasantCore.Services
             };
         }
 
-        public EmailDO GenerateBookerMessage(EmailAddressDO emailAddressDO, string message,string subject)
+        public EmailDO GenerateBookerMessage(IUnitOfWork uow, EmailAddressDO emailAddressDO, string message, string subject)
         {
             EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
             emailAddressValidator.ValidateAndThrow(emailAddressDO);
 
             return new EmailDO()
             {
-                From = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress("info@kwasant.com")),
+                From = _emailAddress.ConvertFromMailAddress(uow, new MailAddress("info@kwasant.com")),
                 Recipients = new List<RecipientDO>()
                                          {
                                               new RecipientDO()
                                                  {
-                                                     EmailAddress = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress(emailAddressDO.Address)),
+                                                     EmailAddress = _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailAddressDO.Address)),
                                                        EmailParticipantType = EmailParticipantType.To
                                                  }
                                          },

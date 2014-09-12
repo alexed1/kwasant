@@ -9,6 +9,13 @@ namespace KwasantCore.Services
 {
     public class Attendee : IAttendee
     {
+        private readonly EmailAddress _emailAddress;
+
+        public Attendee(EmailAddress emailAddress)
+        {
+            _emailAddress = emailAddress;
+        }
+
         public AttendeeDO Create (UserDO curUserDO)
         {
             AttendeeDO curAttendeeDO;
@@ -48,7 +55,6 @@ namespace KwasantCore.Services
 
         private List<AttendeeDO> ConvertFromStringList(IUnitOfWork uow, IList<String> curAttendees)
         {
-            EmailAddress emailAddress = new EmailAddress();
             if (curAttendees == null)
                 return new List<AttendeeDO>();
 
@@ -56,7 +62,7 @@ namespace KwasantCore.Services
             return curAttendees
                 .Select(attendee => new AttendeeDO
                                         {
-                                            EmailAddress = emailAddress.ConvertFromString(attendee, uow),
+                                            EmailAddress = _emailAddress.ConvertFromString(attendee, uow),
                                             //EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(attendee),
                                             Name = attendee
                                         })

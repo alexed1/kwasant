@@ -18,9 +18,12 @@ namespace KwasantWeb.Controllers
     {
         Booker _booker;
         string _currBooker;
+        private readonly IAttendee _attendee;
+
         public NegotiationController()
         {
             _booker = new Booker();
+            _attendee = ObjectFactory.GetInstance<IAttendee>();
         }
        
         public ActionResult Edit(int negotiationID, int bookingRequestID)
@@ -139,8 +142,7 @@ namespace KwasantWeb.Controllers
 
                 negotiationDO.BookingRequestID = value.BookingRequestID;
 
-                var attendee = new Attendee();
-                attendee.ManageNegotiationAttendeeList(uow, negotiationDO, value.Attendees);
+                _attendee.ManageNegotiationAttendeeList(uow, negotiationDO, value.Attendees);
 
                 var proposedQuestionIDs = value.Questions.Select(q => q.Id);
                 //Delete the existing questions which no longer exist in our proposed negotiation

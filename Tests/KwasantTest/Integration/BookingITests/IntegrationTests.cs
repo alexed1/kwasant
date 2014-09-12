@@ -47,7 +47,7 @@ namespace KwasantTest.Integration.BookingITests
 
             _archivePollEmail = _configRepository.Get("ArchivePollEmailAddress");
             _archivePollPassword = _configRepository.Get("ArchivePollEmailPassword");
-            _emailService= new Email(_uow);
+            _emailService = ObjectFactory.GetInstance<Email>();
           
            _startPrefix = "Start:";
            _endPrefix = "End:";

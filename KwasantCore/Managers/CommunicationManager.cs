@@ -25,12 +25,16 @@ namespace KwasantCore.Managers
     public class CommunicationManager
     {
         private readonly IConfigRepository _configRepository;
+        private readonly EmailAddress _emailAddress;
 
-        public CommunicationManager(IConfigRepository configRepository)
+        public CommunicationManager(IConfigRepository configRepository, EmailAddress emailAddress)
         {
             if (configRepository == null)
                 throw new ArgumentNullException("configRepository");
+            if (emailAddress == null)
+                throw new ArgumentNullException("emailAddress");
             _configRepository = configRepository;
+            _emailAddress = emailAddress;
         }
 
         //Register for interesting events
@@ -73,11 +77,13 @@ namespace KwasantCore.Managers
             foreach (var attendee in negotiationDO.Attendees)
             {
                 var emailDO = new EmailDO();
-                emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));
+                emailDO.From = _emailAddress.GetFromEmailAddress(uow, attendee.EmailAddress, negotiationDO.BookingRequest.User);
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
                 //emailDO.Subject = "Regarding:" + negotiationDO.Name;
-                emailDO.Subject = "Need Your Response on " + negotiationDO.BookingRequest.User.FirstName + " "
-                    + (negotiationDO.BookingRequest.User.LastName != null ? negotiationDO.BookingRequest.User.LastName : "") + "event: " + negotiationDO.Name;
+                emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}", 
+                    negotiationDO.BookingRequest.User.FirstName, 
+                    (negotiationDO.BookingRequest.User.LastName ?? ""), 
+                    negotiationDO.Name);
 
                 var responseUrl = String.Format("{0}NegotiationResponse/View?negotiationID={1}", 
                     Server.ServerUrl, 
@@ -141,9 +147,10 @@ namespace KwasantCore.Managers
                     EmailStatus = EmailState.Queued
                 };
 
-                outboundEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress("scheduling@kwasant.com", "Kwasant Scheduling Services");
+                var toEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress);
+                outboundEmail.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
 
-                outboundEmail.AddEmailRecipient(EmailParticipantType.To, uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress));
+                outboundEmail.From = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, bookingRequest.User);
 
                 emailRepo.Add(outboundEmail);
             }
