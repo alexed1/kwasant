@@ -46,8 +46,18 @@ namespace KwasantCore.Services
             if (curEvent == null)
                 throw new ArgumentNullException("curEvent");
 
-            string fromEmail = _configRepository.Get("fromEmail");
-            string fromName = _configRepository.Get("fromName");
+            string fromEmail, fromName;
+            if (curAttendee.EmailAddress.Address == curEvent.BookingRequest.User.EmailAddress.Address)
+            {
+                fromEmail = _configRepository.Get("EmailFromAddress_DirectMode");
+                fromName = _configRepository.Get("EmailFromAddress_DirectMode");
+            }
+            else
+            {
+                fromEmail = _configRepository.Get("EmailFromAddress_DelegateMode");
+                fromName = String.Format(_configRepository.Get("EmailFromName_DelegateMode"), GetOriginatorName(curEvent));
+            }
+            string replyToEmail = _configRepository.Get("replyToEmail");
 
             var emailAddressRepository = uow.EmailAddressRepository;
             if (curEvent.Attendees == null)
@@ -60,6 +70,9 @@ namespace KwasantCore.Services
             var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
             fromEmailAddr.Name = fromName;
             curInvitation.From = fromEmailAddr;
+
+            var replyToAddress = emailAddressRepository.GetOrCreateEmailAddress(replyToEmail);
+            curInvitation.ReplyTo = replyToAddress;
 
             var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(curAttendee.EmailAddress.Address);
             toEmailAddress.Name = curAttendee.Name;
@@ -94,8 +107,11 @@ namespace KwasantCore.Services
 
         private InvitationDO GenerateInitialInvite(InvitationDO curInvitation, EventDO curEvent, string userID)
         {
+            string endtime = curEvent.EndDate.ToUniversalTime().ToString("hh:mmtt");
+            string subjectDate = curEvent.StartDate.ToUniversalTime().ToString("ddd MMM dd, yyyy hh:mmtt - ") + endtime + " +00:00";
+
             curInvitation.InvitationType = InvitationType.InitialInvite;
-            curInvitation.Subject = String.Format(_configRepository.Get("emailSubject"), GetOriginatorName(curEvent), curEvent.Summary, curEvent.StartDate);
+            curInvitation.Subject = String.Format(_configRepository.Get("emailSubject"), GetOriginatorName(curEvent), curEvent.Summary, subjectDate);
             curInvitation.HTMLText = GetEmailHTMLTextForNew(curEvent, userID);
             curInvitation.PlainText = GetEmailPlainTextForNew(curEvent, userID);
             return curInvitation;
@@ -103,8 +119,11 @@ namespace KwasantCore.Services
 
         private InvitationDO GenerateChangeNotification(InvitationDO curInvitation, EventDO curEvent, string userID)
         {
+            string endtime = curEvent.EndDate.ToUniversalTime().ToString("hh:mmtt");
+            string subjectDate = curEvent.StartDate.ToUniversalTime().ToString("ddd MMM dd, yyyy hh:mmtt - ") + endtime + " +00:00";
+
             curInvitation.InvitationType = InvitationType.ChangeNotification;
-            curInvitation.Subject = String.Format(_configRepository.Get("emailSubjectUpdated"), GetOriginatorName(curEvent), curEvent.Summary, curEvent.StartDate);
+            curInvitation.Subject = String.Format(_configRepository.Get("emailSubjectUpdated"), GetOriginatorName(curEvent), curEvent.Summary, subjectDate);
             curInvitation.HTMLText = GetEmailHTMLTextForUpdate(curEvent, userID);
             curInvitation.PlainText = GetEmailPlainTextForUpdate(curEvent, userID);
             return curInvitation;

@@ -190,6 +190,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private InvitationResponseRepository _invitationResponseRepository;
+
+        public InvitationResponseRepository InvitationResponseRepository
+        {
+            get
+            {
+                return _invitationResponseRepository ?? (_invitationResponseRepository = new InvitationResponseRepository(this));
+            }
+        }
+
         private StoredFileRepository _storedFileRepository;
 
         public StoredFileRepository StoredFileRepository
@@ -317,6 +327,16 @@ namespace Data.Infrastructure
             get
             {
                 return _questionsRepository ?? (_questionsRepository = new QuestionsRepository(this));
+            }
+        }
+
+        private AuthorizationTokenRepository _authorizationTokenRepository;
+
+        public AuthorizationTokenRepository AuthorizationTokenRepository
+        {
+            get
+            {
+                return _authorizationTokenRepository ?? (_authorizationTokenRepository = new AuthorizationTokenRepository(this));
             }
         }
 

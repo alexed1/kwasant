@@ -14,7 +14,7 @@ namespace KwasantWeb.Controllers
     public class EmailController : Controller
     {
         private IUnitOfWork _uow;
-        private IBookingRequestRepository curBookingRequestRepository;
+        private IBookingRequestDORepository curBookingRequestRepository;
         private KwasantPackager API;
 
 

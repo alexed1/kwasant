@@ -4,11 +4,13 @@ using System.Linq;
 using Daemons;
 using Data.Entities;
 using Data.Interfaces;
+using FluentValidation.Internal;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantICS.DDay.iCal;
 using KwasantTest.Fixtures;
 using KwasantTest.Utilities;
+using Moq;
 using NUnit.Framework;
 using S22.Imap;
 using StructureMap;
@@ -70,9 +72,9 @@ namespace KwasantTest.Integration.BookingITests
             string targetPassword = "thorium65";
             ImapClient client = new ImapClient("imap.gmail.com", 993, targetAddress, targetPassword, AuthMethod.Login, true);
             InboundEmail inboundDaemon = new InboundEmail();
-            inboundDaemon.username = targetAddress;
-            inboundDaemon.password = targetPassword;
-
+            inboundDaemon.UserName = targetAddress;
+            inboundDaemon.Password = targetPassword;
+            
             //need to add user to pass OutboundEmail validation.
             _uow.UserRepository.Add(_fixture.TestUser3());
             _uow.EmailRepository.Add(testEmail);
@@ -89,7 +91,7 @@ namespace KwasantTest.Integration.BookingITests
                 //make sure queued outbound email gets sent.
                 _polling.FlushOutboundEmailQueues();
 
-                foundBookingRequest = PollForBookingRequest(testEmail, client, inboundDaemon);
+                foundBookingRequest = PollForBookingRequest(testEmail, inboundDaemon);
                 if (foundBookingRequest != null)
                 {
                     EventDO testEvent = CreateTestEvent(foundBookingRequest);
@@ -114,11 +116,11 @@ namespace KwasantTest.Integration.BookingITests
         
         }
 
-        public BookingRequestDO PollForBookingRequest(EmailDO targetCriteria, ImapClient client, InboundEmail inboundDaemon)
+        public BookingRequestDO PollForBookingRequest(EmailDO targetCriteria, InboundEmail inboundDaemon)
         {
             PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindBookingRequest;
 
-            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "intake", client, inboundDaemon);
+            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "intake", null, inboundDaemon);
             BookingRequestDO foundBookingRequest = (BookingRequestDO)queryResults.FirstOrDefault();
             return foundBookingRequest;
         }

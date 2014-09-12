@@ -138,6 +138,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<EventDO>().ToTable("Events");
             modelBuilder.Entity<InstructionDO>().ToTable("Instructions");
+            modelBuilder.Entity<InvitationResponseDO>().ToTable("InvitationResponses");
             modelBuilder.Entity<StoredFileDO>().ToTable("StoredFiles");
             modelBuilder.Entity<TrackingStatusDO>().ToTable("TrackingStatuses");
             modelBuilder.Entity<IdentityUser>().ToTable("IdentityUsers");
@@ -152,6 +153,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<RemoteCalendarAuthDataDO>().ToTable("RemoteCalendarAuthData");
             modelBuilder.Entity<RemoteCalendarLinkDO>().ToTable("RemoteCalendarLinks");
             modelBuilder.Entity<QuestionResponseDO>().ToTable("QuestionResponses");
+            modelBuilder.Entity<AuthorizationTokenDO>().ToTable("AuthorizationTokens");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

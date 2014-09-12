@@ -84,7 +84,7 @@ namespace KwasantCore.Services
         private UserDO ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, string role)
         {
             var user = new User();
-            return Register(uow, email, password, role);
+            return Register(uow, email, email, email, password, role);
         }
 
         public async Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent)
@@ -124,7 +124,7 @@ namespace KwasantCore.Services
         }
 
 
-        public UserDO Register(IUnitOfWork uow, string userName, string password, string role)
+        public UserDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string role)
         {
 
             EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
@@ -132,8 +132,8 @@ namespace KwasantCore.Services
             var userDO = uow.UserRepository.CreateFromEmail(
                 emailAddressDO: curEmailAddress,
                 userName: userName,
-                firstName: userName,
-                lastName: userName);
+                firstName: firstName,
+                lastName: lastName);
 
             UserManager<UserDO> userManager = KwasantCore.Services.User.GetUserManager(uow); ;
             IdentityResult result = userManager.Create(userDO, password);

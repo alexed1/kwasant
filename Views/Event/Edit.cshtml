@@ -5,7 +5,7 @@
     @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/select2")    
     @Scripts.Render("~/bundles/js/jqueryvalidate")
-
+    @Scripts.Render("~/bundles/js/common")
     <script src="/Content/js/Kwasant/Popup.js"></script>
 
     <script type="text/javascript">
@@ -22,26 +22,15 @@
                 }
             };
             var data;
+        var returnval;
             $(document).ready(function () {
                 $('#chkAllDay').click(hideShowDates);
 
                 data = [@Html.Raw(String.Join(",", Model.Attendees.Split(',').Select(a =>
                                 "{id: '" + a + "', text: '" + a + "'}"
                                 )))];
+            getValidEmailAddress($('#attendeesSel'));
 
-                $('#attendeesSel').select2({
-                    createSearchChoice: function (term) {
-                        return { id: term, text: term };
-                    },
-                    validateFormat: function (term) {
-                        if (!isEmail(term))
-                            return "Invalid Email";
-                        return null;
-                    },
-                    multiple: true,
-                    data: [],
-                    width: '100%',
-                });
                 $('#attendeesSel').select2('data', data);
             });
     </script>
@@ -55,7 +44,7 @@
     @Scripts.Render("~/bundles/js/bootstrap31")
 	@Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
     @Scripts.Render("~/bundles/js/modernizr")	
-    @Scripts.Render("~/bundles/js/common")
+    
 }
 @section styles
 {
@@ -116,6 +105,7 @@
 		}
 		<div class="space form-actions">
 			<input id="btnSave" type="submit" value="OK" class="btn btn-default pull-left" />
+            <input id="btnDraft" type="submit" value="Draft" class="btn btn-default pull-left" />
 		    <a href="javascript:closeWithUnsavedDataCheck(modifiedState);" class="cancel-btn pull-left">Cancel</a>
             <a href="javascript:deleteEvent();" style="margin-left:15px;" class="delete-btn pull-left">Delete</a>
 		</div>
@@ -146,7 +136,28 @@
 			});
 		});
 
+		function updateDraftSummary(formElmt){
+		    var summaryElmt = $("#summary");
+		    if($(formElmt).data('clicked') == "Draft"){
+		        if(summaryElmt.val().indexOf("DRAFT:") == -1){
+		            summaryElmt.val("DRAFT:" + summaryElmt.val());
+		        }
+		    }
+		    else {
+		        if(summaryElmt.val().indexOf("DRAFT:") != -1){
+		            summaryElmt.val(summaryElmt.val().replace("DRAFT:",""));
+		        }
+		    }
+		}
+
+		$('#f').on('click', 'input[type=submit]', function(e) {
+		    $(this.form).data('clicked', this.value);
+		});
+
 		$("#f").submit(function () {
+
+		    updateDraftSummary(this);
+
 			if (!modifiedState.modified) {
 				close();
 				return false;
