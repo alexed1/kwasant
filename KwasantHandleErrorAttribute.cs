@@ -1,7 +1,10 @@
 ﻿﻿using System;
-﻿using System.IO;
-﻿using System.Web;
-﻿using System.Web.Mvc;
+using System.IO;
+using System.Web;
+using System.Web.Mvc;
+using Data.Entities;
+using Data.Interfaces;
+using StructureMap;
 
 namespace KwasantWeb
 {
@@ -66,6 +69,28 @@ namespace KwasantWeb
             // they detect a server error. Setting this property indicates that we
             // want it to try to render ASP.NET MVC's error page instead.
             filterContext.HttpContext.Response.TrySkipIisCustomErrors = true;
+
+            SaveUnhandledException(filterContext);
+
+
+        }
+        //Save unhandle exception to incident table
+        private void SaveUnhandledException(ExceptionContext filterContext)
+        {
+            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Error";
+                if (filterContext.Exception.Message.Contains("Validation failed"))
+                    incidentDO.SecondaryCategory = "ValidationException";
+                else
+                    incidentDO.SecondaryCategory = "ApplicationException";
+                incidentDO.CreateTime = DateTime.Now; ;
+                incidentDO.Notes = filterContext.Exception.Message;
+                _uow.IncidentRepository.Add(incidentDO);
+                _uow.SaveChanges();
+            }
+        
         }
     }
 }

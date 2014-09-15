@@ -46,6 +46,9 @@ namespace Data.Infrastructure
         public delegate void BookingRequestOwnershipChangeHandler(int bookingRequestId, string bookerId);
         public static event BookingRequestOwnershipChangeHandler AlertBookingRequestOwnershipChange;
 
+        public delegate void Error_EmailSendFailureHandler();
+        public static event Error_EmailSendFailureHandler AlertError_EmailSendFailure;
+
         #region Method
         
         /// <summary>
@@ -114,6 +117,13 @@ namespace Data.Infrastructure
             if (AlertBookingRequestStateChange != null)
                 AlertBookingRequestOwnershipChange(bookingRequestId, bookerId);
         }
+
+        public static void Error_EmailSendFailure()
+        {
+            if (AlertError_EmailSendFailure != null)
+                AlertError_EmailSendFailure();
+        }
+
         #endregion
     }
 
@@ -133,6 +143,7 @@ namespace Data.Infrastructure
             AlertManager.AlertUserRegistration += UserRegistration;
             AlertManager.AlertBookingRequestCheckedOut += ProcessBookingRequestCheckedOut;
             AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChange;
+            AlertManager.AlertError_EmailSendFailure += Error_EmailSendFailure;
         }
 
         private void NewCustomerCreated(string curUserId)
@@ -305,6 +316,20 @@ namespace Data.Infrastructure
 
         }
 
+        public void Error_EmailSendFailure()
+        {
+            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Email";
+                incidentDO.SecondaryCategory = "Send";
+                incidentDO.CreateTime = DateTime.Now; ;
+                incidentDO.Activity = "Failure";
+                _uow.IncidentRepository.Add(incidentDO);
+                _uow.SaveChanges();
+            }
+        }
+
         public void ProcessBookingRequestCheckedOut(int bookingRequestId, string bookerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -355,6 +380,5 @@ namespace Data.Infrastructure
 
             }
         }
-
     }
 }

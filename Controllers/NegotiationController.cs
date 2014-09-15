@@ -22,7 +22,7 @@ namespace KwasantWeb.Controllers
         {
             _booker = new Booker();
         }
-       
+
         public ActionResult Edit(int negotiationID, int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -31,10 +31,8 @@ namespace KwasantWeb.Controllers
                 string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
                 if (verifyOwnership != "valid")
                     return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
-                else
-                {
-                    return View(GetNegotiationVM(negotiationID, a => a.EventStartDate, a => a.EventEndDate));
-                }
+
+                return View(GetNegotiationVM(negotiationID, a => a.EventStartDate, a => a.EventEndDate));
             }
         }
 
@@ -45,7 +43,7 @@ namespace KwasantWeb.Controllers
                     a => 1 - a.VotedBy.Count, a => (!a.EventStartDate.HasValue ? 0 : a.EventStartDate.Value.Ticks)));
         }
 
-        private static NegotiationVM GetNegotiationVM<T>(int negotiationID, Func<NegotiationAnswerVM, T> orderByFunc, 
+        private static NegotiationVM GetNegotiationVM<T>(int negotiationID, Func<NegotiationAnswerVM, T> orderByFunc,
             Func<NegotiationAnswerVM, T> thenByFunc = null,
             Func<NegotiationAnswerVM, T> thenByFuncTwo = null)
         {
@@ -61,7 +59,7 @@ namespace KwasantWeb.Controllers
                 var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (negotiationDO == null)
                     throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
-                
+
                 model = new NegotiationVM
                 {
                     Id = negotiationDO.Id,
@@ -166,7 +164,7 @@ namespace KwasantWeb.Controllers
                     questionDO.AnswerType = question.AnswerType;
                     if (questionDO.QuestionStatus == 0)
                         questionDO.QuestionStatus = QuestionState.Unanswered;
-                    
+
                     questionDO.Text = question.Text;
                     questionDO.CalendarID = question.CalendarID;
 
@@ -202,7 +200,7 @@ namespace KwasantWeb.Controllers
                 {
                     var communicationManager = ObjectFactory.GetInstance<CommunicationManager>();
                     communicationManager.DispatchNegotiationRequests(subUoW, negotiationDO.Id);
-                    subUoW.SaveChanges();                    
+                    subUoW.SaveChanges();
                 }
 
                 return Json(negotiationDO.Id, JsonRequestBehavior.AllowGet);

@@ -8,6 +8,7 @@ using KwasantCore.Services;
 using System.Net.Mail;
 using Utilities.Logging;
 using System;
+
 namespace KwasantWeb.Controllers
 {
 
@@ -82,7 +83,12 @@ namespace KwasantWeb.Controllers
                 {
                     Email email = new Email(uow);
                     emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailId, name));
-                    EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
+                    string toRecipient ="info@kwasant.com";
+                    string fromAddress =emailId;
+                  
+                   // EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
+                    string subject = "Customer query";
+                    EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, subject, message, fromAddress, toRecipient);
                     email.Send(emailDO);
                     uow.SaveChanges();
                 }

@@ -16,7 +16,9 @@ namespace KwasantCore.Services
                 case "usage":
                     return GenerateUsageReport(uow, dateRange);
                 case "incident":
-                    return GenerateIncidentReport(uow, dateRange);
+                    return ShowAllIncidents(uow, dateRange);
+                case "fiveRecentIncident":
+                    return ShowMostRecent5Incidents(uow, dateRange);
             }
             return this;
         }
@@ -25,10 +27,16 @@ namespace KwasantCore.Services
             return uow.FactRepository.GetAll().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime).ToList();
         }
 
-        private List<IncidentDO> GenerateIncidentReport(IUnitOfWork uow, DateRange dateRange)
+        private List<IncidentDO> ShowAllIncidents(IUnitOfWork uow, DateRange dateRange)
         {
-            return uow.IncidentRepository.GetAll().Where(e => e.CreateTime > dateRange.StartTime && e.CreateTime < dateRange.EndTime).ToList();
+                return uow.IncidentRepository.GetAll().Where(e => e.CreateTime > dateRange.StartTime && e.CreateTime < dateRange.EndTime).ToList();
         }
+        private List<IncidentDO> ShowMostRecent5Incidents(IUnitOfWork uow, DateRange dateRange)
+        {
+            return uow.IncidentRepository.GetAll().OrderByDescending(x => x.CreateTime).Take(5).ToList();
+               
+        }
+        
         public object GenerateHistoryReport(IUnitOfWork uow, DateRange dateRange, string primaryCategory, string bookingRequestId)
         {
             int objectId = 0;
