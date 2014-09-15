@@ -115,18 +115,23 @@ namespace Daemons
         {
             try
             {
-              var messages = client.GetMessages(client.Search(SearchCondition.Unseen())).ToList();
-              Logger.GetLogger().Info(messages.Count + " messages recieved.");
+                var messages = client.GetMessages(client.Search(SearchCondition.Unseen())).ToList();
+                Logger.GetLogger().Info(messages.Count + " messages recieved.");
 
-              foreach (var message in messages)
-                            ProcessMessageInfo(message);
+                foreach (var message in messages)
+                    ProcessMessageInfo(message);
             }
-            catch (SocketException ex)  //we were getting strange socket errors after time, and it looks like a reset solves things
+            catch (SocketException ex)
+                //we were getting strange socket errors after time, and it looks like a reset solves things
             {
                 CleanUp();
                 _client = null; //this will get recreated the next time this daemon runs
                 AlertManager.EmailProcessingFailure(DateTime.Now.to_S(), "Got that SocketException");
                 Logger.GetLogger().Error("Hit SocketException. Trying to reset the IMAP Client.", ex);
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error occured in " + GetType().Name, e);
             }
         }
 
@@ -150,7 +155,7 @@ namespace Daemons
             {
                 AlertManager.EmailProcessingFailure(messageInfo.Headers["Date"], e.Message);
                 Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Headers["Message-ID"]));
-                throw;
+                
             }
         }
 
