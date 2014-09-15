@@ -25,7 +25,7 @@
             //This configuration supports two buttons (Invalid and Details) and several columns of data
             var table = $('#tblbookingrequest').DataTable({
                 data: JSON.parse(response),
-                order: [ 2, 'desc' ],
+                order: [2, 'desc'],
                 columns: [
                     { data: 'date_received' },
                     { data: 'from_address' },
@@ -40,7 +40,7 @@
 
             //This function will bind a click function on every button in table "tblbookingrequest"
             $('#tblbookingrequest tbody').on('click', 'button', function () {
-              
+
                 var data = table.row($(this).parents('tr')).data();
                 var parentcontrol = this;
                 //checking clicked button value for appropriate action this will be either "detail" or "invalid"
@@ -58,7 +58,6 @@
                                 ShowFailedOwnershipVerification(oldOwner, Id);
                             else
                                 $(parentcontrol).parents('tr').remove();
-
                         });
                         break;
                     default:

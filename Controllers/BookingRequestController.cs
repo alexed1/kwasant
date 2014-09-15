@@ -65,14 +65,14 @@ namespace KwasantWeb.Controllers
             {
                 if (id != null)
                 {
-                bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);   
+                    bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                     bookingRequestDO.User = bookingRequestDO.User;
                     bookingRequestDO.State = BookingRequestState.Booking;
                     bookingRequestDO.BookerId = currBooker;
                     bookingRequestDO.LastUpdated = DateTimeOffset.Now;
                     uow.SaveChanges();
                     AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
-            }
+                }
             }
 
             if (bookingRequestDO == null)
@@ -215,5 +215,5 @@ namespace KwasantWeb.Controllers
             recordcount = bR_RelatedItems.Count;
             return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();
         }
-	}
+    }
 }
