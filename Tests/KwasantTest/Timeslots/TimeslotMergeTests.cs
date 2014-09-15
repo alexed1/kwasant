@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using Data.Entities;
@@ -16,6 +17,8 @@ namespace KwasantTest.Timeslots
     public class TimeslotMergeTests
     {
         private UserDO _user;
+        private const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff \z";
+
         [SetUp]
         public void Setup()
         {
@@ -25,15 +28,14 @@ namespace KwasantTest.Timeslots
 
         private String GetFormattedDateString(String date)
         {
-            return DateTime.Parse(date).ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff \z");
+            return DateTime.Parse(date).ToString(DateStandardFormat);
         }
 
         private DateTime GetFormattedDate(String date)
         {
-            return DateTime.Parse(GetFormattedDateString(date)).ToUniversalTime();
+            return DateTime.ParseExact(GetFormattedDateString(date), DateStandardFormat, CultureInfo.InvariantCulture).ToUniversalTime();
         }
-
-
+        
         private void CreateOriginalTimeSlot(int calendarID, String startTime, String endTime, bool nextDay = false)
         {
             var originalTimeSlot = new EventDO();
