@@ -20,6 +20,8 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize(Roles = "Admin")]
     public class EventController : KController
     {
+        public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff \z";
+
         private readonly Event _event;
         private readonly Attendee _attendee;
         private readonly IMappingEngine _mappingEngine;
@@ -150,8 +152,8 @@ namespace KwasantWeb.Controllers
             EventDO createdEvent = new EventDO();
             createdEvent.BookingRequestID = bookingRequestID;
             createdEvent.CalendarID = calendarID;            
-            createdEvent.StartDate = DateTime.Parse(start, CultureInfo.InvariantCulture, 0).ToUniversalTime();
-            createdEvent.EndDate = DateTime.Parse(end, CultureInfo.InvariantCulture, 0).ToUniversalTime();
+            createdEvent.StartDate = DateTime.ParseExact(start, DateStandardFormat, CultureInfo.InvariantCulture).ToUniversalTime();
+            createdEvent.EndDate = DateTime.ParseExact(start, DateStandardFormat, CultureInfo.InvariantCulture).ToUniversalTime();
 
             createdEvent.IsAllDay = createdEvent.StartDate.Equals(createdEvent.StartDate.Date) && createdEvent.StartDate.AddDays(1).Equals(createdEvent.EndDate);
 

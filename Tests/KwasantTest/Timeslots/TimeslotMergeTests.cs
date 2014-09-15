@@ -17,7 +17,6 @@ namespace KwasantTest.Timeslots
     public class TimeslotMergeTests
     {
         private UserDO _user;
-        private const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff \z";
 
         [SetUp]
         public void Setup()
@@ -28,12 +27,12 @@ namespace KwasantTest.Timeslots
 
         private String GetFormattedDateString(String date)
         {
-            return DateTime.Parse(date).ToString(DateStandardFormat);
+            return DateTime.Parse(date).ToString(EventController.DateStandardFormat);
         }
 
         private DateTime GetFormattedDate(String date)
         {
-            return DateTime.ParseExact(GetFormattedDateString(date), DateStandardFormat, CultureInfo.InvariantCulture).ToUniversalTime();
+            return DateTime.ParseExact(GetFormattedDateString(date), EventController.DateStandardFormat, CultureInfo.InvariantCulture).ToUniversalTime();
         }
         
         private void CreateOriginalTimeSlot(int calendarID, String startTime, String endTime, bool nextDay = false)
