@@ -153,7 +153,7 @@ namespace KwasantWeb.Controllers
             createdEvent.BookingRequestID = bookingRequestID;
             createdEvent.CalendarID = calendarID;            
             createdEvent.StartDate = DateTime.ParseExact(start, DateStandardFormat, CultureInfo.InvariantCulture).ToUniversalTime();
-            createdEvent.EndDate = DateTime.ParseExact(start, DateStandardFormat, CultureInfo.InvariantCulture).ToUniversalTime();
+            createdEvent.EndDate = DateTime.ParseExact(end, DateStandardFormat, CultureInfo.InvariantCulture).ToUniversalTime();
 
             createdEvent.IsAllDay = createdEvent.StartDate.Equals(createdEvent.StartDate.Date) && createdEvent.StartDate.AddDays(1).Equals(createdEvent.EndDate);
 

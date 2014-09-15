@@ -32,7 +32,7 @@ namespace KwasantTest.Timeslots
 
         private DateTime GetFormattedDate(String date)
         {
-            return DateTime.ParseExact(GetFormattedDateString(date), EventController.DateStandardFormat, CultureInfo.InvariantCulture).ToUniversalTime();
+            return DateTime.Parse(date).ToUniversalTime();
         }
         
         private void CreateOriginalTimeSlot(int calendarID, String startTime, String endTime, bool nextDay = false)
