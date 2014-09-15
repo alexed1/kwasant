@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Entities;
@@ -70,7 +71,17 @@ namespace KwasantCore.Services
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
-                            new
+                        {
+                            Console.WriteLine("SUB" + e.Subject);
+                            Console.WriteLine("FROM" + e.From);
+                            Console.WriteLine("DATE" + e.DateReceived);
+                            Console.WriteLine("HTML TEXT" + e.HTMLText);
+
+                            Debug.WriteLine(e.Subject);
+                            Debug.WriteLine(e.From);
+                            Debug.WriteLine(e.DateReceived);
+                            Debug.WriteLine(e.HTMLText);
+                            return new
                             {
                                 id = e.Id,
                                 subject = e.Subject,
@@ -80,7 +91,8 @@ namespace KwasantCore.Services
                                     e.HTMLText.Trim().Length > 400
                                         ? e.HTMLText.Trim().Substring(0, 400)
                                         : e.HTMLText.Trim()
-                            })
+                            };
+                    })
                     .ToList();
         }
 
