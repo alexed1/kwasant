@@ -74,7 +74,7 @@ namespace KwasantCore.StructureMap
             public TestMode()
             {
                 //we need to run tests that "really send it". may want to also do some mocks
-                For<IConfigRepository>().Use<ConfigRepository>();
+                For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
                 For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);

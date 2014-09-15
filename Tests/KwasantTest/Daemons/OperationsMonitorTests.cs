@@ -30,7 +30,7 @@ namespace KwasantTest.Daemons
                         case "MaxBRIdle":
                             return "1";
                         default:
-                            return new ConfigRepository().Get<string>(key);
+                            return new MockedConfigRepository().Get<string>(key);
                     }
                 });
             ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepositoryMock.Object));

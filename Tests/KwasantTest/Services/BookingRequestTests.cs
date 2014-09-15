@@ -42,7 +42,7 @@ namespace KwasantTest.Services
                         case "MaxBRIdle":
                             return "1";
                         default:
-                            return new ConfigRepository().Get<string>(key);
+                            return new MockedConfigRepository().Get<string>(key);
                     }
                 });
             _configRepository = configRepositoryMock.Object;

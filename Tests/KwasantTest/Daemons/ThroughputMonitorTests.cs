@@ -44,7 +44,7 @@ namespace KwasantTest.Daemons
                                              case "ThroughputCheckingEndTime":
                                                  return GetThroughputCheckingEndTime().ToString();
                                              default:
-                                                 return new ConfigRepository().Get<string>(key);
+                                                 return new MockedConfigRepository().Get<string>(key);
                                          }
                                      });
             _configRepository = configRepositoryMock.Object;

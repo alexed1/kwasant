@@ -8,6 +8,7 @@ using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers;
 using StructureMap;
+using Utilities;
 using Utilities.Logging;
 using Microsoft.WindowsAzure;
 using Data.Infrastructure;
@@ -126,6 +127,7 @@ namespace Daemons
 
             using (IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                 EnvelopeRepository envelopeRepository = unitOfWork.EnvelopeRepository;
                 EventRepository eventRepository = unitOfWork.EventRepository;
                 var numSent = 0;
@@ -138,9 +140,9 @@ namespace Daemons
                             // we have to query EnvelopeDO one more time to have it loaded in subUow
                             var envelope = subUow.EnvelopeRepository.GetByKey(curEnvelopeDO.Id);
                             IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
-                            if (CloudConfigurationManager.GetSetting("ArchiveOutboundEmail") == "true")
+                            if (configRepository.Get<bool>("ArchiveOutboundEmail"))
                             {
-                                EmailAddressDO outboundemailaddress = subUow.EmailAddressRepository.GetOrCreateEmailAddress(CloudConfigurationManager.GetSetting("ArchiveEmailAddress"), "Outbound Archive");
+                                EmailAddressDO outboundemailaddress = subUow.EmailAddressRepository.GetOrCreateEmailAddress(configRepository.Get("ArchiveEmailAddress"), "Outbound Archive");
                                 envelope.Email.AddEmailRecipient(EmailParticipantType.Bcc, outboundemailaddress);
                             }
 
