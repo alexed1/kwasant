@@ -15,6 +15,7 @@ using System.Web;
 using Data.Entities;
 using StructureMap;
 using Utilities;
+using Data.States;
 
 namespace KwasantCore.Services
 {
@@ -133,8 +134,75 @@ namespace KwasantCore.Services
             if (roles.Any(role => acceptableRoles.Contains(role)))
                         return true;
                     return false;
-         
+        }
 
+        public UserDO GetUser(string curUserId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUser = uow.UserRepository.GetAll().Where(e => e.Id == curUserId).FirstOrDefault();
+                return new UserDO
+                {
+                    Id = curUser.Id,
+                    Calendars = curUser.Calendars,
+                    Email = curUser.Email,
+                    EmailAddress = curUser.EmailAddress,
+                    FirstName = curUser.FirstName,
+                    LastName = curUser.LastName
+                };
+            }
+        }
+
+        public string GetRole(string curUserId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curManager = User.GetUserManager(uow);
+                return curManager.GetRoles(curUserId)[0];
+            }
+        }
+
+        public List<UserDO> Query(IUnitOfWork uow, UserDO curUserSearch)
+        {
+            return uow.UserRepository.GetAll().ToList().Where(e =>
+                  curUserSearch.FirstName != null ?
+                  e.FirstName != null ?
+                  e.FirstName.Contains(curUserSearch.FirstName) : false : false ||
+                  curUserSearch.LastName != null ?
+                  e.LastName != null ?
+                  e.LastName.Contains(curUserSearch.LastName) : false : false ||
+                  curUserSearch.EmailAddress.Address != null ?
+                  e.EmailAddress.Address != null ?
+                  e.EmailAddress.Address.Contains(curUserSearch.EmailAddress.Address) : false : false
+                  ).ToList();
+        }
+
+        public void Create(IUnitOfWork uow, UserDO curUser, string role, bool sendEmail)
+        {
+            if (sendEmail)
+            {
+                EmailDO curEmail = new EmailDO();
+                curEmail.From = curUser.EmailAddress;
+                curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
+                curEmail.Subject = "User Settings Notification";
+                new Email(uow).SendTemplate("User_Settings_Notification", curEmail, null);
+            }
+            new Account().Register(uow, curUser.EmailAddress.Address, curUser.FirstName, curUser.LastName, "test@1234", role);
+        }
+
+        public void Update(IUnitOfWork uow, UserDO curUser, string role)
+        {
+            EmailAddressDO mailaddress = uow.EmailAddressRepository.GetAll().Where(e => e.Address == curUser.EmailAddress.Address).FirstOrDefault();
+            if (mailaddress != null)
+            {
+                UserDO existingUser = uow.UserRepository.GetAll().Where(e => e.EmailAddress.Address == curUser.EmailAddress.Address).FirstOrDefault();
+                existingUser.FirstName = curUser.FirstName;
+                existingUser.LastName = curUser.LastName;
+                existingUser.EmailAddress.Address = curUser.EmailAddress.Address;
+                var curManager = User.GetUserManager(uow);
+                curManager.AddToRole(existingUser.Id, role);
+                uow.SaveChanges();
+            }
         }
 
 

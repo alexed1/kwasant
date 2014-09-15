@@ -14,12 +14,24 @@ using StructureMap;
 using ViewModel.Models;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.Helpers;
+using Data.Validations;
+using System.Linq;
+using KwasantCore.Managers.APIManager.Packagers.DataTable;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Customer")]
+    [KwasantAuthorize]
     public class UserController : Controller
     {
+        private DataTablesPackager _datatables;
+        private User _user;
+
+        public UserController()
+        {
+            _datatables = new DataTablesPackager();
+            _user = new User();
+        }
+
         [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Index()
         {
@@ -105,6 +117,122 @@ namespace KwasantWeb.Controllers
                 var curManageUserVM = AutoMapper.Mapper.Map<Tuple<UserDO, IEnumerable<RemoteCalendarProviderDO>>, ManageUserVM>(tuple);
                 return View(curManageUserVM);
             }
+        }
+
+        public ActionResult ShowAddUser()
+        {
+            UserAdministerVM curUserAdminVM = new UserAdministerVM();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curUserAdminVM.User = new UserDO
+                {
+                    Id = "",
+                    EmailAddress = new EmailAddressDO() { Address = "" },
+                    FirstName = "",
+                    LastName = ""
+                };
+            }
+            return View(curUserAdminVM);
+        }
+
+        public ActionResult Validate(CreateUserVM curCreateUserVM)
+        {
+            UserDO curUser = curCreateUserVM.User;
+            string selectedRole = curCreateUserVM.UserRole;
+
+            if (string.IsNullOrEmpty(curUser.EmailAddress.Address) || string.IsNullOrEmpty(curUser.FirstName) || string.IsNullOrEmpty(curUser.LastName) || string.IsNullOrEmpty(selectedRole))
+            {
+                var jsonErrorResult = Json(_datatables.Pack(new { Error = "All Fields are required" }), JsonRequestBehavior.AllowGet);
+                return jsonErrorResult;
+            }
+
+            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+            if (!(emailAddressValidator.Validate(curUser.EmailAddress).IsValid))
+            {
+                var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
+                return jsonErrorResult;
+            }
+            var jsonSuccessResult = Json(_datatables.Pack("valid"), JsonRequestBehavior.AllowGet);
+            return jsonSuccessResult;
+        }
+
+        [KwasantAuthorize(Roles = "Admin")]
+        public ActionResult Detail(String userId)
+        {
+            UserAdministerVM curUserAdminVM = new UserAdministerVM();
+            curUserAdminVM.User = _user.GetUser(userId);
+            return View(curUserAdminVM);
+        }
+
+        [KwasantAuthorize(Roles = "Admin")]
+        public ActionResult FindUser(UserAdministerVM curUserAdminVM)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curUserAdminVM.User = new UserDO
+                {
+                    Id = "",
+                    EmailAddress = new EmailAddressDO() { Address = "" },
+                    FirstName = "",
+                    LastName = ""
+                };
+            }
+            return View(curUserAdminVM);
+        }
+
+        [HttpPost]
+        public ActionResult RunQuery(UserQueryVM curUserQueryVM)
+        {
+            UserDO curUser = curUserQueryVM.User;
+
+            if (string.IsNullOrEmpty(curUser.EmailAddress.Address) && string.IsNullOrEmpty(curUser.FirstName) && string.IsNullOrEmpty(curUser.LastName))
+            {
+                var jsonErrorResult = Json(_datatables.Pack(new { Error = "Atleast one field is required" }), JsonRequestBehavior.AllowGet);
+                return jsonErrorResult;
+            }
+            if (curUser.EmailAddress.Address != null)
+            {
+                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+                if (!(emailAddressValidator.Validate(curUser.EmailAddress).IsValid))
+                {
+                    var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
+                    return jsonErrorResult;
+                }
+            }
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var jsonResult = Json(_datatables.Pack(_user.Query(uow, curUser)), JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+
+        [HttpPost]
+        public ActionResult AddFromForm(CreateUserVM curCreateUserVM, bool sendEmail)
+        {
+            UserDO curUser = curCreateUserVM.User;
+            string role = curCreateUserVM.Roles.Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _user.Create(uow, curUser, role, sendEmail);
+            }
+            var jsonSuccessResult = Json(_datatables.Pack("User saved successfully."), JsonRequestBehavior.AllowGet);
+            return jsonSuccessResult;
+        }
+
+        [HttpPost]
+        public ActionResult Update(CreateUserVM curCreateUserVM)
+        {
+            UserDO curUser = curCreateUserVM.User;
+            string role = curCreateUserVM.Roles.Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _user.Update(uow, curUser, role);
+            }
+            var jsonSuccessResult = Json(_datatables.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
+            return jsonSuccessResult;
         }
 
     }

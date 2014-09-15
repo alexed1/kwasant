@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net.Mail;
-using System.Text;
+using System.Net.Sockets;
 using Daemons.InboundEmailHandlers;
 using Data.Entities;
 using Data.Infrastructure;
@@ -25,19 +22,9 @@ namespace Daemons
 
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
-            : this(ObjectFactory.GetInstance<IConfigRepository>(), null)
         {
+            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
           
-        }
-
-        //be careful about using this form. can get into problems involving disposal.
-        public InboundEmail(IConfigRepository configRepository, IImapClient client)
-        {
-            if (configRepository == null)
-                throw new ArgumentNullException("configRepository");
-            _configRepository = configRepository;
-            _client = client;
-            // last handler must be BookingRequestHandler as it processes any message that has not been processed by others.
             _handlers = new IInboundEmailHandler[]
                             {
                                 new InvitationResponseHandler(),
@@ -45,75 +32,111 @@ namespace Daemons
                             };
         }
 
-        private IImapClient CreateIntakeClient()
+        //be careful about using this form. can get into problems involving disposal.
+        public InboundEmail(IImapClient client, IConfigRepository configRepository)
         {
-            return new ImapClient(
-                _configRepository.Get("InboundEmailHost"),
-                _configRepository.Get<int>("InboundEmailPort"),
-                _configRepository.Get("INBOUND_EMAIL_USERNAME"),
-                _configRepository.Get("INBOUND_EMAIL_PASSWORD"),
-                AuthMethod.Login,
-                _configRepository.Get<bool>("InboundEmailUseSSL"));
+            _client = client;
+            _configRepository = configRepository;
+
+            _handlers = new IInboundEmailHandler[]
+                            {
+                                new InvitationResponseHandler(),
+                                new BookingRequestHandler(),
+                            };
         }
+
+        private string GetIMAPServer()
+        {
+            return _configRepository.Get("InboundEmailHost");
+        }
+
+        private int GetIMAPPort()
+        {
+            return _configRepository.Get<int>("InboundEmailPort");
+        }
+
+        public String UserName;
+        private string GetUserName()
+        {
+            return UserName ?? _configRepository.Get("INBOUND_EMAIL_USERNAME");
+        }
+
+        public String Password;
+        private string GetPassword()
+            {
+            return Password ??_configRepository.Get("INBOUND_EMAIL_PASSWORD");
+        }
+
+        private bool UseSSL()
+                {
+            return _configRepository.Get<bool>("InboundEmailUseSSL");
+                }
 
         public override int WaitTimeBetweenExecution
         {
-            get { return (int)TimeSpan.FromSeconds(10).TotalMilliseconds; }
+            get
+            {
+                return -1;
+            }
         }
 
-        protected override void Run()
-        {
-            try
+        private IImapClient Client
             {
-                if (_client == null)
+            get
+            {
+                if (_client != null)
+                    return _client;
+
+                try
                 {
-                    _client = CreateIntakeClient();
-                }
-            }
-            catch (ConfigurationException ex)
-            {
-                Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
-                Stop();
-                return;
+                    _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), UseSSL());
+                    string curUser = GetUserName();
+                    string curPwd = GetPassword();
+                    _client.Login(curUser, curPwd, AuthMethod.Login);
             }
             catch (Exception ex)
             {
-                Logger.GetLogger().Error("Error occured on startup... restarting.", ex);
-                return;
+                    Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
+                }
+
+                return _client;
+            }
             }
             
-            Logger.GetLogger().Info(GetType().Name + " - Querying inbound accounts...");
+        protected override void Run()
+                                {
+            GetUnreadMessages(Client);
+            Client.NewMessage += (sender, args) => GetUnreadMessages(args.Client);
+        }
+
+        private void GetUnreadMessages(IImapClient client)
+        {
             try
             {
-                var allMessageInfos = _client.ListMailboxes()
-                    .SelectMany(mailbox => _client
-                                               .Search(SearchCondition.Unseen(), mailbox)
-                                               .Select(uid => new { Client = _client, Mailbox = mailbox, Uid = uid, Message = _client.GetMessage(uid, mailbox: mailbox) }))
-                    .Where(messageInfo => messageInfo.Message.From != null)
-                    .ToList();
-                var messageInfos = allMessageInfos
-                    .Select(messageInfo => messageInfo.Message.Headers["Message-ID"])
-                    .Distinct(StringComparer.Ordinal)
-                    .Select(id => allMessageInfos.First(messageInfo => string.Equals(messageInfo.Message.Headers["Message-ID"], id, StringComparison.Ordinal)))
-                    .ToList();
+              var messages = client.GetMessages(client.Search(SearchCondition.Unseen()));
 
+              foreach (var message in messages)
+                            ProcessMessageInfo(message);
+            }
+            catch (SocketException ex)  //we were getting strange socket errors after time, and it looks like a reset solves things
+            {
+                CleanUp();
+                _client = null; //this will get recreated the next time this daemon runs
+                AlertManager.EmailProcessingFailure(DateTime.Now.to_S(), "Got that SocketException");
+                Logger.GetLogger().Error("Hit SocketException. Trying to reset the IMAP Client.", ex);
+            }
+        }
 
-                string logString;
-
-                //the difference in syntax makes it easy to have nonzero hits stand out visually in the log dashboard
-                if (messageInfos.Any())
-                    logString = GetType().Name + " - " + messageInfos.Count() + " emails found!";
-                else
-                    logString = GetType().Name + " - 0 emails found...";
+        private void ProcessMessageInfo(MailMessage messageInfo)
+        {
+            var logString = "Processing message with subject '" + messageInfo.Subject + "'";
                 Logger.GetLogger().Info(logString);
 
-                foreach (var messageInfo in messageInfos)
-                {
                     try
                     {
                         var handlerIndex = 0;
                         while (handlerIndex < _handlers.Length
-                            && !_handlers[handlerIndex].Process(messageInfo.Message))
+                    && !_handlers[handlerIndex].Process(messageInfo))
                         {
                             handlerIndex++;
                         }
@@ -122,22 +145,14 @@ namespace Daemons
                     }
                     catch (Exception e)
                     {
-                        AlertManager.EmailProcessingFailure(messageInfo.Message.Headers["Date"], e.Message);
-                        Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}",
-                                                               messageInfo.Message.Headers["Message-ID"]));
-                        messageInfo.Client.AddMessageFlags(messageInfo.Uid, messageInfo.Mailbox, MessageFlag.Seen);
+                        AlertManager.EmailProcessingFailure(messageInfo.Headers["Date"], e.Message);
+                        Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Headers["Message-ID"]));
                     }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.GetLogger().Error("Error occured on querying... restarting.", ex);
-            }
         }
 
         protected override void CleanUp()
         {
-            if (_client != null)
+            if(_client != null)
                 _client.Dispose();
         }
     }

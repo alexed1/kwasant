@@ -330,6 +330,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private AuthorizationTokenRepository _authorizationTokenRepository;
+
+        public AuthorizationTokenRepository AuthorizationTokenRepository
+        {
+            get
+            {
+                return _authorizationTokenRepository ?? (_authorizationTokenRepository = new AuthorizationTokenRepository(this));
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();

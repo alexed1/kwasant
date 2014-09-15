@@ -13,7 +13,7 @@ function getConfiguration() {
             $("#txtConfigValue").val(txt);
         },
         "text"
-    );   
+    );
 
     return retValue;
 }
@@ -23,9 +23,9 @@ function getURL(key) {
 
     var retValue = '';
     var lines = configValue.split("\n");
-    
+
     for (var i = 0, len = lines.length; i < len; i++) {
-        var arrLine = lines[i].split('=');        
+        var arrLine = lines[i].split('=');
         if ($.trim(arrLine[0]) == $.trim(key)) {
             retValue = arrLine[1];
             break;
@@ -72,4 +72,44 @@ function close(saved) {
     if (saved === undefined || saved == null)
         saved = false;
     Kwasant.IFrame.CloseMe(saved);
+}
+
+/*** Check Email Validation ***/
+
+var returnval;
+//var initValues;
+var data;
+function getValidEmailAddress(attendeesSel) {
+    $(attendeesSel).select2({
+        createSearchChoice: function (term) {
+            return { id: term, text: term };
+        },
+        validateFormat: function (term) {
+            returnval = "";
+            if (isValidEmail(term)) {
+                if (returnval == true)
+                    return null;
+                else
+                    return returnval;
+            }
+        },
+        multiple: true,
+        data: [],
+        width: '100%',
+    });
+}
+
+function isValidEmail(term) {
+    return $.ajax({
+        type: "Get",
+        async: false,
+        dataType: 'json',
+        contentType: 'application/json; charset=utf-8 ',
+        url: '/Data/ValidateEmailAddress',
+        data: { emailString: JSON.stringify(encodeURI(term)) },
+        success: function (data) {
+            returnval = data;
+        },
+        cache: false
+    });
 }

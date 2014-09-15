@@ -1,0 +1,32 @@
+﻿@model KwasantWeb.ViewModels.UserAdministerVM
+@{
+    ViewBag.Title = "Find User";
+}
+@section styles{
+    @Styles.Render("~/bundles/css/daypilot")
+}
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/daypilot")
+    @Scripts.Render("~/bundles/js/kwasantcalendar")
+    @Scripts.Render("~/bundles/js/kwasantpopup")
+
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
+<h2>Find User</h2>
+<table width="100%">
+    <tr>
+        <td width="45%" style="vertical-align: top;" id="tduserblock">
+            @Html.Partial("ShowQuery", new KwasantWeb.ViewModels.UserQueryVM { User = Model.User })
+        </td>
+        <td width="55%">
+            &nbsp;
+        </td>
+    </tr>
+</table>

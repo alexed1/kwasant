@@ -101,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Authentication\Account.cs" />
+    <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
     <Compile Include="Entities\InvitationResponseDO.cs" />
     <Compile Include="Entities\QuestionResponseDO.cs" />
@@ -181,7 +182,12 @@
     <Compile Include="Migrations\201409101403296_Change_State_to_BookingRequest.Designer.cs">
       <DependentUpon>201409101403296_Change_State_to_BookingRequest.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409111043572_AddAuthorizationTokens.cs" />
+    <Compile Include="Migrations\201409111043572_AddAuthorizationTokens.Designer.cs">
+      <DependentUpon>201409111043572_AddAuthorizationTokens.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
+    <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\InvitationResponseRepository.cs" />
     <Compile Include="Repositories\InvitationRepository.cs" />
     <Compile Include="Migrations\201408210907370_ImplementResponses.cs" />
@@ -917,6 +923,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409101403296_Change_State_to_BookingRequest.resx">
       <DependentUpon>201409101403296_Change_State_to_BookingRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409111043572_AddAuthorizationTokens.resx">
+      <DependentUpon>201409111043572_AddAuthorizationTokens.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

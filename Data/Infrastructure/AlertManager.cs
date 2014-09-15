@@ -28,8 +28,8 @@ namespace Data.Infrastructure
         public delegate void EmailSentHandler(int emailId, string customerId);
         public static event EmailSentHandler AlertEmailSent;
 
-        public delegate void IncidentCreatedHandler(string dateReceived, string errorMessage);
-        public static event IncidentCreatedHandler AlertEmailProcessingFailure;
+        public delegate void EmailProcessingHandler(string dateReceived, string errorMessage);
+        public static event EmailProcessingHandler AlertEmailProcessingFailure;
 
         public delegate void BookingRequestStateChangeHandler(int bookingRequestId);
         public static event BookingRequestStateChangeHandler AlertBookingRequestStateChange;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web.Mvc;
 
 namespace KwasantWeb.ViewModels
 {
@@ -18,6 +19,8 @@ namespace KwasantWeb.ViewModels
         public String Summary { get; set; }
         public String Category { get; set; }
         public int? BookingRequestID { get; set; }
+        
+        [AllowHtml]
         public String Attendees { get; set; }
         public String CreatedByAddress { get; set; }
         public String CreatedByID { get; set; }

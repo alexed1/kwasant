@@ -17,7 +17,6 @@ namespace Data.Entities
             BookingRequests = new List<BookingRequestDO>();
             Calendars = new List<CalendarDO>();
             RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
-            AddDefaultCalendar();
         }
 
         public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
@@ -52,24 +51,6 @@ namespace Data.Entities
                      r.HasAccessToken());
         }
 
-        public void AddDefaultCalendar()
-        {
-            if (this == null)
-                throw new ArgumentNullException("curUser");
-
-            if (!Calendars.Any())
-            {
-                var curCalendar = new CalendarDO
-                {
-                    Name = "Default Calendar",
-                    Owner = this,
-                    OwnerID = Id
-                };
-                Calendars.Add(curCalendar);
-               
-            }
-        }
-
         void ISaveHook.BeforeSave()
         {
             
@@ -77,7 +58,11 @@ namespace Data.Entities
 
         void ICreateHook.AfterCreate()
         {
-            AlertManager.CustomerCreated(this.Id);
+            //we only want to treat explicit customers, who have sent us a BR, a welcome message
+            //if there exists a booking request with this user as its created by...
+            var bookingRequestRepo = new BookingRequestRepository(new UnitOfWork(new KwasantDbContext()));
+            if (bookingRequestRepo.FindOne(br => br.User.Id == this.Id) != null)
+                AlertManager.CustomerCreated(this.Id);
         }
     }
 }

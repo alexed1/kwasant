@@ -37,9 +37,8 @@ namespace KwasantTest.Daemons
 
             _mailMessage = new MailMessage();
 
-            clientMock.Setup(c => c.ListMailboxes()).Returns(new List<String> { "MockedMailbox" });
-            clientMock.Setup(c => c.Search(It.IsAny<SearchCondition>(), It.IsAny<String>())).Returns(new List<uint> { 1 });
-            clientMock.Setup(c => c.GetMessage(1, true, It.IsAny<String>())).Returns(_mailMessage);
+            clientMock.Setup(c => c.GetMessages(It.IsAny<IEnumerable<uint>>(), true, null))
+                .Returns(new List<MailMessage> { _mailMessage });
 
             _client = clientMock.Object;
         }
@@ -53,14 +52,14 @@ namespace KwasantTest.Daemons
             const string testBody = "Test Body";
             const string testToEmailAddress = "test.recipient@gmail.com";
 
+
             _mailMessage.Body = testBody;
             _mailMessage.Subject = testSubject;
             _mailMessage.From = new MailAddress(testFromEmailAddress);
             _mailMessage.To.Add(new MailAddress(testToEmailAddress));
 
-            var ie = new InboundEmail(ObjectFactory.GetInstance<IConfigRepository>(), _client);
 
-            // EXECUTE
+            var ie = new InboundEmail(_client, ObjectFactory.GetInstance<IConfigRepository>());
             DaemonTests.RunDaemonOnce(ie);
 
             // VERIFY
@@ -94,7 +93,7 @@ namespace KwasantTest.Daemons
                 uow.SaveChanges();
             }
             var testInvitationResponseIcs = string.Format(
-@"BEGIN:VCALENDAR
+                @"BEGIN:VCALENDAR
 METHOD:REPLY
 PRODID:Microsoft Exchange Server 2010
 VERSION:2.0
@@ -135,14 +134,15 @@ X-MICROSOFT-CDO-IMPORTANCE:1
 X-MICROSOFT-CDO-INSTTYPE:0
 X-MICROSOFT-DISALLOW-COUNTER:FALSE
 END:VEVENT
-END:VCALENDAR", 
-              KwasantICS.DDay.iCal.ParticipationStatus.Accepted, curAttendee.EmailAddress.Address, curEvent.ExternalGUID);
+END:VCALENDAR",
+                KwasantICS.DDay.iCal.ParticipationStatus.Accepted, curAttendee.EmailAddress.Address,
+                curEvent.ExternalGUID);
 
             var attachmentStream = new MemoryStream(Encoding.UTF8.GetBytes(testInvitationResponseIcs));
             _mailMessage.AlternateViews.Add(new AlternateView(attachmentStream, "text/calendar"));
             _mailMessage.From = new MailAddress(curAttendee.EmailAddress.Address);
-            
-            var ie = new InboundEmail(ObjectFactory.GetInstance<IConfigRepository>(), _client);
+
+            var ie = new InboundEmail(_client, ObjectFactory.GetInstance<IConfigRepository>());
 
             // EXECUTE
             DaemonTests.RunDaemonOnce(ie);
