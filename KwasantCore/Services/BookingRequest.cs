@@ -72,15 +72,6 @@ namespace KwasantCore.Services
                     .Select(
                         e =>
                         {
-                            Console.WriteLine("SUB" + e.Subject);
-                            Console.WriteLine("FROM" + e.From);
-                            Console.WriteLine("DATE" + e.DateReceived);
-                            Console.WriteLine("HTML TEXT" + e.HTMLText);
-
-                            Debug.WriteLine(e.Subject);
-                            Debug.WriteLine(e.From);
-                            Debug.WriteLine(e.DateReceived);
-                            Debug.WriteLine(e.HTMLText);
                             return new
                             {
                                 id = e.Id,

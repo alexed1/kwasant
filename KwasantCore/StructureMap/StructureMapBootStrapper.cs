@@ -52,8 +52,8 @@ namespace KwasantCore.StructureMap
         {
             public LiveMode()
             {
-                For<ISMSPackager>().Use(new TwilioPackager());
                 For<IConfigRepository>().Use<ConfigRepository>();
+                For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
                 For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);

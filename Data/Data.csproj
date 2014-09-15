@@ -186,6 +186,10 @@
     <Compile Include="Migrations\201409111043572_AddAuthorizationTokens.Designer.cs">
       <DependentUpon>201409111043572_AddAuthorizationTokens.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409151606566_Sync.Rob.15.09.2014.cs" />
+    <Compile Include="Migrations\201409151606566_Sync.Rob.15.09.2014.Designer.cs">
+      <DependentUpon>201409151606566_Sync.Rob.15.09.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\InvitationResponseRepository.cs" />
@@ -926,6 +930,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409111043572_AddAuthorizationTokens.resx">
       <DependentUpon>201409111043572_AddAuthorizationTokens.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409151606566_Sync.Rob.15.09.2014.resx">
+      <DependentUpon>201409151606566_Sync.Rob.15.09.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

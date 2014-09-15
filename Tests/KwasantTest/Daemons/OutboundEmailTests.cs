@@ -39,9 +39,6 @@ namespace KwasantTest.Daemons
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Console.WriteLine(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
-                Debug.WriteLine(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
-
                 // SETUP
                 var email = _fixtureData.TestEmail1();
 
