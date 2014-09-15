@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Mail;
 using System.Net.Sockets;
 using Daemons.InboundEmailHandlers;
@@ -103,14 +104,19 @@ namespace Daemons
         {
             Logger.GetLogger().Info("Waiting for messages at " + GetUserName() + "...");
             GetUnreadMessages(Client);
-            Client.NewMessage += (sender, args) => GetUnreadMessages(args.Client);
+            Client.NewMessage += (sender, args) =>
+            {
+                Logger.GetLogger().Info("New email notification recieved.");
+                GetUnreadMessages(args.Client);
+            };
         }
 
         private void GetUnreadMessages(IImapClient client)
         {
             try
             {
-              var messages = client.GetMessages(client.Search(SearchCondition.Unseen()));
+              var messages = client.GetMessages(client.Search(SearchCondition.Unseen())).ToList();
+              Logger.GetLogger().Info(messages.Count + " messages recieved.");
 
               foreach (var message in messages)
                             ProcessMessageInfo(message);
