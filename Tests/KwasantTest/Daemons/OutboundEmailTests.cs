@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics;
 using System.Net.Mail;
 using Daemons;
 using Data.Entities;
@@ -37,6 +39,9 @@ namespace KwasantTest.Daemons
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                Console.WriteLine(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
+                Debug.WriteLine(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
+
                 // SETUP
                 var email = _fixtureData.TestEmail1();
 
