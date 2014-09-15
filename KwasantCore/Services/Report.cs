@@ -27,25 +27,6 @@ namespace KwasantCore.Services
             return uow.FactRepository.GetAll().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime).ToList();
         }
 
-        //private List<object> GenerateIncidentReport(IUnitOfWork uow, DateRange dateRange, string type)
-        //{
-        //   if (type.ToLower() == "incident")
-        //       return uow.IncidentRepository.GetAll().Where(e => e.CreateTime > dateRange.StartTime && e.CreateTime < dateRange.EndTime)
-        //           .Select(e =>  (object)new 
-        //                 {
-        //                     CreateTime = e.CreateTime.ToString("M-d-yy hh:mm tt"), PrimaryCategory = e.PrimaryCategory,
-        //                     SecondaryCategory = e.SecondaryCategory, Activity = e.Activity, Notes = e.Notes
-        //                 }).ToList();
-        //   else
-        //        return uow.IncidentRepository.GetAll().OrderByDescending(x => x.CreateTime)
-        //        .Select(e => (object)new 
-        //                       {
-        //                           CreateTime = e.CreateTime.ToString("M-d-yy hh:mm tt"),PrimaryCategory = e.PrimaryCategory,
-        //                           SecondaryCategory = e.SecondaryCategory, Activity = e.Activity,  Notes = e.Notes
-        //                       }).Take(5).ToList();
-
-        //}
-
         private List<IncidentDO> ShowAllIncidents(IUnitOfWork uow, DateRange dateRange)
         {
                 return uow.IncidentRepository.GetAll().Where(e => e.CreateTime > dateRange.StartTime && e.CreateTime < dateRange.EndTime).ToList();

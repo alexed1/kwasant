@@ -12,6 +12,7 @@ using Utilities.Logging;
 using Microsoft.WindowsAzure;
 using Data.Infrastructure;
 using System.Collections.Generic;
+using KwasantCore.Services;
 
 namespace Daemons
 {
@@ -61,7 +62,7 @@ namespace Daemons
 
                     emailToUpdate.EmailStatus = EmailState.SendCriticalError;
                     AlertManager.Error_EmailSendFailure();
-                    KwasantCore.Services.Email _email = new KwasantCore.Services.Email();
+                    Email _email = new Email();
                     _email.SendAlertEmail();
 
                     unitOfWork.SaveChanges();
@@ -105,7 +106,7 @@ namespace Daemons
 
                     emailToUpdate.EmailStatus = EmailState.SendCriticalError;
                     AlertManager.Error_EmailSendFailure();
-                    KwasantCore.Services.Email _email = new KwasantCore.Services.Email();
+                    Email _email = new Email();
                     _email.SendAlertEmail();
                     unitOfWork.SaveChanges();
                 });

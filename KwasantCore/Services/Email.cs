@@ -229,15 +229,15 @@ namespace KwasantCore.Services
             {
                 IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                 string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
-                string toRecipient ="ops@kwasant.com";
-              
-                EmailAddressDO curEmailAddress = new EmailAddressDO(toRecipient);
+                //string toRecipient ="ops@kwasant.com";
+
+                EmailAddressDO curEmailAddress = new EmailAddressDO("ops@kwasant.com");
                 Email _email = new Email(uow);
                 EmailDO curEmail = new EmailDO();
                 string message = "Alert! Kwasant Error Reported: EmailSendFailure";
                 string subject = "Alert! Kwasant Error Reported: EmailSendFailure";
-                curEmail = _email.GenerateBasicMessage(curEmailAddress, subject, message, fromAddress, toRecipient);
-                curEmail.Subject = "Alert! Kwasant Error Reported: EmailSendFailure"; ;
+                curEmail = _email.GenerateBasicMessage(curEmailAddress, subject, message, fromAddress, "ops@kwasant.com");
+                //curEmail.Subject = "Alert! Kwasant Error Reported: EmailSendFailure"; ;
                 _email.Send(curEmail);
                 uow.SaveChanges();
             }

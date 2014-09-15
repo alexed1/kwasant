@@ -175,8 +175,8 @@ namespace KwasantCore.Services
             string toRecipient = emailAddressDO.Address;
             IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
-            EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, subject, message, fromAddress, toRecipient);
-            email.Send(emailDO);
+            EmailDO curEmail = email.GenerateBasicMessage(emailAddressDO, subject, message, fromAddress, toRecipient);
+            email.Send(curEmail);
             uow.SaveChanges();
         }
 
