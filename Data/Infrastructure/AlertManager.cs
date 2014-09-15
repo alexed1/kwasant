@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Microsoft.WindowsAzure;
 using StructureMap;
+using Utilities;
 using Utilities.Logging;
 
 namespace Data.Infrastructure
@@ -263,6 +264,7 @@ namespace Data.Infrastructure
         {
             Debug.Assert(uow != null);
             Debug.Assert(curAction != null);
+            var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
             if (string.IsNullOrEmpty(curAction.Data))
             {
                 curAction.Data = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
@@ -272,7 +274,7 @@ namespace Data.Infrastructure
                     curAction.ObjectId,
                     curAction.CustomerId);
             }
-            if (CloudConfigurationManager.GetSetting("LogLevel") == "Verbose")
+            if (configRepo.Get("LogLevel") == "Verbose")
                 Logger.GetLogger().Info(curAction.Data);
             uow.FactRepository.Add(curAction);
         }
