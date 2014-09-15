@@ -149,9 +149,8 @@ namespace Daemons
             catch (Exception e)
             {
                 AlertManager.EmailProcessingFailure(messageInfo.Headers["Date"], e.Message);
-                Logger.GetLogger()
-                    .Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}",
-                        messageInfo.Headers["Message-ID"]));
+                Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Headers["Message-ID"]));
+                throw;
             }
         }
 
