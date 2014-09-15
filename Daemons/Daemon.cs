@@ -182,6 +182,9 @@ namespace Daemons
                 {
                     bool firstExecution = true;
                     DateTime lastExecutionTime = DateTime.Now;
+
+                    Logger.GetLogger().Info(GetType().Name + " - spinning up");
+
                     while (!IsStopping)
                     {
                         try

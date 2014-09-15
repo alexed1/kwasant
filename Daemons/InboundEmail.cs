@@ -2,11 +2,7 @@
 using System.Net.Mail;
 using System.Net.Sockets;
 using Daemons.InboundEmailHandlers;
-using Data.Entities;
 using Data.Infrastructure;
-using Data.Interfaces;
-using Data.Repositories;
-using KwasantCore.Services;
 using S22.Imap;
 using StructureMap;
 using Utilities;
@@ -68,9 +64,9 @@ namespace Daemons
         }
 
         private bool UseSSL()
-                {
+        {
             return _configRepository.Get<bool>("InboundEmailUseSSL");
-                }
+        }
 
         public override int WaitTimeBetweenExecution
         {
@@ -81,7 +77,7 @@ namespace Daemons
         }
 
         private IImapClient Client
-            {
+        {
             get
             {
                 if (_client != null)
@@ -93,18 +89,19 @@ namespace Daemons
                     string curUser = GetUserName();
                     string curPwd = GetPassword();
                     _client.Login(curUser, curPwd, AuthMethod.Login);
-            }
-            catch (Exception ex)
-            {
+                }
+                catch (Exception ex)
+                {
                     Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
                 }
 
                 return _client;
             }
-            }
-            
+        }
+
         protected override void Run()
-                                {
+        {
+            Logger.GetLogger().Info("Waiting for messages at " + GetUserName() + "...");
             GetUnreadMessages(Client);
             Client.NewMessage += (sender, args) => GetUnreadMessages(args.Client);
         }
@@ -130,24 +127,26 @@ namespace Daemons
         private void ProcessMessageInfo(MailMessage messageInfo)
         {
             var logString = "Processing message with subject '" + messageInfo.Subject + "'";
-                Logger.GetLogger().Info(logString);
+            Logger.GetLogger().Info(logString);
 
-                    try
-                    {
-                        var handlerIndex = 0;
-                        while (handlerIndex < _handlers.Length
-                    && !_handlers[handlerIndex].Process(messageInfo))
-                        {
-                            handlerIndex++;
-                        }
-                        if (handlerIndex >= _handlers.Length)
-                            throw new ApplicationException("Message hasn't been processed by any handler.");
-                    }
-                    catch (Exception e)
-                    {
-                        AlertManager.EmailProcessingFailure(messageInfo.Headers["Date"], e.Message);
-                        Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Headers["Message-ID"]));
-                    }
+            try
+            {
+                var handlerIndex = 0;
+                while (handlerIndex < _handlers.Length
+                       && !_handlers[handlerIndex].Process(messageInfo))
+                {
+                    handlerIndex++;
+                }
+                if (handlerIndex >= _handlers.Length)
+                    throw new ApplicationException("Message hasn't been processed by any handler.");
+            }
+            catch (Exception e)
+            {
+                AlertManager.EmailProcessingFailure(messageInfo.Headers["Date"], e.Message);
+                Logger.GetLogger()
+                    .Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}",
+                        messageInfo.Headers["Message-ID"]));
+            }
         }
 
         protected override void CleanUp()
