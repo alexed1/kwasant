@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Mail;
 using System.Net.Sockets;
@@ -105,7 +106,7 @@ namespace Daemons
             Logger.GetLogger().Info("Waiting for messages at " + GetUserName() + "...");
             GetUnreadMessages(Client);
             Client.NewMessage += (sender, args) =>
-            {
+            {                
                 Logger.GetLogger().Info("New email notification recieved.");
                 GetUnreadMessages(args.Client);
             };
