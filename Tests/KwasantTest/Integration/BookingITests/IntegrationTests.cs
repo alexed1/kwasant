@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Daemons;
 using Data.Entities;
@@ -151,7 +152,10 @@ namespace KwasantTest.Integration.BookingITests
         public static IEnumerable<EmailDO> InjectedQuery_FindBookingRequest(EmailDO targetCriteria, List<EmailDO> unreadMessages)
         {
             var UOW = ObjectFactory.GetInstance<IUnitOfWork>();
-            BookingRequestDO foundBR = UOW.BookingRequestRepository.FindOne( br => br.From.Address == targetCriteria.From.Address && br.Subject == targetCriteria.Subject);
+            BookingRequestDO foundBR =
+                UOW.BookingRequestRepository.GetQuery()
+                    .FirstOrDefault(
+                        br => br.From.Address == targetCriteria.From.Address && br.Subject == targetCriteria.Subject);
             return ConvertToEmailList(foundBR);
         }
 
@@ -190,7 +194,7 @@ namespace KwasantTest.Integration.BookingITests
             //Programmatically create an event that matches (more or less) the provide booking request
             if (testBR != null)
             {
-                var lines = testBR.HTMLText.Split(new[] {"\r\n"}, StringSplitOptions.None);
+                var lines = testBR.HTMLText.Split(new [] { Environment.NewLine }, StringSplitOptions.None);
                 var startString = lines[1].Remove(0, _startPrefix.Length);
                 var endString = lines[2].Remove(0, _endPrefix.Length);
                 var e = ObjectFactory.GetInstance<Event>();

@@ -44,7 +44,7 @@ namespace KwasantCore.Services
             curEventDO.BookingRequest = bookingRequestDO;            
             curEventDO.CreatedBy = bookingRequestDO.User;
             curEventDO.CreatedByID = bookingRequestDO.User.Id;
-            curEventDO.DateCreated = DateTimeOffset.UtcNow.ToOffset(bookingRequestDO.DateCreated.Offset);
+            curEventDO.DateCreated = DateTime.Now;
             
             var curCalendar = bookingRequestDO.User.Calendars.FirstOrDefault();
             if (curCalendar == null)

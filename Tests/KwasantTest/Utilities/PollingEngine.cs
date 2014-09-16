@@ -104,22 +104,22 @@ namespace KwasantTest.Utilities
         //The actual query is passed in as a delegate method called injectedQuery, which is of type InjectedEmailQuery
         //targetCriteria is passed through this method into the injectedQuery
         //this allows this method's machinery to be reused for many different kinds of email-related queries.
-        public List<EmailDO> PollForEmail(InjectedEmailQuery injectedQuery, EmailDO targetCriteria, string targetType,  ImapClient curClient, InboundEmail inboundDaemon = null)
+        public List<EmailDO> PollForEmail(InjectedEmailQuery injectedQuery, EmailDO targetCriteria, string targetType,
+            ImapClient curClient, InboundEmail inboundDaemon = null)
         {
             List<EmailDO> queryResults;
             List<EmailDO> unreadMessages = null;
-            
 
             //run inbound daemon, checking for a generated BookingRequest, until success or timeout
             using (var timer = this.CreateTimer(maxPollingTime, "Polling"))
             {
-            BookingRequestDO request;
-            do
-            {
+                BookingRequestDO request;
+                do
+                {
                     if (inboundDaemon != null && targetType == "intake")
                     {
                         //querying one of our intake accounts. Might need to kick the Daemon, like getting a car engine to turn over
-                DaemonTests.RunDaemonOnce(inboundDaemon);
+                        DaemonTests.RunDaemonOnce(inboundDaemon);
                     }
                     else
                     {
