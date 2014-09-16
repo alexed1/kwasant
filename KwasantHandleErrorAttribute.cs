@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
+﻿using Utilities.Logging;
 
 namespace KwasantWeb
 {
@@ -51,8 +52,9 @@ namespace KwasantWeb
                     view = statusCode.ToString();
                 }
             }
-           
 
+            Logger.GetLogger().Error("Critical internal error occured.", exception);
+           
             HandleErrorInfo model = new HandleErrorInfo(filterContext.Exception, controllerName, actionName);
             filterContext.Result = new ViewResult
             {
