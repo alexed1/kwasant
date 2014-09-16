@@ -263,7 +263,7 @@ namespace KwasantTest.Services
         [Category("BRM")]
         public void TimeOutStaleBRTest()
         {
-            var timeOut = TimeSpan.FromSeconds(3);
+            var timeOut = TimeSpan.FromSeconds(30);
             Stopwatch staleBRDuration = new Stopwatch();
 
             MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { };
@@ -277,16 +277,18 @@ namespace KwasantTest.Services
             _uow.SaveChanges();
 
             staleBRDuration.Start();
+
+            IEnumerable<BookingRequestDO> requestNow;
             do
             {
                 var om = new OperationsMonitor();
                 DaemonTests.RunDaemonOnce(om);
+                requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
 
-            } while (staleBRDuration.Elapsed < timeOut);
+            } while (!requestNow.Any() || staleBRDuration.Elapsed > timeOut);
             staleBRDuration.Stop();
 
-
-            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
+            requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
             Assert.AreEqual(1, requestNow.Count());
 
         }
