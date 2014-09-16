@@ -104,6 +104,7 @@
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
     <Compile Include="Entities\InvitationResponseDO.cs" />
+    <Compile Include="Entities\LogDO.cs" />
     <Compile Include="Entities\QuestionResponseDO.cs" />
     <Compile Include="Interfaces\IInvitationResponse.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.cs" />
@@ -190,7 +191,12 @@
     <Compile Include="Migrations\201409151606566_Sync.Rob.15.09.2014.Designer.cs">
       <DependentUpon>201409151606566_Sync.Rob.15.09.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409160731277_AddDBLogging.cs" />
+    <Compile Include="Migrations\201409160731277_AddDBLogging.Designer.cs">
+      <DependentUpon>201409160731277_AddDBLogging.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
+    <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\InvitationResponseRepository.cs" />
     <Compile Include="Repositories\InvitationRepository.cs" />
@@ -933,6 +939,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409151606566_Sync.Rob.15.09.2014.resx">
       <DependentUpon>201409151606566_Sync.Rob.15.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409160731277_AddDBLogging.resx">
+      <DependentUpon>201409160731277_AddDBLogging.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

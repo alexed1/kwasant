@@ -274,7 +274,7 @@ namespace Data.Infrastructure
                     curAction.ObjectId,
                     curAction.CustomerId);
             }
-            if (configRepo.Get("LogLevel") == "Verbose")
+            if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
                 Logger.GetLogger().Info(curAction.Data);
             uow.FactRepository.Add(curAction);
         }
