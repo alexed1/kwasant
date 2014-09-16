@@ -340,6 +340,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private LogRepository _logRepository;
+
+        public LogRepository LogRepository
+        {
+            get
+            {
+                return _logRepository ?? (_logRepository = new LogRepository(this));
+            }
+        }
+        
         public void Save()
         {
             _context.SaveChanges();
