@@ -28,7 +28,9 @@ namespace KwasantTest.Daemons
                     switch (key)
                     {
                         case "MaxBRIdle":
-                            return "1";
+                            return "0.04";
+                        case "EmailAddress_GeneralInfo":
+                            return "info@kwasant.com";
                         default:
                             return new MockedConfigRepository().Get<string>(key);
                     }
