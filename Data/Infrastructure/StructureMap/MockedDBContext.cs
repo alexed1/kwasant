@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -22,6 +23,19 @@ namespace Data.Infrastructure.StructureMap
 
             SetUnique<EmailAddressDO, String>(ea => ea.Address);
             SetUnique<UserDO, int>(u => u.EmailAddressID);
+
+            SetPrimaryKey<UserDO, String>(u => u.Id);
+        }
+
+        private readonly Dictionary<Type, PropertyInfo> m_ForcedDOPrimaryKey = new Dictionary<Type, PropertyInfo>();
+
+        private void SetPrimaryKey<TOnType, TReturnType>(Expression<Func<TOnType, TReturnType>> expression)
+        {
+            var reflectionHelper = new ReflectionHelper<TOnType>();
+            var propName = reflectionHelper.GetPropertyName(expression);
+            var linkedProp = typeof (TOnType).GetProperties().FirstOrDefault(p => p.Name == propName);
+            lock(m_ForcedDOPrimaryKey)
+                m_ForcedDOPrimaryKey[typeof(TOnType)] = linkedProp;
         }
 
         private readonly Dictionary<Type, List<String>> m_UniqueProperties = new Dictionary<Type, List<String>>();
@@ -54,6 +68,8 @@ namespace Data.Infrastructure.StructureMap
             DetectChanges();
 
             AssignIDs();
+
+            UpdateForeignKeyReferences();
 
             AssertConstraints();
             
@@ -182,6 +198,98 @@ namespace Data.Infrastructure.StructureMap
                     if ((int)propInfo.GetValue(row) == 0)
                     {
                         propInfo.SetValue(row, ++maxIDAlready);
+                    }
+                }
+            }
+        }
+
+        private void UpdateForeignKeyReferences()
+        {
+            foreach (var keyValuePair in _cachedSets)
+            {
+                if (!keyValuePair.Value.Any())
+                    continue;
+
+                var props = keyValuePair.Key.GetProperties();
+                var propsWithForeignKeyNotation = props.Where(p => p.GetCustomAttribute<ForeignKeyAttribute>() != null).ToList();
+                if (!propsWithForeignKeyNotation.Any())
+                    continue;
+
+                foreach (var prop in propsWithForeignKeyNotation)
+                {
+                    var attr = prop.GetCustomAttribute<ForeignKeyAttribute>();
+                    //Now.. find out which way it goes..
+
+                    var linkedName = attr.Name;
+                    var linkedProp = keyValuePair.Key.GetProperties().FirstOrDefault(n => n.Name == linkedName);
+                    if (linkedProp == null)
+                        continue;
+
+                    PropertyInfo foreignIDProperty;
+                    PropertyInfo parentFKIDProperty;
+                    PropertyInfo parentFKDOProperty;
+
+                    var getPrimaryKeyProp = new Func<PropertyInfo, PropertyInfo>(
+                        (propertyInfo) =>
+                        {
+                            var propType = propertyInfo.PropertyType;
+                            lock (m_ForcedDOPrimaryKey)
+                            {
+                                if (m_ForcedDOPrimaryKey.ContainsKey(propType))
+                                    return m_ForcedDOPrimaryKey[propType];
+                            }
+                            return propType.GetProperties().FirstOrDefault(p => p.GetCustomAttribute<KeyAttribute>() != null);
+                        });
+
+                    var linkedID = getPrimaryKeyProp(linkedProp);
+                    if (linkedID != null)
+                    {
+                        foreignIDProperty = linkedID;
+                        parentFKIDProperty = prop;
+                        parentFKDOProperty = linkedProp;
+                    }
+                    else
+                    {
+                        foreignIDProperty = getPrimaryKeyProp(prop);
+                        parentFKIDProperty = linkedProp;
+                        parentFKDOProperty = prop;
+                    }
+
+                    if (foreignIDProperty == null)
+                        continue;
+
+                    foreach (var value in keyValuePair.Value)
+                    {
+                        var foreignDO = parentFKDOProperty.GetValue(value);
+                        if (foreignDO != null) //If the DO is set, then we update the ID
+                        {
+                            var fkID = foreignIDProperty.GetValue(foreignDO);
+                            parentFKIDProperty.SetValue(value, fkID);
+                        }
+                        else
+                        {
+                            var fkID = parentFKIDProperty.GetValue(value);
+                            if (fkID == null)
+                                continue;
+
+                            if (!_cachedSets.ContainsKey(parentFKDOProperty.PropertyType))
+                                continue;
+
+                            var foreignSet = _cachedSets[parentFKDOProperty.PropertyType];
+                            object foundRow = null;
+                            foreach (var foreignRow in foreignSet)
+                            {
+                                if (foreignIDProperty.GetValue(foreignRow) == fkID)
+                                {
+                                    foundRow = foreignRow;
+                                    break;
+                                }
+                            }
+                            if (foundRow != null)
+                            {
+                                parentFKDOProperty.SetValue(value, foundRow);
+                            }
+                        }
                     }
                 }
             }

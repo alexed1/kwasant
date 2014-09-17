@@ -1,5 +1,6 @@
 using Data.Entities;
 using Data.Interfaces;
+using KwasantCore.Security;
 using StructureMap.Configuration.DSL;
 using IUser = Data.Interfaces.IUser;
 
@@ -38,6 +39,7 @@ namespace Data.Infrastructure.StructureMap
             public TestMode()
             {
                 For<IUnitOfWork>().Use(new UnitOfWork(new MockedDBContext()));
+                For<ISecurityServices>().Use(new MockedSecurityServices());
             }
         }
     }

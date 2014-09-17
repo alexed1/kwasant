@@ -44,9 +44,9 @@ namespace KwasantCore.Services
 
             var curEventGuid = curIcsEvent.UID;
 
-            var curAttendee = uow.AttendeeRepository.GetQuery().FirstOrDefault(a => a.EmailAddressID == curInvitationResponse.FromID && a.Event.ExternalGUID == curEventGuid);
+            var curAttendee = uow.AttendeeRepository.GetQuery().FirstOrDefault(a => a.EmailAddressID == curInvitationResponse.From.Id && a.Event.ExternalGUID == curEventGuid);
             if (curAttendee == null)
-                throw new EntityNotFoundException<AttendeeDO>(string.Format("Cannot find an attendee with EmailAddressID: {0}.", curInvitationResponse.FromID));
+                throw new EntityNotFoundException<AttendeeDO>(string.Format("Cannot find an attendee with EmailAddressID: {0}.", curInvitationResponse.From.Id));
 
             curInvitationResponse.Attendee = curAttendee;
             curInvitationResponse.AttendeeId = curAttendee.Id;

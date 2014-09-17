@@ -5,8 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
-using Microsoft.AspNet.Identity;
-using Microsoft.Owin.Security;
+using KwasantCore.Security;
 using StructureMap;
 
 namespace KwasantWeb.Controllers
@@ -23,18 +22,10 @@ namespace KwasantWeb.Controllers
                 if (validToken.ExpiresAt < DateTime.Now)
                     throw new HttpException(404, "Authorization token expired.");
 
-                UserManager<UserDO> curUserManager = KwasantCore.Services.User.GetUserManager(uow); ;
-                ClaimsIdentity identity = curUserManager.CreateIdentity(validToken.UserDO, DefaultAuthenticationTypes.ApplicationCookie);
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, validToken.UserDO);
 
-                System.Web.HttpContext.Current.GetOwinContext().Authentication.SignIn(new AuthenticationProperties
-                {
-                    IsPersistent = true
-                }, identity);
-
-                return View((object)validToken.RedirectURL);
+                return Redirect(validToken.RedirectURL);
             }
         }
-
-        
 	}
 }
