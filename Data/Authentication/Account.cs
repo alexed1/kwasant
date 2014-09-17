@@ -42,6 +42,7 @@ namespace Data.Authentication
                 //This line forces EF to load the EmailAddress, since it's done lazily. For whatever reason, seeding admins breaks since it thinks the EmailAddress is null...
                 var forceEmail = curUser.EmailAddress;
                 //This line forces the above not to be optimised out. In production, it does nothing.
+                Console.WriteLine(forceEmail);
                 
             }
         

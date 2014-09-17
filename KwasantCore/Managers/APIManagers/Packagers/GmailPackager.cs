@@ -2,7 +2,6 @@
 using System.Net;
 using System.Net.Mail;
 using System.Net.Mime;
-using System.Net.Security;
 using System.Text;
 using Data.Entities;
 using Utilities;
@@ -65,7 +64,7 @@ namespace KwasantCore.Managers.APIManager.Packagers
 
             try
             {
-                                var smtpClient = new SmtpClient(_configRepository.Get("OutboundEmailHost"),
+                var smtpClient = new SmtpClient(_configRepository.Get("OutboundEmailHost"),
                                                 _configRepository.Get<int>("OutboundEmailPort"))
                 {
                     EnableSsl = true,
