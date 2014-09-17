@@ -1,6 +1,5 @@
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.Security;
 using StructureMap.Configuration.DSL;
 using IUser = Data.Interfaces.IUser;
 

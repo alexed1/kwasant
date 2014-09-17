@@ -109,6 +109,7 @@
     <Compile Include="Entities\InvitationResponseDO.cs" />
     <Compile Include="Entities\LogDO.cs" />
     <Compile Include="Entities\QuestionResponseDO.cs" />
+    <Compile Include="Infrastructure\StructureMap\ISecurityServices.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedSecurityServices.cs" />
     <Compile Include="Interfaces\IInvitationResponse.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.cs" />

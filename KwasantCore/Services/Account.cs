@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Infrastructure;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using KwasantCore.Security;
 using Microsoft.AspNet.Identity;
@@ -129,7 +130,7 @@ namespace KwasantCore.Services
         public async Task<LoginStatus> Login(IUnitOfWork uow, string username, string password, bool isPersistent)
         {
             LoginStatus curLogingStatus = LoginStatus.Successful;
-            UserManager<UserDO> curUserManager = KwasantCore.Services.User.GetUserManager(uow); ;
+            UserManager<UserDO> curUserManager = User.GetUserManager(uow); ;
             UserDO curUser = await curUserManager.FindAsync(username, password);
             if (curUser != null)
             {

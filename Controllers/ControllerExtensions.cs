@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using Data.Infrastructure.StructureMap;
 using KwasantCore.Security;
 using StructureMap;
 

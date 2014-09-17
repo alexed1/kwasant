@@ -180,7 +180,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Security\ISecurityServices.cs" />
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\Attendee.cs" />

@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Web;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;

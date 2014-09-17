@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using KwasantCore.Security;
 using KwasantCore.Services;

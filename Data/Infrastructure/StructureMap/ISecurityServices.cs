@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Security.Claims;
 using Data.Entities;
 using Data.Interfaces;
 
-namespace KwasantCore.Security
+namespace Data.Infrastructure.StructureMap
 {
     public interface ISecurityServices
     {

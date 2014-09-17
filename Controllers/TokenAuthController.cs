@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using KwasantCore.Security;
 using StructureMap;

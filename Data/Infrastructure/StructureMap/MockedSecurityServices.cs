@@ -1,7 +1,6 @@
 ﻿using System;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.Security;
 
 namespace Data.Infrastructure.StructureMap
 {
