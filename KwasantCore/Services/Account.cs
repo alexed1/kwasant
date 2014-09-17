@@ -1,14 +1,11 @@
 using System;
 using System.Linq;
-using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using KwasantCore.Security;
 using Microsoft.AspNet.Identity;
-using Microsoft.Owin.Security;
 using StructureMap;
 using Utilities;
 
@@ -16,14 +13,6 @@ namespace KwasantCore.Services
 {
     public class Account
     {
-        private static IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                return HttpContext.Current.GetOwinContext().Authentication;
-            }
-        }
-
         /// <summary>
         /// Register account
         /// </summary>
@@ -34,8 +23,7 @@ namespace KwasantCore.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                RegistrationStatus curRegStatus = RegistrationStatus.Pending;
-                var isNewUser = false;
+                RegistrationStatus curRegStatus;
                 UserDO newUserDO = null;
                 //check if we know this email address
 
@@ -83,7 +71,6 @@ namespace KwasantCore.Services
 
         private UserDO ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, string role)
         {
-            var user = new User();
             return Register(uow, email, email, email, password, role);
         }
 
@@ -102,10 +89,6 @@ namespace KwasantCore.Services
                     }
                     else
                     {
-                        //if (userDO.EmailConfirmed)
-                        //{
-                        //    curLoginStatus = await Login(uow, username, password, isPersistent);
-                        //}
                         curLoginStatus = await Login(uow, username, password, isPersistent);
                     }
                 }
@@ -117,12 +100,6 @@ namespace KwasantCore.Services
                 return curLoginStatus;
             }
         }
-
-        public void LogOff()
-        {
-            new User().LogOff();
-        }
-
 
         public UserDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string role)
         {
@@ -156,18 +133,9 @@ namespace KwasantCore.Services
             UserDO curUser = await curUserManager.FindAsync(username, password);
             if (curUser != null)
             {
-                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-
-                ClaimsIdentity identity = await curUserManager.CreateIdentityAsync(curUser, DefaultAuthenticationTypes.ApplicationCookie);
-
-                if (identity.IsAuthenticated == false)
-                {
-                    throw new ApplicationException("There was an error logging in. Please try again later.");
-                }
-                AuthenticationManager.SignIn(new AuthenticationProperties
-                {
-                    IsPersistent = isPersistent
-                }, identity);
+                var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
+                securityServices.Logout();
+                securityServices.Login(uow, curUser);
             }
             else
             {
@@ -176,26 +144,5 @@ namespace KwasantCore.Services
 
             return curLogingStatus;
         }
-
-
-
-
-        //this doesn't seem to get called. let's watch for a while and then delete it
-        //public void UpdateUser(UserDO userDO, IdentityUserRole identityUserRole)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        EmailAddressDO currEmailAddressDO = uow.EmailAddressRepository.GetByKey(userDO.EmailAddressID);
-        //        currEmailAddressDO.Address = userDO.EmailAddress.Address;
-
-        //        //Change user's role in DB using Identity Framework if only role is changed on the fone-end.
-        //        if (identityUserRole != null)
-        //        {
-        //            User user = new User();
-        //            user.ChangeUserRole(uow, identityUserRole);
-        //        }
-        //        uow.SaveChanges();
-        //    }
-        //}
     }
 }

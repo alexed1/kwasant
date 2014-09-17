@@ -149,6 +149,7 @@
     <Compile Include="Fixtures\FixtureData - Negotiation.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
+    <Compile Include="Security\AuthorizationTokenTests.cs" />
     <Compile Include="Services\AttendeeTests.cs" />
     <Compile Include="Managers\CalendarSyncManagerTest.cs" />
     <Compile Include="Services\BookingRequestTests.cs" />

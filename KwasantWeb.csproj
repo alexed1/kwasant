@@ -778,7 +778,6 @@
     <Content Include="Views\User\ShowQuery.cshtml" />
     <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
     <Content Include="Views\User\ShowUserDetails.cshtml" />
-    <Content Include="Views\TokenAuth\Index.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />
   </ItemGroup>
   <ItemGroup>
