@@ -45,15 +45,24 @@ namespace KwasantWeb.Controllers
                         .Select(n => (int?) n.Id)
                         .FirstOrDefault();
 
-                return View(new CalendarVM
+                CalendarShowVM calWidget = new CalendarShowVM
                 {
                     LinkedNegotiationID = linkedNegotiationID,
-
-                    BookingRequestID = bookingRequestDO.Id,
-                    LinkedCalendarIDs = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).ToList(),
+                    LinkedCalendarIds = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).ToList(),
 
                     //In the future, we won't need this - the 'main' calendar will be picked by the booker
-                    ActiveCalendarID = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
+                    ActiveCalendarId = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
+                };
+                BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
+                {
+                    BookingRequestId = bookingRequestDO.Id,
+                    CurEmailData = uow.EmailRepository.GetByKey(id)
+                };
+
+                return View(new DashboardShowVM
+                {
+                    CalendarVM = calWidget,
+                    BookingRequestVM = bookingInfo
                 });
             }
         }
