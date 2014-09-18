@@ -22,7 +22,8 @@ namespace KwasantWeb.Controllers
         public ActionResult View(int negotiationID)
         {
             AuthenticateUser(negotiationID);
-            
+
+            var user = new User();
             var userID = this.GetUserId();
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
