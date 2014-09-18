@@ -1,10 +1,10 @@
 @if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
 
-:: Prerequisites 
-:: ------------- 
+:: Prerequisites
+:: -------------
 
 :: Setup
-:: ----- 
+:: -----
 
 setlocal enabledelayedexpansion
 

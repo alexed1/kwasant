@@ -60,30 +60,22 @@ namespace KwasantWeb.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var currBooker = this.GetUserId();
-            BookingRequestDO bookingRequestDO = null;
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (id != null)
-                {
-                    bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                    bookingRequestDO.User = bookingRequestDO.User;
-                    bookingRequestDO.State = BookingRequestState.Booking;
-                    bookingRequestDO.BookerId = currBooker;
-                    bookingRequestDO.LastUpdated = DateTimeOffset.Now;
-                    uow.SaveChanges();
-                    AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
-                }
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                if (bookingRequestDO == null)
+                    return HttpNotFound();
+                bookingRequestDO.User = bookingRequestDO.User;
+                bookingRequestDO.State = BookingRequestState.Booking;
+                bookingRequestDO.BookerId = currBooker;
+                bookingRequestDO.LastUpdated = DateTimeOffset.Now;
+                uow.SaveChanges();
+                AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
             }
 
-            if (bookingRequestDO == null)
-            {
-                return HttpNotFound();
-            }
-            else
-            {
-                //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
-                return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Calendar", action = "Index", id = id }));
-            }
+            //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
+            return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Calendar", action = "Index", id = id }));
         }
 
         [HttpGet]

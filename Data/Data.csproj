@@ -46,6 +46,9 @@
     <Reference Include="Google.Apis.Core">
       <HintPath>..\packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>
     </Reference>
+    <Reference Include="KwasantCore">
+      <HintPath>..\Bin\KwasantCore.dll</HintPath>
+    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
@@ -106,6 +109,8 @@
     <Compile Include="Entities\InvitationResponseDO.cs" />
     <Compile Include="Entities\LogDO.cs" />
     <Compile Include="Entities\QuestionResponseDO.cs" />
+    <Compile Include="Infrastructure\StructureMap\ISecurityServices.cs" />
+    <Compile Include="Infrastructure\StructureMap\MockedSecurityServices.cs" />
     <Compile Include="Interfaces\IInvitationResponse.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.Designer.cs">

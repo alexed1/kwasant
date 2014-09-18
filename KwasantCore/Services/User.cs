@@ -1,34 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using FluentValidation;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Owin.Security;
-using System.Web;
 using Data.Entities;
 using StructureMap;
-using Utilities;
 using Data.States;
 
 namespace KwasantCore.Services
 {
     public class User
     {
-        private static IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                return HttpContext.Current.GetOwinContext().Authentication;
-            }
-        }
-
         public UserDO GetOrCreateFromBR(IUnitOfWork uow, EmailAddressDO emailAddressDO)
         {
             if (uow == null)
@@ -75,11 +59,6 @@ namespace KwasantCore.Services
             }
         }
 
-        public void LogOff()
-        {
-            AuthenticationManager.SignOut();
-        }
-        
         //problem: this assumes a single role but we need support for multiple roles on one account
         //problem: the line between account and user is really murky. do we need both?
         public bool ChangeUserRole(IUnitOfWork uow, IdentityUserRole identityUserRole)
