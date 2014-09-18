@@ -83,6 +83,15 @@
             if(negotiation.Questions.length == 0){
                 validationErrors.push('Negotiation should have atleast one question');
             }
+            
+            var hasAttendee = false;
+            $.each(negotiation.Attendees, function (index, obj) {
+                if (obj !== '')
+                    hasAttendee = true;
+            });
+            if (!hasAttendee) {
+                validationErrors.push('Negotiation should have atleast one attendee');
+            }
 
             $.each(negotiation.Questions, function(index, obj) {
                 if (obj.Text === undefined ||

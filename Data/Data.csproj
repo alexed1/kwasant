@@ -208,6 +208,10 @@
     <Compile Include="Migrations\201409120907427_Sync.12.09.2014.Designer.cs">
       <DependentUpon>201409120907427_Sync.12.09.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409181123281_Sync.18.09.2014.cs" />
+    <Compile Include="Migrations\201409181123281_Sync.18.09.2014.Designer.cs">
+      <DependentUpon>201409181123281_Sync.18.09.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
@@ -962,6 +966,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409120907427_Sync.12.09.2014.resx">
       <DependentUpon>201409120907427_Sync.12.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409181123281_Sync.18.09.2014.resx">
+      <DependentUpon>201409181123281_Sync.18.09.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

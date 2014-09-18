@@ -75,6 +75,11 @@
             return returnNeg;
         };
 
+        this.click();
+
+        if (nodes.Questions.length > 0)
+            setTimeout(function() { nodes.Questions[0].FocusMe(); }, 1000);
+        
         return this;
     };
 
@@ -185,8 +190,11 @@
 
         if (immediate)
             questionNode.show();
-        else
-            questionNode.slideDown();
+        else {
+            questionNode.slideDown(400, function() {
+                questionObject.FocusMe();
+            });
+        }
 
         if (questionInitValues.Answers !== null && questionInitValues.Answers !== undefined) {
             for (var i = 0; i < questionInitValues.Answers.length; i++) {
@@ -339,6 +347,7 @@
         var questionName = $('<input type="text" />')
             .addClass('form-control')
             .addClass('col-md-1')
+            .attr('placeholder', 'Enter your question...')
             .val(questionInitValues.Text);
 
         var removeMeIcon = $('<img src="/Content/img/Cross.png"></img>')
@@ -494,6 +503,10 @@
             this.addAnswer(initialValues, immediate);
         };
 
+        questionObject.FocusMe = function() {
+            questionName.focus();
+        };
+
         questionObject.addAnswer = function (initialValues, immediate) {
             if (immediate === undefined)
                 immediate = false;
@@ -529,8 +542,11 @@
             this.AnswerHolder.append(answerNode);
             if (immediate)
                 answerNode.show();
-            else
-                answerNode.slideDown();
+            else {
+                answerNode.slideDown(400, function() {
+                    answerObject.FocusMe();
+                });
+            }
 
             adjustRadioButtonEnabled();
 
@@ -730,6 +746,9 @@
                 Text: answerText.val(),
                 Selected: radioSelect.get(0).checked
             };
+        };
+        answerObject.FocusMe = function() {
+            answerText.focus();
         };
 
         answerObject.RemoveMe = function () {
