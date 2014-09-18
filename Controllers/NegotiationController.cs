@@ -99,11 +99,20 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+                var emailAddress = new EmailAddress();
+             
+                var emailAddresses = emailAddress.GetEmailAddresses(uow, bookingRequestDO.HTMLText, bookingRequestDO.PlainText, bookingRequestDO.Subject);
+                emailAddresses.Add(bookingRequestDO.User.EmailAddress);
+
+                //need to add the addresses of people cc'ed or on the To line of the BookingRequest
+                emailAddresses.AddRange(bookingRequestDO.Recipients.Select(r => r.EmailAddress));
+
                 return View("~/Views/Negotiation/Edit.cshtml", new NegotiationVM
                 {
                     Name = "Negotiation 1",
                     BookingRequestID = bookingRequestID,
-                    Attendees = new List<string>() { uow.BookingRequestRepository.GetByKey(bookingRequestID).User.EmailAddress.Address },
+                    Attendees = emailAddresses.Select(ea => ea.Address).ToList(),
                     Questions = new List<NegotiationQuestionVM>
                     { new NegotiationQuestionVM
                         {
