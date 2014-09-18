@@ -36,9 +36,28 @@
     </thead>
 </table>
 
+<table id="tblAllLogs" class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 15%">Date</th>
+            <th style="width: 15%">Name</th>
+            <th style="width: 15%">Level</th>
+            <th style="width: 55%">Message</th>
+        </tr>
+    </thead>
+</table>
+
 <script type="text/javascript">
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
+        $('#tblAllLogs').hide();
+        $('#tblreport').hide();
+        
+        updateTables();
+    });
+    
+    function updateTables() {
+
         var queryPeriod = "all";
         var table;
         var columns;
@@ -63,17 +82,37 @@
                     { data: 'data' }
                 ];
                 break;
+            case "alllogs":
+                columns = [
+                    { data: 'date' },
+                    { data: 'name' },
+                    { data: 'level' },
+                    { data: 'message' },
+                ];
+                break;
         }
 
         loadReport();
 
         //Inserts retrieved json records into DataTable Widget
         function showRequests(response) {
-            table = $('#tblreport').DataTable({
+            var tableToWrite;// = $('#tblreport');
+            var tableToHide;
+            if ("@ViewBag.type" == "alllogs") {
+                tableToWrite = $('#tblAllLogs');
+                tableToHide = $('#tblreport');
+            } else {
+                tableToWrite = $('#tblreport');
+                tableToHide = $('#tblAllLogs');
+            }
+
+            table = tableToWrite.DataTable({
                 data: JSON.parse(response),
                 order: [0, 'desc'],
                 columns: columns,
             });
+            tableToHide.hide();
+            tableToWrite.show();
         }
 
         function loadReport() {
@@ -82,15 +121,15 @@
         }
 
         //Initializing click for all filter buttons.
-    	$('.top-toolbar-section a').click(function () {
-    		$('.top-toolbar-section a').each(function(){
-    			$(this).removeClass('current');
-    		});
-    		$(this).addClass('current');
+        $('.top-toolbar-section a').click(function () {
+            $('.top-toolbar-section a').each(function () {
+                $(this).removeClass('current');
+            });
+            $(this).addClass('current');
             queryPeriod = $(this).attr("id");
             table.destroy();
             loadReport();
             return false;
         });
-    });
+    }
 </script>

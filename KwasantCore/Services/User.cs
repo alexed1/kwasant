@@ -1,34 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using FluentValidation;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.Owin.Security;
-using System.Web;
 using Data.Entities;
 using StructureMap;
-using Utilities;
 using Data.States;
 
 namespace KwasantCore.Services
 {
     public class User
     {
-        private static IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                return HttpContext.Current.GetOwinContext().Authentication;
-            }
-        }
-
         public UserDO GetOrCreateFromBR(IUnitOfWork uow, EmailAddressDO emailAddressDO)
         {
             if (uow == null)
@@ -39,7 +23,7 @@ namespace KwasantCore.Services
             if (curUser == null)
             {
                 curUser = uow.UserRepository.CreateFromEmail(emailAddressDO);
-
+               
             }
             return curUser;
         }
@@ -73,11 +57,6 @@ namespace KwasantCore.Services
                     throw new ApplicationException("There was a problem trying to change your password. Please try again.");
                 }
             }
-        }
-
-        public void LogOff()
-        {
-            AuthenticationManager.SignOut();
         }
 
         //problem: this assumes a single role but we need support for multiple roles on one account
@@ -132,8 +111,8 @@ namespace KwasantCore.Services
             }
             //if any of the roles that this user belongs to are contained in the current set of acceptable roles, return true
             if (roles.Any(role => acceptableRoles.Contains(role)))
-                return true;
-            return false;
+                        return true;
+                    return false;
         }
 
         public UserDO Get(string curUserId)

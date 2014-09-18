@@ -8,6 +8,7 @@ using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
+using KwasantCore.Security;
 using KwasantCore.Services;
 using StructureMap;
 using StructureMap.Configuration.DSL;
@@ -52,8 +53,8 @@ namespace KwasantCore.StructureMap
         {
             public LiveMode()
             {
-                For<ISMSPackager>().Use(new TwilioPackager());
                 For<IConfigRepository>().Use<ConfigRepository>();
+                For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
                 For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);
@@ -61,6 +62,7 @@ namespace KwasantCore.StructureMap
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
+                For<ISecurityServices>().Use<SecurityServices>();
 
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
@@ -74,7 +76,7 @@ namespace KwasantCore.StructureMap
             public TestMode()
             {
                 //we need to run tests that "really send it". may want to also do some mocks
-                For<IConfigRepository>().Use<ConfigRepository>();
+                For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
                 For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);

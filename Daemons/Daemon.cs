@@ -158,7 +158,6 @@ namespace Daemons
 
         public bool Start()
         {
-            Logger.GetLogger().Info(GetType().Name + " - starting...");
             lock (this)
             {
                 if (IsRunning)
@@ -169,6 +168,7 @@ namespace Daemons
 
                 IsRunning = true;
             }
+            Logger.GetLogger().Info(GetType().Name + " - starting...");
 
             IsStopping = false;
 
@@ -182,6 +182,7 @@ namespace Daemons
                 {
                     bool firstExecution = true;
                     DateTime lastExecutionTime = DateTime.Now;
+
                     while (!IsStopping)
                     {
                         try

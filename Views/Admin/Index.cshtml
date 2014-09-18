@@ -31,6 +31,7 @@
                 </li>
                 <li class="dropdown"><a id="btnReports">Reports</a>
                     <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Show All Logs", "Index", "Report", new { type = "alllogs" }, new { @class = "" }) </li>
                         <li>@Html.ActionLink("Show Incidents", "Index", "Report", new { type = "incident" }, new { @class = "" }) </li>
                         <li>@Html.ActionLink("Show Usage", "Index", "Report", new { type = "usage" }, new { @class = "" }) </li>
                         <li>@Html.ActionLink("Show History", "History", "Report", new{area=""}, new { @class = "" }) </li>
@@ -67,7 +68,7 @@
         $('.navbar .dropdown').hover(function() {
             $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
         }, function() {
-            $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105)
+            $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
         });
         $.getJSON("/Report/ShowReport", { queryPeriod: "", type: "fiveRecentIncident" }, showIncident);
  });
@@ -87,12 +88,6 @@
                  { data: 'notes' }
              ],
          });
-         $('#tblIncident_info').hide();
      }
      
-
-
- 
- 
-
 </script>

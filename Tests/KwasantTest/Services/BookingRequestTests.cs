@@ -40,9 +40,11 @@ namespace KwasantTest.Services
                     switch (key)
                     {
                         case "MaxBRIdle":
-                            return "1";
+                            return "0.04";
+                        case "EmailAddress_GeneralInfo":
+                            return "info@kwasant.com";
                         default:
-                            return new ConfigRepository().Get<string>(key);
+                            return new MockedConfigRepository().Get<string>(key);
                     }
                 });
             _configRepository = configRepositoryMock.Object;
@@ -258,10 +260,10 @@ namespace KwasantTest.Services
 
         //This test takes too long see. KW-340. Temporarily ignoring it.
         [Test]
-        [Category("BRM"), Ignore]
+        [Category("BRM")]
         public void TimeOutStaleBRTest()
         {
-            var timeOut = TimeSpan.FromSeconds(65);
+            var timeOut = TimeSpan.FromSeconds(30);
             Stopwatch staleBRDuration = new Stopwatch();
 
             MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { };
@@ -275,16 +277,18 @@ namespace KwasantTest.Services
             _uow.SaveChanges();
 
             staleBRDuration.Start();
+
+            IEnumerable<BookingRequestDO> requestNow;
             do
             {
                 var om = new OperationsMonitor();
                 DaemonTests.RunDaemonOnce(om);
+                requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
 
-            } while (staleBRDuration.Elapsed < timeOut);
+            } while (!requestNow.Any() || staleBRDuration.Elapsed > timeOut);
             staleBRDuration.Stop();
 
-
-            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
+            requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
             Assert.AreEqual(1, requestNow.Count());
 
         }

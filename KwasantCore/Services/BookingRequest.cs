@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Entities;
@@ -70,7 +71,8 @@ namespace KwasantCore.Services
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
-                            new
+                        {
+                            return new
                             {
                                 id = e.Id,
                                 subject = e.Subject,
@@ -80,7 +82,8 @@ namespace KwasantCore.Services
                                     e.HTMLText.Trim().Length > 400
                                         ? e.HTMLText.Trim().Substring(0, 400)
                                         : e.HTMLText.Trim()
-                            })
+                            };
+                    })
                     .ToList();
         }
 
@@ -170,11 +173,9 @@ namespace KwasantCore.Services
             Email email = new Email(uow);
             string message = "BookingRequest ID :" + bookingRequestDO.Id + " Timed Out";
             string subject = "BookingRequest Timeout";
-
-          //  EmailDO emailDO = email.GenerateBookerMessage(emailAddressDO, message,"BookingRequest Timeout");
             string toRecipient = emailAddressDO.Address;
             IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+            string fromAddress = configRepository.Get<string>("EmailAddress_GeneralInfo");
             EmailDO curEmail = email.GenerateBasicMessage(emailAddressDO, subject, message, fromAddress, toRecipient);
             email.Send(curEmail);
             uow.SaveChanges();

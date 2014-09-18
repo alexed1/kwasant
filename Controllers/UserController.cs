@@ -63,7 +63,7 @@ namespace KwasantWeb.Controllers
         {
             var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
             var result = await authorizer.AuthorizeAsync(this.GetUserId(),
-                                                         this.User.Identity.GetUserName(),
+                                                         this.GetUserName(),
                                                          Url.Action("IndexAsync", "AuthCallback", null,
                                                                     this.Request.Url.Scheme),
                                                          Request.RawUrl,

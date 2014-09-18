@@ -1,14 +1,12 @@
 using System;
 using System.Linq;
-using System.Net;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using Data.Entities;
 using Data.Infrastructure;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using KwasantCore.Security;
 using Microsoft.AspNet.Identity;
-using Microsoft.Owin.Security;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
@@ -17,14 +15,6 @@ namespace KwasantCore.Services
 {
     public class Account
     {
-        private static IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                return HttpContext.Current.GetOwinContext().Authentication;
-            }
-        }
-
         /// <summary>
         /// Register account
         /// </summary>
@@ -35,8 +25,7 @@ namespace KwasantCore.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                RegistrationStatus curRegStatus = RegistrationStatus.Pending;
-                var isNewUser = false;
+                RegistrationStatus curRegStatus;
                 UserDO newUserDO = null;
                 //check if we know this email address
 
@@ -82,6 +71,12 @@ namespace KwasantCore.Services
             }
         }
 
+        private UserDO ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, string role)
+        {
+            var user = new User();
+            return Register(uow, email, email, email, password, role);
+        }
+
         public async Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -97,10 +92,6 @@ namespace KwasantCore.Services
                     }
                     else
                     {
-                        //if (userDO.EmailConfirmed)
-                        //{
-                        //    curLoginStatus = await Login(uow, username, password, isPersistent);
-                        //}
                         curLoginStatus = await Login(uow, username, password, isPersistent);
                     }
                 }
@@ -113,35 +104,29 @@ namespace KwasantCore.Services
             }
         }
 
-        public void LogOff()
-        {
-            new User().LogOff();
-        }
-
-
         public UserDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string role)
         {
             UserDO userDO = new UserDO();
             try
             {
-                EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
+            EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
 
                 userDO = uow.UserRepository.CreateFromEmail(
-                    emailAddressDO: curEmailAddress,
-                    userName: userName,
-                    firstName: firstName,
-                    lastName: lastName);
+                emailAddressDO: curEmailAddress,
+                userName: userName,
+                firstName: firstName,
+                lastName: lastName);
 
-                UserManager<UserDO> userManager = KwasantCore.Services.User.GetUserManager(uow); ;
-                IdentityResult result = userManager.Create(userDO, password);
-                if (result.Succeeded)
-                {
-                    userManager.AddToRole(userDO.Id, role);
-                }
-                else
-                {
-                    throw new ApplicationException("There was a problem trying to register you. Please try again.");
-                }
+            UserManager<UserDO> userManager = KwasantCore.Services.User.GetUserManager(uow); ;
+            IdentityResult result = userManager.Create(userDO, password);
+            if (result.Succeeded)
+            {
+                userManager.AddToRole(userDO.Id, role);
+            }
+            else
+            {
+                throw new ApplicationException("There was a problem trying to register you. Please try again.");
+            }
             }
             catch (Exception ex)
             {
@@ -153,22 +138,13 @@ namespace KwasantCore.Services
         public async Task<LoginStatus> Login(IUnitOfWork uow, string username, string password, bool isPersistent)
         {
             LoginStatus curLogingStatus = LoginStatus.Successful;
-            UserManager<UserDO> curUserManager = KwasantCore.Services.User.GetUserManager(uow); ;
+            UserManager<UserDO> curUserManager = User.GetUserManager(uow); ;
             UserDO curUser = await curUserManager.FindAsync(username, password);
             if (curUser != null)
             {
-                AuthenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);
-
-                ClaimsIdentity identity = await curUserManager.CreateIdentityAsync(curUser, DefaultAuthenticationTypes.ApplicationCookie);
-
-                if (identity.IsAuthenticated == false)
-                {
-                    throw new ApplicationException("There was an error logging in. Please try again later.");
-                }
-                AuthenticationManager.SignIn(new AuthenticationProperties
-                {
-                    IsPersistent = isPersistent
-                }, identity);
+                var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
+                securityServices.Logout();
+                securityServices.Login(uow, curUser);
             }
             else
             {

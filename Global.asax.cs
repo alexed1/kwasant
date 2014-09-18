@@ -71,7 +71,11 @@ namespace KwasantWeb
         protected void Application_Error(Object sender, EventArgs e)
         {
             var exception = Server.GetLastError();
-            Logger.GetLogger().Error("Critical internal error occured.", exception);
+            String errorMessage = "Critical internal error occured.";
+            if (HttpContext.Current != null)
+                errorMessage += " URL accessed: " + HttpContext.Current.Request.Url;
+
+            Logger.GetLogger().Error(errorMessage, exception);
         }
 
         protected void Application_BeginRequest(object sender, EventArgs e)

@@ -55,7 +55,7 @@ namespace KwasantWeb.Controllers
         public ActionResult InterceptLogin(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
-            if (User.Identity.IsAuthenticated)
+            if (this.UserIsAuthenticated())
                 throw new HttpException(403, "You do not have access to view this page.");
             return View("Index");
         }
@@ -64,7 +64,7 @@ namespace KwasantWeb.Controllers
         public ActionResult Index(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
-            if (User.Identity.IsAuthenticated)
+            if (this.UserIsAuthenticated())
                 return RedirectToAction("MyAccount", "User");
             return View();
         }
@@ -84,7 +84,7 @@ namespace KwasantWeb.Controllers
         [AllowAnonymous]
         public ActionResult LogOff()
         {
-            new User().LogOff();
+            this.Logout();
             return RedirectToAction("Index", "Account");
         }
 
