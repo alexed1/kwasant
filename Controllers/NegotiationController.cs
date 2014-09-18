@@ -32,66 +32,82 @@ namespace KwasantWeb.Controllers
                 if (verifyOwnership != "valid")
                     return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
 
-                return View(GetNegotiationVM(negotiationID, a => a.EventStartDate, a => a.EventEndDate));
+                //First - we order by start date
+                Func<NegotiationAnswerVM, DateTimeOffset?> firstSort = a => a.EventStartDate;
+                //Second - order by end date
+                Func<NegotiationAnswerVM, DateTimeOffset?> secondSort = a => a.EventEndDate;
+
+                var negotiationVM = GetNegotiationVM(negotiationID, firstSort, secondSort);
+                return View(negotiationVM);
             }
         }
 
         public ActionResult Review(int negotiationID)
         {
-            return
-                View(GetNegotiationVM(negotiationID, a => a.AnswerState == AnswerState.Selected ? 0 : 1,
-                    a => 1 - a.VotedBy.Count, a => (!a.EventStartDate.HasValue ? 0 : a.EventStartDate.Value.Ticks)));
+            //The following are order delegates.
+            //We always order in ascending order, so it's important to keep that in mind.
+
+            //First - If a question is selected, it should be at the top
+            Func<NegotiationAnswerVM, long> firstSort = a => a.AnswerState == AnswerState.Selected ? 0 : 1;
+
+            //Second - We then order a question by the number of votes. Note that because we're ordering by ascending, the more votes it has, the lower the rank will be
+            //So, we subtract the votes by 1, which orders in the correct direction
+            Func<NegotiationAnswerVM, long> secondSort = a => 1 - a.VotedBy.Count;
+
+            //Third - we order events by their starting date
+            Func<NegotiationAnswerVM, long> thirdSort = a => (!a.EventStartDate.HasValue ? 0 : a.EventStartDate.Value.Ticks);
+
+            var negotiationVM = GetNegotiationVM(negotiationID, firstSort, secondSort, thirdSort);
+            return View(negotiationVM);
         }
 
-        private static NegotiationVM GetNegotiationVM<T>(int negotiationID, Func<NegotiationAnswerVM, T> orderByFunc,
-            Func<NegotiationAnswerVM, T> thenByFunc = null,
-            Func<NegotiationAnswerVM, T> thenByFuncTwo = null)
+        private static NegotiationVM GetNegotiationVM<T>(int negotiationID, params Func<NegotiationAnswerVM, T>[] orders)
         {
-            NegotiationVM model;
-
-            if (thenByFunc == null)
-                thenByFunc = orderByFunc;
-            if (thenByFuncTwo == null)
-                thenByFuncTwo = orderByFunc;
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (negotiationDO == null)
                     throw new ApplicationException("Negotiation with ID " + negotiationID + " does not exist.");
 
-                model = new NegotiationVM
+                var curVM = new NegotiationVM
                 {
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
                     BookingRequestID = negotiationDO.BookingRequestID,
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
-                        new NegotiationQuestionVM
+                    {
+                        var answers = q.Answers.Select(a =>
+                            new NegotiationAnswerVM
+                            {
+                                Id = a.Id,
+                                Text = a.Text,
+                                AnswerState = a.AnswerStatus,
+                                VotedBy =
+                                    uow.QuestionResponseRepository.GetQuery()
+                                        .Where(qr => qr.AnswerID == a.Id)
+                                        .Select(qr => qr.User.FirstName + " " + qr.User.LastName)
+                                        .ToList(),
+
+                                EventID = a.EventID,
+                                EventStartDate = a.Event == null ? (DateTimeOffset?) null : a.Event.StartDate,
+                                EventEndDate = a.Event == null ? (DateTimeOffset?) null : a.Event.EndDate,
+                            });
+
+                        answers = orders.Aggregate(answers, (current, t) => current.OrderBy(t));
+
+                        return new NegotiationQuestionVM
                         {
                             AnswerType = q.AnswerType,
                             Id = q.Id,
                             CalendarID = q.CalendarID,
                             Text = q.Text,
-                            Answers = q.Answers.Select(a =>
-                                new NegotiationAnswerVM
-                                {
-                                    Id = a.Id,
-                                    Text = a.Text,
-                                    AnswerState = a.AnswerStatus,
-                                    VotedBy = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.AnswerID == a.Id).Select(qr => qr.User.FirstName + " " + qr.User.LastName).ToList(),
-
-                                    EventID = a.EventID,
-                                    EventStartDate = a.Event == null ? (DateTimeOffset?)null : a.Event.StartDate,
-                                    EventEndDate = a.Event == null ? (DateTimeOffset?)null : a.Event.EndDate,
-                                })
-                                .OrderBy(orderByFunc).ThenBy(thenByFunc).ThenBy(thenByFuncTwo)
-                                .ToList()
-                        }
-                        ).ToList()
+                            Answers = answers.ToList()
+                        };
+                    }).ToList()
                 };
+                return curVM;
             }
-            return model;
         }
 
 
