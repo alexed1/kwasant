@@ -21,8 +21,10 @@ namespace Data.Entities
         [ForeignKey("AnswerStatusTemplate")]
         public int AnswerStatus { get; set; }
         public _AnswerStatusTemplate AnswerStatusTemplate { get; set; }
-        
-        public virtual UserDO User { get; set; }
+
+        [ForeignKey("UserDO")]
+        public string UserID { get; set; }
+        public virtual UserDO UserDO { get; set; }
         public string Text { get; set; }
 
         

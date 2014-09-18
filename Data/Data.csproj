@@ -200,6 +200,14 @@
     <Compile Include="Migrations\201409160731277_AddDBLogging.Designer.cs">
       <DependentUpon>201409160731277_AddDBLogging.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409120802303_TrackWhoAddedAnswers.cs" />
+    <Compile Include="Migrations\201409120802303_TrackWhoAddedAnswers.Designer.cs">
+      <DependentUpon>201409120802303_TrackWhoAddedAnswers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409120907427_Sync.12.09.2014.cs" />
+    <Compile Include="Migrations\201409120907427_Sync.12.09.2014.Designer.cs">
+      <DependentUpon>201409120907427_Sync.12.09.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
@@ -264,6 +272,7 @@
     <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
+    <Compile Include="States\CommunicationMode.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
     <Compile Include="States\EventCreateType.cs" />
     <Compile Include="States\EventState.cs" />
@@ -947,6 +956,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409160731277_AddDBLogging.resx">
       <DependentUpon>201409160731277_AddDBLogging.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409120802303_TrackWhoAddedAnswers.resx">
+      <DependentUpon>201409120802303_TrackWhoAddedAnswers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409120907427_Sync.12.09.2014.resx">
+      <DependentUpon>201409120907427_Sync.12.09.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
