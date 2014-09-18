@@ -207,5 +207,18 @@ namespace KwasantWeb.Controllers
             recordcount = bR_RelatedItems.Count;
             return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();
         }
+
+        [HttpPost]
+        public void ReleaseBooker(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.BookerId = null;
+                bookingRequestDO.User = bookingRequestDO.User;
+                uow.SaveChanges();
+            }
+        }
     }
 }
