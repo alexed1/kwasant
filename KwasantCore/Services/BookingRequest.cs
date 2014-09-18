@@ -17,7 +17,7 @@ namespace KwasantCore.Services
 {
 
 
-    public class BookingRequest :IBookingRequest
+    public class BookingRequest : IBookingRequest
     {
         private IAttendee _attendee;
         private IEmailAddress _emailAddress;
@@ -27,6 +27,7 @@ namespace KwasantCore.Services
             _attendee = ObjectFactory.GetInstance<IAttendee>();
             _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
         }
+
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
             var user = new User();
@@ -35,20 +36,27 @@ namespace KwasantCore.Services
             bookingRequest.User = curUser;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
 
-            foreach (var calendar in bookingRequest.User.Calendars)  //this is smelly. Calendars are associated with a User. Why do we need to manually add them to BookingREquest.Calendars when they're easy to access?
+            foreach (var calendar in bookingRequest.User.Calendars)
+                //this is smelly. Calendars are associated with a User. Why do we need to manually add them to BookingREquest.Calendars when they're easy to access?
                 bookingRequest.Calendars.Add(calendar);
         }
 
-        public List<object> GetAllByUserId(IBookingRequestDORepository curBookingRequestRepository, int start, int length, string userid)
+        public List<object> GetAllByUserId(IBookingRequestDORepository curBookingRequestRepository, int start,
+            int length, string userid)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Skip(start).Take(length).Select(e =>
-                            (object)new
-                            {
-                                id = e.Id,
-                                subject = e.Subject,
-                                dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
-                                linkedcalendarids = String.Join(",", e.User.Calendars.Select(c => c.Id))
-                            }).ToList();
+            return
+                curBookingRequestRepository.GetAll()
+                    .Where(e => e.User.Id == userid)
+                    .Skip(start)
+                    .Take(length)
+                    .Select(e =>
+                        (object) new
+                        {
+                            id = e.Id,
+                            subject = e.Subject,
+                            dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                            linkedcalendarids = String.Join(",", e.User.Calendars.Select(c => c.Id))
+                        }).ToList();
         }
 
         public int GetBookingRequestsCount(IBookingRequestDORepository curBookingRequestRepository, string userid)
@@ -59,8 +67,8 @@ namespace KwasantCore.Services
         public string GetUserId(IBookingRequestDORepository curBookingRequestRepository, int bookingRequestId)
         {
             return (from requests in curBookingRequestRepository.GetAll()
-                    where requests.Id == bookingRequestId
-                    select requests.User.Id).FirstOrDefault();
+                where requests.Id == bookingRequestId
+                select requests.User.Id).FirstOrDefault();
         }
 
         public object GetUnprocessed(IUnitOfWork uow)
@@ -83,13 +91,13 @@ namespace KwasantCore.Services
                                         ? e.HTMLText.Trim().Substring(0, 400)
                                         : e.HTMLText.Trim()
                             };
-                    })
+                        })
                     .ToList();
         }
 
         private List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)
         {
-            List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?)travelTime).ToList();
+            List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?) travelTime).ToList();
             instructionIDs.Add(ProcessAllDay(emailBody));
             instructionIDs = instructionIDs.Where(i => i.HasValue).Distinct().ToList();
             InstructionRepository instructionRepo = uow.InstructionRepository;
@@ -181,83 +189,21 @@ namespace KwasantCore.Services
             uow.SaveChanges();
         }
 
-
-
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
             //Add the booking request user
             var curAttendeeDO = _attendee.Create(eventDO.BookingRequest.User);
             eventDO.Attendees.Add(curAttendeeDO);
-            IEnumerable<ParsedEmailAddress> recips;
-
-
-
-            var emailAddresses = _emailAddress.ExtractFromString(eventDO.BookingRequest.HTMLText);
-            emailAddresses.AddRange(_emailAddress.ExtractFromString(eventDO.BookingRequest.PlainText));
-            emailAddresses.AddRange(_emailAddress.ExtractFromString(eventDO.BookingRequest.Subject));
+            var emailAddresses = _emailAddress.GetEmailAddresses(uow, eventDO.BookingRequest.HTMLText, eventDO.BookingRequest.PlainText, eventDO.BookingRequest.Subject);
 
             //need to add the addresses of people cc'ed or on the To line of the BookingRequest
-            recips = from recip in eventDO.BookingRequest.Recipients
-                     select new ParsedEmailAddress { Name = recip.EmailAddress.Name, Email = recip.EmailAddress.Address };
-            emailAddresses.AddRange(recips);
-            //Explanation of the query before:
-            //First, we group by email (case insensitive).
-            //Then, for each group of emails, we want to pick the first one in the group with a name
-            //If none of the entries for an email have a name, we pick the first one we find
-
-            //Example, if we had:
-            //Test@gmail.com
-            //<Mr Sir>Test@gmail.com
-            //Test@gmail.com
-            //Rob@gmail.com
-            //TestTwo@gmail.com
-            //<TestTwo>TestTwo@gmail.com
-            //<TestTwoTwo>TestTwo@gmail.com
-
-            //We want to group it like this:
-            //Test@gmail.com
-            //  - Test@gmail.com
-            //  - <Mr Sir>Test@gmail.com
-            //  - Test@gmail.com
-            //Rob@gmail.com
-            //  - Rob@gmail.com
-            //TestTwo@gmail.com
-            //  - TestTwo@gmail.com
-            //  - <TestTwo>TestTwo@gmail.com
-            //  - <TestTwoTwo>TestTwo@gmail.com
-
-            //Then we apply the select to find the name
-            //This flattens the set to be this:
-            // <Mr Sir>Test@gmail.com
-            // Rob@gmail.com
-            // <TestTwo>TestTwo@gmail.com
-
-            //This ensures uniquness, and tries to find a name for each email provided
-
-            var uniqueEmails = emailAddresses.GroupBy(ea => ea.Email.ToLower()).Select(g =>
+            emailAddresses.AddRange(eventDO.BookingRequest.Recipients.Select(r => r.EmailAddress));
+            
+            foreach (var email in emailAddresses)
             {
-                var potentialFirst = g.FirstOrDefault(e => !String.IsNullOrEmpty(e.Name));
-                if (potentialFirst == null)
-                    potentialFirst = g.First();
-                return potentialFirst;
-            });
-
-            //Convert back from the special ParsedEmailAddress type to our normal entity
-            IEnumerable<EmailAddressDO> addressList;         
-            addressList = uniqueEmails.Select(parsemail => new EmailAddressDO {Address = parsemail.Email, Name = parsemail.Name});
-
-            //we don't want addresses like "kwa@sant.com" added as attendees
-            addressList = _emailAddress.FilterOutDomains(addressList, "sant.com");
-
-            foreach (var email in addressList)
-            {         
-            var curAttendee = _attendee.Create(uow, email.Address, eventDO, email.Name);
-            eventDO.Attendees.Add(curAttendee);
+                var curAttendee = _attendee.Create(uow, email.Address, eventDO, email.Name);
+                eventDO.Attendees.Add(curAttendee);
             }
+        }
     }
-
-
-
-    }
-
 }
