@@ -66,9 +66,8 @@ namespace KwasantWeb.Controllers
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 if (bookingRequestDO == null)
                     return HttpNotFound();
-                bookingRequestDO.User = bookingRequestDO.User;
                 bookingRequestDO.State = BookingRequestState.Booking;
-                bookingRequestDO.BookerId = currBooker;
+                bookingRequestDO.UserID = currBooker;
                 bookingRequestDO.LastUpdated = DateTimeOffset.Now;
                 uow.SaveChanges();
                 AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
@@ -102,7 +101,6 @@ namespace KwasantWeb.Controllers
 
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 bookingRequestDO.State = BookingRequestState.Resolved;
-                bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
 
@@ -123,7 +121,6 @@ namespace KwasantWeb.Controllers
 
                  BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                  bookingRequestDO.State = BookingRequestState.Invalid;
-                 bookingRequestDO.User = bookingRequestDO.User;
                  uow.SaveChanges();
                  AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
                  return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
