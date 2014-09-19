@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Interfaces;
-using StructureMap;
-using System;
 using System.Net.Mail;
 namespace KwasantCore.Services
 {
-    
-
     public class EmailAddress : IEmailAddress
     {
        public EmailAddressDO ConvertFromMailAddress(IUnitOfWork uow, MailAddress address)
@@ -59,13 +56,29 @@ namespace KwasantCore.Services
            return result;
        }
 
-        public IEnumerable<EmailAddressDO> FilterOutDomains( IEnumerable<EmailAddressDO> addressList, string domain)
+        public List<EmailAddressDO> GetEmailAddresses(IUnitOfWork uow, params string[] textToSearch)
         {
-        //to be implemented
-            return addressList;
+            var emailAddresses = textToSearch.SelectMany(ExtractFromString);
+            
+            var uniqueEmails = emailAddresses.GroupBy(ea => ea.Email.ToLower()).Select(g =>
+            {
+                var potentialFirst = g.FirstOrDefault(e => !String.IsNullOrEmpty(e.Name)) ?? g.First();
+                return potentialFirst;
+            });
+
+            var addressList =
+                FilterOutDomains(uniqueEmails, "sant.com")
+                    .Select(parsedEmailAddress =>
+                        uow.EmailAddressRepository.GetOrCreateEmailAddress(parsedEmailAddress.Email, parsedEmailAddress.Name)
+                    );
+            
+            return addressList.ToList();
         }
 
-
+        public IEnumerable<ParsedEmailAddress> FilterOutDomains(IEnumerable<ParsedEmailAddress> addressList, params string[] domains)
+        {
+            return addressList.Where(a => domains.All(domain => !a.Email.EndsWith(domain)));
+        }
 
         public EmailAddressDO ConvertFromString(string emailString, IUnitOfWork uow)
         {
@@ -85,7 +98,5 @@ namespace KwasantCore.Services
             EmailAddressDO convertAddresFromString = uow.EmailAddressRepository.GetOrCreateEmailAddress(email, name);
             return convertAddresFromString;
         }
-
     }
-
 }

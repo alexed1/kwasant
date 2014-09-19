@@ -59,6 +59,15 @@ namespace KwasantCore.Services
             }
         }
 
+        public CommunicationMode GetMode(UserDO userDO)
+        {
+            if (userDO.BookingRequests != null && userDO.BookingRequests.Any())
+                return CommunicationMode.DIRECT;
+            if(!String.IsNullOrEmpty(userDO.PasswordHash))
+                return CommunicationMode.DIRECT;
+            return CommunicationMode.DELEGATE;
+        }
+
         //problem: this assumes a single role but we need support for multiple roles on one account
         //problem: the line between account and user is really murky. do we need both?
         public bool ChangeUserRole(IUnitOfWork uow, IdentityUserRole identityUserRole)

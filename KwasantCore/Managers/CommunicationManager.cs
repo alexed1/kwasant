@@ -89,7 +89,27 @@ namespace KwasantCore.Managers
 
                 emailDO.EmailStatus = EmailState.Queued;
                 uow.EmailRepository.Add(emailDO);
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "clarification_request_v3", new Dictionary<string, string>() { { "RESP_URL", tokenURL } });
+
+                var actualHtml =
+                    @"
+{0}. {1}? <br/>
+Proposed Answers: {2}
+";
+                var generated = new List<String>();
+                for (var i = 0; i < negotiationDO.Questions.Count; i++)
+                {
+                    var question = negotiationDO.Questions[i];
+                    var currentQuestion = String.Format(actualHtml, i + 1, question.Text, String.Join(", ", question.Answers.Select(a => a.Text)));
+                    generated.Add(currentQuestion);
+                }
+
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "clarification_request_v3",
+                    new Dictionary<string, string>
+                    {
+                        {"RESP_URL", tokenURL}
+                        ,
+                        {"questions", String.Join("<br/>", generated)}
+                    });
             }
         }
 
