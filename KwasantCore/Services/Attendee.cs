@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 
 namespace KwasantCore.Services
 {
@@ -108,6 +109,43 @@ namespace KwasantCore.Services
             return ConvertFromStringList(uow, newAttendees);
         }
 
+        public static string ConvertToStringParticipationStatus(int participationStatus)
+        {
+            switch (participationStatus)
+            {
+                case ParticipationStatus.NeedsAction:
+                    return KwasantICS.DDay.iCal.ParticipationStatus.NeedsAction;
+                case ParticipationStatus.Accepted:
+                    return KwasantICS.DDay.iCal.ParticipationStatus.Accepted;
+                case ParticipationStatus.Tentative:
+                    return KwasantICS.DDay.iCal.ParticipationStatus.Tentative;
+                case ParticipationStatus.Declined:
+                    return KwasantICS.DDay.iCal.ParticipationStatus.Declined;
+                case ParticipationStatus.Delegated:
+                    return KwasantICS.DDay.iCal.ParticipationStatus.Delegated;
+                default:
+                    throw new ArgumentOutOfRangeException("participationStatus", participationStatus, "Unknown participation status.");
+            }
+        }
+
+        public static int ConvertFromStringParticipationStatus(string participationStatus)
+        {
+            switch (participationStatus)
+            {
+                case KwasantICS.DDay.iCal.ParticipationStatus.NeedsAction:
+                    return ParticipationStatus.NeedsAction;
+                case KwasantICS.DDay.iCal.ParticipationStatus.Accepted:
+                    return ParticipationStatus.Accepted;
+                case KwasantICS.DDay.iCal.ParticipationStatus.Tentative:
+                    return ParticipationStatus.Tentative;
+                case KwasantICS.DDay.iCal.ParticipationStatus.Declined:
+                    return ParticipationStatus.Declined;
+                case KwasantICS.DDay.iCal.ParticipationStatus.Delegated:
+                    return ParticipationStatus.Delegated;
+                default:
+                    throw new ArgumentOutOfRangeException("participationStatus", participationStatus, "Unknown participation status.");
+            }
+        }
        
        
 

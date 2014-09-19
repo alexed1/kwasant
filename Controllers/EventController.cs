@@ -20,7 +20,7 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize(Roles = "Admin")]
     public class EventController : KController
     {
-        public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff \z";
+        public const string DateStandardFormat = @"yyyy-MM-ddTHH:mm:ss\z";
 
         private readonly Event _event;
         private readonly Attendee _attendee;

@@ -50,26 +50,7 @@ namespace KwasantCore.Services
 
             curInvitationResponse.Attendee = curAttendee;
             curInvitationResponse.AttendeeId = curAttendee.Id;
-            curAttendee.ParticipationStatus = ConvertStringParticipationStatus(curIcsAttendee.ParticipationStatus);
-        }
-
-        private int ConvertStringParticipationStatus(string participationStatus)
-        {
-            switch (participationStatus)
-            {
-                case KwasantICS.DDay.iCal.ParticipationStatus.NeedsAction:
-                    return ParticipationStatus.NeedsAction;
-                case KwasantICS.DDay.iCal.ParticipationStatus.Accepted:
-                    return ParticipationStatus.Accepted;
-                case KwasantICS.DDay.iCal.ParticipationStatus.Tentative:
-                    return ParticipationStatus.Tentative;
-                case KwasantICS.DDay.iCal.ParticipationStatus.Declined:
-                    return ParticipationStatus.Declined;
-                case KwasantICS.DDay.iCal.ParticipationStatus.Delegated:
-                    return ParticipationStatus.Delegated;
-                default:
-                    throw new ArgumentOutOfRangeException("participationStatus", participationStatus, "Unknown participation status.");
-            }
+            curAttendee.ParticipationStatus = Attendee.ConvertFromStringParticipationStatus(curIcsAttendee.ParticipationStatus);
         }
     }
 }

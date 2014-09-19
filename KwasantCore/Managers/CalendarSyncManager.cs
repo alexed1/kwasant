@@ -56,6 +56,8 @@ namespace KwasantCore.Managers
                 return;
             var calendars = args.Entities
                 .OfType<EventDO>()
+                .Union(args.Entities.OfType<AttendeeDO>().Select(a => a.Event))
+                .Distinct()
                 .Where(e => e.SyncStatus == EventSyncState.SyncWithExternal)
                 .GroupBy(e => e.CalendarID)
                 .ToArray();
@@ -218,6 +220,7 @@ namespace KwasantCore.Managers
                 && e.SyncStatus == EventSyncState.SyncWithExternal
                 && e.EventStatus != EventState.Deleted;
             var existingEvents = calendar.Events.Where(existingEventPredictor).ToList();
+            var modifiedByKwasant = new List<EventDO>();
 
             foreach (var incomingEvent in incomingEvents)
             {
@@ -229,7 +232,8 @@ namespace KwasantCore.Managers
                                                         EmailAddress = owner.EmailAddress,
                                                         EmailAddressID = owner.EmailAddressID,
                                                         Event = incomingEvent,
-                                                        Name = owner.UserName
+                                                        Name = owner.UserName,
+                                                        ParticipationStatus = ParticipationStatus.NeedsAction
                                                     });
                 }
 
@@ -251,7 +255,14 @@ namespace KwasantCore.Managers
                             attendee.EmailAddressID = existingEmailAddress.Id;
                             attendee.Event = existingEvent;
                             attendee.EventID = existingEvent.Id;
+                            attendee.ParticipationStatus = incomingAttendee.ParticipationStatus;
                             existingEvent.Attendees.Add(attendee);
+                        }
+                        else
+                        {
+                            // assume that participation status may be changed only on the local side
+                            if (attendee.ParticipationStatus != incomingAttendee.ParticipationStatus)
+                                modifiedByKwasant.Add(existingEvent);
                         }
                         provedAttendees.Add(attendee);
                     }
@@ -262,6 +273,7 @@ namespace KwasantCore.Managers
                     existingEvent.Description = incomingEvent.Description;
                     existingEvent.Location = incomingEvent.Location;
                     existingEvent.Sequence = incomingEvent.Sequence;
+                    existingEvent.ExternalGUID = incomingEvent.ExternalGUID;
 
                     existingEvents.Remove(existingEvent);
                 }
@@ -283,6 +295,12 @@ namespace KwasantCore.Managers
             foreach (var created in createdByKwasant)
             {
                 await PushEventAsync(client, calendarLink, created);
+            }
+
+            foreach (var modified in modifiedByKwasant)
+            {
+                var iCalendarEvent = Event.GenerateICSCalendarStructure(modified);
+                await client.UpdateEventAsync(calendarLink, iCalendarEvent);
             }
 
             var deletedByRemote = existingEvents.Where(e => e.DateCreated < calendarLink.DateSynchronized).ToList();

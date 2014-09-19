@@ -224,7 +224,7 @@ namespace KwasantCore.Services
                     CommonName = attendee.Name,
                     Type = "INDIVIDUAL",
                     Role = "REQ-PARTICIPANT",
-                    ParticipationStatus = ParticipationStatus.NeedsAction,
+                    ParticipationStatus = Attendee.ConvertToStringParticipationStatus(attendee.ParticipationStatus),
                     RSVP = true,
                     Value = new Uri("mailto:" + attendee.EmailAddress.Address),
                 });
@@ -247,6 +247,7 @@ namespace KwasantCore.Services
             return new EventDO()
             {
                 Category = icsEvent.Categories != null ? icsEvent.Categories.FirstOrDefault() : null,
+                ExternalGUID = icsEvent.UID,
                 Class = icsEvent.Class,
                 Description = icsEvent.Description,
                 IsAllDay = icsEvent.IsAllDay,
@@ -261,7 +262,8 @@ namespace KwasantCore.Services
                     .Select(a => new AttendeeDO()
                     {
                         EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(a.Value.OriginalString.Remove(0, a.Value.Scheme.Length + 1)),
-                        Name = a.CommonName
+                        Name = a.CommonName,
+                        ParticipationStatus = Attendee.ConvertFromStringParticipationStatus(a.ParticipationStatus)
                     })
                     .ToList(),
             };

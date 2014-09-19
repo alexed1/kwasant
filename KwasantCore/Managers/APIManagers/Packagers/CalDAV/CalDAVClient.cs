@@ -109,6 +109,16 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
 
         public async Task CreateEventAsync(IRemoteCalendarLink calendarLink, iCalendar calendarEvent)
         {
+            await PutEventAsync(calendarLink, calendarEvent, isNew: true);
+        }
+
+        public async Task UpdateEventAsync(IRemoteCalendarLink calendarLink, iCalendar calendarEvent)
+        {
+            await PutEventAsync(calendarLink, calendarEvent, isNew: false);
+        }
+
+        private async Task PutEventAsync(IRemoteCalendarLink calendarLink, iCalendar calendarEvent, bool isNew)
+        {
             if (calendarLink == null)
                 throw new ArgumentNullException("calendarLink");
             if (calendarEvent == null)
@@ -120,22 +130,45 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
             var userId = calendarLink.LocalCalendar.Owner.Id;
             var eventId = calendarEvent.Events.First().UID;
 
+            string etag = "";
+            if (!isNew)
+            {
+                // we need to get current etag value via HEAD request
+                Func<HttpRequestMessage> headRequestFactoryMethod =
+                    () => new HttpRequestMessage(HttpMethod.Head,
+                                                 string.Format(_eventUrlFormat, calendarId,
+                                                               eventId));
+                using (var headResponse = await _channel.SendRequestAsync(headRequestFactoryMethod, userId))
+                {
+                    etag = headResponse.Headers.ETag.Tag;
+                }
+            }
+
             // We need factory method rather than just an instance here as it is required by IHttpChannel.SendRequestAsync. 
             // See that method documentation for more details.
-            Func<HttpRequestMessage> requestFactoryMethod = () =>
-            {
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, string.Format(_eventUrlFormat, calendarId, eventId));
-                request.Headers.Add("If-None-Match", "*");
-                iCalendarSerializer serializer = new iCalendarSerializer(calendarEvent);
-                string calendarString = serializer.Serialize(calendarEvent);
-                request.Content = new StringContent(calendarString, Encoding.UTF8, "text/calendar");
-                return request;
-            };
+            Func<HttpRequestMessage> putRequestFactoryMethod =
+                () =>
+                    {
+                        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put,
+                                                                            string.Format(_eventUrlFormat, calendarId,
+                                                                                          eventId));
+                        if (isNew)
+                        {
+                            request.Headers.Add("If-None-Match", "*");
+                        }
+                        else
+                        {
+                            request.Headers.Add("If-Match", etag);
+                        }
+                        iCalendarSerializer serializer = new iCalendarSerializer(calendarEvent);
+                        string calendarString = serializer.Serialize(calendarEvent);
+                        request.Content = new StringContent(calendarString, Encoding.UTF8, "text/calendar");
+                        return request;
+                    };
 
-            using (var response = await _channel.SendRequestAsync(requestFactoryMethod, userId))
+            using (var putResponse = await _channel.SendRequestAsync(putRequestFactoryMethod, userId))
             {
             }
         }
-
     }
 }
