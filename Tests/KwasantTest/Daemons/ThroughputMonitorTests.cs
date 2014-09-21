@@ -44,7 +44,7 @@ namespace KwasantTest.Daemons
                                              case "ThroughputCheckingEndTime":
                                                  return GetThroughputCheckingEndTime().ToString();
                                              default:
-                                                 return new ConfigRepository().Get<string>(key);
+                                                 return new MockedConfigRepository().Get<string>(key);
                                          }
                                      });
             _configRepository = configRepositoryMock.Object;
@@ -58,7 +58,7 @@ namespace KwasantTest.Daemons
             BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
             
             var bookingRequestDO = new BookingRequestDO();
-            bookingRequestDO.BookingRequestState = BookingRequestState.Unprocessed;
+            bookingRequestDO.State = BookingRequestState.Unstarted;
             bookingRequestDO.User = new FixtureData().TestUser1();
             bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 1, 0, 0));
             bookingRequestRepo.Add(bookingRequestDO);
@@ -81,7 +81,7 @@ namespace KwasantTest.Daemons
             BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
             var bookingRequestDO = new BookingRequestDO();
-            bookingRequestDO.BookingRequestState = BookingRequestState.Unprocessed;
+            bookingRequestDO.State = BookingRequestState.Unstarted;
             bookingRequestDO.User = new FixtureData().TestUser1();
             bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
             bookingRequestRepo.Add(bookingRequestDO);
@@ -106,7 +106,7 @@ namespace KwasantTest.Daemons
             BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
             var bookingRequestDO = new BookingRequestDO();
-            bookingRequestDO.BookingRequestState = BookingRequestState.Unprocessed;
+            bookingRequestDO.State = BookingRequestState.Unstarted;
             bookingRequestDO.User = new FixtureData().TestUser1();
             bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
             bookingRequestRepo.Add(bookingRequestDO);

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
@@ -31,7 +32,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                String senderMailAddress = ConfigurationManager.AppSettings["EmailFromAddress_DirectMode"];
+                String senderMailAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
 
                 EmailDO emailDO = new EmailDO();
                 emailDO.AddEmailRecipient(EmailParticipantType.To, Email.GenerateEmailAddress(uow, new MailAddress(message.Destination)));
@@ -51,17 +52,21 @@ namespace KwasantWeb.Controllers
     public class AccountController : Controller
     {
         [AllowAnonymous]
+        public ActionResult InterceptLogin(string returnUrl)
+        {
+            ViewBag.ReturnUrl = returnUrl;
+            if (this.UserIsAuthenticated())
+                throw new HttpException(403, "You do not have access to view this page.");
+            return View("Index");
+        }
+
+        [AllowAnonymous]
         public ActionResult Index(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
-            if (this.User.Identity.IsAuthenticated)
-            {
+            if (this.UserIsAuthenticated())
                 return RedirectToAction("MyAccount", "User");
-            }
-            else
-            {
-                return View();
-            }
+            return View();
         }
 
         [AllowAnonymous]
@@ -79,7 +84,7 @@ namespace KwasantWeb.Controllers
         [AllowAnonymous]
         public ActionResult LogOff()
         {
-            new User().LogOff();
+            this.Logout();
             return RedirectToAction("Index", "Account");
         }
 

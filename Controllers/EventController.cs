@@ -20,6 +20,8 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize(Roles = "Admin")]
     public class EventController : KController
     {
+        public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss\z";
+
         private readonly Event _event;
         private readonly Attendee _attendee;
         private readonly IMappingEngine _mappingEngine;
@@ -150,8 +152,8 @@ namespace KwasantWeb.Controllers
             EventDO createdEvent = new EventDO();
             createdEvent.BookingRequestID = bookingRequestID;
             createdEvent.CalendarID = calendarID;            
-            createdEvent.StartDate = DateTime.Parse(start, CultureInfo.InvariantCulture, 0).ToUniversalTime();
-            createdEvent.EndDate = DateTime.Parse(end, CultureInfo.InvariantCulture, 0).ToUniversalTime();
+            createdEvent.StartDate = DateTime.ParseExact(start, DateStandardFormat, CultureInfo.InvariantCulture);
+            createdEvent.EndDate = DateTime.ParseExact(end, DateStandardFormat, CultureInfo.InvariantCulture);
 
             createdEvent.IsAllDay = createdEvent.StartDate.Equals(createdEvent.StartDate.Date) && createdEvent.StartDate.AddDays(1).Equals(createdEvent.EndDate);
 
@@ -224,8 +226,10 @@ namespace KwasantWeb.Controllers
                 var curEventDO = uow.EventRepository.GetByKey(updatedEventInfo.Id);
                 if (curEventDO == null)
                     throw new EntityNotFoundException<EventDO>();
-                List<AttendeeDO> updatedAttendeeList = _attendee.ConvertFromString(uow, curEventVM.Attendees);
-                _event.InviteAttendees(uow, curEventDO, updatedEventInfo, updatedAttendeeList);
+                updatedEventInfo.Attendees = _attendee.ConvertFromString(uow, curEventVM.Attendees);
+                curEventDO.EventStatus = updatedEventInfo.Summary.Contains("DRAFT") ? EventState.Draft : EventState.Booking;
+
+                _event.Process(uow, curEventDO, updatedEventInfo);
 
                 if (mergeEvents)
                     MergeTimeSlots(uow, curEventDO);

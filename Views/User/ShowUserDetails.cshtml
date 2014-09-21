@@ -1,0 +1,166 @@
+﻿@model KwasantWeb.ViewModels.CreateUserVM
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+<div style="padding-right: 40px;">
+    <fieldset id="userInfoForm">
+        <table>
+            <tr>
+                <td colspan="2">
+                    <label id="lblSaveError" style="color: red;"></label>
+                </td>
+            </tr>
+            <tr>
+                <td>First Name 
+                </td>
+                <td>
+                    @Html.TextBoxFor(curUser => curUser.User.FirstName, new { id = "firstname" })
+                </td>
+            </tr>
+            <tr>
+                <td>Last Name 
+                </td>
+                <td>
+                    @Html.TextBoxFor(curUser => curUser.User.LastName, new { id = "lastname" })
+                </td>
+            </tr>
+            <tr>
+                <td>Email Address
+                </td>
+                <td>
+                    @Html.TextBoxFor(curUser => curUser.User.EmailAddress.Address, new { id = "email" })
+                </td>
+            </tr>
+            <tr>
+                <td>Email ID
+                </td>
+                <td>
+                    @Html.TextBoxFor(curUser => curUser.User.EmailAddress.Id, new { id = "emailId", disabled = "disabled" })
+                </td>
+            </tr>
+            <tr>
+                <td>Role
+                </td>
+                <td>
+                    <select id="role" name="UserRole">
+                        <option value="">-- Select Role --</option>
+                        @foreach (var role in Model.Roles)
+                        {
+                            if (role.Name != Model.UserRole)
+                            {<option value="@role.Id">@role.Name</option>}
+                            else
+                            {<option value="@role.Id" selected="selected">@role.Name</option>}
+                        }
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr id="trNewUser">
+                <td colspan="2">
+                    <input type="button" id="btnSave" value="Save" />&nbsp;&nbsp;
+                    <input type="button" id="btnCancel" value="Cancel" /></td>
+            </tr>
+            <tr id="trEditUser" style="display: none;">
+                <td>
+                    <input type="button" id="btnEdit" value="Edit" />
+                </td>
+            </tr>
+        </table>
+        <input id="hdnUserId" type="hidden" value="@Model.User.Id" />
+    </fieldset>
+</div>
+<script>
+    //Document ready function, will run after page is ready and all elements are loaded.
+    $(document).ready(function () {
+        var table;
+
+        //following condition checking if user already exists then setting the view to edit mode
+        if ("@Model.UserRole" != "") {
+            toggleFields(true);
+        }
+
+        //Binding click function to cancel button
+        $("#btnCancel").click(function () {
+            if ($("#hdnUserId").val() != "") {
+                toggleFields(true);
+                $("#firstname").val("@Model.User.FirstName");
+                $("#lastname").val("@Model.User.LastName");
+                $("#email").val("@Model.User.EmailAddress.Address");
+            }
+            else {
+                window.location.href = "@Url.Action("Dashboard", "Admin")";
+            }
+        });
+
+        $("#btnEdit").click(function () {
+            toggleFields(false);
+        });
+
+        //Binding click event handler to Save button.
+        $("#btnSave").click(function () {
+            $.ajax({
+                url: '@Url.Action("Validate", "User")',
+                type: 'post',
+                data: $('#userInfoForm').serialize(),
+                success: function (response) {
+                    $("#lblSaveError").html("");
+                    if (JSON.parse(response).error != undefined) {
+                        $("#lblSaveError").html(JSON.parse(response).error);
+                    }
+                    else {
+                        createUpdateUser();
+                    }
+                }
+            });
+        });
+
+        //Create or update user if all input values are valid.
+        function createUpdateUser() {
+            if ($("#hdnUserId").val() != "") {
+                updateUser();
+            }
+            else {
+                createUser();
+            }
+        }
+
+        //Create new user
+        function createUser() {
+            var sendMail = $("#chkSendEmail").is(':checked');
+            $.ajax({
+                url: '@Url.Action("AddFromForm", "User")',
+                type: 'post',
+                data: $('#userInfoForm').serialize() + "&sendEmail=" + sendMail,
+                success: function (response) {
+                    window.location.href = "@Url.Action("Dashboard", "Admin")";
+                }
+            });
+        }
+
+        //Update existing user
+        function updateUser() {
+            $.ajax({
+                url: '@Url.Action("Update", "User")',
+                type: 'post',
+                data: $('#userInfoForm').serialize(),
+                success: function (response) {
+                    $("#lblSaveError").html("User updated successfully");
+                    toggleFields(true);
+                }
+            });
+        }
+
+    });
+
+    //toggle fields state
+    function toggleFields(state) {
+        $("#firstname").prop("disabled", state);
+        $("#lastname").prop("disabled", state);
+        $("#email").prop("disabled", state);
+        $("#role").prop("disabled", state);
+        $("#trNewUser").toggle();
+        $("#trEditUser").toggle();
+    }
+</script>
+

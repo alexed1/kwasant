@@ -3,15 +3,15 @@
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 
 <table id="tblbookingrequest" class="data-table table-with-action">
-	<thead>
-		<tr>
-			<th width="15%">Date Recieved</th>
-			<th>From</th>	
-			<th>Subject</th>
-			<th>Body</th>		
-			<th class="action-cell">Action</th>
-		</tr>
-	</thead>
+    <thead>
+        <tr>
+            <th width="15%">Date Recieved</th>
+            <th>From</th>
+            <th>Subject</th>
+            <th>Body</th>
+            <th class="action-cell">Action</th>
+        </tr>
+    </thead>
 </table>
 
 <script type="text/javascript">
@@ -25,7 +25,7 @@
             //This configuration supports two buttons (Invalid and Details) and several columns of data
             var table = $('#tblbookingrequest').DataTable({
                 data: JSON.parse(response),
-                order: [ 2, 'desc' ],
+                order: [2, 'desc'],
                 columns: [
                     { data: 'date_received' },
                     { data: 'from_address' },
@@ -40,7 +40,7 @@
 
             //This function will bind a click function on every button in table "tblbookingrequest"
             $('#tblbookingrequest tbody').on('click', 'button', function () {
-              
+
                 var data = table.row($(this).parents('tr')).data();
                 var parentcontrol = this;
                 //checking clicked button value for appropriate action this will be either "detail" or "invalid"
@@ -51,21 +51,13 @@
                         break;
                     case "invalid":
                         //setting status of booking request to "INVALID" and removing the row
-                        $.ajax({
-                            url: "/BookingRequest/Invalidate",
-                            dataType: "json",
-                            contentType: "application/json",
-                            type: "GET",
-                            data: { id: data.id },
-                            success: function (response) {
-                                if (response.Name == "Success") {
-                                    //removing the current row
-                                    $(parentcontrol).parents('tr').remove();
-                                }
-                                else {
-                                    alert(response.Message);
-                                }
-                            }
+                        $.getJSON("/BookingRequest/Invalidate?id=" + data.id, function (response) {
+                            var oldOwner = response.Message;
+                            var Id = data.id;
+                            if (response.Name == "DifferentOwner")
+                                ShowFailedOwnershipVerification(oldOwner, Id);
+                            else
+                                $(parentcontrol).parents('tr').remove();
                         });
                         break;
                     default:
@@ -75,4 +67,17 @@
             });
         }
     });
+
+    function ShowFailedOwnershipVerification(bookingRequestOwner, Id) {
+        if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestOwner + " \n Take Ownership of This BookingRequest?")) {
+            $.ajax({
+                url: "/BookingRequest/ProcessOwnerChange",
+                type: "GET",
+                data: { bookingRequestId: Id },
+                success: function (response) {
+                    alert(response);
+                }
+            });
+        }
+    }
 </script>

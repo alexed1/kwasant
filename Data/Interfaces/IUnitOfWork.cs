@@ -20,6 +20,7 @@ namespace Data.Interfaces
         EventStatusRepository EventStatusRepository { get; }
         InstructionRepository InstructionRepository { get; }
         InvitationRepository InvitationRepository { get; }
+        InvitationResponseRepository InvitationResponseRepository { get; }
         StoredFileRepository StoredFileRepository { get; }
         TrackingStatusRepository TrackingStatusRepository { get; }
         UserAgentInfoRepository UserAgentInfoRepository { get; }
@@ -33,6 +34,8 @@ namespace Data.Interfaces
         QuestionRepository QuestionRepository { get; }
         AnswerRepository AnswerRepository { get; }
         QuestionResponseRepository QuestionResponseRepository { get; }
+        AuthorizationTokenRepository AuthorizationTokenRepository { get; }
+        LogRepository LogRepository { get; }
 
         /// <summary>
         /// Call this to commit the unit of work

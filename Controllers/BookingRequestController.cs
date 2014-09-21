@@ -8,6 +8,8 @@ using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using KwasantCore.Services;
+using KwasantWeb.ViewModels;
+using KwasantWeb.ViewModels.JsonConverters;
 using StructureMap;
 using System.Net.Mail;
 using System;
@@ -24,11 +26,13 @@ namespace KwasantWeb.Controllers
         private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
+        Booker _booker;
         
         public BookingRequestController()
         {
             _datatables = new DataTablesPackager();
             _br = new BookingRequest();
+            _booker = new Booker();
         }
 
         // GET: /BookingRequest/
@@ -55,34 +59,51 @@ namespace KwasantWeb.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            BookingRequestDO bookingRequestDO = null;
+            var currBooker = this.GetUserId();
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);   
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                if (bookingRequestDO == null)
+                    return HttpNotFound();
+                bookingRequestDO.State = BookingRequestState.Booking;
+                bookingRequestDO.UserID = currBooker;
+                bookingRequestDO.LastUpdated = DateTimeOffset.Now;
+                uow.SaveChanges();
+                AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
             }
 
-            if (bookingRequestDO == null)
-            {
-                return HttpNotFound();
-            }
-            else
-            {
-                //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
-                return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Calendar", action = "Index", id = id }));
-            }
+            //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
+            return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Calendar", action = "Index", id = id }));
         }
 
+        [HttpGet]
+        public ActionResult ProcessOwnerChange(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var currBooker = this.GetUserId();
+                string result = _booker.ChangeOwner(uow, bookingRequestId, currBooker);
+                return Content(result);
+            }
+        }
 
         [HttpGet]
         public ActionResult MarkAsProcessed(int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                //call to VerifyOwnership 
+                var currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
+                if (verifyOwnership != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.BookingRequestState = BookingRequestState.Processed;
-                bookingRequestDO.User = bookingRequestDO.User;
+                bookingRequestDO.State = BookingRequestState.Resolved;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
+
                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
             }
         }
@@ -92,9 +113,14 @@ namespace KwasantWeb.Controllers
          {
              using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
              {
+                 //call to VerifyOwnership
+                 var currBooker = this.GetUserId();
+                 string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
+                 if (verifyOwnership != "valid")
+                     return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+
                  BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                 bookingRequestDO.BookingRequestState = BookingRequestState.Invalid;
-                 bookingRequestDO.User = bookingRequestDO.User;
+                 bookingRequestDO.State = BookingRequestState.Invalid;
                  uow.SaveChanges();
                  AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
                  return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
@@ -152,7 +178,7 @@ namespace KwasantWeb.Controllers
         [HttpGet]
         public ActionResult ShowRelatedItems(int bookingRequestId, int draw, int start, int length)
         {
-            List<BR_RelatedItems> obj = new List<BR_RelatedItems>();
+            List<RelatedItemShowVM> obj = new List<RelatedItemShowVM>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             { 
                 var jsonResult = Json(new
@@ -168,19 +194,15 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public List<BR_RelatedItems> BuildRelatedItemsJSON(IUnitOfWork uow, int bookingRequestId, int start, int length)
+        public List<RelatedItemShowVM> BuildRelatedItemsJSON(IUnitOfWork uow, int bookingRequestId, int start, int length)
         {
-            List<BR_RelatedItems> bR_RelatedItems = new List<BR_RelatedItems>();
-            var events = _br.GetRelatedEvents(uow, bookingRequestId);
-            //removed clarification requests, as there is no longer a direct connection. we'll need to collect them for this json via negotiation objects
+            List<RelatedItemShowVM> bR_RelatedItems = _br
+                .GetRelatedItems(uow, bookingRequestId)
+                .Select(AutoMapper.Mapper.Map<RelatedItemShowVM>)
+                .ToList();
 
-            if (events.Count() > 0)
-                bR_RelatedItems.AddRange(events);
-
-          
-
-              recordcount = bR_RelatedItems.Count();
+            recordcount = bR_RelatedItems.Count;
             return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();
         }
-	}
+    }
 }

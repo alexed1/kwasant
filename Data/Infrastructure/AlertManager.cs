@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Microsoft.WindowsAzure;
 using StructureMap;
+using Utilities;
 using Utilities.Logging;
 
 namespace Data.Infrastructure
@@ -28,8 +29,8 @@ namespace Data.Infrastructure
         public delegate void EmailSentHandler(int emailId, string customerId);
         public static event EmailSentHandler AlertEmailSent;
 
-        public delegate void IncidentCreatedHandler(string dateReceived, string errorMessage);
-        public static event IncidentCreatedHandler AlertEmailProcessingFailure;
+        public delegate void EmailProcessingHandler(string dateReceived, string errorMessage);
+        public static event EmailProcessingHandler AlertEmailProcessingFailure;
 
         public delegate void BookingRequestStateChangeHandler(int bookingRequestId);
         public static event BookingRequestStateChangeHandler AlertBookingRequestStateChange;
@@ -39,6 +40,15 @@ namespace Data.Infrastructure
 
         public delegate void UserRegistrationHandler(UserDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
+
+        public delegate void BookingRequestCheckedOutHandler(int bookingRequestId, string bookerId);
+        public static event BookingRequestCheckedOutHandler AlertBookingRequestCheckedOut;
+
+        public delegate void BookingRequestOwnershipChangeHandler(int bookingRequestId, string bookerId);
+        public static event BookingRequestOwnershipChangeHandler AlertBookingRequestOwnershipChange;
+
+        public delegate void Error_EmailSendFailureHandler();
+        public static event Error_EmailSendFailureHandler AlertError_EmailSendFailure;
 
         #region Method
         
@@ -96,6 +106,25 @@ namespace Data.Infrastructure
             if (AlertUserRegistration != null)
                 AlertUserRegistration(curUser);
         }
+
+        public static void BookingRequestCheckedOut(int bookingRequestId, string bookerId)
+        {
+            if (AlertBookingRequestStateChange != null)
+                AlertBookingRequestCheckedOut(bookingRequestId, bookerId);
+        }
+
+        public static void BookingRequestOwnershipChange(int bookingRequestId, string bookerId)
+        {
+            if (AlertBookingRequestStateChange != null)
+                AlertBookingRequestOwnershipChange(bookingRequestId, bookerId);
+        }
+
+        public static void Error_EmailSendFailure()
+        {
+            if (AlertError_EmailSendFailure != null)
+                AlertError_EmailSendFailure();
+        }
+
         #endregion
     }
 
@@ -113,6 +142,9 @@ namespace Data.Infrastructure
             AlertManager.AlertCustomerCreated += NewCustomerCreated;
             AlertManager.AlertBookingRequestProcessingTimeout += ProcessTimeout;
             AlertManager.AlertUserRegistration += UserRegistration;
+            AlertManager.AlertBookingRequestCheckedOut += ProcessBookingRequestCheckedOut;
+            AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChange;
+            AlertManager.AlertError_EmailSendFailure += Error_EmailSendFailure;
         }
 
         private void NewCustomerCreated(string curUserId)
@@ -232,6 +264,7 @@ namespace Data.Infrastructure
         {
             Debug.Assert(uow != null);
             Debug.Assert(curAction != null);
+            var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
             if (string.IsNullOrEmpty(curAction.Data))
             {
                 curAction.Data = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
@@ -241,7 +274,7 @@ namespace Data.Infrastructure
                     curAction.ObjectId,
                     curAction.CustomerId);
             }
-            if (CloudConfigurationManager.GetSetting("LogLevel") == "Verbose")
+            if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
                 Logger.GetLogger().Info(curAction.Data);
             uow.FactRepository.Add(curAction);
         }
@@ -256,7 +289,7 @@ namespace Data.Infrastructure
                 incidentDO.Activity = "TimeOut";
                 incidentDO.ObjectId = bookingRequestDO.Id;
                 incidentDO.CustomerId = bookingRequestDO.User.Id;
-                incidentDO.BookerId = bookingRequestDO.BookerId;
+                incidentDO.BookerId = bookingRequestDO.UserID;
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
@@ -285,5 +318,69 @@ namespace Data.Infrastructure
 
         }
 
+        public void Error_EmailSendFailure()
+        {
+            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Email";
+                incidentDO.SecondaryCategory = "Send";
+                incidentDO.CreateTime = DateTime.Now; ;
+                incidentDO.Activity = "Failure";
+                _uow.IncidentRepository.Add(incidentDO);
+                _uow.SaveChanges();
+            }
+        }
+
+        public void ProcessBookingRequestCheckedOut(int bookingRequestId, string bookerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
+                FactDO curAction = new FactDO()
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Ownership",
+                    Activity = "Checkout",
+                    CustomerId = bookingRequestDO.User.Id,
+                    ObjectId = bookingRequestDO.Id,
+                    BookerId = bookerId,
+                    Status = status,
+                    CreateDate = DateTimeOffset.Now,
+                };
+                curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
+                AddFact(uow, curAction);
+                uow.SaveChanges();
+            }
+        }
+
+        public void BookingRequestOwnershipChange(int bookingRequestId, string bookerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
+                FactDO curAction = new FactDO()
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Ownership",
+                    Activity = "Change",
+                    CustomerId = bookingRequestDO.User.Id,
+                    ObjectId = bookingRequestDO.Id,
+                    BookerId = bookerId,
+                    Status = status,
+                    CreateDate = DateTimeOffset.Now,
+                };
+                curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
+                AddFact(uow, curAction);
+                uow.SaveChanges();
+
+            }
+        }
     }
 }

@@ -158,7 +158,6 @@ namespace Daemons
 
         public bool Start()
         {
-            Logger.GetLogger().Info(GetType().Name + " - starting...");
             lock (this)
             {
                 if (IsRunning)
@@ -169,18 +168,26 @@ namespace Daemons
 
                 IsRunning = true;
             }
+            Logger.GetLogger().Info(GetType().Name + " - starting...");
 
             IsStopping = false;
 
-            m_RunningThread = new Thread(() =>
+            if (WaitTimeBetweenExecution == -1)
+            {
+                m_RunningThread = new Thread(Run);
+            }
+            else
+            {
+                m_RunningThread = new Thread(() =>
                 {
                     bool firstExecution = true;
                     DateTime lastExecutionTime = DateTime.Now;
+
                     while (!IsStopping)
                     {
                         try
                         {
-                            DateTime currTime = DateTime.Now;    
+                            DateTime currTime = DateTime.Now;
                             if (firstExecution ||
                                 (currTime - lastExecutionTime).TotalMilliseconds > WaitTimeBetweenExecution)
                             {
@@ -194,12 +201,13 @@ namespace Daemons
                             else
                             {
                                 //Sleep until the approximate time that we're ready
-                                double waitTime = (WaitTimeBetweenExecution - (currTime - lastExecutionTime).TotalMilliseconds);
+                                double waitTime = (WaitTimeBetweenExecution -
+                                                   (currTime - lastExecutionTime).TotalMilliseconds);
 
                                 //Logger.GetLogger().Info(GetType().Name + " - sleeping for " + waitTime + " milliseconds");
-                                Thread.Sleep((int)waitTime);
+                                Thread.Sleep((int) waitTime);
                             }
-                            
+
                         }
                         catch (Exception e)
                         {
@@ -211,6 +219,7 @@ namespace Daemons
                     CleanupInternal();
                     IsRunning = false;
                 });
+            }
 
             m_RunningThread.Start();
             return true;

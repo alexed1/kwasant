@@ -28,9 +28,11 @@ namespace KwasantTest.Daemons
                     switch (key)
                     {
                         case "MaxBRIdle":
-                            return "1";
+                            return "0.04";
+                        case "EmailAddress_GeneralInfo":
+                            return "info@kwasant.com";
                         default:
-                            return new ConfigRepository().Get<string>(key);
+                            return new MockedConfigRepository().Get<string>(key);
                     }
                 });
             ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepositoryMock.Object));
@@ -43,7 +45,7 @@ namespace KwasantTest.Daemons
             BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
             TrackingStatusRepository trackingStatusRepository = uow.TrackingStatusRepository;
             var bookingRequestDO = new BookingRequestDO();
-            bookingRequestDO.BookingRequestState = BookingRequestState.Unprocessed;
+            bookingRequestDO.State = BookingRequestState.Unstarted;
             bookingRequestDO.User = new FixtureData().TestUser1();
             bookingRequestRepo.Add(bookingRequestDO);
 

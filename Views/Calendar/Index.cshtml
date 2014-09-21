@@ -48,7 +48,8 @@
 	                    <li class="dropdown"><a id="btnUser">User</a>
 	                        <ul class="dropdown-menu">
 	                            <li> @Html.ActionLink("Get All", "Index", "User") </li>
-	                            <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
+	                            @*<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>*@
+<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
 	                        </ul>
 	                    </li>
 	                    <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
@@ -152,10 +153,10 @@
     //funtion to load booking request info in iframe "emailInfoFrame" on "tbluserrequests" request row click.
     //called by : rows in tbluserrequests on click
     function loadrequest(id, linkedCalendarIDs, ele) {
-    	$("#tbluserrequests tr").removeClass('current-row');
-    	if ($('#tbluserrequests tr').length > 2) {
-    		$(ele).addClass('current-row');
-    	}    
+        $("#tbluserrequests tr").removeClass('current-row');
+        if ($('#tbluserrequests tr').length > 2) {
+            $(ele).addClass('current-row');
+        }    
         $("#hdnrequestid").val(id);
         $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("MarkAsProcessed", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
         $("#emailInfoFrame")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
@@ -202,9 +203,27 @@
 
     //Mark processed function will execute on click to update the Request status to "Processed".
     function updateStatus(path) {
-        $.getJSON(path, function () {
-            window.location.href = "@Url.Action("Index", "BookingRequest")";
+        $.getJSON(path, function (response) {
+            var oldOwner = response.Message;
+            var Id = $("#hdnrequestid").val();
+            if (response.Name == "DifferentOwner") 
+                ShowFailedOwnershipVerification(oldOwner, Id);
+            else 
+                window.location.href = "@Url.Action("Index", "BookingRequest")";
         });
+    }
+
+    function ShowFailedOwnershipVerification(bookingRequestOwner, bookingRequestId) {
+        if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestOwner + " \n Take Ownership of This BookingRequest?")) {
+            $.ajax({
+                url: "/BookingRequest/ProcessOwnerChange",
+                type: "GET",
+                data: { bookingRequestId: bookingRequestId },
+                success: function (response) {
+                    alert(response);
+                }
+            });
+        }
     }
 
     function HistoryClick(id) {
@@ -251,11 +270,11 @@
         },
             //Callback function for row created.
             createdRow: function (row, data, index) {
-            	if (data.id == $("#hdnrequestid").val() && $('#tbluserrequests tr').length > 2) {
-                	$(row).addClass('current-row');
+                if (data.id == $("#hdnrequestid").val() && $('#tbluserrequests tr').length > 2) {
+                    $(row).addClass('current-row');
                 }
                 else {
-                	$(row).removeClass('current-row');
+                    $(row).removeClass('current-row');
                 }
             },
         columns: [
@@ -291,41 +310,41 @@
             ajax:
             {
                 "url": "@Url.Action("ShowRelatedItems", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestID",
-				"dataSrc": function (json) {
-					var orgdata = JSON.parse(json.data);
-					return orgdata;
-				}
-			},
+            "dataSrc": function (json) {
+                var orgdata = JSON.parse(json.data);
+                return orgdata;
+            }
+        },
             
-        	createdRow: function (row, data, index) {
-        		if (data.id == $("#hdnrequestid").val() && $('#tblRelatedItems tr').length > 2) {
-        			$(row).addClass('current-row');
-        		}
-        		else {
-        			$(row).removeClass('current-row');
-        		}
+            createdRow: function (row, data, index) {
+                if (data.id == $("#hdnrequestid").val() && $('#tblRelatedItems tr').length > 2) {
+                    $(row).addClass('current-row');
+                }
+                else {
+                    $(row).removeClass('current-row');
+                }
 
-               // $(row).attr("style", "cursor:pointer;");
+                // $(row).attr("style", "cursor:pointer;");
             },
-			columns: [
-                {
-                    data: function (data) {
-                        return ConvertTODateString(data.date);
-					}
-                },
-                { data: 'type' }
-			]
-		});
+        columns: [
+            {
+                data: function (data) {
+                    return ConvertTODateString(data.date);
+                }
+            },
+            { data: 'type' }
+        ]
+    });
 
-	}
+    }
    
-	$('#tblRelatedItems').on('click', 'tr', function () {
-		//$("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
-		//$(this).attr("style", "background-color: #aaa;");
-		$('#tblRelatedItems tr').removeClass('current-row');
-		if ( $('#tblRelatedItems tr').length > 2) {     	
-			$(this).addClass('current-row');
-		}
+    $('#tblRelatedItems').on('click', 'tr', function () {
+        //$("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
+        //$(this).attr("style", "background-color: #aaa;");
+        $('#tblRelatedItems tr').removeClass('current-row');
+        if ( $('#tblRelatedItems tr').length > 2) {     	
+            $(this).addClass('current-row');
+        }
         var data = table1.row($(this)).data();
         var dp_day = storedCalendar[0];
         dp_day.startDate = data.date;
@@ -374,31 +393,49 @@
 
     function getNegotiationWindow() {
         if (linkedNegotiationID != null) {
-            Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID,
-                {
-                    horizontalAlign: 'right',
-                    minHeight: 700,
-                    minWidth: 630,
-                    callback: function(result) {
-                        if (result)
-                            displayNegotiation('Your negotiation was successfully updated');
+            var bookingRequestId = $("#hdnrequestid").val();
+            var url= '/Negotiation/Edit';
+            $.ajax({
+                url: url,
+                type: 'Get',
+                data: {negotiationID:linkedNegotiationID,bookingRequestID:bookingRequestId},
+                async: false, 
+                success: function(response) {
+                    var oldOwner = response.Message;
+                    var Id = $("#hdnrequestid").val();
+                    if (response.Name == "DifferentOwner") 
+                        ShowFailedOwnershipVerification(oldOwner, Id);
+                    else 
+                    {
+                        Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID +'&bookingRequestID=' + bookingRequestId,
+                        {
+                            horizontalAlign: 'right',
+                            minHeight: 700,
+                            minWidth: 630,
+                            callback: function(result) {
+                                if (result)
+                                    displayNegotiation('Your negotiation was successfully updated');
+                            }
+                        });
                     }
-                });
+                }
+            });
+           
         } else {
             Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestID',
-                {
-                    horizontalAlign: 'right',
-                    minHeight: 700,
-                    minWidth: 300,
-                    callback: function(result) {
-                        if (result) {
-                            $('#liCreateOrEditNegotiation').html('Edit');
-                            linkedNegotiationID = result;
-                            updateCreateResolveButtons();
-                            displayNegotiation('Your negotiation was successfully created');
-                        }
+            {
+                horizontalAlign: 'right',
+                minHeight: 700,
+                minWidth: 300,
+                callback: function(result) {
+                    if (result) {
+                        $('#liCreateOrEditNegotiation').html('Edit');
+                        linkedNegotiationID = result;
+                        updateCreateResolveButtons();
+                        displayNegotiation('Your negotiation was successfully created');
                     }
-                });
+                }
+            });
         }
     }
 

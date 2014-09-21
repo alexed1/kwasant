@@ -57,6 +57,7 @@ namespace KwasantCore.Services
                 fromEmail = _configRepository.Get("EmailFromAddress_DelegateMode");
                 fromName = String.Format(_configRepository.Get("EmailFromName_DelegateMode"), GetOriginatorName(curEvent));
             }
+            string replyToEmail = _configRepository.Get("replyToEmail");
 
             var emailAddressRepository = uow.EmailAddressRepository;
             if (curEvent.Attendees == null)
@@ -69,6 +70,9 @@ namespace KwasantCore.Services
             var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
             fromEmailAddr.Name = fromName;
             curInvitation.From = fromEmailAddr;
+
+            var replyToAddress = emailAddressRepository.GetOrCreateEmailAddress(replyToEmail);
+            curInvitation.ReplyTo = replyToAddress;
 
             var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(curAttendee.EmailAddress.Address);
             toEmailAddress.Name = curAttendee.Name;

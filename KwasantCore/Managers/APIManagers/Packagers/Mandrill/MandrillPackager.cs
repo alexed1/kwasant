@@ -477,7 +477,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
                 FromEmail = message.From.Address,
                 FromName = message.From.Name,
                 To = message.To.Select(t => new MandrilEmail.MandrilEmailAddress { Email = t.Address, Name = t.Name, Type = "to" }).ToList(),
-                Headers = null,
+                Headers = message.ReplyTo != null ? new MandrilEmail.MandrilHeader() { ReplyTo = message.ReplyTo.Address } : null,
                 Important = false,
                 Tags = new List<string> { Email.Id.ToString() },
                 Attachments = message.Attachments.Select(a =>

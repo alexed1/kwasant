@@ -47,7 +47,7 @@ namespace KwasantTest.Fixtures
 
         public EventDO TestEvent2()
         {
-            return new EventDO()
+            var curEvent = new EventDO()
             {
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddHours(1),
@@ -65,11 +65,17 @@ namespace KwasantTest.Fixtures
                 Attendees = TestAttendeeList1().ToList(),
                 CreatedBy = TestUser2()
             };
+            foreach (var attendee in curEvent.Attendees)
+            {
+                attendee.Event = curEvent;
+                attendee.EventID = curEvent.Id;
+            }
+            return curEvent;
         }
 
         public EventDO TestEvent3_TodayDates()
         {
-            return new EventDO()
+            var curEvent = new EventDO()
             {
                 StartDate = DateTime.Today,
                 EndDate = DateTime.Today,
@@ -86,11 +92,17 @@ namespace KwasantTest.Fixtures
                 Attendees = TestAttendeeList1().ToList(),
                 CreatedBy = TestUser2()
             };
+            foreach (var attendee in curEvent.Attendees)
+            {
+                attendee.Event = curEvent;
+                attendee.EventID = curEvent.Id;
+            }
+            return curEvent;
         }
 
         public EventDO TestEvent4()
         {
-            return new EventDO()
+            var curEvent = new EventDO()
             {
                 CreatedByID = "1",
                 EventStatus = EventState.Booking,
@@ -103,6 +115,12 @@ namespace KwasantTest.Fixtures
                 Emails = new List<EmailDO>(),
                 CreatedBy = TestUser2()
             };
+            foreach (var attendee in curEvent.Attendees)
+            {
+                attendee.Event = curEvent;
+                attendee.EventID = curEvent.Id;
+            }
+            return curEvent;
         }
 
     

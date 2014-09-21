@@ -40,9 +40,11 @@ namespace KwasantTest.Services
                     switch (key)
                     {
                         case "MaxBRIdle":
-                            return "1";
+                            return "0.04";
+                        case "EmailAddress_GeneralInfo":
+                            return "info@kwasant.com";
                         default:
-                            return new ConfigRepository().Get<string>(key);
+                            return new MockedConfigRepository().Get<string>(key);
                     }
                 });
             _configRepository = configRepositoryMock.Object;
@@ -226,7 +228,7 @@ namespace KwasantTest.Services
         public void ShowUnprocessedRequestTest()
         {
             object requests = (new BookingRequest()).GetUnprocessed(_uow);
-            object requestNow = _uow.BookingRequestRepository.GetAll().Where(e => e.BookingRequestState == BookingRequestState.Unprocessed).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
+            object requestNow = _uow.BookingRequestRepository.GetAll().Where(e => e.State == BookingRequestState.Unstarted).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
 
             Assert.AreEqual(requestNow, requests);
     }
@@ -240,10 +242,10 @@ namespace KwasantTest.Services
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
             (new BookingRequest()).Process(_uow, bookingRequest);
-            bookingRequest.BookingRequestState = BookingRequestState.Invalid;
+            bookingRequest.State = BookingRequestState.Invalid;
             _uow.SaveChanges();
 
-            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.BookingRequestState == BookingRequestState.Invalid);
+            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Invalid);
             Assert.AreEqual(1, requestNow.Count());
 }
 
@@ -256,11 +258,12 @@ namespace KwasantTest.Services
             Assert.AreEqual(1, requests.Count);
         }
 
+        //This test takes too long see. KW-340. Temporarily ignoring it.
         [Test]
         [Category("BRM")]
         public void TimeOutStaleBRTest()
         {
-            var timeOut = TimeSpan.FromSeconds(65);
+            var timeOut = TimeSpan.FromSeconds(30);
             Stopwatch staleBRDuration = new Stopwatch();
 
             MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { };
@@ -268,22 +271,24 @@ namespace KwasantTest.Services
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
             (new BookingRequest()).Process(_uow, bookingRequest);
 
-            bookingRequest.BookingRequestState = BookingRequestState.CheckedOut;
-            bookingRequest.BookerId = bookingRequest.User.Id;
+            bookingRequest.State = BookingRequestState.Booking;
+            bookingRequest.UserID = bookingRequest.User.Id;
             bookingRequest.LastUpdated = DateTimeOffset.Now;
             _uow.SaveChanges();
 
             staleBRDuration.Start();
+
+            IEnumerable<BookingRequestDO> requestNow;
             do
             {
                 var om = new OperationsMonitor();
                 DaemonTests.RunDaemonOnce(om);
+                requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
 
-            } while (staleBRDuration.Elapsed < timeOut);
+            } while (!requestNow.Any() || staleBRDuration.Elapsed > timeOut);
             staleBRDuration.Stop();
 
-
-            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.BookingRequestState == BookingRequestState.Unprocessed);
+            requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
             Assert.AreEqual(1, requestNow.Count());
 
         }

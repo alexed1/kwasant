@@ -44,15 +44,15 @@ namespace Daemons
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {  
                 //Process Timing Out BR status "CheckedOut" to "Unprocessed"
-                int maxBRIdleMinutes = Convert.ToInt32(_configRepository.Get<string>("MaxBRIdle"));
+                double maxBRIdleMinutes = Convert.ToDouble(_configRepository.Get<string>("MaxBRIdle"));
 
-                DateTimeOffset idleTimeLimit = DateTimeOffset.Now.Subtract(new TimeSpan(0, maxBRIdleMinutes, 0));
+                DateTimeOffset idleTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(maxBRIdleMinutes));
                 List<BookingRequestDO> staleBRList = new List<BookingRequestDO>();
-                staleBRList = uow.BookingRequestRepository.GetAll().Where(x => x.BookingRequestState == BookingRequestState.CheckedOut && x.LastUpdated.DateTime < idleTimeLimit.DateTime).ToList();
+                staleBRList = uow.BookingRequestRepository.GetAll().Where(x => x.State == BookingRequestState.Booking && x.LastUpdated.DateTime < idleTimeLimit.DateTime).ToList();
                 BookingRequest _br = new BookingRequest();
                 foreach (var br in staleBRList)
                     _br.Timeout(uow, br);
-
+                
                 BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
                 TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(bookingRequestRepo);
@@ -62,7 +62,6 @@ namespace Daemons
 
                 CommunicationManager cm = ObjectFactory.GetInstance<CommunicationManager>();
                 cm.ProcessBRNotifications(unprocessedBookingRequests);
-                //unprocessedBookingRequests.ForEach(br => ts.SetStatus(TrackingType.BookingState, br, TrackingState.Processed));
 
                 foreach (var unprocessedBR in unprocessedBookingRequests)
                     ts.SetStatus(uow, unprocessedBR);

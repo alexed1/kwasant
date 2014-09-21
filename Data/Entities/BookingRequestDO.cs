@@ -6,7 +6,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class BookingRequestDO : EmailDO, IBookingRequest
+    public class BookingRequestDO : EmailDO
     {
         public BookingRequestDO()
         {
@@ -14,7 +14,8 @@ namespace Data.Entities
             Negotiations = new List<NegotiationDO>();
         }
 
-        [Required]
+        [Required, ForeignKey("User")]
+        public string UserID { get; set; }        
         public virtual UserDO User { get; set; }
 
         public virtual List<InstructionDO> Instructions { get; set; }
@@ -26,9 +27,7 @@ namespace Data.Entities
         public virtual List<CalendarDO> Calendars { get; set; }
 
         [Required, ForeignKey("BookingRequestStateTemplate")]
-        public int BookingRequestState { get; set; }
+        public int State { get; set; }
         public virtual _BookingRequestStateTemplate BookingRequestStateTemplate { get; set; }
-
-        public string BookerId { get; set; }	
     }
 }
