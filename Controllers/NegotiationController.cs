@@ -52,7 +52,7 @@ namespace KwasantWeb.Controllers
 
             //Second - We then order a question by the number of votes. Note that because we're ordering by ascending, the more votes it has, the lower the rank will be
             //So, we subtract the votes by 1, which orders in the correct direction
-            Func<NegotiationAnswerVM, long> secondSort = a => 1 - a.VotedBy.Count;
+            Func<NegotiationAnswerVM, long> secondSort = a => 1 - a.VotedByList.Count;
 
             //Third - we order events by their starting date
             Func<NegotiationAnswerVM, long> thirdSort = a => (!a.EventStartDate.HasValue ? 0 : a.EventStartDate.Value.Ticks);
@@ -83,12 +83,10 @@ namespace KwasantWeb.Controllers
                                     Id = a.Id,
                                     Text = a.Text,
                                     AnswerState = a.AnswerStatus,
-                                VotedBy =
-                                    uow.QuestionResponseRepository.GetQuery()
-                                        .Where(qr => qr.AnswerID == a.Id)
-                                        .Select(qr => qr.User.FirstName + " " + qr.User.LastName)
-                                        .ToList(),
-
+                                    VotedByList = uow.QuestionResponseRepository.GetQuery()
+                                                                                    .Where(qr => qr.AnswerID == a.Id)
+                                                                                    .Select(qr => qr.User.FirstName + " " + qr.User.LastName)
+                                                                                    .ToList(),
                                     EventID = a.EventID,
                                     EventStartDate = a.Event == null ? (DateTimeOffset?)null : a.Event.StartDate,
                                     EventEndDate = a.Event == null ? (DateTimeOffset?)null : a.Event.EndDate,
@@ -98,7 +96,7 @@ namespace KwasantWeb.Controllers
 
                         return new NegotiationQuestionVM
                         {
-                            AnswerType = q.AnswerType,
+                            Type = q.AnswerType,
                             Id = q.Id,
                             CalendarID = q.CalendarID,
                             Text = q.Text,
