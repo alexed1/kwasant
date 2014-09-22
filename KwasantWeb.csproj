@@ -773,6 +773,8 @@
     <Content Include="Views\Shared\404.cshtml" />
     <Content Include="Views\Negotiation\Review.cshtml" />
     <Content Include="Views\Account\RegistrationConfirmation.cshtml" />
+    <Content Include="Views\TokenAuth\Index.cshtml" />
+    <Content Include="Views\Shared\403.cshtml" />
     <Content Include="Views\User\ChooseCalendars.cshtml" />
     <Content Include="Views\User\Detail.cshtml" />
     <Content Include="Views\User\FindUser.cshtml" />

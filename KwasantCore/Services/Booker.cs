@@ -18,10 +18,10 @@ namespace KwasantCore.Services
         {
 
             BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-            if (bookingRequestDO.BookerId != currBooker)
+            if (bookingRequestDO.UserID != currBooker)
             {
-                if (bookingRequestDO.BookerId != null)
-                    return uow.UserRepository.GetByKey(bookingRequestDO.BookerId).FirstName;
+                if (bookingRequestDO.UserID != null)
+                    return uow.UserRepository.GetByKey(bookingRequestDO.UserID).FirstName;
                 else
                     return "valid";
             }
@@ -38,8 +38,7 @@ namespace KwasantCore.Services
                 if (bookingRequestId != null)
                 {
                     bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                    bookingRequestDO.User = bookingRequestDO.User;
-                    bookingRequestDO.BookerId = currBooker;
+                    bookingRequestDO.UserID = currBooker;
                     uow.SaveChanges();
                     AlertManager.BookingRequestOwnershipChange(bookingRequestDO.Id, currBooker);
                     result = "Booking request ownership changed successfully!";

@@ -17,13 +17,6 @@ namespace Data.Validations
                 .GreaterThanOrEqualTo(eventDO => eventDO.StartDate)
                 .WithMessage("End date must after Start date");
 
-            //RuleFor(eventDO => eventDO.Description).NotNull().SetValidator(new StringMinLength(3));
-            //initial event creation has no description, so a general purpose rule here won't suit. need to either split into two different event validators or do something else
-
-
-            //RuleFor(eventDO => eventDO.Attendees).SetValidator(new ListMustContainAtLeastOneItem<AttendeeDO>())
-            //    .WithMessage("Event must have at least one attendee");
-
             RuleFor(eventDO => eventDO.CreatedByID)
                 .NotNull()
                 .WithMessage("CreatedByID is Required");

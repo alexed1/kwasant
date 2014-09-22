@@ -14,7 +14,8 @@ namespace Data.Entities
             Negotiations = new List<NegotiationDO>();
         }
 
-        [Required]
+        [Required, ForeignKey("User")]
+        public string UserID { get; set; }        
         public virtual UserDO User { get; set; }
 
         public virtual List<InstructionDO> Instructions { get; set; }
@@ -28,9 +29,5 @@ namespace Data.Entities
         [Required, ForeignKey("BookingRequestStateTemplate")]
         public int State { get; set; }
         public virtual _BookingRequestStateTemplate BookingRequestStateTemplate { get; set; }
-
-        //[ForeignKey("Bookers")]
-        public string BookerId { get; set; }
-        //public virtual UserDO Bookers { get; set; }
     }
 }
