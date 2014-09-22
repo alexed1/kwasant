@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
+using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Services;
+using KwasantCore.StructureMap;
 using NUnit.Framework;
 using StructureMap;
 
@@ -13,6 +16,7 @@ namespace KwasantTest.Services
         [SetUp]
         public void Setup()
         {
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
         }
 
@@ -111,5 +115,32 @@ namespace KwasantTest.Services
             Assert.AreEqual("rjrudman@gmail.XN--CLCHC0EA0B2G2A9GCD", result[0].Email);
         }
 
+        [Test]
+        public void TestEmailAddressDOCreated()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Assert.AreEqual(0, uow.EmailAddressRepository.GetQuery().Count());
+                _emailAddress.GetEmailAddresses(uow, "rjrudman@gmail.com");
+                Assert.AreEqual(1, uow.EmailAddressRepository.GetQuery().Count());
+            }
+        }
+
+        [Test]
+        public void TestEmailAddressDODuplicateNotCreated()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Assert.AreEqual(0, uow.EmailAddressRepository.GetQuery().Count());
+                uow.EmailAddressRepository.Add(new EmailAddressDO
+                {
+                    Address = "rjrudman@gmail.com",
+                    Name = "rjrudman@gmail.com"
+                });
+                Assert.AreEqual(1, uow.EmailAddressRepository.GetQuery().Count());
+                _emailAddress.GetEmailAddresses(uow, "rjrudman@gmail.com");
+                Assert.AreEqual(1, uow.EmailAddressRepository.GetQuery().Count());
+            }
+        }
     }
 }

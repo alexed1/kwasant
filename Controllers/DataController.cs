@@ -29,7 +29,7 @@ namespace KwasantWeb.Controllers
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    EmailAddressDO emailAddressDO = _emailAddress.ConvertFromString(HttpUtility.UrlDecode(emailString), uow);
+                    EmailAddressDO emailAddressDO = _emailAddress.ConvertFromString(emailString, uow);
                     if (!(_emailAddressValidator.Validate(emailAddressDO).IsValid))
                         return Json("Invalid email format", JsonRequestBehavior.AllowGet);
                     else

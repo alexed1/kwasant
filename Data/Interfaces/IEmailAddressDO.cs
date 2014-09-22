@@ -15,6 +15,6 @@ namespace Data.Interfaces
     {
         EmailAddressDO ConvertFromMailAddress(IUnitOfWork uow, MailAddress address);
         List<ParsedEmailAddress> ExtractFromString(String textToSearch);
-        IEnumerable<EmailAddressDO> FilterOutDomains(IEnumerable<EmailAddressDO> addressList, string domain);
+        List<EmailAddressDO> GetEmailAddresses(IUnitOfWork uow, params string[] textToSearch);
     }
 }
