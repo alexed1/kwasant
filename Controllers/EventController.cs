@@ -227,6 +227,10 @@ namespace KwasantWeb.Controllers
                 if (curEventDO == null)
                     throw new EntityNotFoundException<EventDO>();
                 updatedEventInfo.Attendees = _attendee.ConvertFromString(uow, curEventVM.Attendees);
+                
+                if (updatedEventInfo.Summary == null)
+                    updatedEventInfo.Summary = String.Empty;
+
                 curEventDO.EventStatus = updatedEventInfo.Summary.Contains("DRAFT") ? EventState.Draft : EventState.Booking;
 
                 _event.Process(uow, curEventDO, updatedEventInfo);
@@ -236,7 +240,7 @@ namespace KwasantWeb.Controllers
 
                 uow.SaveChanges();
             }
-            return Json(true);
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult DeleteEvent(int eventID, bool requiresConfirmation = true)
