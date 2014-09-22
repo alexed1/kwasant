@@ -207,7 +207,7 @@ namespace KwasantWeb.Controllers
 
         public ActionResult ConfirmChanges(EventVM eventVM)
         {
-            return View(eventVM);
+            return View("~/Views/Event/ConfirmChanges.cshtml", eventVM);
         }
 
         [HttpPost]
