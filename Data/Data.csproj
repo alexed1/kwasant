@@ -208,6 +208,10 @@
     <Compile Include="Migrations\201409191154252_FixUserIDPK.Designer.cs">
       <DependentUpon>201409191154252_FixUserIDPK.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.cs" />
+    <Compile Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.Designer.cs">
+      <DependentUpon>201409221025343_Add_ConversationId_to_EmailDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
@@ -961,6 +965,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409191154252_FixUserIDPK.resx">
       <DependentUpon>201409191154252_FixUserIDPK.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.resx">
+      <DependentUpon>201409221025343_Add_ConversationId_to_EmailDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
