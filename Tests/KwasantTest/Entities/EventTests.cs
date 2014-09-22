@@ -77,28 +77,6 @@ namespace KwasantTest.Entities
             Assert.AreEqual(curOriginalEventDO.Id, curRetrievedEventDO.Id);
         }
 
-        [Test, Ignore]
-        [Category("Event")]
-        public void Event_Add_FailsWhenAddEventWithTooShortDescription()
-        {
-            //SETUP      
-            EventDO curOriginalEventDO = _fixture.TestEvent2();
-            curOriginalEventDO.Description = "X";
-
-            //EXECUTE
-            Assert.Throws<ValidationException>(() =>
-                {
-                    _uow.EventRepository.Add(curOriginalEventDO);
-                }
-            );
-
-            //eventRepo.UnitOfWork.SaveChanges(); not necessary
-
-            //VERIFY
-            //handled in EXECUTE
-
-        }
-
         [Test]
         [Category("Event")]
         public void Event_Add_CanAddEventWithAllFields()

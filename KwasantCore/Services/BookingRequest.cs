@@ -156,16 +156,15 @@ namespace KwasantCore.Services
 
         public void Timeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
         {
-            string bookerId = bookingRequestDO.BookerId;
+            string bookerId = bookingRequestDO.UserID;
             bookingRequestDO.State = BookingRequestState.Unstarted;
-            bookingRequestDO.BookerId = null;
-            bookingRequestDO.User = bookingRequestDO.User;
+            bookingRequestDO.UserID = null;
             uow.SaveChanges();
-            bookingRequestDO.BookerId = bookerId;
+            bookingRequestDO.UserID = bookerId;
 
             AlertManager.BookingRequestProcessingTimeout(bookingRequestDO);
             Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + bookingRequestDO.Id);
-            bookingRequestDO.BookerId = null;
+            bookingRequestDO.UserID = null;
             // Send mail to Booker
             UserDO userDO = new UserDO();
             userDO = uow.UserRepository.GetByKey(bookerId);

@@ -272,7 +272,7 @@ namespace KwasantTest.Services
             (new BookingRequest()).Process(_uow, bookingRequest);
 
             bookingRequest.State = BookingRequestState.Booking;
-            bookingRequest.BookerId = bookingRequest.User.Id;
+            bookingRequest.UserID = bookingRequest.User.Id;
             bookingRequest.LastUpdated = DateTimeOffset.Now;
             _uow.SaveChanges();
 

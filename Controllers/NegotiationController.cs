@@ -40,7 +40,7 @@ namespace KwasantWeb.Controllers
         {
             return
                 View(GetNegotiationVM(negotiationID, a => a.AnswerState == AnswerState.Selected ? 0 : 1,
-                    a => 1 - a.VotedBy.Count, a => (!a.EventStartDate.HasValue ? 0 : a.EventStartDate.Value.Ticks)));
+                    a => 1 - a.VotedByList.Count, a => (!a.EventStartDate.HasValue ? 0 : a.EventStartDate.Value.Ticks)));
         }
 
         private static NegotiationVM GetNegotiationVM<T>(int negotiationID, Func<NegotiationAnswerVM, T> orderByFunc,
@@ -69,7 +69,7 @@ namespace KwasantWeb.Controllers
                     Questions = negotiationDO.Questions.Select(q =>
                         new NegotiationQuestionVM
                         {
-                            AnswerType = q.AnswerType,
+                            Type = q.AnswerType,
                             Id = q.Id,
                             CalendarID = q.CalendarID,
                             Text = q.Text,
@@ -79,7 +79,7 @@ namespace KwasantWeb.Controllers
                                     Id = a.Id,
                                     Text = a.Text,
                                     AnswerState = a.AnswerStatus,
-                                    VotedBy = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.AnswerID == a.Id).Select(qr => qr.User.FirstName + " " + qr.User.LastName).ToList(),
+                                    VotedByList = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.AnswerID == a.Id).Select(qr => qr.User.FirstName + " " + qr.User.LastName).ToList(),
 
                                     EventID = a.EventID,
                                     EventStartDate = a.Event == null ? (DateTimeOffset?)null : a.Event.StartDate,
@@ -107,7 +107,7 @@ namespace KwasantWeb.Controllers
                     Questions = new List<NegotiationQuestionVM>
                     { new NegotiationQuestionVM
                         {
-                            AnswerType = "Text"
+                            Type = "Text"
                         }
                     }
                 });
@@ -161,7 +161,7 @@ namespace KwasantWeb.Controllers
                         questionDO = uow.QuestionsRepository.GetByKey(question.Id);
 
                     questionDO.Negotiation = negotiationDO;
-                    questionDO.AnswerType = question.AnswerType;
+                    questionDO.AnswerType = question.Type;
                     if (questionDO.QuestionStatus == 0)
                         questionDO.QuestionStatus = QuestionState.Unanswered;
 

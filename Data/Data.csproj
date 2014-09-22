@@ -200,6 +200,14 @@
     <Compile Include="Migrations\201409160731277_AddDBLogging.Designer.cs">
       <DependentUpon>201409160731277_AddDBLogging.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409191059422_Sync.Rob.19.09.2014.cs" />
+    <Compile Include="Migrations\201409191059422_Sync.Rob.19.09.2014.Designer.cs">
+      <DependentUpon>201409191059422_Sync.Rob.19.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409191154252_FixUserIDPK.cs" />
+    <Compile Include="Migrations\201409191154252_FixUserIDPK.Designer.cs">
+      <DependentUpon>201409191154252_FixUserIDPK.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
@@ -947,6 +955,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409160731277_AddDBLogging.resx">
       <DependentUpon>201409160731277_AddDBLogging.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409191059422_Sync.Rob.19.09.2014.resx">
+      <DependentUpon>201409191059422_Sync.Rob.19.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409191154252_FixUserIDPK.resx">
+      <DependentUpon>201409191154252_FixUserIDPK.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

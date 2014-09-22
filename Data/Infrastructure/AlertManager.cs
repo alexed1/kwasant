@@ -289,7 +289,7 @@ namespace Data.Infrastructure
                 incidentDO.Activity = "TimeOut";
                 incidentDO.ObjectId = bookingRequestDO.Id;
                 incidentDO.CustomerId = bookingRequestDO.User.Id;
-                incidentDO.BookerId = bookingRequestDO.BookerId;
+                incidentDO.BookerId = bookingRequestDO.UserID;
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
