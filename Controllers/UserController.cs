@@ -20,7 +20,7 @@ using KwasantCore.Managers.APIManager.Packagers.DataTable;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Customer")]
+    [KwasantAuthorize]
     public class UserController : Controller
     {
         private DataTablesPackager _datatables;
@@ -62,12 +62,12 @@ namespace KwasantWeb.Controllers
         public async Task<ActionResult> GrantRemoteCalendarAccess(string providerName)
         {
             var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
-            var result = await authorizer.AuthorizeAsync(this.GetUserId(),
-                                                         this.User.Identity.GetUserName(),
-                                                         Url.Action("IndexAsync", "AuthCallback", null,
-                                                                    this.Request.Url.Scheme),
-                                                         Request.RawUrl,
-                                                         CancellationToken.None);
+            var result = await authorizer.AuthorizeAsync(
+                this.GetUserId(),
+                this.GetUserName(),
+                String.Format("{0}AuthCallback/IndexAsync", Utilities.Server.ServerUrl),
+                Request.RawUrl,
+                CancellationToken.None);
 
             if (result.Credential != null)
             {

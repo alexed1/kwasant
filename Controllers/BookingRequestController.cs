@@ -26,7 +26,6 @@ namespace KwasantWeb.Controllers
         private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
-        string _currBooker;
         Booker _booker;
         
         public BookingRequestController()
@@ -60,31 +59,22 @@ namespace KwasantWeb.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            _currBooker = this.GetUserId();
-            BookingRequestDO bookingRequestDO = null;
+            var currBooker = this.GetUserId();
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (id != null)
-                {
-                    bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                    bookingRequestDO.User = bookingRequestDO.User;
-                    bookingRequestDO.State = BookingRequestState.Booking;
-                    bookingRequestDO.BookerId = _currBooker;
-                    bookingRequestDO.LastUpdated = DateTimeOffset.Now;
-                    uow.SaveChanges();
-                    AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, _currBooker);
-                }
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                if (bookingRequestDO == null)
+                    return HttpNotFound();
+                bookingRequestDO.State = BookingRequestState.Booking;
+                bookingRequestDO.UserID = currBooker;
+                bookingRequestDO.LastUpdated = DateTimeOffset.Now;
+                uow.SaveChanges();
+                AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
             }
 
-            if (bookingRequestDO == null)
-            {
-                return HttpNotFound();
-            }
-            else
-            {
-                //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
-                return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Calendar", action = "Index", id = id }));
-            }
+            //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
+            return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Calendar", action = "Index", id = id }));
         }
 
         [HttpGet]
@@ -92,8 +82,8 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _currBooker = this.GetUserId();
-                string result = _booker.ChangeOwner(uow, bookingRequestId, _currBooker);
+                var currBooker = this.GetUserId();
+                string result = _booker.ChangeOwner(uow, bookingRequestId, currBooker);
                 return Content(result);
             }
         }
@@ -104,14 +94,13 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //call to VerifyOwnership 
-                _currBooker = this.GetUserId();
-                string verifyOwnership = _booker.IsBookerValid(uow, id, _currBooker);
+                var currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
                 if (verifyOwnership != "valid")
                     return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
 
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 bookingRequestDO.State = BookingRequestState.Resolved;
-                bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
 
@@ -125,14 +114,13 @@ namespace KwasantWeb.Controllers
              using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
              {
                  //call to VerifyOwnership
-                 _currBooker = this.GetUserId();
-                 string verifyOwnership = _booker.IsBookerValid(uow, id, _currBooker);
+                 var currBooker = this.GetUserId();
+                 string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
                  if (verifyOwnership != "valid")
                      return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
 
                  BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                  bookingRequestDO.State = BookingRequestState.Invalid;
-                 bookingRequestDO.User = bookingRequestDO.User;
                  uow.SaveChanges();
                  AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
                  return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);

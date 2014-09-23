@@ -12,6 +12,7 @@ using Data.Validations;
 using FluentValidation;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using StructureMap;
+using Utilities;
 
 
 namespace KwasantCore.Services
@@ -186,51 +187,66 @@ namespace KwasantCore.Services
         }
 
 
-
-        public EmailDO GenerateBasicMessage(IUnitOfWork uow, EmailAddressDO emailAddressDO, string message)
+       
+        public EmailDO GenerateBasicMessage(IUnitOfWork uow, EmailAddressDO curEmailAddress,string subject, string message, string fromAddress ,string toRecipient)
         {
-            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-            emailAddressValidator.ValidateAndThrow(emailAddressDO);
-
-            return new EmailDO()
+            ValidateEmailAddress(curEmailAddress);
+            EmailDO curEmail = new EmailDO()
             {
-                From = _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailAddressDO.Address, emailAddressDO.Name)),
-                Recipients = new List<RecipientDO>()
-                                         {
-                                              new RecipientDO()
-                                                 {
-                                                       EmailAddress = _emailAddress.ConvertFromMailAddress(uow, new MailAddress("info@kwasant.com")),
-                                                       EmailParticipantType = EmailParticipantType.To
-                                                 }
-                                         },
-                Subject = "",
-                PlainText = message,
-                HTMLText = message
-            };
-        }
-
-        public EmailDO GenerateBookerMessage(IUnitOfWork uow, EmailAddressDO emailAddressDO, string message, string subject)
-        {
-            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-            emailAddressValidator.ValidateAndThrow(emailAddressDO);
-
-            return new EmailDO()
-            {
-                From = _emailAddress.ConvertFromMailAddress(uow, new MailAddress("info@kwasant.com")),
-                Recipients = new List<RecipientDO>()
-                                         {
-                                              new RecipientDO()
-                                                 {
-                                                     EmailAddress = _emailAddress.ConvertFromMailAddress(uow, new MailAddress(emailAddressDO.Address)),
-                                                       EmailParticipantType = EmailParticipantType.To
-                                                 }
-                                         },
                 Subject = subject,
                 PlainText = message,
                 HTMLText = message
             };
+            curEmail = AddFromAddress(uow, curEmail,fromAddress);
+            curEmail = AddSingleRecipient(uow, curEmail, toRecipient);
+            return curEmail;
         }
-       
+
+        public void SendAlertEmail()
+        {
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+
+                EmailAddressDO curEmailAddress = new EmailAddressDO("ops@kwasant.com");
+                EmailDO curEmail = new EmailDO();
+                string message = "Alert! Kwasant Error Reported: EmailSendFailure";
+                string subject = "Alert! Kwasant Error Reported: EmailSendFailure";
+                curEmail = GenerateBasicMessage(uow, curEmailAddress, subject, message, fromAddress, "ops@kwasant.com");
+                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                uow.SaveChanges();
+            }
+        }
+
+
+
+        public void ValidateEmailAddress(EmailAddressDO curEmailAddress)
+        {
+            EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+            emailAddressValidator.ValidateAndThrow(curEmailAddress);
+
+        }
+
+        public EmailDO AddSingleRecipient(IUnitOfWork uow, EmailDO curEmail, string toRecipient)
+        {
+            curEmail.Recipients = new List<RecipientDO>()
+                                         {
+                                              new RecipientDO()
+                                                 {
+                                                   EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(toRecipient),
+                                                   EmailParticipantType = EmailParticipantType.To
+                                                 }
+                                         };
+            return curEmail;
+        }
+
+
+        public EmailDO AddFromAddress(IUnitOfWork uow, EmailDO curEmail, string fromAddress)
+        {
+            curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+            return curEmail;
+        }
 
     }
 }

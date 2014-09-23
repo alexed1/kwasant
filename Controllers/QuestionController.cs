@@ -24,7 +24,7 @@ namespace KwasantWeb.Controllers
                     {
                         Name = "Negotiation Caledar",
                         NegotiationID = negotiationID,
-                        OwnerID = User.Identity.GetUserId()
+                        OwnerID = this.GetUserId()
                     };
                     uow.CalendarRepository.Add(calendarDO);
                     uow.SaveChanges();

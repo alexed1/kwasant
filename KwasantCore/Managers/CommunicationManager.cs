@@ -74,6 +74,7 @@ namespace KwasantCore.Managers
             if (negotiationDO.Attendees == null)
                 return;
 
+            var user = ObjectFactory.GetInstance<User>();
             foreach (var attendee in negotiationDO.Attendees)
             {
                 var emailDO = new EmailDO();
@@ -85,14 +86,31 @@ namespace KwasantCore.Managers
                     (negotiationDO.BookingRequest.User.LastName ?? ""), 
                     negotiationDO.Name);
 
-                var responseUrl = String.Format("{0}NegotiationResponse/View?negotiationID={1}", 
-                    Server.ServerUrl, 
+                var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", 
                     negotiationDO.Id);
+
+                var authToken = new AuthorizationToken();
+                var tokenURL = authToken.GetAuthorizationTokenURL(uow, responseUrl, user.GetOrCreateFromBR(uow, attendee.EmailAddress));
 
                 uow.EmailRepository.Add(emailDO);
 
-                string templateName = "clarification_request_v3";
-                
+                string templateName;
+                // Max Kostyrkin: currently User#GetMode returns Direct if user has a booking request or has a password, otherwise Delegate.
+                switch (user.GetMode(uow, user.Get(uow, attendee.EmailAddress)))
+                {
+                    case CommunicationMode.Direct:
+                        templateName = _configRepository.Get("CR_template_for_creator");
+                        break;
+                    case CommunicationMode.Delegate:
+                        templateName = _configRepository.Get("CR_template_for_existing_user");
+                        break;
+                    case CommunicationMode.Precustomer:
+                        templateName = _configRepository.Get("CR_template_for_precustomer");
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, templateName, new Dictionary<string, string>() { { "RESP_URL", responseUrl } });
             }
         }

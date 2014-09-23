@@ -27,6 +27,8 @@ namespace Data.Authentication
                     TestAccount = true
                 };
 
+                AddDefaultCalendar(curUser);
+
                 IdentityResult ir = um.Create(curUser, curPassword);
 
                 if (!ir.Succeeded)
@@ -47,6 +49,19 @@ namespace Data.Authentication
             return curUser.Id;
         }
 
+        public void AddDefaultCalendar(UserDO curUser)
+        {
+            if (curUser == null)
+                throw new ArgumentNullException("curUser");
+
+            var curCalendar = new CalendarDO
+            {
+                Name = "Default Calendar",
+                Owner = curUser,
+                OwnerID = curUser.Id
+            };
+            curUser.Calendars.Add(curCalendar);
+        }
 
         public void AddRole(string roleName, string accountId, IUnitOfWork unitOfWork)
         {

@@ -9,6 +9,7 @@ namespace Data.States
     public enum CommunicationMode
     {
         Direct,
-        Delegate
+        Delegate,
+        Precustomer
     }
 }

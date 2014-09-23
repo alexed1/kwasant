@@ -1,11 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Net.Mail;
+using System.Net.Sockets;
 using Daemons.InboundEmailHandlers;
-using Data.Entities;
 using Data.Infrastructure;
-using Data.Interfaces;
-using Data.Repositories;
-using KwasantCore.Services;
 using S22.Imap;
 using StructureMap;
 using Utilities;
@@ -18,12 +16,12 @@ namespace Daemons
         private IImapClient _client;
         private readonly IConfigRepository _configRepository;
         private readonly IInboundEmailHandler[] _handlers;
-        
+
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
         {
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-
+          
             _handlers = new IInboundEmailHandler[]
                             {
                                 new InvitationResponseHandler(),
@@ -62,7 +60,7 @@ namespace Daemons
 
         public String Password;
         private string GetPassword()
-        {
+            {
             return Password ??_configRepository.Get("INBOUND_EMAIL_PASSWORD");
         }
 
@@ -104,28 +102,49 @@ namespace Daemons
 
         protected override void Run()
         {
+            Logger.GetLogger().Info("Waiting for messages at " + GetUserName() + "...");
             GetUnreadMessages(Client);
-            Client.NewMessage += (sender, args) => GetUnreadMessages(args.Client);
+            Client.NewMessage += (sender, args) =>
+            {
+                Logger.GetLogger().Info("New email notification recieved.");
+                GetUnreadMessages(args.Client);
+            };
         }
 
         private void GetUnreadMessages(IImapClient client)
         {
-            var messages = client.GetMessages(client.Search(SearchCondition.Unseen()));
-            
-            foreach (var message in messages)
-                ProcessMessageInfo(message);
+            try
+            {
+                var messages = client.GetMessages(client.Search(SearchCondition.Unseen())).ToList();
+                Logger.GetLogger().Info(messages.Count + " messages recieved.");
+
+                foreach (var message in messages)
+                    ProcessMessageInfo(message);
+            }
+            catch (SocketException ex)
+                //we were getting strange socket errors after time, and it looks like a reset solves things
+            {
+                CleanUp();
+                _client = null; //this will get recreated the next time this daemon runs
+                AlertManager.EmailProcessingFailure(DateTime.Now.to_S(), "Got that SocketException");
+                Logger.GetLogger().Error("Hit SocketException. Trying to reset the IMAP Client.", ex);
+            }
+            catch (Exception e)
+            {
+                Logger.GetLogger().Error("Error occured in " + GetType().Name, e);
+            }
         }
 
         private void ProcessMessageInfo(MailMessage messageInfo)
         {
             var logString = "Processing message with subject '" + messageInfo.Subject + "'";
             Logger.GetLogger().Info(logString);
-            
+
             try
             {
                 var handlerIndex = 0;
                 while (handlerIndex < _handlers.Length
-                    && !_handlers[handlerIndex].Process(messageInfo))
+                       && !_handlers[handlerIndex].Process(messageInfo))
                 {
                     handlerIndex++;
                 }
@@ -136,6 +155,7 @@ namespace Daemons
             {
                 AlertManager.EmailProcessingFailure(messageInfo.Headers["Date"], e.Message);
                 Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Headers["Message-ID"]));
+                
             }
         }
 

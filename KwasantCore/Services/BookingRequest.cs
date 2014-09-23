@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Entities;
@@ -9,6 +10,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using StructureMap;
+using Utilities;
 using Utilities.Logging;
 
 namespace KwasantCore.Services
@@ -71,7 +73,8 @@ namespace KwasantCore.Services
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
-                            new
+                        {
+                            return new
                             {
                                 id = e.Id,
                                 subject = e.Subject,
@@ -81,7 +84,8 @@ namespace KwasantCore.Services
                                     e.HTMLText.Trim().Length > 400
                                         ? e.HTMLText.Trim().Substring(0, 400)
                                         : e.HTMLText.Trim()
-                            })
+                            };
+                    })
                     .ToList();
         }
 
@@ -154,24 +158,26 @@ namespace KwasantCore.Services
 
         public void Timeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
         {
-            string bookerId = bookingRequestDO.BookerId;
+            string bookerId = bookingRequestDO.UserID;
             bookingRequestDO.State = BookingRequestState.Unstarted;
-            bookingRequestDO.BookerId = null;
-            bookingRequestDO.User = bookingRequestDO.User;
+            bookingRequestDO.UserID = null;
             uow.SaveChanges();
-            bookingRequestDO.BookerId = bookerId;
+            bookingRequestDO.UserID = bookerId;
 
             AlertManager.BookingRequestProcessingTimeout(bookingRequestDO);
             Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + bookingRequestDO.Id);
-            bookingRequestDO.BookerId = null;
+            bookingRequestDO.UserID = null;
             // Send mail to Booker
             UserDO userDO = new UserDO();
             userDO = uow.UserRepository.GetByKey(bookerId);
             EmailAddressDO emailAddressDO = new EmailAddressDO(userDO.EmailAddress.Address);
             string message = "BookingRequest ID :" + bookingRequestDO.Id + " Timed Out";
-            EmailDO emailDO = _email.GenerateBookerMessage(uow, emailAddressDO, message,"BookingRequest Timeout");
-            emailDO.Subject = "BookingRequest Timeout";
-            uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
+            string subject = "BookingRequest Timeout";
+            string toRecipient = emailAddressDO.Address;
+            IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+            string fromAddress = configRepository.Get<string>("EmailAddress_GeneralInfo");
+            EmailDO curEmail = _email.GenerateBasicMessage(uow, emailAddressDO, subject, message, fromAddress, toRecipient);
+            uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
             uow.SaveChanges();
         }
 

@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Microsoft.WindowsAzure;
 using StructureMap;
+using Utilities;
 using Utilities.Logging;
 
 namespace Data.Infrastructure
@@ -45,6 +46,9 @@ namespace Data.Infrastructure
 
         public delegate void BookingRequestOwnershipChangeHandler(int bookingRequestId, string bookerId);
         public static event BookingRequestOwnershipChangeHandler AlertBookingRequestOwnershipChange;
+
+        public delegate void Error_EmailSendFailureHandler();
+        public static event Error_EmailSendFailureHandler AlertError_EmailSendFailure;
 
         #region Method
         
@@ -114,6 +118,13 @@ namespace Data.Infrastructure
             if (AlertBookingRequestStateChange != null)
                 AlertBookingRequestOwnershipChange(bookingRequestId, bookerId);
         }
+
+        public static void Error_EmailSendFailure()
+        {
+            if (AlertError_EmailSendFailure != null)
+                AlertError_EmailSendFailure();
+        }
+
         #endregion
     }
 
@@ -133,6 +144,7 @@ namespace Data.Infrastructure
             AlertManager.AlertUserRegistration += UserRegistration;
             AlertManager.AlertBookingRequestCheckedOut += ProcessBookingRequestCheckedOut;
             AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChange;
+            AlertManager.AlertError_EmailSendFailure += Error_EmailSendFailure;
         }
 
         private void NewCustomerCreated(string curUserId)
@@ -252,6 +264,7 @@ namespace Data.Infrastructure
         {
             Debug.Assert(uow != null);
             Debug.Assert(curAction != null);
+            var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
             if (string.IsNullOrEmpty(curAction.Data))
             {
                 curAction.Data = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
@@ -261,7 +274,7 @@ namespace Data.Infrastructure
                     curAction.ObjectId,
                     curAction.CustomerId);
             }
-            if (CloudConfigurationManager.GetSetting("LogLevel") == "Verbose")
+            if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
                 Logger.GetLogger().Info(curAction.Data);
             uow.FactRepository.Add(curAction);
         }
@@ -276,7 +289,7 @@ namespace Data.Infrastructure
                 incidentDO.Activity = "TimeOut";
                 incidentDO.ObjectId = bookingRequestDO.Id;
                 incidentDO.CustomerId = bookingRequestDO.User.Id;
-                incidentDO.BookerId = bookingRequestDO.BookerId;
+                incidentDO.BookerId = bookingRequestDO.UserID;
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
@@ -303,6 +316,20 @@ namespace Data.Infrastructure
                 uow.SaveChanges();
             }
 
+        }
+
+        public void Error_EmailSendFailure()
+        {
+            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Email";
+                incidentDO.SecondaryCategory = "Send";
+                incidentDO.CreateTime = DateTime.Now; ;
+                incidentDO.Activity = "Failure";
+                _uow.IncidentRepository.Add(incidentDO);
+                _uow.SaveChanges();
+            }
         }
 
         public void ProcessBookingRequestCheckedOut(int bookingRequestId, string bookerId)
@@ -355,6 +382,5 @@ namespace Data.Infrastructure
 
             }
         }
-
     }
 }

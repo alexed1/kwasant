@@ -6,36 +6,47 @@ namespace Utilities
     public interface IConfigRepository
     {
         String Get(String key);
-        String Get(String key, bool required);
+        String Get(String key, String defaultValue);
         T Get<T>(String key);
-        T Get<T>(String key, bool required);
+        T Get<T>(String key, T defaultValue);
     }
 
     public class ConfigRepository : IConfigRepository
     {
         public string Get(string key)
         {
-            return Get(key, true);
+            return Get<string>(key);
         }
 
-        public String Get(String key, bool required)
+        public string Get(string key, string defaultValue)
         {
-            return Get<String>(key, required);
+            return Get<string>(key, defaultValue);
         }
 
-        public T Get<T>(string key)
+        public T Get<T>(String key)
         {
-            return Get<T>(key, true);
+            return InternalGet<T>(key);
         }
 
-        public T Get<T>(String key, bool required)
+        public T Get<T>(string key, T defaultValue)
+        {
+            return InternalGet(key, defaultValue, true);
+        }
+
+        private T InternalGet<T>(String key, T defaultValue = default(T), bool defaultProvided = false)
         {
             var stringValue = CloudConfigurationManager.GetSetting(key);
 
-            if(String.IsNullOrEmpty(stringValue) && required)
-                throw new ConfigurationException("Key '" + key + "' not found.");
+            if (String.IsNullOrEmpty(stringValue))
+            {
+                if (!defaultProvided)
+                    throw new ConfigurationException("Key '" + key + "' not found.");
 
-            var returnType = typeof (T);
+                return defaultValue;
+            }
+                
+
+            var returnType = typeof(T);
 
             if (returnType == typeof(String))
             {

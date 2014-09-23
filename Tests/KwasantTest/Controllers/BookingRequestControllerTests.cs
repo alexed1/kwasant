@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using System;
+using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
@@ -33,7 +34,7 @@ namespace KwasantTest.Controllers
 
         private void AddTestRequestData()
         {
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { };
+            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { Body = String.Empty };
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
@@ -57,9 +58,7 @@ namespace KwasantTest.Controllers
 
         }
 
-
-
-        [Test, Ignore]
+        [Test]
         [Category("BRM")]
         public void MarkAsProcessedTest()
         {
@@ -71,7 +70,7 @@ namespace KwasantTest.Controllers
             Assert.AreEqual("Success", ((KwasantPackagedMessage)jsonResultActual.Data).Name);
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("BRM")]
         public void InvalidateTest()
         {

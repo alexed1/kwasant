@@ -38,6 +38,7 @@ namespace Data.Infrastructure.StructureMap
             public TestMode()
             {
                 For<IUnitOfWork>().Use(new UnitOfWork(new MockedDBContext()));
+                For<ISecurityServices>().Use(new MockedSecurityServices());
             }
         }
     }

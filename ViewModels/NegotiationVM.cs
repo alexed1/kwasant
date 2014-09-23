@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace KwasantWeb.ViewModels
 {
@@ -29,22 +30,20 @@ namespace KwasantWeb.ViewModels
         public int? CalendarID { get; set; }
         public string Text { get; set; }
         public List<NegotiationAnswerVM> Answers { get; set; }
-        public string AnswerType { get; set; }  
+        public string Type { get; set; }  
     }
 
     public class NegotiationAnswerVM
     {
         public NegotiationAnswerVM()
         {
-            VotedBy = new List<string>();
+            VotedByList = new List<string>();
         }
 
         public int Id { get; set; }
         public string UserId { get; set; }
         public string Text { get; set; }
         public int? EventID { get; set; }
-        public String EventStart { get; set; }
-        public String EventEnd { get; set; }
 
         public DateTimeOffset? EventStartDate { get; set; }
         public DateTimeOffset? EventEndDate { get; set; }
@@ -52,6 +51,7 @@ namespace KwasantWeb.ViewModels
         public bool Selected { get; set; }
         public int AnswerState { get; set; }
 
-        public List<String> VotedBy { get; set; } 
+        public List<String> VotedByList { get; set; }
+        public String VotedBy { get { return VotedByList != null ? String.Join(",", VotedByList.Where(a => !String.IsNullOrEmpty(a)).Select(a => "'" + a + "'")) : ""; } set {  } }
     }
 }

@@ -23,7 +23,7 @@ namespace KwasantWeb.Controllers
         {
             AuthenticateUser(negotiationID);
             
-            var userID = User.Identity.GetUserId();
+            var userID = this.GetUserId();
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -45,7 +45,7 @@ namespace KwasantWeb.Controllers
                     {
                         return (NegotiationQuestionVM) new NegotiationResponseQuestionVM
                         {
-                            AnswerType = q.AnswerType,
+                            Type = q.AnswerType,
                             Id = q.Id,
                             Text = q.Text,
                             CalendarID = q.CalendarID,
@@ -78,7 +78,7 @@ namespace KwasantWeb.Controllers
 
             AuthenticateUser(value.Id.Value);
 
-            var userID = User.Identity.GetUserId();
+            var userID = this.GetUserId();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -154,7 +154,7 @@ namespace KwasantWeb.Controllers
         public void AuthenticateUser(int negotiationID)
         {
             //If this is a regular customer, verify that they're an attendee
-            var userID = User.Identity.GetUserId();
+            var userID = this.GetUserId();
             var user = new User();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -175,7 +175,7 @@ namespace KwasantWeb.Controllers
                 throw new HttpException(404, "Negotiation not found.");
 
             var attendees = negotiationDO.Attendees;
-            var currentUserID = User.Identity.GetUserId();
+            var currentUserID = this.GetUserId();
 
             var existingUserDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == currentUserID);
             if (existingUserDO == null)
@@ -187,7 +187,7 @@ namespace KwasantWeb.Controllers
                 if (attendee.EmailAddress.Address.ToLower() == currentUserEmail)
                     return;
 
-            throw new HttpException(404, "You're not authorized to view information about this Negotiation");
+            throw new HttpException(403, "You're not authorized to view information about this Negotiation");
         }
 
 	}
