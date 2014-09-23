@@ -143,7 +143,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Diagnostics\IDiagnosable.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
