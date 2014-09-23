@@ -30,7 +30,7 @@ namespace KwasantWeb.Controllers
         {
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>(); // TODO: inject dependency via a constructor parameter
             _event = ObjectFactory.GetInstance<Event>();
-            _attendee = new Attendee();
+            _attendee = ObjectFactory.GetInstance<Attendee>();
         }
 
         public ActionResult New(int bookingRequestID, int calendarID, string start, string end)

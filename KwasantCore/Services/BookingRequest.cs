@@ -21,10 +21,12 @@ namespace KwasantCore.Services
     {
         private IAttendee _attendee;
         private IEmailAddress _emailAddress;
+        private readonly Email _email;
 
         public BookingRequest()
         {
             _attendee = ObjectFactory.GetInstance<IAttendee>();
+            _email = ObjectFactory.GetInstance<Email>();
             _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
         }
 
@@ -178,14 +180,13 @@ namespace KwasantCore.Services
             UserDO userDO = new UserDO();
             userDO = uow.UserRepository.GetByKey(bookerId);
             EmailAddressDO emailAddressDO = new EmailAddressDO(userDO.EmailAddress.Address);
-            Email email = new Email(uow);
             string message = "BookingRequest ID :" + bookingRequestDO.Id + " Timed Out";
             string subject = "BookingRequest Timeout";
             string toRecipient = emailAddressDO.Address;
             IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             string fromAddress = configRepository.Get<string>("EmailAddress_GeneralInfo");
-            EmailDO curEmail = email.GenerateBasicMessage(emailAddressDO, subject, message, fromAddress, toRecipient);
-            email.Send(curEmail);
+            EmailDO curEmail = _email.GenerateBasicMessage(uow, emailAddressDO, subject, message, fromAddress, toRecipient);
+            uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
             uow.SaveChanges();
         }
 

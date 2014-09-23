@@ -236,6 +236,10 @@
     <Compile Include="Migrations\201409230642376_AddBookerId_to_BookingRequestDO.Designer.cs">
       <DependentUpon>201409230642376_AddBookerId_to_BookingRequestDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409231048096_Sync.23.09.2014.cs" />
+    <Compile Include="Migrations\201409231048096_Sync.23.09.2014.Designer.cs">
+      <DependentUpon>201409231048096_Sync.23.09.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
@@ -1004,6 +1008,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409230642376_AddBookerId_to_BookingRequestDO.resx">
       <DependentUpon>201409230642376_AddBookerId_to_BookingRequestDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409231048096_Sync.23.09.2014.resx">
+      <DependentUpon>201409231048096_Sync.23.09.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -45,8 +45,7 @@ namespace KwasantTest.Daemons
                 uow.EmailRepository.Add(email);
 
                 // EXECUTE
-                var emailService = new Email(_uow, email);
-                var envelope = emailService.Send();
+                var envelope = uow.EnvelopeRepository.ConfigurePlainEmail(email);
 
                 uow.SaveChanges();
 
@@ -74,8 +73,7 @@ namespace KwasantTest.Daemons
                 var email = _fixtureData.TestEmail1();
 
                 // EXECUTE
-                var emailService = new Email(_uow, email);
-                var envelope = emailService.SendTemplate("template", email, null);
+                var envelope = _uow.EnvelopeRepository.ConfigureTemplatedEmail(email, "template", null);
                 uow.SaveChanges();
 
                 //adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
@@ -100,8 +98,7 @@ namespace KwasantTest.Daemons
             var email = _fixtureData.TestEmail1();
 
             // EXECUTE
-            var emailService = new Email(_uow, email);
-            var envelope = emailService.SendTemplate("template", email, null);
+            var envelope = _uow.EnvelopeRepository.ConfigureTemplatedEmail(email, "template", null);
             
             envelope.Handler = "INVALID EMAIL PACKAGER";
             _uow.SaveChanges();

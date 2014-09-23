@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Validations;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
@@ -59,13 +60,18 @@ namespace KwasantCore.Services
             }
         }
 
+        /// <summary>
+        /// Determines <see cref="CommunicationMode">communication mode</see> for user
+        /// </summary>
+        /// <param name="userDO">User</param>
+        /// <returns>Direct if the user has a booking request or a password. Otherwise, Delegate.</returns>
         public CommunicationMode GetMode(UserDO userDO)
         {
             if (userDO.BookingRequests != null && userDO.BookingRequests.Any())
-                return CommunicationMode.DIRECT;
+                return CommunicationMode.Direct;
             if(!String.IsNullOrEmpty(userDO.PasswordHash))
-                return CommunicationMode.DIRECT;
-            return CommunicationMode.DELEGATE;
+                return CommunicationMode.Direct;
+            return CommunicationMode.Delegate;
         }
 
         //problem: this assumes a single role but we need support for multiple roles on one account
@@ -150,6 +156,30 @@ namespace KwasantCore.Services
             }
         }
 
+        /// <summary>
+        /// Determines <see cref="CommunicationMode">communication mode</see> for user
+        /// </summary>
+        /// <param name="uow">UnitOfWork</param>
+        /// <param name="curUser">User</param>
+        /// <returns>Direct if the user has a booking request or a password. Otherwise, Delegate.</returns>
+        public CommunicationMode GetMode(IUnitOfWork uow, UserDO curUser)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (curUser == null)
+                throw new ArgumentNullException("curUser");
+            // search for BR
+            var curBookingRequest = uow.BookingRequestRepository.GetQuery().FirstOrDefault(br => br.User.Id == curUser.Id);
+            if (curBookingRequest != null)
+                return CommunicationMode.Direct;
+            // look for password
+            var userManager = User.GetUserManager(uow);
+            var hasPassword = userManager.HasPassword(curUser.Id);
+            if (hasPassword)
+                return CommunicationMode.Direct;
+            return CommunicationMode.Delegate;
+        }
+
         public List<UserDO> Query(IUnitOfWork uow, UserDO curUserSearch)
         {
             return uow.UserRepository.GetAll().ToList().Where(e =>
@@ -173,7 +203,7 @@ namespace KwasantCore.Services
                 curEmail.From = curUser.EmailAddress;
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
                 curEmail.Subject = "User Settings Notification";
-                new Email(uow).SendTemplate("User_Settings_Notification", curEmail, null);
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "User_Settings_Notification", null);
             }
             new Account().Register(uow, curUser.EmailAddress.Address, curUser.FirstName, curUser.LastName, "test@1234", role);
         }
@@ -193,7 +223,31 @@ namespace KwasantCore.Services
             }
         }
 
+        //if we have a first name and last name, use them together
+        //else if we have a first name only, use that
+        //else if we have just an email address, use the portion preceding the @ unless there's a name
+        //else throw
+        public static string GetDisplayName(UserDO curUser)
+        {
+            string firstName = curUser.FirstName;
+            string lastName = curUser.LastName;
+            if (firstName != null)
+            {
+                if (lastName == null)
+                    return firstName;
 
+                return firstName + " " + lastName;
+            }
+
+            EmailAddressDO curEmailAddress = curUser.EmailAddress;
+            if (curEmailAddress.Name != null)
+                return curEmailAddress.Name;
+
+            curEmailAddress.Address.ValidateEmailAddress();
+            return curEmailAddress.Address.Split(new[] {'@'})[0];
+
+            throw new ArgumentException("Failed to extract originator info from this Event. Something needs to be there.");
+        }
 
     }
 }
