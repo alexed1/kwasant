@@ -67,7 +67,7 @@ namespace KwasantWeb.Controllers
                 if (bookingRequestDO == null)
                     return HttpNotFound();
                 bookingRequestDO.State = BookingRequestState.Booking;
-                bookingRequestDO.UserID = currBooker;
+                bookingRequestDO.BookerID = currBooker;
                 bookingRequestDO.LastUpdated = DateTimeOffset.Now;
                 uow.SaveChanges();
                 AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
@@ -212,7 +212,7 @@ namespace KwasantWeb.Controllers
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 bookingRequestDO.State = BookingRequestState.Unstarted;
-                bookingRequestDO.BookerId = null;
+                bookingRequestDO.BookerID = null;
                 bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
             }
