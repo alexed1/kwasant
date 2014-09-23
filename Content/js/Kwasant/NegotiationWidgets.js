@@ -22,8 +22,6 @@
             AnswerProposedStatus: 2,
             AnswerSelectedStatus: 3,
 
-            MaxAdditionalAnswers: -1,
-
             AllowModifyNegotiationRequest: true,
 
             AllowAddQuestion: true,
@@ -77,6 +75,11 @@
             return returnNeg;
         };
 
+        this.click();
+
+        if (nodes.Questions.length > 0)
+            setTimeout(function() { nodes.Questions[0].FocusMe(); }, 1000);
+        
         return this;
     };
 
@@ -187,16 +190,27 @@
 
         if (immediate)
             questionNode.show();
-        else
-            questionNode.slideDown();
+        else {
+            questionNode.slideDown(400, function() {
+                questionObject.FocusMe();
+            });
+        }
 
         if (questionInitValues.Answers !== null && questionInitValues.Answers !== undefined) {
             for (var i = 0; i < questionInitValues.Answers.length; i++) {
                 var answerValues = questionInitValues.Answers[i];
+                
                 if (!answerValues.EventID)
                     questionObject.addTextAnswer(answerValues, true);
                 else
                     questionObject.addAnswer(answerValues, true);
+            }
+            //Now we create a new 'answer' that customers can use to specify their own answer..
+
+            if (settings.DisplayMode == 'reply') {
+                questionObject.addTextAnswer({
+                    CanDelete: false
+                }, true);
             }
         }
 
@@ -255,6 +269,7 @@
                                         EventStart: event.start,
                                         EventEnd: event.end,
                                         EventID: event.id,
+                                        Selected: true,
                                         Type: _that.Type
                                     });
                                 }
@@ -265,7 +280,8 @@
                             $.each(tmpAnswers, function (j, answer) {
                                 if ($.inArray(answer, touchedAnswers) == -1) {
                                     //Remove it!
-                                    answer.RemoveMe();
+                                    if (answer.EventID)
+                                        answer.RemoveMe();
                                 }
                             });
                             $.each(answersToAdd, function (k, newAnswer) {
@@ -282,10 +298,23 @@
             }
         };
 
-        var selectEventWindowsButton = $('<a>')
-            .addClass('handIcon')
-            .append('Select Times')
-            .click(function () { questionObject.OpenEventWindowSelection(); });
+
+        var selectEventWindowsButton;
+        if (settings.DisplayMode == 'reply') {
+            selectEventWindowsButton = $('<span>')
+                .append('Write in an alternative, or ')
+                .append(
+                    $('<a>')
+                        .addClass('handIcon')
+                        .append('choose from a calendar')
+                        .click(function() { questionObject.OpenEventWindowSelection(); })
+                );
+        } else {
+            selectEventWindowsButton = $('<a>')
+                .addClass('handIcon')
+                .append('Select Times')
+                .click(function() { questionObject.OpenEventWindowSelection(); });
+        }
 
         var radioButtons = [questionTypeText, questionTypeCalendar];
 
@@ -318,14 +347,13 @@
         var questionName = $('<input type="text" />')
             .addClass('form-control')
             .addClass('col-md-1')
+            .attr('placeholder', 'Enter your question...')
             .val(questionInitValues.Text);
 
         var removeMeIcon = $('<img src="/Content/img/Cross.png"></img>')
             .addClass('handIcon')
             .click(function () {
-                numAnswersAdded--;
                 questionObject.RemoveMe();
-
             });
 
         var configureAnswerButton = function (isCalendar) {
@@ -339,10 +367,10 @@
             } else {
                 selectEventWindowsButton.hide();
 
-                if (settings.MaxAdditionalAnswers != -1 && numAnswersAdded >= settings.MaxAdditionalAnswers) {
-                    addAnswerSpan.hide();
-                } else if (settings.MaxAdditionalAnswers == -1 || numAnswersAdded < settings.MaxAdditionalAnswers) {
+                if (settings.AllowAddAnswer) {
                     addAnswerSpan.show();
+                } else  {
+                    addAnswerSpan.hide();
                 }
             }
         };
@@ -358,7 +386,6 @@
             .addClass('form-group')
             .addClass('handIcon')
             .click(function () {
-                numAnswersAdded++;
                 questionObject.addTextAnswer();
             })
             .append(
@@ -469,13 +496,15 @@
             }
         };
 
-        var numAnswersAdded = 0;
-
         questionObject.addTextAnswer = function (initialValues, immediate) {
             if (!initialValues)
                 initialValues = {};
             initialValues.ForceTextAnswer = true;
             this.addAnswer(initialValues, immediate);
+        };
+
+        questionObject.FocusMe = function() {
+            questionName.focus();
         };
 
         questionObject.addAnswer = function (initialValues, immediate) {
@@ -488,11 +517,13 @@
             var answerInitValues = $.extend({
                 Id: 0,
                 VotedBy: [],
+                CanDelete: !(initialValues.DisableManualEdit || !settings.AllowDeleteAnswer && initialValues.Id > 0),
                 StartDate: initialValues.StartDate,
                 EndDate: initialValues.EndDate,
                 AnswerState: settings.AnswerProposedStatus,
                 Selected: this.Answers.length == 0 ? true : false,
                 QuestionGUID: questionInitValues.QuestionGUID,
+                PromptText: 'Enter an alternative answer here...',
                 Text: ''
             }, initialValues);
 
@@ -511,8 +542,11 @@
             this.AnswerHolder.append(answerNode);
             if (immediate)
                 answerNode.show();
-            else
-                answerNode.slideDown();
+            else {
+                answerNode.slideDown(400, function() {
+                    answerObject.FocusMe();
+                });
+            }
 
             adjustRadioButtonEnabled();
 
@@ -533,8 +567,6 @@
         questionObject.removeAnswer = function (answerObject) {
             this.Answers.splice(this.Answers.indexOf(answerObject), 1);
             answerObject.Node.slideUp();
-
-            numAnswersAdded--;
 
             reconfigureAnswerButton();
 
@@ -569,11 +601,8 @@
         var radioSelect = $('<input type="radio"/>')
             .attr('name', answerInitValues.QuestionGUID);
 
-        if (answerInitValues.Id == 0)
-            radioSelect.click();
-
         if (answerInitValues.Selected)
-            radioSelect.attr('checked', true);
+            radioSelect.click();
 
         if (settings.DisplayMode != 'reply')
             radioSelect.hide();
@@ -583,7 +612,20 @@
             .addClass('col-md-1')
             .val(answerInitValues.Text);
 
-        if (answerInitValues.DisableManualEdit || (!settings.AllowModifyAnswer && answerInitValues.Id > 0))
+        if (settings.DisplayMode != 'review')
+            answerText.attr('placeholder', answerInitValues.PromptText);
+
+        answerText.click(function() {
+            radioSelect.click();
+        });
+
+        var canEditAnswer =
+            !answerInitValues.DisableManualEdit && (
+                settings.AllowModifyAnswer ||
+                answerInitValues.Id == 0
+            );
+
+        if (!canEditAnswer)
             answerText.attr('disabled', 'disabled');
 
         var deleteButton = $('<img src="/Content/img/Cross.png" />')
@@ -652,7 +694,7 @@
             btnMarkProposed.hide();
         }
 
-        if (answerInitValues.DisableManualEdit || !settings.AllowDeleteAnswer && answerInitValues.Id > 0)
+        if (!answerInitValues.CanDelete)
             deleteButton.hide();
 
         var answerDiv =
@@ -704,6 +746,9 @@
                 Text: answerText.val(),
                 Selected: radioSelect.get(0).checked
             };
+        };
+        answerObject.FocusMe = function() {
+            answerText.focus();
         };
 
         answerObject.RemoveMe = function () {
