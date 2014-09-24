@@ -249,5 +249,16 @@ namespace KwasantCore.Services
             throw new ArgumentException("Failed to extract originator info from this Event. Something needs to be there.");
         }
 
+        public List<UserDO> Query(IUnitOfWork uow, String userId)
+        {
+            List<UserDO> curUserList = new List<UserDO>();
+            if (uow.UserRepository == null)
+                return curUserList;
+
+            curUserList = uow.UserRepository.GetAll().Where(x => (!string.IsNullOrEmpty(userId)) ? x.Id == userId : x.Id != null).ToList();
+
+            return curUserList;
+        }
+
     }
 }
