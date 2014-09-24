@@ -548,6 +548,7 @@
     <Content Include="Content\js\jquery.validate.js" />
     <Content Include="Content\js\Kwasant\NegotiationWidgets.js" />
     <Content Include="Content\js\Kwasant\Popup.js" />
+    <Content Include="Content\js\Kwasant\quickcopy.js" />
     <Content Include="Content\js\main.js" />
     <Content Include="Content\js\modernizr.js" />
     <Content Include="Content\js\moment.js" />
@@ -787,6 +788,7 @@
     <Content Include="Views\BookingRequest\Administer.cshtml" />
     <Content Include="Views\Calendar\Edit.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
+    <Content Include="Views\Email\Show.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
