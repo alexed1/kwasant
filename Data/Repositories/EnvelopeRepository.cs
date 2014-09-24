@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Validations;
 using FluentValidation;
+using KwasantCore.Services;
+using Utilities;
 
 namespace Data.Repositories
 {
@@ -34,20 +37,34 @@ namespace Data.Repositories
 
         public EnvelopeDO ConfigureTemplatedEmail(IEmail email, string templateName, IDictionary<string, string> mergeData)
         {
+            //Unless we're explicitly given a base url, we should override it
             var envelope = new EnvelopeDO()
             {
                 TemplateName = templateName,
                 Handler = EnvelopeDO.MandrillHander
             };
-            ((IEnvelope) envelope).Email = email;
+
             if (mergeData != null)
             {
+                if (!mergeData.ContainsKey("kwasantBaseURL"))
+                {
+                    var firstTo = email.To.SingleOrDefault();
+                    if (firstTo != null)
+                    {
+                        var authToken = new AuthorizationToken();
+                        var user = new User();
+                        var tokenURL = authToken.GetAuthorizationTokenURL(UnitOfWork, Server.ServerUrl, user.GetOrCreateFromBR(UnitOfWork, firstTo));
+                        mergeData["kwasantURL"] = tokenURL;
+                    }
+                }
                 foreach (var pair in mergeData)
                 {
                     envelope.MergeData.Add(pair);
                 }
             }
-
+            
+            ((IEnvelope) envelope).Email = email;
+            
             UnitOfWork.EnvelopeRepository.Add(envelope);
             return envelope;
         }

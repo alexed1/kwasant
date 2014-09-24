@@ -2,6 +2,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
@@ -63,6 +64,7 @@ namespace KwasantCore.StructureMap
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
                 For<ISecurityServices>().Use<SecurityServices>();
+                For<ISegmentIO>().Use<SegmentIO>();
 
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
@@ -83,6 +85,7 @@ namespace KwasantCore.StructureMap
                 For<IBookingRequest>().Use<BookingRequest>();
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
+                For<ISegmentIO>().Use<SegmentIO>();
 
                 For<IKwasantRoleStore>().Use(new MockedRoleStore());
                 For<IKwasantUserStore>().Use(new MockedUserStore());

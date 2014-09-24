@@ -4,8 +4,11 @@ using System.Web;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using KwasantCore.Interfaces;
+using KwasantCore.Services;
 using Microsoft.AspNet.Identity;
 using Microsoft.Owin.Security;
+using StructureMap;
 
 namespace KwasantCore.Security
 {
@@ -18,6 +21,7 @@ namespace KwasantCore.Security
             {
                 IsPersistent = true
             }, identity);
+            ObjectFactory.GetInstance<ISegmentIO>().Identify(userDO);
         }
 
         public String GetCurrentUser()

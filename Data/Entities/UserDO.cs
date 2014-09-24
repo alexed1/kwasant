@@ -3,10 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Data.Infrastructure;
 using Data.Repositories;
+using KwasantCore.Interfaces;
+using KwasantCore.Services;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 
 using Data.Interfaces;
+using StructureMap;
 
 namespace Data.Entities
 {
@@ -63,6 +66,8 @@ namespace Data.Entities
             var bookingRequestRepo = new BookingRequestRepository(new UnitOfWork(new KwasantDbContext()));
             if (bookingRequestRepo.FindOne(br => br.User.Id == this.Id) != null)
                 AlertManager.CustomerCreated(this.Id);
+
+            ObjectFactory.GetInstance<ISegmentIO>().Identify(this);
         }
     }
 }

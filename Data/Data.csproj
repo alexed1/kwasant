@@ -235,6 +235,10 @@
     <Compile Include="Migrations\201409221108487_Sync.Rob2.22.09.2014.Designer.cs">
       <DependentUpon>201409221108487_Sync.Rob2.22.09.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.cs" />
+    <Compile Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.Designer.cs">
+      <DependentUpon>201409241548359_AddSegmentTrackingToAuthTokens.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
@@ -1007,6 +1011,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409221108487_Sync.Rob2.22.09.2014.resx">
       <DependentUpon>201409221108487_Sync.Rob2.22.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.resx">
+      <DependentUpon>201409241548359_AddSegmentTrackingToAuthTokens.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

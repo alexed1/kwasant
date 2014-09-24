@@ -9,6 +9,7 @@ using Data.Interfaces;
 using Data.States;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Exceptions;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
@@ -247,12 +248,12 @@ namespace KwasantWeb.Controllers
                     var userDO = user.GetOrCreateFromBR(uow, attendeeDO.EmailAddress);
                     if (user.GetMode(userDO) == CommunicationMode.DELEGATE)
                     {
-                        Analytics.Client.Track(userDO.Id, "User", new Segment.Model.Properties
-                        {
-                            {"Action", "InvitedAsPreCustomerAttendee"},
-                            {"BookingRequestId", curEventDO.BookingRequestID},
-                            {"EventID", curEventDO.Id}
-                        });
+                        ObjectFactory.GetInstance<ISegmentIO>().Track(userDO, "User", "InvitedAsPreCustomerAttendee",
+                            new Dictionary<string, object>
+                            {
+                                {"BookingRequestId", curEventDO.BookingRequestID},
+                                {"EventID", curEventDO.Id}
+                            });
                     }
                 }
             }

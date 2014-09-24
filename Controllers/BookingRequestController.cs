@@ -4,6 +4,7 @@ using System.Web.Routing;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
@@ -168,19 +169,16 @@ namespace KwasantWeb.Controllers
 
                     uow.SaveChanges();
 
-                    Analytics.Client.Track(bookingRequest.UserID, "SiteActivity", new Properties()
-                    {
-                        {"Action", "SubmitsViaTryItOut"},
-                        {"BookingRequestId", bookingRequest.Id}
-                    });
-                    result = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be";
+                    ObjectFactory.GetInstance<ISegmentIO>().Track(bookingRequest.User, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> {{"BookingRequestID", bookingRequest.Id}});
+
+                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = bookingRequest.UserID }, JsonRequestBehavior = JsonRequestBehavior.AllowGet};
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                result = "Sorry! Something went wrong. Alpha software...";
+                return new JsonResult() { Data = new { Message = "Sorry! Something went wrong. Alpha software..." }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
-            return Content(result);
+            
         }
 
         // GET: /RelatedItems 

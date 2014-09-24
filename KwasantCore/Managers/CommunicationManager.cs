@@ -296,9 +296,10 @@ Proposed Answers: {2}
         public String Summary { get; set; }
         public String Description { get; set; }
         public String Location { get; set; }
+        public String AuthTokenURL { get; set; }
         public List<RazorAttendeeViewModel> Attendees { get; set; }
 
-        public RazorViewModel(EventDO ev, String userID)
+        public RazorViewModel(EventDO ev, String userID, String authTokenURL)
         {
             IsAllDay = ev.IsAllDay;
             StartDate = ev.StartDate.DateTime;
@@ -306,6 +307,7 @@ Proposed Answers: {2}
             Summary = ev.Summary;
             Description = ev.Description;
             Location = ev.Location;
+            AuthTokenURL = authTokenURL;
             Attendees = ev.Attendees.Select(a => new RazorAttendeeViewModel { Name = a.Name, EmailAddress = a.EmailAddress.Address }).ToList();
             UserID = userID;
         }

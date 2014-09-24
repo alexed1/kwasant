@@ -1,9 +1,12 @@
 ﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using KwasantCore.Interfaces;
+using KwasantCore.Services;
 using Microsoft.WindowsAzure;
 using Segment;
 using Segment.Model;
@@ -230,12 +233,8 @@ namespace Data.Infrastructure
                 AddFact(uow, curAction);
                 uow.SaveChanges();
 
-                Analytics.Client.Track(bookingRequestDO.UserID, "BookingRequest", new Properties()
-                    {
-                        {"Action", "Submit"},
-                        {"BookingRequestId", bookingRequestDO.Id}
-                    });
-
+                ObjectFactory.GetInstance<ISegmentIO>().Track(bookingRequestDO.User, "BookingRequest", "Submit",
+                    new Dictionary<string, object> {{"BookingRequestId", bookingRequestDO.Id}});
             }
         }
         public void ProcessBookingRequestStateChange(int bookingRequestId)

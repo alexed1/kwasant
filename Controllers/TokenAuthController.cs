@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Web;
 using System.Web.Mvc;
-using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using KwasantCore.Security;
+using KwasantCore.Interfaces;
+using KwasantCore.Services;
+using Newtonsoft.Json;
+using Segment;
+using Segment.Model;
 using StructureMap;
 
 namespace KwasantWeb.Controllers
@@ -24,6 +27,20 @@ namespace KwasantWeb.Controllers
                     throw new HttpException(404, "Authorization token expired.");
 
                 ObjectFactory.GetInstance<ISecurityServices>().Login(uow, validToken.UserDO);
+
+                if (!String.IsNullOrEmpty(validToken.SegmentTrackingEventName))
+                {
+                    Properties segmentProps = null;
+                    if (!String.IsNullOrEmpty(validToken.SegmentTrackingProperties))
+                    {
+                        segmentProps = new Properties();
+                        var trackingProperties = JsonConvert.DeserializeObject<Dictionary<String, Object>>(validToken.SegmentTrackingProperties);
+                        foreach (var prop in trackingProperties)
+                            segmentProps.Add(prop.Key, prop.Value);
+                    }
+
+                    ObjectFactory.GetInstance<ISegmentIO>().Track(validToken.UserDO, validToken.SegmentTrackingEventName, segmentProps);
+                }
 
                 return Redirect(validToken.RedirectURL);
             }
