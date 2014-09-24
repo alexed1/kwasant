@@ -10,9 +10,10 @@ using KwasantCore.Services;
 using KwasantCore.Managers;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
+using Segment;
 using StructureMap;
 using Utilities;
-using Utilities.Logging;
+using Logger = Utilities.Logging.Logger;
 
 namespace KwasantWeb
 {
@@ -54,9 +55,8 @@ namespace KwasantWeb
             CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
             curCommManager.SubscribeToAlerts();
 
-            
-            //AnalyticsManager curAnalyticsManager = new AnalyticsManager();
-            //curAnalyticsManager.SubscribeToAlerts();
+            var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
+            Analytics.Initialize(segmentWriteKey);
 
             AlertReporter curReporter = new AlertReporter();
             curReporter.SubscribeToAlerts();

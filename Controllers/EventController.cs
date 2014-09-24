@@ -12,6 +12,7 @@ using KwasantCore.Exceptions;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
+using Segment;
 using StructureMap;
 
 
@@ -239,6 +240,22 @@ namespace KwasantWeb.Controllers
                     MergeTimeSlots(uow, curEventDO);
 
                 uow.SaveChanges();
+
+                foreach (var attendeeDO in updatedEventInfo.Attendees)
+                {
+                    var user = new User();
+                    var userDO = user.GetOrCreateFromBR(uow, attendeeDO.EmailAddress);
+                    if (user.GetMode(userDO) == CommunicationMode.DELEGATE)
+                    {
+                        Analytics.Client.Track(userDO.Id, "User", new Segment.Model.Properties
+                        {
+                            {"Action", "InvitedAsPreCustomerAttendee"},
+                            {"UserID", userDO.Id},
+                            {"BookingRequestId", curEventDO.BookingRequestID},
+                            {"EventID", curEventDO.Id}
+                        });
+                    }
+                }
             }
             return Json(true, JsonRequestBehavior.AllowGet);
         }

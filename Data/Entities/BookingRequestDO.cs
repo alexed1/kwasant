@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class BookingRequestDO : EmailDO
+    public class BookingRequestDO : EmailDO, ICreateHook
     {
         public BookingRequestDO()
         {
@@ -29,5 +30,10 @@ namespace Data.Entities
         [Required, ForeignKey("BookingRequestStateTemplate")]
         public int State { get; set; }
         public virtual _BookingRequestStateTemplate BookingRequestStateTemplate { get; set; }
+        
+        public void AfterCreate()
+        {
+            AlertManager.BookingRequestCreated(Id);
+        }
     }
 }

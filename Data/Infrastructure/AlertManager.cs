@@ -5,9 +5,11 @@ using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Microsoft.WindowsAzure;
+using Segment;
+using Segment.Model;
 using StructureMap;
 using Utilities;
-using Utilities.Logging;
+using Logger = Utilities.Logging.Logger;
 
 namespace Data.Infrastructure
 {
@@ -213,19 +215,28 @@ namespace Data.Infrastructure
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 FactDO curAction = new FactDO()
                                        {
                                            Name = "BookingRequest Created",
                                            PrimaryCategory = "Email",
                                            SecondaryCategory = "BookingRequest",
                                            Activity = "Created",
-                                           CustomerId = uow.BookingRequestRepository.GetByKey(bookingRequestId).User.Id,
+                                           CustomerId = bookingRequestDO.UserID,
                                            CreateDate = DateTimeOffset.Now,
                                            ObjectId = bookingRequestId
                                        };
                 curAction.Data = curAction.Name + ": ID= " + curAction.ObjectId;
                 AddFact(uow, curAction);
                 uow.SaveChanges();
+
+                Analytics.Client.Track(bookingRequestDO.UserID, "BookingRequest", new Properties()
+                    {
+                        {"Action", "Submit"},
+                        {"UserID", bookingRequestDO.UserID},
+                        {"BookingRequestId", bookingRequestDO.Id}
+                    });
+
             }
         }
         public void ProcessBookingRequestStateChange(int bookingRequestId)

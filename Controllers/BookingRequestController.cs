@@ -10,6 +10,8 @@ using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using KwasantWeb.ViewModels.JsonConverters;
+using Segment;
+using Segment.Model;
 using StructureMap;
 using System.Net.Mail;
 using System;
@@ -148,7 +150,7 @@ namespace KwasantWeb.Controllers
         }
 
 
-        //create a BookingRequest
+        [AllowAnonymous]
         public ActionResult Generate(string emailAddress,string meetingInfo)
         {
             string result = "";
@@ -163,7 +165,15 @@ namespace KwasantWeb.Controllers
                     bookingRequest.DateReceived = DateTime.Now;
                     bookingRequest.PlainText = meetingInfo;
                     _br.Process(uow, bookingRequest);
+
                     uow.SaveChanges();
+
+                    Analytics.Client.Track(bookingRequest.UserID, "SiteActivity", new Properties()
+                    {
+                        {"Action", "SubmitsViaTryItOut"},
+                        {"UserID", bookingRequest.UserID},
+                        {"BookingRequestId", bookingRequest.Id}
+                    });
                     result = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be";
                 }
             }

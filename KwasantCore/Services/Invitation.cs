@@ -10,6 +10,7 @@ using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using RazorEngine;
+using Segment;
 using Utilities;
 using Encoding = System.Text.Encoding;
 
@@ -34,6 +35,7 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("curInvitation");
 
             Email email = new Email(uow);
+
             email.Send(curInvitation);
         }
 

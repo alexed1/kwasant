@@ -1,24 +1,23 @@
-﻿<!DOCTYPE html>
+﻿<%@ Page CodeBehind="Index.aspx.cs" Inherits="KwasantWeb.Index" Language="C#" %>
+<%@ Import Namespace="System.Web.Optimization" %>
+<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
 <!--[if gt IE 8]><!-->
 
-<%@ Page Language="C#" %>
-
-<%@ Import Namespace="System.Web.Optimization" %>
 <html class="no-js">
 <!--<![endif]-->
     
 <!--Google Analytics code block. should probably be moved to a common js file -->
 <script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-ga('create', 'UA-52048536-1', 'kwasant.com');
-ga('send', 'pageview');
+    ga('create', 'UA-52048536-1', 'kwasant.com');
+    ga('send', 'pageview');
 
 </script>  
 
@@ -29,17 +28,98 @@ ga('send', 'pageview');
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
 	<link rel='shortcut icon' type='image/x-icon' href='Content/img/favicon.ico' />
-    <% Response.Write(Styles.Render("~/bundles/css/bootstrap23").ToHtmlString()); %>
-	<% Response.Write(Styles.Render("~/bundles/css/bootstrap-responsive").ToHtmlString()); %>
-    <% Response.Write(Styles.Render("~/bundles/css/colorbox").ToHtmlString()); %>
-    <% Response.Write(Styles.Render("~/bundles/css/frontpage").ToHtmlString()); %>
-	<% Response.Write(Styles.Render("~/bundles/css/temp").ToHtmlString()); %>
+    <%=Scripts.Render("~/bundles/js/jquery")%>
+    <%=Styles.Render("~/bundles/css/bootstrap23")%>
+	<%=Styles.Render("~/bundles/css/bootstrap-responsive")%>
+    <%=Styles.Render("~/bundles/css/colorbox")%>
+    <%=Styles.Render("~/bundles/css/frontpage")%>
+	<%=Styles.Render("~/bundles/css/temp")%>
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 	<link href="Content/css/additionalcss/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
     <!--[if lt IE 9]>
         <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
         <script src="Content/js/respond.min.js"></script>
     <![endif]-->
+    
+    <script type="text/javascript">
+        window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
+        window.analytics.load("<%=GetSegmentWriteKey()%>");
+        window.analytics.page();
+    </script>
+    
+    <script type="text/javascript">
+        //The below is vimeo's API. Since we cannot track events in an IFrame, we need to post messages to vimeo to retrieve play events.
+        $(function () {
+            $(function () {
+                <%
+                    var userID = GetUserID();
+                    if (!String.IsNullOrEmpty(userID))
+                    {
+                        %>analytics.identify('<%=userID%>', {
+                            name: '<%=GetUserName()%>',
+                            email: '<%=GetUserEmail()%>'
+                        });<%
+                    }
+                %>
+
+                var player = $('#video');
+                var url = window.location.protocol + player.attr('src').split('?')[0];
+
+                // Listen for messages from the player
+                if (window.addEventListener) {
+                    window.addEventListener('message', onMessageReceived, false);
+                }
+                else {
+                    window.attachEvent('onmessage', onMessageReceived, false);
+                }
+
+                // Handle messages received from the player
+                function onMessageReceived(e) {
+                    if (e.data === 'tic!')
+                        return;
+                    
+                    var data = JSON.parse(e.data);
+
+                    switch (data.event) {
+                    case 'ready':
+                        onReady();
+                        break;
+                            
+                    case 'play':
+                        play();
+                        break;
+                    }
+                }
+
+                // Call the API when a button is pressed
+                $('button').on('click', function () {
+                    post($(this).text().toLowerCase());
+                });
+
+                // Helper function for sending a message to the player
+                function post(action, value) {
+                    var data = {
+                        method: action
+                    };
+
+                    if (value) {
+                        data.value = value;
+                    }
+
+                    var message = JSON.stringify(data);
+                    player[0].contentWindow.postMessage(data, url);
+                }
+
+                function onReady() {
+                    post('addEventListener', 'play');
+                };
+                
+                function play() {
+                    analytics.track('Played video', {});
+                };
+            });
+        });
+    </script>
 </head>
 <body>
     <!--[if lt IE 7]>
@@ -75,7 +155,7 @@ ga('send', 'pageview');
 				<div class="landing-video">
 					<div class="video-inner">
 						<img class="video-screen" src="Content/img/site/kwasant-video-screen.png" alt="Kwasant Video" />
-						<iframe class="video-frame" src="//player.vimeo.com/video/98375763" width="500" height="297" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+						<iframe id="video" class="video-frame" src="//player.vimeo.com/video/98375763?api=1" width="500" height="297" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 					</div>
 				</div>	
 				<div id="logotext" class="text">
@@ -91,7 +171,6 @@ ga('send', 'pageview');
             <div class="container">
                 <div class="row-fluid">
                     <h2 class="text-center"><b>Schedule a Meeting in One Step</b></h2>
-                    <%--<article class="span4"> <i class="icon-resize-full"></i>--%>  
                     <img class="pull-center" src="Content/img/site/from_this_to_this.png" alt="Schedule a Meeting in One Step" />
                 </div>
                 
@@ -263,7 +342,6 @@ ga('send', 'pageview');
                         <form class="form clearfix" action="#">
                             <input type="text" class="span12" placeholder="Name" name="name" id="name">
                             <input type="email" class="span12" placeholder="Email" name="emailAddress" id="emailId">
-                            <%-- <input type="text" class="span12" placeholder="Subject" name="subject" id="subject">--%>
                             <textarea class="span12" placeholder="Message" name="message" rows="6" id="message"></textarea>
                             <button class="btn btn-large pull-right" type="button" onclick="SendMail();">Submit</button>                                
                             <span id="spMessage" class="contact-hint"></span>
@@ -295,44 +373,8 @@ ga('send', 'pageview');
                             </article>
                         </div>
                     </div>
-                    <!--<div class="span4">
-                        <h4>Follow us</h4>
-                        <div class="social">
-                            <ul class="unstyled clearfix">
-                                <li>
-                                    <a target="_blank" title="Twitter" href="#">
-                                        <i class="fa fa-twitter"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a target="_blank" title="Facebook" href="#">
-                                        <i class="fa fa-facebook"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a target="_blank" title="Linkedin" href="#">
-                                        <i class="fa fa-linkedin"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a target="_blank" title="Google+" href="#">
-                                        <i class="fa fa-google-plus"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>-->
                     <div class="span6">
                         <h4>Recent posts</h4>
-                        <!-- <ul>
-                                <li><a href="#">Lorem ipsum dolor sit amet</a></li>
-                                <li><a href="#">Cum maiestatis necessitatibus ad</a></li>
-                                <li><a href="#">Dicat tantas copiosae eam id</a></li>
-                                <li><a href="#">Theophrastus, dicat tantas</a></li>
-                                <li><a href="#">Cras metus elit, consectetur sed</a></li>
-                                <li><a href="#">Lorem ipsum dolor sit amet</a></li>
-                            </ul>
-                            -->
                     </div>
                 </div>
             </div>
@@ -347,58 +389,57 @@ ga('send', 'pageview');
     </footer>
 
     <a class="goTop goTop-link" title="Go Top"><i class="fa fa-arrow-up"></i></a>
-
-
-    <% Response.Write(Scripts.Render("~/bundles/js/jquery").ToHtmlString()); %>
-    <% Response.Write(Scripts.Render("~/bundles/js/bootstrap").ToHtmlString()); %>
-    <% Response.Write(Scripts.Render("~/bundles/js/colorbox").ToHtmlString()); %>
-    <% Response.Write(Scripts.Render("~/bundles/js/waypoints").ToHtmlString()); %>
-    <% Response.Write(Scripts.Render("~/bundles/js/placeholder").ToHtmlString()); %>
-    <% Response.Write(Scripts.Render("~/bundles/js/modernizr").ToHtmlString()); %>
-			<script src="http://a.vimeocdn.com/js/froogaloop2.min.js"></script>
-    <% Response.Write(Scripts.Render("~/bundles/js/main").ToHtmlString()); %>
+    
+    <%=Scripts.Render("~/bundles/js/jquery")%>
+    <%=Scripts.Render("~/bundles/js/bootstrap")%>
+    <%=Scripts.Render("~/bundles/js/colorbox")%>
+    <%=Scripts.Render("~/bundles/js/waypoints")%>
+    <%=Scripts.Render("~/bundles/js/placeholder")%>
+    <%=Scripts.Render("~/bundles/js/modernizr")%>
+	<script src="http://a.vimeocdn.com/js/froogaloop2.min.js"></script>
+    <%=Scripts.Render("~/bundles/js/main")%>
 
 	<script type="text/javascript">
 		// this function is used to get values and sent pass these values to “ProcessSubmittedEmail” action method on "HomeController" using ajax
 		//and display contant result to user using alert
-		function SendMail() {
-			$.ajax({
-				url: "/Home/ProcessSubmittedEmail",
-				type: "POST",
-				async: true,
-				data: { 'name': $('#name').val(), 'emailId': $('#emailId').val(), 'message': $('#message').val() },
-				success: function (result) {
-					if (result == "success") {
-						$('#name').val(""); $('#emailId').val(""); $('#message').val("");
-						$('#spMessage').html("Email Submitted");
-					}
-					else {
-						$('#spMessage').html(result);
-					}
-				}
-			});
-		}
+	    function SendMail() {
+	        $.ajax({
+	            url: "/Home/ProcessSubmittedEmail",
+	            type: "POST",
+	            async: true,
+	            data: { 'name': $('#name').val(), 'emailId': $('#emailId').val(), 'message': $('#message').val() },
+	            success: function (result) {
+	                if (result == "success") {
+	                    $('#name').val(""); $('#emailId').val(""); $('#message').val("");
+	                    $('#spMessage').html("Email Submitted");
+	                }
+	                else {
+	                    $('#spMessage').html(result);
+	                }
+	            }
+	        });
+	    }
 	</script>
 
 	<script type="text/javascript">
-		function SendMailMeetingRequest() {
-			$.ajax({
-				url: "/Home/ProcessHomePageBookingRequest",
-				type: "POST",
-				async: true,
-				data: { 'emailAddress': $('#emailIdReqBooking').val(), 'meetingInfo': $('#meetingInfo').val() },
-				success: function (result) {
-					if (result == "success") {
-						$('#spBookingRequestMsg').html("Request Booking Created Successfully");
-						//alert("Request Booking Created Successfully ");
-					}
-					else {
-						//alert(result);
-						$('#spBookingRequestMsg').html(result);
-					}
-				}
-			});
-		}
+	    function SendMailMeetingRequest() {
+	        $.ajax({
+	            url: "/Home/ProcessHomePageBookingRequest",
+	            type: "POST",
+	            async: true,
+	            data: { 'emailAddress': $('#emailIdReqBooking').val(), 'meetingInfo': $('#meetingInfo').val() },
+	            success: function (result) {
+	                if (result == "success") {
+	                    $('#spBookingRequestMsg').html("Request Booking Created Successfully");
+	                    //alert("Request Booking Created Successfully ");
+	                }
+	                else {
+	                    //alert(result);
+	                    $('#spBookingRequestMsg').html(result);
+	                }
+	            }
+	        });
+	    }
 	</script>
 
 </body>
