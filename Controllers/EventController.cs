@@ -250,7 +250,6 @@ namespace KwasantWeb.Controllers
                         Analytics.Client.Track(userDO.Id, "User", new Segment.Model.Properties
                         {
                             {"Action", "InvitedAsPreCustomerAttendee"},
-                            {"UserID", userDO.Id},
                             {"BookingRequestId", curEventDO.BookingRequestID},
                             {"EventID", curEventDO.Id}
                         });

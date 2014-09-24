@@ -171,7 +171,6 @@ namespace KwasantWeb.Controllers
                     Analytics.Client.Track(bookingRequest.UserID, "SiteActivity", new Properties()
                     {
                         {"Action", "SubmitsViaTryItOut"},
-                        {"UserID", bookingRequest.UserID},
                         {"BookingRequestId", bookingRequest.Id}
                     });
                     result = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be";

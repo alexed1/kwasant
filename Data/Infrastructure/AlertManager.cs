@@ -233,7 +233,6 @@ namespace Data.Infrastructure
                 Analytics.Client.Track(bookingRequestDO.UserID, "BookingRequest", new Properties()
                     {
                         {"Action", "Submit"},
-                        {"UserID", bookingRequestDO.UserID},
                         {"BookingRequestId", bookingRequestDO.Id}
                     });
 
