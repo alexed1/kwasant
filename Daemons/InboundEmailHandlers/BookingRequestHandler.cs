@@ -4,6 +4,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Services;
+using System.Linq;
 using StructureMap;
 
 namespace Daemons.InboundEmailHandlers
@@ -16,17 +17,30 @@ namespace Daemons.InboundEmailHandlers
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
-                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                EmailRepository emailRepo = uow.EmailRepository;
+                EmailDO email = Email.ConvertMailMessageToEmail(emailRepo, message);
 
-                //assign the owner of the booking request to be the owner of the From address
+                var curEmail = (from t in uow.EmailRepository.GetAll()
+                                where t.Subject == email.Subject
+                                && (t.Recipients.Any(e => e.EmailID == email.From.Id) || t.FromID == email.From.Id)
+                                select t).FirstOrDefault();
 
-                (new BookingRequest()).Process(uow, bookingRequest);
-
-                uow.SaveChanges();
-
-                AlertManager.BookingRequestCreated(bookingRequest.Id);
-                AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+                if (curEmail != null)
+                {
+                    email.ConversationId = curEmail.Id;
+                    var user = new User();
+                    UserDO curUser = user.GetOrCreateFromBR(uow, email.From);
+                    uow.SaveChanges();
+                }
+                else
+                {
+                    BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                    (new BookingRequest()).Process(uow, bookingRequest);
+                    uow.SaveChanges();
+                    AlertManager.BookingRequestCreated(bookingRequest.Id);
+                    AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+                }
             }
             return true;
         }
