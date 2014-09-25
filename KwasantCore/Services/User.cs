@@ -156,30 +156,6 @@ namespace KwasantCore.Services
             }
         }
 
-        /// <summary>
-        /// Determines <see cref="CommunicationMode">communication mode</see> for user
-        /// </summary>
-        /// <param name="uow">UnitOfWork</param>
-        /// <param name="curUser">User</param>
-        /// <returns>Direct if the user has a booking request or a password. Otherwise, Delegate.</returns>
-        public CommunicationMode GetMode(IUnitOfWork uow, UserDO curUser)
-        {
-            if (uow == null)
-                throw new ArgumentNullException("uow");
-            if (curUser == null)
-                throw new ArgumentNullException("curUser");
-            // search for BR
-            var curBookingRequest = uow.BookingRequestRepository.GetQuery().FirstOrDefault(br => br.User.Id == curUser.Id);
-            if (curBookingRequest != null)
-                return CommunicationMode.Direct;
-            // look for password
-            var userManager = User.GetUserManager(uow);
-            var hasPassword = userManager.HasPassword(curUser.Id);
-            if (hasPassword)
-                return CommunicationMode.Direct;
-            return CommunicationMode.Delegate;
-        }
-
         public List<UserDO> Query(IUnitOfWork uow, UserDO curUserSearch)
         {
             return uow.UserRepository.GetAll().ToList().Where(e =>

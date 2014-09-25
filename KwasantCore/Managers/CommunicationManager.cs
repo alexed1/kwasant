@@ -108,7 +108,7 @@ Proposed Answers: {2}
 
                 string templateName;
                 // Max Kostyrkin: currently User#GetMode returns Direct if user has a booking request or has a password, otherwise Delegate.
-                switch (user.GetMode(uow, user.Get(uow, attendee.EmailAddress)))
+                switch (user.GetMode(user.Get(uow, attendee.EmailAddress)))
                 {
                     case CommunicationMode.Direct:
                         templateName = _configRepository.Get("CR_template_for_creator");
