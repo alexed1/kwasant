@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201408271137562_AddBookerId_to_BookingRequestDO"; }
+            get { return "201409230642376_AddBookerId_to_BookingRequestDO"; }
         }
         
         string IMigrationMetadata.Source

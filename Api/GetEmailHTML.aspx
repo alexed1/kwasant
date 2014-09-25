@@ -1,64 +1,82 @@
 ﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="GetEmailHTML.aspx.cs" Inherits="KwasantWeb.Api.GetEmailHTML" %>
+
 <%@ OutputCache Location="None" VaryByParam="None" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title><%=GetEmailSubject()%></title>    
-	<%=System.Web.Optimization.Styles.Render("~/bundles/css/bootstrap30")%>
-	<%=System.Web.Optimization.Styles.Render("~/bundles/css/backendcss")%>
-	<%=System.Web.Optimization.Styles.Render("~/bundles/css/colorbox")%>
-	<%=System.Web.Optimization.Styles.Render("~/bundles/css/temp")%>
-	<%=System.Web.Optimization.Scripts.Render("~/bundles/js/jquery")%>
+    <title><%=GetEmailSubject()%></title>
+    <%=System.Web.Optimization.Styles.Render("~/bundles/css/bootstrap30")%>
+    <%=System.Web.Optimization.Styles.Render("~/bundles/css/backendcss")%>
+    <%=System.Web.Optimization.Styles.Render("~/bundles/css/colorbox")%>
+    <%=System.Web.Optimization.Styles.Render("~/bundles/css/temp")%>
+    <%=System.Web.Optimization.Scripts.Render("~/bundles/js/jquery")%>
     <%=System.Web.Optimization.Scripts.Render("~/bundles/js/select2")%>
     <script src="../Scripts/ContextMenu/jquery.contextMenu.js"></script>
     <link href="../Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
- 
+
 </head>
 <body class="email-info-section">
     <%--style="width: 400px;"--%>
     <form id="form1" runat="server">
-		<div class="info">
-			<div id="emailSubject" class="subHeading email-subject">
-				<h4 class="with-border"><%=GetEmailSubject()%></h4>
-			</div>
-			<div class="email-details with-border">
-				<table width="100%">
-					<tr>
-						<td class="displayLabel">From:</td>
-						<td><%=GetFromPerson()%></td>
-					</tr>
+        <div class="info">
+            <div id="emailSubject" class="subHeading email-subject">
+                <h4 class="with-border"><%=GetEmailSubject()%></h4>
+            </div>
+            <div class="email-details with-border">
+                <table width="100%">
                     <tr>
-						<td class="displayLabel">From:</td>
-						<td><%=GetEmail()%></td>
-					</tr>
+                        <td class="displayLabel">Booker:</td>
+                        <td id="tdbookerinfo"><%=GetBooker()%>
+                            <%=GetBooker() != "none" ? "<span style='padding-left:15px;'><a href='javascript:void(0);' onclick='javascript:releaseBooker("+GetEmailId()+")'>Release</a></span>" : "" %>
+                        </td>
+                    </tr>
                     <tr>
-						<td class="displayLabel">To:</td>
-						<td><%=GetTo()%></td>
-					</tr>
-					<tr>
-						<td class="displayLabel">CC:</td>
-						<td><%=GetCC()%></td>
-					</tr>
-					<tr>
-						<td class="displayLabel">BCC:</td>
-						<td><%=GetBCC()%></td>
-					</tr>
-					
-					<tr>
-						<td class="displayLabel">Attachments:</td>
-						<td><%=GetAttachments()%></td>
-					</tr>
-				</table>
-			</div>
-			<div id="emailContent" class="email-content">
-				<%=GetContent()%>
-			</div>
-		</div>
+                        <td class="displayLabel">From:</td>
+                        <td><%=GetFromPerson()%></td>
+                    </tr>
+                    <tr>
+                        <td class="displayLabel">From:</td>
+                        <td><%=GetEmail()%></td>
+                    </tr>
+                    <tr>
+                        <td class="displayLabel">To:</td>
+                        <td><%=GetTo()%></td>
+                    </tr>
+                    <tr>
+                        <td class="displayLabel">CC:</td>
+                        <td><%=GetCC()%></td>
+                    </tr>
+                    <tr>
+                        <td class="displayLabel">BCC:</td>
+                        <td><%=GetBCC()%></td>
+                    </tr>
+
+                    <tr>
+                        <td class="displayLabel">Attachments:</td>
+                        <td><%=GetAttachments()%></td>
+                    </tr>
+                </table>
+            </div>
+            <div id="emailContent" class="email-content">
+                <%=GetContent()%>
+            </div>
+        </div>
         <div class="context-menu box menu-1"></div>
     </form>
     <script type="text/javascript">
+        function releaseBooker(requestId) {
+            $.ajax({
+                url: "/BookingRequest/ReleaseBooker",
+                type: "POST",
+                data: { bookingRequestId: requestId },
+                success: function () {
+                    $("#tdbookerinfo").html("none");
+                }
+            });
+        }
+
         $(document).ready(function () {
             //Global variables
             var activeframe;
@@ -116,7 +134,7 @@
                             iFrame.get(0).contentWindow.modifiedState.modified = true;
                             break;
 
-                         //below 3 field needs validation, for these server call is made for validating the selected text.
+                            //below 3 field needs validation, for these server call is made for validating the selected text.
                         case "#attendees":
                             processCopy("attendees", currentSelection);
                             break;

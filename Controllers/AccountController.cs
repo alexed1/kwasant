@@ -41,8 +41,7 @@ namespace KwasantWeb.Controllers
                 emailDO.Subject = message.Subject;
                 emailDO.HTMLText = message.Body;
 
-                Email userEmail = new Email(uow, emailDO);
-                userEmail.Send();
+                uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                 uow.SaveChanges();
             }
         }
@@ -232,21 +231,21 @@ namespace KwasantWeb.Controllers
         }
 
 
-        public ActionResult Edit(String userId, String roleId)
-        {
-            if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //public ActionResult Edit(String userId, String roleId)
+        //{
+        //    if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            UsersAdmin currUsersAdmin = new UsersAdmin();
-            List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData(userId, roleId);
+        //    UsersAdmin currUsersAdmin = new UsersAdmin();
+        //    List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData(userId, roleId);
 
 
-            List<UsersAdminVM> currUsersAdminVMs = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminVMList(currUsersAdminDataList) : null;
+        //    List<UsersAdminVM> currUsersAdminVMs = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminVMList(currUsersAdminDataList) : null;
 
-            UsersAdminVM currUsersAdminVM = currUsersAdminVMs == null || currUsersAdminVMs.Count == 0 ? new UsersAdminVM() : currUsersAdminVMs[0];
+        //    UsersAdminVM currUsersAdminVM = currUsersAdminVMs == null || currUsersAdminVMs.Count == 0 ? new UsersAdminVM() : currUsersAdminVMs[0];
 
-            return View(currUsersAdminVM);
-        }
+        //    return View(currUsersAdminVM);
+        //}
 
         [System.Web.Http.HttpPost]
         public ActionResult Edit(UsersAdminVM usersAdminVM)

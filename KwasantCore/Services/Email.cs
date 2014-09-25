@@ -19,9 +19,9 @@ namespace KwasantCore.Services
 {
     public class Email
     {
-        private readonly IUnitOfWork _uow;
-        private EmailDO _curEmailDO;
         private EventValidator _curEventValidator;
+        private readonly EmailAddress _emailAddress;
+
         #region Constructor
 
 
@@ -30,22 +30,11 @@ namespace KwasantCore.Services
         /// Initialize EmailManager
         /// </summary>
         /// 
-
-        public Email()
-            : this(ObjectFactory.GetInstance<IUnitOfWork>())
-        {
-        }
         //this constructor enables the creation of an email that doesn't necessarily have anything to do with an Event. It gets called by the other constructors
-        public Email(IUnitOfWork uow)
+        public Email(EmailAddress emailAddress)
         {
-            _uow = uow;
+            _emailAddress = emailAddress;
             _curEventValidator = new EventValidator();
-        }
-
-        public Email(IUnitOfWork uow, EmailDO curEmailDO) : this(uow)
-        {
-            //should add validation here
-            _curEmailDO = curEmailDO;
         }
 
         #endregion
@@ -55,26 +44,16 @@ namespace KwasantCore.Services
         /// <summary>
         /// This implementation of Send uses the Mandrill API
         /// </summary>
-        public EnvelopeDO SendTemplate(string templateName, IEmail message, Dictionary<string, string> mergeFields)
+        [ObsoleteAttribute("Use directly uow.EnvelopeRepository.ConfigureTemplatedEmail method.")]
+        public EnvelopeDO SendTemplate(IUnitOfWork uow, string templateName, IEmail message, Dictionary<string, string> mergeFields)
         {
-            var envelope = _uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
-            message.EmailStatus = EmailState.Queued;
-            _uow.EnvelopeRepository.Add(envelope);
-            return envelope;
+            return uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
         }
 
-        public EnvelopeDO Send()
+        [ObsoleteAttribute("Use directly uow.EnvelopeRepository.ConfigurePlainEmail method.")]
+        public EnvelopeDO Send(IUnitOfWork uow, EmailDO emailDO)
         {
-            var envelope = _uow.EnvelopeRepository.ConfigurePlainEmail(_curEmailDO);
-            _curEmailDO.EmailStatus = EmailState.Queued;
-            _uow.EnvelopeRepository.Add(envelope);
-            return envelope;
-        }
-
-        public void Send(EmailDO emailDO)
-        {
-            _curEmailDO = emailDO;
-            Send();
+            return uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
         }
 
         public static void InitialiseWebhook(String url)
@@ -218,7 +197,7 @@ namespace KwasantCore.Services
 
 
        
-        public EmailDO GenerateBasicMessage(EmailAddressDO curEmailAddress,string subject, string message, string fromAddress ,string toRecipient)
+        public EmailDO GenerateBasicMessage(IUnitOfWork uow, EmailAddressDO curEmailAddress,string subject, string message, string fromAddress ,string toRecipient)
         {
             ValidateEmailAddress(curEmailAddress);
             EmailDO curEmail = new EmailDO()
@@ -227,8 +206,8 @@ namespace KwasantCore.Services
                 PlainText = message,
                 HTMLText = message
             };
-            curEmail = AddFromAddress(curEmail,fromAddress);
-            curEmail = AddSingleRecipient(curEmail, toRecipient);
+            curEmail = AddFromAddress(uow, curEmail,fromAddress);
+            curEmail = AddSingleRecipient(uow, curEmail, toRecipient);
             return curEmail;
         }
 
@@ -240,12 +219,11 @@ namespace KwasantCore.Services
                 string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
                 EmailAddressDO curEmailAddress = new EmailAddressDO("ops@kwasant.com");
-                Email _email = new Email(uow);
                 EmailDO curEmail = new EmailDO();
                 string message = "Alert! Kwasant Error Reported: EmailSendFailure";
                 string subject = "Alert! Kwasant Error Reported: EmailSendFailure";
-                curEmail = _email.GenerateBasicMessage(curEmailAddress, subject, message, fromAddress, "ops@kwasant.com");
-                _email.Send(curEmail);
+                curEmail = GenerateBasicMessage(uow, curEmailAddress, subject, message, fromAddress, "ops@kwasant.com");
+                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }
         }
@@ -259,13 +237,13 @@ namespace KwasantCore.Services
 
         }
 
-        public EmailDO AddSingleRecipient(EmailDO curEmail, string toRecipient)
+        public EmailDO AddSingleRecipient(IUnitOfWork uow, EmailDO curEmail, string toRecipient)
         {
             curEmail.Recipients = new List<RecipientDO>()
                                          {
                                               new RecipientDO()
                                                  {
-                                                   EmailAddress = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress(toRecipient)),
+                                                   EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(toRecipient),
                                                    EmailParticipantType = EmailParticipantType.To
                                                  }
                                          };
@@ -273,11 +251,11 @@ namespace KwasantCore.Services
         }
 
 
-        public EmailDO AddFromAddress(EmailDO curEmail,string fromAddress)
+        public EmailDO AddFromAddress(IUnitOfWork uow, EmailDO curEmail, string fromAddress)
         {
-             curEmail.From  = (new EmailAddress()).ConvertFromMailAddress(_uow, new MailAddress(fromAddress));
-             return curEmail;
+            curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+            return curEmail;
         }
-       
+
     }
 }

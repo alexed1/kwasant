@@ -66,16 +66,15 @@ namespace KwasantWeb.Controllers
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 if (bookingRequestDO == null)
                     return HttpNotFound();
-                bookingRequestDO.User = bookingRequestDO.User;
                 bookingRequestDO.State = BookingRequestState.Booking;
-                bookingRequestDO.BookerId = currBooker;
+                bookingRequestDO.BookerID = currBooker;
                 bookingRequestDO.LastUpdated = DateTimeOffset.Now;
                 uow.SaveChanges();
                 AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
             }
 
             //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
-            return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Calendar", action = "Index", id = id }));
+            return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Dashboard", action = "Index", id = id }));
         }
 
         [HttpGet]
@@ -102,7 +101,6 @@ namespace KwasantWeb.Controllers
 
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 bookingRequestDO.State = BookingRequestState.Resolved;
-                bookingRequestDO.User = bookingRequestDO.User;
                 uow.SaveChanges();
                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
 
@@ -123,7 +121,6 @@ namespace KwasantWeb.Controllers
 
                  BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                  bookingRequestDO.State = BookingRequestState.Invalid;
-                 bookingRequestDO.User = bookingRequestDO.User;
                  uow.SaveChanges();
                  AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
                  return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
@@ -206,6 +203,19 @@ namespace KwasantWeb.Controllers
 
             recordcount = bR_RelatedItems.Count;
             return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();
+        }
+
+        [HttpPost]
+        public void ReleaseBooker(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.BookerID = null;
+                bookingRequestDO.User = bookingRequestDO.User;
+                uow.SaveChanges();
+            }
         }
     }
 }

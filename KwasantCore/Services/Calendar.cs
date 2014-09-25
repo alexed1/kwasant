@@ -14,10 +14,8 @@ namespace KwasantCore.Services
                 case "attendees":
                     try
                     {
-                        if (selectedText.IsEmailAddress())
-                        {
-                            returnvalue = selectedText;
-                        }
+                        selectedText.ValidateEmailAddress();
+                        returnvalue = selectedText;
                     }
                     catch(ValidationException ex) { returnvalue = "Invalid Selection"; }
                     break;

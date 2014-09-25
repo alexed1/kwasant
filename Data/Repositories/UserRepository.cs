@@ -48,10 +48,6 @@ namespace Data.Repositories
         public UserDO CreateFromEmail(EmailAddressDO emailAddressDO,
             string userName = null, string firstName = null, string lastName = null)
         {
-            var password = Guid.NewGuid().ToString();
-            var passwordHasher = new PasswordHasher();
-            var hashedPassword = passwordHasher.HashPassword(password);
-
             var curUser = new UserDO
             {
                 UserName = userName ?? emailAddressDO.Address,
@@ -59,7 +55,6 @@ namespace Data.Repositories
                 EmailAddress = emailAddressDO,
                 EmailConfirmed = false,
                 TestAccount = false,
-                PasswordHash = hashedPassword,
                 SecurityStamp = Guid.NewGuid().ToString()
             };
             UnitOfWork.UserRepository.Add(curUser);

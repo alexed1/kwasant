@@ -23,10 +23,13 @@ namespace KwasantWeb.Controllers
         {
             AuthenticateUser(negotiationID);
             
+            var user = new User();
             var userID = this.GetUserId();
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var userDO = uow.UserRepository.GetByKey(userID);
+
                 var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (negotiationDO == null)
                     throw new HttpException(404, "Negotiation not found.");
@@ -34,33 +37,51 @@ namespace KwasantWeb.Controllers
                 var answerIDs = negotiationDO.Questions.SelectMany(q => q.Answers.Select(a => a.Id)).ToList();
                 var userAnswerIDs = uow.QuestionResponseRepository.GetQuery().Where(qr => answerIDs.Contains(qr.AnswerID) && qr.UserID == userID).Select(a => a.AnswerID).ToList();
 
+                var originatingUser = negotiationDO.BookingRequest.User.FirstName;
+                if (!String.IsNullOrEmpty(negotiationDO.BookingRequest.User.LastName))
+                    originatingUser += " " + negotiationDO.BookingRequest.User.LastName;
                 var model = new NegotiationResponseVM
                 {
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
                     BookingRequestID = negotiationDO.BookingRequestID,
 
+                    CommunicationMode = user.GetMode(userDO),
+                    OriginatingUser = originatingUser,
+
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
                     {
-                        return (NegotiationQuestionVM) new NegotiationResponseQuestionVM
-                        {
-                            AnswerType = q.AnswerType,
-                            Id = q.Id,
-                            Text = q.Text,
-                            CalendarID = q.CalendarID,
+                        var selectedAnswer = q.Answers.FirstOrDefault(a => userAnswerIDs.Contains(a.Id));
 
-                            Answers = q.Answers.Select(a =>
+                        var answers = q.Answers.Select(a =>
                                 (NegotiationAnswerVM) new NegotiationResponseAnswerVM
                                 {
                                     Id = a.Id,
-                                    Selected = userAnswerIDs.Contains(a.Id),
+
+                                Selected = a == selectedAnswer,
                                     EventID = a.EventID,
+                                UserAnswer = a.UserID == userID,
+
                                     EventStartDate = a.Event == null ? (DateTimeOffset?)null : a.Event.StartDate,
                                     EventEndDate = a.Event == null ? (DateTimeOffset?)null : a.Event.EndDate,
 
                                     Text = a.Text,
-                                }).OrderBy(a => a.EventStartDate).ThenBy(a => a.EventEndDate).ToList()
+                            }).OrderBy(a => a.EventStartDate).ThenBy(a => a.EventEndDate).ToList();
+
+                        //We select the answer that the user previously selected
+                        //If they don't have a previous selection, then we select the first answer by default.
+                        if (!answers.Any(a => a.Selected))
+                            answers.First().Selected = true;
+
+                        return (NegotiationQuestionVM) new NegotiationResponseQuestionVM
+                        {
+                            Type = q.AnswerType,
+                            Id = q.Id,
+                            Text = q.Text,
+                            CalendarID = q.CalendarID,
+
+                            Answers = answers
                         };
                     }).ToList()
                 };
@@ -101,6 +122,9 @@ namespace KwasantWeb.Controllers
                         AnswerDO answerDO;
                         if (answer.Id == 0)
                         {
+                            if (!answer.Selected)
+                                continue;
+
                             answerDO = new AnswerDO();
                             uow.AnswerRepository.Add(answerDO);
 
@@ -110,6 +134,7 @@ namespace KwasantWeb.Controllers
 
                             answerDO.Text = answer.Text;
                             answerDO.EventID = answer.EventID;
+                            answerDO.UserID = userID;
                         } else
                         {
                             answerDO = uow.AnswerRepository.GetByKey(answer.Id);

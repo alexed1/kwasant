@@ -30,7 +30,7 @@ namespace KwasantWeb.Controllers
         {
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>(); // TODO: inject dependency via a constructor parameter
             _event = ObjectFactory.GetInstance<Event>();
-            _attendee = new Attendee();
+            _attendee = ObjectFactory.GetInstance<Attendee>();
         }
 
         public ActionResult New(int bookingRequestID, int calendarID, string start, string end)
@@ -207,7 +207,7 @@ namespace KwasantWeb.Controllers
 
         public ActionResult ConfirmChanges(EventVM eventVM)
         {
-            return View(eventVM);
+            return View("~/Views/Event/ConfirmChanges.cshtml", eventVM);
         }
 
         [HttpPost]
@@ -227,6 +227,10 @@ namespace KwasantWeb.Controllers
                 if (curEventDO == null)
                     throw new EntityNotFoundException<EventDO>();
                 updatedEventInfo.Attendees = _attendee.ConvertFromString(uow, curEventVM.Attendees);
+                
+                if (updatedEventInfo.Summary == null)
+                    updatedEventInfo.Summary = String.Empty;
+
                 curEventDO.EventStatus = updatedEventInfo.Summary.Contains("DRAFT") ? EventState.Draft : EventState.Booking;
 
                 _event.Process(uow, curEventDO, updatedEventInfo);
@@ -236,7 +240,7 @@ namespace KwasantWeb.Controllers
 
                 uow.SaveChanges();
             }
-            return Json(true);
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult DeleteEvent(int eventID, bool requiresConfirmation = true)

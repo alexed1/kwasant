@@ -1,4 +1,6 @@
-﻿@model KwasantWeb.ViewModels.NegotiationVM
+﻿@using Data.States
+@using KwasantWeb.ViewModels
+@model KwasantWeb.ViewModels.NegotiationResponseVM
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @section immediateScripts
 {
@@ -28,7 +30,7 @@
                 AllowModifyQuestion: false,
                 AllowDeleteQuestion: false,
 
-                AllowAddAnswer: true,
+                AllowAddAnswer: false,
                 AllowModifyAnswer: false,
                 AllowDeleteAnswer: false,
             };
@@ -46,15 +48,16 @@
                     @:currentQuestion = {};
                     @:currentQuestion.Id = @question.Id
                     @:currentQuestion.Text = '@question.Text';
-                    @:currentQuestion.Type = '@question.AnswerType';
+                    @:currentQuestion.Type = '@question.Type';
                     @:currentQuestion.CalendarID = @Html.Raw(question.CalendarID == null ? "null" : question.CalendarID.ToString());
                     @:answers = [];
-                    foreach (var answer in question.Answers)
+                    foreach (NegotiationResponseAnswerVM answer in question.Answers)
                     {
                         @:currentAnswer = {};
                         @:currentAnswer.Id = @answer.Id
                         @:currentAnswer.Selected = @Html.Raw(answer.Selected ? "true" : "false");
-                        
+                        @:currentAnswer.UserAnswer = @Html.Raw(answer.UserAnswer ? "true" : "false");
+                       
                         @:currentAnswer.Text = '@answer.Text';
                         
                         @:currentAnswer.EventID = @Html.Raw(answer.EventID.HasValue? answer.EventID.Value.ToString() : "null");
@@ -141,7 +144,12 @@
 
 <div style="padding:15px;">
     <form id="f" class="negotiationsidebar ourBox">
-        <h2>We need clarification about the following <br />to finish booking your event</h2>
+        <h2>
+            @Html.Raw(
+                Model.CommunicationMode == CommunicationMode.DIRECT
+                ? "Regarding " + Model.Name + ", please clarify the following"
+                                  : "Kwasant helps " + Model.OriginatingUser + " to schedule their calendar. Can you respond to the following:")
+        </h2>
         <div id="negotiation"></div>
 
         <div class="space form-actions negotiation-form-actions" style="display:inline-block">

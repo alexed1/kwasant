@@ -1,16 +1,16 @@
 ﻿@using Data.States
-@model KwasantWeb.ViewModels.CalendarVM
+@model KwasantWeb.ViewModels.DashboardShowVM
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @{
-	ViewBag.Title = "Event ";
+    ViewBag.Title = "Event ";
 }
 @section styles{
     @Styles.Render("~/bundles/css/daypilot")
 }
 @section immediateScripts
 {
-	@Scripts.Render("~/bundles/js/jquery")
-	@Scripts.Render("~/bundles/js/daypilot")
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/daypilot")
     @Scripts.Render("~/bundles/js/kwasantcalendar")
     @Scripts.Render("~/bundles/js/kwasantpopup")
 
@@ -23,458 +23,68 @@
     @Scripts.Render("~/bundles/js/bootstrap")
     @Scripts.Render("~/bundles/js/common")
 }
+<script type="text/javascript">
+    document.body.style.overflowY = 'scroll';
+    var calendar;
+    var dp_navigator, storedCalendar;
+    var linkedNegotiationID = @Html.Raw(Model.CalendarVM.LinkedNegotiationID == null ? "null" : Model.CalendarVM.LinkedNegotiationID.ToString())
+</script>
 
-@*width: 1270px;*@
 <div class="jumbotron calendar-section jumbotron_new">
-	<div class="row">
-        @*width: 420px;*@	
-	    <nav class="navbar navbar-default top-toolbar-section" role="navigation">
-	        <div class="container-fluid">
-	            <div class="navbar-header">
-	                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
-	                    <span class="sr-only">Toggle navigation</span>
-	                    <span class="icon-bar"></span>
-	                    <span class="icon-bar"></span>
-	                    <span class="icon-bar"></span>
-	                </button>
-	            </div>
-	            <div class="collapse navbar-collapse" id="navbar-collapse">
-	                <ul class="nav navbar-nav">
-	                    <li class="dropdown"><a id="btnBookingRequest">BookingRequest</a>
-	                        <ul class="dropdown-menu">
-	                            <li>@Html.ActionLink("Get All", "Index", "BookingRequest")</li>
-	                        </ul>   
-	                    </li>
-	                    <li class="dropdown"><a id="btnUser">User</a>
-	                        <ul class="dropdown-menu">
-	                            <li> @Html.ActionLink("Get All", "Index", "User") </li>
-	                            @*<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>*@
-<li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestID })');" href="#">Mark Processed</a></li>
-	                        </ul>
-	                    </li>
-	                    <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
-	                        <ul class="dropdown-menu">
-	                            <li><a id="liReview" onclick="getNegotiationReview(); " href="#">Review</a></li>
-	                            <li><a id="liCreateOrEditNegotiation" onclick="getNegotiationWindow();" data-value='@(Model.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
-	                            <li id="liResolveNegotiation"><a onclick="resolveActiveNegotiation(linkedNegotiationID);" href="#">Mark Resolved</a></li>
-	                        </ul>
-	                    </li>
-	                    <li class="dropdown"><a id="btnReport">Reports</a>
-	                        <ul class="dropdown-menu">
-	                            <li><a id="btnHistory" onclick="HistoryClick(@Model.BookingRequestID);" class="btnHistory" href="#">Show History</a></li>
-	                        </ul>
-	                    </li>
-	                </ul>
-	            </div>
-	        </div>
-	    </nav>
-	    <div id="notificationGroup">
-	        <div class="col-md-7" style=" margin-top: -25px;  margin-bottom: 5px; text-align: left; padding-left: 1px;">
-	            <div id="notificationMessage" style="background: #f8f8f8 !important;color: #d85e17;font-size: 16px;padding-left: 15px;font-size: 16px;font-weight: bold;">
-	            </div>
-	        </div>
+    <div class="row">
+        <nav class="navbar navbar-default top-toolbar-section" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown"><a id="btnBookingRequest">BookingRequest</a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Get All", "Index", "BookingRequest")</li>
+                            </ul>
+                        </li>
+                        <li class="dropdown"><a id="btnUser">User</a>
+                            <ul class="dropdown-menu">
+                                <li>@Html.ActionLink("Get All", "Index", "User") </li>
+                                <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestVM.BookingRequestId })');" href="#">Mark Processed</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
+                            <ul class="dropdown-menu">
+                                <li><a id="liReview" onclick="getNegotiationReview(); " href="#">Review</a></li>
+                                <li><a id="liCreateOrEditNegotiation" onclick="getNegotiationWindow();" data-value='@(Model.CalendarVM.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.CalendarVM.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
+                                <li id="liResolveNegotiation"><a onclick="resolveActiveNegotiation(linkedNegotiationID);" href="#">Mark Resolved</a></li>
+                            </ul>
+                        </li>
+                        <li class="dropdown"><a id="btnReport">Reports</a>
+                            <ul class="dropdown-menu">
+                                <li><a id="btnHistory" onclick="HistoryClick(@Model.BookingRequestVM.BookingRequestId);" class="btnHistory" href="#">Show History</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <div id="notificationGroup">
+            <div class="col-md-7" style="margin-top: -25px; margin-bottom: 5px; text-align: left; padding-left: 1px;">
+                <div id="notificationMessage" style="background: #f8f8f8 !important; color: #d85e17; font-size: 16px; padding-left: 15px; font-size: 16px; font-weight: bold;">
+                </div>
+            </div>
             <div class="col-md-5">
             </div>
-	    </div>
-            
-            <div id="emailInfoBox" class="col-md-7">
-                <div class="emailInfoBox">
-				<iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.BookingRequestID"></iframe>
-				<div class="">
-					<input type="radio" id="rdnshowOtherBRs" name="group1" value="ShowOtherBRs" /> Show Other BR's  &nbsp;&nbsp; 
-					<input type="radio" id="rdnShowRelatedItems" name="group1" value="ShowRelatedItems" checked="checked" />Show Related Items
-				</div>
-				<table id="tblRelatedItems" class="email-info-table data-table">
-					<thead>
-						<tr>
-							<th>Date</th>
-							<th>Type</th>
-						</tr>
-					</thead>
-				</table>
-				<table id="tbluserrequests" class="email-info-table data-table">
-					<thead>
-						<tr>
-							<th>Date Received</th>
-							<th>Subject</th>
-						</tr>
-					</thead>
-				</table>
-			</div>
         </div>
-		<div id="CalendarDiv" class="col-md-5"></div>
 
-	</div>
+        <!-- Booking Request Info View here -->
+        @Html.Partial("../BookingRequest/Administer", Model.BookingRequestVM)
+        <!-- Calendar Partial view here -->
+        @Html.Partial("Edit", Model.CalendarVM)
+
+    </div>
 </div>
-<input type="hidden" value="@Model.BookingRequestID" id="hdnrequestid" name="requestid" />
-
-<script type="text/javascript">
-    var calendar;
-    var dp_navigator,storedCalendar;
-    $(function() {
-        @{
-            var calendarsToDisplay = new List<int>();
-            if (Model.LinkedCalendarIDs != null)
-            {
-                calendarsToDisplay.AddRange(Model.LinkedCalendarIDs);
-            }
-            calendarsToDisplay.Add(Model.ActiveCalendarID);
-            var calendarString = String.Join(",", calendarsToDisplay.Distinct());
-        }
-        
-        calendar = $('#CalendarDiv').KCalendar({
-            getCalendarBackendURL: function() {
-                return '@Url.Content("~/Calendar/Day?calendarIDs=" + calendarString)';
-            },
-            getMonthBackendURL: function () {
-                return '@Url.Content("~/Calendar/Month?calendarIDs=" + calendarString)';
-            },
-            getNavigatorBackendURL: function() {
-                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + calendarString)';
-            },  
-            getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
-            getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
-            getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
-            onEventNew: function(start, end) {
-                if (Kwasant.IFrame.PopupsActive()) {
-                    return;
-                }
-                var id = $("#hdnrequestid").val();
-                Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z',
-                    {
-                        horizontalAlign: 'right',
-                        callback: calendar.refreshCalendars
-                    });
-            },
-        }
-        );
-    });
-     
-    //funtion to load booking request info in iframe "emailInfoFrame" on "tbluserrequests" request row click.
-    //called by : rows in tbluserrequests on click
-    function loadrequest(id, linkedCalendarIDs, ele) {
-        $("#tbluserrequests tr").removeClass('current-row');
-        if ($('#tbluserrequests tr').length > 2) {
-            $(ele).addClass('current-row');
-        }    
-        $("#hdnrequestid").val(id);
-        $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("MarkAsProcessed", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
-        $("#emailInfoFrame")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
-        
-        if (calendar !== undefined) {
-            calendar.updateBackendURLs("@Url.Content("~/Calendar/Day?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Month?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Navigator?calendarIDs=")" + linkedCalendarIDs);
-        }
-    }
-
-
-
-    //Document ready function, will run after page is ready and all elements are loaded.
-    $(document).ready(function () {
-        showRelatedItems();
-        $('#tbluserrequests').hide();
-        $('#notificationGroup').hide();
-
-        storedCalendar = calendar.getStoredCalendar();
-        dp_navigator = calendar.getNavigator();
-
-    });
-
-    //This function will bind a click function on every button in table "tblbookingrequest"
-    $('#tbluserrequests').on('click', 'tr', function () {
-        var data = table.row($(this)).data();
-        loadrequest(data.id, data.linkedcalendarids, this);
-    });
-
-    function emailFrameLoaded() {
-        var iframe = $("#emailInfoFrame").get(0);
-        if (iframe) {
-            // here you can make the height, I delete it first, then I make it again
-            iframe.height = "";
-            iframe.height = (iframe.contentWindow.document.body.scrollHeight + 30) + "px";
-        }
-    }
-
-    //function to format datetime of Request viewer widget
-    function ConvertTODateString(dateFormat) {
-        var datevalue = new Date(dateFormat);
-        dateFormat = datevalue.getMonth() + 1 + "/" + datevalue.getDate() + "/" + datevalue.getFullYear() + " " + datevalue.getHours() + ":" + datevalue.getMinutes();
-        return dateFormat;
-    }
-
-    //Mark processed function will execute on click to update the Request status to "Processed".
-    function updateStatus(path) {
-        $.getJSON(path, function (response) {
-            var oldOwner = response.Message;
-            var Id = $("#hdnrequestid").val();
-            if (response.Name == "DifferentOwner") 
-                ShowFailedOwnershipVerification(oldOwner, Id);
-            else 
-                window.location.href = "@Url.Action("Index", "BookingRequest")";
-        });
-    }
-
-    function ShowFailedOwnershipVerification(bookingRequestOwner, bookingRequestId) {
-        if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestOwner + " \n Take Ownership of This BookingRequest?")) {
-            $.ajax({
-                url: "/BookingRequest/ProcessOwnerChange",
-                type: "GET",
-                data: { bookingRequestId: bookingRequestId },
-                success: function (response) {
-                    alert(response);
-                }
-            });
-        }
-    }
-
-    function HistoryClick(id) {
-        if (Kwasant.IFrame.PopupsActive()) { return; }
-        Kwasant.IFrame.Display('/Report/HistoryByBookingRequestId?bookingRequestID=' + id,
-            {
-                horizontalAlign: 'left',
-                callback: calendar.refreshCalendars
-            });
-    }
-
-    
-    $("#rdnShowRelatedItems").click(function () {
-        showRelatedItems();
-    });
-  
-    $("#rdnshowOtherBRs").click(function () {
-        showOtherBRs();
-    });
-
-    var table;
-    function showOtherBRs()
-    {
-        $('#tbluserrequests').show();
-        $('#tblRelatedItems_wrapper').hide();
-
-        //Parsing and binding the booking requests viewer
-        table = $('#tbluserrequests').DataTable({
-            destroy: true,
-            order: [0, 'desc'],
-            searching: false,
-            ordering: false,
-            bLengthChange: false,
-            processing: true,
-            serverSide: true, //Enabling server side processing
-            ajax:
-            {
-                //Ajax call to get all unprocessed booking request from server according to user.
-                "url": "@Url.Action("GetBookingRequests", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestID",
-            "dataSrc": function (json) {
-                var orgdata = JSON.parse(json.data);
-                return orgdata;
-            }
-        },
-            //Callback function for row created.
-            createdRow: function (row, data, index) {
-                if (data.id == $("#hdnrequestid").val() && $('#tbluserrequests tr').length > 2) {
-                    $(row).addClass('current-row');
-                }
-                else {
-                    $(row).removeClass('current-row');
-                }
-            },
-        columns: [
-            {
-                data: function (data) {
-                    return ConvertTODateString(data.date_received);
-                }
-            },
-            { data: 'subject' }
-        ]
-    });
-
-    var datenow = new Date();
-    var dp_day = storedCalendar[0];
-    dp_day.startDate = datenow;
-    calendar.refreshCalendars();
-    dp_navigator.select(new DayPilot.Date(datenow));
-    }
-
-
-    var table1;
-    function showRelatedItems() {
-
-        $('#tbluserrequests_wrapper').hide();
-        table1 = $('#tblRelatedItems').DataTable({
-            destroy: true,
-            order: [0, 'desc'],
-            searching: false,
-            ordering: false,
-            bLengthChange: false,
-            processing: true,
-            serverSide: true, 
-            ajax:
-            {
-                "url": "@Url.Action("ShowRelatedItems", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestID",
-            "dataSrc": function (json) {
-                var orgdata = JSON.parse(json.data);
-                return orgdata;
-            }
-        },
-            
-            createdRow: function (row, data, index) {
-                if (data.id == $("#hdnrequestid").val() && $('#tblRelatedItems tr').length > 2) {
-                    $(row).addClass('current-row');
-                }
-                else {
-                    $(row).removeClass('current-row');
-                }
-
-                // $(row).attr("style", "cursor:pointer;");
-            },
-        columns: [
-            {
-                data: function (data) {
-                    return ConvertTODateString(data.date);
-                }
-            },
-            { data: 'type' }
-        ]
-    });
-
-    }
-   
-    $('#tblRelatedItems').on('click', 'tr', function () {
-        //$("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
-        //$(this).attr("style", "background-color: #aaa;");
-        $('#tblRelatedItems tr').removeClass('current-row');
-        if ( $('#tblRelatedItems tr').length > 2) {     	
-            $(this).addClass('current-row');
-        }
-        var data = table1.row($(this)).data();
-        var dp_day = storedCalendar[0];
-        dp_day.startDate = data.date;
-        calendar.refreshCalendars();
-        var datevalue = new Date(data.date);
-        dp_navigator.select(new DayPilot.Date(datevalue));
-        if(data.type=="Clarification")
-            clarificationPopUpWindow(data.id);
-    });
-
-    function clarificationPopUpWindow(id)
-    {
-        if (Kwasant.IFrame.PopupsActive()) { return; }
-        var bookingrequest="@Model.BookingRequestID";
-        var path = '/ClarificationRequest/Edit/?bookingRequestId=' + bookingrequest + '&clarificationRequestId=' + id;
-        Kwasant.IFrame.Display(path,
-            {
-                horizontalAlign: 'left',
-            });
-    }
-
-    //this function will open the new iframe for negotiation window and close the iframe for Edit Event window.
-
-    function displayNegotiation(message) {
-        var notification = $('#notificationGroup');
-        $('#notificationMessage').html(message);
-        notification.fadeIn('slow');
-        setTimeout(function() {
-            notification.fadeOut('slow');
-        }, 5 * 1000);
-    }
-
-    function getNegotiationReview() {
-        Kwasant.IFrame.Display('/Negotiation/Review?negotiationID=' + linkedNegotiationID,
-                {
-                    horizontalAlign: 'right',
-                    minHeight: 700,
-                    minWidth: 630,
-                    callback: function(result) {
-                        if (result)
-                            displayNegotiation('Your negotiation was successfully updated');
-                    }
-                });
-    }
-    
-
-    function getNegotiationWindow() {
-        if (linkedNegotiationID != null) {
-            var bookingRequestId = $("#hdnrequestid").val();
-            var url= '/Negotiation/Edit';
-            $.ajax({
-                url: url,
-                type: 'Get',
-                data: {negotiationID:linkedNegotiationID,bookingRequestID:bookingRequestId},
-                async: false, 
-                success: function(response) {
-                    var oldOwner = response.Message;
-                    var Id = $("#hdnrequestid").val();
-                    if (response.Name == "DifferentOwner") 
-                        ShowFailedOwnershipVerification(oldOwner, Id);
-                    else 
-                    {
-                        Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID +'&bookingRequestID=' + bookingRequestId,
-                        {
-                            horizontalAlign: 'right',
-                            minHeight: 700,
-                            minWidth: 630,
-                            callback: function(result) {
-                                if (result)
-                                    displayNegotiation('Your negotiation was successfully updated');
-                            }
-                        });
-                    }
-                }
-            });
-           
-        } else {
-            Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestID',
-            {
-                horizontalAlign: 'right',
-                minHeight: 700,
-                minWidth: 300,
-                callback: function(result) {
-                    if (result) {
-                        $('#liCreateOrEditNegotiation').html('Edit');
-                        linkedNegotiationID = result;
-                        updateCreateResolveButtons();
-                        displayNegotiation('Your negotiation was successfully created');
-                    }
-                }
-            });
-        }
-    }
-
-    function resolveActiveNegotiation(negotiationID)
-    {
-        if (confirm("Are you sure you want to resolve this negotiation?")) {
-            var url = "/Negotiation/MarkResolved?negotiationID=" + negotiationID;
-            Kwasant.IFrame.DispatchUrlRequest(url, function (data) {
-                if (!data) {
-                    alert('An error occured on the server. Your changes were not saved.');
-                } else {
-                    displayNegotiation('Your negotiation was successfully resolved.');
-                    linkedNegotiationID = null;
-                    $('#liCreateOrEditNegotiation').html('Create');
-                    updateCreateResolveButtons();
-                }
-            });
-        }       
-    }
-
-    var linkedNegotiationID = @Html.Raw(Model.LinkedNegotiationID == null ? "null" : Model.LinkedNegotiationID.ToString());
-    
-    function updateCreateResolveButtons() {
-        if (linkedNegotiationID == null) {
-            $('#liReview').hide();
-            $('#liResolveNegotiation').hide();
-        } else {
-            $('#liReview').show();
-            $('#liResolveNegotiation').show();
-        }
-    }
-  
-    $(document).ready(function() {
-        updateCreateResolveButtons();
-
-        $('.navbar .dropdown').hover(function() {
-            $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
-        }, function() {
-            $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
-        });
-    });
-</script>

@@ -1,4 +1,5 @@
-﻿@model KwasantWeb.ViewModels.NegotiationVM
+﻿@using Newtonsoft.Json
+@model KwasantWeb.ViewModels.NegotiationVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @section bodyStyle {overflow-y:scroll;}
 @section immediateScripts
@@ -17,47 +18,18 @@
         var widget;
         $(function() {
             var settings = {
-
+                
             };
-
-            var questions = [
-                
-            ];
-
-            var answers;
-            var currentQuestion;
-            var currentAnswer;
-            var calendarEvents;
-            @{
-                foreach (var question in Model.Questions)
-                {
-                    @:currentQuestion = {};
-                    @:currentQuestion.Id = @question.Id
-                    @:currentQuestion.Text = '@Html.Raw(HttpUtility.JavaScriptStringEncode(@question.Text))';
-                    @:currentQuestion.Type = '@question.AnswerType';
-                    @:currentQuestion.CalendarID = @Html.Raw(question.CalendarID == null ? "null" : question.CalendarID.ToString());
-                    @:answers = [];
-                    foreach (var answer in question.Answers)
-                    {
-                        @:currentAnswer = {};
-                        @:currentAnswer.Id = @answer.Id
-                        
-                        @:currentAnswer.Text = '@Html.Raw(HttpUtility.JavaScriptStringEncode(@answer.Text))';
-                        
-                        @:currentAnswer.EventID = @Html.Raw(answer.EventID.HasValue? answer.EventID.Value.ToString() : "null");
-                        if (answer.EventStartDate.HasValue)
-                        {
-                            @:currentAnswer.EventStart = new Date(@answer.EventStartDate.Value.Year, (@answer.EventStartDate.Value.Month - 1), @answer.EventStartDate.Value.Day, @answer.EventStartDate.Value.Hour, @answer.EventStartDate.Value.Minute, @answer.EventStartDate.Value.Millisecond)
-                        }
-                        if (answer.EventEndDate.HasValue)
-                        {
-                            @:currentAnswer.EventEnd = new Date(@answer.EventEndDate.Value.Year, (@answer.EventEndDate.Value.Month - 1), @answer.EventEndDate.Value.Day, @answer.EventEndDate.Value.Hour, @answer.EventEndDate.Value.Minute, @answer.EventEndDate.Value.Millisecond)
-                        }
-                
-                        @:answers.push(currentAnswer);
-                    }
-                    @:currentQuestion.Answers = answers;
-                    @:questions.push(currentQuestion);
+            
+            var questions = @Html.Raw(JsonConvert.SerializeObject(Model.Questions, Formatting.Indented));
+            
+            for (var i = 0; i < questions.length; i++) {
+                for (var j = 0; j < questions[i].Answers.length; j++) {
+                    var a = questions[i].Answers[j];
+                    if (a.EventStartDate != null)
+                        a.EventStart = new Date(a.EventStartDate);
+                    if (a.EventEndDate != null)
+                        a.EventEnd = new Date(a.EventEndDate);
                 }
             }
 
@@ -82,6 +54,15 @@
             
             if(negotiation.Questions.length == 0){
                 validationErrors.push('Negotiation should have atleast one question');
+            }
+            
+            var hasAttendee = false;
+            $.each(negotiation.Attendees, function (index, obj) {
+                if (obj !== '')
+                    hasAttendee = true;
+            });
+            if (!hasAttendee) {
+                validationErrors.push('Negotiation should have atleast one attendee');
             }
 
             $.each(negotiation.Questions, function(index, obj) {

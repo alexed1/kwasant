@@ -18,12 +18,14 @@ namespace KwasantCore.Services
     public class Invitation
     {
         private readonly IConfigRepository _configRepository;
+        private readonly EmailAddress _emailAddress;
 
-        public Invitation(IConfigRepository configRepository)
+        public Invitation(IConfigRepository configRepository, EmailAddress emailAddress)
         {
             if (configRepository == null)
                 throw new ArgumentNullException("configRepository");
             _configRepository = configRepository;
+            _emailAddress = emailAddress;
         }
 
         public void Dispatch(IUnitOfWork uow, InvitationDO curInvitation)
@@ -33,8 +35,7 @@ namespace KwasantCore.Services
             if (curInvitation == null)
                 throw new ArgumentNullException("curInvitation");
 
-            Email email = new Email(uow);
-            email.Send(curInvitation);
+            uow.EnvelopeRepository.ConfigurePlainEmail(curInvitation);
         }
 
         public InvitationDO Generate(IUnitOfWork uow, int curType, AttendeeDO curAttendee, EventDO curEvent)
@@ -46,17 +47,6 @@ namespace KwasantCore.Services
             if (curEvent == null)
                 throw new ArgumentNullException("curEvent");
 
-            string fromEmail, fromName;
-            if (curAttendee.EmailAddress.Address == curEvent.BookingRequest.User.EmailAddress.Address)
-            {
-                fromEmail = _configRepository.Get("EmailFromAddress_DirectMode");
-                fromName = _configRepository.Get("EmailFromAddress_DirectMode");
-            }
-            else
-            {
-                fromEmail = _configRepository.Get("EmailFromAddress_DelegateMode");
-                fromName = String.Format(_configRepository.Get("EmailFromName_DelegateMode"), GetOriginatorName(curEvent));
-            }
             string replyToEmail = _configRepository.Get("replyToEmail");
 
             var emailAddressRepository = uow.EmailAddressRepository;
@@ -66,17 +56,15 @@ namespace KwasantCore.Services
             InvitationDO curInvitation = new InvitationDO();
             curInvitation.ConfirmationStatus = ConfirmationStatus.Unnecessary;
 
-            //configure the sender information
-            var fromEmailAddr = emailAddressRepository.GetOrCreateEmailAddress(fromEmail);
-            fromEmailAddr.Name = fromName;
-            curInvitation.From = fromEmailAddr;
-
-            var replyToAddress = emailAddressRepository.GetOrCreateEmailAddress(replyToEmail);
-            curInvitation.ReplyTo = replyToAddress;
-
             var toEmailAddress = emailAddressRepository.GetOrCreateEmailAddress(curAttendee.EmailAddress.Address);
             toEmailAddress.Name = curAttendee.Name;
             curInvitation.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
+
+            //configure the sender information
+            curInvitation.From = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, curEvent.CreatedBy);
+
+            var replyToAddress = emailAddressRepository.GetOrCreateEmailAddress(replyToEmail);
+            curInvitation.ReplyTo = replyToAddress;
 
             var user = new User();
             var userID = user.GetOrCreateFromBR(uow, curAttendee.EmailAddress).Id;
@@ -157,24 +145,7 @@ namespace KwasantCore.Services
         public string GetOriginatorName(EventDO curEventDO)
         {
             UserDO originator = curEventDO.CreatedBy;
-            string firstName = originator.FirstName;
-            string lastName = originator.LastName;
-            if (firstName != null)
-            {
-                if (lastName == null)
-                    return firstName;
-
-                return firstName + " " + lastName;
-            }
-
-            EmailAddressDO curEmailAddress = originator.EmailAddress;
-            if (curEmailAddress.Name != null)
-                return curEmailAddress.Name;
-
-            if (curEmailAddress.Address.IsEmailAddress())
-                return curEmailAddress.Address.Split(new[] { '@' })[0];
-
-            throw new ArgumentException("Failed to extract originator info from this Event. Something needs to be there.");
+            return User.GetDisplayName(originator);
         }
 
         private String GetEmailHTMLTextForUpdate(EventDO eventDO, String userID)
