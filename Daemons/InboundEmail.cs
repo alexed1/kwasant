@@ -4,6 +4,7 @@ using System.Net.Mail;
 using System.Net.Sockets;
 using Daemons.InboundEmailHandlers;
 using Data.Infrastructure;
+using KwasantCore.ExternalServices;
 using S22.Imap;
 using StructureMap;
 using Utilities;
@@ -13,7 +14,7 @@ namespace Daemons
 {
     public class InboundEmail : Daemon
     {
-        private IImapClient _client;
+        private IKwasantIMapClient _client;
         private readonly IConfigRepository _configRepository;
         private readonly IInboundEmailHandler[] _handlers;
 
@@ -25,20 +26,7 @@ namespace Daemons
             _handlers = new IInboundEmailHandler[]
                             {
                                 new InvitationResponseHandler(),
-                                new BookingRequestHandler(),
-                            };
-        }
-
-        //be careful about using this form. can get into problems involving disposal.
-        public InboundEmail(IImapClient client, IConfigRepository configRepository)
-        {
-            _client = client;
-            _configRepository = configRepository;
-
-            _handlers = new IInboundEmailHandler[]
-                            {
-                                new InvitationResponseHandler(),
-                                new BookingRequestHandler(),
+                                new BookingRequestHandler()
                             };
         }
 
@@ -86,7 +74,9 @@ namespace Daemons
 
                 try
                 {
-                    _client = new ImapClient(GetIMAPServer(), GetIMAPPort(), UseSSL());
+                    _client = ObjectFactory.GetInstance<IKwasantIMapClient>();
+                    _client.Initialize(GetIMAPServer(), GetIMAPPort(), UseSSL());
+
                     string curUser = GetUserName();
                     string curPwd = GetPassword();
                     _client.Login(curUser, curPwd, AuthMethod.Login);

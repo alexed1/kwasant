@@ -10,7 +10,7 @@ using Data.Repositories;
 using Data.States;
 using Data.Validations;
 using FluentValidation;
-using KwasantCore.Managers.APIManager.Packagers.Mandrill;
+using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
 using StructureMap;
 using Utilities;
 

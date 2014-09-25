@@ -2,12 +2,13 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using KwasantCore.ExternalServices;
 using KwasantCore.Managers.APIManager.Packagers;
-using KwasantCore.Managers.APIManager.Packagers.Mandrill;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
+using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
 using KwasantCore.Security;
 using KwasantCore.Services;
 using StructureMap;
@@ -68,6 +69,8 @@ namespace KwasantCore.StructureMap
 
                 For<IKwasantRoleStore>().Use(new KwasantRoleStore());
                 For<IKwasantUserStore>().Use(new KwasantUserStore());
+
+                For<IKwasantIMapClient>().Use<KwasantImapClient>();
             }
         }
 
@@ -75,7 +78,6 @@ namespace KwasantCore.StructureMap
         {
             public TestMode()
             {
-                //we need to run tests that "really send it". may want to also do some mocks
                 For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
@@ -86,6 +88,8 @@ namespace KwasantCore.StructureMap
 
                 For<IKwasantRoleStore>().Use(new MockedRoleStore());
                 For<IKwasantUserStore>().Use(new MockedUserStore());
+
+
             }
         }
 

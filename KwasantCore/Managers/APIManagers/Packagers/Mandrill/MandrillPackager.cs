@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Data.Entities;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Transmitters.Restful;
 using Newtonsoft.Json;
 using Utilities;
 using JsonSerializer = KwasantCore.Managers.APIManagers.Serializers.Json.JsonSerializer;
 
-namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
+namespace KwasantCore.Managers.APIManagers.Packagers.Mandrill
 { 
     //uses the Mandrill API at https://mandrillapp.com/settings/index
     public class MandrillPackager : IEmailPackager
@@ -61,11 +62,6 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
         }
 
         #endregion
-
-
-
-
-
 
         #region Method
 
