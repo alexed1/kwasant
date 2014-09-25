@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Mail;
 
 namespace KwasantCore.ExternalServices
@@ -20,8 +21,16 @@ namespace KwasantCore.ExternalServices
         public void Send(MailMessage message)
         {
             _serviceManager.LogAttempt("Sending an email...");
-            _internalClient.Send(message);
-            _serviceManager.LogSucessful("Email sent.");
+            try
+            {
+                _internalClient.Send(message);
+                _serviceManager.LogSucessful("Email sent.");
+            }
+            catch (Exception ex)
+            {
+                _serviceManager.LogFail(ex, "Failed to send email.");
+                throw;
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ namespace KwasantCore.ExternalServices
         
         public void Initialize(String serverURL, int port, bool useSSL)
         {
-            _serviceManager = new ServiceManager<ImapClientWrapper>("Imap Service");
+            _serviceManager = new ServiceManager<ImapClientWrapper>("Imap Service: " + serverURL);
 
             _internalClient = new ImapClient(serverURL, port, useSSL);
 
@@ -39,9 +39,17 @@ namespace KwasantCore.ExternalServices
         public IEnumerable<MailMessage> GetMessages(IEnumerable<uint> uids, bool seen = true, string mailbox = null)
         {
             _serviceManager.LogAttempt("Retrieving messages...");
-            var messages = _internalClient.GetMessages(uids, seen, mailbox).ToList();
-            _serviceManager.LogSucessful(messages.Count + " messages retrieved.");
-            return messages;
+            try
+            {
+                var messages = _internalClient.GetMessages(uids, seen, mailbox).ToList();
+                _serviceManager.LogSucessful(messages.Count + " messages retrieved.");
+                return messages;
+            }
+            catch (Exception ex)
+            {
+                _serviceManager.LogFail(ex, "Failed to retrieve messages.");
+                throw;
+            }
         }
 
         //The below is a manual implementation of .NET's event system

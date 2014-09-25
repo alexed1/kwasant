@@ -1,4 +1,5 @@
-﻿using Twilio;
+﻿using System;
+using Twilio;
 
 namespace KwasantCore.ExternalServices
 {
@@ -16,9 +17,18 @@ namespace KwasantCore.ExternalServices
         public SMSMessage SendSmsMessage(string from, string to, string body)
         {
             _serviceManager.LogAttempt("Sending an sms...");
-            var message = _internalClient.SendSmsMessage(from, to, body);
-            _serviceManager.LogSucessful("SMS sent.");
-            return message;
+            try
+            {
+                var message = _internalClient.SendSmsMessage(from, to, body);
+                _serviceManager.LogSucessful("SMS sent.");
+                return message;
+            }
+            catch (Exception ex)
+            {
+                _serviceManager.LogFail(ex, "Failed to send an sms.");    
+                throw;
+            }
+            
         }
     }
 }

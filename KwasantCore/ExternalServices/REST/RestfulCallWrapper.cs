@@ -11,7 +11,7 @@ namespace KwasantCore.ExternalServices.REST
 
         public void Initialize(string baseURL, string resource, Method method)
         {
-            _serviceManager = new ServiceManager<RestfulCallWrapper>("REST Service");
+            _serviceManager = new ServiceManager<RestfulCallWrapper>("REST Service: " + baseURL);
             _client = new RestfulCall(baseURL, resource, method);
         }
 
@@ -23,9 +23,17 @@ namespace KwasantCore.ExternalServices.REST
         public IRestfulResponse Execute()
         {
             _serviceManager.LogAttempt("Sending REST call...");
-            var result = new RestfulResponseWrapper(_client.Execute());
-            _serviceManager.LogSucessful("REST call sent.");
-            return result;
+            try
+            {
+                var result = new RestfulResponseWrapper(_client.Execute());
+                _serviceManager.LogSucessful("REST call sent.");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _serviceManager.LogFail(ex, "Error sending REST call...");
+                throw;
+            }
         }
     }
 }

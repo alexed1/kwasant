@@ -35,8 +35,7 @@ namespace KwasantCore.ExternalServices
                     ServiceInfo[typeof(T)] = service = new ServiceInformation();
                 
                 service.ServiceName = serviceName;
-            }
-                
+            }       
         }
 
         public static void LogEvent<T>(String eventName)
@@ -55,6 +54,12 @@ namespace KwasantCore.ExternalServices
         {
             lock (ServiceInfo)
                 ServiceInfo[typeof(T)].AddSuccess();
+        }
+
+        public static void LogFail<T>()
+        {
+            lock (ServiceInfo)
+                ServiceInfo[typeof(T)].AddFail();
         }
 
         public class ServiceInformation
@@ -113,6 +118,21 @@ namespace KwasantCore.ExternalServices
                         _success = value;
                 }
             }
+
+            private int _fail;
+            public int Fail
+            {
+                get
+                {
+                    lock (ServiceInfo)
+                        return _fail;
+                }
+                set
+                {
+                    lock (ServiceInfo)
+                        _fail = value;
+                }
+            }
             
             public void AddAttempt()
             {
@@ -125,6 +145,13 @@ namespace KwasantCore.ExternalServices
                 lock (ServiceInfo)
                     Success++;
             }
+
+            public void AddFail()
+            {
+                lock (ServiceInfo)
+                    Fail++;
+            }
+
             public void AddEvent(String eventName)
             {
                 lock (ServiceInfo)
@@ -157,6 +184,27 @@ namespace KwasantCore.ExternalServices
             if (!String.IsNullOrEmpty(eventName))
                 LogEvent(eventName);
             ServiceManager.LogSuccess<T>();
+        }
+
+        public void LogFail(Exception ex, string eventName = null)
+        {
+            var currException = ex;
+            var exceptionMessages = new List<String>();
+            while (currException != null)
+            {
+                exceptionMessages.Add(currException.Message);
+                currException = currException.InnerException;
+            }
+
+            var exceptionMessage = String.Join(Environment.NewLine, exceptionMessages);
+
+            if (eventName == null)
+                eventName = exceptionMessage;
+            else
+                eventName += " " + exceptionMessage;
+            
+            LogEvent(eventName);
+            ServiceManager.LogFail<T>();
         }
     }
 }

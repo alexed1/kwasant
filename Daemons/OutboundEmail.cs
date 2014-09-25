@@ -5,14 +5,11 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
-using Microsoft.WindowsAzure;
 using Data.Infrastructure;
-using System.Collections.Generic;
 using KwasantCore.Services;
 
 namespace Daemons
