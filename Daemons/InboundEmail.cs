@@ -9,12 +9,13 @@ using S22.Imap;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
+using IImapClient = KwasantCore.ExternalServices.IImapClient;
 
 namespace Daemons
 {
     public class InboundEmail : Daemon
     {
-        private IKwasantIMapClient _client;
+        private IImapClient _client;
         private readonly IConfigRepository _configRepository;
         private readonly IInboundEmailHandler[] _handlers;
 
@@ -65,7 +66,7 @@ namespace Daemons
             }
         }
 
-        private IImapClient Client
+        private S22.Imap.IImapClient Client
         {
             get
             {
@@ -74,7 +75,7 @@ namespace Daemons
 
                 try
                 {
-                    _client = ObjectFactory.GetInstance<IKwasantIMapClient>();
+                    _client = ObjectFactory.GetInstance<IImapClient>();
                     _client.Initialize(GetIMAPServer(), GetIMAPPort(), UseSSL());
 
                     string curUser = GetUserName();
@@ -102,7 +103,7 @@ namespace Daemons
             };
         }
 
-        private void GetUnreadMessages(IImapClient client)
+        private void GetUnreadMessages(S22.Imap.IImapClient client)
         {
             try
             {

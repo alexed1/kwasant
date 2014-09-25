@@ -5,13 +5,13 @@ using S22.Imap;
 
 namespace KwasantCore.ExternalServices
 {
-    public class KwasantImapClient : IKwasantIMapClient
+    public class ImapClient : IImapClient
     {
-        private ImapClient _internalClient;
+        private S22.Imap.ImapClient _internalClient;
         
         public void Initialize(String serverURL, int port, bool useSSL)
         {
-            _internalClient = new ImapClient(serverURL, port, useSSL);
+            _internalClient = new S22.Imap.ImapClient(serverURL, port, useSSL);
             _internalClient.NewMessage += (sender, args) => { if (NewMessage != null) NewMessage(sender, args); };
             _internalClient.MessageDeleted += (sender, args) => { if (MessageDeleted != null) MessageDeleted(sender, args); };
         }

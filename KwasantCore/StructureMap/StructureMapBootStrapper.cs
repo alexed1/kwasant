@@ -70,7 +70,7 @@ namespace KwasantCore.StructureMap
                 For<IKwasantRoleStore>().Use(new KwasantRoleStore());
                 For<IKwasantUserStore>().Use(new KwasantUserStore());
 
-                For<IKwasantIMapClient>().Use<KwasantImapClient>();
+                For<IImapClient>().Use<ImapClient>();
             }
         }
 

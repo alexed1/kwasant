@@ -1,9 +1,8 @@
 ﻿using System;
-using S22.Imap;
 
 namespace KwasantCore.ExternalServices
 {
-    public interface IKwasantIMapClient : IImapClient
+    public interface IImapClient : S22.Imap.IImapClient
     {
         void Initialize(String serverURL, int port, bool useSSL);
     }

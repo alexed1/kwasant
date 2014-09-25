@@ -148,8 +148,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
-    <Compile Include="ExternalServices\IKwasantIMapClient.cs" />
-    <Compile Include="ExternalServices\KwasantIIMapClient.cs" />
+    <Compile Include="ExternalServices\IImapClient.cs" />
+    <Compile Include="ExternalServices\ImapClient.cs" />
+    <Compile Include="ExternalServices\REST\IRestfullCall.cs" />
+    <Compile Include="ExternalServices\REST\IRestfulResponse.cs" />
+    <Compile Include="ExternalServices\REST\RestfulCallWrapper.cs" />
+    <Compile Include="ExternalServices\REST\RestfulResponseWrapper.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
@@ -160,6 +164,16 @@
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\CalDAVClient.cs" />
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClient.cs" />
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClientFactory.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\ActiveMandrillWebhook.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillBasePackage.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillDeleteWebhook.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillDynamicContentChunk.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillListWebhooks.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillMergeRecipient.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillResponse.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillTemplatePackage.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookAddRequest.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookResponse.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\IAuthorizingHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\OAuthHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Packagers\DataTable\DataTablesPackager.cs" />

@@ -18,7 +18,7 @@ namespace KwasantTest.Daemons
     public class InboundEmailTests
     {
         private MailMessage _mailMessage;
-        private IKwasantIMapClient _client;
+        private IImapClient _client;
         private FixtureData _fixtureData;
 
         [SetUp]
@@ -28,7 +28,7 @@ namespace KwasantTest.Daemons
 
             _fixtureData = new FixtureData();
 
-            var clientMock = new Mock<IKwasantIMapClient>();
+            var clientMock = new Mock<IImapClient>();
 
             _mailMessage = new MailMessage();
 
@@ -53,7 +53,7 @@ namespace KwasantTest.Daemons
             _mailMessage.From = new MailAddress(testFromEmailAddress);
             _mailMessage.To.Add(new MailAddress(testToEmailAddress));
 
-            ObjectFactory.Configure(a => a.For<IKwasantIMapClient>().Use(_client));
+            ObjectFactory.Configure(a => a.For<IImapClient>().Use(_client));
             
             var ie = new InboundEmail();
             DaemonTests.RunDaemonOnce(ie);
@@ -138,7 +138,7 @@ END:VCALENDAR",
             _mailMessage.AlternateViews.Add(new AlternateView(attachmentStream, "text/calendar"));
             _mailMessage.From = new MailAddress(curAttendee.EmailAddress.Address);
 
-            ObjectFactory.Configure(a => a.For<IKwasantIMapClient>().Use(_client));
+            ObjectFactory.Configure(a => a.For<IImapClient>().Use(_client));
             
             var ie = new InboundEmail();
 
