@@ -294,7 +294,6 @@
     <Compile Include="KwasantHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\BookingRequestAdminVM.cs" />
     <Compile Include="ViewModels\CalendarShowVM.cs" />
-    <Compile Include="ViewModels\CreateUserVM.cs" />
     <Compile Include="ViewModels\DashboardShowVM.cs" />
     <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />
     <Compile Include="ViewModels\CalendarVM.cs" />
@@ -322,6 +321,7 @@
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\RemoteCalendarVM.cs" />
     <Compile Include="ViewModels\UserAdministerVM.cs" />
+    <Compile Include="ViewModels\UserCreateVM.cs" />
     <Compile Include="ViewModels\UserQueryVM.cs" />
     <Compile Include="ViewModels\UsersAdminVM.cs" />
     <Compile Include="ViewModels\UserShowAllVM.cs" />

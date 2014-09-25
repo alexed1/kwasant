@@ -23,7 +23,9 @@ namespace KwasantCore.Services
         private readonly EmailAddress _emailAddress;
 
         #region Constructor
-
+        public Email()
+        {
+        }
 
       
         /// <summary>
@@ -78,7 +80,8 @@ namespace KwasantCore.Services
             curEmail.From = submittedUserData.EmailAddress;
             curEmail.AddEmailRecipient(EmailParticipantType.To, submittedUserData.EmailAddress);
             curEmail.Subject = "User Settings Notification";
-            new Email(uow).SendTemplate("User_Settings_Notification", curEmail, null);
+            //new Email(uow).SendTemplate(uow, "User_Settings_Notification", curEmail, null);
+            uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "User_Settings_Notification", null);
         }
 
         #endregion
