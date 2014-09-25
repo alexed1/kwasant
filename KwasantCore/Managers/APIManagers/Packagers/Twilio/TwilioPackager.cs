@@ -1,6 +1,5 @@
 ﻿using System;
 using KwasantCore.ExternalServices;
-using KwasantCore.Managers.APIManager.Packagers;
 using StructureMap;
 using Twilio;
 using Utilities;
@@ -41,8 +40,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.Twilio
             SMSMessage result = _twilio.SendSmsMessage(_twilioFromNumber, number, message);
             if (result.RestException != null)
             {
-                if (result.RestException.MoreInfo == "https://www.twilio.com/docs/errors/21606" &&
-                    System.Diagnostics.Debugger.IsAttached)
+                if (result.RestException.MoreInfo == "https://www.twilio.com/docs/errors/21606" && System.Diagnostics.Debugger.IsAttached)
                 {
                     //swallow the twilio exception that gets thrown when you use the test account, so it doesn't clutter up the logs
                 }

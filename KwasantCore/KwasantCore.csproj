@@ -149,11 +149,16 @@
   <ItemGroup>
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
-    <Compile Include="ExternalServices\ImapClient.cs" />
+    <Compile Include="ExternalServices\ImapClientWrapper.cs" />
+    <Compile Include="ExternalServices\ISmtpClient.cs" />
+    <Compile Include="ExternalServices\ITwilioRestClient.cs" />
     <Compile Include="ExternalServices\REST\IRestfullCall.cs" />
     <Compile Include="ExternalServices\REST\IRestfulResponse.cs" />
     <Compile Include="ExternalServices\REST\RestfulCallWrapper.cs" />
     <Compile Include="ExternalServices\REST\RestfulResponseWrapper.cs" />
+    <Compile Include="ExternalServices\ServiceManager.cs" />
+    <Compile Include="ExternalServices\SmtpClientWrapper.cs" />
+    <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
