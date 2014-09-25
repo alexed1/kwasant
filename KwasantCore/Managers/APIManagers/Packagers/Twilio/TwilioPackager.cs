@@ -1,10 +1,11 @@
 ﻿using System;
-using Microsoft.WindowsAzure;
+using KwasantCore.ExternalServices;
+using KwasantCore.Managers.APIManager.Packagers;
 using StructureMap;
 using Twilio;
 using Utilities;
 
-namespace KwasantCore.Managers.APIManager.Packagers.Twilio
+namespace KwasantCore.Managers.APIManagers.Packagers.Twilio
 {
     public class TwilioPackager : ISMSPackager
     {
@@ -12,12 +13,10 @@ namespace KwasantCore.Managers.APIManager.Packagers.Twilio
         private const string AuthTokenWebConfigName = "TWILIO_TOKEN";
         private const string FromNumberWebConfigName = "TwilioFromNumber";
 
-        private readonly TwilioRestClient _twilio;
+        private readonly ITwilioRestClient _twilio;
         private readonly String _twilioFromNumber;
         public TwilioPackager()
         {
-
-
             var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
             //this will be overridden by Azure settings with the same name, on RC, Staging, and Production
             string accountSID = configRepo.Get(AccountSIDWebConfigName);
@@ -25,15 +24,16 @@ namespace KwasantCore.Managers.APIManager.Packagers.Twilio
             _twilioFromNumber = configRepo.Get(FromNumberWebConfigName);
 
             if (String.IsNullOrEmpty(accountSID))
-                throw new ArgumentNullException(AccountSIDWebConfigName, "Value must be set in web.config");
+                throw new ArgumentNullException(AccountSIDWebConfigName, @"Value must be set in web.config");
 
             if (String.IsNullOrEmpty(accountAuthKey))
-                throw new ArgumentNullException(AuthTokenWebConfigName, "Value must be set in web.config");
+                throw new ArgumentNullException(AuthTokenWebConfigName, @"Value must be set in web.config");
 
             if (String.IsNullOrEmpty(_twilioFromNumber))
-                throw new ArgumentNullException(FromNumberWebConfigName, "Value must be set in web.config");
+                throw new ArgumentNullException(FromNumberWebConfigName, @"Value must be set in web.config");
 
-            _twilio = new TwilioRestClient(accountSID, accountAuthKey);
+            _twilio = ObjectFactory.GetInstance<ITwilioRestClient>();
+            _twilio.Initialize(accountSID, accountAuthKey);
         }
 
         public SMSMessage SendSMS(String number, String message)

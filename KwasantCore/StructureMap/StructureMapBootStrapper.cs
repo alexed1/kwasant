@@ -3,13 +3,14 @@ using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using KwasantCore.ExternalServices;
+using KwasantCore.ExternalServices.REST;
 using KwasantCore.Managers.APIManager.Packagers;
-using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
 using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
+using KwasantCore.Managers.APIManagers.Packagers.Twilio;
 using KwasantCore.Security;
 using KwasantCore.Services;
 using StructureMap;
@@ -72,6 +73,9 @@ namespace KwasantCore.StructureMap
                 For<IKwasantUserStore>().Use(new KwasantUserStore());
 
                 For<IImapClient>().Use<ImapClientWrapper>();
+                For<ISmtpClient>().Use<SmtpClientWrapper>();
+                For<IRestfullCall>().Use<RestfulCallWrapper>();
+                For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
             }
         }
 

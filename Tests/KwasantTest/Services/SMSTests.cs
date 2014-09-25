@@ -1,5 +1,6 @@
 ﻿using KwasantCore.Managers.APIManager.Packagers;
-using KwasantCore.Managers.APIManager.Packagers.Twilio;
+using KwasantCore.Managers.APIManagers.Packagers;
+using KwasantCore.Managers.APIManagers.Packagers.Twilio;
 using KwasantCore.StructureMap;
 using NUnit.Framework;
 using StructureMap;
