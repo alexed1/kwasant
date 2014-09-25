@@ -296,6 +296,7 @@
     <Compile Include="ViewModels\CalendarShowVM.cs" />
     <Compile Include="ViewModels\CreateUserVM.cs" />
     <Compile Include="ViewModels\DashboardShowVM.cs" />
+    <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
     <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />
     <Compile Include="ViewModels\CalendarVM.cs" />
     <Compile Include="ViewModels\EventVM.cs" />
@@ -788,6 +789,7 @@
     <Content Include="Views\BookingRequest\Administer.cshtml" />
     <Content Include="Views\Calendar\Edit.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
+    <Content Include="Views\Admin\Diagnostics.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

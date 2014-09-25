@@ -1,25 +1,16 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Data.Validations;
-using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers;
-using KwasantICS.DDay.iCal;
-using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
-using RazorEngine;
 using StructureMap;
 using Microsoft.WindowsAzure;
 using KwasantCore.Services;
 using Utilities;
-using Encoding = System.Text.Encoding;
 
 namespace KwasantCore.Managers
 {
@@ -54,7 +45,6 @@ namespace KwasantCore.Managers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                // WARNING: 'user' parameter must not be used as reference in scope of this UnitOfWork as it is attached to another UnitOfWork
                 var curUser = uow.UserRepository.GetByKey(curUserId);
                 EmailDO curEmail = new EmailDO();
                 curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<KwasantWeb.ViewModels.DiagnosticInfoVM>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+<h2>Diagnostics</h2>
+@foreach (var service in Model)
+{
+    <h3>@service.ServiceName @service.Percent % Last updated @service.LastUpdated</h3>
+    <span>Attempts: @service.Attempts</span>
+    <span>Success: @service.Success</span>
+    <table id="tblIncident" class="data-table">
+        <thead>
+            <tr>
+                <th style="width: 50%">Date</th>
+                <th style="width: 50%">Event</th>
+            </tr>
+            @foreach (var ev in service.Events)
+            {
+                <tr>
+                    <td>
+                        @ev.Date
+                    </td>
+                    <td>
+                        @ev.EventName
+                    </td>
+                </tr>
+            }
+        </thead>
+    </table>
+}
+<a href="/">Go to kwasant.com</a>
+<script type="text/javascript">
+ </script>

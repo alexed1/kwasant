@@ -24,94 +24,51 @@ namespace Daemons
 
         public OutboundEmail()
         {
-
-            #region RegisterEvent Calls
-            RegisterEvent<string, int>(MandrillPackagerEventHandler.EmailSent, (id, emailID) =>
-            {
-                IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                EmailRepository emailRepository = unitOfWork.EmailRepository;
-                var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
-                if (emailToUpdate == null)
-                {
-                    Logger.GetLogger()
-                        .Error("Email id " + emailID +
-                               " recieved a callback saying it was sent from Mandrill, but the email was not found in our database");
-                    return;
-                }
-
-                emailToUpdate.EmailStatus = EmailState.Sent;
-                unitOfWork.SaveChanges();
-            });
-
-            RegisterEvent<string, string, int>(MandrillPackagerEventHandler.EmailRejected, (id, reason, emailID) =>
-            {
-                IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                string logMessage = String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason);
-                var emailToUpdate = ProcessMandrillError(logMessage, emailID);
-                emailToUpdate.EmailStatus = EmailState.SendRejected;
-                unitOfWork.SaveChanges();
-            });
-
-            RegisterEvent<int, string, string, int>(MandrillPackagerEventHandler.EmailCriticalError,
-                (errorCode, name, message, emailID) =>
-                {
-                    IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                  
-
-                    string logMessage = String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}", errorCode, name, message, emailID);
-                    var emailToUpdate = ProcessMandrillError(logMessage, emailID);
-
-                    emailToUpdate.EmailStatus = EmailState.SendCriticalError;
-                    AlertManager.Error_EmailSendFailure();
-                    Email _email = ObjectFactory.GetInstance<Email>();
-                    _email.SendAlertEmail();
-
-                    unitOfWork.SaveChanges();
-                });
-
             RegisterEvent<int>(GmailPackagerEventHandler.EmailSent, emailID =>
             {
-                IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                EmailRepository emailRepository = unitOfWork.EmailRepository;
-                var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
-                if (emailToUpdate == null)
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    Logger.GetLogger()
-                        .Error("Email id " + emailID +
-                               " recieved a callback saying it was sent from Gmail, but the email was not found in our database");
-                    return;
-                }
+                    EmailRepository emailRepository = uow.EmailRepository;
+                    var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
+                    if (emailToUpdate == null)
+                    {
+                        Logger.GetLogger().Error("Email id " + emailID + " recieved a callback saying it was sent from Gmail, but the email was not found in our database");
+                        return;
+                    }
 
-                emailToUpdate.EmailStatus = EmailState.Sent;
-                unitOfWork.SaveChanges();
+                    emailToUpdate.EmailStatus = EmailState.Sent;
+                    uow.SaveChanges();
+                }
             });
 
             RegisterEvent<string, int>(GmailPackagerEventHandler.EmailRejected, (reason, emailID) =>
             {
-                IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-               
-
-                string logMessage = String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason);
-                var emailToUpdate = ProcessMandrillError(logMessage, emailID);
-                emailToUpdate.EmailStatus = EmailState.SendRejected;
-                unitOfWork.SaveChanges();
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    string logMessage = String.Format("Email was rejected with id '{0}'. Reason: {1}", emailID, reason);
+                    var emailToUpdate = ProcessMandrillError(uow, logMessage, emailID);
+                    emailToUpdate.EmailStatus = EmailState.SendRejected;
+                    uow.SaveChanges();
+                }
             });
 
             RegisterEvent<int, string, string, int>(GmailPackagerEventHandler.EmailCriticalError,
                 (errorCode, name, message, emailID) =>
                 {
-                    IUnitOfWork unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>();
-                    
-                    string logMessage = String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}", errorCode, name, message, emailID);
-                    var emailToUpdate = ProcessMandrillError(logMessage, emailID);
+                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                    {
+                        string logMessage = String.Format("Email failed. Error code: {0}. Name: {1}. Message: {2}. EmailID: {3}", errorCode, name, message, emailID);
+                        var emailToUpdate = ProcessMandrillError(uow, logMessage, emailID);
 
-                    emailToUpdate.EmailStatus = EmailState.SendCriticalError;
+                        emailToUpdate.EmailStatus = EmailState.SendCriticalError;
+                        
+                        uow.SaveChanges();
+                    }
+
                     AlertManager.Error_EmailSendFailure();
                     Email _email = ObjectFactory.GetInstance<Email>();
                     _email.SendAlertEmail();
-                    unitOfWork.SaveChanges();
                 });
-            #endregion
         }
 
         public override int WaitTimeBetweenExecution
@@ -135,30 +92,33 @@ namespace Daemons
                 {
                     using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
+                        var envelope = subUow.EnvelopeRepository.GetByKey(curEnvelopeDO.Id);
                         try
                         {
                             // we have to query EnvelopeDO one more time to have it loaded in subUow
-                            var envelope = subUow.EnvelopeRepository.GetByKey(curEnvelopeDO.Id);
                             IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
                             if (configRepository.Get<bool>("ArchiveOutboundEmail"))
                             {
-                                EmailAddressDO outboundemailaddress = subUow.EmailAddressRepository.GetOrCreateEmailAddress(configRepository.Get("ArchiveEmailAddress"), "Outbound Archive");
+                                EmailAddressDO outboundemailaddress =
+                                    subUow.EmailAddressRepository.GetOrCreateEmailAddress(
+                                        configRepository.Get("ArchiveEmailAddress"), "Outbound Archive");
                                 envelope.Email.AddEmailRecipient(EmailParticipantType.Bcc, outboundemailaddress);
                             }
 
                             //Removing email address which are not test account in debug mode
-                            #if DEBUG
+#if DEBUG
                             {
                                 if (RemoveRecipients(envelope.Email, subUow))
                                 {
                                     Logger.GetLogger().Info("Removed one or more email recipients because they were not test accounts");
                                 }
                             }
-                            #endif
+#endif
                             packager.Send(envelope);
                             numSent++;
 
-                            var email = envelope.Email; // subUow.EmailRepository.GetQuery().First(e => e.Id == envelope.Email.Id);
+                            var email = envelope.Email;
+                                // subUow.EmailRepository.GetQuery().First(e => e.Id == envelope.Email.Id);
                             email.EmailStatus = EmailState.Dispatched;
                             subUow.SaveChanges();
 
@@ -210,17 +170,14 @@ namespace Daemons
         }
 
 
-        public EmailDO ProcessMandrillError(string logMessage, int emailID)
+        public EmailDO ProcessMandrillError(IUnitOfWork uow, string logMessage, int emailID)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            var emailDO = uow.EmailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
+            if (emailDO == null)
             {
-                var emailRepository = uow.EmailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
-                if (emailRepository == null)
-                {
-                    Logger.GetLogger().Error(logMessage);
-                }
-                return emailRepository;
+                Logger.GetLogger().Error(logMessage);
             }
+            return emailDO;
         }
     }
 }

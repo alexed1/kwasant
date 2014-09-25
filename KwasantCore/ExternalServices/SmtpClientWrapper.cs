@@ -6,8 +6,11 @@ namespace KwasantCore.ExternalServices
     public class SmtpClientWrapper : ISmtpClient
     {
         private SmtpClient _internalClient;
+        private ServiceManager<SmtpClientWrapper> _serviceManager;
         public void Initialize(string serverURL, int serverPort)
         {
+            _serviceManager = new ServiceManager<SmtpClientWrapper>("SMTP Service");
+
             _internalClient = new SmtpClient(serverURL, serverPort);
         }
 
@@ -16,7 +19,9 @@ namespace KwasantCore.ExternalServices
         public ICredentialsByHost Credentials { get { return _internalClient.Credentials; } set { _internalClient.Credentials = value; } }
         public void Send(MailMessage message)
         {
+            _serviceManager.LogAttempt("Sending an email...");
             _internalClient.Send(message);
+            _serviceManager.LogSucessful("Email sent.");
         }
     }
 }
