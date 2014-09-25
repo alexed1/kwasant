@@ -4,7 +4,6 @@ using System.Net.Mail;
 using System.Net.Sockets;
 using Daemons.InboundEmailHandlers;
 using Data.Infrastructure;
-using KwasantCore.ExternalServices;
 using S22.Imap;
 using StructureMap;
 using Utilities;
@@ -66,7 +65,7 @@ namespace Daemons
             }
         }
 
-        private S22.Imap.IImapClient Client
+        private IImapClient Client
         {
             get
             {
@@ -103,7 +102,7 @@ namespace Daemons
             };
         }
 
-        private void GetUnreadMessages(S22.Imap.IImapClient client)
+        private void GetUnreadMessages(IImapClient client)
         {
             try
             {

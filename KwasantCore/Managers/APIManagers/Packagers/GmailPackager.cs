@@ -4,9 +4,10 @@ using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
 using Data.Entities;
+using KwasantCore.Managers.APIManager.Packagers;
 using Utilities;
 
-namespace KwasantCore.Managers.APIManager.Packagers
+namespace KwasantCore.Managers.APIManagers.Packagers
 {
     public class GmailPackager : IEmailPackager
     {

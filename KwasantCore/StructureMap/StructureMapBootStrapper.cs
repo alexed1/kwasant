@@ -7,6 +7,7 @@ using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
+using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
 using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
 using KwasantCore.Security;
@@ -70,7 +71,7 @@ namespace KwasantCore.StructureMap
                 For<IKwasantRoleStore>().Use(new KwasantRoleStore());
                 For<IKwasantUserStore>().Use(new KwasantUserStore());
 
-                For<IImapClient>().Use<ImapClient>();
+                For<IImapClient>().Use<ImapClientWrapper>();
             }
         }
 
