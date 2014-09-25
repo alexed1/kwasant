@@ -54,7 +54,7 @@ namespace Data.Repositories
                         var authToken = new AuthorizationToken();
                         var user = new User();
                         var tokenURL = authToken.GetAuthorizationTokenURL(UnitOfWork, Server.ServerUrl, user.GetOrCreateFromBR(UnitOfWork, firstTo));
-                        mergeData["kwasantURL"] = tokenURL;
+                        mergeData["kwasantBaseURL"] = tokenURL;
                     }
                 }
                 foreach (var pair in mergeData)

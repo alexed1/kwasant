@@ -148,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
+    <Compile Include="Interfaces\ISegmentIO.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
