@@ -244,6 +244,10 @@
     <Compile Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.Designer.cs">
       <DependentUpon>201409221025343_Add_ConversationId_to_EmailDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409250752223_Sync_Fix.cs" />
+    <Compile Include="Migrations\201409250752223_Sync_Fix.Designer.cs">
+      <DependentUpon>201409250752223_Sync_Fix.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
@@ -1018,6 +1022,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.resx">
       <DependentUpon>201409221025343_Add_ConversationId_to_EmailDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409250752223_Sync_Fix.resx">
+      <DependentUpon>201409250752223_Sync_Fix.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
