@@ -14,12 +14,12 @@ namespace KwasantWeb.Controllers
 {
     public class DataController : Controller
     {
-        EmailAddress _emailAddress;
+        readonly EmailAddress _emailAddress;
         EmailAddressValidator _emailAddressValidator;
 
         public DataController()
         {
-            _emailAddress = new EmailAddress();
+            _emailAddress = ObjectFactory.GetInstance<EmailAddress>();
             _emailAddressValidator = new EmailAddressValidator();
         }
 

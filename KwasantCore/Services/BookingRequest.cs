@@ -21,10 +21,12 @@ namespace KwasantCore.Services
     {
         private IAttendee _attendee;
         private IEmailAddress _emailAddress;
+        private readonly Email _email;
 
         public BookingRequest()
         {
             _attendee = ObjectFactory.GetInstance<IAttendee>();
+            _email = ObjectFactory.GetInstance<Email>();
             _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
         }
 
@@ -165,27 +167,27 @@ namespace KwasantCore.Services
 
         public void Timeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
         {
-            string bookerId = bookingRequestDO.UserID;
+            string bookerId = bookingRequestDO.BookerID;
             bookingRequestDO.State = BookingRequestState.Unstarted;
-            bookingRequestDO.UserID = null;
+            bookingRequestDO.BookerID = null;
+            bookingRequestDO.User = bookingRequestDO.User;
             uow.SaveChanges();
-            bookingRequestDO.UserID = bookerId;
+            bookingRequestDO.BookerID = bookerId;
 
             AlertManager.BookingRequestProcessingTimeout(bookingRequestDO);
             Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + bookingRequestDO.Id);
-            bookingRequestDO.UserID = null;
+            bookingRequestDO.BookerID = null;
             // Send mail to Booker
             UserDO userDO = new UserDO();
             userDO = uow.UserRepository.GetByKey(bookerId);
             EmailAddressDO emailAddressDO = new EmailAddressDO(userDO.EmailAddress.Address);
-            Email email = new Email(uow);
             string message = "BookingRequest ID :" + bookingRequestDO.Id + " Timed Out";
             string subject = "BookingRequest Timeout";
             string toRecipient = emailAddressDO.Address;
             IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             string fromAddress = configRepository.Get<string>("EmailAddress_GeneralInfo");
-            EmailDO curEmail = email.GenerateBasicMessage(emailAddressDO, subject, message, fromAddress, toRecipient);
-            email.Send(curEmail);
+            EmailDO curEmail = _email.GenerateBasicMessage(uow, emailAddressDO, subject, message, fromAddress, toRecipient);
+            uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
             uow.SaveChanges();
         }
 

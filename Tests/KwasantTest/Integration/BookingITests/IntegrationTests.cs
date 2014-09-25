@@ -47,7 +47,7 @@ namespace KwasantTest.Integration.BookingITests
 
             _archivePollEmail = _configRepository.Get("ArchivePollEmailAddress");
             _archivePollPassword = _configRepository.Get("ArchivePollEmailPassword");
-            _emailService= new Email(_uow);
+            _emailService = ObjectFactory.GetInstance<Email>();
           
            _startPrefix = "Start:";
            _endPrefix = "End:";
@@ -85,7 +85,7 @@ namespace KwasantTest.Integration.BookingITests
             EmailDO eventEmail = null;
             using (_polling.NewTimer(_polling.totalOperationTimeout, "Workflow"))
             {
-                _emailService.Send(testEmail);
+                _uow.EnvelopeRepository.ConfigurePlainEmail(testEmail);
                 _uow.SaveChanges();
 
                 //make sure queued outbound email gets sent.
@@ -232,10 +232,9 @@ namespace KwasantTest.Integration.BookingITests
             
             var emailDO = CreateTestEmail(start, end, "Bcc Test");
             _uow.EmailRepository.Add(emailDO);
-            var email = new Email(_uow);
 
             // EXECUTE
-            email.Send(emailDO);
+            _uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
             _uow.SaveChanges();
 
             //THIS SHOULDN"T BE NECESSARY ANYMORE adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.

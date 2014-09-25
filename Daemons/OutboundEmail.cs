@@ -63,7 +63,7 @@ namespace Daemons
 
                     emailToUpdate.EmailStatus = EmailState.SendCriticalError;
                     AlertManager.Error_EmailSendFailure();
-                    Email _email = new Email();
+                    Email _email = ObjectFactory.GetInstance<Email>();
                     _email.SendAlertEmail();
 
                     unitOfWork.SaveChanges();
@@ -107,7 +107,7 @@ namespace Daemons
 
                     emailToUpdate.EmailStatus = EmailState.SendCriticalError;
                     AlertManager.Error_EmailSendFailure();
-                    Email _email = new Email();
+                    Email _email = ObjectFactory.GetInstance<Email>();
                     _email.SendAlertEmail();
                     unitOfWork.SaveChanges();
                 });

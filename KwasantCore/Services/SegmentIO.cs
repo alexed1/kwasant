@@ -30,7 +30,7 @@ namespace KwasantCore.Services
                 {"Last Name", userDO.LastName},
                 {"Username", userDO.UserName},
                 {"Email", userDO.EmailAddress.Address},
-                {"Delegate Account", user.GetMode(userDO) == CommunicationMode.DELEGATE }
+                {"Delegate Account", user.GetMode(userDO) == CommunicationMode.Delegate }
             };
         }
 

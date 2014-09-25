@@ -2,6 +2,8 @@
 {
     public enum CommunicationMode
     {
-        DIRECT, DELEGATE
+        Direct,
+        Delegate,
+        Precustomer
     }
 }

@@ -32,7 +32,7 @@ namespace KwasantWeb.Controllers
         {
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>(); // TODO: inject dependency via a constructor parameter
             _event = ObjectFactory.GetInstance<Event>();
-            _attendee = new Attendee();
+            _attendee = ObjectFactory.GetInstance<Attendee>();
         }
 
         public ActionResult New(int bookingRequestID, int calendarID, string start, string end)
@@ -246,7 +246,7 @@ namespace KwasantWeb.Controllers
                 {
                     var user = new User();
                     var userDO = user.GetOrCreateFromBR(uow, attendeeDO.EmailAddress);
-                    if (user.GetMode(userDO) == CommunicationMode.DELEGATE)
+                    if (user.GetMode(userDO) == CommunicationMode.Delegate)
                     {
                         ObjectFactory.GetInstance<ISegmentIO>().Track(userDO, "User", "InvitedAsPreCustomerAttendee",
                             new Dictionary<string, object>

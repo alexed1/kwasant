@@ -235,6 +235,14 @@
     <Compile Include="Migrations\201409221108487_Sync.Rob2.22.09.2014.Designer.cs">
       <DependentUpon>201409221108487_Sync.Rob2.22.09.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409230642376_AddBookerId_to_BookingRequestDO.cs" />
+    <Compile Include="Migrations\201409230642376_AddBookerId_to_BookingRequestDO.Designer.cs">
+      <DependentUpon>201409230642376_AddBookerId_to_BookingRequestDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409231048096_Sync.23.09.2014.cs" />
+    <Compile Include="Migrations\201409231048096_Sync.23.09.2014.Designer.cs">
+      <DependentUpon>201409231048096_Sync.23.09.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.cs" />
     <Compile Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.Designer.cs">
       <DependentUpon>201409241548359_AddSegmentTrackingToAuthTokens.cs</DependentUpon>
@@ -267,10 +275,6 @@
     <Compile Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.cs" />
     <Compile Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.Designer.cs">
       <DependentUpon>201408251234014_AddCascadeForAttendeeOnNegotiations.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408271137562_AddBookerId_to_BookingRequestDO.cs" />
-    <Compile Include="Migrations\201408271137562_AddBookerId_to_BookingRequestDO.Designer.cs">
-      <DependentUpon>201408271137562_AddBookerId_to_BookingRequestDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201408271139344_AddLastUpdated_to_EmailDO.cs" />
     <Compile Include="Migrations\201408271139344_AddLastUpdated_to_EmailDO.Designer.cs">
@@ -946,9 +950,6 @@
     <EmbeddedResource Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.resx">
       <DependentUpon>201408251234014_AddCascadeForAttendeeOnNegotiations.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408271137562_AddBookerId_to_BookingRequestDO.resx">
-      <DependentUpon>201408271137562_AddBookerId_to_BookingRequestDO.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408271139344_AddLastUpdated_to_EmailDO.resx">
       <DependentUpon>201408271139344_AddLastUpdated_to_EmailDO.cs</DependentUpon>
     </EmbeddedResource>
@@ -1011,6 +1012,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409221108487_Sync.Rob2.22.09.2014.resx">
       <DependentUpon>201409221108487_Sync.Rob2.22.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409230642376_AddBookerId_to_BookingRequestDO.resx">
+      <DependentUpon>201409230642376_AddBookerId_to_BookingRequestDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409231048096_Sync.23.09.2014.resx">
+      <DependentUpon>201409231048096_Sync.23.09.2014.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.resx">
       <DependentUpon>201409241548359_AddSegmentTrackingToAuthTokens.cs</DependentUpon>

@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using Data.Validations;
 using FluentValidation;
 using KwasantCore.Services;
@@ -24,26 +27,30 @@ namespace Data.Repositories
             base.Add(entity);
         }
 
-        public EnvelopeDO ConfigurePlainEmail(EmailDO email)
+        public EnvelopeDO ConfigurePlainEmail(IEmail email)
         {
-            var envelope = new EnvelopeDO()
-            {
-                Email = email,
-                Handler = EnvelopeDO.GmailHander
-            };
-            UnitOfWork.EnvelopeRepository.Add(envelope);
-            return envelope;
+            if (email == null)
+                throw new ArgumentNullException("email");
+            return ConfigureEnvelope(email, EnvelopeDO.GmailHander);
         }
 
         public EnvelopeDO ConfigureTemplatedEmail(IEmail email, string templateName, IDictionary<string, string> mergeData)
         {
-            //Unless we're explicitly given a base url, we should override it
-            var envelope = new EnvelopeDO()
+            if (email == null)
+                throw new ArgumentNullException("email");
+            if (string.IsNullOrEmpty(templateName))
+                throw new ArgumentNullException("templateName", "Template name is null or empty.");
+            return ConfigureEnvelope(email, EnvelopeDO.GmailHander, templateName, mergeData);
+        }
+
+        private EnvelopeDO ConfigureEnvelope(IEmail email, string handler, string templateName = null, IDictionary<string, string> mergeData = null)
+        {
+            var envelope = new EnvelopeDO
             {
                 TemplateName = templateName,
-                Handler = EnvelopeDO.MandrillHander
+                Handler = handler
             };
-
+           
             if (mergeData != null)
             {
                 if (!mergeData.ContainsKey("kwasantBaseURL"))
@@ -62,7 +69,7 @@ namespace Data.Repositories
                     envelope.MergeData.Add(pair);
                 }
             }
-            
+            email.EmailStatus = EmailState.Queued;
             ((IEnvelope) envelope).Email = email;
             
             UnitOfWork.EnvelopeRepository.Add(envelope);

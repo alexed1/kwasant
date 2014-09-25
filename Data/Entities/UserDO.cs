@@ -3,8 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Data.Infrastructure;
 using Data.Repositories;
-using KwasantCore.Interfaces;
-using KwasantCore.Services;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 
@@ -64,10 +62,10 @@ namespace Data.Entities
             //we only want to treat explicit customers, who have sent us a BR, a welcome message
             //if there exists a booking request with this user as its created by...
             var bookingRequestRepo = new BookingRequestRepository(new UnitOfWork(new KwasantDbContext()));
-            if (bookingRequestRepo.FindOne(br => br.User.Id == this.Id) != null)
-                AlertManager.CustomerCreated(this.Id);
+            if (bookingRequestRepo.FindOne(br => br.User.Id == Id) != null)
+                AlertManager.ExplicitCustomerCreated(Id);
 
-            ObjectFactory.GetInstance<ISegmentIO>().Identify(this);
+            AlertManager.CustomerCreated(this);
         }
     }
 }
