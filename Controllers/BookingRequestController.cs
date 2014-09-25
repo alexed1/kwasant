@@ -60,7 +60,7 @@ namespace KwasantWeb.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var currBooker = this.GetUserId();
-            
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
@@ -71,10 +71,48 @@ namespace KwasantWeb.Controllers
                 bookingRequestDO.LastUpdated = DateTimeOffset.Now;
                 uow.SaveChanges();
                 AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
-            }
 
-            //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
-            return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Dashboard", action = "Index", id = id }));
+                //Get the most recent conversation for this Booking Request
+                var curEmail = uow.EmailRepository.GetAll().Where(e => e.Id == id || e.ConversationId == id).OrderByDescending(e => e.DateReceived).First();
+                const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
+
+                var attachmentInfo = String.Join("<br />",
+                            curEmail.Attachments.Select(
+                                attachment =>
+                                "<a href='" + String.Format(fileViewURLStr, attachment.Id) + "' target='" +
+                                attachment.OriginalName + "'>" + attachment.OriginalName + "</a>"));
+
+                string booker = "none";
+                string bookerId = uow.BookingRequestRepository.GetByKey(id).BookerID;
+                if (bookerId != null)
+                {
+                    booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
+                }
+
+                BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
+                {
+                    BookingRequestId = bookingRequestDO.Id,
+                    CurEmailData = new EmailDO
+                    {
+                        Attachments = curEmail.Attachments,
+                        From = curEmail.From,
+                        Recipients = curEmail.Recipients,
+                        HTMLText = curEmail.HTMLText,
+                        Id = curEmail.Id,
+                        FromID = curEmail.FromID,
+                        DateCreated = curEmail.DateCreated,
+                        Subject = curEmail.Subject
+                    },
+                    EmailTo = String.Join(", ", curEmail.To.Select(a => a.Address)),
+                    EmailCC = String.Join(", ", curEmail.CC.Select(a => a.Address)),
+                    EmailBCC = String.Join(", ", curEmail.BCC.Select(a => a.Address)),
+                    EmailAttachments = attachmentInfo,
+                    Booker = booker
+                };
+                TempData["requestInfo"] = bookingInfo;
+                //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
+                return RedirectToAction("Index", "Dashboard", new { id = id });
+            }
         }
 
         [HttpGet]
@@ -217,5 +255,6 @@ namespace KwasantWeb.Controllers
                 uow.SaveChanges();
             }
         }
+
     }
 }

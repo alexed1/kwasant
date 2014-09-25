@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
@@ -20,6 +21,9 @@ namespace KwasantWeb.Controllers
         {
             if (id <= 0)
                 throw new HttpException(400, "Booking request not found");
+
+            if (TempData["requestInfo"] == null)
+                GetRequestInfo(id);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -45,7 +49,22 @@ namespace KwasantWeb.Controllers
                     //In the future, we won't need this - the 'main' calendar will be picked by the booker
                     ActiveCalendarId = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
                 };
-                var curEmail = uow.EmailRepository.GetByKey(id);
+
+                return View(new DashboardShowVM
+                {
+                    CalendarVM = calWidget,
+                    BookingRequestVM = TempData["requestInfo"] as BookingRequestAdminVM
+                });
+            }
+        }
+
+        public void GetRequestInfo(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curEmail = uow.EmailRepository.GetAll().Where(e => e.Id == bookingRequestId || e.ConversationId == bookingRequestId).OrderByDescending(e => e.DateReceived).FirstOrDefault();
+
+
                 const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
 
                 var attachmentInfo = String.Join("<br />",
@@ -55,7 +74,7 @@ namespace KwasantWeb.Controllers
                                 attachment.OriginalName + "'>" + attachment.OriginalName + "</a>"));
 
                 string booker = "none";
-                string bookerId = uow.BookingRequestRepository.GetByKey(id).BookerID;
+                string bookerId = uow.BookingRequestRepository.GetByKey(bookingRequestId).BookerID;
                 if (bookerId != null)
                 {
                     booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
@@ -63,7 +82,7 @@ namespace KwasantWeb.Controllers
 
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
                 {
-                    BookingRequestId = bookingRequestDO.Id,
+                    BookingRequestId = bookingRequestId,
                     CurEmailData = new EmailDO
                     {
                         Attachments = curEmail.Attachments,
@@ -81,12 +100,7 @@ namespace KwasantWeb.Controllers
                     EmailAttachments = attachmentInfo,
                     Booker = booker
                 };
-
-                return View(new DashboardShowVM
-                {
-                    CalendarVM = calWidget,
-                    BookingRequestVM = bookingInfo
-                });
+                TempData["requestInfo"] = bookingInfo;
             }
         }
 	}

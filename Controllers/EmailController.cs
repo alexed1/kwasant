@@ -42,7 +42,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curEmail = uow.EmailRepository.GetByKey(emailId);
+                var curEmail = uow.EmailRepository.GetAll().Where(e => e.Id == emailId || e.ConversationId == emailId).OrderByDescending(e => e.DateReceived).First();
                 const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
 
                 var attachmentInfo = String.Join("<br />",
