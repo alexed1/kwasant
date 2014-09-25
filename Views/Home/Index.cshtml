@@ -430,7 +430,7 @@
                     
                     $('#spBookingRequestMsg').html(result.Message);
                     if (result.UserID) {
-                        analytics.identify(result.UserID);
+                        analytics.alias(result.UserID);
                     }
                 }
             });
