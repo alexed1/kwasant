@@ -18,9 +18,14 @@ namespace KwasantWeb.Controllers
     {
         Booker _booker;
         string _currBooker;
+        private readonly IAttendee _attendee;
+        private readonly IEmailAddress _emailAddress;
+
         public NegotiationController()
         {
             _booker = new Booker();
+            _attendee = ObjectFactory.GetInstance<IAttendee>();
+            _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
         }
 
         public ActionResult Edit(int negotiationID, int bookingRequestID)
@@ -114,9 +119,8 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
-                var emailAddress = new EmailAddress();
              
-                var emailAddresses = emailAddress.GetEmailAddresses(uow, bookingRequestDO.HTMLText, bookingRequestDO.PlainText, bookingRequestDO.Subject);
+                var emailAddresses = _emailAddress.GetEmailAddresses(uow, bookingRequestDO.HTMLText, bookingRequestDO.PlainText, bookingRequestDO.Subject);
                 emailAddresses.Add(bookingRequestDO.User.EmailAddress);
 
                 //need to add the addresses of people cc'ed or on the To line of the BookingRequest
@@ -160,8 +164,7 @@ namespace KwasantWeb.Controllers
 
                 negotiationDO.BookingRequestID = value.BookingRequestID;
 
-                var attendee = new Attendee();
-                attendee.ManageNegotiationAttendeeList(uow, negotiationDO, value.Attendees);
+                _attendee.ManageNegotiationAttendeeList(uow, negotiationDO, value.Attendees);
 
                 var proposedQuestionIDs = value.Questions.Select(q => q.Id);
                 //Delete the existing questions which no longer exist in our proposed negotiation

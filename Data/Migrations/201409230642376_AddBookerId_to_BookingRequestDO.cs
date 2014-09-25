@@ -7,12 +7,12 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.BookingRequests", "BookerId", c => c.String());
+            AddColumn("dbo.BookingRequests", "BookerID", c => c.String());
         }
         
         public override void Down()
         {
-            DropColumn("dbo.BookingRequests", "BookerId");
+            DropColumn("dbo.BookingRequests", "BookerID");
         }
     }
 }

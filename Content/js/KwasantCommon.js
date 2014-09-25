@@ -106,7 +106,7 @@ function isValidEmail(term) {
         dataType: 'json',
         contentType: 'application/json; charset=utf-8 ',
         url: '/Data/ValidateEmailAddress',
-        data: { emailString: JSON.stringify(encodeURI(term)) },
+        data: { emailString: term },
         success: function (data) {
             returnval = data;
         },

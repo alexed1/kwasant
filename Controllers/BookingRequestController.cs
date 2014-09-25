@@ -67,7 +67,7 @@ namespace KwasantWeb.Controllers
                 if (bookingRequestDO == null)
                     return HttpNotFound();
                 bookingRequestDO.State = BookingRequestState.Booking;
-                bookingRequestDO.UserID = currBooker;
+                bookingRequestDO.BookerID = currBooker;
                 bookingRequestDO.LastUpdated = DateTimeOffset.Now;
                 uow.SaveChanges();
                 AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
@@ -203,6 +203,19 @@ namespace KwasantWeb.Controllers
 
             recordcount = bR_RelatedItems.Count;
             return bR_RelatedItems.OrderByDescending(x => x.Date).Skip(start).Take(length).ToList();
+        }
+
+        [HttpPost]
+        public void ReleaseBooker(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.BookerID = null;
+                bookingRequestDO.User = bookingRequestDO.User;
+                uow.SaveChanges();
+            }
         }
     }
 }

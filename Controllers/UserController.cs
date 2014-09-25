@@ -35,28 +35,55 @@ namespace KwasantWeb.Controllers
         [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Index()
         {
-            UsersAdmin currUsersAdmin = new UsersAdmin();
-            List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData();
-            List<UsersAdminVM> currUsersAdminVMs = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminVMList(currUsersAdminDataList) : null;
+            string userId = "";
+            User _user = new User();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                List<UserDO> userList = _user.Query(uow, userId);
+                UserShowAllVM userShowAllVM = new UserShowAllVM();
+                List<UserShowVM> userShowVMList = new List<UserShowVM>();
 
-            return View(currUsersAdminVMs);
+                var userManager = KwasantCore.Services.User.GetUserManager(uow);
+                userList.ForEach(u => userShowVMList.Add(new UserShowVM
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    EmailAddress = u.EmailAddress.Address,
+                    Role = userManager.GetRoles(u.Id)[0],
+                    RoleId = u.Roles.ToList()[0].RoleId
+                }));
+                userShowAllVM.Users = userShowVMList;
+
+
+               
+                return View(userShowAllVM);
+            }
         }
 
         [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Details(String userId, String roleId)
         {
-
             if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            UsersAdmin currUsersAdmin = new UsersAdmin();
-            List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData(userId, roleId);
+            User _user = new User();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUserManager = KwasantCore.Services.User.GetUserManager(uow);
+                UserDO curUser = _user.Query(uow, userId)[0];
+                UserShowVM userShowVM = new UserShowVM
+                {
+                    Id = curUser.Id,
+                    FirstName = curUser.FirstName,
+                    LastName = curUser.LastName,
+                    EmailAddress = curUser.EmailAddress.Address,
+                    Role = curUserManager.GetRoles(curUser.Id)[0],
+                    RoleId = curUser.Roles.ToList()[0].RoleId
+                };
+                return View(userShowVM);
+            }
 
-            List<UsersAdminVM> currUsersAdminVMs = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminVMList(currUsersAdminDataList) : null;
-
-            UsersAdminVM currUsersAdminVM = currUsersAdminVMs == null || currUsersAdminVMs.Count == 0 ? new UsersAdminVM() : currUsersAdminVMs[0];
-
-            return View(currUsersAdminVM);
         }
 
         public async Task<ActionResult> GrantRemoteCalendarAccess(string providerName)
