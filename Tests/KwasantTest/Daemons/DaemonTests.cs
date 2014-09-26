@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -54,6 +55,21 @@ namespace KwasantTest.Daemons
             protected override void Run()
             {
                 _execute();
+            }
+
+            public override IList<Exception> LoggedExceptions
+            {
+                get { throw new NotImplementedException(); }
+            }
+
+            public override bool Start()
+            {
+                throw new NotImplementedException();
+            }
+
+            public override void Stop()
+            {
+                throw new NotImplementedException();
             }
         }
 
