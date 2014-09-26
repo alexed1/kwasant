@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Mime;
+using Data.Authentication;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
@@ -96,8 +97,7 @@ namespace KwasantCore.Services
 
         private static String GetAuthTokenForBaseURL(IUnitOfWork uow, string userID)
         {
-            var authToken = new AuthorizationToken();
-            return authToken.GetAuthorizationTokenURL(uow, Server.ServerUrl, userID, "Invitation", new Dictionary<string, object>
+            return uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(Server.ServerUrl, userID, "Invitation", new Dictionary<string, object>
                 {
                     {"action", "Clicked on Invitation Header"}
                 });

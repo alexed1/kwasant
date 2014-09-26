@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Data.Entities;
-using KwasantCore.Services;
 
 namespace Data.Interfaces
 {

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using KwasantCore.Security;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantWeb.Controllers;
-using Moq;
 using NUnit.Framework;
 using StructureMap;
 
@@ -26,7 +23,6 @@ namespace KwasantTest.Security
         [Test]
         public void TestAuthTokenGeneration()
         {
-            var authToken = new AuthorizationToken();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 const string originalURL = @"http://www.google.com";
@@ -39,7 +35,7 @@ namespace KwasantTest.Security
 
                 var userDO = user.GetOrCreateFromBR(uow, emailAddress);
 
-                var authTokenURL = authToken.GetAuthorizationTokenURL(uow, originalURL, userDO);
+                var authTokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(originalURL, userDO);
 
                 uow.SaveChanges();
 
@@ -57,7 +53,6 @@ namespace KwasantTest.Security
         [Test]
         public void TestAuthPage()
         {
-            var authToken = new AuthorizationToken();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 const string originalURL = @"http://www.google.com";
@@ -70,7 +65,7 @@ namespace KwasantTest.Security
 
                 var userDO = user.GetOrCreateFromBR(uow, emailAddress);
 
-                var authTokenURL = authToken.GetAuthorizationTokenURL(uow, originalURL, userDO);
+                var authTokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(originalURL, userDO);
 
                 uow.SaveChanges();
 

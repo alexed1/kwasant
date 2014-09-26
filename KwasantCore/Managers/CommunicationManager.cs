@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Authentication;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -103,8 +104,7 @@ namespace KwasantCore.Managers
                 var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", 
                     negotiationDO.Id);
 
-                var authToken = new AuthorizationToken();
-                var tokenURL = authToken.GetAuthorizationTokenURL(uow, responseUrl, user.GetOrCreateFromBR(uow, attendee.EmailAddress));
+                var tokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(responseUrl, user.GetOrCreateFromBR(uow, attendee.EmailAddress));
 
                 uow.EmailRepository.Add(emailDO);
                 var actualHtml =

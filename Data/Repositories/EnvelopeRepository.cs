@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Data.Validations;
 using FluentValidation;
-using KwasantCore.Services;
 using Utilities;
 
 namespace Data.Repositories
@@ -58,9 +56,10 @@ namespace Data.Repositories
                     var firstTo = email.To.SingleOrDefault();
                     if (firstTo != null)
                     {
-                        var authToken = new AuthorizationToken();
-                        var user = new User();
-                        var tokenURL = authToken.GetAuthorizationTokenURL(UnitOfWork, Server.ServerUrl, user.GetOrCreateFromBR(UnitOfWork, firstTo));
+                        var userDO =  UnitOfWork.UserRepository.GetByEmailAddress(firstTo) ??
+                                      UnitOfWork.UserRepository.CreateFromEmail(firstTo);
+
+                        var tokenURL = UnitOfWork.AuthorizationTokenRepository.GetAuthorizationTokenURL(Server.ServerUrl, userDO);
                         mergeData["kwasantBaseURL"] = tokenURL;
                     }
                 }
