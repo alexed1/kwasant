@@ -36,7 +36,7 @@ namespace KwasantTest.Daemons
             mockDaemon.Stop();
         }
 
-        private class TestDaemon : Daemon
+        private class TestDaemon : Daemon<TestDaemon>
         {
             private readonly Action _execute;
             private readonly int _timeoutInSeconds;
@@ -55,21 +55,6 @@ namespace KwasantTest.Daemons
             protected override void Run()
             {
                 _execute();
-            }
-
-            public override IList<Exception> LoggedExceptions
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public override bool Start()
-            {
-                throw new NotImplementedException();
-            }
-
-            public override void Stop()
-            {
-                throw new NotImplementedException();
             }
         }
 
