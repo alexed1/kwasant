@@ -13,6 +13,14 @@ namespace Daemons
     {
         public abstract bool Start();
         public abstract void Stop();
+
+        public abstract int WaitTimeBetweenExecution { get; }
+
+        protected abstract void Run();
+
+        public bool IsRunning { get; protected set; }
+
+        public abstract IList<Exception> LoggedExceptions { get; }
     }
     public abstract class Daemon<T> : Daemon
         where T : Daemon<T>
@@ -21,13 +29,9 @@ namespace Daemons
         public event DaemonExecutedEventHandler DaemonExecuted;
 
         private Thread m_RunningThread;
-
-        public abstract int WaitTimeBetweenExecution { get; }
-
-        public bool IsRunning { get; protected set; }
+        
         public bool IsStopping { get; private set; }
 
-        protected abstract void Run();
         private readonly Queue<Action> _eventQueue = new Queue<Action>();
         private readonly HashSet<EventInfo> _activeEventHandlers = new HashSet<EventInfo>();
         private readonly HashSet<Exception> _loggedExceptions = new HashSet<Exception>();
@@ -67,7 +71,7 @@ namespace Daemons
         /// <summary>
         /// Currently unused, but will be a useful debugging tool when investigating event callbacks.
         /// </summary>
-        public IList<Exception> LoggedExceptions
+        public override IList<Exception> LoggedExceptions
         {
             get
             {
