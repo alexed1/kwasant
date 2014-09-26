@@ -20,7 +20,7 @@ namespace KwasantWeb
     public class MvcApplication : System.Web.HttpApplication
     {
         private static bool _IsInitialised;
-
+        
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
@@ -72,8 +72,16 @@ namespace KwasantWeb
         {
             var exception = Server.GetLastError();
             String errorMessage = "Critical internal error occured.";
-            if (HttpContext.Current != null)
-                errorMessage += " URL accessed: " + HttpContext.Current.Request.Url;
+            try
+            {
+                if (HttpContext.Current != null && HttpContext.Current.Request != null)
+                    errorMessage += " URL accessed: " + HttpContext.Current.Request.Url;
+            }
+            catch (Exception)
+            {
+                errorMessage += " Error on startup.";
+            }
+            
 
             Logger.GetLogger().Error(errorMessage, exception);
         }
