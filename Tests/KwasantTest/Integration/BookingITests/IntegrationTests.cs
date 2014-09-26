@@ -59,7 +59,7 @@ namespace KwasantTest.Integration.BookingITests
 
         //This is a core integration test that verifies that inbound email is being processed into BR's, and then an event created from
         //a BR is booked and dispatched into invitation email that is received
-        [Test]
+        [Test, Ignore("KW-420 will fix")]
         [Category("IntegrationTests")]
         public void ITest_CanProcessBRCreateEventAndSendInvite()
         {
@@ -221,7 +221,7 @@ namespace KwasantTest.Integration.BookingITests
         //this should be DRYed up by using the newly modular functions, above.
         //this test may not be worth doing. it is very fragile. if we fix it, we should probably create an account on kwasant.net send the test bcc messages, there, and imap there
         //to dodge gmail's free public constraints.
-        [Test, Ignore]
+        [Test, Ignore("KW-420 will fix")]
         [Category("Workflow")]
         public void ITest_CanAddBcctoOutbound()
         {
