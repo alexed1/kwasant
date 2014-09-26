@@ -14,6 +14,7 @@ using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
 using KwasantCore.Managers.APIManagers.Packagers.Twilio;
 using KwasantCore.Security;
 using KwasantCore.Services;
+using Moq;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using AutoMapper;
@@ -97,7 +98,8 @@ namespace KwasantCore.StructureMap
                 For<IKwasantRoleStore>().Use(new MockedRoleStore());
                 For<IKwasantUserStore>().Use(new MockedUserStore());
 
-
+                var mockSegment = new Mock<ISegmentIO>();
+                For<ISegmentIO>().Use(mockSegment.Object);
             }
         }
 
