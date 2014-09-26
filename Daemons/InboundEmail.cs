@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Net.Sockets;
@@ -19,6 +20,16 @@ namespace Daemons
         private readonly IConfigRepository _configRepository;
         private readonly IInboundEmailHandler[] _handlers;
 
+        private readonly HashSet<String> _testSubjects = new HashSet<string>(); 
+        public void RegisterTestEmailSubject(String subject)
+        {
+            lock (_testSubjects)
+                _testSubjects.Add(subject);
+        }
+
+        public delegate void ExplicitCustomerCreatedHandler(string subject);
+        public static event ExplicitCustomerCreatedHandler TestMessageRecieved;
+
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
         {
@@ -29,6 +40,9 @@ namespace Daemons
                                 new InvitationResponseHandler(),
                                 new BookingRequestHandler()
                             };
+
+            AddTest("OutboundEmailDaemon_TestGmail", "Test Gmail");
+            AddTest("OutboundEmailDaemon_TestMandrill", "Test Mandrill");
         }
 
         private string GetIMAPServer()
@@ -42,7 +56,7 @@ namespace Daemons
         }
 
         public String UserName;
-        private string GetUserName()
+        public string GetUserName()
         {
             return UserName ?? _configRepository.Get("INBOUND_EMAIL_USERNAME");
         }
@@ -120,7 +134,7 @@ namespace Daemons
         {
             try
             {
-                LogAttempt("Querying for messages...");
+                LogEvent("Querying for messages...");
                 var messages = client.GetMessages(client.Search(SearchCondition.Unseen())).ToList();
                 LogSuccess(messages.Count + " messages recieved.");
 
@@ -146,6 +160,25 @@ namespace Daemons
         {
             var logString = "Processing message with subject '" + messageInfo.Subject + "'";
             Logger.GetLogger().Info(logString);
+
+            lock (_testSubjects)
+            {
+                if (_testSubjects.Contains(messageInfo.Subject))
+                {
+                    LogEvent("Test message detected.");
+                    _testSubjects.Remove(messageInfo.Subject);
+
+                    if (TestMessageRecieved != null)
+                    {
+                        TestMessageRecieved(messageInfo.Subject);
+                        LogSuccess();
+                    }
+                    else
+                        LogFail(new Exception("No one was listening for test message event..."));
+
+                    return;
+                }
+            }
 
             try
             {

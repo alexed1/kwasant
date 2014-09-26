@@ -16,7 +16,7 @@ namespace KwasantCore.ExternalServices
 
         public SMSMessage SendSmsMessage(string from, string to, string body)
         {
-            _serviceManager.LogAttempt("Sending an sms...");
+            _serviceManager.LogEvent("Sending an sms...");
             try
             {
                 var message = _internalClient.SendSmsMessage(from, to, body);

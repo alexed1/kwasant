@@ -29,7 +29,7 @@ namespace Daemons
             get { return (int)TimeSpan.FromHours(1).TotalMilliseconds; }
         }
 
-        protected override async void Run()
+        protected override void Run()
         {
             try
             {
@@ -40,13 +40,15 @@ namespace Daemons
                         try
                         {
                             CalendarSyncManager calendarSyncManager = new CalendarSyncManager(_calDAVClientFactory);
-                            await calendarSyncManager.SyncNowAsync(uow, curUser);
+                            calendarSyncManager.SyncNowAsync(uow, curUser).Wait();
                             uow.SaveChanges();
                             Logger.GetLogger().InfoFormat("Calendars synchronized for user: {0}.", curUser.Id);
+                            LogSuccess("Calendars synchronized for user: " + curUser.Id);
                         }
                         catch (Exception ex)
                         {
                             Logger.GetLogger().Error(string.Format("Error occured on calendar synchronization for user: {0}.", curUser.Id), ex);
+                            throw;
                         }
                     }
                 }
@@ -54,6 +56,7 @@ namespace Daemons
             catch (Exception ex)
             {
                 Logger.GetLogger().Error("Error occured. Shutting down...", ex);
+                throw;
             }
         }
     }

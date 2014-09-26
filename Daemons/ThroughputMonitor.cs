@@ -67,6 +67,7 @@ namespace Daemons
                         string toNumber = _configRepository.Get<string>("TwilioToNumber");
                         var tw = ObjectFactory.GetInstance<ISMSPackager>();
                         tw.SendSMS(toNumber, oldBookingRequests.Count() + " Booking requests are over-due by 30 minutes.");
+                        LogSuccess(oldBookingRequests.Count() + " Booking requests are over-due by 30 minutes.");
                     }
                 }
             }

@@ -255,6 +255,10 @@
     <Compile Include="Migrations\201409251527319_Rob2.Sync.25.09.2014.Designer.cs">
       <DependentUpon>201409251527319_Rob2.Sync.25.09.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409261128558_Sync.26.09.2014.cs" />
+    <Compile Include="Migrations\201409261128558_Sync.26.09.2014.Designer.cs">
+      <DependentUpon>201409261128558_Sync.26.09.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
@@ -1035,6 +1039,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409251527319_Rob2.Sync.25.09.2014.resx">
       <DependentUpon>201409251527319_Rob2.Sync.25.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409261128558_Sync.26.09.2014.resx">
+      <DependentUpon>201409261128558_Sync.26.09.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

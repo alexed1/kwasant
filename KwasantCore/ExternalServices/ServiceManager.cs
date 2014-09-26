@@ -57,28 +57,40 @@ namespace KwasantCore.ExternalServices
                 ServiceInfo[typeof (T)].SetFlag(flagName, value);
         }
 
+        public static void AddAction<T>(String serverAction, String displayName)
+        {
+            lock (ServiceInfo)
+                ServiceInfo[typeof(T)].AddAction(serverAction, displayName);
+        }
+
+        public static void AddTest<T>(String serverAction, String displayName)
+        {
+            lock (ServiceInfo)
+                ServiceInfo[typeof(T)].AddTest(serverAction, displayName);
+        }
+
         public static void LogEvent<T>(String eventName)
         {
             lock (ServiceInfo)
                 ServiceInfo[typeof(T)].AddEvent(eventName);
         }
 
-        public static void LogAttempt<T>()
-        {
-            lock (ServiceInfo)
-                ServiceInfo[typeof(T)].AddAttempt();
-        }
-
         public static void LogSuccess<T>()
         {
             lock (ServiceInfo)
-                ServiceInfo[typeof(T)].AddSuccess();
+            {
+                ServiceInfo[typeof(T)].AddAttempt();
+                ServiceInfo[typeof (T)].AddSuccess();
+            }
         }
 
         public static void LogFail<T>()
         {
             lock (ServiceInfo)
-                ServiceInfo[typeof(T)].AddFail();
+            {
+                ServiceInfo[typeof(T)].AddAttempt();
+                ServiceInfo[typeof (T)].AddFail();
+            }
         }
 
         public class ServiceInformation
@@ -137,6 +149,26 @@ namespace KwasantCore.ExternalServices
                 }
             }
 
+            private DateTime? _lastFail;
+            public DateTime? LastFail
+            {
+                get
+                {
+                    lock (ServiceInfo)
+                        return _lastFail;
+                }
+            }
+
+            private DateTime? _lastSuccess;
+            public DateTime? LastSuccess
+            {
+                get
+                {
+                    lock (ServiceInfo)
+                        return _lastSuccess;
+                }
+            }
+
             private readonly Dictionary<String, Object> _flags = new Dictionary<string, object>();
             public Dictionary<String, Object> Flags
             {
@@ -144,6 +176,26 @@ namespace KwasantCore.ExternalServices
                 {
                     lock (ServiceInfo)
                         return new Dictionary<string, object>(_flags);
+                }
+            }
+
+            private readonly Dictionary<String, String> _actions = new Dictionary<String, String>();
+            public Dictionary<String, String> Actions
+            {
+                get
+                {
+                    lock (ServiceInfo)
+                        return new Dictionary<String, String>(_actions);
+                }
+            }
+
+            private readonly Dictionary<String, String> _tests = new Dictionary<String, String>();
+            public Dictionary<String, String> Tests
+            {
+                get
+                {
+                    lock (ServiceInfo)
+                        return new Dictionary<String, String>(_tests);
                 }
             } 
 
@@ -211,13 +263,19 @@ namespace KwasantCore.ExternalServices
             public void AddSuccess()
             {
                 lock (ServiceInfo)
+                {
+                    _lastSuccess = DateTime.Now;
                     Success++;
+                }
             }
 
             public void AddFail()
             {
                 lock (ServiceInfo)
+                {
+                    _lastFail = DateTime.Now;
                     Fail++;
+                }
             }
 
             public void AddEvent(String eventName)
@@ -230,6 +288,18 @@ namespace KwasantCore.ExternalServices
             {
                 lock (ServiceInfo)
                     _flags[flagName] = flagValue;
+            }
+
+            public void AddAction(String serverCall, String displayName)
+            {
+                lock (ServiceInfo)
+                    _actions[serverCall] = displayName;
+            }
+
+            public void AddTest(String serverCall, String displayName)
+            {
+                lock (ServiceInfo)
+                    _tests[serverCall] = displayName;
             }
         }
     }
@@ -246,18 +316,21 @@ namespace KwasantCore.ExternalServices
             ServiceManager.SetFlag<T>(flagName, value);
         }
 
+        public void AddAction(String serverAction, String displayName)
+        {
+            ServiceManager.AddAction<T>(serverAction, displayName);
+        }
+
+        public void AddTest(String serverAction, String displayName)
+        {
+            ServiceManager.AddTest<T>(serverAction, displayName);
+        }
+        
         public void LogEvent(String eventName)
         {
             ServiceManager.LogEvent<T>(eventName);
         }
-
-        public void LogAttempt(string eventName = null)
-        {
-            if (!String.IsNullOrEmpty(eventName))
-                LogEvent(eventName);
-            ServiceManager.LogAttempt<T>();
-        }
-
+        
         public void LogSucessful(string eventName = null)
         {
             if (!String.IsNullOrEmpty(eventName))

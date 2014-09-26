@@ -16,7 +16,6 @@ namespace Daemons
 {
     public class OutboundEmail : Daemon<OutboundEmail>
     {
-
         private string logString;
 
         public OutboundEmail()
@@ -66,6 +65,9 @@ namespace Daemons
                     Email _email = ObjectFactory.GetInstance<Email>();
                     _email.SendAlertEmail();
                 });
+
+            AddTest("OutboundEmailDaemon_TestGmail", "Test Gmail");
+            AddTest("OutboundEmailDaemon_TestMandrill", "Test Mandrill");
         }
 
         public override int WaitTimeBetweenExecution
@@ -86,6 +88,7 @@ namespace Daemons
                 var numSent = 0;
                 foreach (EnvelopeDO curEnvelopeDO in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
                 {
+                    LogEvent("Sending an email...");
                     using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var envelope = subUow.EnvelopeRepository.GetByKey(curEnvelopeDO.Id);
@@ -118,6 +121,8 @@ namespace Daemons
                             email.EmailStatus = EmailState.Dispatched;
                             subUow.SaveChanges();
 
+                            LogSuccess("Sent.");
+
                             foreach (var recipient in email.To)
                             {
                                 var curUser = subUow.UserRepository.GetQuery()
@@ -135,19 +140,9 @@ namespace Daemons
                         }
                     }
                 }
-
-                if (numSent == 0)
-                {
-                    logString = "nothing sent";
-                }
-                else
-                {
-                    logString = "Emails sent:" + numSent;
-                }
-
-                LogEvent(logString);
             }
         }
+
         private bool RemoveRecipients(EmailDO emailDO, IUnitOfWork uow)
         {
             bool isRecipientRemoved = false;

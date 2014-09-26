@@ -10,9 +10,13 @@ namespace KwasantWeb.ViewModels
         public int Attempts { get; set; }
         public int Success { get; set; }
         public int Percent { get; set; }
+        public bool Operational { get; set; }
         public String Key { get; set; }
         public String LastUpdated { get; set; }
+        public String LastSuccess { get; set; }
+        public String LastFail { get; set; }
         public List<DiagnosticEventInfoVM> Events { get; set; }
+        public List<DiagnosticActionVM> Tests { get; set; }
         public List<DiagnosticActionVM> Actions { get; set; }
         public Dictionary<String, Object> Flags { get; set; } 
     }

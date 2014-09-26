@@ -38,7 +38,7 @@ namespace KwasantCore.ExternalServices
 
         public IEnumerable<MailMessage> GetMessages(IEnumerable<uint> uids, bool seen = true, string mailbox = null)
         {
-            _serviceManager.LogAttempt("Retrieving messages...");
+            _serviceManager.LogEvent("Retrieving messages...");
             try
             {
                 var messages = _internalClient.GetMessages(uids, seen, mailbox).ToList();

@@ -185,9 +185,7 @@ namespace KwasantCore.Services
             att.SetData(av.ContentStream);
             return att;
         }
-
-
-       
+        
         public EmailDO GenerateBasicMessage(IUnitOfWork uow, EmailAddressDO curEmailAddress,string subject, string message, string fromAddress ,string toRecipient)
         {
             ValidateEmailAddress(curEmailAddress);

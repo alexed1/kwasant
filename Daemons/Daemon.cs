@@ -37,19 +37,23 @@ namespace Daemons
         protected Daemon()
         {
             _serviceManager = new ServiceManager<T>(GetType().Name, "Daemons", this);
+            _serviceManager.AddAction("StartDaemon", "Start");
+            _serviceManager.AddAction("StopDaemon", "Stop");
         }
 
+        protected void AddTest(String serverCall, String displayName)
+        {
+            _serviceManager.AddTest(serverCall, displayName);
+        }
         protected void SetFlag(String flagName, Object value)
         {
             _serviceManager.SetFlag(flagName, value);
         }
-        protected void LogEvent(String message)
+        protected void LogEvent(String message = null)
         {
+            if (message == null)
+                message = String.Empty;
             _serviceManager.LogEvent(message);
-        }
-        protected void LogAttempt(String message = null)
-        {
-            _serviceManager.LogAttempt(message);
         }
         protected void LogFail(Exception ex, String message = null)
         {
@@ -223,9 +227,9 @@ namespace Daemons
                             {
                                 lastExecutionTime = currTime;
                                 firstExecution = false;
-                                LogAttempt("Running...");
+                                LogEvent();
                                 Run();
-                                LogSuccess("Completed.");
+                                LogEvent();
                                 if (DaemonExecuted != null)
                                     DaemonExecuted();
                             }
