@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Data.Entities;
+using KwasantCore.Services;
 
 namespace Data.Interfaces
 {
@@ -15,7 +16,7 @@ namespace Data.Interfaces
         String HTMLText { get; set; }
         DateTimeOffset DateReceived { get; set; }
 
-        //IEnumerable<EmailAddress> To { get; set; }
+        IEnumerable<EmailAddressDO> To { get; }
         //IEnumerable<EmailAddress> BCC { get; set; }
         //IEnumerable<EmailAddress> CC { get; set; }
         //IEnumerable<Attachment> Attachments { get; set; }

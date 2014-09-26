@@ -36,6 +36,7 @@ namespace KwasantCore.Services
             bookingRequest.State = BookingRequestState.Unstarted;
             UserDO curUser = user.GetOrCreateFromBR(uow, bookingRequest.From);
             bookingRequest.User = curUser;
+            bookingRequest.UserID = curUser.Id;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
 
             foreach (var calendar in bookingRequest.User.Calendars)

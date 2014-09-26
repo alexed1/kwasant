@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Analytics.NET">
+      <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -239,6 +242,14 @@
     <Compile Include="Migrations\201409231048096_Sync.23.09.2014.cs" />
     <Compile Include="Migrations\201409231048096_Sync.23.09.2014.Designer.cs">
       <DependentUpon>201409231048096_Sync.23.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.cs" />
+    <Compile Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.Designer.cs">
+      <DependentUpon>201409241548359_AddSegmentTrackingToAuthTokens.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409251049205_Sync.Rob.25.09.2014.cs" />
+    <Compile Include="Migrations\201409251049205_Sync.Rob.25.09.2014.Designer.cs">
+      <DependentUpon>201409251049205_Sync.Rob.25.09.2014.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201409251527319_Rob2.Sync.25.09.2014.cs" />
     <Compile Include="Migrations\201409251527319_Rob2.Sync.25.09.2014.Designer.cs">
@@ -1015,6 +1026,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409231048096_Sync.23.09.2014.resx">
       <DependentUpon>201409231048096_Sync.23.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.resx">
+      <DependentUpon>201409241548359_AddSegmentTrackingToAuthTokens.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409251049205_Sync.Rob.25.09.2014.resx">
+      <DependentUpon>201409251049205_Sync.Rob.25.09.2014.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409251527319_Rob2.Sync.25.09.2014.resx">
       <DependentUpon>201409251527319_Rob2.Sync.25.09.2014.cs</DependentUpon>

@@ -6,6 +6,12 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Data.Validations;
+using KwasantCore.Interfaces;
+using KwasantCore.Managers.APIManager.Packagers;
+using KwasantICS.DDay.iCal;
+using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
+using RazorEngine;
 using KwasantCore.Managers.APIManagers.Packagers;
 using StructureMap;
 using Microsoft.WindowsAzure;
@@ -32,13 +38,30 @@ namespace KwasantCore.Managers
         //Register for interesting events
         public void SubscribeToAlerts()
         {
+            AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerWorkflow;
             AlertManager.AlertCustomerCreated += NewCustomerWorkflow;
+            AlertManager.AlertBookingRequestCreated += BookingRequestCreated;
         }
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
-        public void NewCustomerWorkflow(string curUserId)
+        public void NewExplicitCustomerWorkflow(string curUserId)
         {
             GenerateWelcomeEmail(curUserId);  
+        }
+
+        //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
+        public void NewCustomerWorkflow(UserDO userDO)
+        {
+            ObjectFactory.GetInstance<ISegmentIO>().Identify(userDO);
+        }
+
+        public void BookingRequestCreated(int bookingRequestId) 
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                ObjectFactory.GetInstance<ISegmentIO>().Track(bookingRequestDO.User, "BookingRequest", "Submit", new Dictionary<string, object> {{"BookingRequestId", bookingRequestDO.Id}});
+            }
         }
 
         public void GenerateWelcomeEmail(string curUserId)
@@ -199,9 +222,10 @@ Proposed Answers: {2}
         public String Summary { get; set; }
         public String Description { get; set; }
         public String Location { get; set; }
+        public String AuthTokenURL { get; set; }
         public List<RazorAttendeeViewModel> Attendees { get; set; }
 
-        public RazorViewModel(EventDO ev, String userID)
+        public RazorViewModel(EventDO ev, String userID, String authTokenURL)
         {
             IsAllDay = ev.IsAllDay;
             StartDate = ev.StartDate.DateTime;
@@ -209,6 +233,7 @@ Proposed Answers: {2}
             Summary = ev.Summary;
             Description = ev.Description;
             Location = ev.Location;
+            AuthTokenURL = authTokenURL;
             Attendees = ev.Attendees.Select(a => new RazorAttendeeViewModel { Name = a.Name, EmailAddress = a.EmailAddress.Address }).ToList();
             UserID = userID;
         }
