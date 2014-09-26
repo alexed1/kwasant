@@ -8,10 +8,16 @@ namespace KwasantCore.ExternalServices
     {
         public static Dictionary<Type, ServiceInformation> ServiceInfo = new Dictionary<Type, ServiceInformation>();
 
-        public static List<Type> GetServices()
+        public static List<String> GetServices()
         {
             lock (ServiceInfo)
-                return ServiceInfo.Keys.ToList();
+                return ServiceInfo.Values.Select(v => v.Key).ToList();
+        }
+
+        public static ServiceInformation GetInformationForService(String key)
+        {
+            lock (ServiceInfo)
+                return ServiceInfo.Values.FirstOrDefault(v => v.Key == key);
         }
 
         public static ServiceInformation GetInformationForService<TServiceType>()
@@ -24,18 +30,31 @@ namespace KwasantCore.ExternalServices
                 return ServiceInfo[serviceType];
         }
 
-        public static void RegisterService<T>(String serviceName)
+        public static void RegisterService(Type serviceType, String serviceName, string groupName, object instance = null)
         {
             lock (ServiceInfo)
             {
                 ServiceInformation service;
-                if (ServiceInfo.ContainsKey(typeof (T)))
-                    service = ServiceInfo[typeof (T)];
+                if (ServiceInfo.ContainsKey(serviceType))
+                    service = ServiceInfo[serviceType];
                 else
-                    ServiceInfo[typeof(T)] = service = new ServiceInformation();
-                
+                    ServiceInfo[serviceType] = service = new ServiceInformation();
+
                 service.ServiceName = serviceName;
-            }       
+                service.GroupName = groupName;
+                service.Instance = instance;
+            }
+        }
+
+        public static void RegisterService<T>(String serviceName, String groupName, object instance = null)
+        {
+            RegisterService(typeof(T), serviceName, groupName, instance);
+        }
+
+        public static void SetFlag<T>(String flagName, Object value)
+        {
+            lock (ServiceInfo)
+                ServiceInfo[typeof (T)].SetFlag(flagName, value);
         }
 
         public static void LogEvent<T>(String eventName)
@@ -64,6 +83,30 @@ namespace KwasantCore.ExternalServices
 
         public class ServiceInformation
         {
+            private readonly String _key = Guid.NewGuid().ToString();
+            public String Key
+            {
+                get
+                {
+                    return _key;
+                }
+            }
+
+            private Object _instance;
+            public Object Instance
+            {
+                get
+                {
+                    lock (ServiceInfo)
+                        return _instance;
+                }
+                set
+                {
+                    lock (ServiceInfo)
+                        _instance = value;
+                }
+            }
+
             private String _serviceName;
             public String ServiceName
             {
@@ -78,6 +121,31 @@ namespace KwasantCore.ExternalServices
                         _serviceName = value;
                 }
             }
+
+            private String _groupName;
+            public String GroupName
+            {
+                get
+                {
+                    lock (ServiceInfo)
+                        return _groupName;
+                }
+                set
+                {
+                    lock (ServiceInfo)
+                        _groupName = value;
+                }
+            }
+
+            private readonly Dictionary<String, Object> _flags = new Dictionary<string, object>();
+            public Dictionary<String, Object> Flags
+            {
+                get
+                {
+                    lock (ServiceInfo)
+                        return new Dictionary<string, object>(_flags);
+                }
+            } 
 
             private readonly List<Tuple<DateTime, String>> _events = new List<Tuple<DateTime, String>>();
             public List<Tuple<DateTime, String>> Events
@@ -157,14 +225,25 @@ namespace KwasantCore.ExternalServices
                 lock (ServiceInfo)
                     _events.Add(new Tuple<DateTime, string>(DateTime.Now, eventName));
             }
+
+            public void SetFlag(String flagName, Object flagValue)
+            {
+                lock (ServiceInfo)
+                    _flags[flagName] = flagValue;
+            }
         }
     }
 
     public class ServiceManager<T>
     {
-        public ServiceManager(String serviceName)
+        public ServiceManager(String serviceName, String groupName, object instance = null)
         {
-            ServiceManager.RegisterService<T>(serviceName);
+            ServiceManager.RegisterService<T>(serviceName, groupName, instance);
+        }
+
+        public void SetFlag(String flagName, Object value)
+        {
+            ServiceManager.SetFlag<T>(flagName, value);
         }
 
         public void LogEvent(String eventName)

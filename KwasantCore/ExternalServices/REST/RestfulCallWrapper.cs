@@ -11,7 +11,7 @@ namespace KwasantCore.ExternalServices.REST
 
         public void Initialize(string baseURL, string resource, Method method)
         {
-            _serviceManager = new ServiceManager<RestfulCallWrapper>("REST Service: " + baseURL);
+            _serviceManager = new ServiceManager<RestfulCallWrapper>("REST Service: " + baseURL, "REST");
             _client = new RestfulCall(baseURL, resource, method);
         }
 

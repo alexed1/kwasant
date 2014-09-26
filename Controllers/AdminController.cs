@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Daemons;
 using KwasantCore.ExternalServices;
 using KwasantCore.Managers;
 using KwasantWeb.ViewModels;
@@ -35,10 +36,41 @@ namespace KwasantWeb.Controllers
                     Percent = percent,
                     ServiceName = info.ServiceName,
                     LastUpdated = lastUpdated,
-                    Events = info.Events.OrderByDescending(ev => ev.Item1).Select(e => new DiagnosticEventInfoVM { Date = e.Item1.ToShortTimeString(), EventName = e.Item2}).ToList()
+                    GroupName = info.GroupName,
+                    Flags = info.Flags,
+                    Actions = new List<DiagnosticActionVM> { 
+                        new DiagnosticActionVM { DisplayName = "Start", ServerAction = "StartDaemon" }, 
+                        new DiagnosticActionVM { DisplayName = "Stop", ServerAction = "StopDaemon" }
+                    },
+                    Key = info.Key,
+                    Events = info.Events.AsEnumerable().Reverse().Take(5).Select(e => new DiagnosticEventInfoVM { Date = e.Item1.ToString(), EventName = e.Item2}).ToList()
                 };
             }).ToList();
             return View(vm);
+        }
+
+        [HttpPost]
+        public ActionResult StartDaemon(String key)
+        {
+            var daemon = ServiceManager.GetInformationForService(key).Instance as Daemon;
+            if (daemon != null)
+            {
+                daemon.Start();
+                return new JsonResult { Data = true };
+            }
+            return new JsonResult { Data = false };
+        }
+
+        [HttpPost]
+        public ActionResult StopDaemon(String key)
+        {
+            var daemon = ServiceManager.GetInformationForService(key).Instance as Daemon;
+            if (daemon != null)
+            {
+                daemon.Stop();
+                return new JsonResult { Data = true };
+            }
+            return new JsonResult { Data = false };
         }
 
         public ActionResult Dashboard()

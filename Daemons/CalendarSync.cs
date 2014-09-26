@@ -7,7 +7,7 @@ using Utilities.Logging;
 
 namespace Daemons
 {
-    class CalendarSync : Daemon
+    class CalendarSync : Daemon<CalendarSync>
     {
         private readonly ICalDAVClientFactory _calDAVClientFactory;
 

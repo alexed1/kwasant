@@ -17,7 +17,7 @@ namespace Daemons
     /// This Daemon looks for new booking requests, or unprocessed booking requests based on TrackingStatusDO.
     /// New booking requests are sent to the communication manager, which will then send off emails/smses to specific people
     /// </summary>
-    public class OperationsMonitor : Daemon
+    public class OperationsMonitor : Daemon<OperationsMonitor>
     {
         private IConfigRepository _configRepository;
 

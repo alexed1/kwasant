@@ -10,7 +10,7 @@ namespace KwasantCore.ExternalServices
         private ServiceManager<SmtpClientWrapper> _serviceManager;
         public void Initialize(string serverURL, int serverPort)
         {
-            _serviceManager = new ServiceManager<SmtpClientWrapper>("SMTP Service");
+            _serviceManager = new ServiceManager<SmtpClientWrapper>("SMTP Service", "Email");
 
             _internalClient = new SmtpClient(serverURL, serverPort);
         }

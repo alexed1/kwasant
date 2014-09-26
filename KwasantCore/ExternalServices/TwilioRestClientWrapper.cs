@@ -10,7 +10,7 @@ namespace KwasantCore.ExternalServices
 
         public void Initialize(string accountSID, string accountAuthKey)
         {
-            _serviceManager = new ServiceManager<TwilioRestClientWrapper>("Twilio Service");
+            _serviceManager = new ServiceManager<TwilioRestClientWrapper>("Twilio Service", "SMS");
             _internalClient = new TwilioRestClient(accountSID, accountAuthKey);
         }
 

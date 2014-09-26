@@ -3,12 +3,19 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using Daemons.EventExposers;
-using Utilities.Logging;
+using KwasantCore.ExternalServices;
 
 namespace Daemons
 {
     //For more information, see https://maginot.atlassian.net/wiki/display/SH/Design+Document%3A+SH-21
+
     public abstract class Daemon
+    {
+        public abstract bool Start();
+        public abstract void Stop();
+    }
+    public abstract class Daemon<T> : Daemon
+        where T : Daemon<T>
     {
         public delegate void DaemonExecutedEventHandler();
         public event DaemonExecutedEventHandler DaemonExecuted;
@@ -17,7 +24,7 @@ namespace Daemons
 
         public abstract int WaitTimeBetweenExecution { get; }
 
-        public bool IsRunning { get; private set; }
+        public bool IsRunning { get; protected set; }
         public bool IsStopping { get; private set; }
 
         protected abstract void Run();
@@ -25,10 +32,32 @@ namespace Daemons
         private readonly HashSet<EventInfo> _activeEventHandlers = new HashSet<EventInfo>();
         private readonly HashSet<Exception> _loggedExceptions = new HashSet<Exception>();
 
-        
-        public Daemon()
+        private readonly ServiceManager<T> _serviceManager;
+
+        protected Daemon()
         {
-            
+            _serviceManager = new ServiceManager<T>(GetType().Name, "Daemons", this);
+        }
+
+        protected void SetFlag(String flagName, Object value)
+        {
+            _serviceManager.SetFlag(flagName, value);
+        }
+        protected void LogEvent(String message)
+        {
+            _serviceManager.LogEvent(message);
+        }
+        protected void LogAttempt(String message = null)
+        {
+            _serviceManager.LogAttempt(message);
+        }
+        protected void LogFail(Exception ex, String message = null)
+        {
+            _serviceManager.LogFail(ex, message);
+        }
+        protected void LogSuccess(String message = null)
+        {
+            _serviceManager.LogSucessful(message);
         }
 
         /// <summary>
@@ -156,19 +185,20 @@ namespace Daemons
             }
         }
 
-        public bool Start()
+        public override bool Start()
         {
             lock (this)
             {
-                if (IsRunning)
+                if (IsRunning && !IsStopping)
                 {
-                    Logger.GetLogger().Info(GetType().Name + " - already running.");
+                    LogEvent("Already running.");
                     return false;
                 }
 
                 IsRunning = true;
             }
-            Logger.GetLogger().Info(GetType().Name + " - starting...");
+            SetFlag("State", "Running");
+            LogEvent("Starting...");
 
             IsStopping = false;
 
@@ -193,18 +223,17 @@ namespace Daemons
                             {
                                 lastExecutionTime = currTime;
                                 firstExecution = false;
-                                // Logger.GetLogger().Info(GetType().Name + " - executing...");
+                                LogAttempt("Running...");
                                 Run();
+                                LogSuccess("Completed.");
                                 if (DaemonExecuted != null)
                                     DaemonExecuted();
                             }
                             else
                             {
                                 //Sleep until the approximate time that we're ready
-                                double waitTime = (WaitTimeBetweenExecution -
-                                                   (currTime - lastExecutionTime).TotalMilliseconds);
+                                double waitTime = (WaitTimeBetweenExecution - (currTime - lastExecutionTime).TotalMilliseconds);
 
-                                //Logger.GetLogger().Info(GetType().Name + " - sleeping for " + waitTime + " milliseconds");
                                 Thread.Sleep((int) waitTime);
                             }
 
@@ -214,10 +243,11 @@ namespace Daemons
                             HandleException(e);
                         }
                     }
-                    Logger.GetLogger().Info(GetType().Name + " - shutting down");
+                    LogEvent("Stopped.");
 
                     CleanupInternal();
                     IsRunning = false;
+                    SetFlag("State", "Stopped");
                 });
             }
 
@@ -225,10 +255,15 @@ namespace Daemons
             return true;
         }
 
-        public void Stop()
+        public override void Stop()
         {
+            SetFlag("State", "Stopping...");
+            LogEvent("Stopping...");
             IsStopping = true;
+            StopInternal();
         }
+
+        protected virtual void StopInternal() { }
 
         private void CleanupInternal()
         {
@@ -248,7 +283,7 @@ namespace Daemons
             lock (_loggedExceptions)
                 _loggedExceptions.Add(e);
 
-            Logger.GetLogger().Error("Error occured in " + GetType().Name, e);
+            LogFail(e, "Error occured in " + GetType().Name);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace KwasantCore.ExternalServices
         
         public void Initialize(String serverURL, int port, bool useSSL)
         {
-            _serviceManager = new ServiceManager<ImapClientWrapper>("Imap Service: " + serverURL);
+            _serviceManager = new ServiceManager<ImapClientWrapper>("Imap Service: " + serverURL, "Email Services");
 
             _internalClient = new ImapClient(serverURL, port, useSSL);
 
@@ -63,13 +63,20 @@ namespace KwasantCore.ExternalServices
         {
             add
             {
+                _serviceManager.LogEvent("New consumer of 'NewMessage' event added.");
                 EventDelegateCollection.AddHandler(NewMessageEventKey, value);
-                EventHandler<IdleMessageEventArgs> internalClientOnNewMessage = (sender, args) => ((EventHandler<IdleMessageEventArgsWrapper>)EventDelegateCollection[NewMessageEventKey])(sender, new IdleMessageEventArgsWrapper(this));
+                EventHandler<IdleMessageEventArgs> internalClientOnNewMessage = (sender, args) =>
+                {
+                    _serviceManager.LogEvent("New email notification recieved.");
+                    ((EventHandler<IdleMessageEventArgsWrapper>) EventDelegateCollection[NewMessageEventKey])(sender, new IdleMessageEventArgsWrapper(this));
+                };
+                    
                 _internalClient.NewMessage += internalClientOnNewMessage;
                 _eventMapping[value] = internalClientOnNewMessage;
             }
             remove
             {
+                _serviceManager.LogEvent("Removed consumer of 'NewMessage' event.");
                 EventDelegateCollection.RemoveHandler(NewMessageEventKey, value);
                 if (!_eventMapping.ContainsKey(value)) return;
                 var oldEvent = _eventMapping[value];

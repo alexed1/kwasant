@@ -5,31 +5,72 @@
 <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 <h2>Diagnostics</h2>
-@foreach (var service in Model)
+@foreach (var group in Model.GroupBy(m => m.GroupName))
 {
-    <h3>@service.ServiceName @service.Percent % Last updated @service.LastUpdated</h3>
-    <span>Attempts: @service.Attempts</span>
-    <span>Success: @service.Success</span>
-    <table id="tblIncident" class="data-table">
-        <thead>
-            <tr>
-                <th style="width: 50%">Date</th>
-                <th style="width: 50%">Event</th>
-            </tr>
-            @foreach (var ev in service.Events)
-            {
+    <h2>@group.Key</h2>
+    foreach (var service in group)
+    { 
+        <h3>@service.ServiceName @service.Percent % Last updated @service.LastUpdated</h3>
+        <span>Attempts: @service.Attempts</span>
+        <span>Success: @service.Success</span>
+        foreach (var flag in service.Flags)
+        {
+            <div>@flag.Key: @flag.Value</div>
+        }
+        <a class="expando" targettable="#tbl_@service.Key" key="@service.Key" expanded="false" href="javascript:void(0);">Show details</a>
+        foreach (var action in service.Actions)
+        {
+            <a class="actionItem" serverAction="@action.ServerAction" key="@service.Key" href="javascript:void(0);">@action.DisplayName</a>
+        }
+        <table id="tbl_@service.Key" key="@service.Key" class="data-table">
+            <thead>
                 <tr>
-                    <td>
-                        @ev.Date
-                    </td>
-                    <td>
-                        @ev.EventName
-                    </td>
+                    <th style="width: 50%">Date</th>
+                    <th style="width: 50%">Event</th>
                 </tr>
-            }
-        </thead>
-    </table>
+                @foreach (var ev in service.Events)
+                {
+                    <tr>
+                        <td>
+                            @ev.Date
+                        </td>
+                        <td>
+                            @ev.EventName
+                        </td>
+                    </tr>
+                }
+            </thead>
+        </table>
+    }
 }
 <a href="/">Go to kwasant.com</a>
 <script type="text/javascript">
- </script>
+    $(function() {
+        $(".data-table").each(function(i, object) {
+            if (!$.cookie('Expanded_' + $(object).attr('key')))
+                $(object).hide();
+        });
+        $('.expando').click(function () {
+            var link = $(this);
+            if (link.attr('expanded') == 'false') {
+                $(link.attr('targettable')).show();
+                link.attr('expanded', 'true');
+                link.html('Hide details');
+                $.cookie('Expanded_' + link.attr('key'), true);
+            } else {
+                $(link.attr('targettable')).hide();
+                link.attr('expanded', 'false');
+                link.html('Show details');
+                $.cookie('Expanded_' + link.attr('key'), false);
+            } 
+        });
+        $('.actionItem').click(function() {
+            var link = $(this);
+            var url = link.attr('serverAction');
+            var key = link.attr('key');
+            $.post(url, {
+                Key: key
+            });
+        });
+    });
+</script>

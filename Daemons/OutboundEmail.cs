@@ -14,7 +14,7 @@ using KwasantCore.Services;
 
 namespace Daemons
 {
-    public class OutboundEmail : Daemon
+    public class OutboundEmail : Daemon<OutboundEmail>
     {
 
         private string logString;
@@ -83,7 +83,6 @@ namespace Daemons
             {
                 var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                 EnvelopeRepository envelopeRepository = unitOfWork.EnvelopeRepository;
-                EventRepository eventRepository = unitOfWork.EventRepository;
                 var numSent = 0;
                 foreach (EnvelopeDO curEnvelopeDO in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
                 {
@@ -146,7 +145,7 @@ namespace Daemons
                     logString = "Emails sent:" + numSent;
                 }
 
-                Logger.GetLogger().Info(logString);
+                LogEvent(logString);
             }
         }
         private bool RemoveRecipients(EmailDO emailDO, IUnitOfWork uow)
