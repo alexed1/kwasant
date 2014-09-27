@@ -133,7 +133,6 @@
     <Compile Include="Repositories\EventRepositoryTests.cs" />
     <Compile Include="Services\EmailTests.cs" />
     <Compile Include="Services\EventServiceTests.cs" />
-    <Compile Include="Integration\NegotiationITests\NegotiationTests.cs" />
     <Compile Include="Services\SMSTests.cs" />
     <Compile Include="Timeslots\TimeslotMergeTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
