@@ -17,7 +17,7 @@ namespace KwasantCore.ExternalServices
             _serviceManager = new ServiceManager<ImapClientWrapper>("Imap Service: " + serverURL, "Email Services");
 
             _internalClient = new ImapClient(serverURL, port, useSSL);
-
+            
             _serviceManager.LogEvent("Installed event listener for new messages.");
         }
 
@@ -52,36 +52,76 @@ namespace KwasantCore.ExternalServices
             }
         }
 
-        //The below is a manual implementation of .NET's event system
-        //We need to do this so we can have the add {} and remove {} methods
-        //We can't use the automatic event generator, because we need to wrap the event args
-        //The below code is essentially the same as a usual 'event EventHandler NewMessage' declaration
-        protected EventHandlerList EventDelegateCollection = new EventHandlerList();
-        static readonly object NewMessageEventKey = new object();
-        private readonly Dictionary<EventHandler<IdleMessageEventArgsWrapper>, EventHandler<IdleMessageEventArgs>> _eventMapping = new Dictionary<EventHandler<IdleMessageEventArgsWrapper>, EventHandler<IdleMessageEventArgs>>();
+
+        private event EventHandler<IdleMessageEventArgsWrapper> NewMessageInternal;
         public event EventHandler<IdleMessageEventArgsWrapper> NewMessage
         {
             add
             {
                 _serviceManager.LogEvent("New consumer of 'NewMessage' event added.");
-                EventDelegateCollection.AddHandler(NewMessageEventKey, value);
-                EventHandler<IdleMessageEventArgs> internalClientOnNewMessage = (sender, args) =>
-                {
-                    _serviceManager.LogEvent("New email notification recieved.");
-                    ((EventHandler<IdleMessageEventArgsWrapper>) EventDelegateCollection[NewMessageEventKey])(sender, new IdleMessageEventArgsWrapper(this));
-                };
-                    
-                _internalClient.NewMessage += internalClientOnNewMessage;
-                _eventMapping[value] = internalClientOnNewMessage;
+                NewMessageInternal += value;
+                _internalClient.NewMessage += InternalClientOnNewMessage;
             }
             remove
             {
                 _serviceManager.LogEvent("Removed consumer of 'NewMessage' event.");
-                EventDelegateCollection.RemoveHandler(NewMessageEventKey, value);
-                if (!_eventMapping.ContainsKey(value)) return;
-                var oldEvent = _eventMapping[value];
-                _internalClient.NewMessage -= oldEvent;
+                NewMessageInternal -= value;
+                _internalClient.NewMessage -= InternalClientOnNewMessage;
             }
+        }
+
+        private void InternalClientOnNewMessage(object sender, IdleMessageEventArgs idleMessageEventArgs)
+        {
+            if (NewMessageInternal != null)
+                NewMessageInternal(sender, new IdleMessageEventArgsWrapper(this));
+        }
+
+
+        private event EventHandler<IdleErrorEventArgsWrapper> IdleErrorInternal;
+        public event EventHandler<IdleErrorEventArgsWrapper> IdleError
+        {
+            add
+            {
+                _serviceManager.LogEvent("New consumer of 'IdleError' event added.");
+                IdleErrorInternal += value;
+                _internalClient.IdleError += InternalClientOnNewMessage;
+            }
+            remove
+            {
+                _serviceManager.LogEvent("Removed consumer of 'IdleError' event.");
+                IdleErrorInternal -= value;
+                _internalClient.IdleError -= InternalClientOnNewMessage;
+            }
+        }
+
+        private void InternalClientOnNewMessage(object sender, IdleErrorEventArgs idleMessageEventArgs)
+        {
+            if (IdleErrorInternal != null)
+                IdleErrorInternal(sender, new IdleErrorEventArgsWrapper(this, idleMessageEventArgs.Exception));
+        }
+
+
+        private event EventHandler<IdleEndedEventArgsWrapper> IdleEndedInternal;
+        public event EventHandler<IdleEndedEventArgsWrapper> IdleEnded
+        {
+            add
+            {
+                _serviceManager.LogEvent("New consumer of 'IdleEnded' event added.");
+                IdleEndedInternal += value;
+                _internalClient.IdleEnded += InternalClientOnNewMessage;
+            }
+            remove
+            {
+                _serviceManager.LogEvent("Removed consumer of 'IdleEnded' event.");
+                IdleEndedInternal -= value;
+                _internalClient.IdleEnded -= InternalClientOnNewMessage;
+            }
+        }
+
+        private void InternalClientOnNewMessage(object sender, IdleEndedEventArgs idleMessageEventArgs)
+        {
+            if (IdleEndedInternal != null)
+                IdleEndedInternal(sender, new IdleEndedEventArgsWrapper(this));
         }
     }
 }

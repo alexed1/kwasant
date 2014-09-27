@@ -13,6 +13,8 @@ namespace KwasantCore.ExternalServices
         IEnumerable<uint> Search(SearchCondition criteria, string mailbox = null);
         void Dispose();
         event EventHandler<IdleMessageEventArgsWrapper> NewMessage;
+        event EventHandler<IdleErrorEventArgsWrapper> IdleError;
+        event EventHandler<IdleEndedEventArgsWrapper> IdleEnded;
     }
 
     public class IdleMessageEventArgsWrapper
@@ -20,6 +22,28 @@ namespace KwasantCore.ExternalServices
         public IImapClient Client { get; private set; }
 
         public IdleMessageEventArgsWrapper(IImapClient client)
+        {
+            Client = client;
+        }
+    }
+
+    public class IdleErrorEventArgsWrapper
+    {
+        public IImapClient Client { get; private set; }
+        public Exception Exception { get; private set; }
+
+        public IdleErrorEventArgsWrapper(IImapClient client, Exception exception)
+        {
+            Client = client;
+            Exception = exception;
+        }
+    }
+
+    public class IdleEndedEventArgsWrapper
+    {
+        public IImapClient Client { get; private set; }
+
+        public IdleEndedEventArgsWrapper(IImapClient client)
         {
             Client = client;
         }

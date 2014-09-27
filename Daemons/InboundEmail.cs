@@ -76,7 +76,7 @@ namespace Daemons
         {
             get
             {
-                return -1;
+                return (int)TimeSpan.FromMinutes(2).TotalSeconds;
             }
         }
 
@@ -106,28 +106,58 @@ namespace Daemons
             }
         }
 
+        private bool _alreadyListening;
+        private readonly object _alreadyListeningLock = new object();
+
         protected override void Run()
         {
-            LogEvent("Waiting for messages at " + GetUserName() + "...");
-            GetUnreadMessages(Client);
-            Client.NewMessage += OnNewMessage;
+            lock (_alreadyListeningLock)
+            {
+                if (!_alreadyListening)
+                {
+                    LogEvent("Waiting for messages at " + GetUserName() + "...");
+                    GetUnreadMessages(Client);
+                    Client.NewMessage += OnNewMessage;
+                    Client.IdleError += OnIdleError;
+                    Client.IdleEnded += OnIdleEnded;
+
+                    _alreadyListening = true;
+                }
+                LogEvent();
+            }
         }
 
-        protected override void StopInternal()
+        private void OnIdleError(object sender, IdleErrorEventArgsWrapper args)
         {
-            LogEvent("Removed email listener");
-            Client.NewMessage -= OnNewMessage;
-            IsRunning = false;
-            LogEvent("Stopped.");
-            SetFlag("State", "Stopped");
-            base.StopInternal();
+            Logger.GetLogger().Info("Idle error recieved.");
+            LogFail(args.Exception, "Idle error recieved.");
+            RestartClient();
         }
 
+        public void OnIdleEnded(object sender, IdleEndedEventArgsWrapper args)
+        {
+            Logger.GetLogger().Info("Idle ended...");
+            LogEvent("Idle ended...");
+            RestartClient();
+        }
+        
         public void OnNewMessage(object sender, IdleMessageEventArgsWrapper args)
         {
             Logger.GetLogger().Info("New email notification recieved.");
             LogEvent("New email notification recieved.");
             GetUnreadMessages(args.Client);
+        }
+
+        private void RestartClient()
+        {
+            lock (_alreadyListeningLock)
+            {
+                CleanUp();
+
+                LogEvent("Restarting...");
+
+                _alreadyListening = false;
+            }
         }
         
         private void GetUnreadMessages(IImapClient client)
@@ -143,16 +173,16 @@ namespace Daemons
             }
             catch (SocketException ex) //we were getting strange socket errors after time, and it looks like a reset solves things
             {
-                CleanUp();
-                _client = null; //this will get recreated the next time this daemon runs
                 AlertManager.EmailProcessingFailure(DateTime.Now.to_S(), "Got that SocketException");
                 LogFail(ex, "Hit SocketException. Trying to reset the IMAP Client.");
                 Logger.GetLogger().Error("Hit SocketException. Trying to reset the IMAP Client.", ex);
+                RestartClient();
             }
             catch (Exception e)
             {
                 Logger.GetLogger().Error("Error occured in " + GetType().Name, e);
                 LogFail(e);
+                RestartClient();
             }
         }
 
@@ -183,8 +213,7 @@ namespace Daemons
             try
             {
                 var handlerIndex = 0;
-                while (handlerIndex < _handlers.Length
-                       && !_handlers[handlerIndex].Process(messageInfo))
+                while (handlerIndex < _handlers.Length && !_handlers[handlerIndex].Process(messageInfo))
                 {
                     handlerIndex++;
                 }
@@ -195,14 +224,19 @@ namespace Daemons
             {
                 AlertManager.EmailProcessingFailure(messageInfo.Headers["Date"], e.Message);
                 Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Headers["Message-ID"]));
-                
             }
         }
 
         protected override void CleanUp()
         {
-            if(_client != null)
+            if (_client != null)
+            {
+                _client.NewMessage -= OnNewMessage;
+                _client.IdleError -= OnIdleError;
+                _client.IdleEnded -= OnIdleEnded;
                 _client.Dispose();
+                _client = null;
+            }   
         }
     }
 }
