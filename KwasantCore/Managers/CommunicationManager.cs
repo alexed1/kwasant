@@ -53,7 +53,7 @@ namespace KwasantCore.Managers
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
         public void NewCustomerWorkflow(UserDO userDO)
         {
-            ObjectFactory.GetInstance<ISegmentIO>().Identify(userDO);
+            ObjectFactory.GetInstance<ITracker>().Identify(userDO);
         }
 
         public void BookingRequestCreated(int bookingRequestId) 
@@ -61,7 +61,7 @@ namespace KwasantCore.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                ObjectFactory.GetInstance<ISegmentIO>().Track(bookingRequestDO.User, "BookingRequest", "Submit", new Dictionary<string, object> {{"BookingRequestId", bookingRequestDO.Id}});
+                ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.User, "BookingRequest", "Submit", new Dictionary<string, object> {{"BookingRequestId", bookingRequestDO.Id}});
             }
         }
 

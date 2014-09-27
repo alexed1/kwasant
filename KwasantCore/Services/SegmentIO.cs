@@ -10,7 +10,7 @@ using StructureMap;
 
 namespace KwasantCore.Services
 {
-    public class SegmentIO : ISegmentIO
+    public class SegmentIO : ITracker
     {
         public void Identify(String userID)
         {

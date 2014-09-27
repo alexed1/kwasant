@@ -21,7 +21,7 @@ namespace KwasantCore.Security
             {
                 IsPersistent = true
             }, identity);
-            ObjectFactory.GetInstance<ISegmentIO>().Identify(userDO);
+            ObjectFactory.GetInstance<ITracker>().Identify(userDO);
         }
 
         public String GetCurrentUser()

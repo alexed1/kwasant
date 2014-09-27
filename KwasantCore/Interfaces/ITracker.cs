@@ -4,7 +4,7 @@ using Data.Entities;
 
 namespace KwasantCore.Interfaces
 {
-    public interface ISegmentIO
+    public interface ITracker
     {
         void Identify(String userID);
         void Identify(UserDO userDO);

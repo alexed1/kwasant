@@ -248,7 +248,7 @@ namespace KwasantWeb.Controllers
                     var userDO = user.GetOrCreateFromBR(uow, attendeeDO.EmailAddress);
                     if (user.GetMode(userDO) == CommunicationMode.Delegate)
                     {
-                        ObjectFactory.GetInstance<ISegmentIO>().Track(userDO, "User", "InvitedAsPreCustomerAttendee",
+                        ObjectFactory.GetInstance<ITracker>().Track(userDO, "User", "InvitedAsPreCustomerAttendee",
                             new Dictionary<string, object>
                             {
                                 {"BookingRequestId", curEventDO.BookingRequestID},

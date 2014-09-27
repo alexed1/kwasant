@@ -39,7 +39,7 @@ namespace KwasantWeb.Controllers
                             segmentProps.Add(prop.Key, prop.Value);
                     }
 
-                    ObjectFactory.GetInstance<ISegmentIO>().Track(validToken.UserDO, validToken.SegmentTrackingEventName, segmentProps);
+                    ObjectFactory.GetInstance<ITracker>().Track(validToken.UserDO, validToken.SegmentTrackingEventName, segmentProps);
                 }
 
                 return Redirect(validToken.RedirectURL);
