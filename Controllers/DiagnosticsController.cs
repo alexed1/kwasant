@@ -18,8 +18,10 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize(Roles = "Admin")]
     public class DiagnosticsController : Controller
     {
-        public ActionResult Index()
+        public ActionResult Index(int? pageAmount)
         {
+            if (!pageAmount.HasValue)
+                pageAmount = 100;
             var serviceTypes = ServiceManager.GetServices();
 
             var vm = serviceTypes.Select(st =>
@@ -52,6 +54,7 @@ namespace KwasantWeb.Controllers
                     LastUpdated = lastUpdated,
                     GroupName = info.GroupName,
                     LastFail = lastFail,
+                    RunningTest = info.RunningTest,
                     LastSuccess = lastSuccess,
                     Operational = operational,
                     Flags = info.Flags,
@@ -66,7 +69,7 @@ namespace KwasantWeb.Controllers
                         info.Events.AsEnumerable()
                             .Reverse()
                             .Where(e => !String.IsNullOrEmpty(e.Item2))
-                            .Take(15)
+                            .Take(pageAmount.Value)
                             .Select(e => new DiagnosticEventInfoVM { Date = e.Item1.ToString(), EventName = e.Item2 })
                             .ToList()
                 };
@@ -165,28 +168,48 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult OutboundEmailDaemon_TestGmail(String key)
+        public ActionResult OutboundEmailDaemon_TestGmail(String key, String testName)
         {
-            return SendTestEmail((uow, curEmail, subjKey, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon, _email) =>
+            return SendTestEmail(testName, (uow, curEmail, subjKey, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon, _email) =>
             {
                 _email.GenerateBasicMessage(uow, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
             });
         }
 
         [HttpPost]
-        public ActionResult OutboundEmailDaemon_TestMandrill(String key)
+        public ActionResult OutboundEmailDaemon_TestMandrill(String key, String testName)
         {
-            return SendTestEmail((uow, curEmail, subjKey, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon, _email) =>
+            return SendTestEmail(testName, (uow, curEmail, subjKey, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon, _email) =>
             {
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "test_template", null);
             });
         }
 
-        public JsonResult SendTestEmail(Action<IUnitOfWork, EmailDO, string, EmailAddressDO, string, string, string, InboundEmail, Email> configureEmail)
+        private void StartTest<T>(String testName)
         {
-            ServiceManager.LogEvent<OutboundEmail>("Running test...");
-            ServiceManager.LogEvent<InboundEmail>("Running test...");
+            ServiceManager.StartingTest<T>();
+            ServiceManager.LogEvent<T>("Running test '" + testName + "'...");
+        }
 
+        private void PassTest<T>(String testName)
+        {
+            ServiceManager.FinishedTest<T>();
+            ServiceManager.LogEvent<T>("Test '" + testName + "' succeeded.");
+            ServiceManager.LogSuccess<T>();
+        }
+
+        private void FailTest<T>(String testName)
+        {
+            ServiceManager.FinishedTest<T>();
+            ServiceManager.LogEvent<T>("Test '" + testName + "' failed.");
+            ServiceManager.LogFail<T>();
+        }
+
+        public JsonResult SendTestEmail(String testName, Action<IUnitOfWork, EmailDO, string, EmailAddressDO, string, string, string, InboundEmail, Email> configureEmail)
+        {
+            StartTest<OutboundEmail>(testName);
+            StartTest<InboundEmail>(testName);
+            
             var inboundEmailDaemon = ServiceManager.GetInformationForService<InboundEmail>().Instance as InboundEmail;
             if (inboundEmailDaemon == null)
                 return new JsonResult { Data = false };
@@ -229,22 +252,16 @@ namespace KwasantWeb.Controllers
                 {
                     if (messageRecieved)
                     {
-                        ServiceManager.LogEvent<OutboundEmail>("Test succeeded.");
-                        ServiceManager.LogSuccess<OutboundEmail>();
-
-                        ServiceManager.LogEvent<InboundEmail>("Test succeeded.");
-                        ServiceManager.LogSuccess<InboundEmail>();
+                        PassTest<OutboundEmail>(testName);
+                        PassTest<InboundEmail>(testName);
                         return;
                     }
 
                     Thread.Sleep(100);
                 }
 
-                ServiceManager.LogEvent<OutboundEmail>("Test failed.");
-                ServiceManager.LogFail<OutboundEmail>();
-
-                ServiceManager.LogEvent<InboundEmail>("Test failed.");
-                ServiceManager.LogFail<InboundEmail>();
+                FailTest<OutboundEmail>(testName);
+                FailTest<InboundEmail>(testName);
             }).Start();
 
             return new JsonResult { Data = true };

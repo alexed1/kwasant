@@ -11,6 +11,7 @@ namespace KwasantWeb.ViewModels
         public int Success { get; set; }
         public int Percent { get; set; }
         public bool Operational { get; set; }
+        public bool RunningTest { get; set; }
         public String Key { get; set; }
         public String LastUpdated { get; set; }
         public String LastSuccess { get; set; }

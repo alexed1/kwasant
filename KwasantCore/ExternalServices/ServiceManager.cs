@@ -75,6 +75,18 @@ namespace KwasantCore.ExternalServices
                 ServiceInfo[typeof(T)].AddEvent(eventName);
         }
 
+        public static void StartingTest<T>()
+        {
+            lock (ServiceInfo)
+                ServiceInfo[typeof(T)].StartingTest();
+        }
+
+        public static void FinishedTest<T>()
+        {
+            lock (ServiceInfo)
+                ServiceInfo[typeof(T)].FinishedTest();
+        }
+
         public static void LogSuccess<T>()
         {
             lock (ServiceInfo)
@@ -224,6 +236,21 @@ namespace KwasantCore.ExternalServices
                 }
             }
 
+            private bool _runningTest;
+            public bool RunningTest
+            {
+                get
+                {
+                    lock (ServiceInfo)
+                        return _runningTest;
+                }
+                set
+                {
+                    lock (ServiceInfo)
+                        _runningTest = value;
+                }
+            }
+
             private int _success;
             public int Success
             {
@@ -276,6 +303,18 @@ namespace KwasantCore.ExternalServices
                     _lastFail = DateTime.Now;
                     Fail++;
                 }
+            }
+
+            public void StartingTest()
+            {
+                lock (ServiceInfo)
+                    RunningTest = true;
+            }
+
+            public void FinishedTest()
+            {
+                lock (ServiceInfo)
+                    RunningTest = false;
             }
 
             public void AddEvent(String eventName)
@@ -347,6 +386,9 @@ namespace KwasantCore.ExternalServices
                 exceptionMessages.Add(currException.Message);
                 currException = currException.InnerException;
             }
+
+            exceptionMessages.Add("*** Stacktrace ***");
+            exceptionMessages.Add(ex.StackTrace);
 
             var exceptionMessage = String.Join(Environment.NewLine, exceptionMessages);
 

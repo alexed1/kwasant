@@ -98,7 +98,7 @@ namespace Daemons
                 }
                 catch (Exception ex)
                 {
-                    Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
+                    LogFail(ex, "Error occured on startup... shutting down");
                     throw;
                 }
 
@@ -129,14 +129,12 @@ namespace Daemons
 
         private void OnIdleError(object sender, IdleErrorEventArgsWrapper args)
         {
-            Logger.GetLogger().Info("Idle error recieved.");
             LogFail(args.Exception, "Idle error recieved.");
             RestartClient();
         }
 
         public void OnNewMessage(object sender, IdleMessageEventArgsWrapper args)
         {
-            Logger.GetLogger().Info("New email notification recieved.");
             LogEvent("New email notification recieved.");
             GetUnreadMessages(args.Client);
         }
@@ -168,12 +166,10 @@ namespace Daemons
             {
                 AlertManager.EmailProcessingFailure(DateTime.Now.to_S(), "Got that SocketException");
                 LogFail(ex, "Hit SocketException. Trying to reset the IMAP Client.");
-                Logger.GetLogger().Error("Hit SocketException. Trying to reset the IMAP Client.", ex);
                 RestartClient();
             }
             catch (Exception e)
             {
-                Logger.GetLogger().Error("Error occured in " + GetType().Name, e);
                 LogFail(e);
                 RestartClient();
             }
@@ -183,6 +179,7 @@ namespace Daemons
         {
             var logString = "Processing message with subject '" + messageInfo.Subject + "'";
             Logger.GetLogger().Info(logString);
+            LogEvent(logString);
 
             lock (_testSubjects)
             {
@@ -216,7 +213,7 @@ namespace Daemons
             catch (Exception e)
             {
                 AlertManager.EmailProcessingFailure(messageInfo.Headers["Date"], e.Message);
-                Logger.GetLogger().Error(string.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Headers["Message-ID"]));
+                LogFail(e, String.Format("EmailProcessingFailure Reported. ObjectID = {0}", messageInfo.Headers["Message-ID"]));
             }
         }
 

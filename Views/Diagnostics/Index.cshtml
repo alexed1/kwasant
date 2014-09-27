@@ -9,6 +9,10 @@
     .expando {
 
     }
+    .tableDiv {
+        max-height: 500px;
+        overflow-y: scroll;
+    }
     .serviceBlock {
         border: 1px solid;
         margin: 3px;
@@ -22,6 +26,7 @@
         height: 10px;
     }
 </style>
+@Scripts.Render("~/bundles/js/kwasantpopup")
 <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 <h2>Diagnostics</h2>
@@ -31,7 +36,7 @@
     foreach (var service in group)
     {
         <div class="serviceBlock">
-            <h3>@service.ServiceName @Html.Raw(service.Operational ? "<span style='color:green'>OK</span>" : "<span style='color:red'>BROKEN</span>")</h3>
+            <h3>@service.ServiceName @Html.Raw(service.RunningTest ? ("<span style='color:darkorange'>Running test...</span>") : (service.Operational ? "<span style='color:green'>OK</span>" : "<span style='color:red'>BROKEN</span>"))</h3>
             <h4>@service.Percent% Success Rate, Last updated: @service.LastUpdated</h4>
             <h4>Last success: @service.LastSuccess</h4>
             <h4>Last fail: @service.LastFail</h4>
@@ -58,39 +63,48 @@
                      
             @if (service.Tests.Any())
             {
-                <h4>Tests</h4>
-                foreach (var test in service.Tests)
+                if (service.RunningTest)
                 {
-                    <a class="actionItem" serveraction="@test.ServerAction" key="@service.Key" href="javascript:void(0);">@test.DisplayName</a>
+                    <h4 style="color: darkred">Test in progress</h4>
                 }
-                <div class="horizSep"></div>
-                <div class="horizSep"></div>
+                else
+                {
+                    <h4>Tests</h4>
+                    foreach (var test in service.Tests)
+                    {
+                        <a class="actionItem" serveraction="@test.ServerAction" key="@service.Key" href="javascript:void(0);">@test.DisplayName</a>
+                    }
+                    <div class="horizSep"></div>
+                }
             }
             else
             {
                 <h4>No tests available</h4>
             }
+            <div class="horizSep"></div>
             <a class="expando" targettable="#tbl_@service.Key" key="@service.Key" expanded="false" href="javascript:void(0);">Show details</a>
 
-            <table id="tbl_@service.Key" key="@service.Key" class="data-table">
-                <thead>
-                    <tr>
-                        <th style="width: 50%">Date</th>
-                        <th style="width: 50%">Event</th>
-                    </tr>
-                    @foreach (var ev in service.Events)
-                    {
+            <div class="tableDiv">
+                <table id="tbl_@service.Key" key="@service.Key" class="data-table">
+                    <thead>
                         <tr>
-                            <td>
-                                @ev.Date
-                            </td>
-                            <td>
-                                @ev.EventName
-                            </td>
+                            <th style="width: 50%">Date</th>
+                            <th style="width: 50%">Event</th>
                         </tr>
-                    }
-                </thead>
-            </table>
+                        @foreach (var ev in service.Events)
+                        {
+                            <tr>
+                                <td>
+                                    @ev.Date
+                                </td>
+                                <td>
+                                    @ev.EventName
+                                </td>
+                            </tr>
+                        }
+                    </thead>
+                </table>
+            </div>
         </div>
     }
 }
@@ -139,12 +153,17 @@
             });
             
             showFunc($(expando));
+            var spinner = Kwasant.IFrame.DisplaySpinner();
+
             var url = '/Diagnostics/' + link.attr('serverAction');
             var key = link.attr('key');
+            var testName = link.html();
             $.post(url, {
-                Key: key
+                Key: key,
+                TestName: testName
             }, function (result) {
                 if (!result) {
+                    spinner.hide();
                     alert('Action Failed');
                     return;
                 }

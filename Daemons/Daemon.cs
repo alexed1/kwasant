@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading;
 using Daemons.EventExposers;
 using KwasantCore.ExternalServices;
+using Utilities.Logging;
 
 namespace Daemons
 {
@@ -62,6 +63,7 @@ namespace Daemons
         protected void LogFail(Exception ex, String message = null)
         {
             _serviceManager.LogFail(ex, message);
+            Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
         }
         protected void LogSuccess(String message = null)
         {
@@ -291,6 +293,7 @@ namespace Daemons
             lock (_loggedExceptions)
                 _loggedExceptions.Add(e);
 
+            Logger.GetLogger().Error("Error occured in " + GetType().Name, e);
             LogFail(e, "Error occured in " + GetType().Name);
         }
     }
