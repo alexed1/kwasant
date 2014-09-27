@@ -10,7 +10,7 @@
 
     }
     .tableDiv {
-        max-height: 500px;
+        height: 361px;
         overflow-y: scroll;
     }
     .serviceBlock {
@@ -34,7 +34,14 @@
 @Scripts.Render("~/bundles/js/kwasantpopup")
 <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
-<h2>Diagnostics</h2>
+
+<div>
+    <h2>Diagnostics</h2>
+    <label>
+        <input id="autoRefresh" type="checkbox" />
+        Auto-Refresh page
+    </label>
+</div>
 @foreach (var group in Model.GroupBy(m => m.GroupName))
 {
     <h2>@group.Key</h2>
@@ -87,9 +94,9 @@
                 <h4>No tests available</h4>
             }
             <div class="horizSep"></div>
-            <a class="expando" targettable="#tbl_@service.Key" key="@service.Key" expanded="false" href="javascript:void(0);">Show details</a>
+            <a class="expando" targettable="#tbldiv_@service.Key" key="@service.Key" expanded="false" href="javascript:void(0);">Show details</a>
 
-            <div class="tableDiv">
+            <div id="tbldiv_@service.Key" class="tableDiv">
                 <table id="tbl_@service.Key" key="@service.Key" class="data-table">
                     <thead>
                         <tr>
@@ -119,7 +126,28 @@
 </div>
 <script type="text/javascript">
     $(function() {
+
+        var timeoutFunc;
+        $('#autoRefresh').click(function(a) {
+            var t = $(this);
+            if (this.checked) {
+                $.cookie('AutoRefreshDiagostics', 'true');
+                timeoutFunc =setTimeout(function () {
+                    location.reload();
+                }, 5000);
+            } else {
+                $.cookie('AutoRefreshDiagostics', 'false');
+                if (timeoutFunc)
+                    clearTimeout(timeoutFunc);
+            }
+        });
+
+        if ($.cookie('AutoRefreshDiagostics') == 'true') {
+            $('#autoRefresh').click();
+        }
+
         
+
         var showFunc = function(link) {
             $(link.attr('targettable')).show();
             link.attr('expanded', 'true');

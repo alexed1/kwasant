@@ -170,19 +170,13 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult OutboundEmailDaemon_TestGmail(String key, String testName)
         {
-            return SendTestEmail(testName, (uow, curEmail) =>
-            {
-                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
-            });
+            return SendTestEmail(testName, (uow, curEmail) => uow.EnvelopeRepository.ConfigurePlainEmail(curEmail));
         }
 
         [HttpPost]
         public ActionResult OutboundEmailDaemon_TestMandrill(String key, String testName)
         {
-            return SendTestEmail(testName, (uow, curEmail) =>
-            {
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "test_template", null);
-            });
+            return SendTestEmail(testName, (uow, curEmail) => uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "test_template", null));
         }
 
         private void StartTest<T>(String testName)
@@ -198,11 +192,29 @@ namespace KwasantWeb.Controllers
             ServiceManager.LogSuccess<T>();
         }
 
-        private void FailTest<T>(String testName)
+        private static void FailTest<T>(String testName, string results)
         {
             ServiceManager.FinishedTest<T>();
             ServiceManager.LogEvent<T>("Test '" + testName + "' failed.");
             ServiceManager.LogFail<T>();
+
+            //Dispatch an email which alerts us about failed tests
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+
+                Email email = ObjectFactory.GetInstance<Email>();
+                EmailAddressDO curEmailAddress = new EmailAddressDO("ops@kwasant.com");
+                string message = String.Format(@"
+Test failed at {0}. Results:
+{1}.
+", DateTime.Now, results);
+                string subject = String.Format("Alert! Service test failed. Service: {0} Test: {1}", typeof(T).Name, testName);
+                var curEmail = email.GenerateBasicMessage(uow, curEmailAddress, subject, message, fromAddress, "techops@kwasant.com");
+                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                uow.SaveChanges();
+            }
         }
 
         public JsonResult SendTestEmail(String testName, Action<IUnitOfWork, EmailDO> configureEmail)
@@ -259,8 +271,9 @@ namespace KwasantWeb.Controllers
                     Thread.Sleep(100);
                 }
 
-                FailTest<OutboundEmail>(testName);
-                FailTest<InboundEmail>(testName);
+                const string errorMessage = "No email was reported with the correct subject within the given timeframe.";
+                FailTest<OutboundEmail>(testName, errorMessage);
+                FailTest<InboundEmail>(testName, errorMessage);
             }).Start();
 
             return new JsonResult { Data = true };
