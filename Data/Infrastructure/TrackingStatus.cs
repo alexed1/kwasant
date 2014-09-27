@@ -120,27 +120,5 @@ namespace Data.Infrastructure
         {
             DeleteCustomField(entityDO, cf => cf.TrackingType == type);
         }
-       
-
-        public void SetStatus(IUnitOfWork uow,BookingRequestDO bookingRequestDO)
-        {
-            TrackingStatusDO trackingStatusDO = new TrackingStatusDO();
-            trackingStatusDO = uow.TrackingStatusRepository.GetAll().Where(ts => ts.Id == bookingRequestDO.Id).FirstOrDefault();
-                if (trackingStatusDO == null)
-                {
-                    trackingStatusDO = new TrackingStatusDO();
-                    trackingStatusDO.Id = bookingRequestDO.Id;
-                    trackingStatusDO.ForeignTableName = "BookingRequestDO";
-                    trackingStatusDO.TrackingType = TrackingType.BookingState;
-                    trackingStatusDO.TrackingStatus = TrackingType.TestState;
-                    uow.TrackingStatusRepository.Add(trackingStatusDO);
-                }
-                else
-                {
-                    trackingStatusDO.TrackingType = TrackingType.BookingState;
-                    trackingStatusDO.TrackingStatus = TrackingType.TestState;
-                }
-        }
-
     }
 }

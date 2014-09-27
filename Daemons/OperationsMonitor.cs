@@ -67,7 +67,7 @@ namespace Daemons
                 cm.ProcessBRNotifications(unprocessedBookingRequests);
 
                 foreach (var unprocessedBR in unprocessedBookingRequests)
-                    ts.SetStatus(uow, unprocessedBR);
+                    ts.SetStatus(TrackingType.BookingState, unprocessedBR, TrackingType.TestState);
                 
                 uow.SaveChanges();
             }
