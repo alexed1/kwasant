@@ -132,12 +132,12 @@
         $('#autoRefresh').click(function(a) {
             var t = $(this);
             if (this.checked) {
-                $.cookie('AutoRefreshDiagostics', true, { path: '/foo' });
+                $.cookie('AutoRefreshDiagostics', 'true', { path: '/foo' });
                 timeoutFunc =setTimeout(function () {
                     location.reload();
                 }, 5000);
             } else {
-                $.cookie('AutoRefreshDiagostics', false, { path: '/foo' });
+                $.cookie('AutoRefreshDiagostics', 'false', { path: '/foo' });
                 if (timeoutFunc)
                     clearTimeout(timeoutFunc);
             }
