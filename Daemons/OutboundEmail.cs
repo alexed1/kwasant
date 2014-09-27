@@ -88,7 +88,7 @@ namespace Daemons
                 var numSent = 0;
                 foreach (EnvelopeDO curEnvelopeDO in envelopeRepository.FindList(e => e.Email.EmailStatus == EmailState.Queued))
                 {
-                    LogEvent("Sending an email...");
+                    LogEvent("Sending an email with subject '" + curEnvelopeDO.Email.Subject + "'");
                     using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var envelope = subUow.EnvelopeRepository.GetByKey(curEnvelopeDO.Id);

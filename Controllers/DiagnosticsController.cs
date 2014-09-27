@@ -70,7 +70,7 @@ namespace KwasantWeb.Controllers
                             .Reverse()
                             .Where(e => !String.IsNullOrEmpty(e.Item2))
                             .Take(pageAmount.Value)
-                            .Select(e => new DiagnosticEventInfoVM { Date = e.Item1.ToString(), EventName = e.Item2 })
+                            .Select(e => new DiagnosticEventInfoVM { Date = e.Item1.ToString(), EventName = e.Item2.Replace(Environment.NewLine, "<br/>") })
                             .ToList()
                 };
             }).ToList();
@@ -238,7 +238,6 @@ namespace KwasantWeb.Controllers
                 string subject = subjKey;
                 curEmail = _email.GenerateBasicMessage(uow, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
                 configureEmail(uow, curEmail, subjKey, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon, _email);
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "test_template", new Dictionary<string, string> { { "test_key", subjKey } });
                 uow.SaveChanges();
 
                 ServiceManager.LogEvent<OutboundEmail>("Queued email to " + inboundEmailDaemon.GetUserName());

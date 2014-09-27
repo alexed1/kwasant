@@ -18,12 +18,17 @@
         margin: 3px;
         padding: 10px;
         padding-top: 0;
+        float: left;
+        width: 49.5%;
     }
     h3 {
         text-transform: none;
     }
     .horizSep {
         height: 10px;
+    }
+    .clearBoth {
+        clear: both;
     }
 </style>
 @Scripts.Render("~/bundles/js/kwasantpopup")
@@ -42,25 +47,25 @@
             <h4>Last fail: @service.LastFail</h4>
             <span>Attempts: @service.Attempts</span>
             <span>Success: @service.Success</span>
-            <div ></div>
+            <div></div>
             @if (service.Flags.Any())
             {
                 foreach (var flag in service.Flags)
                 {
                     <div>@flag.Key: @flag.Value</div>
                 }
-                <div class="horizSep"></div>    
+                <div class="horizSep"></div>
             }
-            
+
             @if (service.Actions.Any())
             {
                 foreach (var action in service.Actions)
                 {
                     <a class="actionItem" serveraction="@action.ServerAction" key="@service.Key" href="javascript:void(0);">@action.DisplayName</a>
-                }  
-                <div class="horizSep"></div> 
+                }
+                <div class="horizSep"></div>
             }
-                     
+
             @if (service.Tests.Any())
             {
                 if (service.RunningTest)
@@ -98,7 +103,7 @@
                                     @ev.Date
                                 </td>
                                 <td>
-                                    @ev.EventName
+                                    @Html.Raw(ev.EventName)
                                 </td>
                             </tr>
                         }
@@ -107,6 +112,7 @@
             </div>
         </div>
     }
+    <div class="clearBoth"></div>
 }
 <div>
     <br />

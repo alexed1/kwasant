@@ -63,7 +63,7 @@ namespace Daemons
         protected void LogFail(Exception ex, String message = null)
         {
             _serviceManager.LogFail(ex, message);
-            Logger.GetLogger().Error("Error occured on startup... shutting down", ex);
+            Logger.GetLogger(2).Error(message, ex);
         }
         protected void LogSuccess(String message = null)
         {
