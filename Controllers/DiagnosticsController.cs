@@ -170,16 +170,16 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult OutboundEmailDaemon_TestGmail(String key, String testName)
         {
-            return SendTestEmail(testName, (uow, curEmail, subjKey, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon, _email) =>
+            return SendTestEmail(testName, (uow, curEmail) =>
             {
-                _email.GenerateBasicMessage(uow, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
+                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
             });
         }
 
         [HttpPost]
         public ActionResult OutboundEmailDaemon_TestMandrill(String key, String testName)
         {
-            return SendTestEmail(testName, (uow, curEmail, subjKey, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon, _email) =>
+            return SendTestEmail(testName, (uow, curEmail) =>
             {
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "test_template", null);
             });
@@ -205,7 +205,7 @@ namespace KwasantWeb.Controllers
             ServiceManager.LogFail<T>();
         }
 
-        public JsonResult SendTestEmail(String testName, Action<IUnitOfWork, EmailDO, string, EmailAddressDO, string, string, string, InboundEmail, Email> configureEmail)
+        public JsonResult SendTestEmail(String testName, Action<IUnitOfWork, EmailDO> configureEmail)
         {
             StartTest<OutboundEmail>(testName);
             StartTest<InboundEmail>(testName);
@@ -237,7 +237,7 @@ namespace KwasantWeb.Controllers
                 const string message = "This is a test message";
                 string subject = subjKey;
                 curEmail = _email.GenerateBasicMessage(uow, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
-                configureEmail(uow, curEmail, subjKey, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon, _email);
+                configureEmail(uow, curEmail);
                 uow.SaveChanges();
 
                 ServiceManager.LogEvent<OutboundEmail>("Queued email to " + inboundEmailDaemon.GetUserName());
