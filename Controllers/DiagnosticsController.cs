@@ -22,7 +22,7 @@ namespace KwasantWeb.Controllers
         {
             if (!pageAmount.HasValue)
                 pageAmount = 100;
-            var serviceTypes = ServiceManager.GetServices();
+            var serviceTypes = ServiceManager.GetServicesKeys();
 
             var vm = serviceTypes.Select(st =>
             {
@@ -165,6 +165,17 @@ namespace KwasantWeb.Controllers
                 return new JsonResult { Data = true };
             }
             return new JsonResult { Data = false };
+        }
+
+        [HttpPost]
+        public ActionResult DiagnosticsTest_RunAll(String key, String testName)
+        {
+            var diagnosticsTest = ServiceManager.GetInformationForService<DiagnosticsTest>().Instance as DiagnosticsTest;
+            if (diagnosticsTest == null)
+                return new JsonResult {Data = false};
+
+            diagnosticsTest.RunAllTests();
+            return new JsonResult {Data = true};
         }
 
         [HttpPost]

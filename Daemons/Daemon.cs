@@ -210,6 +210,26 @@ namespace Daemons
             SetFlag("State", "Running");
             LogEvent("Starting...");
 
+            var getFrequency = new Func<String>(() =>
+            {
+                var timeSpan = TimeSpan.FromMilliseconds(WaitTimeBetweenExecution);
+                if (timeSpan.TotalMilliseconds < 1000)
+                    return timeSpan.TotalMilliseconds + " millsecond(s).";
+
+                if (timeSpan.TotalSeconds < 60)
+                    return timeSpan.TotalSeconds + " second(s).";
+
+                if (timeSpan.TotalMinutes < 60)
+                    return timeSpan.TotalMinutes + " minute(s).";
+
+                if (timeSpan.TotalHours < 24)
+                    return timeSpan.TotalHours + " hour(s).";
+
+                return timeSpan.TotalDays + " day(s).";
+            });
+
+            _serviceManager.SetFlag("Frequency", getFrequency());
+
             IsStopping = false;
 
             if (WaitTimeBetweenExecution == -1)

@@ -8,7 +8,7 @@ namespace KwasantCore.ExternalServices
     {
         public static Dictionary<Type, ServiceInformation> ServiceInfo = new Dictionary<Type, ServiceInformation>();
 
-        public static List<String> GetServices()
+        public static List<String> GetServicesKeys()
         {
             lock (ServiceInfo)
                 return ServiceInfo.Values.Select(v => v.Key).ToList();

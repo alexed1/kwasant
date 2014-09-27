@@ -10,7 +10,7 @@
 
     }
     .tableDiv {
-        height: 361px;
+        height: 411px;
         overflow-y: scroll;
     }
     .serviceBlock {
@@ -20,6 +20,7 @@
         padding-top: 0;
         float: left;
         width: 49.5%;
+        min-height: 405px;
     }
     h3 {
         text-transform: none;
@@ -131,18 +132,18 @@
         $('#autoRefresh').click(function(a) {
             var t = $(this);
             if (this.checked) {
-                $.cookie('AutoRefreshDiagostics', 'true');
+                $.cookie('AutoRefreshDiagostics', true, { path: '/foo' });
                 timeoutFunc =setTimeout(function () {
                     location.reload();
                 }, 5000);
             } else {
-                $.cookie('AutoRefreshDiagostics', 'false');
+                $.cookie('AutoRefreshDiagostics', false, { path: '/foo' });
                 if (timeoutFunc)
                     clearTimeout(timeoutFunc);
             }
         });
 
-        if ($.cookie('AutoRefreshDiagostics') == 'true') {
+        if ($.cookie('AutoRefreshDiagostics', { path: '/foo' }) == 'true') {
             $('#autoRefresh').click();
         }
 
