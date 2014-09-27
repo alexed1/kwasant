@@ -18,12 +18,12 @@ namespace KwasantCore.Services
         {
 
             BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-            if (bookingRequestDO.UserID != currBooker)
+            if (bookingRequestDO.BookerID != currBooker)
             {
-                if (bookingRequestDO.UserID != null)
-                    return uow.UserRepository.GetByKey(bookingRequestDO.UserID).FirstName;
-                else
-                    return "valid";
+                if (bookingRequestDO.BookerID != null)
+                    return uow.UserRepository.GetByKey(bookingRequestDO.BookerID).FirstName;
+
+                return "valid";
             }
             return "valid";
 

@@ -1,9 +1,12 @@
-﻿using KwasantCore.Managers.APIManager.Packagers;
+﻿using KwasantCore.ExternalServices;
+using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers.Twilio;
 using KwasantCore.StructureMap;
+using Moq;
 using NUnit.Framework;
 using StructureMap;
+using Twilio;
 using Utilities;
 
 namespace KwasantTest.Services
@@ -15,20 +18,18 @@ namespace KwasantTest.Services
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-
-            ObjectFactory.Configure(a => a.For<ISMSPackager>().Use(new TwilioPackager()));
         }
 
-        [Test, Ignore("KW-420 WILL FIX")]
-        public void TestTwillioConfiguration()
-        {
-            //We just want to test that we can instantiate the packager
-        }
-
-        [Test, Ignore("KW-420 WILL FIX")]
+        [Test]
         public void TestCanSendSMS()
         {
             const string testBody = "Test SMS";
+
+            var oj = new Mock<ITwilioRestClient>();
+            oj.Setup(a => a.SendSmsMessage(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+                .Returns<string, string, string>((from, to, body) => { return new SMSMessage { Body = body }; });
+
+            ObjectFactory.Configure(a => a.For<ITwilioRestClient>().Use(oj.Object));
 
             var twil = ObjectFactory.GetInstance<ISMSPackager>();
             var res = twil.SendSMS(ObjectFactory.GetInstance<IConfigRepository>().Get<string>("TwilioToNumber"), testBody);

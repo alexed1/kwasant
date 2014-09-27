@@ -130,7 +130,7 @@ namespace KwasantWeb.Controllers
                   
                    // EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
                     string subject = "Customer query";
-                    EmailDO emailDO = _email.GenerateBasicMessage(uow, emailAddressDO, subject, message, fromAddress, toRecipient);
+                    EmailDO emailDO = _email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
                     uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                     uow.SaveChanges();
                 }

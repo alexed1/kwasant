@@ -222,7 +222,7 @@ Test failed at {0}. Results:
 {1}.
 ", DateTime.Now, results);
                 string subject = String.Format("Alert! Service test failed. Service: {0} Test: {1}", typeof(T).Name, testName);
-                var curEmail = email.GenerateBasicMessage(uow, curEmailAddress, subject, message, fromAddress, "techops@kwasant.com");
+                var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, "techops@kwasant.com");
                 uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }
@@ -259,7 +259,7 @@ Test failed at {0}. Results:
                 EmailDO curEmail = new EmailDO();
                 const string message = "This is a test message";
                 string subject = subjKey;
-                curEmail = _email.GenerateBasicMessage(uow, curEmailAddress, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
+                curEmail = _email.GenerateBasicMessage(uow, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
                 configureEmail(uow, curEmail);
                 uow.SaveChanges();
 

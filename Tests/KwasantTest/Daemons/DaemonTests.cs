@@ -27,10 +27,10 @@ namespace KwasantTest.Daemons
             }
         }
 
-        [Test, Category("Threaded"), Ignore("KW-420 WILL FIX")]
+        [Test, Category("Threaded")]
         public void CannotStartDaemonTwice()
         {
-            Daemon mockDaemon = new Mock<TestDaemon>().Object;
+            Daemon mockDaemon = new TestDaemon(() => { }, 60);
             Assert.True(mockDaemon.Start());
             Assert.False(mockDaemon.Start());
             mockDaemon.Stop();

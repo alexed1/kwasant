@@ -186,10 +186,10 @@ namespace KwasantCore.Services
             return att;
         }
         
-        public EmailDO GenerateBasicMessage(IUnitOfWork uow, EmailAddressDO curEmailAddress,string subject, string message, string fromAddress ,string toRecipient)
+        public EmailDO GenerateBasicMessage(IUnitOfWork uow, string subject, string message, string fromAddress ,string toRecipient)
         {
-            ValidateEmailAddress(curEmailAddress);
-            EmailDO curEmail = new EmailDO()
+            new EmailAddressValidator().Validate(new EmailAddressDO(toRecipient));
+            EmailDO curEmail = new EmailDO
             {
                 Subject = subject,
                 PlainText = message,
@@ -211,7 +211,7 @@ namespace KwasantCore.Services
                 EmailDO curEmail = new EmailDO();
                 string message = "Alert! Kwasant Error Reported: EmailSendFailure";
                 string subject = "Alert! Kwasant Error Reported: EmailSendFailure";
-                curEmail = GenerateBasicMessage(uow, curEmailAddress, subject, message, fromAddress, "ops@kwasant.com");
+                curEmail = GenerateBasicMessage(uow, subject, message, fromAddress, "ops@kwasant.com");
                 uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }

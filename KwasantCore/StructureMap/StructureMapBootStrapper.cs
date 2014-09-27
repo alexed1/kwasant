@@ -87,6 +87,7 @@ namespace KwasantCore.StructureMap
             public TestMode()
             {
                 For<IConfigRepository>().Use<MockedConfigRepository>();
+                For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
                 For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);
