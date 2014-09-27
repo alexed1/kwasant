@@ -21,11 +21,11 @@ namespace Playground
             db.Database.Initialize(true);
 
 
-            var at = new AuthorizationToken();
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var firstUser = uow.UserRepository.GetQuery().First();
-                var tokenLink = at.GetAuthorizationTokenURL(uow, "www.google.com", firstUser);
+                var tokenLink = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL("www.google.com", firstUser);
 
             }
         }

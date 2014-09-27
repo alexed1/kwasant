@@ -4,15 +4,12 @@ using System.Linq;
 using Daemons;
 using Data.Entities;
 using Data.Interfaces;
-using FluentValidation.Internal;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantICS.DDay.iCal;
 using KwasantTest.Fixtures;
 using KwasantTest.Utilities;
-using Moq;
 using NUnit.Framework;
-using S22.Imap;
 using StructureMap;
 using Utilities;
 
@@ -33,9 +30,7 @@ namespace KwasantTest.Integration.BookingITests
         private string _endPrefix;
         
         private FixtureData _fixture;
-        private PollingEngine _polling;
-
-   
+        
         [SetUp]
         public void Setup()
         {
@@ -52,93 +47,9 @@ namespace KwasantTest.Integration.BookingITests
            _startPrefix = "Start:";
            _endPrefix = "End:";
            _fixture = new FixtureData();
-            _polling = new PollingEngine(_uow);
         }
 
-     
-
-        //This is a core integration test that verifies that inbound email is being processed into BR's, and then an event created from
-        //a BR is booked and dispatched into invitation email that is received
-        [Test, Ignore("KW-420 will fix")]
-        [Category("IntegrationTests")]
-        public void ITest_CanProcessBRCreateEventAndSendInvite()
-        {
-            //SETUP                     
-            //setup start time and end time for test event. 
-            var start = GenerateEventStartDate();
-            var end = start.AddHours(1);
-            EmailDO testEmail = CreateTestEmail(start, end, "Event");
-            string targetAddress = testEmail.To.First().Address;
-            string targetPassword = "thorium65";
-            ImapClient client = new ImapClient("imap.gmail.com", 993, targetAddress, targetPassword, AuthMethod.Login, true);
-            InboundEmail inboundDaemon = new InboundEmail();
-            inboundDaemon.UserName = targetAddress;
-            inboundDaemon.Password = targetPassword;
-            
-            //need to add user to pass OutboundEmail validation.
-            _uow.UserRepository.Add(_fixture.TestUser3());
-            _uow.EmailRepository.Add(testEmail);
-            _uow.SaveChanges();
-            
-            //EXECUTE
-            BookingRequestDO foundBookingRequest = null;
-            EmailDO eventEmail = null;
-            using (_polling.NewTimer(_polling.totalOperationTimeout, "Workflow"))
-            {
-                _uow.EnvelopeRepository.ConfigurePlainEmail(testEmail);
-                _uow.SaveChanges();
-
-                //make sure queued outbound email gets sent.
-                _polling.FlushOutboundEmailQueues();
-
-                foundBookingRequest = PollForBookingRequest(testEmail, inboundDaemon);
-                if (foundBookingRequest != null)
-                {
-                    EventDO testEvent = CreateTestEvent(foundBookingRequest);
-
-                    //start the stopwatch measuring time from email send
-                    using (_polling.NewTimer(_polling.requestToEmailTimeout, "BookingRequest to Invitation"))
-                    {
-                        //run the outbound daemon to send any outgoing invite(s)
-                        _polling.FlushOutboundEmailQueues();
-
-                        eventEmail = PollMailboxForEvent(testEmail, client, start, end);
-                    }
-                }
-            }
-
-            //VERIFY
-            Assert.NotNull(foundBookingRequest, "No BookingRequest found.");
-            Assert.NotNull(eventEmail, "No Invitation found.");
-            //check timeouts
-            _polling.CheckTimeouts();
-            client.Dispose();
         
-        }
-
-        public BookingRequestDO PollForBookingRequest(EmailDO targetCriteria, InboundEmail inboundDaemon)
-        {
-            PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindBookingRequest;
-
-            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "intake", null, inboundDaemon);
-            BookingRequestDO foundBookingRequest = (BookingRequestDO)queryResults.FirstOrDefault();
-            return foundBookingRequest;
-        }
-
-
-        public EmailDO PollMailboxForEvent(EmailDO targetCriteria, ImapClient client, DateTimeOffset start, DateTimeOffset end)
-        {
-            //poll the specified account inbox until either the expected message is received, or timeout
-            var eventEmails = _polling.PollForEmail((criteria, unreadMessages) => InjectedQuery_FindSpecificEvent(unreadMessages, start, end), targetCriteria, "external", client);
-            return eventEmails.FirstOrDefault();
-        }
-       
-
-
-     
-
-      
-
         #region Injected Queries
         //Injected Queries
 
@@ -218,38 +129,5 @@ namespace KwasantTest.Integration.BookingITests
             return testEmail;
         }
 
-        //this should be DRYed up by using the newly modular functions, above.
-        //this test may not be worth doing. it is very fragile. if we fix it, we should probably create an account on kwasant.net send the test bcc messages, there, and imap there
-        //to dodge gmail's free public constraints.
-        [Test, Ignore("KW-420 will fix")]
-        [Category("Workflow")]
-        public void ITest_CanAddBcctoOutbound()
-        {
-            var start = GenerateEventStartDate();
-            var end = start.AddHours(1);
-
-            _uow.UserRepository.Add(_fixture.TestUser3());
-            
-            var emailDO = CreateTestEmail(start, end, "Bcc Test");
-            _uow.EmailRepository.Add(emailDO);
-
-            // EXECUTE
-            _uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
-            _uow.SaveChanges();
-
-            //THIS SHOULDN"T BE NECESSARY ANYMORE adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
-            //AddNewTestCustomer(emailDO.From);
-
-            _polling.FlushOutboundEmailQueues();
-            ImapClient client = new ImapClient("imap.gmail.com", 993, _archivePollEmail, _archivePollPassword,
-                                               AuthMethod.Login, true);
-
-            	//<add key="ArchivePollEmailAddress" value="kwasantoutbound@gmail.com" />
-	            //<add key="ArchivePollEmailPassword" value="thales45" />
-            	//<add key="ArchiveEmailAddress" value="outboundemailarchive@kwasant.com" />
-            var emails = _polling.PollForEmail(InjectedQuery_FindEmailBySubject, emailDO, "external", client);
-            Assert.AreEqual(1, emails.Count);
-            _polling.CheckTimeouts();
-        }
     }
 }

@@ -1,12 +1,8 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.Services;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
-using KwasantTest.Utilities;
-using S22.Imap;
 using System.Collections.Generic;
-using System.Linq;
 using KwasantCore.StructureMap;
 using StructureMap;
 
@@ -18,8 +14,6 @@ namespace KwasantTest.Integration.NegotiationITests
         private IUnitOfWork _uow;
         private FixtureData _fixture;
         
-        private PollingEngine _polling;
-
 
         [SetUp]
         public void SetUp()
@@ -28,7 +22,6 @@ namespace KwasantTest.Integration.NegotiationITests
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
 
             _fixture = new FixtureData();
-            _polling = new PollingEngine(_uow);
         }
 
         //Injected Query
@@ -40,16 +33,6 @@ namespace KwasantTest.Integration.NegotiationITests
             return matchingEmails;
         }
         
-        //Inject a query into the email polling engine that looks for a clarification request with characteristics matching the specified Attendee
-        public EmailDO PollForClarificationRequest(AttendeeDO testAttendee, ImapClient client)
-        {
-            EmailDO targetCriteria = new EmailDO();
-            targetCriteria.Subject = "We need a little more information from you"; //this is the current subject for clarification requests.
-            PollingEngine.InjectedEmailQuery injectedQuery = InjectedQuery_FindClarificationRequest;
-            List<EmailDO> queryResults = _polling.PollForEmail(injectedQuery, targetCriteria, "external", client);
-            return queryResults.FirstOrDefault();
-
-        }
         
     }
 }

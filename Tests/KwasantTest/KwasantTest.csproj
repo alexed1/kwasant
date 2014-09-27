@@ -138,7 +138,6 @@
     <Compile Include="Timeslots\TimeslotMergeTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
     <Compile Include="Integration\BookingITests\IntegrationTests.cs" />
-    <Compile Include="Utilities\PollingEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
