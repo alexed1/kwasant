@@ -14,7 +14,6 @@ namespace KwasantCore.ExternalServices
         void Dispose();
         event EventHandler<IdleMessageEventArgsWrapper> NewMessage;
         event EventHandler<IdleErrorEventArgsWrapper> IdleError;
-        event EventHandler<IdleEndedEventArgsWrapper> IdleEnded;
     }
 
     public class IdleMessageEventArgsWrapper
@@ -36,16 +35,6 @@ namespace KwasantCore.ExternalServices
         {
             Client = client;
             Exception = exception;
-        }
-    }
-
-    public class IdleEndedEventArgsWrapper
-    {
-        public IImapClient Client { get; private set; }
-
-        public IdleEndedEventArgsWrapper(IImapClient client)
-        {
-            Client = client;
         }
     }
 }

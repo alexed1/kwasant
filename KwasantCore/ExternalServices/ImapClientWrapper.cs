@@ -60,17 +60,17 @@ namespace KwasantCore.ExternalServices
             {
                 _serviceManager.LogEvent("New consumer of 'NewMessage' event added.");
                 NewMessageInternal += value;
-                _internalClient.NewMessage += InternalClientOnNewMessage;
+                _internalClient.NewMessage += InternalClientOnIdleError;
             }
             remove
             {
                 _serviceManager.LogEvent("Removed consumer of 'NewMessage' event.");
                 NewMessageInternal -= value;
-                _internalClient.NewMessage -= InternalClientOnNewMessage;
+                _internalClient.NewMessage -= InternalClientOnIdleError;
             }
         }
 
-        private void InternalClientOnNewMessage(object sender, IdleMessageEventArgs idleMessageEventArgs)
+        private void InternalClientOnIdleError(object sender, IdleMessageEventArgs idleMessageEventArgs)
         {
             if (NewMessageInternal != null)
                 NewMessageInternal(sender, new IdleMessageEventArgsWrapper(this));
@@ -84,44 +84,20 @@ namespace KwasantCore.ExternalServices
             {
                 _serviceManager.LogEvent("New consumer of 'IdleError' event added.");
                 IdleErrorInternal += value;
-                _internalClient.IdleError += InternalClientOnNewMessage;
+                _internalClient.IdleError += InternalClientOnIdleError;
             }
             remove
             {
                 _serviceManager.LogEvent("Removed consumer of 'IdleError' event.");
                 IdleErrorInternal -= value;
-                _internalClient.IdleError -= InternalClientOnNewMessage;
+                _internalClient.IdleError -= InternalClientOnIdleError;
             }
         }
 
-        private void InternalClientOnNewMessage(object sender, IdleErrorEventArgs idleMessageEventArgs)
+        private void InternalClientOnIdleError(object sender, IdleErrorEventArgs idleMessageEventArgs)
         {
             if (IdleErrorInternal != null)
                 IdleErrorInternal(sender, new IdleErrorEventArgsWrapper(this, idleMessageEventArgs.Exception));
-        }
-
-
-        private event EventHandler<IdleEndedEventArgsWrapper> IdleEndedInternal;
-        public event EventHandler<IdleEndedEventArgsWrapper> IdleEnded
-        {
-            add
-            {
-                _serviceManager.LogEvent("New consumer of 'IdleEnded' event added.");
-                IdleEndedInternal += value;
-                _internalClient.IdleEnded += InternalClientOnNewMessage;
-            }
-            remove
-            {
-                _serviceManager.LogEvent("Removed consumer of 'IdleEnded' event.");
-                IdleEndedInternal -= value;
-                _internalClient.IdleEnded -= InternalClientOnNewMessage;
-            }
-        }
-
-        private void InternalClientOnNewMessage(object sender, IdleEndedEventArgs idleMessageEventArgs)
-        {
-            if (IdleEndedInternal != null)
-                IdleEndedInternal(sender, new IdleEndedEventArgsWrapper(this));
         }
     }
 }

@@ -76,7 +76,7 @@ namespace Daemons
         {
             get
             {
-                return (int)TimeSpan.FromMinutes(2).TotalSeconds;
+                return (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
             }
         }
 
@@ -111,19 +111,19 @@ namespace Daemons
 
         protected override void Run()
         {
+            LogEvent();
             lock (_alreadyListeningLock)
             {
                 if (!_alreadyListening)
                 {
                     LogEvent("Waiting for messages at " + GetUserName() + "...");
-                    GetUnreadMessages(Client);
                     Client.NewMessage += OnNewMessage;
                     Client.IdleError += OnIdleError;
-                    Client.IdleEnded += OnIdleEnded;
+                    
+                    GetUnreadMessages(Client);
 
                     _alreadyListening = true;
                 }
-                LogEvent();
             }
         }
 
@@ -134,13 +134,6 @@ namespace Daemons
             RestartClient();
         }
 
-        public void OnIdleEnded(object sender, IdleEndedEventArgsWrapper args)
-        {
-            Logger.GetLogger().Info("Idle ended...");
-            LogEvent("Idle ended...");
-            RestartClient();
-        }
-        
         public void OnNewMessage(object sender, IdleMessageEventArgsWrapper args)
         {
             Logger.GetLogger().Info("New email notification recieved.");
@@ -233,7 +226,6 @@ namespace Daemons
             {
                 _client.NewMessage -= OnNewMessage;
                 _client.IdleError -= OnIdleError;
-                _client.IdleEnded -= OnIdleEnded;
                 _client.Dispose();
                 _client = null;
             }   
