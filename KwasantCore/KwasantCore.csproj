@@ -155,7 +155,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
-    <Compile Include="Interfaces\ISegmentIO.cs" />
+    <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
     <Compile Include="ExternalServices\ISmtpClient.cs" />
