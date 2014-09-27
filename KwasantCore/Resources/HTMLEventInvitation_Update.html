@@ -1,8 +1,8 @@
 ﻿@{
 
-var serverURL = Model.AuthTokenURL;
+var serverURL = Utilities.Server.ServerUrl;
 
-var linkTo = serverURL;
+var linkTo = Model.AuthTokenURL;
 var imageURL = serverURL + "Content/img/EmailLogo.png";
 if(Utilities.Server.IsDevMode)
 {
