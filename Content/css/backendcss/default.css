@@ -49,6 +49,10 @@ h2 {
     color: #d85e17;
 }
 
+h2 span.title-notice {
+    font-size: 0.5em;
+}
+
 h3 {
 	font-size: 18px;
 	line-height: 25px;
@@ -292,6 +296,10 @@ html.iframe-body body {
 
 #main-container {
     min-height: 100%;
+}
+
+#main-container.login-page {
+    height: 100%;
 }
 
 .footer-clear {
@@ -620,9 +628,62 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
 
 /*Login section*/
 
+
+.login-page {
+    background: url(/Content/img/backgrounds/background_coffee.jpg) no-repeat fixed 50% 0;
+    background-size: 115%;
+    border-bottom: 0 none;   
+}
+
+.login-page .site-header {
+    background-image: none;
+}
+
 .login-section {
     margin: 0 auto;
     float: none;    
+}
+
+.login-section .wrapper {
+    padding: 15px;
+    background: url(/Content/img/backgrounds/login-wrapper-bg.png);
+    border: 5px solid #fff;
+    -webkit-box-shadow: 0 3px 3px 0 #5e5e5e;
+    -moz-box-shadow: 0 3px 3px 0 #5e5e5e;
+    box-shadow: 0 3px 3px 0 #5e5e5e;        
+}
+
+.login-section .wrapper h2 {
+    color: #333;
+    margin: 0;
+    padding-bottom: 10px;
+    font-size: 2em;    
+}
+
+.login-section .custom-form {
+    padding: 15px 0 0;
+}
+
+.login-section .custom-form .form-group.login-fields {
+    margin-bottom: 0;
+}
+
+.login-section .custom-form input[type="text"], .login-section .custom-form input[type="password"] {
+    background: #f2e9df;
+}
+
+.login-section .custom-form input[type="text"]:hover, .login-section .custom-form input[type="text"]:focus, .login-section .custom-form input[type="password"]:hover, .login-section .custom-form input[type="password"]:focus {
+    background: #f2dfc9;
+}
+
+.login-section .custom-form input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #f2e9df inset;
+    -webkit-text-fill-color: #333;
+}
+
+.login-section .custom-form input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #f2dfc9 inset;
+    -webkit-text-fill-color: #333;
 }
 
 /*Registration section*/
@@ -1246,7 +1307,7 @@ today-calendar-tbl .first-col {
 
 /*Users section styles*/
 
-/*Responsive Styles*/
+/*Responsive Styles*/        
 
 @media screen and (max-width: 767px) {
 
@@ -1270,8 +1331,18 @@ today-calendar-tbl .first-col {
 	.site-header .mmenu ul li a:hover {
 		border: 0 none;
 	}
+
+    
+    .login-page h2 > span {
+        display: block;
+    }
 }           
 
+@media screen and (min-width: 991px) and (max-width: 1200px) {
+    .login-page .login-section.col-md-5 {
+        width: 55%;
+    }
+}
 
 @media screen and (min-width: 1200px) {
     .container {
@@ -1291,6 +1362,14 @@ today-calendar-tbl .first-col {
 
 @media screen and (max-width: 991px) {
 
+    .login-page {
+        background-size: cover;
+    }
+
+    .login-page .container {
+        max-width: 100%;
+    }           
+
     .table-with-action tr td:last-child button {
 	    font-size: 0;
     }   
@@ -1301,9 +1380,9 @@ today-calendar-tbl .first-col {
     }
 }
 
-@media screen and (min-width: 768px) and (max-width: 991px) {
-
-	.site-header .mmenu {
+@media screen and (min-width: 768px) and (max-width: 991px) {      
+	
+    .site-header .mmenu {
 		padding-top: 20px;
 	}
 
@@ -1312,6 +1391,7 @@ today-calendar-tbl .first-col {
 		line-height: 10px;
 		padding: 10px;
 	}
+
 }	
 
 /* Responsive: Portrait tablets and up */
