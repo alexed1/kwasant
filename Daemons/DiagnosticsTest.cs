@@ -13,6 +13,9 @@ namespace Daemons
         private readonly object _controller;
         private const string runAllKey = "DiagnosticsTest_RunAll";
         private readonly object _testRunLocker = new object();
+
+        protected override String ServiceGroupName { get { return "Tests (Daemon)"; } }
+
         public DiagnosticsTest()
         {
             lock (_testRunLocker)

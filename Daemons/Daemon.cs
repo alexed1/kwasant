@@ -39,9 +39,11 @@ namespace Daemons
 
         private readonly ServiceManager<T> _serviceManager;
 
+        protected virtual String ServiceGroupName { get { return "Daemons"; } }
+
         protected Daemon()
         {
-            _serviceManager = new ServiceManager<T>(GetType().Name, "Daemons", this);
+            _serviceManager = new ServiceManager<T>(GetType().Name, ServiceGroupName, this);
             _serviceManager.AddAction("StartDaemon", "Start");
             _serviceManager.AddAction("StopDaemon", "Stop");
         }

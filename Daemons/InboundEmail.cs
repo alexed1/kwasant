@@ -63,8 +63,8 @@ namespace Daemons
 
         public String Password;
         private string GetPassword()
-            {
-            return Password ??_configRepository.Get("INBOUND_EMAIL_PASSWORD");
+        {
+            return Password ?? _configRepository.Get("INBOUND_EMAIL_PASSWORD");
         }
 
         private bool UseSSL()
@@ -110,7 +110,24 @@ namespace Daemons
 
         private void OnIdleError(object sender, IdleErrorEventArgsWrapper args)
         {
-            LogFail(args.Exception, "Idle error recieved.");
+            //Instead of logging it as an error - log it as an event. This doesn't mean we've lost any emails, so there's no reason to reduce success %.
+            //This happens often on Kwasant - yet to be diagnosed.
+            var eventName = "Idle error recieved.";
+            var currException = args.Exception;
+            var exceptionMessages = new List<String>();
+            while (currException != null)
+            {
+                exceptionMessages.Add(currException.Message);
+                currException = currException.InnerException;
+            }
+            exceptionMessages.Add("*** Stacktrace ***");
+            exceptionMessages.Add(args.Exception.StackTrace);
+
+            var exceptionMessage = String.Join(Environment.NewLine, exceptionMessages);
+
+            eventName += " " + exceptionMessage;
+            LogEvent(eventName);
+
             RestartClient();
         }
 
