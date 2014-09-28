@@ -240,15 +240,15 @@ Test failed at {0}. Results:
             var subjKey = Guid.NewGuid().ToString();
 
             inboundEmailDaemon.RegisterTestEmailSubject(subjKey);
-            bool messageRecieved = false;
+            bool messageReceived = false;
 
-            InboundEmail.ExplicitCustomerCreatedHandler testMessageRecieved = subject =>
+            InboundEmail.ExplicitCustomerCreatedHandler testMessageReceived = subject =>
             {
                 if (subjKey == subject)
-                    messageRecieved = true;
+                    messageReceived = true;
             };
 
-            InboundEmail.TestMessageRecieved += testMessageRecieved;
+            InboundEmail.TestMessageReceived += testMessageReceived;
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Email _email = ObjectFactory.GetInstance<Email>();
@@ -272,7 +272,7 @@ Test failed at {0}. Results:
                 var maxTime = TimeSpan.FromMinutes(2);
                 while (DateTime.Now < startTime.Add(maxTime))
                 {
-                    if (messageRecieved)
+                    if (messageReceived)
                     {
                         PassTest<OutboundEmail>(testName);
                         PassTest<InboundEmail>(testName);

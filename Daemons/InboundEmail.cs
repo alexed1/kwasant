@@ -28,7 +28,7 @@ namespace Daemons
         }
 
         public delegate void ExplicitCustomerCreatedHandler(string subject);
-        public static event ExplicitCustomerCreatedHandler TestMessageRecieved;
+        public static event ExplicitCustomerCreatedHandler TestMessageReceived;
 
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
@@ -129,13 +129,13 @@ namespace Daemons
 
         private void OnIdleError(object sender, IdleErrorEventArgsWrapper args)
         {
-            LogFail(args.Exception, "Idle error recieved.");
+            LogFail(args.Exception, "Idle error received.");
             RestartClient();
         }
 
         public void OnNewMessage(object sender, IdleMessageEventArgsWrapper args)
         {
-            LogEvent("New email notification recieved.");
+            LogEvent("New email notification received.");
             GetUnreadMessages(args.Client);
         }
 
@@ -157,7 +157,7 @@ namespace Daemons
             {
                 LogEvent("Querying for messages...");
                 var messages = client.GetMessages(client.Search(SearchCondition.Unseen())).ToList();
-                LogSuccess(messages.Count + " messages recieved.");
+                LogSuccess(messages.Count + " messages received.");
 
                 foreach (var message in messages)
                     ProcessMessageInfo(message);
@@ -188,9 +188,9 @@ namespace Daemons
                     LogEvent("Test message detected.");
                     _testSubjects.Remove(messageInfo.Subject);
 
-                    if (TestMessageRecieved != null)
+                    if (TestMessageReceived != null)
                     {
-                        TestMessageRecieved(messageInfo.Subject);
+                        TestMessageReceived(messageInfo.Subject);
                         LogSuccess();
                     }
                     else

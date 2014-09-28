@@ -265,7 +265,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.Mandrill
                 string firstTag = response.Msg.Tags.FirstOrDefault();
                 if (firstTag == null)
                 {
-                    OnEmailCriticalError(-1, "No email ID was stored in tags.", "An email webhook was recieved, but we couldn't identify the email.", -1);
+                    OnEmailCriticalError(-1, "No email ID was stored in tags.", "An email webhook was received, but we couldn't identify the email.", -1);
                     return;
                 }
                 int emailID = int.Parse(firstTag);
