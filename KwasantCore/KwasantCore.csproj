@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
+    </Reference>
     <Reference Include="AutoMapper">
       <HintPath>..\packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.dll</HintPath>
     </Reference>
@@ -94,12 +98,19 @@
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.2.0.3\lib\net40\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
+    <Reference Include="Moq">
+      <HintPath>..\packages\Moq.4.2.1402.2112\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp">
       <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="S22.Imap, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\S22.Imap.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Net" />
@@ -144,6 +155,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
+    <Compile Include="Interfaces\ITracker.cs" />
+    <Compile Include="ExternalServices\IImapClient.cs" />
+    <Compile Include="ExternalServices\ImapClientWrapper.cs" />
+    <Compile Include="ExternalServices\ISmtpClient.cs" />
+    <Compile Include="ExternalServices\ITwilioRestClient.cs" />
+    <Compile Include="ExternalServices\REST\IRestfullCall.cs" />
+    <Compile Include="ExternalServices\REST\IRestfulResponse.cs" />
+    <Compile Include="ExternalServices\REST\RestfulCallWrapper.cs" />
+    <Compile Include="ExternalServices\REST\RestfulResponseWrapper.cs" />
+    <Compile Include="ExternalServices\ServiceManager.cs" />
+    <Compile Include="ExternalServices\SmtpClientWrapper.cs" />
+    <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
@@ -154,6 +177,16 @@
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\CalDAVClient.cs" />
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClient.cs" />
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClientFactory.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\ActiveMandrillWebhook.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillBasePackage.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillDeleteWebhook.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillDynamicContentChunk.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillListWebhooks.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillMergeRecipient.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillResponse.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillTemplatePackage.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookAddRequest.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookResponse.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\IAuthorizingHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\OAuthHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Packagers\DataTable\DataTablesPackager.cs" />
@@ -182,7 +215,6 @@
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\Attendee.cs" />
-    <Compile Include="Services\AuthorizationToken.cs" />
     <Compile Include="Services\Booker.cs" />
     <Compile Include="Services\Calendar.cs" />
     <Compile Include="Services\EmailAddress.cs" />
@@ -194,6 +226,7 @@
     <Compile Include="Services\InvitationResponse.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\Role.cs" />
+    <Compile Include="Services\SegmentIO.cs" />
     <Compile Include="Services\User.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>
@@ -228,7 +261,9 @@
     <Content Include="Resources\PlainEventInvitation_Update.html" />
     <Content Include="Resources\PlainEventInvitation.html" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Diagnostics\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

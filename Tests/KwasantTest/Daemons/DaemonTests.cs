@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -29,13 +30,13 @@ namespace KwasantTest.Daemons
         [Test, Category("Threaded")]
         public void CannotStartDaemonTwice()
         {
-            Daemon mockDaemon = new Mock<Daemon>().Object;
+            Daemon mockDaemon = new TestDaemon(() => { }, 60);
             Assert.True(mockDaemon.Start());
             Assert.False(mockDaemon.Start());
             mockDaemon.Stop();
         }
 
-        private class TestDaemon : Daemon
+        private class TestDaemon : Daemon<TestDaemon>
         {
             private readonly Action _execute;
             private readonly int _timeoutInSeconds;

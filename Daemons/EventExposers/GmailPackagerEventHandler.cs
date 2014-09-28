@@ -1,4 +1,4 @@
-﻿using KwasantCore.Managers.APIManager.Packagers;
+﻿using KwasantCore.Managers.APIManagers.Packagers;
 
 namespace Daemons.EventExposers
 {

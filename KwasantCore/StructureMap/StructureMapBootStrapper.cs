@@ -2,14 +2,19 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using KwasantCore.Interfaces;
+using KwasantCore.ExternalServices;
+using KwasantCore.ExternalServices.REST;
 using KwasantCore.Managers.APIManager.Packagers;
-using KwasantCore.Managers.APIManager.Packagers.Mandrill;
-using KwasantCore.Managers.APIManager.Packagers.Twilio;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
+using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
+using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
+using KwasantCore.Managers.APIManagers.Packagers.Twilio;
 using KwasantCore.Security;
 using KwasantCore.Services;
+using Moq;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using AutoMapper;
@@ -63,11 +68,17 @@ namespace KwasantCore.StructureMap
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
                 For<ISecurityServices>().Use<SecurityServices>();
+                For<ITracker>().Use<SegmentIO>();
 
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
                 For<IKwasantRoleStore>().Use(new KwasantRoleStore());
                 For<IKwasantUserStore>().Use(new KwasantUserStore());
+
+                For<IImapClient>().Use<ImapClientWrapper>();
+                For<ISmtpClient>().Use<SmtpClientWrapper>();
+                For<IRestfullCall>().Use<RestfulCallWrapper>();
+                For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
             }
         }
 
@@ -75,17 +86,21 @@ namespace KwasantCore.StructureMap
         {
             public TestMode()
             {
-                //we need to run tests that "really send it". may want to also do some mocks
                 For<IConfigRepository>().Use<MockedConfigRepository>();
+                For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
                 For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);
                 For<IBookingRequest>().Use<BookingRequest>();
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
+                For<ITracker>().Use<SegmentIO>();
 
                 For<IKwasantRoleStore>().Use(new MockedRoleStore());
                 For<IKwasantUserStore>().Use(new MockedUserStore());
+
+                var mockSegment = new Mock<ITracker>();
+                For<ITracker>().Use(mockSegment.Object);
             }
         }
 

@@ -17,7 +17,7 @@ namespace Daemons
     /// This Daemon looks for new booking requests, or unprocessed booking requests based on TrackingStatusDO.
     /// New booking requests are sent to the communication manager, which will then send off emails/smses to specific people
     /// </summary>
-    public class OperationsMonitor : Daemon
+    public class OperationsMonitor : Daemon<OperationsMonitor>
     {
         private IConfigRepository _configRepository;
 
@@ -51,8 +51,11 @@ namespace Daemons
                 staleBRList = uow.BookingRequestRepository.GetAll().Where(x => x.State == BookingRequestState.Booking && x.LastUpdated.DateTime < idleTimeLimit.DateTime).ToList();
                 BookingRequest _br = new BookingRequest();
                 foreach (var br in staleBRList)
+                {
                     _br.Timeout(uow, br);
-                
+                    LogSuccess("Booking request timed out");
+                }
+
                 BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
                 TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(bookingRequestRepo);

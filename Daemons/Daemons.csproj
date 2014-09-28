@@ -50,8 +50,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
     </Reference>
-    <Reference Include="S22.Imap">
-      <HintPath>..\packages\S22.Imap.3.6.0.0\lib\net40\S22.Imap.dll</HintPath>
+    <Reference Include="S22.Imap, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\S22.Imap.dll</HintPath>
     </Reference>
     <Reference Include="StructureMap">
       <HintPath>..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
@@ -66,6 +67,7 @@
   <ItemGroup>
     <Compile Include="CalendarSync.cs" />
     <Compile Include="Daemon.cs" />
+    <Compile Include="DiagnosticsTest.cs" />
     <Compile Include="EventExposers\GmailPackagerEventHandler.cs" />
     <Compile Include="EventExposers\ExposedEvent.cs" />
     <Compile Include="EventExposers\MandrillPackagerEventHandler.cs" />
