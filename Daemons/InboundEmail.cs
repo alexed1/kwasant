@@ -80,32 +80,6 @@ namespace Daemons
             }
         }
 
-        private IImapClient Client
-        {
-            get
-            {
-                if (_client != null)
-                    return _client;
-
-                try
-                {
-                    _client = ObjectFactory.GetInstance<IImapClient>();
-                    _client.Initialize(GetIMAPServer(), GetIMAPPort(), UseSSL());
-
-                    string curUser = GetUserName();
-                    string curPwd = GetPassword();
-                    _client.Login(curUser, curPwd, AuthMethod.Login);
-                }
-                catch (Exception ex)
-                {
-                    LogFail(ex, "Error occured on startup... shutting down");
-                    throw;
-                }
-
-                return _client;
-            }
-        }
-
         private bool _alreadyListening;
         private readonly object _alreadyListeningLock = new object();
 
@@ -116,11 +90,18 @@ namespace Daemons
             {
                 if (!_alreadyListening)
                 {
+                    _client = ObjectFactory.GetInstance<IImapClient>();
+                    _client.Initialize(GetIMAPServer(), GetIMAPPort(), UseSSL());
+
+                    string curUser = GetUserName();
+                    string curPwd = GetPassword();
+                    _client.Login(curUser, curPwd, AuthMethod.Login);
+
                     LogEvent("Waiting for messages at " + GetUserName() + "...");
-                    Client.NewMessage += OnNewMessage;
-                    Client.IdleError += OnIdleError;
+                    _client.NewMessage += OnNewMessage;
+                    _client.IdleError += OnIdleError;
                     
-                    GetUnreadMessages(Client);
+                    GetUnreadMessages(_client);
 
                     _alreadyListening = true;
                 }
@@ -143,11 +124,9 @@ namespace Daemons
         {
             lock (_alreadyListeningLock)
             {
-                CleanUp();
-
                 LogEvent("Restarting...");
 
-                _alreadyListening = false;
+                CleanUp();
             }
         }
         
@@ -225,7 +204,10 @@ namespace Daemons
                 _client.IdleError -= OnIdleError;
                 _client.Dispose();
                 _client = null;
-            }   
+            }
+
+            LogEvent("Shutting down...");
+            _alreadyListening = false;
         }
     }
 }
