@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.StructureMap;
 using NUnit.Framework;
 using StructureMap;
 
@@ -13,12 +12,6 @@ namespace KwasantTest.MockedDB
     [TestFixture]
     public class MockedDBTests : BaseTest
     {
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-        }
-
         //This test is to ensure our mocking properly distinguishes between saved and local DbSets (to mimic EF behaviour)
         [Test]
         public void TestDBMocking()
