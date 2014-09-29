@@ -25,7 +25,12 @@ namespace Data.Repositories
             if (emailAddressDO == null)
                 throw new ArgumentNullException("emailAddressDO");
             string fromEmailAddress = emailAddressDO.Address;
-            return UnitOfWork.UserRepository.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
+
+            var matchingUser = UnitOfWork.UserRepository.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
+            if (matchingUser == null)
+                matchingUser = UnitOfWork.UserRepository.DBSet.Local.FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
+
+            return matchingUser;
         }
 
         public UserDO CreateFromEmail(EmailAddressDO emailAddressDO,

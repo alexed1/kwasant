@@ -52,7 +52,7 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
-        private readonly Dictionary<Type, IEnumerable<object>> _cachedSets = new Dictionary<Type, IEnumerable<object>>();
+        private readonly Dictionary<Type, MockedDbSet> _cachedSets = new Dictionary<Type, MockedDbSet>();
 
         private object[] _addedEntities;
         public int SaveChanges()
@@ -64,6 +64,9 @@ namespace Data.Infrastructure.StructureMap
             //We loop, because in this instance:
             //eventDO.Emails.Add(new EmailDO { Customer = new CustomerDO }) - once we've added the email, we still haven't added the customer.
             //Looping causes us to pickup each foreign link and be sure everything is persisted in memory
+
+            SaveSets();
+
             while (AddForeignValues() > 0) ;
 
             DetectChanges();
@@ -76,8 +79,20 @@ namespace Data.Infrastructure.StructureMap
             
             foreach (var newBookingRequestDO in _addedEntities.OfType<BookingRequestDO>())
                 AlertManager.BookingRequestCreated(newBookingRequestDO.Id);
-            
+
             return 1;
+        }
+
+        private void SaveSets()
+        {
+            lock (_cachedSets)
+            {
+                foreach (var cachedSet in _cachedSets)
+                {
+                    var set = cachedSet.Value as MockedDbSet;
+                    set.Save();
+                }
+            }
         }
 
         public void DetectChanges()
@@ -186,9 +201,9 @@ namespace Data.Infrastructure.StructureMap
                 foreach (var set in _cachedSets)
                 {
                     int maxIDAlready = 0;
-                    if (set.Value.Any())
+                    if (set.Value.OfType<object>().Any())
                     {
-                        maxIDAlready = set.Value.Max<object, int>(a =>
+                        maxIDAlready = set.Value.OfType<object>().Max<object, int>(a =>
                         {
                             var propInfo = EntityPrimaryKeyPropertyInfo(a);
                             if (propInfo == null)
@@ -217,20 +232,20 @@ namespace Data.Infrastructure.StructureMap
         {
             lock (_cachedSets)
             {
-                foreach (var keyValuePair in _cachedSets)
+                var cachedSet = _cachedSets.ToList();
+                foreach (var keyValuePair in cachedSet)
                 {
-                    if (!keyValuePair.Value.Any())
+                    if (!keyValuePair.Value.OfType<object>().Any())
                         continue;
 
                     var props = keyValuePair.Key.GetProperties();
-                    var propsWithForeignKeyNotation =
-                        props.Where(p => p.GetCustomAttribute<ForeignKeyAttribute>() != null).ToList();
+                    var propsWithForeignKeyNotation = props.Where(p => p.GetCustomAttribute<ForeignKeyAttribute>(true) != null).ToList();
                     if (!propsWithForeignKeyNotation.Any())
                         continue;
 
                     foreach (var prop in propsWithForeignKeyNotation)
                     {
-                        var attr = prop.GetCustomAttribute<ForeignKeyAttribute>();
+                        var attr = prop.GetCustomAttribute<ForeignKeyAttribute>(true);
                         //Now.. find out which way it goes..
 
                         var linkedName = attr.Name;
@@ -253,7 +268,7 @@ namespace Data.Infrastructure.StructureMap
                                 }
                                 return
                                     propType.GetProperties()
-                                        .FirstOrDefault(p => p.GetCustomAttribute<KeyAttribute>() != null);
+                                        .FirstOrDefault(p => p.GetCustomAttribute<KeyAttribute>(true) != null);
                             });
 
                         var linkedID = getPrimaryKeyProp(linkedProp);
@@ -287,14 +302,12 @@ namespace Data.Infrastructure.StructureMap
                                 if (fkID == null)
                                     continue;
 
-                                if (!_cachedSets.ContainsKey(parentFKDOProperty.PropertyType))
-                                    continue;
-
-                                var foreignSet = _cachedSets[parentFKDOProperty.PropertyType];
+                                var foreignSet = Set(parentFKDOProperty.PropertyType);
                                 object foundRow = null;
                                 foreach (var foreignRow in foreignSet)
                                 {
-                                    if (foreignIDProperty.GetValue(foreignRow) == fkID)
+                                    var id = foreignIDProperty.GetValue(foreignRow);
+                                    if (id.Equals(fkID))
                                     {
                                         foundRow = foreignRow;
                                         break;
@@ -316,7 +329,7 @@ namespace Data.Infrastructure.StructureMap
             lock (_cachedSets)
             {
                 int numAdded = 0;
-                foreach (KeyValuePair<Type, IEnumerable<object>> set in _cachedSets.ToList())
+                foreach (KeyValuePair<Type, MockedDbSet> set in _cachedSets.ToList())
                 {
                     foreach (object row in set.Value)
                     {
@@ -358,10 +371,8 @@ namespace Data.Infrastructure.StructureMap
         private bool AddValueToForeignSet(Object value)
         {
             var checkSet = Set(value.GetType());
-            if (checkSet.Contains(value))
-            {
+            if (checkSet.LocalEnumerable.OfType<object>().Contains(value))
                 return false;
-            }
 
             MethodInfo methodToCall = checkSet.GetType().GetMethod("Add", new[] { value.GetType() });
             methodToCall.Invoke(checkSet, new[] { value });
@@ -374,18 +385,17 @@ namespace Data.Infrastructure.StructureMap
             return (IDbSet<TEntity>)(Set(entityType));
         }
 
-        private IEnumerable<object> Set(Type entityType)
+        private MockedDbSet Set(Type entityType)
         {
             lock (_cachedSets)
             {
                 if (!_cachedSets.ContainsKey(entityType))
                 {
                     var assemblyTypes = entityType.Assembly.GetTypes();
-                    var subclassedSets =
-                        assemblyTypes.Where(a => a.IsSubclassOf(entityType) && entityType != a).ToList();
+                    var subclassedSets = assemblyTypes.Where(a => a.IsSubclassOf(entityType) && entityType != a).ToList();
                     var otherSets = subclassedSets.Select(Set);
 
-                    _cachedSets[entityType] = (IEnumerable<object>)Activator.CreateInstance(typeof (MockedDbSet<>).MakeGenericType(entityType), this, otherSets);
+                    _cachedSets[entityType] = (MockedDbSet)Activator.CreateInstance(typeof (MockedDbSet<>).MakeGenericType(entityType), otherSets);
                 }
                 return _cachedSets[entityType];
             }
