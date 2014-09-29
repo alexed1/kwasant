@@ -9,6 +9,7 @@ using KwasantCore.Security;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Utilities;
+using Utilities.Logging;
 
 namespace KwasantCore.Services
 {
@@ -48,13 +49,13 @@ namespace KwasantCore.Services
                     }
                     else
                     {
-                        newUserDO = ProcessRegistrationRequest(uow, email, password, "Customer");
+                        newUserDO = Register(uow, email, email, email, password, "Customer");
                         curRegStatus = RegistrationStatus.Successful;
                     }
                 }
                 else
                 {
-                    newUserDO = ProcessRegistrationRequest(uow, email, password, "Customer");
+                    newUserDO = Register(uow, email, email, email, password, "Customer");
                     curRegStatus = RegistrationStatus.Successful;
                 }
 
@@ -72,6 +73,7 @@ namespace KwasantCore.Services
 
         private UserDO ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, string role)
         {
+            var user = new User();
             return Register(uow, email, email, email, password, role);
         }
 
@@ -104,10 +106,12 @@ namespace KwasantCore.Services
 
         public UserDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string role)
         {
-
+            UserDO userDO = new UserDO();
+            try
+            {
             EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
 
-            var userDO = uow.UserRepository.CreateFromEmail(
+                userDO = uow.UserRepository.CreateFromEmail(
                 emailAddressDO: curEmailAddress,
                 userName: userName,
                 firstName: firstName,
@@ -123,7 +127,11 @@ namespace KwasantCore.Services
             {
                 throw new ApplicationException("There was a problem trying to register you. Please try again.");
             }
-
+            }
+            catch (Exception ex)
+            {
+                LogRegistrationError(ex);
+            }
             return userDO;
         }
 
@@ -145,5 +153,48 @@ namespace KwasantCore.Services
 
             return curLogingStatus;
         }
+
+        public void LogRegistrationError(Exception ex)
+        {
+            IncidentDO incidentDO = new IncidentDO();
+            incidentDO.PrimaryCategory = "Error";
+            incidentDO.SecondaryCategory = "Processing";
+            incidentDO.CreateTime = DateTime.Now;
+            incidentDO.Activity = "Registration";
+            incidentDO.Notes = ex.Message;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+            }
+
+            string logData = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
+                    incidentDO.PrimaryCategory,
+                    incidentDO.SecondaryCategory,
+                    incidentDO.Activity,
+                    incidentDO.ObjectId,
+                    incidentDO.CustomerId);
+
+            Logger.GetLogger().Info(logData);
+        }
+
+
+        //this doesn't seem to get called. let's watch for a while and then delete it
+        //public void UpdateUser(UserDO userDO, IdentityUserRole identityUserRole)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        EmailAddressDO currEmailAddressDO = uow.EmailAddressRepository.GetByKey(userDO.EmailAddressID);
+        //        currEmailAddressDO.Address = userDO.EmailAddress.Address;
+
+        //        //Change user's role in DB using Identity Framework if only role is changed on the fone-end.
+        //        if (identityUserRole != null)
+        //        {
+        //            User user = new User();
+        //            user.ChangeUserRole(uow, identityUserRole);
+        //        }
+        //        uow.SaveChanges();
+        //    }
+        //}
     }
 }

@@ -43,6 +43,5 @@ namespace KwasantTest.Entities
                 UserDO currRetrivedUserDO = uow.UserRepository.GetQuery().FirstOrDefault(uu => currUserDO.EmailAddressID == uu.EmailAddressID);
             }
         }
-
     }
 }
