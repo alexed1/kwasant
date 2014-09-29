@@ -9,9 +9,11 @@ using Data.Interfaces;
 using Data.States;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Exceptions;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
+using Segment;
 using StructureMap;
 
 
@@ -239,6 +241,21 @@ namespace KwasantWeb.Controllers
                     MergeTimeSlots(uow, curEventDO);
 
                 uow.SaveChanges();
+
+                foreach (var attendeeDO in updatedEventInfo.Attendees)
+                {
+                    var user = new User();
+                    var userDO = user.GetOrCreateFromBR(uow, attendeeDO.EmailAddress);
+                    if (user.GetMode(userDO) == CommunicationMode.Delegate)
+                    {
+                        ObjectFactory.GetInstance<ITracker>().Track(userDO, "User", "InvitedAsPreCustomerAttendee",
+                            new Dictionary<string, object>
+                            {
+                                {"BookingRequestId", curEventDO.BookingRequestID},
+                                {"EventID", curEventDO.Id}
+                            });
+                    }
+                }
             }
             return Json(true, JsonRequestBehavior.AllowGet);
         }

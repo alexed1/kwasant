@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Mime;
+using Data.Authentication;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
@@ -10,6 +11,7 @@ using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using RazorEngine;
+using Segment;
 using Utilities;
 using Encoding = System.Text.Encoding;
 
@@ -71,11 +73,11 @@ namespace KwasantCore.Services
 
             if (curType == InvitationType.ChangeNotification)
             {
-                curInvitation = GenerateChangeNotification(curInvitation, curEvent, userID);
+                curInvitation = GenerateChangeNotification(uow, curInvitation, curEvent, userID);
             }
             else
             {
-                curInvitation = GenerateInitialInvite(curInvitation, curEvent, userID);
+                curInvitation = GenerateInitialInvite(uow, curInvitation, curEvent, userID);
             }
 
             //prepare the outbound email
@@ -93,27 +95,35 @@ namespace KwasantCore.Services
             return curInvitation;
         }
 
-        private InvitationDO GenerateInitialInvite(InvitationDO curInvitation, EventDO curEvent, string userID)
+        private static String GetAuthTokenForBaseURL(IUnitOfWork uow, string userID)
+        {
+            return uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(Server.ServerUrl, userID, "Invitation", new Dictionary<string, object>
+                {
+                    {"action", "Clicked on Invitation Header"}
+                });
+        }
+
+        private InvitationDO GenerateInitialInvite(IUnitOfWork uow, InvitationDO curInvitation, EventDO curEvent, string userID)
         {
             string endtime = curEvent.EndDate.ToUniversalTime().ToString("hh:mmtt");
             string subjectDate = curEvent.StartDate.ToUniversalTime().ToString("ddd MMM dd, yyyy hh:mmtt - ") + endtime + " +00:00";
 
             curInvitation.InvitationType = InvitationType.InitialInvite;
             curInvitation.Subject = String.Format(_configRepository.Get("emailSubject"), GetOriginatorName(curEvent), curEvent.Summary, subjectDate);
-            curInvitation.HTMLText = GetEmailHTMLTextForNew(curEvent, userID);
-            curInvitation.PlainText = GetEmailPlainTextForNew(curEvent, userID);
+            curInvitation.HTMLText = GetEmailHTMLTextForNew(uow, curEvent, userID);
+            curInvitation.PlainText = GetEmailPlainTextForNew(uow, curEvent, userID);
             return curInvitation;
         }
 
-        private InvitationDO GenerateChangeNotification(InvitationDO curInvitation, EventDO curEvent, string userID)
+        private InvitationDO GenerateChangeNotification(IUnitOfWork uow, InvitationDO curInvitation, EventDO curEvent, string userID)
         {
             string endtime = curEvent.EndDate.ToUniversalTime().ToString("hh:mmtt");
             string subjectDate = curEvent.StartDate.ToUniversalTime().ToString("ddd MMM dd, yyyy hh:mmtt - ") + endtime + " +00:00";
 
             curInvitation.InvitationType = InvitationType.ChangeNotification;
             curInvitation.Subject = String.Format(_configRepository.Get("emailSubjectUpdated"), GetOriginatorName(curEvent), curEvent.Summary, subjectDate);
-            curInvitation.HTMLText = GetEmailHTMLTextForUpdate(curEvent, userID);
-            curInvitation.PlainText = GetEmailPlainTextForUpdate(curEvent, userID);
+            curInvitation.HTMLText = GetEmailHTMLTextForUpdate(uow, curEvent, userID);
+            curInvitation.PlainText = GetEmailPlainTextForUpdate(uow, curEvent, userID);
             return curInvitation;
         }
 
@@ -146,26 +156,26 @@ namespace KwasantCore.Services
         {
             UserDO originator = curEventDO.CreatedBy;
             return User.GetDisplayName(originator);
+            }
+
+        private String GetEmailHTMLTextForUpdate(IUnitOfWork uow, EventDO eventDO, String userID)
+        {
+            return Razor.Parse(Properties.Resources.HTMLEventInvitation_Update, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
         }
 
-        private String GetEmailHTMLTextForUpdate(EventDO eventDO, String userID)
+        private String GetEmailPlainTextForUpdate(IUnitOfWork uow, EventDO eventDO, String userID)
         {
-            return Razor.Parse(Properties.Resources.HTMLEventInvitation_Update, new RazorViewModel(eventDO, userID));
+            return Razor.Parse(Properties.Resources.PlainEventInvitation_Update, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
         }
 
-        private String GetEmailPlainTextForUpdate(EventDO eventDO, String userID)
+        private String GetEmailHTMLTextForNew(IUnitOfWork uow, EventDO eventDO, String userID)
         {
-            return Razor.Parse(Properties.Resources.PlainEventInvitation_Update, new RazorViewModel(eventDO, userID));
+            return Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
         }
 
-        private String GetEmailHTMLTextForNew(EventDO eventDO, String userID)
+        private String GetEmailPlainTextForNew(IUnitOfWork uow, EventDO eventDO, String userID)
         {
-            return Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO, userID));
-        }
-
-        private String GetEmailPlainTextForNew(EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO, userID));
+            return Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
         }
 
     }

@@ -5,6 +5,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using Moq;

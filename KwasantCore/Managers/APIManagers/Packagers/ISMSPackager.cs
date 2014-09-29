@@ -1,7 +1,7 @@
 ﻿using System;
 using Twilio;
 
-namespace KwasantCore.Managers.APIManager.Packagers
+namespace KwasantCore.Managers.APIManagers.Packagers
 {
     public interface ISMSPackager
     {

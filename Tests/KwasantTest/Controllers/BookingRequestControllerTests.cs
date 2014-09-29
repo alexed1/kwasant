@@ -1,5 +1,6 @@
 ﻿using System;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
@@ -38,6 +39,7 @@ namespace KwasantTest.Controllers
 
             BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
             BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+
             (new BookingRequest()).Process(_uow, bookingRequest);
         }
 
