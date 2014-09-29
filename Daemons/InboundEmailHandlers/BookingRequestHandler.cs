@@ -34,8 +34,7 @@ namespace Daemons.InboundEmailHandlers
                 }
                 else
                 {
-                    BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
-                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
                     (new BookingRequest()).Process(uow, bookingRequest);
                     uow.SaveChanges();
                     AlertManager.BookingRequestCreated(bookingRequest.Id);
