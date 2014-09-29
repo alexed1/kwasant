@@ -152,7 +152,7 @@ namespace KwasantCore.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curManager = User.GetUserManager(uow);
-                return curManager.GetRoles(curUserId)[0];
+                return curManager.GetRoles(curUserId).Count() > 0 ? curManager.GetRoles(curUserId)[0] : "";
             }
         }
 

@@ -50,8 +50,8 @@ namespace KwasantWeb.Controllers
                     FirstName = u.FirstName,
                     LastName = u.LastName,
                     EmailAddress = u.EmailAddress.Address,
-                    Role = userManager.GetRoles(u.Id)[0],
-                    RoleId = u.Roles.ToList()[0].RoleId
+                    Role = userManager.GetRoles(u.Id).Count() > 0 ? userManager.GetRoles(u.Id)[0] : "",
+                    RoleId = u.Roles.ToList().Count() > 0 ? u.Roles.ToList()[0].RoleId : "",
                 }));
                 userShowAllVM.Users = userShowVMList;
 
