@@ -57,6 +57,7 @@ namespace Data.Migrations
             SeedRemoteCalendarProviders(unitOfWork);
 
             AddCalendars(unitOfWork);
+            AddProfiles(unitOfWork);
             AddEvents(unitOfWork);
         }
 
@@ -341,6 +342,13 @@ namespace Data.Migrations
                 CreateCalendars("Test Calendar 1", "alexlucre1@gmail.com", uow);
                 CreateCalendars("Test Calendar 2", "alexlucre1@gmail.com", uow);
             }
+        }
+
+        private void AddProfiles(IUnitOfWork uow)
+        {
+            var users = uow.UserRepository.GetAll().ToList();
+            foreach (var user in users)
+                uow.UserRepository.AddDefaultProfile(user);
         }
 
         private void CreateCalendars(string calendarName,string curUserEmail, IUnitOfWork uow) 

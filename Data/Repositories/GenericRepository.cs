@@ -15,7 +15,7 @@ namespace Data.Repositories
         protected readonly IUnitOfWork _uow;
         public IDbSet<TEntity> DBSet;
 
-        internal GenericRepository(IUnitOfWork uow)
+        public GenericRepository(IUnitOfWork uow)
         {
             if (uow == null) throw new ArgumentNullException("uow");
             _uow = uow;

@@ -2,6 +2,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Repositories;
 using KwasantCore.Interfaces;
 using KwasantCore.ExternalServices;
 using KwasantCore.ExternalServices.REST;
@@ -72,6 +73,8 @@ namespace KwasantCore.StructureMap
 
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
+                For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
+
                 For<IKwasantRoleStore>().Use(new KwasantRoleStore());
                 For<IKwasantUserStore>().Use(new KwasantUserStore());
 
@@ -95,6 +98,8 @@ namespace KwasantCore.StructureMap
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<ITracker>().Use<SegmentIO>();
+
+                For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
 
                 For<IKwasantRoleStore>().Use(new MockedRoleStore());
                 For<IKwasantUserStore>().Use(new MockedUserStore());

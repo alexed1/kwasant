@@ -6,6 +6,7 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.SqlServer;
 using System.Linq;
+using Data.Entities.CTE;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
 using Data.Interfaces;
@@ -155,6 +156,11 @@ namespace Data.Infrastructure
             modelBuilder.Entity<QuestionResponseDO>().ToTable("QuestionResponses");
             modelBuilder.Entity<AuthorizationTokenDO>().ToTable("AuthorizationTokens");
             modelBuilder.Entity<LogDO>().ToTable("Logs");
+            modelBuilder.Entity<ProfileDO>().ToTable("Profiles");
+            modelBuilder.Entity<ProfileNodeDO>().ToTable("ProfileNodes");
+            modelBuilder.Entity<ProfileItemDO>().ToTable("ProfileItems");
+            modelBuilder.Entity<ProfileNodeAncestorsCTE>().ToTable("ProfileNodeAncestorsCTEView");
+            modelBuilder.Entity<ProfileNodeDescendantsCTE>().ToTable("ProfileNodeDescendantsCTEView");
 
             modelBuilder.Entity<EmailDO>()
                 .HasRequired(a => a.From)

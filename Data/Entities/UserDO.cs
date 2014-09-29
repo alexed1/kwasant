@@ -41,6 +41,9 @@ namespace Data.Entities
         public virtual IList<CalendarDO> Calendars { get; set; }
 
         [InverseProperty("User")]
+        public virtual IList<ProfileDO> Profiles { get; set; }
+
+        [InverseProperty("User")]
         public virtual IList<RemoteCalendarAuthDataDO> RemoteCalendarAuthData { get; set; }
 
         public bool IsRemoteCalendarAccessGranted(string providerName)

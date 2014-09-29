@@ -105,9 +105,14 @@
   <ItemGroup>
     <Compile Include="Authentication\Account.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
+    <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
+    <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
     <Compile Include="Entities\InvitationResponseDO.cs" />
     <Compile Include="Entities\LogDO.cs" />
+    <Compile Include="Entities\ProfileDO.cs" />
+    <Compile Include="Entities\ProfileItemDO.cs" />
+    <Compile Include="Entities\ProfileNodeDO.cs" />
     <Compile Include="Entities\QuestionResponseDO.cs" />
     <Compile Include="Infrastructure\StructureMap\ISecurityServices.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedSecurityServices.cs" />
@@ -256,7 +261,25 @@
     <Compile Include="Migrations\201409261128558_Sync.26.09.2014.Designer.cs">
       <DependentUpon>201409261128558_Sync.26.09.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409291852449_UserProfiles.cs" />
+    <Compile Include="Migrations\201409291852449_UserProfiles.Designer.cs">
+      <DependentUpon>201409291852449_UserProfiles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409292102211_ProfileNodeAncestorsCTEView.cs" />
+    <Compile Include="Migrations\201409292102211_ProfileNodeAncestorsCTEView.Designer.cs">
+      <DependentUpon>201409292102211_ProfileNodeAncestorsCTEView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409292127594_ProfileNodeDescendantsCTEView.cs" />
+    <Compile Include="Migrations\201409292127594_ProfileNodeDescendantsCTEView.Designer.cs">
+      <DependentUpon>201409292127594_ProfileNodeDescendantsCTEView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410031357380_AddNameToProfileDO.cs" />
+    <Compile Include="Migrations\201410031357380_AddNameToProfileDO.Designer.cs">
+      <DependentUpon>201410031357380_AddNameToProfileDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
+    <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
+    <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\InvitationResponseRepository.cs" />
@@ -314,6 +337,7 @@
       <DependentUpon>201409021727515_NewNegotiationStructure.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\AnswerRepository.cs" />
+    <Compile Include="Repositories\ProfileNodeRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\CommunicationMode.cs" />
@@ -1039,6 +1063,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409261128558_Sync.26.09.2014.resx">
       <DependentUpon>201409261128558_Sync.26.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409291852449_UserProfiles.resx">
+      <DependentUpon>201409291852449_UserProfiles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409292102211_ProfileNodeAncestorsCTEView.resx">
+      <DependentUpon>201409292102211_ProfileNodeAncestorsCTEView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409292127594_ProfileNodeDescendantsCTEView.resx">
+      <DependentUpon>201409292127594_ProfileNodeDescendantsCTEView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410031357380_AddNameToProfileDO.resx">
+      <DependentUpon>201410031357380_AddNameToProfileDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
