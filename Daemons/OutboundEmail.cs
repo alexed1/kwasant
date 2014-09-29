@@ -28,7 +28,7 @@ namespace Daemons
                     var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
                     if (emailToUpdate == null)
                     {
-                        Logger.GetLogger().Error("Email id " + emailID + " recieved a callback saying it was sent from Gmail, but the email was not found in our database");
+                        Logger.GetLogger().Error("Email id " + emailID + " received a callback saying it was sent from Gmail, but the email was not found in our database");
                         return;
                     }
 

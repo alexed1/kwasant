@@ -107,12 +107,12 @@ namespace KwasantCore.Services
             if (String.IsNullOrEmpty(body))
                 body = mailMessage.Body;
 
-            String strDateRecieved = String.Empty;
-            strDateRecieved = mailMessage.Headers["Date"];
+            String strDateReceived = String.Empty;
+            strDateReceived = mailMessage.Headers["Date"];
 
-            DateTimeOffset dateRecieved;
-            if (!DateTimeOffset.TryParse(strDateRecieved, out dateRecieved))
-                dateRecieved = DateTimeOffset.Now;
+            DateTimeOffset dateReceived;
+            if (!DateTimeOffset.TryParse(strDateReceived, out dateReceived))
+                dateReceived = DateTimeOffset.Now;
 
             String strDateCreated = String.Empty;
             strDateCreated = mailMessage.Headers["Date"];
@@ -126,7 +126,7 @@ namespace KwasantCore.Services
                 Subject = mailMessage.Subject,
                 HTMLText = body,
                 PlainText = plainBody,
-                DateReceived = dateRecieved,
+                DateReceived = dateReceived,
                 DateCreated = dateCreated,
                 Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),
                 Events = null

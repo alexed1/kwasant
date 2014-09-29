@@ -254,15 +254,15 @@ See more: {2}
             var subjKey = Guid.NewGuid().ToString();
 
             inboundEmailDaemon.RegisterTestEmailSubject(subjKey);
-            bool messageRecieved = false;
+            bool messageReceived = false;
 
-            InboundEmail.ExplicitCustomerCreatedHandler testMessageRecieved = subject =>
+            InboundEmail.ExplicitCustomerCreatedHandler testMessageReceived = subject =>
             {
                 if (subjKey == subject)
-                    messageRecieved = true;
+                    messageReceived = true;
             };
 
-            InboundEmail.TestMessageRecieved += testMessageRecieved;
+            InboundEmail.TestMessageReceived += testMessageReceived;
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Email email = ObjectFactory.GetInstance<Email>();
@@ -282,7 +282,7 @@ See more: {2}
             var maxTime = TimeSpan.FromMinutes(2);
             while (DateTime.Now < startTime.Add(maxTime))
             {
-                if (messageRecieved)
+                    if (messageReceived)
                 {
                     MarkTestSuccess<OutboundEmail>(testName);
                     MarkTestSuccess<InboundEmail>(testName);
