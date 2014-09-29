@@ -67,5 +67,34 @@ namespace KwasantTest.Repositories
                 Assert.NotNull(brOne.User);
             }
         }
+
+        [Test]
+        public void TestCollectionsProperlyUpdated()
+        {
+            //Force a seed -- helps with debug
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                uow.SaveChanges();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var negDO = new NegotiationDO();
+                negDO.Id = 1;
+                uow.NegotiationsRepository.Add(negDO);
+
+                var attendee = new AttendeeDO();
+                attendee.NegotiationID = 1;
+                uow.AttendeeRepository.Add(attendee);
+                
+                uow.SaveChanges();
+
+                Assert.AreEqual(1, negDO.Attendees.Count);
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var negDO = uow.NegotiationsRepository.GetQuery().First();
+
+                Assert.AreEqual(1, negDO.Attendees.Count);
+            }
+        }
     }
 }
