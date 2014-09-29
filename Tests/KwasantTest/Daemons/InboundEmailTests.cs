@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
-using System.Net.Security;
 using System.Text;
 using Daemons;
-using Data.Entities;
 using Data.Interfaces;
-using Data.Repositories;
+using KwasantCore.ExternalServices;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using Moq;
 using NUnit.Framework;
-using S22.Imap;
 using StructureMap;
-using Utilities;
 
 namespace KwasantTest.Daemons
 {
@@ -58,8 +53,9 @@ namespace KwasantTest.Daemons
             _mailMessage.From = new MailAddress(testFromEmailAddress);
             _mailMessage.To.Add(new MailAddress(testToEmailAddress));
 
-
-            var ie = new InboundEmail(_client, ObjectFactory.GetInstance<IConfigRepository>());
+            ObjectFactory.Configure(a => a.For<IImapClient>().Use(_client));
+            
+            var ie = new InboundEmail();
             DaemonTests.RunDaemonOnce(ie);
 
             // VERIFY
@@ -142,7 +138,9 @@ END:VCALENDAR",
             _mailMessage.AlternateViews.Add(new AlternateView(attachmentStream, "text/calendar"));
             _mailMessage.From = new MailAddress(curAttendee.EmailAddress.Address);
 
-            var ie = new InboundEmail(_client, ObjectFactory.GetInstance<IConfigRepository>());
+            ObjectFactory.Configure(a => a.For<IImapClient>().Use(_client));
+            
+            var ie = new InboundEmail();
 
             // EXECUTE
             DaemonTests.RunDaemonOnce(ie);

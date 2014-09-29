@@ -236,7 +236,7 @@ namespace KwasantCore.Managers.APIManager.Transmitters.Restful
             foreach (KeyValuePair<string, string> header in HeaderParams)
             {
                 if (restrictedHeaderActions.ContainsKey(header.Key))
-                    restrictedHeaderActions[header.Key].Invoke(curWebRequest, header.Value.ToString());
+                    restrictedHeaderActions[header.Key].Invoke(curWebRequest, header.Value);
                 else
                     curWebRequest.Headers.Add(header.Key, header.Value);
             }
@@ -252,7 +252,7 @@ namespace KwasantCore.Managers.APIManager.Transmitters.Restful
             {
                 if (querystring.Length > 1)
                     querystring.Append("&");
-                querystring.AppendFormat("{0}={1}", p.Key, p.Value.ToString());
+                querystring.AppendFormat("{0}={1}", p.Key, p.Value);
             }
             return querystring.ToString();
         }

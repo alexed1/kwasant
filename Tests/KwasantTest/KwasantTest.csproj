@@ -74,10 +74,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
     </Reference>
-    <Reference Include="S22.Imap, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\S22.Imap.3.6.0.0\lib\net40\S22.Imap.dll</HintPath>
-    </Reference>
     <Reference Include="StructureMap, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\structuremap.3.0.3.116\lib\net40\StructureMap.dll</HintPath>
@@ -137,12 +133,10 @@
     <Compile Include="Repositories\EventRepositoryTests.cs" />
     <Compile Include="Services\EmailTests.cs" />
     <Compile Include="Services\EventServiceTests.cs" />
-    <Compile Include="Integration\NegotiationITests\NegotiationTests.cs" />
     <Compile Include="Services\SMSTests.cs" />
     <Compile Include="Timeslots\TimeslotMergeTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
     <Compile Include="Integration\BookingITests\IntegrationTests.cs" />
-    <Compile Include="Utilities\PollingEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

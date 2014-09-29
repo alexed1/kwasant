@@ -59,24 +59,24 @@ call :ExecuteCmd "%NUGET_EXE%" restore Kwasant.sln
 :: 3. Build to the temporary path
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
   echo Building application to temp folder
-  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\KwasantWeb.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="%DEPLOYMENT_TEMP%";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
+  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\KwasantWeb.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="%DEPLOYMENT_TEMP%";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Debug /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
   IF !ERRORLEVEL! NEQ 0 goto error
-  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\KwasantTest\KwasantTest.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:_PackageTempDir="%DEPLOYMENT_TEMP%";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
+  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\KwasantTest\KwasantTest.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:_PackageTempDir="%DEPLOYMENT_TEMP%";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Debug /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
   IF !ERRORLEVEL! NEQ 0 goto error
-  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.Collections.Test\DDay.Collections.Test.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:_PackageTempDir="%DEPLOYMENT_TEMP%";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
+  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.Collections.Test\DDay.Collections.Test.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:_PackageTempDir="%DEPLOYMENT_TEMP%";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Debug /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
   IF !ERRORLEVEL! NEQ 0 goto error
-  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.iCal.Test\DDay.iCal.Test.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:_PackageTempDir="%DEPLOYMENT_TEMP%";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
+  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.iCal.Test\DDay.iCal.Test.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:_PackageTempDir="%DEPLOYMENT_TEMP%";AutoParameterizationWebConfigConnectionStrings=false;Configuration=Debug /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
   IF !ERRORLEVEL! NEQ 0 goto error
 
 ) ELSE (
   echo Building application in place
-  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\KwasantWeb.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
+  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\KwasantWeb.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:AutoParameterizationWebConfigConnectionStrings=false;Configuration=Debug /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
   IF !ERRORLEVEL! NEQ 0 goto error
-  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\KwasantTest\KwasantTest.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
+  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\KwasantTest\KwasantTest.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:AutoParameterizationWebConfigConnectionStrings=false;Configuration=Debug /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
   IF !ERRORLEVEL! NEQ 0 goto error
-  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.Collections.Test\DDay.Collections.Test.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
+  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.Collections.Test\DDay.Collections.Test.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:AutoParameterizationWebConfigConnectionStrings=false;Configuration=Debug /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
   IF !ERRORLEVEL! NEQ 0 goto error
-  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.iCal.Test\DDay.iCal.Test.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:AutoParameterizationWebConfigConnectionStrings=false;Configuration=Release /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
+  call :ExecuteCmd "%MSBUILD_PATH%" "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.iCal.Test\DDay.iCal.Test.csproj" /nologo /verbosity:m /t:Build /p:WarningLevel=0 /p:AutoParameterizationWebConfigConnectionStrings=false;Configuration=Debug /p:SolutionDir="%DEPLOYMENT_SOURCE%\.\\" %SCM_BUILD_ARGS%
   IF !ERRORLEVEL! NEQ 0 goto error
 )
 
@@ -84,7 +84,7 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 echo Running tests
 call :ExecuteCmd "%NUGET_EXE%" install NUnit.Runners -Version %NUNIT_RUNNERS_VERSION%
 IF !ERRORLEVEL! NEQ 0 goto error
-call :ExecuteCmd "%NUNIT_RUNNERS%" -labels "%DEPLOYMENT_SOURCE%\Tests\KwasantTest\bin\Release\KwasantTest.dll"
+call :ExecuteCmd "%NUNIT_RUNNERS%" -labels "%DEPLOYMENT_SOURCE%\Tests\KwasantTest\bin\Debug\KwasantTest.dll"
 IF !ERRORLEVEL! NEQ 0 goto error
 :: call :ExecuteCmd "%NUNIT_RUNNERS%" -labels "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.Collections.Test\bin\Release\DDay.Collections.Test.dll"
 :: IF !ERRORLEVEL! NEQ 0 goto error
