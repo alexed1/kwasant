@@ -10,21 +10,13 @@ using StructureMap;
 namespace KwasantTest.Services
 {
     [TestFixture]
-    public class AttendeeTests
+    public class AttendeeTests : BaseTest
     {
-        private IEmailAddress _emailAddress;
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-            _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
-        }
-
-
         [Test]
         public void TestBasicEmail()
         {
-            var result=_emailAddress.ExtractFromString("rjrudman@gmail.com");
+            var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+            var result = emailAddress.ExtractFromString("rjrudman@gmail.com");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(String.Empty, result[0].Name);
@@ -34,7 +26,8 @@ namespace KwasantTest.Services
         [Test]
         public void TestMultipleBasicEmails()
         {
-            var result=_emailAddress.ExtractFromString("rjrudman@gmail.com,otheremail@gmail.com");
+            var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+            var result = emailAddress.ExtractFromString("rjrudman@gmail.com,otheremail@gmail.com");
 
             Assert.AreEqual(2, result.Count);
 
@@ -48,7 +41,8 @@ namespace KwasantTest.Services
         [Test]
         public void TestEmailWithName()
         {
-            var result=_emailAddress.ExtractFromString("<Robert>rjrudman@gmail.com");
+            var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+            var result = emailAddress.ExtractFromString("<Robert>rjrudman@gmail.com");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual("Robert", result[0].Name);
@@ -58,7 +52,8 @@ namespace KwasantTest.Services
         [Test]
         public void TestEmailWithFullName()
         {
-            var result=_emailAddress.ExtractFromString("<Robert Robert>rjrudman@gmail.com");
+            var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+            var result = emailAddress.ExtractFromString("<Robert Robert>rjrudman@gmail.com");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual("Robert Robert", result[0].Name);
@@ -68,7 +63,8 @@ namespace KwasantTest.Services
         [Test]
         public void TestNameWithNumbers()
         {
-            var result=_emailAddress.ExtractFromString("<Robert23>rjrudman@gmail.com");
+            var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+            var result = emailAddress.ExtractFromString("<Robert23>rjrudman@gmail.com");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual("Robert23", result[0].Name);
@@ -78,7 +74,8 @@ namespace KwasantTest.Services
         [Test]
         public void TestEmailNameWithNumbers()
         {
-            var result=_emailAddress.ExtractFromString("rjrudman23@gmail.com");
+            var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+            var result = emailAddress.ExtractFromString("rjrudman23@gmail.com");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(String.Empty, result[0].Name);
@@ -88,7 +85,8 @@ namespace KwasantTest.Services
         [Test]
         public void TestDomainlNameWithNumbers()
         {
-            var result=_emailAddress.ExtractFromString("rjrudman@g23mail.com");
+            var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+            var result = emailAddress.ExtractFromString("rjrudman@g23mail.com");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(String.Empty, result[0].Name);
@@ -98,7 +96,8 @@ namespace KwasantTest.Services
         [Test]
         public void TestInvalidTLD_Short()
         {
-            var result=_emailAddress.ExtractFromString("rjrudman@gmail.c");
+            var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+            var result = emailAddress.ExtractFromString("rjrudman@gmail.c");
 
             Assert.AreEqual(0, result.Count);
         }
@@ -106,8 +105,9 @@ namespace KwasantTest.Services
         [Test]
         public void TestComplexTLD()
         {
+            var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
             //This is valid TLD - as per http://data.iana.org/TLD/tlds-alpha-by-domain.txt
-            var result = _emailAddress.ExtractFromString("rjrudman@gmail.XN--CLCHC0EA0B2G2A9GCD");
+            var result = emailAddress.ExtractFromString("rjrudman@gmail.XN--CLCHC0EA0B2G2A9GCD");
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(String.Empty, result[0].Name);
@@ -117,10 +117,12 @@ namespace KwasantTest.Services
         [Test]
         public void TestEmailAddressDOCreated()
         {
+            var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Assert.AreEqual(0, uow.EmailAddressRepository.GetQuery().Count());
-                _emailAddress.GetEmailAddresses(uow, "rjrudman@gmail.com");
+                emailAddress.GetEmailAddresses(uow, "rjrudman@gmail.com");
+                uow.SaveChanges();
                 Assert.AreEqual(1, uow.EmailAddressRepository.GetQuery().Count());
             }
         }
@@ -128,6 +130,7 @@ namespace KwasantTest.Services
         [Test]
         public void TestEmailAddressDODuplicateNotCreated()
         {
+            var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Assert.AreEqual(0, uow.EmailAddressRepository.GetQuery().Count());
@@ -136,8 +139,10 @@ namespace KwasantTest.Services
                     Address = "rjrudman@gmail.com",
                     Name = "rjrudman@gmail.com"
                 });
+                uow.SaveChanges();
                 Assert.AreEqual(1, uow.EmailAddressRepository.GetQuery().Count());
-                _emailAddress.GetEmailAddresses(uow, "rjrudman@gmail.com");
+                emailAddress.GetEmailAddresses(uow, "rjrudman@gmail.com");
+                uow.SaveChanges();
                 Assert.AreEqual(1, uow.EmailAddressRepository.GetQuery().Count());
             }
         }

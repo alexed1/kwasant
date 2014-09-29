@@ -17,6 +17,18 @@ namespace Data.Infrastructure.StructureMap
 {
     public class MockedDBContext : IDBContext
     {
+        private static readonly List<MockedDbSet> SetsToClear = new List<MockedDbSet>();
+        public static void WipeMockedDatabase()
+        {
+            lock (SetsToClear)
+            {
+                foreach (var set in SetsToClear)
+                {
+                    set.WipeDatabase();
+                }
+            }
+        }
+
         public MockedDBContext()
         {
             MigrationConfiguration.Seed(new UnitOfWork(this));
@@ -65,11 +77,16 @@ namespace Data.Infrastructure.StructureMap
             //eventDO.Emails.Add(new EmailDO { Customer = new CustomerDO }) - once we've added the email, we still haven't added the customer.
             //Looping causes us to pickup each foreign link and be sure everything is persisted in memory
 
+            
+            //the only way we know what is being created is to look at EntityState.Added. But after the savechanges, that will all be erased.
+            //so we have to build a little list of entities that will have their AfterCreate hook called.
+
+            AddForeignRows();
+
             var adds = GetAdds();
-
+            var createdEntityList = adds.OfType<ICreateHook>().ToList();
+            
             SaveSets();
-
-            while (AddForeignValues() > 0) {}
 
             DetectChanges();
 
@@ -79,8 +96,10 @@ namespace Data.Infrastructure.StructureMap
 
             AssertConstraints();
             
-            foreach (var newBookingRequestDO in _addedEntities.OfType<BookingRequestDO>())
-                AlertManager.BookingRequestCreated(newBookingRequestDO.Id);
+            foreach (var createdEntity in createdEntityList)
+            {
+                createdEntity.AfterCreate();
+            }
 
             return 1;
         }
@@ -305,7 +324,8 @@ namespace Data.Infrastructure.StructureMap
                                 if (collectionToAddTo == null)
                                     continue;
 
-                                collectionToAddTo.Add(value);
+                                if (!collectionToAddTo.Contains(value))
+                                    collectionToAddTo.Add(value);
                             }
                         }
                     }
@@ -313,50 +333,64 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
-        private int AddForeignValues()
+        private void AddForeignRows()
         {
+            List<Object> currentPass;
             lock (_cachedSets)
+                currentPass = new List<object>(_cachedSets.SelectMany(c => c.Value.LocalEnumerable.OfType<object>()));
+
+            var nextPass = new List<Object>();
+            
+            while (currentPass.Any())
             {
-                int numAdded = 0;
-                foreach (KeyValuePair<Type, MockedDbSet> set in _cachedSets.ToList())
+                foreach (var row in currentPass)
                 {
-                    foreach (object row in set.Value)
+                    PropertyInfo[] props = row.GetType().GetProperties();
+                    foreach (PropertyInfo prop in props)
                     {
-                        PropertyInfo[] props = row.GetType().GetProperties();
-                        foreach (PropertyInfo prop in props)
+                        Type castValue = null;
+                        var actualValue = prop.GetValue(row);
+                        if (actualValue != null)
+                            castValue = actualValue.GetType();
+                        if (IsEntity(prop.PropertyType) || (castValue != null && IsEntity(castValue)))
                         {
-                            if (IsEntity(prop.PropertyType))
-                            {
-                                //It's a normal foreign key
-                                object value = prop.GetValue(row);
-                                if (value == null)
-                                    continue;
+                            //It's a normal foreign key
+                            object value = prop.GetValue(row);
+                            if (value == null)
+                                continue;
 
-                                if (AddValueToForeignSet(value))
-                                    numAdded++;
-                            }
-                            else if (prop.PropertyType.IsGenericType &&
-                                     typeof (IEnumerable).IsAssignableFrom(prop.PropertyType) &&
-                                     IsEntity(prop.PropertyType.GetGenericArguments()[0]))
-                            {
-                                //It's a collection!
-                                IEnumerable collection = prop.GetValue(row) as IEnumerable;
-                                if (collection == null)
-                                    continue;
+                            if (AddValueToForeignSet(value))
+                                nextPass.Add(value);
+                        }
+                        else if (prop.PropertyType.IsGenericType &&
+                                 typeof (IEnumerable).IsAssignableFrom(prop.PropertyType) &&
+                                 IsEntity(prop.PropertyType.GetGenericArguments()[0]))
+                        {
+                            //It's a collection!
+                            IEnumerable collection = prop.GetValue(row) as IEnumerable;
+                            if (collection == null)
+                                continue;
 
-                                numAdded += collection.Cast<object>().Count(AddValueToForeignSet);
+                            foreach (var obj in collection.OfType<object>())
+                            {
+                                if (AddValueToForeignSet(obj))
+                                    nextPass.Add(obj);
                             }
                         }
                     }
                 }
-                return numAdded;
+                currentPass = new List<object>(nextPass);
+                nextPass.Clear();
             }
         }
 
         private bool AddValueToForeignSet(Object value)
         {
+            if (value.GetType().IsNested)
+                return false;
+
             var checkSet = Set(value.GetType());
-            if (checkSet.LocalEnumerable.OfType<object>().Contains(value))
+            if (checkSet.OfType<object>().Union(checkSet.LocalEnumerable.OfType<object>()).Contains(value))
                 return false;
 
             MethodInfo methodToCall = checkSet.GetType().GetMethod("Add", new[] { value.GetType() });
@@ -380,9 +414,16 @@ namespace Data.Infrastructure.StructureMap
                     var subclassedSets = assemblyTypes.Where(a => a.IsSubclassOf(entityType) && entityType != a).ToList();
                     var otherSets = subclassedSets.Select(Set);
 
-                    _cachedSets[entityType] = (MockedDbSet)Activator.CreateInstance(typeof (MockedDbSet<>).MakeGenericType(entityType), otherSets);
+                    _cachedSets[entityType] = (MockedDbSet)Activator.CreateInstance(typeof(MockedDbSet<>).MakeGenericType(entityType), otherSets);
                 }
-                return _cachedSets[entityType];
+
+                var returnSet = _cachedSets[entityType];
+                lock (SetsToClear)
+                {
+                    if (!SetsToClear.Contains(returnSet))
+                        SetsToClear.Add(returnSet);
+                }
+                return returnSet;
             }
         }
 

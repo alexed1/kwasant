@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Daemons;
-using Moq;
 using NUnit.Framework;
 
 namespace KwasantTest.Daemons
 {
     [TestFixture]
-    public class DaemonTests
+    public class DaemonTests : BaseTest
     {
         public static void RunDaemonOnce<TDaemon>(TDaemon daemon)
             where TDaemon : Daemon

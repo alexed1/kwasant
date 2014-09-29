@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.StructureMap;
@@ -12,7 +11,7 @@ using StructureMap;
 namespace KwasantTest.Repositories
 {
     [TestFixture]
-    public class MockedDBTests
+    public class MockedDBTests : BaseTest
     {
         [SetUp]
         public void Setup()

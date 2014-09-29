@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.StructureMap;
 using KwasantWeb.Controllers;
 using KwasantWeb.ViewModels;
 using NUnit.Framework;
@@ -12,15 +10,8 @@ using Utilities;
 
 namespace KwasantTest.Controllers
 {
-    class NegotiationControllerTests
+    public class NegotiationControllerTests : BaseTest
     {
-
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-        }
-
         [Test, ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Invalid email format")]
         public void TestAttendeesRejectedIfInvalidFormat()
         {

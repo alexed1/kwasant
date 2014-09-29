@@ -16,14 +16,8 @@ using StructureMap;
 namespace KwasantTest.Integration.BookingITests
 {
     [TestFixture]
-    public class IntegrationTests
+    public class IntegrationTests : BaseTest
     {
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-        }
-
         [Test]
         [Category("IntegrationTests")]
         public void ITest_CanProcessBRCreateEventAndSendInvite()
@@ -84,9 +78,11 @@ namespace KwasantTest.Integration.BookingITests
                 //Create an event
                 var e = ObjectFactory.GetInstance<Event>();
                 var eventDO = e.Create(uow, bookingRequestDO.Id, DateTime.Now.ToString(), DateTime.Now.AddHours(1).ToString());
+                uow.SaveChanges();
                 
                 //Dispatch invites for the event
                 e.InviteAttendees(uow, eventDO, eventDO.Attendees, new List<AttendeeDO>());
+                uow.SaveChanges();
 
                 //Run our outbound email daemon so we can check if emails are created
                 DaemonTests.RunDaemonOnce(outboundEmailDaemon);

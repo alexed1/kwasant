@@ -4,9 +4,9 @@ using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using Daemons;
+using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.ExternalServices;
-using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using Moq;
 using NUnit.Framework;
@@ -15,29 +15,8 @@ using StructureMap;
 namespace KwasantTest.Daemons
 {
     [TestFixture]
-    public class InboundEmailTests
+    public class InboundEmailTests : BaseTest
     {
-        private MailMessage _mailMessage;
-        private IImapClient _client;
-        private FixtureData _fixtureData;
-
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-
-            _fixtureData = new FixtureData();
-
-            var clientMock = new Mock<IImapClient>();
-
-            _mailMessage = new MailMessage();
-
-            clientMock.Setup(c => c.GetMessages(It.IsAny<IEnumerable<uint>>(), true, null))
-                .Returns(new List<MailMessage> { _mailMessage });
-
-            _client = clientMock.Object;
-        }
-
         [Test]
         public void TestInboundEmail()
         {
@@ -47,17 +26,25 @@ namespace KwasantTest.Daemons
             const string testBody = "Test Body";
             const string testToEmailAddress = "test.recipient@gmail.com";
 
+            var mailMessage = new MailMessage();
 
-            _mailMessage.Body = testBody;
-            _mailMessage.Subject = testSubject;
-            _mailMessage.From = new MailAddress(testFromEmailAddress);
-            _mailMessage.To.Add(new MailAddress(testToEmailAddress));
+            mailMessage.Body = testBody;
+            mailMessage.Subject = testSubject;
+            mailMessage.From = new MailAddress(testFromEmailAddress);
+            mailMessage.To.Add(new MailAddress(testToEmailAddress));
 
-            ObjectFactory.Configure(a => a.For<IImapClient>().Use(_client));
+            var clientMock = new Mock<IImapClient>();
+
+            clientMock.Setup(c => c.GetMessages(It.IsAny<IEnumerable<uint>>(), true, null))
+                .Returns(new List<MailMessage> { mailMessage });
+
+            var imapClient = clientMock.Object;
+
+            ObjectFactory.Configure(a => a.For<IImapClient>().Use(imapClient));
             
             var ie = new InboundEmail();
             DaemonTests.RunDaemonOnce(ie);
-
+            
             // VERIFY
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -79,17 +66,20 @@ namespace KwasantTest.Daemons
         public void CanProcessInvitationResponse()
         {
             // SETUP
-            var curUser = _fixtureData.TestUser1();
-            var curEvent = _fixtureData.TestEvent2();
-            var curAttendee = curEvent.Attendees[0];
+            AttendeeDO curAttendee;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var fixture = new FixtureData(uow);
+                var curUser = fixture.TestUser1();
+                var curEvent = fixture.TestEvent2();
+                curAttendee = curEvent.Attendees[0];
+
                 uow.UserRepository.Add(curUser);
                 uow.EventRepository.Add(curEvent);
                 uow.SaveChanges();
-            }
-            var testInvitationResponseIcs = string.Format(
-                @"BEGIN:VCALENDAR
+
+                var testInvitationResponseIcs = string.Format(
+                    @"BEGIN:VCALENDAR
 METHOD:REPLY
 PRODID:Microsoft Exchange Server 2010
 VERSION:2.0
@@ -131,15 +121,28 @@ X-MICROSOFT-CDO-INSTTYPE:0
 X-MICROSOFT-DISALLOW-COUNTER:FALSE
 END:VEVENT
 END:VCALENDAR",
-                KwasantICS.DDay.iCal.ParticipationStatus.Accepted, curAttendee.EmailAddress.Address,
-                curEvent.ExternalGUID);
+                    KwasantICS.DDay.iCal.ParticipationStatus.Accepted, curAttendee.EmailAddress.Address,
+                    curEvent.ExternalGUID);
 
-            var attachmentStream = new MemoryStream(Encoding.UTF8.GetBytes(testInvitationResponseIcs));
-            _mailMessage.AlternateViews.Add(new AlternateView(attachmentStream, "text/calendar"));
-            _mailMessage.From = new MailAddress(curAttendee.EmailAddress.Address);
+                var attachmentStream = new MemoryStream(Encoding.UTF8.GetBytes(testInvitationResponseIcs));
 
-            ObjectFactory.Configure(a => a.For<IImapClient>().Use(_client));
-            
+                var mailMessage = new MailMessage();
+
+                mailMessage.AlternateViews.Add(new AlternateView(attachmentStream, "text/calendar"));
+                mailMessage.From = new MailAddress(curAttendee.EmailAddress.Address);
+
+                var clientMock = new Mock<IImapClient>();
+
+                clientMock.Setup(c => c.GetMessages(It.IsAny<IEnumerable<uint>>(), true, null))
+                    .Returns(new List<MailMessage> { mailMessage });
+
+                var imapClient = clientMock.Object;
+
+                ObjectFactory.Configure(a => a.For<IImapClient>().Use(imapClient));
+
+                uow.SaveChanges();
+            }
+
             var ie = new InboundEmail();
 
             // EXECUTE
@@ -156,7 +159,6 @@ END:VCALENDAR",
                 Assert.AreEqual(curAttendee.EmailAddress.Address, curInvitationResponse.Attendee.EmailAddress.Address);
                 Assert.AreEqual(Data.States.ParticipationStatus.Accepted, curInvitationResponse.Attendee.ParticipationStatus);
             }
-            attachmentStream.Dispose();
         }
     }
 }

@@ -15,6 +15,7 @@ namespace Data.Infrastructure.StructureMap
         public abstract void Save();
         public abstract IEnumerable LocalEnumerable { get; }
         public abstract IEnumerator GetEnumerator();
+        public abstract void WipeDatabase();
     }
 
     public class MockedDbSet<TEntityType> : MockedDbSet, 
@@ -22,9 +23,15 @@ namespace Data.Infrastructure.StructureMap
         where TEntityType : class
     {
         private static readonly HashSet<TEntityType> SavedSet = new HashSet<TEntityType>();
+        private readonly HashSet<TEntityType> _rowsToDelete = new HashSet<TEntityType>(); 
         private readonly HashSet<TEntityType> _set = new HashSet<TEntityType>();
         private readonly IEnumerable<MockedDbSet> _subSets;
 
+        public override void WipeDatabase()
+        {
+            SavedSet.Clear();
+        }
+        
         private IEnumerable<TEntityType> LocalSet
         {
             get
@@ -127,6 +134,8 @@ namespace Data.Infrastructure.StructureMap
         public TEntityType Remove(TEntityType entity)
         {
             _set.Remove(entity);
+            if (!_rowsToDelete.Contains(entity))
+                _rowsToDelete.Add(entity);
             return entity;
         }
 
@@ -236,6 +245,12 @@ namespace Data.Infrastructure.StructureMap
             {
                 if (!SavedSet.Contains(set))
                     SavedSet.Add(set);
+            }
+
+            foreach (var rowToDelete in _rowsToDelete)
+            {
+                if (SavedSet.Contains(rowToDelete))
+                    SavedSet.Remove(rowToDelete);
             }
         }
 

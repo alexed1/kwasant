@@ -8,6 +8,10 @@ namespace Data.Entities
     //We'll switch to a better name when we think of one, but Event, Action, Activity are all taken in one way or another...
     public class FactDO
     {
+        public FactDO()
+        {
+            var t = 0;//For debug breakpoint purposes
+        }
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
