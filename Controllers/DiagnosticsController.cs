@@ -214,21 +214,27 @@ namespace KwasantWeb.Controllers
             ServiceManager.LogEvent<T>("Test '" + testName + "' failed.");
             ServiceManager.LogFail<T>();
 
-            //Dispatch an email which alerts us about failed tests
-            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            if (!Utilities.Server.IsDevMode)
             {
-                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
-                Email email = ObjectFactory.GetInstance<Email>();
-                string message = String.Format(@"
+                //Dispatch an email which alerts us about failed tests
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                    string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+
+                    Email email = ObjectFactory.GetInstance<Email>();
+                    string message = String.Format(@"
 Test failed at {0}. Results:
 {1}.
-", DateTime.Now, results);
-                string subject = String.Format("Alert! Service test failed. Service: {0} Test: {1}", typeof(T).Name, testName);
-                var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, "techops@kwasant.com");
-                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
-                uow.SaveChanges();
+See more: {2}
+", DateTime.Now, results, Utilities.Server.ServerUrl);
+                    string subject = String.Format("Alert! Service test failed. Service: {0} Test: {1}", typeof (T).Name,
+                        testName);
+                    var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, "techops@kwasant.com");
+                    uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                    uow.SaveChanges();
+                }
             }
         }
 
