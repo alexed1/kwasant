@@ -8,7 +8,7 @@ using KwasantCore.StructureMap;
 using NUnit.Framework;
 using StructureMap;
 
-namespace KwasantTest.Repositories
+namespace KwasantTest.MockedDB
 {
     [TestFixture]
     public class MockedDBTests : BaseTest
@@ -94,6 +94,26 @@ namespace KwasantTest.Repositories
 
                 Assert.AreEqual(1, negDO.Attendees.Count);
             }
+        }
+
+
+        [Test]
+        public void AssertAllTestsImplementBaseTest()
+        {
+            var failedTypes = new List<Type>();
+            foreach (var testClass in GetType().Assembly.GetTypes().Where(t => t.GetCustomAttributes<TestFixtureAttribute>().Any()))
+            {
+                if (testClass != typeof(BaseTest) && !testClass.IsSubclassOf(typeof(BaseTest)))
+                    failedTypes.Add(testClass);
+            }
+            var exceptionMessages = new List<String>();
+            foreach (var failedType in failedTypes)
+            {
+                var testClassName = failedType.Name;
+                exceptionMessages.Add(testClassName + " must implement 'BaseTest'");
+            }
+            if (exceptionMessages.Any())
+                Assert.Fail(String.Join(Environment.NewLine, exceptionMessages));
         }
     }
 }

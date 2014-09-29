@@ -24,24 +24,5 @@ namespace KwasantTest
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>()) //Get the seeding done first
                 uow.SaveChanges();
         }
-
-        [Test]
-        public void AssertAllTestsImplementBaseTest()
-        {
-            var failedTypes = new List<Type>();
-            foreach (var testClass in GetType().Assembly.GetTypes().Where(t => t.GetCustomAttributes<TestFixtureAttribute>().Any()))
-            {
-                if (testClass != typeof(BaseTest) && !testClass.IsSubclassOf(typeof(BaseTest)))
-                    failedTypes.Add(testClass);
-            }
-            var exceptionMessages = new List<String>();
-            foreach (var failedType in failedTypes)
-            {
-                var testClassName = failedType.Name;
-                exceptionMessages.Add(testClassName + " must implement 'BaseTest'");
-            }
-            if (exceptionMessages.Any())
-                Assert.Fail(String.Join(Environment.NewLine, exceptionMessages));
-        }
     }
 }
