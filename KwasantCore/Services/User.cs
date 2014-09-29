@@ -158,7 +158,8 @@ namespace KwasantCore.Services
 
         public List<UserDO> Query(IUnitOfWork uow, UserDO curUserSearch)
         {
-            return uow.UserRepository.GetAll().ToList().Where(e =>
+            List<UserDO> filteredUsers = new List<UserDO>();
+            uow.UserRepository.GetAll().Where(e =>
                   curUserSearch.FirstName != null ?
                   e.FirstName != null ?
                   e.FirstName.Contains(curUserSearch.FirstName) : false : false ||
@@ -168,7 +169,19 @@ namespace KwasantCore.Services
                   curUserSearch.EmailAddress.Address != null ?
                   e.EmailAddress.Address != null ?
                   e.EmailAddress.Address.Contains(curUserSearch.EmailAddress.Address) : false : false
-                  ).ToList();
+                  ).ToList().ForEach(cur => filteredUsers.Add(new UserDO
+                  {
+                      FirstName = cur.FirstName,
+                      LastName = cur.LastName,
+                      EmailAddress = new EmailAddressDO
+                      {
+                          Address = cur.EmailAddress.Address,
+                          Id = cur.EmailAddress.Id,
+                          Name = cur.EmailAddress.Name
+                      },
+                      Id = cur.Id
+                  }));
+            return filteredUsers;
         }
 
         public void Create(IUnitOfWork uow, UserDO submittedUserData, string role, bool sendEmail)
