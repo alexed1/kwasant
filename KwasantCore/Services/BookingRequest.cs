@@ -207,5 +207,30 @@ namespace KwasantCore.Services
                 eventDO.Attendees.Add(curAttendee);
             }
         }
+
+
+        public object GetCheckOutBookingRequest(IUnitOfWork uow, string curBooker)
+        {
+            return
+                uow.BookingRequestRepository.GetAll()
+                .Where(e => e.State == BookingRequestState.Booking && ((!String.IsNullOrEmpty(curBooker)) ? e.BookerID == curBooker : true))
+                    .OrderByDescending(e => e.DateReceived)
+                    .Select(
+                        e =>
+                        {
+                            return new
+                            {
+                                id = e.Id,
+                                subject = e.Subject,
+                                fromAddress = e.From.Address,
+                                dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                                body =
+                                    e.HTMLText.Trim().Length > 400
+                                        ? e.HTMLText.Trim().Substring(0, 400)
+                                        : e.HTMLText.Trim()
+                            };
+                        })
+                    .ToList();
+        }
     }
 }

@@ -224,5 +224,41 @@ namespace KwasantWeb.Controllers
                 uow.SaveChanges();
             }
         }
+
+        public ActionResult MyBookingRequests()
+        {
+            return View("ShowMyBRs");
+        }
+
+
+       //Get all checkout BR's owned by the logged
+        public ActionResult ShowMyBookingRequest()
+        {
+            var curBooker = this.GetUserId();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+
+        public ActionResult InProcessBookingRequests()
+        {
+            return View("ShowInProcessBRs");
+        }
+
+
+       //Get  BR's that are currently checked out
+        public ActionResult ShowInProcessBookingRequest()
+        {    
+            string curBooker="";
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
     }
 }

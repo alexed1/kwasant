@@ -27,6 +27,8 @@
                 <li class="dropdown"><a id="btnBookingRequest">Booking Requests</a>
                     <ul class="dropdown-menu">
                         <li>@Html.ActionLink("Show All", "Index", "BookingRequest", null, new { @class = "" })</li>
+                        <li>@Html.ActionLink("Show My BR", "MyBookingRequests", "BookingRequest", null, new { @class = "" })</li>
+                        <li>@Html.ActionLink("Show In-Process BR", "InProcessBookingRequests", "BookingRequest", null, new { @class = "" })</li>
                     </ul>
                 </li>
                 <li class="dropdown"><a id="btnReports">Reports</a>
