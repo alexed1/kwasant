@@ -224,5 +224,25 @@ namespace KwasantWeb.Controllers
                 uow.SaveChanges();
             }
         }
+
+        // GET: /Conversation Members
+        [HttpGet]
+        public ActionResult ShowConversationMembers(int bookingRequestId)
+        {
+            
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                ConversationMemberVM conversationMembers = new ConversationMemberVM
+                {
+                    FromAddress = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.From.Address).ToList(),
+                    DateReceived = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.DateReceived.ToString()).ToList(),
+                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
+                    HTMLText = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.HTMLText).ToList()
+                };
+
+                return View(conversationMembers);
+                //e.DateReceived.ToString("M-d-yy hh:mm tt")
+            }
+        }
     }
 }
