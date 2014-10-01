@@ -6,7 +6,7 @@ using Data.Entities;
 
 namespace KwasantWeb.ViewModels
 {
-    public class ConversationMemberVM
+    public class BookingRequestConversationVM  
     {
         public List<String> FromAddress { get; set; }
 
@@ -15,5 +15,7 @@ namespace KwasantWeb.ViewModels
         public List<int> ConversationMembers { get; set; }
 
         public List<String> HTMLText { get; set; }
+
+        public int? CurEmailId { get; set; }
     }
 }

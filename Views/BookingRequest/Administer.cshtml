@@ -53,6 +53,8 @@
 
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
+        $("#hdnrequestid").val('@Model.BookingRequestId');
+        
         showRelatedItems();
         $('#tbluserrequests').hide();
         $('#notificationGroup').hide();
@@ -137,7 +139,9 @@
         $('#tbluserrequests').hide();
         $('#tblRelatedItems_wrapper').hide();
         $('tbluserrequests_wrapper').hide();
-        $('#divConversationPanel').load('@Url.Action("ShowConversationMembers","BookingRequest", new {bookingRequestId = @Model.BookingRequestId})');
+        var bookingRequestId = $("#hdnrequestid").val();
+        $('#tbluserrequests_wrapper').attr('style','display:none;');
+        $('#divConversationPanel').load("@Url.Action("ShowConversation","BookingRequest")" + "?bookingRequestId=" + bookingRequestId + '&CurEmailId=@Model.CurEmailData.Id');
     }
 
     var table;
