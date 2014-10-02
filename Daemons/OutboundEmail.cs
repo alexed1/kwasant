@@ -104,15 +104,15 @@ namespace Daemons
                                 envelope.Email.AddEmailRecipient(EmailParticipantType.Bcc, outboundemailaddress);
                             }
 
-                            ////Removing email address which are not test account in debug mode
-                            //#if DEBUG
-                            //{
-                            //    if (RemoveRecipients(envelope.Email, subUow))
-                            //    {
-                            //        Logger.GetLogger().Info("Removed one or more email recipients because they were not test accounts");
-                            //    }
-                            //}
-                            //#endif
+                            //Removing email address which are not test account in debug mode
+                            #if DEBUG
+                            {
+                                if (RemoveRecipients(envelope.Email, subUow))
+                                {
+                                    Logger.GetLogger().Info("Removed one or more email recipients because they were not test accounts");
+                                }
+                            }
+                            #endif
                             packager.Send(envelope);
                             numSent++;
 
