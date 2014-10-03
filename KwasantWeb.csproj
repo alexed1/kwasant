@@ -299,7 +299,6 @@
     <Compile Include="ViewModels\BookingRequestAdminVM.cs" />
     <Compile Include="ViewModels\CalendarShowVM.cs" />
     <Compile Include="ViewModels\BookingRequestConversationVM.cs" />
-    <Compile Include="ViewModels\CreateUserVM.cs" />
     <Compile Include="ViewModels\DashboardShowVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
     <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
