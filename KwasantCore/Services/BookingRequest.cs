@@ -53,7 +53,7 @@ namespace KwasantCore.Services
                     .Skip(start)
                     .Take(length)
                     .Select(e =>
-                        (object) new
+                        (object)new
                         {
                             id = e.Id,
                             subject = e.Subject,
@@ -70,8 +70,8 @@ namespace KwasantCore.Services
         public string GetUserId(IBookingRequestDORepository curBookingRequestRepository, int bookingRequestId)
         {
             return (from requests in curBookingRequestRepository.GetAll()
-                where requests.Id == bookingRequestId
-                select requests.User.Id).FirstOrDefault();
+                    where requests.Id == bookingRequestId
+                    select requests.User.Id).FirstOrDefault();
         }
 
         public object GetUnprocessed(IUnitOfWork uow)
@@ -100,7 +100,7 @@ namespace KwasantCore.Services
 
         private List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)
         {
-            List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?) travelTime).ToList();
+            List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?)travelTime).ToList();
             instructionIDs.Add(ProcessAllDay(emailBody));
             instructionIDs = instructionIDs.Where(i => i.HasValue).Distinct().ToList();
             InstructionRepository instructionRepo = uow.InstructionRepository;
@@ -200,7 +200,7 @@ namespace KwasantCore.Services
 
             //need to add the addresses of people cc'ed or on the To line of the BookingRequest
             emailAddresses.AddRange(eventDO.BookingRequest.Recipients.Select(r => r.EmailAddress));
-            
+
             foreach (var email in emailAddresses)
             {
                 var curAttendee = _attendee.Create(uow, email.Address, eventDO, email.Name);
@@ -220,6 +220,29 @@ namespace KwasantCore.Services
             }
 
             return daysAgo;
+        }
+
+        public object GetAllBookingRequests(IUnitOfWork uow)
+        {
+            return
+                uow.BookingRequestRepository.GetAll()
+                    .OrderByDescending(e => e.DateReceived)
+                    .Select(
+                        e =>
+                        {
+                            return new
+                            {
+                                id = e.Id,
+                                subject = e.Subject,
+                                fromAddress = e.From.Address,
+                                dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                                body =
+                                    e.HTMLText.Trim().Length > 400
+                                        ? e.HTMLText.Trim().Substring(0, 400)
+                                        : e.HTMLText.Trim()
+                            };
+                        })
+                    .ToList();
         }
     }
 

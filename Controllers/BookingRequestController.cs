@@ -245,6 +245,22 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        // GET: /BookingRequest/
+        public ActionResult ShowAllBookingRequests()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult GetAllBookingRequests()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var jsonResult = Json(_datatables.Pack(_br.GetAllBookingRequests(uow)), JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
 
     }
 }

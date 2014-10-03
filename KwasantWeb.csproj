@@ -794,6 +794,7 @@
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\BookingRequest\ShowConversation.cshtml" />
+    <Content Include="Views\BookingRequest\ShowAllBookingRequests.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
