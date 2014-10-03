@@ -12,14 +12,8 @@ using StructureMap;
 namespace KwasantTest.Security
 {
     [TestFixture]
-    public class AuthorizationTokenTests
+    public class AuthorizationTokenTests : BaseTest
     {
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-        }
-
         [Test]
         public void TestAuthTokenGeneration()
         {

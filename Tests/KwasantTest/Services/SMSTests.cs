@@ -1,8 +1,5 @@
 ﻿using KwasantCore.ExternalServices;
-using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers;
-using KwasantCore.Managers.APIManagers.Packagers.Twilio;
-using KwasantCore.StructureMap;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
@@ -12,14 +9,8 @@ using Utilities;
 namespace KwasantTest.Services
 {
     [TestFixture]
-    public class SMSTests
+    public class SMSTests : BaseTest
     {
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-        }
-
         [Test]
         public void TestCanSendSMS()
         {

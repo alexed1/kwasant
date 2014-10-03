@@ -1,22 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Entities;
-using KwasantCore.StructureMap;
+using Data.Interfaces;
 using KwasantWeb.Controllers;
 using KwasantWeb.ViewModels;
 using NUnit.Framework;
+using StructureMap;
+using Utilities;
 
 namespace KwasantTest.Controllers
 {
-    class NegotiationControllerTests
+    public class NegotiationControllerTests : BaseTest
     {
-
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-        }
-
         [Test, ExpectedException(typeof(ArgumentException), ExpectedMessage = @"Invalid email format")]
         public void TestAttendeesRejectedIfInvalidFormat()
         {
@@ -26,5 +21,36 @@ namespace KwasantTest.Controllers
 
             controller.ProcessSubmittedForm(negotiationVM);
         }
+
+        [Test]
+        public void TestNewEmailAttendee()
+        {
+            ObjectFactory.GetInstance<IConfigRepository>().Set("CR_template_for_existing_user", "Mocked Template");
+
+            BookingRequestDO br;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                br = new BookingRequestDO();
+                var userDO = new UserDO();
+                userDO.EmailAddress = new EmailAddressDO("rjrudman@gmail.com");
+
+                br.UserID = userDO.Id;
+
+                uow.BookingRequestRepository.Add(br);
+                uow.UserRepository.Add(userDO);
+                uow.EmailAddressRepository.Add(userDO.EmailAddress);
+
+                uow.SaveChanges();
+            }
+
+            NegotiationController controller = new NegotiationController();
+            var negotiationVM = new NegotiationVM();
+            negotiationVM.Attendees = new List<String> { "thisismynewemailaddresss@gmail.com" };
+            negotiationVM.BookingRequestID = br.Id;
+
+            controller.ProcessSubmittedForm(negotiationVM);
+        }
+
+       
     }
 }

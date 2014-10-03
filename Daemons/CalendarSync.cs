@@ -42,12 +42,12 @@ namespace Daemons
                             CalendarSyncManager calendarSyncManager = new CalendarSyncManager(_calDAVClientFactory);
                             calendarSyncManager.SyncNowAsync(uow, curUser).Wait();
                             uow.SaveChanges();
-                            Logger.GetLogger().InfoFormat("Calendars synchronized for user: {0}.", curUser.Id);
+
                             LogSuccess("Calendars synchronized for user: " + curUser.Id);
                         }
                         catch (Exception ex)
                         {
-                            Logger.GetLogger().Error(string.Format("Error occured on calendar synchronization for user: {0}.", curUser.Id), ex);
+                            LogFail(ex, string.Format("Error occured on calendar synchronization for user: {0}.", curUser.Id));
                             throw;
                         }
                     }
@@ -55,7 +55,7 @@ namespace Daemons
             }
             catch (Exception ex)
             {
-                Logger.GetLogger().Error("Error occured. Shutting down...", ex);
+                LogFail(ex, "Error occured. Shutting down...");
                 throw;
             }
         }

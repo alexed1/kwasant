@@ -50,8 +50,8 @@ namespace KwasantWeb.Controllers
                     FirstName = u.FirstName,
                     LastName = u.LastName,
                     EmailAddress = u.EmailAddress.Address,
-                    Role = userManager.GetRoles(u.Id)[0],
-                    RoleId = u.Roles.ToList()[0].RoleId
+                    Role = userManager.GetRoles(u.Id).Count() > 0 ? userManager.GetRoles(u.Id)[0] : "",
+                    RoleId = u.Roles.ToList().Count() > 0 ? u.Roles.ToList()[0].RoleId : "",
                 }));
                 userShowAllVM.Users = userShowVMList;
 
@@ -162,7 +162,7 @@ namespace KwasantWeb.Controllers
             return View(curUserAdminVM);
         }
 
-        public ActionResult Validate(CreateUserVM curCreateUserVM)
+        public ActionResult Validate(UserCreateVM curCreateUserVM)
         {
             UserDO curUser = curCreateUserVM.User;
             string selectedRole = curCreateUserVM.UserRole;
@@ -187,7 +187,7 @@ namespace KwasantWeb.Controllers
         public ActionResult Detail(String userId)
         {
             UserAdministerVM curUserAdminVM = new UserAdministerVM();
-            curUserAdminVM.User = _user.GetUser(userId);
+            curUserAdminVM.User = _user.Get(userId);
             return View(curUserAdminVM);
         }
 
@@ -210,17 +210,17 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult RunQuery(UserQueryVM curUserQueryVM)
         {
-            UserDO curUser = curUserQueryVM.User;
+            UserDO queryParams = curUserQueryVM.User;
 
-            if (string.IsNullOrEmpty(curUser.EmailAddress.Address) && string.IsNullOrEmpty(curUser.FirstName) && string.IsNullOrEmpty(curUser.LastName))
+            if (string.IsNullOrEmpty(queryParams.EmailAddress.Address) && string.IsNullOrEmpty(queryParams.FirstName) && string.IsNullOrEmpty(queryParams.LastName))
             {
                 var jsonErrorResult = Json(_datatables.Pack(new { Error = "Atleast one field is required" }), JsonRequestBehavior.AllowGet);
                 return jsonErrorResult;
             }
-            if (curUser.EmailAddress.Address != null)
+            if (queryParams.EmailAddress.Address != null)
             {
                 EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-                if (!(emailAddressValidator.Validate(curUser.EmailAddress).IsValid))
+                if (!(emailAddressValidator.Validate(queryParams.EmailAddress).IsValid))
                 {
                     var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
                     return jsonErrorResult;
@@ -228,31 +228,31 @@ namespace KwasantWeb.Controllers
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(_user.Query(uow, curUser)), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_datatables.Pack(_user.Query(uow, queryParams)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
         }
 
         [HttpPost]
-        public ActionResult AddFromForm(CreateUserVM curCreateUserVM, bool sendEmail)
+        public ActionResult ProcessSubmittedForm(UserCreateVM curCreateUserVM, bool sendEmail)
         {
             UserDO curUser = curCreateUserVM.User;
-            string role = curCreateUserVM.Roles.Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
+            string role = new Role().GetRoles().Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 _user.Create(uow, curUser, role, sendEmail);
+                uow.SaveChanges();
             }
-            var jsonSuccessResult = Json(_datatables.Pack("User saved successfully."), JsonRequestBehavior.AllowGet);
-            return jsonSuccessResult;
+            return RedirectToAction("Dashboard", "Admin");
         }
 
         [HttpPost]
-        public ActionResult Update(CreateUserVM curCreateUserVM)
+        public ActionResult Update(UserCreateVM curCreateUserVM)
         {
             UserDO curUser = curCreateUserVM.User;
-            string role = curCreateUserVM.Roles.Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
+            string role = new Role().GetRoles().Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

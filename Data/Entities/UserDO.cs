@@ -20,7 +20,8 @@ namespace Data.Entities
             RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
         }
 
-        public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
+        [InverseProperty("User")]
+        public virtual IList<BookingRequestDO> BookingRequests { get; set; }
 
         public String FirstName { get; set; }
         public String LastName { get; set; }
@@ -61,9 +62,11 @@ namespace Data.Entities
         {
             //we only want to treat explicit customers, who have sent us a BR, a welcome message
             //if there exists a booking request with this user as its created by...
-            var bookingRequestRepo = new BookingRequestRepository(new UnitOfWork(new KwasantDbContext()));
-            if (bookingRequestRepo.FindOne(br => br.User.Id == Id) != null)
-                AlertManager.ExplicitCustomerCreated(Id);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (uow.BookingRequestRepository.FindOne(br => br.User.Id == Id) != null)
+                    AlertManager.ExplicitCustomerCreated(Id);
+            }
 
             AlertManager.CustomerCreated(this);
         }

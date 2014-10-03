@@ -47,7 +47,7 @@ namespace KwasantCore.Managers
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
         public void NewExplicitCustomerWorkflow(string curUserId)
         {
-            GenerateWelcomeEmail(curUserId);  
+            GenerateWelcomeEmail(curUserId);
         }
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
@@ -56,12 +56,12 @@ namespace KwasantCore.Managers
             ObjectFactory.GetInstance<ITracker>().Identify(userDO);
         }
 
-        public void BookingRequestCreated(int bookingRequestId) 
+        public void BookingRequestCreated(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.User, "BookingRequest", "Submit", new Dictionary<string, object> {{"BookingRequestId", bookingRequestDO.Id}});
+                ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.User, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
             }
         }
 
@@ -96,15 +96,15 @@ namespace KwasantCore.Managers
                 emailDO.From = _emailAddress.GetFromEmailAddress(uow, attendee.EmailAddress, negotiationDO.BookingRequest.User);
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
                 //emailDO.Subject = "Regarding:" + negotiationDO.Name;
-                emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}", 
-                    negotiationDO.BookingRequest.User.FirstName, 
-                    (negotiationDO.BookingRequest.User.LastName ?? ""), 
+                emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}",
+                    negotiationDO.BookingRequest.User.FirstName,
+                    (negotiationDO.BookingRequest.User.LastName ?? ""),
                     negotiationDO.Name);
 
-                var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", 
-                    negotiationDO.Id);
+                var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", negotiationDO.Id);
 
-                var tokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(responseUrl, user.GetOrCreateFromBR(uow, attendee.EmailAddress));
+                var userDO = user.GetOrCreateFromBR(uow, attendee.EmailAddress);
+                var tokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(responseUrl, userDO);
 
                 uow.EmailRepository.Add(emailDO);
                 var actualHtml =
@@ -167,7 +167,8 @@ Proposed Answers: {2}
                 if (communicationConfig.CommunicationType == CommunicationType.Sms)
                 {
                     SendBRSMSes(bookingRequests);
-                } else if (communicationConfig.CommunicationType == CommunicationType.Email)
+                }
+                else if (communicationConfig.CommunicationType == CommunicationType.Email)
                 {
                     SendBREmails(communicationConfig.ToAddress, bookingRequests, uow);
                 }

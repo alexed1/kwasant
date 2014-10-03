@@ -5,7 +5,7 @@ using Utilities;
 namespace KwasantTest.Utilities
 {
     [TestFixture]
-    public class EncryptionTests
+    public class EncryptionTests : BaseTest
     {
         private string _randomString;
 

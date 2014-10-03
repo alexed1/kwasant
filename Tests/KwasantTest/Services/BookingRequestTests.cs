@@ -21,17 +21,12 @@ using Utilities;
 namespace KwasantTest.Services
 {
     [TestFixture]
-    public class BookingRequestManagerTests
+    public class BookingRequestManagerTests : BaseTest
     {
-        public IUnitOfWork _uow;
-        private FixtureData _fixture;
-        private IConfigRepository _configRepository;
-
         [SetUp]
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             var configRepositoryMock = new Mock<IConfigRepository>();
             configRepositoryMock
                 .Setup(c => c.Get<string>(It.IsAny<string>()))
@@ -47,215 +42,277 @@ namespace KwasantTest.Services
                             return new MockedConfigRepository().Get<string>(key);
                     }
                 });
-            _configRepository = configRepositoryMock.Object;
-            ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(_configRepository));
-
-            _fixture = new FixtureData();
+            var configRepository = configRepositoryMock.Object;
+            ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepository));
         }
 
         private void AddTestRequestData()
         {
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { };
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"),
+                    new MailAddress("kwa@sant.com", "Bookit Services")) {};
 
-            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).Process(_uow, bookingRequest);
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                (new BookingRequest()).Process(uow, bookingRequest);
+
+                uow.SaveChanges();
+            }
         }
-
-
-
-       
-
-        
 
 
         [Test]
         [Category("BRM")]
         public void NewCustomerCreated()
         {
-            AlertReporter curAnalyticsManager = new AlertReporter();
-            curAnalyticsManager.SubscribeToAlerts();
-
-            List<UserDO> customersNow = _uow.UserRepository.GetAll().ToList();
-            Assert.AreEqual(0, customersNow.Count);
-
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-            };
+                AlertReporter curAnalyticsManager = new AlertReporter();
+                curAnalyticsManager.SubscribeToAlerts();
 
-            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).Process(_uow, bookingRequest);
+                List<UserDO> customersNow = uow.UserRepository.GetAll().ToList();
+                Assert.AreEqual(0, customersNow.Count);
 
-            _uow.SaveChanges();
+                MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"),
+                    new MailAddress("kwa@sant.com", "Booqit Services"))
+                {
+                };
 
-            customersNow = _uow.UserRepository.GetAll().ToList();
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                (new BookingRequest()).Process(uow, bookingRequest);
 
-            Assert.AreEqual(1, customersNow.Count);
-            Assert.AreEqual("customer@gmail.com", customersNow.First().EmailAddress.Address);
-            Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
-            //test analytics system
+                uow.SaveChanges();
 
-            FactDO curAction = _uow.FactRepository.FindOne(k => k.ObjectId == bookingRequest.Id);
-            Assert.NotNull(curAction);
+                customersNow = uow.UserRepository.GetAll().ToList();
+
+                Assert.AreEqual(1, customersNow.Count);
+                Assert.AreEqual("customer@gmail.com", customersNow.First().EmailAddress.Address);
+                Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
+                //test analytics system
+
+                FactDO curAction = uow.FactRepository.FindOne(k => k.ObjectId == bookingRequest.Id);
+                Assert.NotNull(curAction);
+            }
         }
 
         [Test]
         [Category("BRM")]
         public void ExistingCustomerNotCreatedButUsed()
         {
-            List<UserDO> customersNow = _uow.UserRepository.GetAll().ToList();
-            Assert.AreEqual(0, customersNow.Count);
-
-            UserDO user = _fixture.TestUser1();
-            _uow.UserRepository.Add(user);
-            _uow.SaveChanges();
-
-            customersNow = _uow.UserRepository.GetAll().ToList();
-            Assert.AreEqual(1, customersNow.Count);
-
-            MailMessage message = new MailMessage(new MailAddress(user.EmailAddress.Address, user.FirstName), new MailAddress("kwa@sant.com", "Booqit Services"))
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-            };
+                var fixture = new FixtureData(uow);
+                List<UserDO> customersNow = uow.UserRepository.GetAll().ToList();
+                Assert.AreEqual(0, customersNow.Count);
 
-            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).Process(_uow, bookingRequest);
+                UserDO user = fixture.TestUser1();
+                uow.UserRepository.Add(user);
+                uow.SaveChanges();
 
-            customersNow = _uow.UserRepository.GetAll().ToList();
-            Assert.AreEqual(1, customersNow.Count);
-            Assert.AreEqual(user.EmailAddress, customersNow.First().EmailAddress);
-            Assert.AreEqual(user.FirstName, customersNow.First().FirstName);
+                customersNow = uow.UserRepository.GetAll().ToList();
+                Assert.AreEqual(1, customersNow.Count);
+
+                MailMessage message = new MailMessage(new MailAddress(user.EmailAddress.Address, user.FirstName),
+                    new MailAddress("kwa@sant.com", "Booqit Services"))
+                {
+                };
+
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                (new BookingRequest()).Process(uow, bookingRequest);
+
+                customersNow = uow.UserRepository.GetAll().ToList();
+                Assert.AreEqual(1, customersNow.Count);
+                Assert.AreEqual(user.EmailAddress, customersNow.First().EmailAddress);
+                Assert.AreEqual(user.FirstName, customersNow.First().FirstName);
+            }
         }
 
         [Test]
         [Category("BRM")]
         public void ParseAllDay()
         {
-
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Body = "CCADE",
-            };
+                MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"),
+                    new MailAddress("kwa@sant.com", "Booqit Services"))
+                {
+                    Body = "CCADE",
+                };
 
-            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).Process(_uow, bookingRequest);
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                (new BookingRequest()).Process(uow, bookingRequest);
 
-            bookingRequest = bookingRequestRepo.GetAll().ToList().First();
-            Assert.AreEqual(1, bookingRequest.Instructions.Count);
-            Assert.AreEqual(InstructionConstants.EventDuration.MarkAsAllDayEvent, bookingRequest.Instructions.First().Id);
+                uow.SaveChanges();
+
+                bookingRequest = bookingRequestRepo.GetAll().ToList().First();
+                Assert.AreEqual(1, bookingRequest.Instructions.Count);
+                Assert.AreEqual(InstructionConstants.EventDuration.MarkAsAllDayEvent,
+                    bookingRequest.Instructions.First().Id);
+            }
         }
 
         [Test]
         [Category("BRM")]
         public void Parse30MinsInAdvance()
         {
-
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Body = "cc30",
-            };
+                MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"),
+                    new MailAddress("kwa@sant.com", "Booqit Services"))
+                {
+                    Body = "cc30",
+                };
 
-            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).Process(_uow, bookingRequest);
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                (new BookingRequest()).Process(uow, bookingRequest);
 
-            bookingRequest = bookingRequestRepo.GetAll().ToList().First();
-            Assert.AreEqual(1, bookingRequest.Instructions.Count);
-            Assert.AreEqual(InstructionConstants.TravelTime.Add30MinutesTravelTime, bookingRequest.Instructions.First().Id);
+                uow.SaveChanges();
+
+                bookingRequest = bookingRequestRepo.GetAll().ToList().First();
+                Assert.AreEqual(1, bookingRequest.Instructions.Count);
+                Assert.AreEqual(InstructionConstants.TravelTime.Add30MinutesTravelTime,
+                    bookingRequest.Instructions.First().Id);
+            }
         }
 
         [Test]
         [Category("BRM")]
         public void Parse60MinsInAdvance()
         {
-
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Body = "cc60",
-            };
+                MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"),
+                    new MailAddress("kwa@sant.com", "Booqit Services"))
+                {
+                    Body = "cc60",
+                };
 
-            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).Process(_uow, bookingRequest);
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                (new BookingRequest()).Process(uow, bookingRequest);
 
-            bookingRequest = bookingRequestRepo.GetAll().ToList().First();
-            Assert.AreEqual(1, bookingRequest.Instructions.Count);
-            Assert.AreEqual(InstructionConstants.TravelTime.Add60MinutesTravelTime, bookingRequest.Instructions.First().Id);
+                uow.SaveChanges();
+
+                bookingRequest = bookingRequestRepo.GetAll().ToList().First();
+                Assert.AreEqual(1, bookingRequest.Instructions.Count);
+                Assert.AreEqual(InstructionConstants.TravelTime.Add60MinutesTravelTime,
+                    bookingRequest.Instructions.First().Id);
+            }
         }
 
         [Test]
         [Category("BRM")]
         public void Parse90MinsInAdvance()
         {
-
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Body = "cc90",
-            };
+                MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"),
+                    new MailAddress("kwa@sant.com", "Booqit Services"))
+                {
+                    Body = "cc90",
+                };
 
-            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).Process(_uow, bookingRequest);
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                (new BookingRequest()).Process(uow, bookingRequest);
 
-            bookingRequest = bookingRequestRepo.GetAll().ToList().First();
-            Assert.AreEqual(1, bookingRequest.Instructions.Count);
-            Assert.AreEqual(InstructionConstants.TravelTime.Add90MinutesTravelTime, bookingRequest.Instructions.First().Id);
+                uow.SaveChanges();
+
+                bookingRequest = bookingRequestRepo.GetAll().ToList().First();
+                Assert.AreEqual(1, bookingRequest.Instructions.Count);
+                Assert.AreEqual(InstructionConstants.TravelTime.Add90MinutesTravelTime,
+                    bookingRequest.Instructions.First().Id);
+            }
         }
 
         [Test]
         [Category("BRM")]
         public void Parse120MinsInAdvance()
         {
-
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Booqit Services"))
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Body = "cc120",
-            };
+                MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"),
+                    new MailAddress("kwa@sant.com", "Booqit Services"))
+                {
+                    Body = "cc120",
+                };
 
-            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).Process(_uow, bookingRequest);
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                (new BookingRequest()).Process(uow, bookingRequest);
 
-            bookingRequest = bookingRequestRepo.GetAll().ToList().First();
-            Assert.AreEqual(1, bookingRequest.Instructions.Count);
-            Assert.AreEqual(InstructionConstants.TravelTime.Add120MinutesTravelTime, bookingRequest.Instructions.First().Id);
+                uow.SaveChanges();
+
+                bookingRequest = bookingRequestRepo.GetAll().ToList().First();
+                Assert.AreEqual(1, bookingRequest.Instructions.Count);
+                Assert.AreEqual(InstructionConstants.TravelTime.Add120MinutesTravelTime,
+                    bookingRequest.Instructions.First().Id);
+            }
         }
 
         [Test]
         [Category("BRM")]
         public void ShowUnprocessedRequestTest()
         {
-            object requests = (new BookingRequest()).GetUnprocessed(_uow);
-            object requestNow = _uow.BookingRequestRepository.GetAll().Where(e => e.State == BookingRequestState.Unstarted).OrderByDescending(e => e.Id).Select(e => new { request = e, body = e.HTMLText.Trim().Length > 400 ? e.HTMLText.Trim().Substring(0, 400) : e.HTMLText.Trim() }).ToList();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                object requests = (new BookingRequest()).GetUnprocessed(uow);
+                object requestNow =
+                    uow.BookingRequestRepository.GetAll()
+                        .Where(e => e.State == BookingRequestState.Unstarted)
+                        .OrderByDescending(e => e.Id)
+                        .Select(
+                            e =>
+                                new
+                                {
+                                    request = e,
+                                    body =
+                                        e.HTMLText.Trim().Length > 400
+                                            ? e.HTMLText.Trim().Substring(0, 400)
+                                            : e.HTMLText.Trim()
+                                })
+                        .ToList();
 
-            Assert.AreEqual(requestNow, requests);
-    }
+                Assert.AreEqual(requestNow, requests);
+            }
+        }
 
         [Test]
         [Category("BRM")]
         public void SetStatusTest()
         {
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")){};
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"),
+                    new MailAddress("kwa@sant.com", "Bookit Services")) {};
 
-            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).Process(_uow, bookingRequest);
-            bookingRequest.State = BookingRequestState.Invalid;
-            _uow.SaveChanges();
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                (new BookingRequest()).Process(uow, bookingRequest);
+                bookingRequest.State = BookingRequestState.Invalid;
+                uow.SaveChanges();
 
-            IEnumerable<BookingRequestDO> requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Invalid);
-            Assert.AreEqual(1, requestNow.Count());
-}
+                IEnumerable<BookingRequestDO> requestNow =
+                    uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Invalid);
+                Assert.AreEqual(1, requestNow.Count());
+            }
+        }
 
         [Test]
         [Category("BRM")]
         public void GetBookingRequestsTest()
         {
-            AddTestRequestData();
-            List<Object> requests = (new BookingRequest()).GetAllByUserId(_uow.BookingRequestRepository, 0, 10, _uow.BookingRequestRepository.GetAll().FirstOrDefault().User.Id);
-            Assert.AreEqual(1, requests.Count);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                AddTestRequestData();
+                List<Object> requests = (new BookingRequest()).GetAllByUserId(uow.BookingRequestRepository, 0, 10, uow.BookingRequestRepository.GetAll().FirstOrDefault().User.Id);
+                Assert.AreEqual(1, requests.Count);
+            }
         }
 
         //This test takes too long see. KW-340. Temporarily ignoring it.
@@ -263,35 +320,43 @@ namespace KwasantTest.Services
         [Category("BRM")]
         public void TimeOutStaleBRTest()
         {
-            var timeOut = TimeSpan.FromSeconds(30);
-            Stopwatch staleBRDuration = new Stopwatch();
-
-            MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"), new MailAddress("kwa@sant.com", "Bookit Services")) { };
-            BookingRequestRepository bookingRequestRepo = _uow.BookingRequestRepository;
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-            (new BookingRequest()).Process(_uow, bookingRequest);
-
-            bookingRequest.State = BookingRequestState.Booking;
-            bookingRequest.BookerID = bookingRequest.User.Id;
-            bookingRequest.LastUpdated = DateTimeOffset.Now;
-            _uow.SaveChanges();
-
-            staleBRDuration.Start();
-
-            IEnumerable<BookingRequestDO> requestNow;
-            do
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var om = new OperationsMonitor();
-                DaemonTests.RunDaemonOnce(om);
-                requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
+                var timeOut = TimeSpan.FromSeconds(30);
+                Stopwatch staleBRDuration = new Stopwatch();
 
-            } while (!requestNow.Any() || staleBRDuration.Elapsed > timeOut);
-            staleBRDuration.Stop();
+                MailMessage message = new MailMessage(new MailAddress("customer@gmail.com", "Mister Customer"),
+                    new MailAddress("kwa@sant.com", "Bookit Services")) {};
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+                (new BookingRequest()).Process(uow, bookingRequest);
 
-            requestNow = _uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
-            Assert.AreEqual(1, requestNow.Count());
+                bookingRequest.State = BookingRequestState.Booking;
+                bookingRequest.BookerID = bookingRequest.User.Id;
+                bookingRequest.LastUpdated = DateTimeOffset.Now;
+                
+                uow.SaveChanges();
 
+                staleBRDuration.Start();
+
+                IEnumerable<BookingRequestDO> requestNow;
+                do
+                {
+                    var om = new OperationsMonitor();
+                    DaemonTests.RunDaemonOnce(om);
+                    requestNow =
+                        uow.BookingRequestRepository.GetAll()
+                            .ToList()
+                            .Where(e => e.State == BookingRequestState.Unstarted);
+
+                } while (!requestNow.Any() || staleBRDuration.Elapsed > timeOut);
+                staleBRDuration.Stop();
+
+                uow.SaveChanges();
+
+                requestNow = uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
+                Assert.AreEqual(1, requestNow.Count());
+            }
         }
-
     }
 }

@@ -322,6 +322,7 @@
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\RemoteCalendarVM.cs" />
     <Compile Include="ViewModels\UserAdministerVM.cs" />
+    <Compile Include="ViewModels\UserCreateVM.cs" />
     <Compile Include="ViewModels\UserQueryVM.cs" />
     <Compile Include="ViewModels\UsersAdminVM.cs" />
     <Compile Include="ViewModels\UserShowAllVM.cs" />

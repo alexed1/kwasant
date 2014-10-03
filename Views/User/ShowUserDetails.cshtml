@@ -1,7 +1,7 @@
-﻿@model KwasantWeb.ViewModels.CreateUserVM
+﻿@model KwasantWeb.ViewModels.UserCreateVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 <div style="padding-right: 40px;">
-    <fieldset id="userInfoForm">
+    <form id="userInfoForm" action="@Url.Action("ProcessSubmittedForm","User")" method="post">
         <table>
             <tr>
                 <td colspan="2">
@@ -34,6 +34,7 @@
                 </td>
                 <td>
                     @Html.TextBoxFor(curUser => curUser.User.EmailAddress.Id, new { id = "emailId", disabled = "disabled" })
+                    @Html.HiddenFor(curUser => curUser.User.EmailAddress.Id)
                 </td>
             </tr>
             <tr>
@@ -42,7 +43,7 @@
                 <td>
                     <select id="role" name="UserRole">
                         <option value="">-- Select Role --</option>
-                        @foreach (var role in Model.Roles)
+                        @foreach (var role in new KwasantCore.Services.Role().GetRoles())
                         {
                             if (role.Name != Model.UserRole)
                             {<option value="@role.Id">@role.Name</option>}
@@ -68,7 +69,7 @@
             </tr>
         </table>
         <input id="hdnUserId" type="hidden" value="@Model.User.Id" />
-    </fieldset>
+    </form>
 </div>
 <script>
     //Document ready function, will run after page is ready and all elements are loaded.
@@ -128,14 +129,9 @@
         //Create new user
         function createUser() {
             var sendMail = $("#chkSendEmail").is(':checked');
-            $.ajax({
-                url: '@Url.Action("AddFromForm", "User")',
-                type: 'post',
-                data: $('#userInfoForm').serialize() + "&sendEmail=" + sendMail,
-                success: function (response) {
-                    window.location.href = "@Url.Action("Dashboard", "Admin")";
-                }
-            });
+            var action = $('#userInfoForm').attr("action") + "?sendEmail=" + sendMail;
+            $('#userInfoForm').attr("action", action);
+            $('#userInfoForm').submit();
         }
 
         //Update existing user
@@ -153,7 +149,7 @@
 
     });
 
-    //toggle fields state
+    //toggle fields state, enabling/disabling the user text fields to switch user form Mode
     function toggleFields(state) {
         $("#firstname").prop("disabled", state);
         $("#lastname").prop("disabled", state);
