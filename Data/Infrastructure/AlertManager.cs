@@ -52,6 +52,9 @@ namespace Data.Infrastructure
         public delegate void Error_EmailSendFailureHandler();
         public static event Error_EmailSendFailureHandler AlertError_EmailSendFailure;
 
+        public delegate void ErrorSyncingCalendarHandler(RemoteCalendarLinkDO calendarLink);
+        public static event ErrorSyncingCalendarHandler AlertErrorSyncingCalendar;
+
         #region Method
         
         /// <summary>
@@ -133,6 +136,13 @@ namespace Data.Infrastructure
                 AlertError_EmailSendFailure();
         }
 
+        public static void ErrorSyncingCalendar(RemoteCalendarLinkDO calendarLink)
+        {
+            var handler = AlertErrorSyncingCalendar;
+            if (handler != null)
+                handler(calendarLink);
+        }
+
         #endregion
     }
 
@@ -153,6 +163,7 @@ namespace Data.Infrastructure
             AlertManager.AlertBookingRequestCheckedOut += ProcessBookingRequestCheckedOut;
             AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChange;
             AlertManager.AlertError_EmailSendFailure += Error_EmailSendFailure;
+            AlertManager.AlertErrorSyncingCalendar += ErrorSyncingCalendar;
         }
 
         private void NewExplicitCustomerCreated(string curUserId)
@@ -339,6 +350,22 @@ namespace Data.Infrastructure
                 incidentDO.Activity = "Failure";
                 _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
+            }
+        }
+
+        private void ErrorSyncingCalendar(RemoteCalendarLinkDO calendarLink)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Calendar";
+                incidentDO.SecondaryCategory = "Sync";
+                incidentDO.CreateTime = DateTime.Now;
+                incidentDO.Activity = "Failure";
+                incidentDO.ObjectId = calendarLink.Id;
+                incidentDO.CustomerId = calendarLink.LocalCalendar.OwnerID;
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
             }
         }
 
