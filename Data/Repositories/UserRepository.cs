@@ -12,7 +12,7 @@ namespace Data.Repositories
         internal UserRepository(IUnitOfWork uow)
             : base(uow)
         {
-            
+
         }
         public override void Add(UserDO entity)
         {
@@ -25,7 +25,11 @@ namespace Data.Repositories
             if (emailAddressDO == null)
                 throw new ArgumentNullException("emailAddressDO");
             string fromEmailAddress = emailAddressDO.Address;
-            return UnitOfWork.UserRepository.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
+            
+            var returnDO = UnitOfWork.UserRepository.DBSet.Local.FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress) ??
+                           UnitOfWork.UserRepository.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
+
+            return returnDO;
         }
 
         public UserDO CreateFromEmail(EmailAddressDO emailAddressDO,
@@ -48,9 +52,9 @@ namespace Data.Repositories
                 var role = new AspNetUserRolesDO();
                 role.UserId = curUser.Id;
                 role.RoleId = customerRole.Id;
-                UnitOfWork.AspNetUserRolesRepository.Add(role);    
+                UnitOfWork.AspNetUserRolesRepository.Add(role);
             }
-            
+
             UserValidator curUserValidator = new UserValidator();
             curUserValidator.ValidateAndThrow(curUser);
             _uow.UserRepository.Add(curUser);
