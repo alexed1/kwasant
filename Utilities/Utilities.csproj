@@ -69,6 +69,7 @@
     <Compile Include="Enumerations.cs" />
     <Compile Include="ExceptionHandling.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="FilterUtility.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="MappingEngineExtensions.cs" />
     <Compile Include="MockedConfigRepository.cs" />

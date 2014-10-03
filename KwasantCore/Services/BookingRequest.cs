@@ -203,8 +203,11 @@ namespace KwasantCore.Services
             
             foreach (var email in emailAddresses)
             {
-                var curAttendee = _attendee.Create(uow, email.Address, eventDO, email.Name);
-                eventDO.Attendees.Add(curAttendee);
+                if (!FilterUtility.IsTestAttendee(email.Address))
+                {
+                    var curAttendee = _attendee.Create(uow, email.Address, eventDO, email.Name);
+                    eventDO.Attendees.Add(curAttendee);
+                }
             }
         }
 
