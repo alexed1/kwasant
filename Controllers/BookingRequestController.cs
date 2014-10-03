@@ -30,7 +30,7 @@ namespace KwasantWeb.Controllers
         private BookingRequest _br;
         private int recordcount;
         Booker _booker;
-        
+
         public BookingRequestController()
         {
             _datatables = new DataTablesPackager();
@@ -63,7 +63,7 @@ namespace KwasantWeb.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var currBooker = this.GetUserId();
-            
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
@@ -111,24 +111,24 @@ namespace KwasantWeb.Controllers
             }
         }
 
-         [HttpGet]
-         public ActionResult Invalidate(int id)
-         {
-             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-             {
-                 //call to VerifyOwnership
-                 var currBooker = this.GetUserId();
-                 string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
-                 if (verifyOwnership != "valid")
-                     return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+        [HttpGet]
+        public ActionResult Invalidate(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //call to VerifyOwnership
+                var currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
+                if (verifyOwnership != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
 
-                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                 bookingRequestDO.State = BookingRequestState.Invalid;
-                 uow.SaveChanges();
-                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
-                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
-             }
-         }
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                bookingRequestDO.State = BookingRequestState.Invalid;
+                uow.SaveChanges();
+                AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
+                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
         [HttpGet]
         public ActionResult GetBookingRequests(int? bookingRequestId, int draw, int start, int length)
@@ -152,7 +152,7 @@ namespace KwasantWeb.Controllers
 
 
         [AllowAnonymous]
-        public ActionResult Generate(string emailAddress,string meetingInfo)
+        public ActionResult Generate(string emailAddress, string meetingInfo)
         {
             string result = "";
             try
@@ -169,16 +169,16 @@ namespace KwasantWeb.Controllers
 
                     uow.SaveChanges();
 
-                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.User, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> {{"BookingRequestID", bookingRequest.Id}});
+                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.User, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
 
-                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = bookingRequest.UserID }, JsonRequestBehavior = JsonRequestBehavior.AllowGet};
+                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = bookingRequest.UserID }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
                 }
             }
             catch (Exception e)
             {
                 return new JsonResult() { Data = new { Message = "Sorry! Something went wrong. Alpha software..." }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
-            
+
         }
 
         // GET: /RelatedItems 
@@ -187,14 +187,14 @@ namespace KwasantWeb.Controllers
         {
             List<RelatedItemShowVM> obj = new List<RelatedItemShowVM>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            { 
+            {
                 var jsonResult = Json(new
                 {
                     draw = draw,
                     data = _datatables.Pack(BuildRelatedItemsJSON(uow, bookingRequestId, start, length)),
                     recordsTotal = recordcount,
                     recordsFiltered = recordcount,
-                   
+
                 }, JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
@@ -224,5 +224,27 @@ namespace KwasantWeb.Controllers
                 uow.SaveChanges();
             }
         }
+
+        // GET: /Conversation Members
+        [HttpGet]
+        public ActionResult ShowConversation(int bookingRequestId, int? curEmailId)
+        {
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestConversationVM bookingRequestConversation = new BookingRequestConversationVM
+                {
+                    FromAddress = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.From.Address).ToList(),
+                    DateReceived = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).ToList().Select(e => e.DateReceived.ToString("MMM dd") + _br.getCountDaysAgo(e.DateReceived)).ToList(),
+                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
+                    HTMLText = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.HTMLText).ToList(),
+                    CurEmailId = curEmailId
+                };
+
+                return View(bookingRequestConversation);
+            }
+        }
+
+
     }
 }

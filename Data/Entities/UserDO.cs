@@ -20,7 +20,8 @@ namespace Data.Entities
             RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
         }
 
-        public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
+        [InverseProperty("User")]
+        public virtual IList<BookingRequestDO> BookingRequests { get; set; }
 
         public String FirstName { get; set; }
         public String LastName { get; set; }

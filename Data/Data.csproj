@@ -261,6 +261,14 @@
     <Compile Include="Migrations\201409261128558_Sync.26.09.2014.Designer.cs">
       <DependentUpon>201409261128558_Sync.26.09.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.cs" />
+    <Compile Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.Designer.cs">
+      <DependentUpon>201409221025343_Add_ConversationId_to_EmailDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409290708187_Sync_Fix.cs" />
+    <Compile Include="Migrations\201409290708187_Sync_Fix.Designer.cs">
+      <DependentUpon>201409290708187_Sync_Fix.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201409291852449_UserProfiles.cs" />
     <Compile Include="Migrations\201409291852449_UserProfiles.Designer.cs">
       <DependentUpon>201409291852449_UserProfiles.cs</DependentUpon>
@@ -1063,6 +1071,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409261128558_Sync.26.09.2014.resx">
       <DependentUpon>201409261128558_Sync.26.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.resx">
+      <DependentUpon>201409221025343_Add_ConversationId_to_EmailDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409290708187_Sync_Fix.resx">
+      <DependentUpon>201409290708187_Sync_Fix.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409291852449_UserProfiles.resx">
       <DependentUpon>201409291852449_UserProfiles.cs</DependentUpon>
