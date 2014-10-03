@@ -1,4 +1,6 @@
-﻿@model KwasantWeb.ViewModels.NegotiationVM
+﻿@using Data.States
+@using KwasantWeb.ViewModels
+@model KwasantWeb.ViewModels.NegotiationResponseVM
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @section immediateScripts
 {
@@ -19,7 +21,7 @@
         $(function() {
             var settings = {
                 DisplayMode: 'reply',
-
+                PrefixQuestionText:'',
                 MaxAdditionalAnswers: 1,
 
                 AllowModifyNegotiationRequest: false,
@@ -28,7 +30,7 @@
                 AllowModifyQuestion: false,
                 AllowDeleteQuestion: false,
 
-                AllowAddAnswer: true,
+                AllowAddAnswer: false,
                 AllowModifyAnswer: false,
                 AllowDeleteAnswer: false,
             };
@@ -46,15 +48,16 @@
                     @:currentQuestion = {};
                     @:currentQuestion.Id = @question.Id
                     @:currentQuestion.Text = '@question.Text';
-                    @:currentQuestion.Type = '@question.AnswerType';
+                    @:currentQuestion.Type = '@question.Type';
                     @:currentQuestion.CalendarID = @Html.Raw(question.CalendarID == null ? "null" : question.CalendarID.ToString());
                     @:answers = [];
-                    foreach (var answer in question.Answers)
+                    foreach (NegotiationResponseAnswerVM answer in question.Answers)
                     {
                         @:currentAnswer = {};
                         @:currentAnswer.Id = @answer.Id
                         @:currentAnswer.Selected = @Html.Raw(answer.Selected ? "true" : "false");
-                        
+                        @:currentAnswer.UserAnswer = @Html.Raw(answer.UserAnswer ? "true" : "false");
+                       
                         @:currentAnswer.Text = '@answer.Text';
                         
                         @:currentAnswer.EventID = @Html.Raw(answer.EventID.HasValue? answer.EventID.Value.ToString() : "null");
@@ -133,6 +136,23 @@
             -moz-box-shadow: 0px 0px 54px 10px rgba(0,0,0,0.75);
             box-shadow: 0px 0px 54px 10px rgba(0,0,0,0.75);
         }
+
+.negotiationsidebar .answerBox {
+    margin: 10px 40PX;
+}
+        .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .Heading-text h2 {
+        font-size: 1.5em;
+
+}
+        .QuesText {
+        font-size:20px;
+        }
                                                                                                                
     </style>
 }
@@ -141,11 +161,29 @@
 
 <div style="padding:15px;">
     <form id="f" class="negotiationsidebar ourBox">
-        <h2>We need clarification about the following <br />to finish booking your event</h2>
+<table class="Heading-text">
+<tr>
+<td>
+        <h2>
+            @Html.Raw(
+                Model.CommunicationMode == CommunicationMode.Direct
+                ? "Regarding " + Model.Name + ", please clarify the following" 
+                                  : "Kwasant helps " + Model.OriginatingUser + " with calendar scheduling. <br />Please give us the following information:")
+        </h2>
+ </td>
+<td> <img  class="floating" src="/Content/img/site/perfect-krawsant.png" alt="Kwasant" title="Kwasant" height="50px"> </td>
+</tr>
+
+</table>
+
         <div id="negotiation"></div>
 
-        <div class="space form-actions negotiation-form-actions" style="display:inline-block">
-            <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="submitResponse()" />
+        <div class="space form-actions negotiation-form-actions" style="display:inline-block;width:100%;">
+ <input id="btnSave" type="button" value="OK" class="btn btn-default pull-right" onclick="submitResponse()" />
+           
         </div>
     </form>
 </div>
+
+
+        

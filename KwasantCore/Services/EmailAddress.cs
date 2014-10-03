@@ -1,18 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Interfaces;
-using StructureMap;
-using System;
+using Data.States;
 using System.Net.Mail;
+using Utilities;
+
 namespace KwasantCore.Services
 {
-    
-
     public class EmailAddress : IEmailAddress
     {
-       public EmailAddressDO ConvertFromMailAddress(IUnitOfWork uow, MailAddress address)
+        private readonly IConfigRepository _configRepository;
+
+        public EmailAddress(IConfigRepository configRepository)
+        {
+            if (configRepository == null)
+                throw new ArgumentNullException("configRepository");
+            _configRepository = configRepository;
+        }
+
+        public EmailAddressDO ConvertFromMailAddress(IUnitOfWork uow, MailAddress address)
        {
            return uow.EmailAddressRepository.GetOrCreateEmailAddress(address.Address, address.DisplayName);
        }
@@ -59,13 +68,29 @@ namespace KwasantCore.Services
            return result;
        }
 
-        public IEnumerable<EmailAddressDO> FilterOutDomains( IEnumerable<EmailAddressDO> addressList, string domain)
+        public List<EmailAddressDO> GetEmailAddresses(IUnitOfWork uow, params string[] textToSearch)
         {
-        //to be implemented
-            return addressList;
+            var emailAddresses = textToSearch.SelectMany(ExtractFromString);
+            
+            var uniqueEmails = emailAddresses.GroupBy(ea => ea.Email.ToLower()).Select(g =>
+            {
+                var potentialFirst = g.FirstOrDefault(e => !String.IsNullOrEmpty(e.Name)) ?? g.First();
+                return potentialFirst;
+            });
+
+            var addressList =
+                FilterOutDomains(uniqueEmails, "sant.com")
+                    .Select(parsedEmailAddress =>
+                        uow.EmailAddressRepository.GetOrCreateEmailAddress(parsedEmailAddress.Email, parsedEmailAddress.Name)
+                    );
+            
+            return addressList.ToList();
         }
 
-
+        public IEnumerable<ParsedEmailAddress> FilterOutDomains(IEnumerable<ParsedEmailAddress> addressList, params string[] domains)
+        {
+            return addressList.Where(a => domains.All(domain => !a.Email.EndsWith(domain)));
+        }
 
         public EmailAddressDO ConvertFromString(string emailString, IUnitOfWork uow)
         {
@@ -86,6 +111,39 @@ namespace KwasantCore.Services
             return convertAddresFromString;
         }
 
-    }
 
+        public EmailAddressDO GetFromEmailAddress(IUnitOfWork uow, EmailAddressDO curRecipientAddress, UserDO originator)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (curRecipientAddress == null)
+                throw new ArgumentNullException("curRecipientAddress");
+            var user = new User();
+            var curRecipient = user.Get(uow, curRecipientAddress);
+            if (curRecipient != null)
+            {
+                var communicationMode = user.GetMode(curRecipient);
+                switch (communicationMode)
+                {
+                    case CommunicationMode.Direct:
+                        return uow.EmailAddressRepository.GetOrCreateEmailAddress(
+                            _configRepository.Get("EmailFromAddress_DirectMode"),
+                            _configRepository.Get("EmailFromName_DirectMode"));
+                    case CommunicationMode.Delegate:
+                        return uow.EmailAddressRepository.GetOrCreateEmailAddress(
+                            _configRepository.Get("EmailFromAddress_DelegateMode"),
+                            String.Format(_configRepository.Get("EmailFromName_DelegateMode"), User.GetDisplayName(originator)));
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            else
+            {
+                return uow.EmailAddressRepository.GetOrCreateEmailAddress(
+                    _configRepository.Get("EmailFromAddress_DelegateMode"),
+                    String.Format(_configRepository.Get("EmailFromName_DelegateMode"), User.GetDisplayName(originator)));
+            }
+        }
+
+    }
 }

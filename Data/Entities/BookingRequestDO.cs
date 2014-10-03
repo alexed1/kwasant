@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class BookingRequestDO : EmailDO
+    public class BookingRequestDO : EmailDO, ICreateHook
     {
         public BookingRequestDO()
         {
@@ -14,7 +15,8 @@ namespace Data.Entities
             Negotiations = new List<NegotiationDO>();
         }
 
-        [Required]
+        [Required, ForeignKey("User")]
+        public string UserID { get; set; }        
         public virtual UserDO User { get; set; }
 
         public virtual List<InstructionDO> Instructions { get; set; }
@@ -29,8 +31,11 @@ namespace Data.Entities
         public int State { get; set; }
         public virtual _BookingRequestStateTemplate BookingRequestStateTemplate { get; set; }
 
-        //[ForeignKey("Bookers")]
-        public string BookerId { get; set; }
-        //public virtual UserDO Bookers { get; set; }
+        public string BookerID { get; set; }
+        
+        public void AfterCreate()
+        {
+            AlertManager.BookingRequestCreated(Id);
+        }
     }
 }

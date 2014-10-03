@@ -40,7 +40,7 @@
                     @Html.Partial("ChooseCalendars", new KwasantWeb.ViewModels.UserQueryVM { User = Model.User })
                 </div>
                 <div id="divUserDetails">
-                    @Html.Partial("ShowUserDetails", new KwasantWeb.ViewModels.CreateUserVM { User = Model.User, UserRole = new KwasantCore.Services.User().GetRole(Model.User.Id) })
+                    @Html.Partial("ShowUserDetails", new KwasantWeb.ViewModels.UserCreateVM { User = Model.User, UserRole = new KwasantCore.Services.User().GetRole(Model.User.Id) })
                 </div>
             </div>
         </td>

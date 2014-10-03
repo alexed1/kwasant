@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Analytics.NET">
+      <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -45,9 +48,6 @@
     </Reference>
     <Reference Include="Google.Apis.Core">
       <HintPath>..\packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="KwasantCore">
-      <HintPath>..\Bin\KwasantCore.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -200,6 +200,70 @@
     <Compile Include="Migrations\201409160731277_AddDBLogging.Designer.cs">
       <DependentUpon>201409160731277_AddDBLogging.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409120802303_TrackWhoAddedAnswers.cs" />
+    <Compile Include="Migrations\201409120802303_TrackWhoAddedAnswers.Designer.cs">
+      <DependentUpon>201409120802303_TrackWhoAddedAnswers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409120907427_Sync.12.09.2014.cs" />
+    <Compile Include="Migrations\201409120907427_Sync.12.09.2014.Designer.cs">
+      <DependentUpon>201409120907427_Sync.12.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409181123281_Sync.18.09.2014.cs" />
+    <Compile Include="Migrations\201409181123281_Sync.18.09.2014.Designer.cs">
+      <DependentUpon>201409181123281_Sync.18.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409191059422_Sync.Rob.19.09.2014.cs" />
+    <Compile Include="Migrations\201409191059422_Sync.Rob.19.09.2014.Designer.cs">
+      <DependentUpon>201409191059422_Sync.Rob.19.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409191154252_FixUserIDPK.cs" />
+    <Compile Include="Migrations\201409191154252_FixUserIDPK.Designer.cs">
+      <DependentUpon>201409191154252_FixUserIDPK.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409221056573_Sync.Rob.22.09.2014.cs" />
+    <Compile Include="Migrations\201409221056573_Sync.Rob.22.09.2014.Designer.cs">
+      <DependentUpon>201409221056573_Sync.Rob.22.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409111335528_Sync.11.09.2014.cs" />
+    <Compile Include="Migrations\201409111335528_Sync.11.09.2014.Designer.cs">
+      <DependentUpon>201409111335528_Sync.11.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409221108487_Sync.Rob2.22.09.2014.cs" />
+    <Compile Include="Migrations\201409221108487_Sync.Rob2.22.09.2014.Designer.cs">
+      <DependentUpon>201409221108487_Sync.Rob2.22.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409230642376_AddBookerId_to_BookingRequestDO.cs" />
+    <Compile Include="Migrations\201409230642376_AddBookerId_to_BookingRequestDO.Designer.cs">
+      <DependentUpon>201409230642376_AddBookerId_to_BookingRequestDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409231048096_Sync.23.09.2014.cs" />
+    <Compile Include="Migrations\201409231048096_Sync.23.09.2014.Designer.cs">
+      <DependentUpon>201409231048096_Sync.23.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.cs" />
+    <Compile Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.Designer.cs">
+      <DependentUpon>201409241548359_AddSegmentTrackingToAuthTokens.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409251049205_Sync.Rob.25.09.2014.cs" />
+    <Compile Include="Migrations\201409251049205_Sync.Rob.25.09.2014.Designer.cs">
+      <DependentUpon>201409251049205_Sync.Rob.25.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409251527319_Rob2.Sync.25.09.2014.cs" />
+    <Compile Include="Migrations\201409251527319_Rob2.Sync.25.09.2014.Designer.cs">
+      <DependentUpon>201409251527319_Rob2.Sync.25.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409261128558_Sync.26.09.2014.cs" />
+    <Compile Include="Migrations\201409261128558_Sync.26.09.2014.Designer.cs">
+      <DependentUpon>201409261128558_Sync.26.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.cs" />
+    <Compile Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.Designer.cs">
+      <DependentUpon>201409221025343_Add_ConversationId_to_EmailDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409290708187_Sync_Fix.cs" />
+    <Compile Include="Migrations\201409290708187_Sync_Fix.Designer.cs">
+      <DependentUpon>201409290708187_Sync_Fix.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
@@ -228,10 +292,6 @@
     <Compile Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.cs" />
     <Compile Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.Designer.cs">
       <DependentUpon>201408251234014_AddCascadeForAttendeeOnNegotiations.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201408271137562_AddBookerId_to_BookingRequestDO.cs" />
-    <Compile Include="Migrations\201408271137562_AddBookerId_to_BookingRequestDO.Designer.cs">
-      <DependentUpon>201408271137562_AddBookerId_to_BookingRequestDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201408271139344_AddLastUpdated_to_EmailDO.cs" />
     <Compile Include="Migrations\201408271139344_AddLastUpdated_to_EmailDO.Designer.cs">
@@ -264,6 +324,7 @@
     <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
+    <Compile Include="States\CommunicationMode.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
     <Compile Include="States\EventCreateType.cs" />
     <Compile Include="States\EventState.cs" />
@@ -906,9 +967,6 @@
     <EmbeddedResource Include="Migrations\201408251234014_AddCascadeForAttendeeOnNegotiations.resx">
       <DependentUpon>201408251234014_AddCascadeForAttendeeOnNegotiations.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201408271137562_AddBookerId_to_BookingRequestDO.resx">
-      <DependentUpon>201408271137562_AddBookerId_to_BookingRequestDO.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408271139344_AddLastUpdated_to_EmailDO.resx">
       <DependentUpon>201408271139344_AddLastUpdated_to_EmailDO.cs</DependentUpon>
     </EmbeddedResource>
@@ -947,6 +1005,54 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409160731277_AddDBLogging.resx">
       <DependentUpon>201409160731277_AddDBLogging.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409120802303_TrackWhoAddedAnswers.resx">
+      <DependentUpon>201409120802303_TrackWhoAddedAnswers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409120907427_Sync.12.09.2014.resx">
+      <DependentUpon>201409120907427_Sync.12.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409181123281_Sync.18.09.2014.resx">
+      <DependentUpon>201409181123281_Sync.18.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409191059422_Sync.Rob.19.09.2014.resx">
+      <DependentUpon>201409191059422_Sync.Rob.19.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409191154252_FixUserIDPK.resx">
+      <DependentUpon>201409191154252_FixUserIDPK.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409221056573_Sync.Rob.22.09.2014.resx">
+      <DependentUpon>201409221056573_Sync.Rob.22.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409111335528_Sync.11.09.2014.resx">
+      <DependentUpon>201409111335528_Sync.11.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409221108487_Sync.Rob2.22.09.2014.resx">
+      <DependentUpon>201409221108487_Sync.Rob2.22.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409230642376_AddBookerId_to_BookingRequestDO.resx">
+      <DependentUpon>201409230642376_AddBookerId_to_BookingRequestDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409231048096_Sync.23.09.2014.resx">
+      <DependentUpon>201409231048096_Sync.23.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.resx">
+      <DependentUpon>201409241548359_AddSegmentTrackingToAuthTokens.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409251049205_Sync.Rob.25.09.2014.resx">
+      <DependentUpon>201409251049205_Sync.Rob.25.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409251527319_Rob2.Sync.25.09.2014.resx">
+      <DependentUpon>201409251527319_Rob2.Sync.25.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409261128558_Sync.26.09.2014.resx">
+      <DependentUpon>201409261128558_Sync.26.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.resx">
+      <DependentUpon>201409221025343_Add_ConversationId_to_EmailDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409290708187_Sync_Fix.resx">
+      <DependentUpon>201409290708187_Sync_Fix.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

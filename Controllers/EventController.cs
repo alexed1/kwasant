@@ -9,9 +9,11 @@ using Data.Interfaces;
 using Data.States;
 using DayPilot.Web.Mvc.Json;
 using KwasantCore.Exceptions;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
+using Segment;
 using StructureMap;
 
 
@@ -30,14 +32,14 @@ namespace KwasantWeb.Controllers
         {
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>(); // TODO: inject dependency via a constructor parameter
             _event = ObjectFactory.GetInstance<Event>();
-            _attendee = new Attendee();
+            _attendee = ObjectFactory.GetInstance<Attendee>();
         }
 
         public ActionResult New(int bookingRequestID, int calendarID, string start, string end)
         {
             using (var uow = GetUnitOfWork())
             {
-                var createdEvent = CreateNewEvent(uow, bookingRequestID, calendarID, start, end);
+                var createdEvent = CreateNewEvent(bookingRequestID, calendarID, start, end);
                 _event.Create(createdEvent, uow);
 
                 uow.EventRepository.Add(createdEvent);
@@ -55,7 +57,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = GetUnitOfWork())
             {
-                var createdEvent = CreateNewEvent(uow, null, calendarID, start, end);
+                var createdEvent = CreateNewEvent(null, calendarID, start, end);
 
                 createdEvent.CreatedByID = uow.CalendarRepository.GetByKey(calendarID).OwnerID;
                 createdEvent.EventStatus = EventState.ProposedTimeSlot;
@@ -141,7 +143,7 @@ namespace KwasantWeb.Controllers
         }
 
         //Renders a form to accept a new event
-        private EventDO CreateNewEvent(IUnitOfWork uow, int? bookingRequestID, int calendarID, string start, string end)
+        private EventDO CreateNewEvent(int? bookingRequestID, int calendarID, string start, string end)
         {
             if (!start.EndsWith("z"))
                 throw new ApplicationException("Invalid date time");
@@ -154,6 +156,7 @@ namespace KwasantWeb.Controllers
             createdEvent.CalendarID = calendarID;            
             createdEvent.StartDate = DateTime.ParseExact(start, DateStandardFormat, CultureInfo.InvariantCulture);
             createdEvent.EndDate = DateTime.ParseExact(end, DateStandardFormat, CultureInfo.InvariantCulture);
+            createdEvent.CreatedByID = "Rob";
 
             createdEvent.IsAllDay = createdEvent.StartDate.Equals(createdEvent.StartDate.Date) && createdEvent.StartDate.AddDays(1).Equals(createdEvent.EndDate);
 
@@ -207,7 +210,7 @@ namespace KwasantWeb.Controllers
 
         public ActionResult ConfirmChanges(EventVM eventVM)
         {
-            return View(eventVM);
+            return View("~/Views/Event/ConfirmChanges.cshtml", eventVM);
         }
 
         [HttpPost]
@@ -227,6 +230,10 @@ namespace KwasantWeb.Controllers
                 if (curEventDO == null)
                     throw new EntityNotFoundException<EventDO>();
                 updatedEventInfo.Attendees = _attendee.ConvertFromString(uow, curEventVM.Attendees);
+                
+                if (updatedEventInfo.Summary == null)
+                    updatedEventInfo.Summary = String.Empty;
+
                 curEventDO.EventStatus = updatedEventInfo.Summary.Contains("DRAFT") ? EventState.Draft : EventState.Booking;
 
                 _event.Process(uow, curEventDO, updatedEventInfo);
@@ -235,8 +242,23 @@ namespace KwasantWeb.Controllers
                     MergeTimeSlots(uow, curEventDO);
 
                 uow.SaveChanges();
+
+                foreach (var attendeeDO in updatedEventInfo.Attendees)
+                {
+                    var user = new User();
+                    var userDO = user.GetOrCreateFromBR(uow, attendeeDO.EmailAddress);
+                    if (user.GetMode(userDO) == CommunicationMode.Delegate)
+                    {
+                        ObjectFactory.GetInstance<ITracker>().Track(userDO, "User", "InvitedAsPreCustomerAttendee",
+                            new Dictionary<string, object>
+                            {
+                                {"BookingRequestId", curEventDO.BookingRequestID},
+                                {"EventID", curEventDO.Id}
+                            });
+                    }
+                }
             }
-            return Json(true);
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult DeleteEvent(int eventID, bool requiresConfirmation = true)

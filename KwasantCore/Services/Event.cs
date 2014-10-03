@@ -8,6 +8,7 @@ using KwasantCore.Exceptions;
 using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
+using Segment;
 using Utilities;
 using StructureMap;
 using IEvent = Data.Interfaces.IEvent;
@@ -21,15 +22,19 @@ namespace KwasantCore.Services
         private readonly IMappingEngine _mappingEngine;
         private readonly Invitation _invitation;
         private readonly IBookingRequest _bookingRequest;
+        private readonly Attendee _attendee;
 
-        public Event(IMappingEngine mappingEngine, Invitation invitation)
+        public Event(IMappingEngine mappingEngine, Invitation invitation, Attendee attendee)
         {
             if (mappingEngine == null)
                 throw new ArgumentNullException("mappingEngine");
             if (invitation == null)
                 throw new ArgumentNullException("invitation");
+            if (attendee == null)
+                throw new ArgumentNullException("attendee");
             _mappingEngine = mappingEngine;
             _invitation = invitation;
+            _attendee = attendee;
             _bookingRequest = ObjectFactory.GetInstance<IBookingRequest>();
         }
 
@@ -178,8 +183,7 @@ namespace KwasantCore.Services
 
         public EventDO AddAttendee(UserDO curUserDO, EventDO curEvent)
         {
-            var curAttendee = new Attendee();
-            var curAttendeeDO = curAttendee.Create(curUserDO);
+            var curAttendeeDO = _attendee.Create(curUserDO);
             curEvent.Attendees.Add(curAttendeeDO);
             return curEvent;
         }
@@ -190,9 +194,10 @@ namespace KwasantCore.Services
                 throw new ArgumentNullException("eventDO");
 
             IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+            var invitation = ObjectFactory.GetInstance<Invitation>();
             string fromEmail = configRepository.Get("EmailFromAddress_DelegateMode");
             string fromName = configRepository.Get("EmailFromName_DelegateMode");
-            fromName = String.Format(fromName, new Invitation(configRepository).GetOriginatorName(eventDO));
+            fromName = String.Format(fromName, invitation.GetOriginatorName(eventDO));
 
             iCalendar ddayCalendar = new iCalendar();
             DDayEvent dDayEvent = new DDayEvent();

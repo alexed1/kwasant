@@ -1,0 +1,50 @@
+﻿@model KwasantWeb.ViewModels.CalendarShowVM
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+<div id="CalendarDiv" class="col-md-5"></div>
+<script type="text/javascript">
+    @*var calendar;
+    var dp_navigator, storedCalendar;
+    var linkedNegotiationID = @Html.Raw(Model.LinkedNegotiationID == null ? "null" : Model.LinkedNegotiationID.ToString())*@
+    $(function() {
+        @{
+            var calendarsToDisplay = new List<int>();
+            if (Model.LinkedCalendarIds != null)
+            {
+                calendarsToDisplay.AddRange(Model.LinkedCalendarIds);
+            }
+            calendarsToDisplay.Add(Model.ActiveCalendarId);
+            var calendarString = String.Join(",", calendarsToDisplay.Distinct());
+        }
+        
+        window.parent.calendar = $('#CalendarDiv').KCalendar({
+            getCalendarBackendURL: function() {
+                return '@Url.Content("~/Calendar/Day?calendarIDs=" + calendarString)';
+            },
+            getMonthBackendURL: function () {
+                return '@Url.Content("~/Calendar/Month?calendarIDs=" + calendarString)';
+            },
+            getNavigatorBackendURL: function() {
+                return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + calendarString)';
+            },  
+            getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
+            getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
+            getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
+            onEventNew: function(start, end) {
+                if (Kwasant.IFrame.PopupsActive()) {
+                    return;
+                }
+                var id = $("#hdnrequestid").val();
+                Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&calendarID=' + @Model.ActiveCalendarId + '&start=' + start + 'z&end=' + end + 'z',
+                    {
+                        horizontalAlign: 'right',
+                        callback: calendar.refreshCalendars
+                    });
+            },
+        });
+        window.parent.storedCalendar = window.parent.calendar.getStoredCalendar();
+        window.parent.dp_navigator = window.parent.calendar.getNavigator();
+    });
+     
+    //window.parent.storedCalendar = window.parent.calendar.getStoredCalendar();
+    //window.parent.dp_navigator = window.parent.calendar.getNavigator();
+</script>

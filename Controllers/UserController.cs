@@ -35,39 +35,66 @@ namespace KwasantWeb.Controllers
         [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Index()
         {
-            UsersAdmin currUsersAdmin = new UsersAdmin();
-            List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData();
-            List<UsersAdminVM> currUsersAdminVMs = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminVMList(currUsersAdminDataList) : null;
+            string userId = "";
+            User _user = new User();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                List<UserDO> userList = _user.Query(uow, userId);
+                UserShowAllVM userShowAllVM = new UserShowAllVM();
+                List<UserShowVM> userShowVMList = new List<UserShowVM>();
 
-            return View(currUsersAdminVMs);
+                var userManager = KwasantCore.Services.User.GetUserManager(uow);
+                userList.ForEach(u => userShowVMList.Add(new UserShowVM
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    EmailAddress = u.EmailAddress.Address,
+                    Role = userManager.GetRoles(u.Id).Count() > 0 ? userManager.GetRoles(u.Id)[0] : "",
+                    RoleId = u.Roles.ToList().Count() > 0 ? u.Roles.ToList()[0].RoleId : "",
+                }));
+                userShowAllVM.Users = userShowVMList;
+
+
+               
+                return View(userShowAllVM);
+            }
         }
 
         [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Details(String userId, String roleId)
         {
-
             if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            UsersAdmin currUsersAdmin = new UsersAdmin();
-            List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData(userId, roleId);
+            User _user = new User();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curUserManager = KwasantCore.Services.User.GetUserManager(uow);
+                UserDO curUser = _user.Query(uow, userId)[0];
+                UserShowVM userShowVM = new UserShowVM
+                {
+                    Id = curUser.Id,
+                    FirstName = curUser.FirstName,
+                    LastName = curUser.LastName,
+                    EmailAddress = curUser.EmailAddress.Address,
+                    Role = curUserManager.GetRoles(curUser.Id)[0],
+                    RoleId = curUser.Roles.ToList()[0].RoleId
+                };
+                return View(userShowVM);
+            }
 
-            List<UsersAdminVM> currUsersAdminVMs = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminVMList(currUsersAdminDataList) : null;
-
-            UsersAdminVM currUsersAdminVM = currUsersAdminVMs == null || currUsersAdminVMs.Count == 0 ? new UsersAdminVM() : currUsersAdminVMs[0];
-
-            return View(currUsersAdminVM);
         }
 
         public async Task<ActionResult> GrantRemoteCalendarAccess(string providerName)
         {
             var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
-            var result = await authorizer.AuthorizeAsync(this.GetUserId(),
-                                                         this.GetUserName(),
-                                                         Url.Action("IndexAsync", "AuthCallback", null,
-                                                                    this.Request.Url.Scheme),
-                                                         Request.RawUrl,
-                                                         CancellationToken.None);
+            var result = await authorizer.AuthorizeAsync(
+                this.GetUserId(),
+                this.GetUserName(),
+                String.Format("{0}AuthCallback/IndexAsync", Utilities.Server.ServerUrl),
+                Request.RawUrl,
+                CancellationToken.None);
 
             if (result.Credential != null)
             {
@@ -135,7 +162,7 @@ namespace KwasantWeb.Controllers
             return View(curUserAdminVM);
         }
 
-        public ActionResult Validate(CreateUserVM curCreateUserVM)
+        public ActionResult Validate(UserCreateVM curCreateUserVM)
         {
             UserDO curUser = curCreateUserVM.User;
             string selectedRole = curCreateUserVM.UserRole;
@@ -160,7 +187,7 @@ namespace KwasantWeb.Controllers
         public ActionResult Detail(String userId)
         {
             UserAdministerVM curUserAdminVM = new UserAdministerVM();
-            curUserAdminVM.User = _user.GetUser(userId);
+            curUserAdminVM.User = _user.Get(userId);
             return View(curUserAdminVM);
         }
 
@@ -183,17 +210,17 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult RunQuery(UserQueryVM curUserQueryVM)
         {
-            UserDO curUser = curUserQueryVM.User;
+            UserDO queryParams = curUserQueryVM.User;
 
-            if (string.IsNullOrEmpty(curUser.EmailAddress.Address) && string.IsNullOrEmpty(curUser.FirstName) && string.IsNullOrEmpty(curUser.LastName))
+            if (string.IsNullOrEmpty(queryParams.EmailAddress.Address) && string.IsNullOrEmpty(queryParams.FirstName) && string.IsNullOrEmpty(queryParams.LastName))
             {
                 var jsonErrorResult = Json(_datatables.Pack(new { Error = "Atleast one field is required" }), JsonRequestBehavior.AllowGet);
                 return jsonErrorResult;
             }
-            if (curUser.EmailAddress.Address != null)
+            if (queryParams.EmailAddress.Address != null)
             {
                 EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-                if (!(emailAddressValidator.Validate(curUser.EmailAddress).IsValid))
+                if (!(emailAddressValidator.Validate(queryParams.EmailAddress).IsValid))
                 {
                     var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
                     return jsonErrorResult;
@@ -201,31 +228,31 @@ namespace KwasantWeb.Controllers
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(_user.Query(uow, curUser)), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_datatables.Pack(_user.Query(uow, queryParams)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
         }
 
         [HttpPost]
-        public ActionResult AddFromForm(CreateUserVM curCreateUserVM, bool sendEmail)
+        public ActionResult ProcessSubmittedForm(UserCreateVM curCreateUserVM, bool sendEmail)
         {
             UserDO curUser = curCreateUserVM.User;
-            string role = curCreateUserVM.Roles.Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
+            string role = new Role().GetRoles().Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 _user.Create(uow, curUser, role, sendEmail);
+                uow.SaveChanges();
             }
-            var jsonSuccessResult = Json(_datatables.Pack("User saved successfully."), JsonRequestBehavior.AllowGet);
-            return jsonSuccessResult;
+            return RedirectToAction("Dashboard", "Admin");
         }
 
         [HttpPost]
-        public ActionResult Update(CreateUserVM curCreateUserVM)
+        public ActionResult Update(UserCreateVM curCreateUserVM)
         {
             UserDO curUser = curCreateUserVM.User;
-            string role = curCreateUserVM.Roles.Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
+            string role = new Role().GetRoles().Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

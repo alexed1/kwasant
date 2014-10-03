@@ -10,6 +10,7 @@ namespace KwasantWeb.Api
     public partial class GetEmailHTML : Page
     {
         private EmailDO m_EmailRow;
+        private String booker;
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -22,11 +23,26 @@ namespace KwasantWeb.Api
             }
         }
 
-
         private void LoadEmailRow(int emailID)
         {
             var uow = ObjectFactory.GetInstance<IUnitOfWork>();
             m_EmailRow = uow.EmailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
+            string bookerId = uow.BookingRequestRepository.GetByKey(emailID).BookerID;
+            if (bookerId != null)
+            {
+                booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
+            }
+            else { booker = "none"; }
+        }
+
+        protected String GetBooker()
+        {
+            return booker;
+        }
+
+        protected String GetEmailId()
+        {
+            return m_EmailRow.Id.ToString();
         }
 
         protected String GetEmailSubject()
