@@ -4,12 +4,15 @@ using System.Web.Routing;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using KwasantWeb.ViewModels.JsonConverters;
+using Segment;
+using Segment.Model;
 using StructureMap;
 using System.Net.Mail;
 using System;
@@ -148,7 +151,7 @@ namespace KwasantWeb.Controllers
         }
 
 
-        //create a BookingRequest
+        [AllowAnonymous]
         public ActionResult Generate(string emailAddress,string meetingInfo)
         {
             string result = "";
@@ -163,15 +166,19 @@ namespace KwasantWeb.Controllers
                     bookingRequest.DateReceived = DateTime.Now;
                     bookingRequest.PlainText = meetingInfo;
                     _br.Process(uow, bookingRequest);
+
                     uow.SaveChanges();
-                    result = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be";
+
+                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.User, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> {{"BookingRequestID", bookingRequest.Id}});
+
+                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = bookingRequest.UserID }, JsonRequestBehavior = JsonRequestBehavior.AllowGet};
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                result = "Sorry! Something went wrong. Alpha software...";
+                return new JsonResult() { Data = new { Message = "Sorry! Something went wrong. Alpha software..." }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
-            return Content(result);
+            
         }
 
         // GET: /RelatedItems 

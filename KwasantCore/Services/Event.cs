@@ -8,6 +8,7 @@ using KwasantCore.Exceptions;
 using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
+using Segment;
 using Utilities;
 using StructureMap;
 using IEvent = Data.Interfaces.IEvent;

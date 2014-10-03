@@ -10,7 +10,7 @@ using Data.Repositories;
 using Data.States;
 using Data.Validations;
 using FluentValidation;
-using KwasantCore.Managers.APIManager.Packagers.Mandrill;
+using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
 using StructureMap;
 using Utilities;
 
@@ -23,7 +23,9 @@ namespace KwasantCore.Services
         private readonly EmailAddress _emailAddress;
 
         #region Constructor
-
+        public Email()
+        {
+        }
 
       
         /// <summary>
@@ -72,6 +74,16 @@ namespace KwasantCore.Services
             Debug.WriteLine(results);
         }
 
+        public void SendUserSettingsNotification(IUnitOfWork uow, UserDO submittedUserData) 
+        {
+            EmailDO curEmail = new EmailDO();
+            curEmail.From = submittedUserData.EmailAddress;
+            curEmail.AddEmailRecipient(EmailParticipantType.To, submittedUserData.EmailAddress);
+            curEmail.Subject = "User Settings Notification";
+            //new Email(uow).SendTemplate(uow, "User_Settings_Notification", curEmail, null);
+            uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "User_Settings_Notification", null);
+        }
+
         #endregion
 
       
@@ -107,12 +119,12 @@ namespace KwasantCore.Services
             if (String.IsNullOrEmpty(body))
                 body = mailMessage.Body;
 
-            String strDateRecieved = String.Empty;
-            strDateRecieved = mailMessage.Headers["Date"];
+            String strDateReceived = String.Empty;
+            strDateReceived = mailMessage.Headers["Date"];
 
-            DateTimeOffset dateRecieved;
-            if (!DateTimeOffset.TryParse(strDateRecieved, out dateRecieved))
-                dateRecieved = DateTimeOffset.Now;
+            DateTimeOffset dateReceived;
+            if (!DateTimeOffset.TryParse(strDateReceived, out dateReceived))
+                dateReceived = DateTimeOffset.Now;
 
             String strDateCreated = String.Empty;
             strDateCreated = mailMessage.Headers["Date"];
@@ -126,7 +138,7 @@ namespace KwasantCore.Services
                 Subject = mailMessage.Subject,
                 HTMLText = body,
                 PlainText = plainBody,
-                DateReceived = dateRecieved,
+                DateReceived = dateReceived,
                 DateCreated = dateCreated,
                 Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),
                 Events = null
@@ -185,13 +197,11 @@ namespace KwasantCore.Services
             att.SetData(av.ContentStream);
             return att;
         }
-
-
-       
-        public EmailDO GenerateBasicMessage(IUnitOfWork uow, EmailAddressDO curEmailAddress,string subject, string message, string fromAddress ,string toRecipient)
+        
+        public EmailDO GenerateBasicMessage(IUnitOfWork uow, string subject, string message, string fromAddress ,string toRecipient)
         {
-            ValidateEmailAddress(curEmailAddress);
-            EmailDO curEmail = new EmailDO()
+            new EmailAddressValidator().Validate(new EmailAddressDO(toRecipient));
+            EmailDO curEmail = new EmailDO
             {
                 Subject = subject,
                 PlainText = message,
@@ -213,7 +223,7 @@ namespace KwasantCore.Services
                 EmailDO curEmail = new EmailDO();
                 string message = "Alert! Kwasant Error Reported: EmailSendFailure";
                 string subject = "Alert! Kwasant Error Reported: EmailSendFailure";
-                curEmail = GenerateBasicMessage(uow, curEmailAddress, subject, message, fromAddress, "ops@kwasant.com");
+                curEmail = GenerateBasicMessage(uow, subject, message, fromAddress, "ops@kwasant.com");
                 uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }

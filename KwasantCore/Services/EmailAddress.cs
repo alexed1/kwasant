@@ -122,7 +122,7 @@ namespace KwasantCore.Services
             var curRecipient = user.Get(uow, curRecipientAddress);
             if (curRecipient != null)
             {
-                var communicationMode = user.GetMode(uow, curRecipient);
+                var communicationMode = user.GetMode(curRecipient);
                 switch (communicationMode)
                 {
                     case CommunicationMode.Direct:

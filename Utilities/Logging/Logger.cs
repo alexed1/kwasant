@@ -10,13 +10,9 @@ namespace Utilities.Logging
             log4net.Config.XmlConfigurator.Configure();
         }
 
-        public static ILog GetLogger()
+        public static ILog GetLogger(int depth = 1)
         {
-            return LogManager.GetLogger(new StackTrace().GetFrame(1).GetMethod().DeclaringType);
+            return LogManager.GetLogger(new StackTrace().GetFrame(depth).GetMethod().DeclaringType);
         }
     }
-
-    
-
-
 }

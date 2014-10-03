@@ -1,20 +1,22 @@
 ﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
-using Microsoft.WindowsAzure;
 using StructureMap;
 using Utilities;
-using Utilities.Logging;
+using Logger = Utilities.Logging.Logger;
 
 namespace Data.Infrastructure
 {
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
     {       
-        public delegate void CustomerCreatedHandler(string curUserId);
+        public delegate void ExplicitCustomerCreatedHandler(string curUserId);
+        public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
+
+        public delegate void CustomerCreatedHandler(UserDO user);
         public static event CustomerCreatedHandler AlertCustomerCreated;
 
         public delegate void BookingRequestCreatedHandler(int bookingRequestId);
@@ -55,10 +57,16 @@ namespace Data.Infrastructure
         /// <summary>
         /// Publish Customer Created event
         /// </summary>
-        public static void CustomerCreated(string curUserId)
+        public static void ExplicitCustomerCreated(string curUserId)
+        {
+            if (AlertExplicitCustomerCreated != null)
+                AlertExplicitCustomerCreated(curUserId);
+        }
+
+        public static void CustomerCreated(UserDO user)
         {
             if (AlertCustomerCreated != null)
-                AlertCustomerCreated(curUserId);
+                AlertCustomerCreated(user);
         }
 
         public static void BookingRequestCreated(int bookingRequestId)
@@ -139,7 +147,7 @@ namespace Data.Infrastructure
             AlertManager.AlertEmailSent += EmailDispatched;
             AlertManager.AlertBookingRequestCreated += ProcessBookingRequestCreated;
             AlertManager.AlertBookingRequestStateChange += ProcessBookingRequestStateChange;
-            AlertManager.AlertCustomerCreated += NewCustomerCreated;
+            AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerCreated;
             AlertManager.AlertBookingRequestProcessingTimeout += ProcessTimeout;
             AlertManager.AlertUserRegistration += UserRegistration;
             AlertManager.AlertBookingRequestCheckedOut += ProcessBookingRequestCheckedOut;
@@ -147,7 +155,7 @@ namespace Data.Infrastructure
             AlertManager.AlertError_EmailSendFailure += Error_EmailSendFailure;
         }
 
-        private void NewCustomerCreated(string curUserId)
+        private void NewExplicitCustomerCreated(string curUserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -209,17 +217,19 @@ namespace Data.Infrastructure
             };
             SaveFact(curAction);
         }
+
         public void ProcessBookingRequestCreated(int bookingRequestId) 
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 FactDO curAction = new FactDO()
                                        {
                                            Name = "BookingRequest Created",
                                            PrimaryCategory = "Email",
                                            SecondaryCategory = "BookingRequest",
                                            Activity = "Created",
-                                           CustomerId = uow.BookingRequestRepository.GetByKey(bookingRequestId).User.Id,
+                                           CustomerId = bookingRequestDO.UserID,
                                            CreateDate = DateTimeOffset.Now,
                                            ObjectId = bookingRequestId
                                        };

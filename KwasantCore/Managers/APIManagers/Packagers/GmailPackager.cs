@@ -4,9 +4,12 @@ using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
 using Data.Entities;
+using KwasantCore.ExternalServices;
+using KwasantCore.Managers.APIManager.Packagers;
+using StructureMap;
 using Utilities;
 
-namespace KwasantCore.Managers.APIManager.Packagers
+namespace KwasantCore.Managers.APIManagers.Packagers
 {
     public class GmailPackager : IEmailPackager
     {
@@ -43,7 +46,7 @@ namespace KwasantCore.Managers.APIManager.Packagers
         private static void OnEmailCriticalError(int errorCode, string name, string message, int emailID)
         {
             EmailCriticalErrorArgs handler = EmailCriticalError;
-            if (handler != null) handler(errorCode, name, message, emailID); ;
+            if (handler != null) handler(errorCode, name, message, emailID);
         }
 
         //Note that at the moment, we actually are submitting through SendGrid, not Gmail.
@@ -52,33 +55,30 @@ namespace KwasantCore.Managers.APIManager.Packagers
             if (envelope == null)
                 throw new ArgumentNullException("envelope");
             if (!string.Equals(envelope.Handler, EnvelopeDO.GmailHander))
-                throw new ArgumentException("This envelope should not be handled with Gmail.", "envelope");
+                throw new ArgumentException(@"This envelope should not be handled with Gmail.", "envelope");
             if (envelope.Email == null)
-                throw new ArgumentException("This envelope has no Email.", "envelope");
+                throw new ArgumentException(@"This envelope has no Email.", "envelope");
             if (envelope.Email.Recipients.Count == 0)
-                throw new ArgumentException("This envelope has no recipients.", "envelope");
+                throw new ArgumentException(@"This envelope has no recipients.", "envelope");
             
             var email = envelope.Email;
             if (email == null)
-                throw new ArgumentException("Envelope email is null", "envelope");
+                throw new ArgumentException(@"Envelope email is null", "envelope");
 
             try
             {
-                var smtpClient = new SmtpClient(_configRepository.Get("OutboundEmailHost"),
-                                                _configRepository.Get<int>("OutboundEmailPort"))
-                {
-                    EnableSsl = true,
-                    UseDefaultCredentials = false,
-                    Credentials =
-                        new NetworkCredential()
-                        {
-                            UserName = _configRepository.Get("OutboundUserName"),
-                            Password = _configRepository.Get("OutboundUserPassword")
-                        }
-                };
+                var smtpClient = ObjectFactory.GetInstance<ISmtpClient>();
+                smtpClient.Initialize(_configRepository.Get("OutboundEmailHost"), _configRepository.Get<int>("OutboundEmailPort"));
+                smtpClient.EnableSsl = true;
+                smtpClient.UseDefaultCredentials = false;
+                smtpClient.Credentials =
+                    new NetworkCredential
+                    {
+                        UserName = _configRepository.Get("OutboundUserName"),
+                        Password = _configRepository.Get("OutboundUserPassword")
+                    };
 
-                var mailMessage = new MailMessage();
-                mailMessage.From = new MailAddress(email.From.Address, email.From.Name);
+                var mailMessage = new MailMessage {From = new MailAddress(email.From.Address, email.From.Name)};
 
                 if (email.ReplyTo != null)
                 {
@@ -122,18 +122,22 @@ namespace KwasantCore.Managers.APIManager.Packagers
                 {
                     if (attachment.OriginalName.EndsWith(".ics"))
                     {
-                        var vCT = new ContentType("text/calendar");
-                        vCT.CharSet = "UTF-8";
-                        vCT.Parameters.Add("method", "REQUEST");
+                        var vCT = new ContentType("text/calendar") {CharSet = "UTF-8"};
+                        if (vCT.Parameters != null)
+                            vCT.Parameters.Add("method", "REQUEST");
 
-                        var av = new AlternateView(attachment.GetData(), vCT);
-                        av.TransferEncoding = TransferEncoding.SevenBit;
+                        var av = new AlternateView(attachment.GetData(), vCT)
+                        {
+                            TransferEncoding = TransferEncoding.SevenBit
+                        };
                         mailMessage.AlternateViews.Add(av);
                     }
 
-                    var ct = new ContentType(attachment.Type);
-                    ct.MediaType = attachment.Type;
-                    ct.Name = attachment.OriginalName;
+                    var ct = new ContentType(attachment.Type)
+                    {
+                        MediaType = attachment.Type,
+                        Name = attachment.OriginalName
+                    };
 
                     var att = new LinkedResource(attachment.GetData(), ct);
                     if (!String.IsNullOrEmpty(attachment.ContentID))

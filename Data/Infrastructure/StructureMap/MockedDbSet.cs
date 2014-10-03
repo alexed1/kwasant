@@ -7,39 +7,69 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Data.Interfaces;
 
 namespace Data.Infrastructure.StructureMap
 {
-    public class MockedDbSet<TEntityType> : IDbSet<TEntityType>
+    public abstract class MockedDbSet : IEnumerable
+    {
+        public abstract void Save();
+        public abstract IEnumerable LocalEnumerable { get; }
+        public abstract IEnumerator GetEnumerator();
+        public abstract void WipeDatabase();
+    }
+
+    public class MockedDbSet<TEntityType> : MockedDbSet, 
+        IDbSet<TEntityType>
         where TEntityType : class
     {
-        private readonly IDBContext _dbContext;
-        private readonly IEnumerable<IEnumerable<object>> m_SubSets;
+        private static readonly HashSet<TEntityType> SavedSet = new HashSet<TEntityType>();
+        private readonly HashSet<TEntityType> _rowsToDelete = new HashSet<TEntityType>(); 
+        private readonly HashSet<TEntityType> _set = new HashSet<TEntityType>();
+        private readonly IEnumerable<MockedDbSet> _subSets;
 
-        private IEnumerable<TEntityType> _mergedSets
+        public override void WipeDatabase()
+        {
+            SavedSet.Clear();
+        }
+        
+        private IEnumerable<TEntityType> LocalSet
         {
             get
             {
                 foreach (var val in _set)
                     yield return val;
-                foreach(var subSet in m_SubSets)
+                foreach (var subSet in _subSets)
+                    foreach (var val in subSet.LocalEnumerable.OfType<TEntityType>())
+                        yield return val;
+            }
+        }
+
+        private IEnumerable<TEntityType> MergedSets
+        {
+            get
+            {
+                foreach (var val in SavedSet)
+                    yield return val;
+                foreach(var subSet in _subSets)
                     foreach (var val in subSet.OfType<TEntityType>())
                         yield return val;
             }
         }
-        private HashSet<TEntityType> _set = new HashSet<TEntityType>();
 
-        public MockedDbSet(IDBContext dbContext, IEnumerable<IEnumerable<object>> subSets)
+        public MockedDbSet(IEnumerable<MockedDbSet> subSets)
         {
-            _dbContext = dbContext;
-            m_SubSets = subSets;
+            _subSets = subSets;
             _set = new HashSet<TEntityType>();
         }
-
-        public IEnumerator<TEntityType> GetEnumerator()
+        
+        public override IEnumerator GetEnumerator()
         {
-            return _mergedSets.GetEnumerator();
+            return (this as IEnumerable<TEntityType>).GetEnumerator();
+        }
+
+        IEnumerator<TEntityType> IEnumerable<TEntityType>.GetEnumerator()
+        {
+            return MergedSets.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -51,26 +81,23 @@ namespace Data.Infrastructure.StructureMap
         {
             get
             {
-                return _mergedSets.AsQueryable().Expression;
+                return MergedSets.AsQueryable().Expression;
             }
-            private set { }
         }
 
         public Type ElementType
         {
             get
             {
-                return _mergedSets.AsQueryable().ElementType;
+                return MergedSets.AsQueryable().ElementType;
             }
-            private set { }
         }
         public IQueryProvider Provider
         {
             get
             {
-                return _mergedSets.AsQueryable().Provider;
+                return MergedSets.AsQueryable().Provider;
             }
-            private set { }
         }
         public TEntityType Find(params object[] keyValues)
         {
@@ -87,17 +114,15 @@ namespace Data.Infrastructure.StructureMap
             {
                 string entityPrimaryKey = keyValues[0] as string;
                 Func<TEntityType, string> compiledSelector = GetEntityKeySelectorString().Compile();
-                return _mergedSets.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+                return MergedSets.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
             }
             else
             {
 
                 int entityPrimaryKey = (int)(keyValues[0]);
                 Func<TEntityType, int> compiledSelector = GetEntityKeySelectorInt().Compile();
-                return _mergedSets.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
+                return MergedSets.FirstOrDefault(r => compiledSelector(r) == entityPrimaryKey);
             }
-
-
         }
 
         public TEntityType Add(TEntityType entity)
@@ -109,6 +134,8 @@ namespace Data.Infrastructure.StructureMap
         public TEntityType Remove(TEntityType entity)
         {
             _set.Remove(entity);
+            if (!_rowsToDelete.Contains(entity))
+                _rowsToDelete.Add(entity);
             return entity;
         }
 
@@ -131,12 +158,9 @@ namespace Data.Infrastructure.StructureMap
         {
             get
             {
-                return new ObservableCollection<TEntityType>(this);
+                return new ObservableCollection<TEntityType>(LocalSet);
             }
-            private set { }
         }
-
-
 
         protected Expression<Func<TEntityType, int>> GetEntityKeySelectorInt()
         {
@@ -215,6 +239,24 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
+        public override void Save()
+        {
+            foreach (var set in _set)
+            {
+                if (!SavedSet.Contains(set))
+                    SavedSet.Add(set);
+            }
 
+            foreach (var rowToDelete in _rowsToDelete)
+            {
+                if (SavedSet.Contains(rowToDelete))
+                    SavedSet.Remove(rowToDelete);
+            }
+        }
+
+        public override IEnumerable LocalEnumerable
+        {
+            get { return Local; }
+        }
     }
 }
