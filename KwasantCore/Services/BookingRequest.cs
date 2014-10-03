@@ -232,5 +232,20 @@ namespace KwasantCore.Services
                         })
                     .ToList();
         }
+
+        public string getCountDaysAgo(DateTimeOffset dateReceived)
+        {
+            string daysAgo = string.Empty;
+            int countDays = (System.DateTime.Today - dateReceived).Days;
+            if (countDays > 0)
+                daysAgo = " (" + countDays + " days ago)";
+            else
+            {
+                daysAgo = " (" + dateReceived.ToLocalTime().ToString("T") + ")";
+            }
+
+            return daysAgo;
+        }
     }
+
 }

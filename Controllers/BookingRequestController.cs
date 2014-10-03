@@ -152,7 +152,7 @@ namespace KwasantWeb.Controllers
 
 
         [AllowAnonymous]
-        public ActionResult Generate(string emailAddress,string meetingInfo)
+        public ActionResult Generate(string emailAddress, string meetingInfo)
         {
             string result = "";
             try
@@ -169,9 +169,9 @@ namespace KwasantWeb.Controllers
 
                     uow.SaveChanges();
 
-                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.User, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> {{"BookingRequestID", bookingRequest.Id}});
+                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.User, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
 
-                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = bookingRequest.UserID }, JsonRequestBehavior = JsonRequestBehavior.AllowGet};
+                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = bookingRequest.UserID }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
                 }
             }
             catch (Exception e)
@@ -260,5 +260,27 @@ namespace KwasantWeb.Controllers
                 return jsonResult;
             }
         }
+
+        // GET: /Conversation Members
+        [HttpGet]
+        public ActionResult ShowConversation(int bookingRequestId, int? curEmailId)
+        {
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestConversationVM bookingRequestConversation = new BookingRequestConversationVM
+                {
+                    FromAddress = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.From.Address).ToList(),
+                    DateReceived = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).ToList().Select(e => e.DateReceived.ToString("MMM dd") + _br.getCountDaysAgo(e.DateReceived)).ToList(),
+                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
+                    HTMLText = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.HTMLText).ToList(),
+                    CurEmailId = curEmailId
+                };
+
+                return View(bookingRequestConversation);
+            }
+        }
+
+
     }
 }
