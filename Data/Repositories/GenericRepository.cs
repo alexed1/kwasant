@@ -56,7 +56,6 @@ namespace Data.Repositories
 
         public IEnumerable<TEntity> GetAll()
         {
-            
             return DBSet.AsEnumerable().ToList();
         }
 

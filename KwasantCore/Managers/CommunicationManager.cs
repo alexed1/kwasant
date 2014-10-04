@@ -1,24 +1,23 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net.Mime;
+using Data.Authentication;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using Data.Validations;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers.APIManager.Packagers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using RazorEngine;
+using KwasantCore.Managers.APIManagers.Packagers;
 using StructureMap;
 using Microsoft.WindowsAzure;
 using KwasantCore.Services;
 using Utilities;
-using Encoding = System.Text.Encoding;
 
 namespace KwasantCore.Managers
 {
@@ -40,20 +39,36 @@ namespace KwasantCore.Managers
         //Register for interesting events
         public void SubscribeToAlerts()
         {
+            AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerWorkflow;
             AlertManager.AlertCustomerCreated += NewCustomerWorkflow;
+            AlertManager.AlertBookingRequestCreated += BookingRequestCreated;
         }
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
-        public void NewCustomerWorkflow(string curUserId)
+        public void NewExplicitCustomerWorkflow(string curUserId)
         {
-            GenerateWelcomeEmail(curUserId);  
+            GenerateWelcomeEmail(curUserId);
+        }
+
+        //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
+        public void NewCustomerWorkflow(UserDO userDO)
+        {
+            ObjectFactory.GetInstance<ITracker>().Identify(userDO);
+        }
+
+        public void BookingRequestCreated(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.User, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
+            }
         }
 
         public void GenerateWelcomeEmail(string curUserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                // WARNING: 'user' parameter must not be used as reference in scope of this UnitOfWork as it is attached to another UnitOfWork
                 var curUser = uow.UserRepository.GetByKey(curUserId);
                 EmailDO curEmail = new EmailDO();
                 curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));
@@ -81,16 +96,15 @@ namespace KwasantCore.Managers
                 emailDO.From = _emailAddress.GetFromEmailAddress(uow, attendee.EmailAddress, negotiationDO.BookingRequest.User);
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
                 //emailDO.Subject = "Regarding:" + negotiationDO.Name;
-                emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}", 
-                    negotiationDO.BookingRequest.User.FirstName, 
-                    (negotiationDO.BookingRequest.User.LastName ?? ""), 
+                emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}",
+                    negotiationDO.BookingRequest.User.FirstName,
+                    (negotiationDO.BookingRequest.User.LastName ?? ""),
                     negotiationDO.Name);
 
-                var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", 
-                    negotiationDO.Id);
+                var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", negotiationDO.Id);
 
-                var authToken = new AuthorizationToken();
-                var tokenURL = authToken.GetAuthorizationTokenURL(uow, responseUrl, user.GetOrCreateFromBR(uow, attendee.EmailAddress));
+                var userDO = user.GetOrCreateFromBR(uow, attendee.EmailAddress);
+                var tokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(responseUrl, userDO);
 
                 uow.EmailRepository.Add(emailDO);
                 var actualHtml =
@@ -153,7 +167,8 @@ Proposed Answers: {2}
                 if (communicationConfig.CommunicationType == CommunicationType.Sms)
                 {
                     SendBRSMSes(bookingRequests);
-                } else if (communicationConfig.CommunicationType == CommunicationType.Email)
+                }
+                else if (communicationConfig.CommunicationType == CommunicationType.Email)
                 {
                     SendBREmails(communicationConfig.ToAddress, bookingRequests, uow);
                 }
@@ -208,9 +223,10 @@ Proposed Answers: {2}
         public String Summary { get; set; }
         public String Description { get; set; }
         public String Location { get; set; }
+        public String AuthTokenURL { get; set; }
         public List<RazorAttendeeViewModel> Attendees { get; set; }
 
-        public RazorViewModel(EventDO ev, String userID)
+        public RazorViewModel(EventDO ev, String userID, String authTokenURL)
         {
             IsAllDay = ev.IsAllDay;
             StartDate = ev.StartDate.DateTime;
@@ -218,6 +234,7 @@ Proposed Answers: {2}
             Summary = ev.Summary;
             Description = ev.Description;
             Location = ev.Location;
+            AuthTokenURL = authTokenURL;
             Attendees = ev.Attendees.Select(a => new RazorAttendeeViewModel { Name = a.Name, EmailAddress = a.EmailAddress.Address }).ToList();
             UserID = userID;
         }

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Data.Entities;
-using KwasantCore.Managers.APIManager.Transmitters.Restful;
+using KwasantCore.ExternalServices.REST;
+using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Managers.APIManagers.Packagers.Mandrill.APIStructures;
 using Newtonsoft.Json;
+using StructureMap;
 using Utilities;
 using JsonSerializer = KwasantCore.Managers.APIManagers.Serializers.Json.JsonSerializer;
 
-namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
+namespace KwasantCore.Managers.APIManagers.Packagers.Mandrill
 { 
     //uses the Mandrill API at https://mandrillapp.com/settings/index
     public class MandrillPackager : IEmailPackager
@@ -37,14 +40,14 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
         private static void OnEmailCriticalError(int errorCode, string name, string message, int emailID)
         {
             EmailCriticalErrorArgs handler = EmailCriticalError;
-            if (handler != null) handler(errorCode, name, message, emailID); ;
+            if (handler != null) handler(errorCode, name, message, emailID);
         }
 
         #region Members
 
-        private static string baseURL;
-        private static JsonSerializer jsonSerializer;
-        private static string MandrillKey;
+        private static readonly string BaseURL;
+        private static readonly JsonSerializer JsonSerializer;
+        private static readonly string MandrillKey;
 
         #endregion
 
@@ -55,17 +58,12 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
         /// </summary>
         static MandrillPackager()
         {
-            baseURL = "https://mandrillapp.com/api/1.0/";
-            jsonSerializer = new JsonSerializer();
+            BaseURL = "https://mandrillapp.com/api/1.0/";
+            JsonSerializer = new JsonSerializer();
             MandrillKey = "Nr9OJgXzpEgaibv4fIuudQ"; //this is currently tied to the alex@edelstein.org mandrill account. https://maginot.atlassian.net/wiki/display/SH/Email+Systems
         }
 
         #endregion
-
-
-
-
-
 
         #region Method
 
@@ -75,33 +73,25 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
         /// </summary>
         public static void PostMessageSendTemplate(String templateName, EmailDO message, IDictionary<string, string> mergeFields)
         {
-            RestfulCall curCall = new RestfulCall(baseURL, "/messages/send-template.json", Method.POST);
-            MandrillTemplatePackage curTemplatePackage = new MandrillTemplatePackage(MandrillKey, message);
-
-            curTemplatePackage.TemplateName = templateName;
-
-            //ADD CUSTOM MERGE FIELDS
-            //Currently we support just a single recipient. Mandrill's merge tag solution, though, requires a syntax that assume multiple recipients.
-            //What we're doing here is just copying the email address from the EmailAddress object into a similar field called 'rcpt'
-            //This will break the moment we use 'cc' or 'bcc' or put more than one addressee into the message.
-            MandrillMergeRecipient curRecipient = new MandrillMergeRecipient();
-            //curRecipient.Rcpt = message.To. FIX THIS
+            var curCall = CreateRestfulCall(BaseURL, "/messages/send-template.json", Method.POST);
+            MandrillTemplatePackage curTemplatePackage = new MandrillTemplatePackage(MandrillKey, message)
+            {
+                TemplateName = templateName
+            };
 
             //map the template-specific chunks of custom data that will be dyanmically integrated into the template at send time. Put them into a list that can be easily serialized.
             if (mergeFields != null)
             {
                 curTemplatePackage.Message.GlobalMergeVars =
-                    mergeFields.Select(pair => new MandrillDynamicContentChunk()
-                                                   {
-                                                       Name = pair.Key,
-                                                       Content = pair.Value
-                                                   })
+                    mergeFields.Select(pair => new MandrillDynamicContentChunk
+                    {
+                        Name = pair.Key,
+                        Content = pair.Value
+                    })
                         .ToList();
             }
-            //message.MergeVars.Add(curRecipient); NEED A DIFFERENT WAY TO ADD MERGE VARS
 
             AssembleAndSend(curTemplatePackage, curCall);
-
         }
 
 
@@ -110,52 +100,52 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             new Thread(() =>
             {
                 //Delete old ones
-                List<int> activeHookIDs = GetActiveWebHooks();
+                IEnumerable<int> activeHookIDs = GetActiveWebHooks();
                 DeleteOldWebHooks(activeHookIDs);
 
                 InstantiateNewWebhook(url);
             }).Start();
         }
 
-        private static void DeleteOldWebHooks(List<int> activeHookIDs)
+        private static void DeleteOldWebHooks(IEnumerable<int> activeHookIDs)
         {
             foreach (int activeHookID in activeHookIDs)
             {
-                RestfulCall curCall = new RestfulCall(baseURL, "/webhooks/delete.json", Method.POST);
-                MandrillDeleteWebhook listRequest = new MandrillDeleteWebhook()
+                var curCall = CreateRestfulCall(BaseURL, "/webhooks/delete.json", Method.POST);
+                MandrillDeleteWebhook listRequest = new MandrillDeleteWebhook
                 {
                     Key = MandrillKey,
                     ID = activeHookID
                 };
-                string serialisedEmail = jsonSerializer.Serialize(listRequest);
+                string serialisedEmail = JsonSerializer.Serialize(listRequest);
                 curCall.AddBody(serialisedEmail, "application/json");
 
                 curCall.Execute();
             }
         }
 
-        private static List<int> GetActiveWebHooks()
+        private static IEnumerable<int> GetActiveWebHooks()
         {
-            RestfulCall curCall = new RestfulCall(baseURL, "/webhooks/list.json", Method.POST);
+            var curCall = CreateRestfulCall(BaseURL, "/webhooks/list.json", Method.POST);
             MandrillListWebhooks listRequest = new MandrillListWebhooks
             {
                 Key = MandrillKey
             };
-            string serialisedEmail = jsonSerializer.Serialize(listRequest);
+            string serialisedEmail = JsonSerializer.Serialize(listRequest);
             curCall.AddBody(serialisedEmail, "application/json");
 
-            RestfulResponse response = curCall.Execute();
-            MissingMemberHandling oldSetting = jsonSerializer.Settings.MissingMemberHandling;
-            jsonSerializer.Settings.MissingMemberHandling = MissingMemberHandling.Ignore;
-            List<ActiveMandrillWebhook> activeHooks = jsonSerializer.Deserialize<List<ActiveMandrillWebhook>>(response.Content);
+            var response = curCall.Execute();
+            MissingMemberHandling oldSetting = JsonSerializer.Settings.MissingMemberHandling;
+            JsonSerializer.Settings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            List<ActiveMandrillWebhook> activeHooks = JsonSerializer.Deserialize<List<ActiveMandrillWebhook>>(response.Content);
 
-            jsonSerializer.Settings.MissingMemberHandling = oldSetting;
+            JsonSerializer.Settings.MissingMemberHandling = oldSetting;
             return activeHooks.Select(ah => ah.ID).ToList();
         }
 
         private static void InstantiateNewWebhook(string url)
         {
-            RestfulCall curCall = new RestfulCall(baseURL, "/webhooks/add.json", Method.POST);
+            var curCall = CreateRestfulCall(BaseURL, "/webhooks/add.json", Method.POST);
             MandrillWebhookAddRequest addRequest = new MandrillWebhookAddRequest
             {
                 Key = MandrillKey,
@@ -170,7 +160,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
                 URL = url
             };
 
-            string serialisedEmail = jsonSerializer.Serialize(addRequest);
+            string serialisedEmail = JsonSerializer.Serialize(addRequest);
             curCall.AddBody(serialisedEmail, "application/json");
 
             //Transmit the call
@@ -181,7 +171,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
         //simple send with no merge variables or templates
         public static void PostMessageSend(EmailDO message)
         {
-            RestfulCall curCall = new RestfulCall(baseURL, "/messages/send.json", Method.POST);
+            var curCall = CreateRestfulCall(BaseURL, "/messages/send.json", Method.POST);
             MandrillBasePackage curBasePackage = new MandrillBasePackage(MandrillKey, message);
             AssembleAndSend(curBasePackage, curCall);
         }
@@ -189,17 +179,16 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
 
         //FINAL ASSEMBLY AND TRANSMISSION
         //finish configuring a complete 'package' that can be auto-serialized into the json that Mandrill understands.
-        private static void AssembleAndSend(MandrillBasePackage curTemplatePackage, RestfulCall curCall)
+        private static void AssembleAndSend(MandrillBasePackage curTemplatePackage, IRestfullCall curCall)
         {
             //serialize the email data and add it to the RestfulCall
-            string serialisedEmail = jsonSerializer.Serialize(curTemplatePackage);
+            string serialisedEmail = JsonSerializer.Serialize(curTemplatePackage);
             curCall.AddBody(serialisedEmail, "application/json");
 
             //Transmit the call
-            RestfulResponse response = curCall.Execute();
+            var response = curCall.Execute();
 
             HandleResponse(response.Content, curTemplatePackage.Email);
-
         }
 
         private static void HandleResponse(String responseStr, EmailDO email)
@@ -208,7 +197,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             try
             {
                 // Max Kostyrkin: got responseStr = '[]' and this was deserialized as null.
-                responses = jsonSerializer.Deserialize<List<MandrillResponse>>(responseStr) ??
+                responses = JsonSerializer.Deserialize<List<MandrillResponse>>(responseStr) ??
                     new List<MandrillResponse>();
             }
             catch (JsonSerializationException)
@@ -264,7 +253,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             List<MandrillWebhookResponse> responses;
             try
             {
-                responses = jsonSerializer.Deserialize<List<MandrillWebhookResponse>>(responseStr);
+                responses = JsonSerializer.Deserialize<List<MandrillWebhookResponse>>(responseStr);
             }
             catch (JsonSerializationException)
             {
@@ -276,7 +265,7 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
                 string firstTag = response.Msg.Tags.FirstOrDefault();
                 if (firstTag == null)
                 {
-                    OnEmailCriticalError(-1, "No email ID was stored in tags.", "An email webhook was recieved, but we couldn't identify the email.", -1);
+                    OnEmailCriticalError(-1, "No email ID was stored in tags.", "An email webhook was received, but we couldn't identify the email.", -1);
                     return;
                 }
                 int emailID = int.Parse(firstTag);
@@ -301,18 +290,15 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
                 }
             }
         }
-
-
         #endregion
-
 
         //for testing Mandrill if things are broken
         public static string PostPing()
         {
-            RestfulCall curCall = new RestfulCall(baseURL, "/users/ping.json", Method.POST);
+            var curCall = CreateRestfulCall(BaseURL, "/users/ping.json", Method.POST);
             string pingstring = @"{ ""key"": """ + MandrillKey + @"""}";
             curCall.AddBody(pingstring, "application/json");
-            RestfulResponse response = curCall.Execute();
+            var response = curCall.Execute();
 
             return response.Content;
         }
@@ -324,230 +310,19 @@ namespace KwasantCore.Managers.APIManager.Packagers.Mandrill
             if (envelope == null)
                 throw new ArgumentNullException("envelope");
             if (!string.Equals(envelope.Handler, EnvelopeDO.MandrillHander))
-                throw new ArgumentException("This envelope should not be handled with Mandrill.", "envelope");
+                throw new ArgumentException(@"This envelope should not be handled with Mandrill.", "envelope");
             if (envelope.Email == null)
-                throw new ArgumentException("This envelope has no Email.", "envelope");
+                throw new ArgumentException(@"This envelope has no Email.", "envelope");
             if (envelope.Email.Recipients.Count == 0)
-                throw new ArgumentException("This envelope has no recipients.", "envelope");
+                throw new ArgumentException(@"This envelope has no recipients.", "envelope");
             PostMessageSendTemplate(envelope.TemplateName, envelope.Email, envelope.MergeData);
         }
 
-        #endregion
-    }
-
-    //=============================================================================================================================================
-    //MANDRILL-SPECIFIC ENTITIES
-    //These only really exist because it makes it really easy to auto serialize and deserialize from the specific JSON that Mandrill has defined.
-    //They should not be used directly, but only by MandrillPackager
-
-    public class MandrillListWebhooks
-    {
-        public String Key;
-    }
-
-    public class MandrillDeleteWebhook
-    {
-        public String Key;
-        public int ID;
-    }
-
-    public class ActiveMandrillWebhook
-    {
-        public int ID;
-        public String URL;
-        public DateTime Created_At;
-        public DateTime Last_Sent_At;
-        public int Batches_Sent;
-        public int Events_Sent;
-        public String Description;
-        public String AuthKey;
-        public List<String> Events;
-    }
-
-    public class MandrillWebhookResponse
-    {
-        public class MandrillWebhookMessage
+        private static IRestfullCall CreateRestfulCall(String baseURL, String resource, Method method)
         {
-            public int TS;
-            public String Subject;
-            public String Email;
-            public List<String> Tags;
-            public List<String> Opens;
-            public List<String> Clicks;
-            public String State;
-            public List<String> SMTP_Events;
-            public String Subaccount;
-            public List<String> Resends;
-            public String Reject;
-            public String _ID;
-            public String Sender;
-            public String Template;
-
-        }
-        public string Event;
-        public string _ID;
-        public MandrillWebhookMessage Msg;
-        public int TS;
-    }
-
-    public class MandrillResponse
-    {
-        public const String MandrilSent = "sent";
-        public const String MandrilQueued = "queued";
-        public const String MandrilScheduled = "scheduled";
-        public const String MandrilRejected = "rejected";
-        public const String MandrilInvalid = "invalid";
-        public const String MandrilError = "error";
-
-        public String Email;
-        public String Status;
-        public String RejectReason;
-        public String _ID;
-        public int Code;
-        public String Name;
-        public String Message;
-    }
-
-    public class MandrillWebhookAddRequest
-    {
-        public string Key;
-        public string URL;
-        public string Description;
-        public List<String> Events;
-    }
-
-
-    public class MandrillBasePackage
-    {
-        #region Members
-
-        public class MandrilEmail
-        {
-            public class MandrilEmailAddress
-            {
-                public string Email;
-                public string Name;
-                public string Type;
-            }
-
-            public class MandrilHeader
-            {
-                public string ReplyTo;
-            }
-
-            public class MandrilAttachment
-            {
-                public String Type;
-                public String Name;
-                public String Content;
-            }
-
-            public string HTML;
-            public string Subject;
-            public string FromEmail;
-            public string FromName;
-            public List<MandrilEmailAddress> To;
-            public MandrilHeader Headers;
-            public bool Important;
-            public List<MandrilAttachment> Attachments;
-            public List<MandrilAttachment> Images;
-            public List<String> Tags;
-            public List<MandrillDynamicContentChunk> GlobalMergeVars;
-        }
-
-        public string Key;
-        [JsonIgnore]
-        public EmailDO Email;
-
-        public MandrilEmail Message;
-        public bool Async = false;
-
-        #endregion
-
-        #region Constructor
-        public MandrillBasePackage(string curKey, EmailDO message)
-        {
-            Key = curKey;
-            Email = message;
-
-            Message = new MandrilEmail
-            {
-                HTML = message.HTMLText,
-                Subject = message.Subject,
-                FromEmail = message.From.Address,
-                FromName = message.From.Name,
-                To = message.To.Select(t => new MandrilEmail.MandrilEmailAddress { Email = t.Address, Name = t.Name, Type = "to" }).ToList(),
-                Headers = message.ReplyTo != null ? new MandrilEmail.MandrilHeader() { ReplyTo = message.ReplyTo.Address } : null,
-                Important = false,
-                Tags = new List<string> { Email.Id.ToString() },
-                Attachments = message.Attachments.Select(a =>
-                {
-                    byte[] file = a.Bytes;
-                    string base64Version = Convert.ToBase64String(file, 0, file.Length);
-
-                    return new MandrilEmail.MandrilAttachment
-                    {
-                        Content = base64Version,
-                        Name = a.OriginalName,
-                        Type = a.Type
-                    };
-                }).ToList(),
-            };
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// This package combines an email message with mandrill-specific template chunks and a Mandrill key
-    /// </summary>
-    public class MandrillTemplatePackage : MandrillBasePackage
-    {
-        #region Members
-
-
-        public string TemplateName;
-        public List<MandrillDynamicContentChunk> TemplateContent;
-
-
-        #endregion
-
-        #region Constructor
-        public MandrillTemplatePackage(string curKey, EmailDO email)
-            : base(curKey, email)
-        {
-
-        }
-
-        #endregion
-    }
-
-
-
-    [Serializable]
-    public class MandrillDynamicContentChunk
-    {
-        public string Name;
-        public string Content;
-    }
-
-    /// <summary>
-    /// In the Mandrill JSON, dynamic merge data must be provided on a per-recipient basis. Each recipient can have a List of dynamic chunks.
-    /// </summary>
-    [Serializable]
-    public class MandrillMergeRecipient
-    {
-        #region Members
-
-        public string Rcpt;
-        public List<MandrillDynamicContentChunk> Vars;
-
-        #endregion
-
-        #region Constructor
-        public MandrillMergeRecipient()
-        {
-            Vars = new List<MandrillDynamicContentChunk> { };
+            var restfulCall = ObjectFactory.GetInstance<IRestfullCall>();
+            restfulCall.Initialize(baseURL, resource, method);
+            return restfulCall;
         }
 
         #endregion

@@ -36,6 +36,7 @@ namespace KwasantCore.Services
             bookingRequest.State = BookingRequestState.Unstarted;
             UserDO curUser = user.GetOrCreateFromBR(uow, bookingRequest.From);
             bookingRequest.User = curUser;
+            bookingRequest.UserID = curUser.Id;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
 
             foreach (var calendar in bookingRequest.User.Calendars)
@@ -185,7 +186,7 @@ namespace KwasantCore.Services
             string toRecipient = emailAddressDO.Address;
             IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             string fromAddress = configRepository.Get<string>("EmailAddress_GeneralInfo");
-            EmailDO curEmail = _email.GenerateBasicMessage(uow, emailAddressDO, subject, message, fromAddress, toRecipient);
+            EmailDO curEmail = _email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
             uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
             uow.SaveChanges();
         }
@@ -206,5 +207,20 @@ namespace KwasantCore.Services
                 eventDO.Attendees.Add(curAttendee);
             }
         }
+
+        public string getCountDaysAgo(DateTimeOffset dateReceived)
+        {
+            string daysAgo = string.Empty;
+            int countDays = (System.DateTime.Today - dateReceived).Days;
+            if (countDays > 0)
+                daysAgo = " (" + countDays + " days ago)";
+            else
+            {
+                daysAgo = " (" + dateReceived.ToLocalTime().ToString("T") + ")";
+            }
+
+            return daysAgo;
+        }
     }
+
 }

@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Analytics.NET">
+      <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -45,9 +48,6 @@
     </Reference>
     <Reference Include="Google.Apis.Core">
       <HintPath>..\packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="KwasantCore">
-      <HintPath>..\Bin\KwasantCore.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -240,9 +240,29 @@
     <Compile Include="Migrations\201409231048096_Sync.23.09.2014.Designer.cs">
       <DependentUpon>201409231048096_Sync.23.09.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.cs" />
+    <Compile Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.Designer.cs">
+      <DependentUpon>201409241548359_AddSegmentTrackingToAuthTokens.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409251049205_Sync.Rob.25.09.2014.cs" />
+    <Compile Include="Migrations\201409251049205_Sync.Rob.25.09.2014.Designer.cs">
+      <DependentUpon>201409251049205_Sync.Rob.25.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409251527319_Rob2.Sync.25.09.2014.cs" />
+    <Compile Include="Migrations\201409251527319_Rob2.Sync.25.09.2014.Designer.cs">
+      <DependentUpon>201409251527319_Rob2.Sync.25.09.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409261128558_Sync.26.09.2014.cs" />
+    <Compile Include="Migrations\201409261128558_Sync.26.09.2014.Designer.cs">
+      <DependentUpon>201409261128558_Sync.26.09.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.cs" />
     <Compile Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.Designer.cs">
       <DependentUpon>201409221025343_Add_ConversationId_to_EmailDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409290708187_Sync_Fix.cs" />
+    <Compile Include="Migrations\201409290708187_Sync_Fix.Designer.cs">
+      <DependentUpon>201409290708187_Sync_Fix.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201409250752223_Sync_Fix.cs" />
     <Compile Include="Migrations\201409250752223_Sync_Fix.Designer.cs">
@@ -1020,8 +1040,23 @@
     <EmbeddedResource Include="Migrations\201409231048096_Sync.23.09.2014.resx">
       <DependentUpon>201409231048096_Sync.23.09.2014.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409241548359_AddSegmentTrackingToAuthTokens.resx">
+      <DependentUpon>201409241548359_AddSegmentTrackingToAuthTokens.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409251049205_Sync.Rob.25.09.2014.resx">
+      <DependentUpon>201409251049205_Sync.Rob.25.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409251527319_Rob2.Sync.25.09.2014.resx">
+      <DependentUpon>201409251527319_Rob2.Sync.25.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409261128558_Sync.26.09.2014.resx">
+      <DependentUpon>201409261128558_Sync.26.09.2014.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409221025343_Add_ConversationId_to_EmailDO.resx">
       <DependentUpon>201409221025343_Add_ConversationId_to_EmailDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409290708187_Sync_Fix.resx">
+      <DependentUpon>201409290708187_Sync_Fix.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409250752223_Sync_Fix.resx">
       <DependentUpon>201409250752223_Sync_Fix.cs</DependentUpon>

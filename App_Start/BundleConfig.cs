@@ -97,6 +97,10 @@ namespace KwasantWeb.App_Start
 				"~/Content/js/collapse.js"
 				));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/cookies").Include(
+                "~/Content/js/jquery.cookie-1.4.1.min.js"
+                ));
+
             //Styles
             bundles.Add(new StyleBundle("~/bundles/css/bootstrap23").Include(
 				"~/Content/css/additionalcss/bootstrap23/css/bootstrap2.3.css", new CssRewriteUrlTransform()

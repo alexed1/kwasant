@@ -17,6 +17,18 @@ namespace Data.Infrastructure.StructureMap
 {
     public class MockedDBContext : IDBContext
     {
+        private static readonly List<MockedDbSet> SetsToClear = new List<MockedDbSet>();
+        public static void WipeMockedDatabase()
+        {
+            lock (SetsToClear)
+            {
+                foreach (var set in SetsToClear)
+                {
+                    set.WipeDatabase();
+                }
+            }
+        }
+
         public MockedDBContext()
         {
             MigrationConfiguration.Seed(new UnitOfWork(this));
@@ -27,32 +39,32 @@ namespace Data.Infrastructure.StructureMap
             SetPrimaryKey<UserDO, String>(u => u.Id);
         }
 
-        private readonly Dictionary<Type, PropertyInfo> m_ForcedDOPrimaryKey = new Dictionary<Type, PropertyInfo>();
+        private readonly Dictionary<Type, PropertyInfo> _forcedDOPrimaryKey = new Dictionary<Type, PropertyInfo>();
 
         private void SetPrimaryKey<TOnType, TReturnType>(Expression<Func<TOnType, TReturnType>> expression)
         {
             var reflectionHelper = new ReflectionHelper<TOnType>();
             var propName = reflectionHelper.GetPropertyName(expression);
             var linkedProp = typeof (TOnType).GetProperties().FirstOrDefault(p => p.Name == propName);
-            lock(m_ForcedDOPrimaryKey)
-                m_ForcedDOPrimaryKey[typeof(TOnType)] = linkedProp;
+            lock(_forcedDOPrimaryKey)
+                _forcedDOPrimaryKey[typeof(TOnType)] = linkedProp;
         }
 
-        private readonly Dictionary<Type, List<String>> m_UniqueProperties = new Dictionary<Type, List<String>>();
+        private readonly Dictionary<Type, List<String>> _uniqueProperties = new Dictionary<Type, List<String>>();
         private void SetUnique<TOnType, TReturnType>(Expression<Func<TOnType, TReturnType>> expression)
         {
             var reflectionHelper = new ReflectionHelper<TOnType>();
             var propName = reflectionHelper.GetPropertyName(expression);
-            lock (m_UniqueProperties)
+            lock (_uniqueProperties)
             {
-                if (!m_UniqueProperties.ContainsKey(typeof (TOnType)))
-                    m_UniqueProperties[typeof(TOnType)] = new List<String>();
+                if (!_uniqueProperties.ContainsKey(typeof (TOnType)))
+                    _uniqueProperties[typeof(TOnType)] = new List<String>();
                 
-                m_UniqueProperties[typeof(TOnType)].Add(propName);
+                _uniqueProperties[typeof(TOnType)].Add(propName);
             }
         }
 
-        private readonly Dictionary<Type, IEnumerable<object>> _cachedSets = new Dictionary<Type, IEnumerable<object>>();
+        private readonly Dictionary<Type, MockedDbSet> _cachedSets = new Dictionary<Type, MockedDbSet>();
 
         private object[] _addedEntities;
         public int SaveChanges()
@@ -64,20 +76,44 @@ namespace Data.Infrastructure.StructureMap
             //We loop, because in this instance:
             //eventDO.Emails.Add(new EmailDO { Customer = new CustomerDO }) - once we've added the email, we still haven't added the customer.
             //Looping causes us to pickup each foreign link and be sure everything is persisted in memory
-            while (AddForeignValues() > 0) ;
+
+            
+            //the only way we know what is being created is to look at EntityState.Added. But after the savechanges, that will all be erased.
+            //so we have to build a little list of entities that will have their AfterCreate hook called.
+
+            AddForeignRows();
+
+            var adds = GetAdds();
+            var createdEntityList = adds.OfType<ICreateHook>().ToList();
+            
+            SaveSets();
 
             DetectChanges();
 
-            AssignIDs();
+            AssignIDs(adds);
 
-            UpdateForeignKeyReferences();
+            UpdateForeignKeyReferences(adds);
 
             AssertConstraints();
             
-            foreach (var newBookingRequestDO in _addedEntities.OfType<BookingRequestDO>())
-                AlertManager.BookingRequestCreated(newBookingRequestDO.Id);
-            
+            foreach (var createdEntity in createdEntityList)
+            {
+                createdEntity.AfterCreate();
+            }
+
             return 1;
+        }
+
+        private void SaveSets()
+        {
+            lock (_cachedSets)
+            {
+                foreach (var cachedSet in _cachedSets)
+                {
+                    var set = cachedSet.Value;
+                    set.Save();
+                }
+            }
         }
 
         public void DetectChanges()
@@ -94,7 +130,6 @@ namespace Data.Infrastructure.StructureMap
         {
             get
             {
-                // TODO: not supported currenty. May be implemented via hashcodes.
                 return new object[0];
             }
         }
@@ -103,7 +138,6 @@ namespace Data.Infrastructure.StructureMap
         {
             get
             {
-                // TODO: not supported currenty.
                 return new object[0];
             }
         }
@@ -130,9 +164,9 @@ namespace Data.Infrastructure.StructureMap
                 }
             }
 
-            lock (m_UniqueProperties)
+            lock (_uniqueProperties)
             {
-                foreach (var kvp in m_UniqueProperties)
+                foreach (var kvp in _uniqueProperties)
                 {
                     var set = Set(kvp.Key);
 
@@ -157,153 +191,141 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
-        private IEnumerable<object> GetAdds()
+        private IList<object> GetAdds()
         {
             lock (_cachedSets)
             {
+                var returnSet = new List<object>();
                 var sets = _cachedSets.ToList();
                 foreach (var set in sets)
                 {
-                    foreach (object row in set.Value as IEnumerable)
-                    {
-                        var propInfo = EntityPrimaryKeyPropertyInfo(row);
-                        if (propInfo == null)
-                            continue;
-
-                        if ((int) propInfo.GetValue(row) == 0)
-                        {
-                            yield return row;
-                        }
-                    }
+                    returnSet.AddRange(set.Value.LocalEnumerable.Cast<object>().Where(row => !set.Value.OfType<object>().Contains(row)));
                 }
+                return returnSet;
             }
         }
 
-        private void AssignIDs()
+        private void AssignIDs(IEnumerable<object> adds)
         {
             lock (_cachedSets)
             {
-                foreach (var set in _cachedSets)
+                foreach (var grouping in adds.GroupBy(a => a.GetType()))
                 {
                     int maxIDAlready = 0;
-                    if (set.Value.Any())
+                    var savedCollection = Set(grouping.Key).OfType<object>().ToList();
+                    if (savedCollection.Any())
                     {
-                        maxIDAlready = set.Value.Max<object, int>(a =>
-                        {
-                            var propInfo = EntityPrimaryKeyPropertyInfo(a);
-                            if (propInfo == null)
-                                return 0;
+                        var propertyInfo = EntityPrimaryKeyPropertyInfo(grouping.Key);
+                        if (propertyInfo == null || propertyInfo.PropertyType != typeof(int))
+                            continue;
 
-                            return (int) propInfo.GetValue(a);
-                        });
+                        maxIDAlready = savedCollection.Max<object, int>(a => (int) propertyInfo.GetValue(a));
                     }
-
-                    foreach (var row in set.Value)
+                    foreach (var row in grouping)
                     {
                         var propInfo = EntityPrimaryKeyPropertyInfo(row);
                         if (propInfo == null)
                             continue;
-
-                        if ((int) propInfo.GetValue(row) == 0)
-                        {
+                        
+                        if ((int)propInfo.GetValue(row) == 0)
                             propInfo.SetValue(row, ++maxIDAlready);
-                        }
                     }
                 }
             }
         }
 
-        private void UpdateForeignKeyReferences()
+        private void UpdateForeignKeyReferences(IEnumerable<object> newRows)
         {
-            lock (_cachedSets)
+            foreach(var grouping in newRows.GroupBy(r => r.GetType()))
             {
-                foreach (var keyValuePair in _cachedSets)
+                if (!grouping.Any())
+                    continue;
+
+                var propType = grouping.Key;
+                var props = propType.GetProperties();
+                var propsWithForeignKeyNotation = props.Where(p => p.GetCustomAttribute<ForeignKeyAttribute>(true) != null).ToList();
+                if (!propsWithForeignKeyNotation.Any())
+                    continue;
+
+                foreach (var prop in propsWithForeignKeyNotation)
                 {
-                    if (!keyValuePair.Value.Any())
+                    var attr = prop.GetCustomAttribute<ForeignKeyAttribute>(true);
+                    //Now.. find out which way it goes..
+
+                    var linkedName = attr.Name;
+                    var linkedProp = propType.GetProperties().FirstOrDefault(n => n.Name == linkedName);
+                    if (linkedProp == null)
                         continue;
 
-                    var props = keyValuePair.Key.GetProperties();
-                    var propsWithForeignKeyNotation =
-                        props.Where(p => p.GetCustomAttribute<ForeignKeyAttribute>() != null).ToList();
-                    if (!propsWithForeignKeyNotation.Any())
-                        continue;
+                    PropertyInfo foreignIDProperty;
+                    PropertyInfo parentFKIDProperty;
+                    PropertyInfo parentFKDOProperty;
 
-                    foreach (var prop in propsWithForeignKeyNotation)
+                    var linkedID = EntityPrimaryKeyPropertyInfo(linkedProp.PropertyType);
+                    var foreignType = linkedProp.PropertyType;
+                    if (linkedID != null)
                     {
-                        var attr = prop.GetCustomAttribute<ForeignKeyAttribute>();
-                        //Now.. find out which way it goes..
+                        foreignIDProperty = linkedID;
+                        parentFKIDProperty = prop;
+                        parentFKDOProperty = linkedProp;
+                    }
+                    else
+                    {
+                        foreignIDProperty = EntityPrimaryKeyPropertyInfo(prop.PropertyType);
+                        foreignType = prop.PropertyType;
+                        parentFKIDProperty = linkedProp;
+                        parentFKDOProperty = prop;
+                    }
 
-                        var linkedName = attr.Name;
-                        var linkedProp = keyValuePair.Key.GetProperties().FirstOrDefault(n => n.Name == linkedName);
-                        if (linkedProp == null)
-                            continue;
+                    var foreignCollectionProps = foreignType.GetProperties()
+                        .Where(p => p.PropertyType.IsGenericType &&
+                                    typeof (IList).IsAssignableFrom(p.PropertyType) &&
+                                    p.PropertyType.GetGenericArguments()[0] == propType).ToList();
 
-                        PropertyInfo foreignIDProperty;
-                        PropertyInfo parentFKIDProperty;
-                        PropertyInfo parentFKDOProperty;
+                    if (linkedID == null)
+                        continue;
 
-                        var getPrimaryKeyProp = new Func<PropertyInfo, PropertyInfo>(
-                            (propertyInfo) =>
-                            {
-                                var propType = propertyInfo.PropertyType;
-                                lock (m_ForcedDOPrimaryKey)
-                                {
-                                    if (m_ForcedDOPrimaryKey.ContainsKey(propType))
-                                        return m_ForcedDOPrimaryKey[propType];
-                                }
-                                return
-                                    propType.GetProperties()
-                                        .FirstOrDefault(p => p.GetCustomAttribute<KeyAttribute>() != null);
-                            });
-
-                        var linkedID = getPrimaryKeyProp(linkedProp);
-                        if (linkedID != null)
+                    foreach (var value in grouping)
+                    {
+                        var foreignDO = parentFKDOProperty.GetValue(value);
+                        if (foreignDO != null) //If the DO is set, then we update the ID
                         {
-                            foreignIDProperty = linkedID;
-                            parentFKIDProperty = prop;
-                            parentFKDOProperty = linkedProp;
+                            var fkID = foreignIDProperty.GetValue(foreignDO);
+                            parentFKIDProperty.SetValue(value, fkID);
                         }
                         else
                         {
-                            foreignIDProperty = getPrimaryKeyProp(prop);
-                            parentFKIDProperty = linkedProp;
-                            parentFKDOProperty = prop;
+                            var fkID = parentFKIDProperty.GetValue(value);
+                            if (fkID == null)
+                                continue;
+
+                            var foreignSet = Set(parentFKDOProperty.PropertyType);
+                            foreach (var foreignRow in foreignSet)
+                            {
+                                var id = foreignIDProperty.GetValue(foreignRow);
+                                if (id.Equals(fkID))
+                                {
+                                    foreignDO = foreignRow;
+                                    break;
+                                }
+                            }
+                            if (foreignDO != null)
+                            {
+                                parentFKDOProperty.SetValue(value, foreignDO);
+                            }
                         }
 
-                        if (foreignIDProperty == null)
-                            continue;
-
-                        foreach (var value in keyValuePair.Value)
+                        if (foreignDO != null)
                         {
-                            var foreignDO = parentFKDOProperty.GetValue(value);
-                            if (foreignDO != null) //If the DO is set, then we update the ID
+                            //Now we add ourselves to their collection (if they have one)
+                            foreach (var foreignCollectionProp in foreignCollectionProps)
                             {
-                                var fkID = foreignIDProperty.GetValue(foreignDO);
-                                parentFKIDProperty.SetValue(value, fkID);
-                            }
-                            else
-                            {
-                                var fkID = parentFKIDProperty.GetValue(value);
-                                if (fkID == null)
+                                var collectionToAddTo = foreignCollectionProp.GetValue(foreignDO) as IList;
+                                if (collectionToAddTo == null)
                                     continue;
 
-                                if (!_cachedSets.ContainsKey(parentFKDOProperty.PropertyType))
-                                    continue;
-
-                                var foreignSet = _cachedSets[parentFKDOProperty.PropertyType];
-                                object foundRow = null;
-                                foreach (var foreignRow in foreignSet)
-                                {
-                                    if (foreignIDProperty.GetValue(foreignRow) == fkID)
-                                    {
-                                        foundRow = foreignRow;
-                                        break;
-                                    }
-                                }
-                                if (foundRow != null)
-                                {
-                                    parentFKDOProperty.SetValue(value, foundRow);
-                                }
+                                if (!collectionToAddTo.Contains(value))
+                                    collectionToAddTo.Add(value);
                             }
                         }
                     }
@@ -311,57 +333,65 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
-        private int AddForeignValues()
+        private void AddForeignRows()
         {
+            List<Object> currentPass;
             lock (_cachedSets)
+                currentPass = new List<object>(_cachedSets.SelectMany(c => c.Value.LocalEnumerable.OfType<object>()));
+
+            var nextPass = new List<Object>();
+            
+            while (currentPass.Any())
             {
-                int numAdded = 0;
-                foreach (KeyValuePair<Type, IEnumerable<object>> set in _cachedSets.ToList())
+                foreach (var row in currentPass)
                 {
-                    foreach (object row in set.Value)
+                    PropertyInfo[] props = row.GetType().GetProperties();
+                    foreach (PropertyInfo prop in props)
                     {
-                        PropertyInfo[] props = row.GetType().GetProperties();
-                        foreach (PropertyInfo prop in props)
+                        Type castValue = null;
+                        var actualValue = prop.GetValue(row);
+                        if (actualValue != null)
+                            castValue = actualValue.GetType();
+                        if (IsEntity(prop.PropertyType) || (castValue != null && IsEntity(castValue)))
                         {
-                            if (IsEntity(prop.PropertyType))
-                            {
-                                //It's a normal foreign key
-                                object value = prop.GetValue(row);
-                                if (value == null)
-                                    continue;
+                            //It's a normal foreign key
+                            object value = prop.GetValue(row);
+                            if (value == null)
+                                continue;
 
-                                if (AddValueToForeignSet(value))
-                                    numAdded++;
-                            }
-                            else if (prop.PropertyType.IsGenericType &&
-                                     typeof (IEnumerable).IsAssignableFrom(prop.PropertyType) &&
-                                     IsEntity(prop.PropertyType.GetGenericArguments()[0]))
-                            {
-                                //It's a collection!
-                                IEnumerable collection = prop.GetValue(row) as IEnumerable;
-                                if (collection == null)
-                                    continue;
+                            if (AddValueToForeignSet(value))
+                                nextPass.Add(value);
+                        }
+                        else if (prop.PropertyType.IsGenericType &&
+                                 typeof (IEnumerable).IsAssignableFrom(prop.PropertyType) &&
+                                 IsEntity(prop.PropertyType.GetGenericArguments()[0]))
+                        {
+                            //It's a collection!
+                            IEnumerable collection = prop.GetValue(row) as IEnumerable;
+                            if (collection == null)
+                                continue;
 
-                                foreach (object value in collection)
-                                {
-                                    if (AddValueToForeignSet(value))
-                                        numAdded++;
-                                }
+                            foreach (var obj in collection.OfType<object>())
+                            {
+                                if (AddValueToForeignSet(obj))
+                                    nextPass.Add(obj);
                             }
                         }
                     }
                 }
-                return numAdded;
+                currentPass = new List<object>(nextPass);
+                nextPass.Clear();
             }
         }
 
         private bool AddValueToForeignSet(Object value)
         {
-            var checkSet = Set(value.GetType());
-            if (checkSet.Contains(value))
-            {
+            if (value.GetType().IsNested)
                 return false;
-            }
+
+            var checkSet = Set(value.GetType());
+            if (checkSet.OfType<object>().Union(checkSet.LocalEnumerable.OfType<object>()).Contains(value))
+                return false;
 
             MethodInfo methodToCall = checkSet.GetType().GetMethod("Add", new[] { value.GetType() });
             methodToCall.Invoke(checkSet, new[] { value });
@@ -374,26 +404,32 @@ namespace Data.Infrastructure.StructureMap
             return (IDbSet<TEntity>)(Set(entityType));
         }
 
-        private IEnumerable<object> Set(Type entityType)
+        private MockedDbSet Set(Type entityType)
         {
             lock (_cachedSets)
             {
                 if (!_cachedSets.ContainsKey(entityType))
                 {
                     var assemblyTypes = entityType.Assembly.GetTypes();
-                    var subclassedSets =
-                        assemblyTypes.Where(a => a.IsSubclassOf(entityType) && entityType != a).ToList();
+                    var subclassedSets = assemblyTypes.Where(a => a.IsSubclassOf(entityType) && entityType != a).ToList();
                     var otherSets = subclassedSets.Select(Set);
 
-                    _cachedSets[entityType] = (IEnumerable<object>)Activator.CreateInstance(typeof (MockedDbSet<>).MakeGenericType(entityType), this, otherSets);
+                    _cachedSets[entityType] = (MockedDbSet)Activator.CreateInstance(typeof(MockedDbSet<>).MakeGenericType(entityType), otherSets);
                 }
-                return _cachedSets[entityType];
+
+                var returnSet = _cachedSets[entityType];
+                lock (SetsToClear)
+                {
+                    if (!SetsToClear.Contains(returnSet))
+                        SetsToClear.Add(returnSet);
+                }
+                return returnSet;
             }
         }
 
         public DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public IUnitOfWork UnitOfWork { get; set; }
@@ -406,14 +442,18 @@ namespace Data.Infrastructure.StructureMap
         public PropertyInfo EntityPrimaryKeyPropertyInfo(object entity)
         {
             var entityType = entity.GetType();
-            List<PropertyInfo> keys = entityType.GetProperties().Where(p => p.GetCustomAttributes(typeof(KeyAttribute), true).Any()).ToList();
-            if (keys.Count > 1)
-                return null;
-            //If no primary key exists, we cannot use it
-            if (keys.Count == 0)
-                return null;
+            return EntityPrimaryKeyPropertyInfo(entityType);
+        }
 
-            return keys.First();
+        public PropertyInfo EntityPrimaryKeyPropertyInfo(Type entityType)
+        {
+            lock (_forcedDOPrimaryKey)
+            {
+                if (_forcedDOPrimaryKey.ContainsKey(entityType))
+                    return _forcedDOPrimaryKey[entityType];
+            }
+            return
+                entityType.GetProperties().FirstOrDefault(p => p.GetCustomAttribute<KeyAttribute>(true) != null);
         }
 
         public void Dispose()

@@ -10,16 +10,17 @@ using KwasantCore.Services;
 using KwasantCore.Managers;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
+using Segment;
 using StructureMap;
 using Utilities;
-using Utilities.Logging;
+using Logger = Utilities.Logging.Logger;
 
 namespace KwasantWeb
 {
     public class MvcApplication : System.Web.HttpApplication
     {
         private static bool _IsInitialised;
-
+        
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
@@ -54,9 +55,8 @@ namespace KwasantWeb
             CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
             curCommManager.SubscribeToAlerts();
 
-            
-            //AnalyticsManager curAnalyticsManager = new AnalyticsManager();
-            //curAnalyticsManager.SubscribeToAlerts();
+            var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
+            Analytics.Initialize(segmentWriteKey);
 
             AlertReporter curReporter = new AlertReporter();
             curReporter.SubscribeToAlerts();
@@ -72,8 +72,16 @@ namespace KwasantWeb
         {
             var exception = Server.GetLastError();
             String errorMessage = "Critical internal error occured.";
-            if (HttpContext.Current != null)
-                errorMessage += " URL accessed: " + HttpContext.Current.Request.Url;
+            try
+            {
+                if (HttpContext.Current != null && HttpContext.Current.Request != null)
+                    errorMessage += " URL accessed: " + HttpContext.Current.Request.Url;
+            }
+            catch (Exception)
+            {
+                errorMessage += " Error on startup.";
+            }
+            
 
             Logger.GetLogger().Error(errorMessage, exception);
         }

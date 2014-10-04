@@ -4,12 +4,15 @@ using System.Web.Routing;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using KwasantWeb.ViewModels.JsonConverters;
+using Segment;
+using Segment.Model;
 using StructureMap;
 using System.Net.Mail;
 using System;
@@ -60,7 +63,7 @@ namespace KwasantWeb.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var currBooker = this.GetUserId();
-
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
@@ -87,10 +90,11 @@ namespace KwasantWeb.Controllers
                 if (bookerId != null)
                 {
                     booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
-                }
+            }
 
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
                 {
+                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestDO.Id).Select(e => e.Id).ToList(),
                     BookingRequestId = bookingRequestDO.Id,
                     CurEmailData = new EmailDO
                     {
@@ -110,7 +114,7 @@ namespace KwasantWeb.Controllers
                     Booker = booker
                 };
                 TempData["requestInfo"] = bookingInfo;
-                //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
+            //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
                 return RedirectToAction("Index", "Dashboard", new { id = id });
             }
         }
@@ -186,8 +190,8 @@ namespace KwasantWeb.Controllers
         }
 
 
-        //create a BookingRequest
-        public ActionResult Generate(string emailAddress,string meetingInfo)
+        [AllowAnonymous]
+        public ActionResult Generate(string emailAddress, string meetingInfo)
         {
             string result = "";
             try
@@ -201,15 +205,19 @@ namespace KwasantWeb.Controllers
                     bookingRequest.DateReceived = DateTime.Now;
                     bookingRequest.PlainText = meetingInfo;
                     _br.Process(uow, bookingRequest);
+
                     uow.SaveChanges();
-                    result = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be";
+
+                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.User, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
+
+                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = bookingRequest.UserID }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                result = "Sorry! Something went wrong. Alpha software...";
+                return new JsonResult() { Data = new { Message = "Sorry! Something went wrong. Alpha software..." }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
-            return Content(result);
+
         }
 
         // GET: /RelatedItems 
@@ -255,6 +263,27 @@ namespace KwasantWeb.Controllers
                 uow.SaveChanges();
             }
         }
+
+        // GET: /Conversation Members
+        [HttpGet]
+        public ActionResult ShowConversation(int bookingRequestId, int? curEmailId)
+        {
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestConversationVM bookingRequestConversation = new BookingRequestConversationVM
+                {
+                    FromAddress = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.From.Address).ToList(),
+                    DateReceived = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).ToList().Select(e => e.DateReceived.ToString("MMM dd") + _br.getCountDaysAgo(e.DateReceived)).ToList(),
+                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
+                    HTMLText = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.HTMLText).ToList(),
+                    CurEmailId = curEmailId
+                };
+
+                return View(bookingRequestConversation);
+            }
+        }
+
 
     }
 }

@@ -1,5 +1,5 @@
 ﻿(function ($) {
-
+   
     var that;
     var settings;
     var initValues;
@@ -14,10 +14,11 @@
     };
 
     $.fn.NegotiationWidget = function (options, initialValues) {
-        that = this;
+        
+        that = this; 
         settings = $.extend({
             DisplayMode: 'edit',
-
+            PrefixQuestionText: 'Question:',
             //Based on AnswerState.cs - this is overridable via the options
             AnswerProposedStatus: 2,
             AnswerSelectedStatus: 3,
@@ -347,6 +348,7 @@
         var questionName = $('<input type="text" />')
             .addClass('form-control')
             .addClass('col-md-1')
+            .addClass('QuesText')
             .attr('placeholder', 'Enter your question...')
             .val(questionInitValues.Text);
 
@@ -424,7 +426,7 @@
                             .append(
                                 $('<td />')
                                     .append(
-                                        $('<label>Question: </label>')
+                                         $('<label>' + settings.PrefixQuestionText + ' </label>')
                                     )
                             ).append(
                                 $('<td />')
@@ -523,7 +525,7 @@
                 AnswerState: settings.AnswerProposedStatus,
                 Selected: this.Answers.length == 0 ? true : false,
                 QuestionGUID: questionInitValues.QuestionGUID,
-                PromptText: 'Enter an alternative answer here...',
+                PromptText: 'Enter an alternative suggestion here...',
                 Text: ''
             }, initialValues);
 

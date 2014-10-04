@@ -3,13 +3,12 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Daemons;
-using Moq;
 using NUnit.Framework;
 
 namespace KwasantTest.Daemons
 {
     [TestFixture]
-    public class DaemonTests
+    public class DaemonTests : BaseTest
     {
         public static void RunDaemonOnce<TDaemon>(TDaemon daemon)
             where TDaemon : Daemon
@@ -29,13 +28,13 @@ namespace KwasantTest.Daemons
         [Test, Category("Threaded")]
         public void CannotStartDaemonTwice()
         {
-            Daemon mockDaemon = new Mock<Daemon>().Object;
+            Daemon mockDaemon = new TestDaemon(() => { }, 60);
             Assert.True(mockDaemon.Start());
             Assert.False(mockDaemon.Start());
             mockDaemon.Stop();
         }
 
-        private class TestDaemon : Daemon
+        private class TestDaemon : Daemon<TestDaemon>
         {
             private readonly Action _execute;
             private readonly int _timeoutInSeconds;
