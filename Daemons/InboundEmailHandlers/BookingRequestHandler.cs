@@ -20,10 +20,10 @@ namespace Daemons.InboundEmailHandlers
                 EmailRepository emailRepo = uow.EmailRepository;
                 EmailDO email = Email.ConvertMailMessageToEmail(emailRepo, message);
 
-                var curEmail = (from t in uow.EmailRepository.GetAll()
-                                where t.Subject == email.Subject
-                                && (t.Recipients.Any(e => e.EmailID == email.From.Id) || t.FromID == email.From.Id)
-                                select t).FirstOrDefault();
+                var curEmail = (from t in uow.BookingRequestRepository.GetAll()
+                            where t.Subject == email.Subject
+                            && (t.Recipients.Any(e => e.EmailID == email.From.Id) || t.FromID == email.From.Id)
+                            select t).FirstOrDefault();
 
                 if (curEmail != null)
                 {
