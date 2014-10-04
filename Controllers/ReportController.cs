@@ -11,13 +11,15 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize(Roles = "Admin")]
     public class ReportController : Controller
     {
-        private DataTablesPackager _datatables;
+        //private DataTablesPackager _datatables;
         private Report _report;
+        private JsonPackager _jsonPackager;
 
         public ReportController()
         {
-            _datatables = new DataTablesPackager();
+           // _datatables = new DataTablesPackager();
             _report = new Report();
+            _jsonPackager = new JsonPackager();
         }
 
         //
@@ -42,7 +44,9 @@ namespace KwasantWeb.Controllers
             DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(_report.Generate(uow, dateRange, type)), JsonRequestBehavior.AllowGet);
+                //var jsonResult = Json(_datatables.Pack(_report.Generate(uow, dateRange, type)), JsonRequestBehavior.AllowGet);
+                var report = _report.Generate(uow, dateRange, type);
+                var jsonResult = Json(_jsonPackager.Pack(report), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -59,7 +63,9 @@ namespace KwasantWeb.Controllers
             DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(_report.GenerateHistoryReport(uow, dateRange, primaryCategory, bookingRequestId)), JsonRequestBehavior.AllowGet);
+                //var jsonResult = Json(_datatables.Pack(_report.GenerateHistoryReport(uow, dateRange, primaryCategory, bookingRequestId)), JsonRequestBehavior.AllowGet);
+                var historyReport = _report.GenerateHistoryReport(uow, dateRange, primaryCategory, bookingRequestId);
+                var jsonResult = Json(_jsonPackager.Pack(historyReport), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -77,7 +83,9 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(_report.GenerateHistoryByBookingRequestId(uow, bookingRequestId)), JsonRequestBehavior.AllowGet);
+               // var jsonResult = Json(_datatables.Pack(_report.GenerateHistoryByBookingRequestId(uow, bookingRequestId)), JsonRequestBehavior.AllowGet);
+                var historyByBRId = _report.GenerateHistoryByBookingRequestId(uow, bookingRequestId);
+                var jsonResult = Json(_jsonPackager.Pack(historyByBRId), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
              }

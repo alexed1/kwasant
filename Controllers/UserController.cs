@@ -17,19 +17,21 @@ using KwasantWeb.Controllers.Helpers;
 using Data.Validations;
 using System.Linq;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
+using Utilities;
 
 namespace KwasantWeb.Controllers
 {
     [KwasantAuthorize]
     public class UserController : Controller
     {
-        private DataTablesPackager _datatables;
+       // private DataTablesPackager _datatables;
         private User _user;
-
+        private JsonPackager _jsonPackager;
         public UserController()
         {
-            _datatables = new DataTablesPackager();
+           // _datatables = new DataTablesPackager();
             _user = new User();
+            _jsonPackager = new JsonPackager();
         }
 
         [KwasantAuthorize(Roles = "Admin")]
@@ -169,17 +171,17 @@ namespace KwasantWeb.Controllers
 
             if (string.IsNullOrEmpty(curUser.EmailAddress.Address) || string.IsNullOrEmpty(curUser.FirstName) || string.IsNullOrEmpty(curUser.LastName) || string.IsNullOrEmpty(selectedRole))
             {
-                var jsonErrorResult = Json(_datatables.Pack(new { Error = "All Fields are required" }), JsonRequestBehavior.AllowGet);
+                var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "All Fields are required" }), JsonRequestBehavior.AllowGet);
                 return jsonErrorResult;
             }
 
             EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
             if (!(emailAddressValidator.Validate(curUser.EmailAddress).IsValid))
             {
-                var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
+                var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
                 return jsonErrorResult;
             }
-            var jsonSuccessResult = Json(_datatables.Pack("valid"), JsonRequestBehavior.AllowGet);
+            var jsonSuccessResult = Json(_jsonPackager.Pack("valid"), JsonRequestBehavior.AllowGet);
             return jsonSuccessResult;
         }
 
@@ -214,7 +216,7 @@ namespace KwasantWeb.Controllers
 
             if (string.IsNullOrEmpty(queryParams.EmailAddress.Address) && string.IsNullOrEmpty(queryParams.FirstName) && string.IsNullOrEmpty(queryParams.LastName))
             {
-                var jsonErrorResult = Json(_datatables.Pack(new { Error = "Atleast one field is required" }), JsonRequestBehavior.AllowGet);
+                var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "Atleast one field is required" }), JsonRequestBehavior.AllowGet);
                 return jsonErrorResult;
             }
             if (queryParams.EmailAddress.Address != null)
@@ -222,13 +224,13 @@ namespace KwasantWeb.Controllers
                 EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
                 if (!(emailAddressValidator.Validate(queryParams.EmailAddress).IsValid))
                 {
-                    var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
+                    var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
                     return jsonErrorResult;
                 }
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(_user.Query(uow, queryParams)), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_jsonPackager.Pack(_user.Query(uow, queryParams)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -258,7 +260,7 @@ namespace KwasantWeb.Controllers
             {
                 _user.Update(uow, curUser, role);
             }
-            var jsonSuccessResult = Json(_datatables.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
+            var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
             return jsonSuccessResult;
         }
 
