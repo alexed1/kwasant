@@ -10,7 +10,8 @@ namespace KwasantCore.Managers.APIManager.Packagers.DataTable
         {
             jsonSerializer = new JsonSerializer();
         }
-        public string Pack(object dataObject) {
+        public string Pack(object dataObject)
+        {
             return jsonSerializer.Serialize(dataObject);
         }
     }

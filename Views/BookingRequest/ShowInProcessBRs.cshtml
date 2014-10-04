@@ -17,7 +17,7 @@
 <script type="text/javascript">
     $(document).ready(function () {
         //Ajax call to get all check out  booking request from server.
-        $.getJSON("/BookingRequest/ShowInProcessBookingRequest", {}, showRequests);
+        $.getJSON("/BookingRequest/GetInProcessBRS", {}, showRequests);
        
         function showRequests(response) {
             var table = $('#tblinprocessbookingrequest').DataTable({
