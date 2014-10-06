@@ -330,6 +330,7 @@
     <Compile Include="States\EventSyncState.cs" />
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
+    <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AnswerStatusTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />

@@ -13,14 +13,13 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Newtonsoft.Json;
+using StructureMap;
 using Utilities;
 
 namespace Data.Migrations
 {
     public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasantDbContext>
     {
-        private readonly IConfigRepository _configRepository;
-
         public MigrationConfiguration()
         {
             //Do not ever turn this on! It will break database upgrades
@@ -28,7 +27,6 @@ namespace Data.Migrations
 
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.KwasantDbContext";
-            _configRepository = new ConfigRepository();
         }
 
         protected override void Seed(KwasantDbContext context)
@@ -45,23 +43,24 @@ namespace Data.Migrations
             var unitOfWork = new UnitOfWork(context);
             Seed(unitOfWork);
 
-            AddRoles(unitOfWork);
-            AddAdmins(unitOfWork);
-            AddCustomers(unitOfWork);
-            AddBookingRequest(unitOfWork);
-
-            SeedRemoteCalendarProviders(unitOfWork);
-
-            AddCalendars(unitOfWork);
-            AddEvents(unitOfWork);
         }
 
         //Method to let us seed into memory as well
-        public static void Seed(IUnitOfWork context)
+        public static void Seed(IUnitOfWork uow)
         {
-            SeedConstants(context);
+            SeedConstants(uow);
 
-            SeedInstructions(context);
+            SeedInstructions(uow);
+
+            AddRoles(uow);
+            AddAdmins(uow);
+            AddCustomers(uow);
+            AddBookingRequest(uow);
+
+            SeedRemoteCalendarProviders(uow);
+
+            AddCalendars(uow);
+            AddEvents(uow);
         }
 
         //This method will automatically seed any constants file
@@ -139,8 +138,9 @@ namespace Data.Migrations
             }
         }
 
-        private void SeedRemoteCalendarProviders(IUnitOfWork uow)
+        private static void SeedRemoteCalendarProviders(IUnitOfWork uow)
         {
+            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             var providers = new[]
                                 {
                                     new RemoteCalendarProviderDO
@@ -150,8 +150,8 @@ namespace Data.Migrations
                                             AppCreds = JsonConvert.SerializeObject(
                                                 new
                                                     {
-                                                        ClientId = _configRepository.Get("GoogleCalendarClientId"),
-                                                        ClientSecret = _configRepository.Get("GoogleCalendarClientSecret"),
+                                                        ClientId = configRepository.Get("GoogleCalendarClientId"),
+                                                        ClientSecret = configRepository.Get("GoogleCalendarClientSecret"),
                                                         Scopes = "https://www.googleapis.com/auth/calendar"
                                                     }),
                                             CalDAVEndPoint = "https://apidata.googleusercontent.com/caldav/v2"
@@ -227,28 +227,31 @@ namespace Data.Migrations
                 );
         }
 
-        /// <summary>
-        /// Add roles of type 'Admin' and 'Customer' in DB
-        /// </summary>
-        /// <param name="unitOfWork"></param>
-        private void AddRoles(IUnitOfWork unitOfWork)
+        private static void AddRoles(IUnitOfWork uow)
         {
-            var roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(unitOfWork.Db as KwasantDbContext));
-
-            var roles = roleManager.Roles.ToList();
-            if (roleManager.RoleExists("Admin") == false)
+            Func<string, string, AspNetRolesDO> creatorFunc = (value, name) => new AspNetRolesDO
             {
-                roleManager.Create(new IdentityRole("Admin"));
+                Id = value,
+                Name = name
+            };
+            FieldInfo[] constants = typeof(Roles).GetFields();
+            var rolesToAdd = (from constant in constants
+                                     let name = constant.Name
+                                     let value = constant.GetValue(null)
+                                     select creatorFunc((string)value, name)).ToList();
+            
+            var repo = new GenericRepository<AspNetRolesDO>(uow);
+            var allRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
+            foreach (var row in allRows) //Delete old rows that are no longer seeded
+            {
+                if (!rolesToAdd.Select(i => i.Id).Contains(row.Id))
+                {
+                    repo.Remove(row);
+                }
             }
-
-            if (roleManager.RoleExists("Customer") == false)
+            foreach (var row in rolesToAdd)
             {
-                roleManager.Create(new IdentityRole("Customer"));
-            }
-
-            if (roleManager.RoleExists("Booker") == false)
-            {
-                roleManager.Create(new IdentityRole("Booker"));
+                uow.AspNetRolesRepository.DBSet.AddOrUpdate(r => r.Id, row);
             }
         }
 
@@ -257,7 +260,7 @@ namespace Data.Migrations
         /// </summary>
         /// <param name="unitOfWork">of type ShnexyKwasantDbContext</param>
         /// <returns>True if created successfully otherwise false</returns>
-        private void AddAdmins(IUnitOfWork unitOfWork)
+        private static void AddAdmins(IUnitOfWork unitOfWork)
         {
             CreateAdmin("alex@kwasant.com", "alex@1234", unitOfWork);
             CreateAdmin("pabitra@hotmail.com", "pabi1234", unitOfWork);
@@ -271,7 +274,7 @@ namespace Data.Migrations
         /// </summary>
         /// <param name="unitOfWork">of type ShnexyKwasantDbContext</param>
         /// <returns>True if created successfully otherwise false</returns>
-        private void AddCustomers(IUnitOfWork unitOfWork)
+        private static void AddCustomers(IUnitOfWork unitOfWork)
         {
             CreateCustomer("alexlucre1@gmail.com", "lucrelucre", unitOfWork);
         }
@@ -283,12 +286,14 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private void CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
+        private static void CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
-            //TODO: Add admin role
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
-            
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
+
             user.TestAccount = true;
         }
 
@@ -299,16 +304,16 @@ namespace Data.Migrations
         /// <param name="curPassword"></param>
         /// <param name="uow"></param>
         /// <returns></returns>
-        private void CreateCustomer(string userEmail, string curPassword, IUnitOfWork uow)
+        private static void CreateCustomer(string userEmail, string curPassword, IUnitOfWork uow)
         {
             var user = uow.UserRepository.GetOrCreateUser(userEmail);
-            //TODO: Add admin role
             uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
 
-            user.TestAccount = false;
+            user.TestAccount = true;
         }
 
-        private void AddBookingRequest(IUnitOfWork unitOfWork)
+        private static void AddBookingRequest(IUnitOfWork unitOfWork)
         {
             if (!unitOfWork.BookingRequestRepository.GetQuery().Any())
             {
@@ -317,8 +322,12 @@ namespace Data.Migrations
             }
         }
 
-        private void CreateBookingRequest(string curUserName, string subject, string htmlText, IUnitOfWork uow)
+        private static void CreateBookingRequest(string curUserName, string subject, string htmlText, IUnitOfWork uow)
         {
+            var userDO = uow.UserRepository.DBSet.Local.FirstOrDefault(u => u.UserName == curUserName);
+            if (userDO == null)
+                userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == curUserName);
+
             var curBookingRequestDO = new BookingRequestDO
             {
                 DateCreated = DateTimeOffset.UtcNow,
@@ -328,25 +337,27 @@ namespace Data.Migrations
                 EmailStatus = EmailState.Unprocessed,
                 DateReceived = DateTimeOffset.UtcNow,
                 State = BookingRequestState.Unstarted,
-                User = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db as KwasantDbContext)).FindByName(curUserName)
+                User = userDO
             };
+            userDO.BookingRequests.Add(curBookingRequestDO);
+
             foreach (var calendar in curBookingRequestDO.User.Calendars)
                 curBookingRequestDO.Calendars.Add(calendar);
             uow.BookingRequestRepository.Add(curBookingRequestDO);
         }
 
-        private void AddCalendars(IUnitOfWork uow)
+        private static void AddCalendars(IUnitOfWork uow)
         {
-            if (!uow.CalendarRepository.GetAll().Any(e => e.Name == "Test Calendar 1"))
+            if (uow.CalendarRepository.GetAll().All(e => e.Name != "Test Calendar 1"))
             {
                 CreateCalendars("Test Calendar 1", "alexlucre1@gmail.com", uow);
                 CreateCalendars("Test Calendar 2", "alexlucre1@gmail.com", uow);
             }
         }
 
-        private void CreateCalendars(string calendarName,string curUserEmail, IUnitOfWork uow) 
+        private static void CreateCalendars(string calendarName, string curUserEmail, IUnitOfWork uow) 
         {
-            UserDO curUser = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);
+            UserDO curUser = uow.UserRepository.GetOrCreateUser(curUserEmail);
             var curCalendar = new CalendarDO
             {
                 Name = calendarName,
@@ -356,7 +367,7 @@ namespace Data.Migrations
             curUser.Calendars.Add(curCalendar);
         }
 
-        private void AddEvents(IUnitOfWork uow)
+        private static void AddEvents(IUnitOfWork uow)
         {
             if (uow.EventRepository.GetAll().All(e => e.Description != "Test Event 1"))
             {
@@ -366,16 +377,15 @@ namespace Data.Migrations
         }
         
         //Creating 10 events for each calendar
-        private void CreateEvents(IUnitOfWork uow, string curUserEmail,string calendarName)
+        private static void CreateEvents(IUnitOfWork uow, string curUserEmail, string calendarName)
         {
-            uow.SaveChanges();
-            int bookingRequestID, calendarID;
+            UserDO curUser = uow.UserRepository.DBSet.Local.FirstOrDefault(e => e.EmailAddress.Address == curUserEmail);
+            if (curUser == null)
+                curUser = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);
 
-            UserDO curUser = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);
-            bookingRequestID = uow.BookingRequestRepository.GetAll().Where(e => e.User.Id == curUser.Id).FirstOrDefault().Id;
-            calendarID = curUser.Calendars.Where(e => e.Name == calendarName).FirstOrDefault().Id;
-
-
+            var bookingRequestID = curUser.BookingRequests.First().Id;
+            var calendarID = curUser.Calendars.FirstOrDefault(e => e.Name == calendarName).Id;
+            
             for (int eventNumber = 1; eventNumber < 11; eventNumber++)
             {
                 DateTimeOffset start = GetRandomEventStartTime();
@@ -397,7 +407,7 @@ namespace Data.Migrations
         }
 
         //Getting random working time within next 3 days
-        private DateTimeOffset GetRandomEventStartTime()
+        private static DateTimeOffset GetRandomEventStartTime()
         {
             TimeSpan timeSpan = DateTime.Now.AddDays(3) - DateTime.Now;
             var randomTest = new Random();

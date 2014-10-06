@@ -19,25 +19,23 @@ namespace Data.Repositories
             AddDefaultCalendar(entity);
         }
 
-        public UserDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null, params int[] roleIds)
+        public UserDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null)
         {
-            return UpdateUserCredentials(UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress), userName, password, roleIds);
+            return UpdateUserCredentials(UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress), userName, password);
         }
 
-        public UserDO UpdateUserCredentials(EmailAddressDO emailAddressDO, String userName = null, String password = null, params int[] roleIds)
+        public UserDO UpdateUserCredentials(EmailAddressDO emailAddressDO, String userName = null, String password = null)
         {
-            return UpdateUserCredentials(UnitOfWork.UserRepository.GetOrCreateUser(emailAddressDO), userName, password, roleIds);
+            return UpdateUserCredentials(UnitOfWork.UserRepository.GetOrCreateUser(emailAddressDO), userName, password);
         }
 
-        public UserDO UpdateUserCredentials(UserDO userDO, String userName = null, String password = null, params int[] roleIds)
+        public UserDO UpdateUserCredentials(UserDO userDO, String userName = null, String password = null)
         {
             var passwordHasher = new PasswordHasher();
             
             userDO.UserName = userName;
             userDO.PasswordHash = passwordHasher.HashPassword(password);
-
-            //Add roles...
-
+            
             return userDO;
         }
 
