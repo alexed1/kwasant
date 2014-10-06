@@ -109,7 +109,7 @@ namespace KwasantCore.Services
         public async Task<LoginStatus> Login(IUnitOfWork uow, string username, string password, bool isPersistent)
         {
             LoginStatus curLogingStatus = LoginStatus.Successful;
-            UserManager<UserDO> curUserManager = User.GetUserManager(uow); ;
+            UserManager<UserDO> curUserManager = User.GetUserManager(uow);
             UserDO curUser = await curUserManager.FindAsync(username, password);
             if (curUser != null)
             {

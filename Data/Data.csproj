@@ -263,6 +263,14 @@
     <Compile Include="Migrations\201409290708187_Sync_Fix.Designer.cs">
       <DependentUpon>201409290708187_Sync_Fix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201410061310205_Sync.Rob.06.10.2014.cs" />
+    <Compile Include="Migrations\201410061310205_Sync.Rob.06.10.2014.Designer.cs">
+      <DependentUpon>201410061310205_Sync.Rob.06.10.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410061330516_FixUserRoles.cs" />
+    <Compile Include="Migrations\201410061330516_FixUserRoles.Designer.cs">
+      <DependentUpon>201410061330516_FixUserRoles.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
@@ -1053,6 +1061,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409290708187_Sync_Fix.resx">
       <DependentUpon>201409290708187_Sync_Fix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410061310205_Sync.Rob.06.10.2014.resx">
+      <DependentUpon>201410061310205_Sync.Rob.06.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410061330516_FixUserRoles.resx">
+      <DependentUpon>201410061330516_FixUserRoles.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

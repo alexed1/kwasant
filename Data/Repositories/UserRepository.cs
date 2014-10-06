@@ -31,10 +31,13 @@ namespace Data.Repositories
 
         public UserDO UpdateUserCredentials(UserDO userDO, String userName = null, String password = null)
         {
-            var passwordHasher = new PasswordHasher();
-            
-            userDO.UserName = userName;
-            userDO.PasswordHash = passwordHasher.HashPassword(password);
+            if (userName != null)
+                userDO.UserName = userName;
+            if (password != null)
+            {
+                var passwordHasher = new PasswordHasher();
+                userDO.PasswordHash = passwordHasher.HashPassword(password);       
+            }
             
             return userDO;
         }
@@ -46,10 +49,9 @@ namespace Data.Repositories
 
         public UserDO GetOrCreateUser(EmailAddressDO emailAddressDO)
         {
-            
-            var matchingUser = UnitOfWork.UserRepository.DBSet.Local.FirstOrDefault(u => u.EmailAddress == emailAddressDO);
+            var matchingUser = UnitOfWork.UserRepository.DBSet.Local.FirstOrDefault(u => u.EmailAddress.Address == emailAddressDO.Address);
             if (matchingUser == null)
-                matchingUser = UnitOfWork.UserRepository.GetQuery().FirstOrDefault(u => u.EmailAddress == emailAddressDO);
+                matchingUser = UnitOfWork.UserRepository.GetQuery().FirstOrDefault(u => u.EmailAddress.Address == emailAddressDO.Address);
 
             if (matchingUser == null)
             {

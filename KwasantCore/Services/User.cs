@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Validations;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
-using StructureMap;
 using Data.States;
+using Microsoft.AspNet.Identity;
+using StructureMap;
 
 namespace KwasantCore.Services
 {
@@ -19,14 +17,7 @@ namespace KwasantCore.Services
         {
             if (userDO != null)
             {
-                UserManager<UserDO> curUserManager = GetUserManager(uow); ;
-
-                curUserManager.RemovePassword(userDO.Id); //remove old password
-                var curResult = curUserManager.AddPassword(userDO.Id, password); // add new password
-                if (curResult.Succeeded == false)
-                {
-                    throw new ApplicationException("There was a problem trying to change your password. Please try again.");
-                }
+                uow.UserRepository.UpdateUserCredentials(userDO, password: password);
             }
         }
 
@@ -43,44 +34,15 @@ namespace KwasantCore.Services
                 return CommunicationMode.Direct;
             return CommunicationMode.Delegate;
         }
-
-        //problem: this assumes a single role but we need support for multiple roles on one account
-        //problem: the line between account and user is really murky. do we need both?
-        public bool ChangeUserRole(IUnitOfWork uow, IdentityUserRole identityUserRole)
-        {
-            UserManager<UserDO> userManager = GetUserManager(uow);
-            RoleManager<IdentityRole> roleManager = Role.GetRoleManager(uow);
-
-            IList<string> currCurrentIdentityRole = userManager.GetRoles(identityUserRole.UserId);
-            IdentityResult identityResult = userManager.RemoveFromRole(identityUserRole.UserId, currCurrentIdentityRole.ToList()[0]);
-
-            if (identityResult.Succeeded)
-            {
-                IdentityRole currNewIdentityRole = roleManager.FindById(identityUserRole.RoleId.Trim());
-                identityResult = userManager.AddToRole(identityUserRole.UserId.Trim(), currNewIdentityRole.Name);
-            }
-
-            return identityResult.Succeeded;
-        }
-
-        public static UserManager<UserDO> GetUserManager(IUnitOfWork uow)
-        {
-            var userStore = ObjectFactory.GetInstance<IKwasantUserStore>();
-            var um = new UserManager<UserDO>(userStore.SetUnitOfWork(uow));
-            var provider = new Microsoft.Owin.Security.DataProtection.DpapiDataProtectionProvider("Sample");
-            um.UserTokenProvider = new Microsoft.AspNet.Identity.Owin.DataProtectorTokenProvider<UserDO>(provider.Create("EmailConfirmation"));
-
-            return um;
-        }
-
-
+        
         //
         //get roles for this User
         //if at least one role meets or exceeds the provided level, return true, else false
         public bool VerifyMinimumRole(string minAuthLevel, string curUserId, IUnitOfWork uow)
         {
-            var um = GetUserManager(uow);
-            var roles = um.GetRoles(curUserId);
+            var roleIds = uow.AspNetUserRolesRepository.GetQuery().Where(ur => ur.UserId == curUserId).Select(ur => ur.RoleId).ToList();
+            var roles = uow.AspNetRolesRepository.GetQuery().Where(r => roleIds.Contains(r.Id)).Select(r => r.Name).ToList();
+
             String[] acceptableRoles = { };
             switch (minAuthLevel)
             {
@@ -100,14 +62,6 @@ namespace KwasantCore.Services
                     return false;
         }
 
-        public string GetRole(string curUserId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curManager = GetUserManager(uow);
-                return curManager.GetRoles(curUserId).Any() ? curManager.GetRoles(curUserId)[0] : "";
-            }
-        }
 
         //if we have a first name and last name, use them together
         //else if we have a first name only, use that
@@ -131,6 +85,16 @@ namespace KwasantCore.Services
 
             curEmailAddress.Address.ValidateEmailAddress();
             return curEmailAddress.Address.Split(new[] {'@'})[0];
+        }
+
+        public static UserManager<UserDO> GetUserManager(IUnitOfWork uow)
+        {
+            var userStore = ObjectFactory.GetInstance<IKwasantUserStore>();
+            var um = new UserManager<UserDO>(userStore.SetUnitOfWork(uow));
+            var provider = new Microsoft.Owin.Security.DataProtection.DpapiDataProtectionProvider("Sample");
+            um.UserTokenProvider = new Microsoft.AspNet.Identity.Owin.DataProtectorTokenProvider<UserDO>(provider.Create("EmailConfirmation"));
+
+            return um;
         }
     }
 }

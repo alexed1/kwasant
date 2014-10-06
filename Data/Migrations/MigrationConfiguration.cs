@@ -40,17 +40,8 @@ namespace Data.Migrations
             //In this situation, we need to be sure to use the provided context.
 
             //This class is _not_ mockable - it's a core part of EF. Some seeding, however, is mockable (see the static function Seed and how MockedKwasantDbContext uses it).
-            var unitOfWork = new UnitOfWork(context);
-            Seed(unitOfWork);
-
-        }
-
-        //Method to let us seed into memory as well
-        public static void Seed(IUnitOfWork uow)
-        {
-            SeedConstants(uow);
-
-            SeedInstructions(uow);
+            var uow = new UnitOfWork(context);
+            Seed(uow);
 
             AddRoles(uow);
             AddAdmins(uow);
@@ -61,6 +52,14 @@ namespace Data.Migrations
 
             AddCalendars(uow);
             AddEvents(uow);
+        }
+
+        //Method to let us seed into memory as well
+        public static void Seed(IUnitOfWork uow)
+        {
+            SeedConstants(uow);
+
+            SeedInstructions(uow);
         }
 
         //This method will automatically seed any constants file
@@ -231,7 +230,6 @@ namespace Data.Migrations
         {
             Func<string, string, AspNetRolesDO> creatorFunc = (value, name) => new AspNetRolesDO
             {
-                Id = value,
                 Name = name
             };
             FieldInfo[] constants = typeof(Roles).GetFields();
@@ -241,17 +239,18 @@ namespace Data.Migrations
                                      select creatorFunc((string)value, name)).ToList();
             
             var repo = new GenericRepository<AspNetRolesDO>(uow);
-            var allRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
-            foreach (var row in allRows) //Delete old rows that are no longer seeded
+            var existingRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
+            foreach (var row in existingRows) //Delete old rows that are no longer seeded
             {
-                if (!rolesToAdd.Select(i => i.Id).Contains(row.Id))
+                if (!rolesToAdd.Select(i => i.Name).Contains(row.Name))
                 {
                     repo.Remove(row);
                 }
             }
             foreach (var row in rolesToAdd)
             {
-                uow.AspNetRolesRepository.DBSet.AddOrUpdate(r => r.Id, row);
+                if (!existingRows.Select(r => r.Name).Contains(row.Name))
+                    uow.AspNetRolesRepository.Add(row);
             }
         }
 
@@ -379,6 +378,7 @@ namespace Data.Migrations
         //Creating 10 events for each calendar
         private static void CreateEvents(IUnitOfWork uow, string curUserEmail, string calendarName)
         {
+            uow.SaveChanges();
             UserDO curUser = uow.UserRepository.DBSet.Local.FirstOrDefault(e => e.EmailAddress.Address == curUserEmail);
             if (curUser == null)
                 curUser = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);

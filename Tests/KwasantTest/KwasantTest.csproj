@@ -123,7 +123,6 @@
     <Compile Include="Fixtures\FixtureData - User.cs" />
     <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="Security\AuthorizationTokenTests.cs" />
-    <Compile Include="Security\RoleTests.cs" />
     <Compile Include="Services\AttendeeTests.cs" />
     <Compile Include="Managers\CalendarSyncManagerTest.cs" />
     <Compile Include="Services\BookingRequestTests.cs" />
