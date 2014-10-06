@@ -106,32 +106,8 @@ namespace KwasantCore.Services
 
         public UserDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string role)
         {
-            UserDO userDO = new UserDO();
-            try
-            {
-            EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
-
-                userDO = uow.UserRepository.CreateFromEmail(
-                emailAddressDO: curEmailAddress,
-                userName: userName,
-                firstName: firstName,
-                lastName: lastName);
-
-            UserManager<UserDO> userManager = KwasantCore.Services.User.GetUserManager(uow); ;
-            IdentityResult result = userManager.Create(userDO, password);
-            if (result.Succeeded)
-            {
-                userManager.AddToRole(userDO.Id, role);
-            }
-            else
-            {
-                throw new ApplicationException("There was a problem trying to register you. Please try again.");
-            }
-            }
-            catch (Exception ex)
-            {
-                LogRegistrationError(ex);
-            }
+            var userDO = uow.UserRepository.GetOrCreateUser(userName);
+            uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
             return userDO;
         }
 
@@ -177,24 +153,5 @@ namespace KwasantCore.Services
 
             Logger.GetLogger().Info(logData);
         }
-
-
-        //this doesn't seem to get called. let's watch for a while and then delete it
-        //public void UpdateUser(UserDO userDO, IdentityUserRole identityUserRole)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        EmailAddressDO currEmailAddressDO = uow.EmailAddressRepository.GetByKey(userDO.EmailAddressID);
-        //        currEmailAddressDO.Address = userDO.EmailAddress.Address;
-
-        //        //Change user's role in DB using Identity Framework if only role is changed on the fone-end.
-        //        if (identityUserRole != null)
-        //        {
-        //            User user = new User();
-        //            user.ChangeUserRole(uow, identityUserRole);
-        //        }
-        //        uow.SaveChanges();
-        //    }
-        //}
     }
 }

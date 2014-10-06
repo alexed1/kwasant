@@ -4,7 +4,6 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Data.Authentication;
 using Data.Repositories;
 using Data.States;
 using Data.States.Templates;
@@ -18,10 +17,8 @@ using Utilities;
 
 namespace Data.Migrations
 {
-
     public sealed class MigrationConfiguration : DbMigrationsConfiguration<KwasantDbContext>
     {
-        private readonly Account _account;
         private readonly IConfigRepository _configRepository;
 
         public MigrationConfiguration()
@@ -31,7 +28,6 @@ namespace Data.Migrations
 
             //Do not modify this, otherwise migrations will run twice!
             ContextKey = "Data.Infrastructure.KwasantDbContext";
-            _account = new Account();
             _configRepository = new ConfigRepository();
         }
 
@@ -86,6 +82,13 @@ namespace Data.Migrations
                     })
                     .Where(t => t.ConstantsType != null).ToList();
 
+
+            var seedMethod =
+                typeof(MigrationConfiguration).GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
+                    .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod);
+            if (seedMethod == null)
+                throw new Exception("Unable to find SeedConstants method.");
+            
             foreach (var constantToSeed in constantsToSeed)
             {
                 var rowType = constantToSeed.RowType;
@@ -130,12 +133,9 @@ namespace Data.Migrations
                 //Now we have our expression, we need to call something similar to this:
                 //SeedConstants<constantType, rowType>(context, compiledExpression)
 
-                var seedMethod = typeof(MigrationConfiguration)
-                    .GetMethods(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)
-                    .FirstOrDefault(m => m.Name == "SeedConstants" && m.IsGenericMethod)
-                    .MakeGenericMethod(constantType, rowType);
+                var genericSeedMethod = seedMethod.MakeGenericMethod(constantType, rowType);
 
-                seedMethod.Invoke(null, new object[] { context, compiledExpression });
+                genericSeedMethod.Invoke(null, new object[] { context, compiledExpression });
             }
         }
 
@@ -143,7 +143,7 @@ namespace Data.Migrations
         {
             var providers = new[]
                                 {
-                                    new RemoteCalendarProviderDO()
+                                    new RemoteCalendarProviderDO
                                         {
                                             Name = "Google",
                                             AuthType = ServiceAuthorizationType.OAuth2,
@@ -155,7 +155,7 @@ namespace Data.Migrations
                                                         Scopes = "https://www.googleapis.com/auth/calendar"
                                                     }),
                                             CalDAVEndPoint = "https://apidata.googleusercontent.com/caldav/v2"
-                                        },
+                                        }
                                 };
             foreach (var provider in providers)
             {
@@ -170,15 +170,12 @@ namespace Data.Migrations
             // ReSharper restore UnusedMember.Local
             where TConstantDO : class, IStateTemplate<TConstantsType>
         {
-            var instructionsToAdd = new List<TConstantDO>();
-
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
-            foreach (FieldInfo constant in constants)
-            {
-                string name = constant.Name;
-                object value = constant.GetValue(null);
-                instructionsToAdd.Add(creatorFunc((int)value, name));
-            }
+            var instructionsToAdd = (from constant in constants
+                let name = constant.Name
+                let value = constant.GetValue(null)
+                select creatorFunc((int) value, name)).ToList();
+
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
             //Then, we find rows in our seeding that don't exist in the DB. We create those ones (or update the name).
 
@@ -282,34 +279,38 @@ namespace Data.Migrations
         /// <summary>
         /// Craete a user with role 'Admin'
         /// </summary>
-        /// <param name="curUserName"></param>
+        /// <param name="userEmail"></param>
         /// <param name="curPassword"></param>
-        /// <param name="unitOfWork"></param>
+        /// <param name="uow"></param>
         /// <returns></returns>
-        private void CreateAdmin(string curUserName, string curPassword, IUnitOfWork uow)
+        private void CreateAdmin(string userEmail, string curPassword, IUnitOfWork uow)
         {
-
-            string userId = _account.Create(curUserName, curPassword, uow);
-            _account.AddRole("Admin", userId, uow);
-            _account.AddRole("Customer", userId, uow);
+            var user = uow.UserRepository.GetOrCreateUser(userEmail);
+            //TODO: Add admin role
+            uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+            
+            user.TestAccount = true;
         }
 
         /// <summary>
         /// Craete a user with role 'Customer'
         /// </summary>
-        /// <param name="curUserName"></param>
+        /// <param name="userEmail"></param>
         /// <param name="curPassword"></param>
-        /// <param name="unitOfWork"></param>
+        /// <param name="uow"></param>
         /// <returns></returns>
-        private void CreateCustomer(string curUserName, string curPassword, IUnitOfWork uow)
+        private void CreateCustomer(string userEmail, string curPassword, IUnitOfWork uow)
         {
-            string userId = _account.Create(curUserName, curPassword, uow);
-            _account.AddRole("Customer", userId, uow);
+            var user = uow.UserRepository.GetOrCreateUser(userEmail);
+            //TODO: Add admin role
+            uow.UserRepository.UpdateUserCredentials(userEmail, userEmail, curPassword);
+
+            user.TestAccount = false;
         }
 
         private void AddBookingRequest(IUnitOfWork unitOfWork)
         {
-            if (unitOfWork.BookingRequestRepository.GetQuery().Count() == 0)
+            if (!unitOfWork.BookingRequestRepository.GetQuery().Any())
             {
                 CreateBookingRequest("alexlucre1@gmail.com", "First Booking request subject", "First Booking request text", unitOfWork);
                 CreateBookingRequest("alexlucre1@gmail.com", "Second Booking request subject", "Second Booking request text", unitOfWork);
@@ -336,7 +337,7 @@ namespace Data.Migrations
 
         private void AddCalendars(IUnitOfWork uow)
         {
-            if (!uow.CalendarRepository.GetAll().Where(e => e.Name == "Test Calendar 1").Any())
+            if (!uow.CalendarRepository.GetAll().Any(e => e.Name == "Test Calendar 1"))
             {
                 CreateCalendars("Test Calendar 1", "alexlucre1@gmail.com", uow);
                 CreateCalendars("Test Calendar 2", "alexlucre1@gmail.com", uow);
@@ -357,7 +358,7 @@ namespace Data.Migrations
 
         private void AddEvents(IUnitOfWork uow)
         {
-            if (!uow.EventRepository.GetAll().Where(e => e.Description == "Test Event 1").Any())
+            if (uow.EventRepository.GetAll().All(e => e.Description != "Test Event 1"))
             {
                 CreateEvents(uow, "alexlucre1@gmail.com", "Test Calendar 1");
                 CreateEvents(uow, "alexlucre1@gmail.com", "Test Calendar 2");

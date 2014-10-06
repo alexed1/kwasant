@@ -32,9 +32,8 @@ namespace KwasantCore.Services
 
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-            var user = new User();
             bookingRequest.State = BookingRequestState.Unstarted;
-            UserDO curUser = user.GetOrCreateFromBR(uow, bookingRequest.From);
+            UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest.From);
             bookingRequest.User = curUser;
             bookingRequest.UserID = curUser.Id;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
@@ -178,8 +177,7 @@ namespace KwasantCore.Services
             Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + bookingRequestDO.Id);
             bookingRequestDO.BookerID = null;
             // Send mail to Booker
-            UserDO userDO = new UserDO();
-            userDO = uow.UserRepository.GetByKey(bookerId);
+            var userDO = uow.UserRepository.GetByKey(bookerId);
             EmailAddressDO emailAddressDO = new EmailAddressDO(userDO.EmailAddress.Address);
             string message = "BookingRequest ID :" + bookingRequestDO.Id + " Timed Out";
             string subject = "BookingRequest Timeout";

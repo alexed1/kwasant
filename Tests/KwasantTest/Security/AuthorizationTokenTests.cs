@@ -27,7 +27,7 @@ namespace KwasantTest.Security
                     Name = "Robert Rudman"
                 };
 
-                var userDO = user.GetOrCreateFromBR(uow, emailAddress);
+                var userDO = uow.UserRepository.GetOrCreateUser(emailAddress);
 
                 var authTokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(originalURL, userDO);
 
@@ -57,7 +57,7 @@ namespace KwasantTest.Security
                     Name = "Robert Rudman"
                 };
 
-                var userDO = user.GetOrCreateFromBR(uow, emailAddress);
+                var userDO = uow.UserRepository.GetOrCreateUser(emailAddress);
 
                 var authTokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(originalURL, userDO);
 

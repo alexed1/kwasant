@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Authentication;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using Data.Validations;
 using KwasantCore.Interfaces;
-using KwasantCore.Managers.APIManager.Packagers;
-using KwasantICS.DDay.iCal;
-using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
-using RazorEngine;
 using KwasantCore.Managers.APIManagers.Packagers;
 using StructureMap;
 using Microsoft.WindowsAzure;
@@ -103,7 +97,7 @@ namespace KwasantCore.Managers
 
                 var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", negotiationDO.Id);
 
-                var userDO = user.GetOrCreateFromBR(uow, attendee.EmailAddress);
+                var userDO = uow.UserRepository.GetOrCreateUser(attendee.EmailAddress);
                 var tokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(responseUrl, userDO);
 
                 uow.EmailRepository.Add(emailDO);
@@ -122,7 +116,7 @@ Proposed Answers: {2}
 
                 string templateName;
                 // Max Kostyrkin: currently User#GetMode returns Direct if user has a booking request or has a password, otherwise Delegate.
-                switch (user.GetMode(user.Get(uow, attendee.EmailAddress)))
+                switch (user.GetMode(userDO))
                 {
                     case CommunicationMode.Direct:
                         templateName = _configRepository.Get("CR_template_for_creator");

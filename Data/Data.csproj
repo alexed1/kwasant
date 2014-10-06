@@ -103,7 +103,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Authentication\Account.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
     <Compile Include="Entities\InvitationResponseDO.cs" />
@@ -1056,6 +1055,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Authentication\" />
     <Folder Include="Constants\" />
     <Folder Include="Entities\Enumerations\" />
   </ItemGroup>
