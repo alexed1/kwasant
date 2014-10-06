@@ -5,7 +5,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using KwasantCore.Security;
+using Data.States;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Utilities;
@@ -49,13 +49,13 @@ namespace KwasantCore.Services
                     }
                     else
                     {
-                        newUserDO = Register(uow, email, email, email, password, "Customer");
+                        newUserDO = Register(uow, email, email, email, password, Roles.Customer);
                         curRegStatus = RegistrationStatus.Successful;
                     }
                 }
                 else
                 {
-                    newUserDO = Register(uow, email, email, email, password, "Customer");
+                    newUserDO = Register(uow, email, email, email, password, Roles.Customer);
                     curRegStatus = RegistrationStatus.Successful;
                 }
 
@@ -71,17 +71,11 @@ namespace KwasantCore.Services
             }
         }
 
-        private UserDO ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, string role)
-        {
-            var user = new User();
-            return Register(uow, email, email, email, password, role);
-        }
-
         public async Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                LoginStatus curLoginStatus = LoginStatus.Pending;
+                LoginStatus curLoginStatus;
 
                 UserDO userDO = uow.UserRepository.FindOne(x => x.UserName == username);
                 if (userDO != null)
@@ -104,10 +98,11 @@ namespace KwasantCore.Services
             }
         }
 
-        public UserDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string role)
+        public UserDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string roleID)
         {
             var userDO = uow.UserRepository.GetOrCreateUser(userName);
             uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
             return userDO;
         }
 

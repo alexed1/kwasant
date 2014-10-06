@@ -230,7 +230,7 @@ namespace KwasantWeb.Controllers
 
                     var newUser = uow.UserRepository.GetOrCreateUser(curUser.EmailAddress.Address);
                     uow.UserRepository.UpdateUserCredentials(newUser, curUser.UserName, Guid.NewGuid().ToString());
-                    
+                    uow.AspNetUserRolesRepository.AssignRoleToUser(role, newUser.Id);
                     uow.SaveChanges();
                 }
             }
@@ -247,6 +247,7 @@ namespace KwasantWeb.Controllers
             {
                 var existingUser = uow.UserRepository.GetOrCreateUser(curUser.EmailAddress.Address);
                 uow.UserRepository.UpdateUserCredentials(existingUser, curUser.UserName, Guid.NewGuid().ToString());
+                uow.AspNetUserRolesRepository.AssignRoleToUser(role, existingUser.Id);
             }
             var jsonSuccessResult = Json(_datatables.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
             return jsonSuccessResult;
