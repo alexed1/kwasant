@@ -59,6 +59,8 @@ namespace Data.Repositories
                     new UserDO
                     {
                         EmailAddress = emailAddressDO,
+                        UserName = emailAddressDO.Address,
+                        FirstName = emailAddressDO.Name,
                         SecurityStamp = Guid.NewGuid().ToString(),
                     };
                 UnitOfWork.UserRepository.Add(matchingUser);
