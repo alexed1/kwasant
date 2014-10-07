@@ -46,6 +46,7 @@ namespace KwasantWeb.Controllers
                 };
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
                 {
+                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestDO.Id).Select(e => e.Id).ToList(),
                     BookingRequestId = bookingRequestDO.Id,
                     CurEmailData = uow.EmailRepository.GetByKey(id)
                 };
