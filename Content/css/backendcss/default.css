@@ -175,6 +175,12 @@ td .custom-btn:first-child {
 	margin-left: 0;
 }
 
+.form-actions .btn.small-dialog-button, .form-actions .btn.small-dialog-button {         
+    padding: 10px 25px;
+    font-size: 14px;
+    line-height: 16px;        
+}
+
 /* Main marketing message and sign up button */
 .jumbotron {
     text-align: center;
