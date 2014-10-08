@@ -7,7 +7,7 @@ using Utilities;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Booker")]
     public class ReportController : Controller
     {
         //private DataTablesPackager _datatables;

@@ -19,7 +19,7 @@ using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Booker")]
     public class EventController : KController
     {
         public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss\z";
