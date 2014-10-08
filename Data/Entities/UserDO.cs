@@ -17,6 +17,7 @@ namespace Data.Entities
             BookingRequests = new List<BookingRequestDO>();
             Calendars = new List<CalendarDO>();
             RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
+            Profiles = new List<ProfileDO>();
         }
 
         [InverseProperty("User")]

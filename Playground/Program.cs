@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using Data.Authentication;
-using Data.Entities;
-using Data.Entities.CTE;
+﻿using System.Linq;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using StructureMap;
 
