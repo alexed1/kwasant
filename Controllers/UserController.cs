@@ -212,8 +212,8 @@ namespace KwasantWeb.Controllers
 
                 var matchedUsers = query.ToList();
 
-                var jsonResult = Json(_datatables.Pack(matchedUsers), JsonRequestBehavior.AllowGet);
-                var jsonResult = Json(_jsonPackager.Pack(_user.Query(uow, queryParams)), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_jsonPackager.Pack(matchedUsers), JsonRequestBehavior.AllowGet);
+               // var jsonResult = Json(_jsonPackager.Pack(_user.Query(uow, queryParams)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
