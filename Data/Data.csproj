@@ -103,7 +103,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Authentication\Account.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
@@ -269,6 +268,18 @@
     <Compile Include="Migrations\201409290708187_Sync_Fix.Designer.cs">
       <DependentUpon>201409290708187_Sync_Fix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201410061310205_Sync.Rob.06.10.2014.cs" />
+    <Compile Include="Migrations\201410061310205_Sync.Rob.06.10.2014.Designer.cs">
+      <DependentUpon>201410061310205_Sync.Rob.06.10.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410061330516_FixUserRoles.cs" />
+    <Compile Include="Migrations\201410061330516_FixUserRoles.Designer.cs">
+      <DependentUpon>201410061330516_FixUserRoles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410080749315_MigrateAspNetRolesDiscriminator.cs" />
+    <Compile Include="Migrations\201410080749315_MigrateAspNetRolesDiscriminator.Designer.cs">
+      <DependentUpon>201410080749315_MigrateAspNetRolesDiscriminator.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201409291852449_UserProfiles.cs" />
     <Compile Include="Migrations\201409291852449_UserProfiles.Designer.cs">
       <DependentUpon>201409291852449_UserProfiles.cs</DependentUpon>
@@ -359,6 +370,7 @@
     <Compile Include="States\EventSyncState.cs" />
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
+    <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AnswerStatusTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
@@ -1082,6 +1094,15 @@
     <EmbeddedResource Include="Migrations\201409290708187_Sync_Fix.resx">
       <DependentUpon>201409290708187_Sync_Fix.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410061310205_Sync.Rob.06.10.2014.resx">
+      <DependentUpon>201410061310205_Sync.Rob.06.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410061330516_FixUserRoles.resx">
+      <DependentUpon>201410061330516_FixUserRoles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410080749315_MigrateAspNetRolesDiscriminator.resx">
+      <DependentUpon>201410080749315_MigrateAspNetRolesDiscriminator.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409291852449_UserProfiles.resx">
       <DependentUpon>201409291852449_UserProfiles.cs</DependentUpon>
     </EmbeddedResource>
@@ -1099,6 +1120,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Authentication\" />
     <Folder Include="Constants\" />
     <Folder Include="Entities\Enumerations\" />
   </ItemGroup>

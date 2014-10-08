@@ -199,7 +199,6 @@
     <Compile Include="Managers\APIManagers\Packagers\ISMSPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Twilio\TwilioPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\UnknownEmailPackagerException.cs" />
-    <Compile Include="Managers\APIManagers\Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulCall.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulResponse.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulTransmitter.cs" />

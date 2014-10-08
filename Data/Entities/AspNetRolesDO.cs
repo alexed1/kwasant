@@ -7,9 +7,5 @@ namespace Data.Entities
     [Table("AspNetRoles")]
     public class AspNetRolesDO : IdentityRole,  IAspNetRoles
     {
-        //[Key]
-        //public string Id { get; set; }
-        //public string Name { get; set; }
-        //public virtual ICollection<UserDO> Users { get; set; }
     }
 }

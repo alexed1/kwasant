@@ -31,12 +31,12 @@ namespace Data.Infrastructure.StructureMap
 
         public MockedDBContext()
         {
-            MigrationConfiguration.Seed(new UnitOfWork(this));
-
             SetUnique<EmailAddressDO, String>(ea => ea.Address);
             SetUnique<UserDO, int>(u => u.EmailAddressID);
 
             SetPrimaryKey<UserDO, String>(u => u.Id);
+
+            MigrationConfiguration.Seed(new UnitOfWork(this));
         }
 
         private readonly Dictionary<Type, PropertyInfo> _forcedDOPrimaryKey = new Dictionary<Type, PropertyInfo>();

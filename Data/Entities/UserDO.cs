@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Data.Infrastructure;
-using Data.Repositories;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 

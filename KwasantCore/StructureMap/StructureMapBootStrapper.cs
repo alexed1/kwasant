@@ -6,7 +6,6 @@ using Data.Repositories;
 using KwasantCore.Interfaces;
 using KwasantCore.ExternalServices;
 using KwasantCore.ExternalServices.REST;
-using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers;

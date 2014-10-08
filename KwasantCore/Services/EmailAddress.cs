@@ -119,7 +119,7 @@ namespace KwasantCore.Services
             if (curRecipientAddress == null)
                 throw new ArgumentNullException("curRecipientAddress");
             var user = new User();
-            var curRecipient = user.Get(uow, curRecipientAddress);
+            var curRecipient = uow.UserRepository.GetOrCreateUser(curRecipientAddress);
             if (curRecipient != null)
             {
                 var communicationMode = user.GetMode(curRecipient);
