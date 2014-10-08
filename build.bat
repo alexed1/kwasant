@@ -84,7 +84,7 @@ IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
 echo Running tests
 call :ExecuteCmd "%NUGET_EXE%" install NUnit.Runners -Version %NUNIT_RUNNERS_VERSION%
 IF !ERRORLEVEL! NEQ 0 goto error
-call :ExecuteCmd "%NUNIT_RUNNERS%" -labels "%DEPLOYMENT_SOURCE%\Tests\KwasantTest\bin\Debug\KwasantTest.dll"
+call :ExecuteCmd "%NUNIT_RUNNERS%" -labels "%DEPLOYMENT_SOURCE%\Tests\KwasantTest\bin\Release\KwasantTest.dll"
 IF !ERRORLEVEL! NEQ 0 goto error
 :: call :ExecuteCmd "%NUNIT_RUNNERS%" -labels "%DEPLOYMENT_SOURCE%\Tests\DDay\DDay.Collections.Test\bin\Release\DDay.Collections.Test.dll"
 :: IF !ERRORLEVEL! NEQ 0 goto error
