@@ -105,14 +105,13 @@ namespace Daemons
                             }
 
                             //Removing email address which are not test account in debug mode
-                            #if DEBUG
+                            if (Server.IsDevMode)
                             {
                                 if (RemoveRecipients(envelope.Email, subUow))
                                 {
                                     Logger.GetLogger().Info("Removed one or more email recipients because they were not test accounts");
                                 }
                             }
-                            #endif
                             packager.Send(envelope);
                             numSent++;
 
