@@ -71,9 +71,6 @@ namespace KwasantCore.StructureMap
 
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
-                For<IKwasantRoleStore>().Use(new KwasantRoleStore());
-                For<IKwasantUserStore>().Use(new KwasantUserStore());
-
                 For<IImapClient>().Use<ImapClientWrapper>();
                 For<ISmtpClient>().Use<SmtpClientWrapper>();
                 For<IRestfullCall>().Use<RestfulCallWrapper>();
@@ -94,9 +91,6 @@ namespace KwasantCore.StructureMap
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<ITracker>().Use<SegmentIO>();
-
-                For<IKwasantRoleStore>().Use(new MockedRoleStore());
-                For<IKwasantUserStore>().Use(new MockedUserStore());
 
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);

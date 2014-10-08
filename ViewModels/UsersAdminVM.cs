@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using KwasantCore.Services;
+using System.Linq;
 using Data.Interfaces;
+using KwasantCore.Services;
 using StructureMap;
 
-namespace ViewModel.Models
+namespace KwasantWeb.ViewModels
 {
     public class UsersAdminVM
     {
-        IUnitOfWork _uow;
         public UsersAdminVM()
         {
-            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            Role role = new Role();
-            List<RoleData> roleList = role.GetRoles();
-            Roles = roleList;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Roles = uow.AspNetRolesRepository.GetAll().Select(r => new RoleData { Id = r.Id, Name = r.Name}).ToList();
+            }
         }        
 
         public String UserId { get; set; }
