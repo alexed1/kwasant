@@ -2,7 +2,7 @@
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
-using KwasantCore.Managers.APIManager.Packagers.DataTable;
+using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using KwasantCore.Services;
 using KwasantWeb.Controllers;
 using NUnit.Framework;
@@ -10,7 +10,6 @@ using StructureMap;
 using System.Web.Mvc;
 using System.Net.Mail;
 using System.Linq;
-using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 using Utilities;
 namespace KwasantTest.Controllers
 {

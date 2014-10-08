@@ -14,7 +14,6 @@ using StructureMap;
 using KwasantCore.Services;
 using Data.Validations;
 using System.Linq;
-using KwasantCore.Managers.APIManager.Packagers.DataTable;
 using Utilities;
 
 namespace KwasantWeb.Controllers
