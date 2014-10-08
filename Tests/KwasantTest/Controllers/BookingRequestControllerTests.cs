@@ -35,7 +35,6 @@ namespace KwasantTest.Controllers
         [Category("BRM")]
         public void ShowUnprocessedRequestTest()
         {
-           // var dataTables = new DataTablesPackager();
             JsonPackager jsonPackager = new JsonPackager();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -92,7 +91,6 @@ namespace KwasantTest.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-               // var dataTables = new DataTablesPackager();
                 JsonPackager jsonPackager = new JsonPackager();
                 BookingRequestController controller = new BookingRequestController();
                 int id = uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
