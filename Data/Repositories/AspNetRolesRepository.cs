@@ -1,3 +1,4 @@
+using System.Linq;
 using Data.Interfaces;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -11,10 +12,11 @@ namespace Data.Repositories
         {
             
         }
+
     }
 
     public interface IAspNetRolesRepository : IGenericRepository<IdentityRole>
     {
-      
+        
     }
 }

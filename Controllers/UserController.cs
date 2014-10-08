@@ -11,9 +11,7 @@ using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
-using ViewModel.Models;
 using KwasantCore.Services;
-using KwasantWeb.Controllers.Helpers;
 using Data.Validations;
 using System.Linq;
 using KwasantCore.Managers.APIManager.Packagers.DataTable;
@@ -37,11 +35,9 @@ namespace KwasantWeb.Controllers
         [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Index()
         {
-            string userId = "";
-            User _user = new User();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                List<UserDO> userList = _user.Query(uow, userId);
+                List<UserDO> userList = uow.UserRepository.GetAll().ToList();
                 UserShowAllVM userShowAllVM = new UserShowAllVM();
                 List<UserShowVM> userShowVMList = new List<UserShowVM>();
 
@@ -52,13 +48,11 @@ namespace KwasantWeb.Controllers
                     FirstName = u.FirstName,
                     LastName = u.LastName,
                     EmailAddress = u.EmailAddress.Address,
-                    Role = userManager.GetRoles(u.Id).Count() > 0 ? userManager.GetRoles(u.Id)[0] : "",
-                    RoleId = u.Roles.ToList().Count() > 0 ? u.Roles.ToList()[0].RoleId : "",
+                    Role = userManager.GetRoles(u.Id).Any() ? userManager.GetRoles(u.Id)[0] : "",
+                    RoleId = u.Roles.ToList().Any() ? u.Roles.ToList()[0].RoleId : "",
                 }));
                 userShowAllVM.Users = userShowVMList;
 
-
-               
                 return View(userShowAllVM);
             }
         }
@@ -69,11 +63,10 @@ namespace KwasantWeb.Controllers
             if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            User _user = new User();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curUserManager = KwasantCore.Services.User.GetUserManager(uow);
-                UserDO curUser = _user.Query(uow, userId)[0];
+                UserDO curUser = uow.UserRepository.GetByKey(userId);
                 UserShowVM userShowVM = new UserShowVM
                 {
                     Id = curUser.Id,
@@ -103,11 +96,8 @@ namespace KwasantWeb.Controllers
                 // don't wait for this, run it async and return response to the user.
                 return RedirectToAction("MyAccount", new { remoteCalendarAccessGranted = providerName });
             }
-            else
-            {
                 return new RedirectResult(result.RedirectUri);
             }
-        }
 
         public async Task<ActionResult> RevokeRemoteCalendarAccess(string providerName)
         {
@@ -150,19 +140,8 @@ namespace KwasantWeb.Controllers
 
         public ActionResult ShowAddUser()
         {
-            UserAdministerVM curUserAdminVM = new UserAdministerVM();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                curUserAdminVM.User = new UserDO
-                {
-                    Id = "",
-                    EmailAddress = new EmailAddressDO() { Address = "" },
-                    FirstName = "",
-                    LastName = ""
-                };
+            return View((UserDO)null);
             }
-            return View(curUserAdminVM);
-        }
 
         public ActionResult Validate(UserCreateVM curCreateUserVM)
         {
@@ -189,24 +168,17 @@ namespace KwasantWeb.Controllers
         public ActionResult Detail(String userId)
         {
             UserAdministerVM curUserAdminVM = new UserAdministerVM();
-            curUserAdminVM.User = _user.Get(userId);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curUserAdminVM.User = uow.UserRepository.GetByKey(userId);
             return View(curUserAdminVM);
+        }
         }
 
         [KwasantAuthorize(Roles = "Admin")]
-        public ActionResult FindUser(UserAdministerVM curUserAdminVM)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                curUserAdminVM.User = new UserDO
+        public ActionResult FindUser(UserAdministerVM curUserAdminVM) //This wasn't even searching before...???
                 {
-                    Id = "",
-                    EmailAddress = new EmailAddressDO() { Address = "" },
-                    FirstName = "",
-                    LastName = ""
-                };
-            }
-            return View(curUserAdminVM);
+            return View(new UserAdministerVM());
         }
 
         [HttpPost]
@@ -230,6 +202,17 @@ namespace KwasantWeb.Controllers
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var query = uow.UserRepository.GetQuery();
+                if (!String.IsNullOrWhiteSpace(queryParams.FirstName))
+                    query = query.Where(u => u.FirstName.Contains(queryParams.FirstName));
+                if (!String.IsNullOrWhiteSpace(queryParams.LastName))
+                    query = query.Where(u => u.LastName.Contains(queryParams.LastName));
+                if (!String.IsNullOrWhiteSpace(queryParams.EmailAddress.Address))
+                    query = query.Where(u => u.EmailAddress.Address.Contains(queryParams.EmailAddress.Address));
+
+                var matchedUsers = query.ToList();
+
+                var jsonResult = Json(_datatables.Pack(matchedUsers), JsonRequestBehavior.AllowGet);
                 var jsonResult = Json(_jsonPackager.Pack(_user.Query(uow, queryParams)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
@@ -240,12 +223,21 @@ namespace KwasantWeb.Controllers
         public ActionResult ProcessSubmittedForm(UserCreateVM curCreateUserVM, bool sendEmail)
         {
             UserDO curUser = curCreateUserVM.User;
-            string role = new Role().GetRoles().Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
+            var firstOrDefault = new Role().GetRoles().FirstOrDefault(e => e.Id == curCreateUserVM.UserRole);
+            if (firstOrDefault != null)
+            {
+                string role = firstOrDefault.Name;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _user.Create(uow, curUser, role, sendEmail);
+                    if (sendEmail)
+                        new Email().SendUserSettingsNotification(uow, curUser);
+
+                    var newUser = uow.UserRepository.GetOrCreateUser(curUser.EmailAddress.Address);
+                    uow.UserRepository.UpdateUserCredentials(newUser, curUser.UserName, Guid.NewGuid().ToString());
+                    uow.AspNetUserRolesRepository.AssignRoleToUser(role, newUser.Id);
                 uow.SaveChanges();
+            }
             }
             return RedirectToAction("Dashboard", "Admin");
         }
@@ -258,7 +250,9 @@ namespace KwasantWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _user.Update(uow, curUser, role);
+                var existingUser = uow.UserRepository.GetOrCreateUser(curUser.EmailAddress.Address);
+                uow.UserRepository.UpdateUserCredentials(existingUser, curUser.UserName, Guid.NewGuid().ToString());
+                uow.AspNetUserRolesRepository.AssignRoleToUser(role, existingUser.Id);
             }
             var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
             return jsonSuccessResult;

@@ -246,7 +246,7 @@ namespace KwasantWeb.Controllers
                 foreach (var attendeeDO in updatedEventInfo.Attendees)
                 {
                     var user = new User();
-                    var userDO = user.GetOrCreateFromBR(uow, attendeeDO.EmailAddress);
+                    var userDO = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress);
                     if (user.GetMode(userDO) == CommunicationMode.Delegate)
                     {
                         ObjectFactory.GetInstance<ITracker>().Track(userDO, "User", "InvitedAsPreCustomerAttendee",
