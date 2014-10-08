@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
@@ -38,6 +40,12 @@ namespace Data.Repositories
         {
             string roleID = GetRoleID(roleName);
             RevokeRoleIDFromUser(roleID, userID);
+        }
+
+        public IQueryable<AspNetRolesDO> GetRoles(string userID)
+        {
+            var roleIDs = GetQuery().Where(ur => ur.UserId == userID).Select(ur => ur.RoleId).ToList();
+            return UnitOfWork.AspNetRolesRepository.GetQuery().Where(r => roleIDs.Contains(r.Id));
         }
 
         public bool UserHasRoleID(string roleID, string userID)

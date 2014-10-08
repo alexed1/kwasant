@@ -1,10 +1,9 @@
-using System.Linq;
+using Data.Entities;
 using Data.Interfaces;
-using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace Data.Repositories
 {
-    public class AspNetRolesRepository : GenericRepository<IdentityRole>, IAspNetRolesRepository
+    public class AspNetRolesRepository : GenericRepository<AspNetRolesDO>, IAspNetRolesRepository
     {
 
         internal AspNetRolesRepository(IUnitOfWork uow)
@@ -15,7 +14,7 @@ namespace Data.Repositories
 
     }
 
-    public interface IAspNetRolesRepository : IGenericRepository<IdentityRole>
+    public interface IAspNetRolesRepository : IGenericRepository<AspNetRolesDO>
     {
         
     }

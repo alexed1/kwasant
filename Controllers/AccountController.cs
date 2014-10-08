@@ -161,9 +161,8 @@ namespace KwasantWeb.Controllers
                                 bool isAdmin;
                                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                                 {
-                                    var userManager = KwasantCore.Services.User.GetUserManager(uow);
-                                    var user = userManager.FindByName(username);
-                                    isAdmin = userManager.IsInRole(user.Id, "Admin");
+                                    var user = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == username);
+                                    isAdmin = uow.AspNetUserRolesRepository.UserHasRole("Admin", user.Id);
                                 }
 
                                 if (isAdmin)
@@ -188,21 +187,6 @@ namespace KwasantWeb.Controllers
             return View("Index", model);
         }
 
-        /// <summary>
-        /// Send email for confirmation
-        /// </summary>
-        /// <param name="curUserDO"></param>
-        private async Task SendEmailConfirmation(UserDO curUserDO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var um = KwasantCore.Services.User.GetUserManager(uow);
-                string code = await um.GenerateEmailConfirmationTokenAsync(curUserDO.Id);
-                var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = curUserDO.Id, code = code }, protocol: Request.Url.Scheme);
-                um.EmailService = new KwasantEmailService();
-                await um.SendEmailAsync(curUserDO.Id, "Confirm your account", "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">Click here</a>");
-            }
-        }
 
         [HttpGet]
         [AllowAnonymous]

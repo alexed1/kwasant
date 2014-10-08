@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Entity;
 using System.Security.Claims;
 using System.Web;
 using Data.Entities;
@@ -7,6 +8,7 @@ using Data.Interfaces;
 using KwasantCore.Interfaces;
 using KwasantCore.Services;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin.Security;
 using StructureMap;
 
@@ -46,7 +48,11 @@ namespace KwasantCore.Security
 
         public ClaimsIdentity GetIdentity(IUnitOfWork uow, UserDO userDO)
         {
-            UserManager<UserDO> curUserManager = User.GetUserManager(uow);
+            var um = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db as DbContext));
+            var provider = new Microsoft.Owin.Security.DataProtection.DpapiDataProtectionProvider("Sample");
+            um.UserTokenProvider = new Microsoft.AspNet.Identity.Owin.DataProtectorTokenProvider<UserDO>(provider.Create("EmailConfirmation"));
+
+            UserManager<UserDO> curUserManager = um;
             return curUserManager.CreateIdentity(userDO, DefaultAuthenticationTypes.ApplicationCookie);
         }
     }

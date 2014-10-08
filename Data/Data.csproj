@@ -426,15 +426,9 @@
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Entities\UserAgentInfoDO.cs" />
     <Compile Include="Infrastructure\AlertManager.cs" />
-    <Compile Include="Infrastructure\KwasantRoleStore.cs" />
-    <Compile Include="Infrastructure\KwasantUserStore.cs" />
-    <Compile Include="Infrastructure\StructureMap\IKwasantRoleStore.cs" />
-    <Compile Include="Infrastructure\StructureMap\IKwasantUserStore.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedDBContext.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedDbSet.cs" />
     <Compile Include="Infrastructure\StructureMap\DatabaseStructureMapBootStrapper.cs" />
-    <Compile Include="Infrastructure\StructureMap\MockedRoleStore.cs" />
-    <Compile Include="Infrastructure\StructureMap\MockedUserStore.cs" />
     <Compile Include="Infrastructure\TrackingStatus.cs" />
     <Compile Include="Interfaces\IAspNetRoles.cs" />
     <Compile Include="Interfaces\IAspNetUserRoles.cs" />

@@ -135,8 +135,7 @@ namespace KwasantTest.Daemons
                         EmailParticipantType = EmailParticipantType.To
                     }
                 };
-                var role = new Role();
-                role.Add(uow, fixture.TestRole());
+                uow.AspNetRolesRepository.Add(fixture.TestRole());
                 var u = new UserDO();
                 var user = new User();
                 UserDO currUserDO = new UserDO();

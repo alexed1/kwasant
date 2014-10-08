@@ -87,14 +87,5 @@ namespace KwasantCore.Services
             return curEmailAddress.Address.Split(new[] {'@'})[0];
         }
 
-        public static UserManager<UserDO> GetUserManager(IUnitOfWork uow)
-        {
-            var userStore = ObjectFactory.GetInstance<IKwasantUserStore>();
-            var um = new UserManager<UserDO>(userStore.SetUnitOfWork(uow));
-            var provider = new Microsoft.Owin.Security.DataProtection.DpapiDataProtectionProvider("Sample");
-            um.UserTokenProvider = new Microsoft.AspNet.Identity.Owin.DataProtectorTokenProvider<UserDO>(provider.Create("EmailConfirmation"));
-
-            return um;
-        }
     }
 }

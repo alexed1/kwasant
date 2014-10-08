@@ -43,6 +43,7 @@ namespace Data.Repositories
             return userDO;
         }
 
+
         public UserDO GetOrCreateUser(String emailAddress)
         {
             return GetOrCreateUser(UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress));

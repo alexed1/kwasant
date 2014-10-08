@@ -9,5 +9,6 @@ namespace KwasantWeb.ViewModels
     public class UserAdministerVM
     {
         public UserDO User { get; set; }
+        public String Role { get; set; }
     }
 }
