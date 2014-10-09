@@ -32,7 +32,7 @@ namespace KwasantTest.Services
                 uow.UserRepository.Add(testUser1);
                 UserDO testUser2 = new UserDO() { FirstName = "Firsttest2", LastName = "Lasttest2", EmailAddress = new EmailAddressDO { Address = "alex@gmail.com" } };
                 uow.UserRepository.Add(testUser2);
-
+                uow.SaveChanges();
                 //Searching for users
                 UserDO searchQueryUser = new UserDO() { FirstName = "test" };
                 Assert.AreEqual(2, new User().Query(uow, searchQueryUser).Count());
