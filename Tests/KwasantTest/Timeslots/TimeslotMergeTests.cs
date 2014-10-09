@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using DayPilot.Web.Mvc.Json;
-using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
 using KwasantWeb.Controllers;
 using NUnit.Framework;
@@ -14,17 +12,8 @@ using StructureMap;
 namespace KwasantTest.Timeslots
 {
     [TestFixture]
-    public class TimeslotMergeTests
+    public class TimeslotMergeTests : BaseTest
     {
-        private UserDO _user;
-
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-            _user = new FixtureData().TestUser1();
-        }
-
         private String GetFormattedDateString(String date)
         {
             return DateTime.Parse(date).ToString(EventController.DateStandardFormat);
@@ -64,23 +53,23 @@ namespace KwasantTest.Timeslots
 
         private CalendarDO CreateCalendarDO(IUnitOfWork uow, int calendarID)
         {
-            
+            var user = new FixtureData(uow).TestUser1();
             var calendarDO = new CalendarDO()
             {
                 Id = calendarID,
                 Name = "Test Calendar",
-                OwnerID = _user.Id,
-                Owner = _user
+                OwnerID = user.Id,
+                Owner = user
             };
             uow.CalendarRepository.Add(calendarDO);
             return calendarDO;
         }
 
-        private void SubmitNewTimeSlotToController(int EventID, String startTime, String endTime)
+        private void SubmitNewTimeSlotToController(int calendarID, String startTime, String endTime)
         {
             var controller = new EventController();
 
-            var res = controller.NewTimeSlot(EventID, GetFormattedDateString(startTime), GetFormattedDateString(endTime), true);
+            var res = controller.NewTimeSlot(calendarID, GetFormattedDateString(startTime), GetFormattedDateString(endTime), true);
             var converted = res as JavaScriptResult;
             if (converted == null)
                 throw new Exception("Invalid return type");
@@ -98,6 +87,8 @@ namespace KwasantTest.Timeslots
 
                 Assert.AreEqual(1, uow.EventRepository.GetAll().Count());
                 SubmitNewTimeSlotToController(1, "11:30am", "11:45am");
+
+                uow.SaveChanges(); 
 
                 var all = uow.EventRepository.GetAll().ToList();
                 Assert.AreEqual(2, all.Count());
@@ -120,6 +111,8 @@ namespace KwasantTest.Timeslots
                 Assert.AreEqual(1, uow.EventRepository.GetAll().Count());
                 SubmitNewTimeSlotToController(1, "11:00am", "11:45am");
 
+                uow.SaveChanges(); 
+
                 var all = uow.EventRepository.GetAll().ToList();
                 Assert.AreEqual(1, all.Count());
 
@@ -137,6 +130,8 @@ namespace KwasantTest.Timeslots
 
                 Assert.AreEqual(1, uow.EventRepository.GetAll().Count());
                 SubmitNewTimeSlotToController(1, "11:00am", "11:45am");
+
+                uow.SaveChanges(); 
 
                 var all = uow.EventRepository.GetAll().ToList();
                 Assert.AreEqual(1, all.Count());
@@ -156,6 +151,8 @@ namespace KwasantTest.Timeslots
                 Assert.AreEqual(1, uow.EventRepository.GetAll().Count());
                 SubmitNewTimeSlotToController(1, "10:00am", "11:30am");
 
+                uow.SaveChanges(); 
+
                 var all = uow.EventRepository.GetAll().ToList();
                 Assert.AreEqual(1, all.Count());
 
@@ -173,6 +170,8 @@ namespace KwasantTest.Timeslots
 
                 Assert.AreEqual(1, uow.EventRepository.GetAll().Count());
                 SubmitNewTimeSlotToController(1, "10:00am", "11:30am");
+
+                uow.SaveChanges(); 
 
                 var all = uow.EventRepository.GetAll().ToList();
                 Assert.AreEqual(1, all.Count());
@@ -192,6 +191,8 @@ namespace KwasantTest.Timeslots
                 Assert.AreEqual(1, uow.EventRepository.GetAll().Count());
                 SubmitNewTimeSlotToController(1, "9:00am", "11:30am");
 
+                uow.SaveChanges(); 
+
                 var all = uow.EventRepository.GetAll().ToList();
                 Assert.AreEqual(1, all.Count());
 
@@ -210,6 +211,8 @@ namespace KwasantTest.Timeslots
                 Assert.AreEqual(1, uow.EventRepository.GetAll().Count());
                 SubmitNewTimeSlotToController(1, "10:00am", "11:00am");
 
+                uow.SaveChanges(); 
+
                 var all = uow.EventRepository.GetAll().ToList();
                 Assert.AreEqual(1, all.Count());
 
@@ -224,11 +227,14 @@ namespace KwasantTest.Timeslots
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 CreateCalendarDO(uow, 2);
+                uow.SaveChanges();
 
                 CreateOriginalTimeSlot(1, "10:00am", "11:00am");
 
                 Assert.AreEqual(1, uow.EventRepository.GetAll().Count());
                 SubmitNewTimeSlotToController(2, "9:00am", "11:30am");
+
+                uow.SaveChanges(); 
 
                 var all = uow.EventRepository.GetAll().ToList();
                 Assert.AreEqual(2, all.Count());
@@ -248,11 +254,15 @@ namespace KwasantTest.Timeslots
             {
                 CreateCalendarDO(uow, 2);
 
+                uow.SaveChanges();
+
                 //This creates the event tomorrow at 10am
                 CreateOriginalTimeSlot(1, "10:00am", "11:00am", true);
 
                 Assert.AreEqual(1, uow.EventRepository.GetAll().Count());
                 SubmitNewTimeSlotToController(2, "9:00am", "11:30am");
+
+                uow.SaveChanges(); 
 
                 var all = uow.EventRepository.GetAll().ToList();
                 Assert.AreEqual(2, all.Count());

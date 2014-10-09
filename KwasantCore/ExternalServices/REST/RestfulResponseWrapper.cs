@@ -1,5 +1,5 @@
 ﻿using System;
-using KwasantCore.Managers.APIManager.Transmitters.Restful;
+using KwasantCore.Managers.APIManagers.Transmitters.Restful;
 
 namespace KwasantCore.ExternalServices.REST
 {

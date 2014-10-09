@@ -1,6 +1,6 @@
 ﻿using Data.Entities;
 
-namespace KwasantCore.Managers.APIManager.Packagers
+namespace KwasantCore.Managers.APIManagers.Packagers
 {
     public interface IEmailPackager
     {

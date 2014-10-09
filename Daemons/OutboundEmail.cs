@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Daemons.EventExposers;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Managers.APIManagers.Packagers;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
@@ -104,15 +105,18 @@ namespace Daemons
                                 envelope.Email.AddEmailRecipient(EmailParticipantType.Bcc, outboundemailaddress);
                             }
 
-                            ////Removing email address which are not test account in debug mode
-                            //#if DEBUG
-                            //{
-                            //    if (RemoveRecipients(envelope.Email, subUow))
-                            //    {
-                            //        Logger.GetLogger().Info("Removed one or more email recipients because they were not test accounts");
-                            //    }
-                            //}
-                            //#endif
+                            //Removing email address which are not test account in debug mode
+                            if (Server.IsDevMode)
+                            {
+                                var recipientsRemoved = RemoveRecipients(envelope.Email, subUow);
+                                if (recipientsRemoved.Any())
+                                {
+                                    var message = String.Format("The following recipients were removed because they are not test accounts: {0}", String.Join(", ", recipientsRemoved));
+                                    Logger.GetLogger().Info(message);
+                                    LogEvent(message);
+                                }
+                            }
+
                             packager.Send(envelope);
                             numSent++;
 
@@ -143,9 +147,9 @@ namespace Daemons
             }
         }
 
-        private bool RemoveRecipients(EmailDO emailDO, IUnitOfWork uow)
+        private List<String> RemoveRecipients(EmailDO emailDO, IUnitOfWork uow)
         {
-            bool isRecipientRemoved = false;
+            var recipientsRemoved = new List<String>();
             var recipientList = emailDO.Recipients.ToList();
             
             foreach (RecipientDO recipient in recipientList)
@@ -154,10 +158,10 @@ namespace Daemons
                 if (user != null && !user.TestAccount)
                 {
                     uow.RecipientRepository.Remove(recipient);
-                    isRecipientRemoved = true;
+                    recipientsRemoved.Add(recipient.EmailAddress.Address);
                 }
             }
-            return isRecipientRemoved;
+            return recipientsRemoved;
         }
 
 

@@ -4,7 +4,6 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
-using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
@@ -16,10 +15,8 @@ using Utilities;
 namespace KwasantTest.Daemons
 {
     [TestFixture]
-    public class ThroughputMonitorTests
+    public class ThroughputMonitorTests : BaseTest
     {
-        private IConfigRepository _configRepository;
-
         private Func<DateTimeOffset> GetThroughputCheckingStartTime = () => DateTimeOffset.Now.AddHours(-1);
         private Func<DateTimeOffset> GetThroughputCheckingEndTime = () => DateTimeOffset.Now.AddHours(1);
 
@@ -48,28 +45,30 @@ namespace KwasantTest.Daemons
                                                  return new MockedConfigRepository().Get<string>(key);
                                          }
                                      });
-            _configRepository = configRepositoryMock.Object;
-            ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(_configRepository));
+            var configRepository = configRepositoryMock.Object;
+            ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepository));
         }
 
         [Test]
         public void TestThroughputManagerExpired()
         {
-            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
-            
-            var bookingRequestDO = new BookingRequestDO();
-            bookingRequestDO.State = BookingRequestState.Unstarted;
-            bookingRequestDO.User = new FixtureData().TestUser1();
-            bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 1, 0, 0));
-            bookingRequestRepo.Add(bookingRequestDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
-            uow.SaveChanges();
+                var bookingRequestDO = new BookingRequestDO();
+                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.User = new FixtureData(uow).TestUser1();
+                bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 1, 0, 0));
+                bookingRequestRepo.Add(bookingRequestDO);
 
-            var throughputMonitor = new ThroughputMonitor();
-            DaemonTests.RunDaemonOnce(throughputMonitor);
+                uow.SaveChanges();
 
-            _smsPackagerMock.Verify(s => s.SendSMS(It.IsAny<String>(), It.IsAny<String>()), () => Times.Exactly(1));
+                var throughputMonitor = new ThroughputMonitor();
+                DaemonTests.RunDaemonOnce(throughputMonitor);
+
+                _smsPackagerMock.Verify(s => s.SendSMS(It.IsAny<String>(), It.IsAny<String>()), () => Times.Exactly(1));
+            }
         }
 
 
@@ -78,22 +77,23 @@ namespace KwasantTest.Daemons
         {
             GetThroughputCheckingStartTime = () => DateTimeOffset.Now.AddHours(1);
 
-            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
-            var bookingRequestDO = new BookingRequestDO();
-            bookingRequestDO.State = BookingRequestState.Unstarted;
-            bookingRequestDO.User = new FixtureData().TestUser1();
-            bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
-            bookingRequestRepo.Add(bookingRequestDO);
+                var bookingRequestDO = new BookingRequestDO();
+                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.User = new FixtureData(uow).TestUser1();
+                bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
+                bookingRequestRepo.Add(bookingRequestDO);
 
-            uow.SaveChanges();
+                uow.SaveChanges();
 
-            var throughputMonitor = new ThroughputMonitor();
-            DaemonTests.RunDaemonOnce(throughputMonitor);
+                var throughputMonitor = new ThroughputMonitor();
+                DaemonTests.RunDaemonOnce(throughputMonitor);
 
-            _smsPackagerMock.Verify(s => s.SendSMS(It.IsAny<String>(), It.IsAny<String>()), Times.Never);
-
+                _smsPackagerMock.Verify(s => s.SendSMS(It.IsAny<String>(), It.IsAny<String>()), Times.Never);
+            }
         }
 
         [Test]
@@ -103,21 +103,23 @@ namespace KwasantTest.Daemons
 
             ObjectFactory.Configure(a => a.For<ISMSPackager>().Use(smsPackager.Object));
 
-            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
-            var bookingRequestDO = new BookingRequestDO();
-            bookingRequestDO.State = BookingRequestState.Unstarted;
-            bookingRequestDO.User = new FixtureData().TestUser1();
-            bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
-            bookingRequestRepo.Add(bookingRequestDO);
+                var bookingRequestDO = new BookingRequestDO();
+                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.User = new FixtureData(uow).TestUser1();
+                bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
+                bookingRequestRepo.Add(bookingRequestDO);
 
-            uow.SaveChanges();
+                uow.SaveChanges();
 
-            var throughputMonitor = new ThroughputMonitor();
-            DaemonTests.RunDaemonOnce(throughputMonitor);
+                var throughputMonitor = new ThroughputMonitor();
+                DaemonTests.RunDaemonOnce(throughputMonitor);
 
-            smsPackager.Verify(s => s.SendSMS(It.IsAny<String>(), It.IsAny<String>()), Times.Never);
+                smsPackager.Verify(s => s.SendSMS(It.IsAny<String>(), It.IsAny<String>()), Times.Never);
+            }
         }
     }
 }

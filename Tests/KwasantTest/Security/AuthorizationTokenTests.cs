@@ -12,14 +12,8 @@ using StructureMap;
 namespace KwasantTest.Security
 {
     [TestFixture]
-    public class AuthorizationTokenTests
+    public class AuthorizationTokenTests : BaseTest
     {
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-        }
-
         [Test]
         public void TestAuthTokenGeneration()
         {
@@ -33,7 +27,7 @@ namespace KwasantTest.Security
                     Name = "Robert Rudman"
                 };
 
-                var userDO = user.GetOrCreateFromBR(uow, emailAddress);
+                var userDO = uow.UserRepository.GetOrCreateUser(emailAddress);
 
                 var authTokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(originalURL, userDO);
 
@@ -63,7 +57,7 @@ namespace KwasantTest.Security
                     Name = "Robert Rudman"
                 };
 
-                var userDO = user.GetOrCreateFromBR(uow, emailAddress);
+                var userDO = uow.UserRepository.GetOrCreateUser(emailAddress);
 
                 var authTokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(originalURL, userDO);
 

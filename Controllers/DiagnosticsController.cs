@@ -15,7 +15,7 @@ using Utilities;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Booker")]
     public class DiagnosticsController : Controller
     {
         public ActionResult Index(int? pageAmount)
@@ -279,8 +279,8 @@ See more: {2}
             }
 
             var startTime = DateTime.Now;
-            var maxTime = TimeSpan.FromMinutes(2);
-            while (DateTime.Now < startTime.Add(maxTime))
+            var endTime = startTime.Add(TimeSpan.FromMinutes(10));
+            while (DateTime.Now < endTime)
             {
                     if (messageReceived)
                 {

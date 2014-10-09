@@ -57,9 +57,15 @@ function getURLParameter(name) {
 }
 
 /*** Kwasant.IFrame functions ***/
-function closeWithUnsavedDataCheck(modifiedState) {
+function closeWithUnsavedDataCheck(modifiedState, summery, eventId) {
+
     if (!modifiedState.modified) {
-        close();
+        if (summery == '') {
+            $.getJSON('/Event/ConfirmDelete?eventID=' + eventId, function (response) {
+                window.parent.calendar.refreshCalendars;
+                close();
+            });
+        }
     }
     else if (confirm("you are about to lose data, continue?")) {
         modifiedState.modified = false;

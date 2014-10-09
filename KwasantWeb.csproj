@@ -298,6 +298,7 @@
     <Compile Include="KwasantHandleErrorAttribute.cs" />
     <Compile Include="ViewModels\BookingRequestAdminVM.cs" />
     <Compile Include="ViewModels\CalendarShowVM.cs" />
+    <Compile Include="ViewModels\BookingRequestConversationVM.cs" />
     <Compile Include="ViewModels\DashboardShowVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
     <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
@@ -792,6 +793,9 @@
     <Content Include="Views\Calendar\Edit.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
+    <Content Include="Views\BookingRequest\ShowConversation.cshtml" />
+    <Content Include="Views\BookingRequest\ShowInProcessBRs.cshtml" />
+    <Content Include="Views\BookingRequest\ShowMyBRs.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

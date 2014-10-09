@@ -6,8 +6,7 @@ using Data.Interfaces;
 using Data.States;
 using KwasantCore.Interfaces;
 using KwasantCore.Managers;
-using KwasantCore.Managers.APIManager.Packagers.DataTable;
-using KwasantCore.Managers.APIManager.Packagers.Kwasant;
+using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using KwasantWeb.ViewModels.JsonConverters;
@@ -20,22 +19,24 @@ using Data.Repositories;
 using Data.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
+using Utilities;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Booker")]
     public class BookingRequestController : Controller
     {
-        private DataTablesPackager _datatables;
+       // private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
         Booker _booker;
-        
+        private JsonPackager _jsonPackager;
         public BookingRequestController()
         {
-            _datatables = new DataTablesPackager();
+           // _datatables = new DataTablesPackager();
             _br = new BookingRequest();
             _booker = new Booker();
+            _jsonPackager = new JsonPackager();
         }
 
         // GET: /BookingRequest/
@@ -49,7 +50,9 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
+               // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
+                var unprocessedBRs = _br.GetUnprocessed(uow);
+                var jsonResult = Json(_jsonPackager.Pack(unprocessedBRs), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -142,7 +145,7 @@ namespace KwasantWeb.Controllers
                     draw = draw,
                     recordsTotal = recordcount,
                     recordsFiltered = recordcount,
-                    data = _datatables.Pack(_br.GetAllByUserId(uow.BookingRequestRepository, start, length, userId))
+                    data = _jsonPackager.Pack(_br.GetAllByUserId(uow.BookingRequestRepository, start, length, userId))
                 }, JsonRequestBehavior.AllowGet);
 
                 jsonResult.MaxJsonLength = int.MaxValue;
@@ -152,7 +155,7 @@ namespace KwasantWeb.Controllers
 
 
         [AllowAnonymous]
-        public ActionResult Generate(string emailAddress,string meetingInfo)
+        public ActionResult Generate(string emailAddress, string meetingInfo)
         {
             string result = "";
             try
@@ -169,9 +172,9 @@ namespace KwasantWeb.Controllers
 
                     uow.SaveChanges();
 
-                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.User, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> {{"BookingRequestID", bookingRequest.Id}});
+                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.User, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
 
-                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = bookingRequest.UserID }, JsonRequestBehavior = JsonRequestBehavior.AllowGet};
+                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = bookingRequest.UserID }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
                 }
             }
             catch (Exception e)
@@ -191,7 +194,7 @@ namespace KwasantWeb.Controllers
                 var jsonResult = Json(new
                 {
                     draw = draw,
-                    data = _datatables.Pack(BuildRelatedItemsJSON(uow, bookingRequestId, start, length)),
+                    data = _jsonPackager.Pack(BuildRelatedItemsJSON(uow, bookingRequestId, start, length)),
                     recordsTotal = recordcount,
                     recordsFiltered = recordcount,
                    
@@ -224,5 +227,67 @@ namespace KwasantWeb.Controllers
                 uow.SaveChanges();
             }
         }
+
+        public ActionResult ShowBRSOwnedByBooker()
+        {
+            return View("ShowMyBRs");
+        }
+
+
+       //Get all checkout BR's owned by the logged
+        public ActionResult GetBRSOwnedByBooker()
+        {
+            var curBooker = this.GetUserId();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
+                var bookerOwnedRequests = _br.GetCheckOutBookingRequest(uow, curBooker);
+                var jsonResult = Json(_jsonPackager.Pack(bookerOwnedRequests), JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+
+        public ActionResult ShowInProcessBRS()
+        {
+            return View("ShowInProcessBRs");
+        }
+
+
+       //Get  BR's that are currently checked out
+        public ActionResult GetInProcessBRS()
+        {    
+            string curBooker="";
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
+                var inProcessBRs = _br.GetCheckOutBookingRequest(uow, curBooker);
+                var jsonResult = Json(_jsonPackager.Pack(inProcessBRs), JsonRequestBehavior.AllowGet);
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+
+        // GET: /Conversation Members
+        [HttpGet]
+        public ActionResult ShowConversation(int bookingRequestId, int? curEmailId)
+        {
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestConversationVM bookingRequestConversation = new BookingRequestConversationVM
+                {
+                    FromAddress = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.From.Address).ToList(),
+                    DateReceived = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).ToList().Select(e => e.DateReceived.ToString("MMM dd") + _br.getCountDaysAgo(e.DateReceived)).ToList(),
+                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
+                    HTMLText = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.HTMLText).ToList(),
+                    CurEmailId = curEmailId
+                };
+
+                return View(bookingRequestConversation);
+            }
+        }
+
+
     }
 }

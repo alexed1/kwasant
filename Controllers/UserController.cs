@@ -11,35 +11,32 @@ using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
-using ViewModel.Models;
 using KwasantCore.Services;
-using KwasantWeb.Controllers.Helpers;
 using Data.Validations;
 using System.Linq;
-using KwasantCore.Managers.APIManager.Packagers.DataTable;
+using Utilities;
 
 namespace KwasantWeb.Controllers
 {
     [KwasantAuthorize]
     public class UserController : Controller
     {
-        private DataTablesPackager _datatables;
+       // private DataTablesPackager _datatables;
         private User _user;
-
+        private JsonPackager _jsonPackager;
         public UserController()
         {
-            _datatables = new DataTablesPackager();
+           // _datatables = new DataTablesPackager();
             _user = new User();
+            _jsonPackager = new JsonPackager();
         }
 
         [KwasantAuthorize(Roles = "Admin")]
         public ActionResult Index()
         {
-            string userId = "";
-            User _user = new User();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                List<UserDO> userList = _user.Query(uow, userId);
+                List<UserDO> userList = uow.UserRepository.GetAll().ToList();
                 UserShowAllVM userShowAllVM = new UserShowAllVM();
                 List<UserShowVM> userShowVMList = new List<UserShowVM>();
 
@@ -50,13 +47,11 @@ namespace KwasantWeb.Controllers
                     FirstName = u.FirstName,
                     LastName = u.LastName,
                     EmailAddress = u.EmailAddress.Address,
-                    Role = userManager.GetRoles(u.Id).Count() > 0 ? userManager.GetRoles(u.Id)[0] : "",
-                    RoleId = u.Roles.ToList().Count() > 0 ? u.Roles.ToList()[0].RoleId : "",
+                    Role = userManager.GetRoles(u.Id).Any() ? userManager.GetRoles(u.Id)[0] : "",
+                    RoleId = u.Roles.ToList().Any() ? u.Roles.ToList()[0].RoleId : "",
                 }));
                 userShowAllVM.Users = userShowVMList;
 
-
-               
                 return View(userShowAllVM);
             }
         }
@@ -67,11 +62,10 @@ namespace KwasantWeb.Controllers
             if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            User _user = new User();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curUserManager = KwasantCore.Services.User.GetUserManager(uow);
-                UserDO curUser = _user.Query(uow, userId)[0];
+                UserDO curUser = uow.UserRepository.GetByKey(userId);
                 UserShowVM userShowVM = new UserShowVM
                 {
                     Id = curUser.Id,
@@ -101,11 +95,8 @@ namespace KwasantWeb.Controllers
                 // don't wait for this, run it async and return response to the user.
                 return RedirectToAction("MyAccount", new { remoteCalendarAccessGranted = providerName });
             }
-            else
-            {
                 return new RedirectResult(result.RedirectUri);
             }
-        }
 
         public async Task<ActionResult> RevokeRemoteCalendarAccess(string providerName)
         {
@@ -148,19 +139,8 @@ namespace KwasantWeb.Controllers
 
         public ActionResult ShowAddUser()
         {
-            UserAdministerVM curUserAdminVM = new UserAdministerVM();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                curUserAdminVM.User = new UserDO
-                {
-                    Id = "",
-                    EmailAddress = new EmailAddressDO() { Address = "" },
-                    FirstName = "",
-                    LastName = ""
-                };
+            return View((UserDO)null);
             }
-            return View(curUserAdminVM);
-        }
 
         public ActionResult Validate(UserCreateVM curCreateUserVM)
         {
@@ -169,17 +149,17 @@ namespace KwasantWeb.Controllers
 
             if (string.IsNullOrEmpty(curUser.EmailAddress.Address) || string.IsNullOrEmpty(curUser.FirstName) || string.IsNullOrEmpty(curUser.LastName) || string.IsNullOrEmpty(selectedRole))
             {
-                var jsonErrorResult = Json(_datatables.Pack(new { Error = "All Fields are required" }), JsonRequestBehavior.AllowGet);
+                var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "All Fields are required" }), JsonRequestBehavior.AllowGet);
                 return jsonErrorResult;
             }
 
             EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
             if (!(emailAddressValidator.Validate(curUser.EmailAddress).IsValid))
             {
-                var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
+                var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
                 return jsonErrorResult;
             }
-            var jsonSuccessResult = Json(_datatables.Pack("valid"), JsonRequestBehavior.AllowGet);
+            var jsonSuccessResult = Json(_jsonPackager.Pack("valid"), JsonRequestBehavior.AllowGet);
             return jsonSuccessResult;
         }
 
@@ -187,24 +167,17 @@ namespace KwasantWeb.Controllers
         public ActionResult Detail(String userId)
         {
             UserAdministerVM curUserAdminVM = new UserAdministerVM();
-            curUserAdminVM.User = _user.Get(userId);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curUserAdminVM.User = uow.UserRepository.GetByKey(userId);
             return View(curUserAdminVM);
+        }
         }
 
         [KwasantAuthorize(Roles = "Admin")]
-        public ActionResult FindUser(UserAdministerVM curUserAdminVM)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                curUserAdminVM.User = new UserDO
+        public ActionResult FindUser(UserAdministerVM curUserAdminVM) //This wasn't even searching before...???
                 {
-                    Id = "",
-                    EmailAddress = new EmailAddressDO() { Address = "" },
-                    FirstName = "",
-                    LastName = ""
-                };
-            }
-            return View(curUserAdminVM);
+            return View(new UserAdministerVM());
         }
 
         [HttpPost]
@@ -214,7 +187,7 @@ namespace KwasantWeb.Controllers
 
             if (string.IsNullOrEmpty(queryParams.EmailAddress.Address) && string.IsNullOrEmpty(queryParams.FirstName) && string.IsNullOrEmpty(queryParams.LastName))
             {
-                var jsonErrorResult = Json(_datatables.Pack(new { Error = "Atleast one field is required" }), JsonRequestBehavior.AllowGet);
+                var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "Atleast one field is required" }), JsonRequestBehavior.AllowGet);
                 return jsonErrorResult;
             }
             if (queryParams.EmailAddress.Address != null)
@@ -222,13 +195,24 @@ namespace KwasantWeb.Controllers
                 EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
                 if (!(emailAddressValidator.Validate(queryParams.EmailAddress).IsValid))
                 {
-                    var jsonErrorResult = Json(_datatables.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
+                    var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "Please provide valid email address" }), JsonRequestBehavior.AllowGet);
                     return jsonErrorResult;
                 }
             }
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(_user.Query(uow, queryParams)), JsonRequestBehavior.AllowGet);
+                var query = uow.UserRepository.GetQuery();
+                if (!String.IsNullOrWhiteSpace(queryParams.FirstName))
+                    query = query.Where(u => u.FirstName.Contains(queryParams.FirstName));
+                if (!String.IsNullOrWhiteSpace(queryParams.LastName))
+                    query = query.Where(u => u.LastName.Contains(queryParams.LastName));
+                if (!String.IsNullOrWhiteSpace(queryParams.EmailAddress.Address))
+                    query = query.Where(u => u.EmailAddress.Address.Contains(queryParams.EmailAddress.Address));
+
+                var matchedUsers = query.ToList();
+
+                var jsonResult = Json(_jsonPackager.Pack(matchedUsers), JsonRequestBehavior.AllowGet);
+               // var jsonResult = Json(_jsonPackager.Pack(_user.Query(uow, queryParams)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -238,12 +222,21 @@ namespace KwasantWeb.Controllers
         public ActionResult ProcessSubmittedForm(UserCreateVM curCreateUserVM, bool sendEmail)
         {
             UserDO curUser = curCreateUserVM.User;
-            string role = new Role().GetRoles().Where(e => e.Id == curCreateUserVM.UserRole).FirstOrDefault().Name;
+            var firstOrDefault = new Role().GetRoles().FirstOrDefault(e => e.Id == curCreateUserVM.UserRole);
+            if (firstOrDefault != null)
+            {
+                string role = firstOrDefault.Name;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _user.Create(uow, curUser, role, sendEmail);
+                    if (sendEmail)
+                        new Email().SendUserSettingsNotification(uow, curUser);
+
+                    var newUser = uow.UserRepository.GetOrCreateUser(curUser.EmailAddress.Address);
+                    uow.UserRepository.UpdateUserCredentials(newUser, curUser.UserName, Guid.NewGuid().ToString());
+                    uow.AspNetUserRolesRepository.AssignRoleToUser(role, newUser.Id);
                 uow.SaveChanges();
+            }
             }
             return RedirectToAction("Dashboard", "Admin");
         }
@@ -256,9 +249,11 @@ namespace KwasantWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _user.Update(uow, curUser, role);
+                var existingUser = uow.UserRepository.GetOrCreateUser(curUser.EmailAddress.Address);
+                uow.UserRepository.UpdateUserCredentials(existingUser, curUser.UserName, Guid.NewGuid().ToString());
+                uow.AspNetUserRolesRepository.AssignRoleToUser(role, existingUser.Id);
             }
-            var jsonSuccessResult = Json(_datatables.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
+            var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
             return jsonSuccessResult;
         }
 

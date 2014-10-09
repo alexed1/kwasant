@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KwasantCore.Managers.APIManagers.Packagers.Mandrill
+namespace KwasantCore.Managers.APIManagers.Packagers.Mandrill.APIStructures
 {
     public class MandrillListWebhooks
     {

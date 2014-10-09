@@ -46,7 +46,7 @@ namespace KwasantCore.Security
 
         public ClaimsIdentity GetIdentity(IUnitOfWork uow, UserDO userDO)
         {
-            UserManager<UserDO> curUserManager = Services.User.GetUserManager(uow); ;
+            UserManager<UserDO> curUserManager = User.GetUserManager(uow);
             return curUserManager.CreateIdentity(userDO, DefaultAuthenticationTypes.ApplicationCookie);
         }
     }
