@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Validations;
 using Data.Entities;
 using Data.States;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 using System.Collections.Generic;
 
@@ -77,15 +75,6 @@ namespace KwasantCore.Services
                     FirstName = curUser.FirstName,
                     LastName = curUser.LastName
                 };
-            }
-        }
-
-        public string GetRole(string curUserId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curManager = User.GetUserManager(uow);
-                return curManager.GetRoles(curUserId).Count() > 0 ? curManager.GetRoles(curUserId)[0] : "";
             }
         }
 
