@@ -43,7 +43,7 @@
                 <td>Role
                 </td>
                 <td>
-                    <select id="role" name="UserRole">
+                    <select id="role" name="RoleId">
                         <option value="">-- Select Role --</option>
                         @{
                             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -52,9 +52,11 @@
                                 foreach (var role in roles)
                                 {
                                     if (role.Name != Model.RoleName)
-                                    {<option value="@role.Id">@role.Name</option>}
+                                    {
+                                        <option value="@role.Id">@role.Name</option>}
                                     else
-                                    {<option value="@role.Id" selected="selected">@role.Name</option>}
+                                    {
+                                        <option value="@role.Id" selected="selected">@role.Name</option>}
                                 }
                             }
                         }

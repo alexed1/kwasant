@@ -1,40 +1,55 @@
-﻿@model KwasantWeb.ViewModels.UserShowVM
-
+﻿@using KwasantWeb.ViewModels
+@model UserVM
 @{
-    ViewBag.Title = "User Details";
+    ViewBag.Title = "Details";
 }
-<div class="page-title-action">
-	<h2>Details</h2>
-	<div class="title-actions">
-		@Html.ActionLink("Back to List", "Index", null, new { @class = "custom-btn glyphicon glyphicon-arrow-left" })
-		@Html.ActionLink("Edit", "Edit", "Account", new { userId = @Model.Id, roleId = @Model.RoleId }, new { @class = "custom-btn glyphicon glyphicon-pencil" })
-	</div>	
-</div>
-<table class="data-table dataTable user-details-table">
-		@{
-			<tr>
-				<td>First Name:</td>
-				<td>@Model.FirstName</td>
-			</tr>
-			<tr>
-				<td>Last Name:</td>
-				<td>@Model.LastName</td>
-			</tr>
-			<tr>
-				<td>Email Address:</td>
-				<td>@Model.EmailAddress</td>
-			</tr>
-			<tr>
-				<td>Role:</td>
-				<td>@Model.Role</td>
-			</tr>
-		}
-</table>
+@section styles{
+    @Styles.Render("~/bundles/css/daypilot")
+}
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/daypilot")
+    @Scripts.Render("~/bundles/js/kwasantcalendar")
+    @Scripts.Render("~/bundles/js/kwasantpopup")
 
-<script type="text/javascript">
-	$(document).ready(function () {
-		$('.body-content table.data-table tbody tr:odd').addClass('even');
-	})
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
+
+<h2>Details</h2>
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/smoothness/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+@*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>*@
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+<script>
+    $(function () {
+        $("#tabs").tabs();
+        $('body').css('overflow-y', 'auto');
+    });
 </script>
-
+<table width="100%">
+    <tr>
+        <td width="45%" style="vertical-align: top; padding-right: 40px;">
+            <div id="tabs">
+                <ul>
+                    <li><a href="#tduserblock">Calendars</a></li>
+                    <li><a href="#divUserDetails">Details</a></li>
+                </ul>
+                <div id="tduserblock">
+                    @Html.Partial("ChooseCalendars", Model)
+                </div>
+                <div id="divUserDetails">
+                    @Html.Partial("ShowUserDetails", Model)
+                </div>
+            </div>
+        </td>
+        <td width="55%" style="vertical-align: top;">
+            @Html.Partial("ShowCalendarEvents", new CalendarShowVM { LinkedCalendarIds = Model.Calendars.Select(c => c.Id).ToList() })
+        </td>
+    </tr>
+</table>
 

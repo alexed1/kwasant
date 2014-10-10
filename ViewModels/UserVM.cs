@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace KwasantWeb.ViewModels
 {
@@ -12,5 +13,13 @@ namespace KwasantWeb.ViewModels
         public int EmailAddressID { get; set; }
         public String RoleName { get; set; }
         public String RoleId { get; set; }
+
+        public List<UserCalendarVM> Calendars { get; set; }
+    }
+
+    public class UserCalendarVM
+    {
+        public int Id { get; set; }
+        public String Name { get; set; }
     }
 }

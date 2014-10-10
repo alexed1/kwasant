@@ -109,7 +109,7 @@ namespace KwasantWeb.Controllers
             //string selectedRole = curCreateUserVM.UserRole;
 
             if (string.IsNullOrEmpty(userVM.EmailAddress) || string.IsNullOrEmpty(userVM.FirstName) ||
-                string.IsNullOrEmpty(userVM.LastName) || string.IsNullOrEmpty(userVM.RoleName))
+                string.IsNullOrEmpty(userVM.LastName) || string.IsNullOrEmpty(userVM.RoleId))
             {
                 var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "All Fields are required"}),
                     JsonRequestBehavior.AllowGet);
@@ -207,10 +207,14 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string role = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(r => r.Id == curCreateUserVM.RoleId).Name;
                 var existingUser = uow.UserRepository.GetOrCreateUser(curCreateUserVM.EmailAddress);
                 uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName, Guid.NewGuid().ToString());
-                uow.AspNetUserRolesRepository.AssignRoleToUser(role, existingUser.Id);
+                uow.AspNetUserRolesRepository.AssignRoleIDToUser(curCreateUserVM.RoleId, existingUser.Id);
+
+                existingUser.FirstName = curCreateUserVM.FirstName;
+                existingUser.LastName = curCreateUserVM.LastName;
+                existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress, curCreateUserVM.FirstName);
+                uow.SaveChanges();
             }
             var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
             return jsonSuccessResult;
@@ -227,6 +231,8 @@ namespace KwasantWeb.Controllers
                 EmailAddress = u.EmailAddress.Address,
                 RoleName = uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Name).FirstOrDefault(),
                 RoleId = uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Id.ToString()).FirstOrDefault(),
+
+                Calendars = u.Calendars.Select(c => new UserCalendarVM { Id = c.Id, Name = c.Name}).ToList()
             };
         }
 
