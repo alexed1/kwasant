@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
@@ -15,6 +16,9 @@ namespace Data.Infrastructure
     {       
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
+
+        public delegate void PostResolutionNegotiationResponseReceivedHandler(int negotiationId);
+        public static event PostResolutionNegotiationResponseReceivedHandler AlertPostResolutionNegotiationResponseReceived;
 
         public delegate void CustomerCreatedHandler(UserDO user);
         public static event CustomerCreatedHandler AlertCustomerCreated;
@@ -61,6 +65,12 @@ namespace Data.Infrastructure
         {
             if (AlertExplicitCustomerCreated != null)
                 AlertExplicitCustomerCreated(curUserId);
+        }
+
+        public static void PostResolutionNegotiationResponseReceived(int negotiationDO)
+        {
+            if (AlertPostResolutionNegotiationResponseReceived != null)
+                AlertPostResolutionNegotiationResponseReceived(negotiationDO);
         }
 
         public static void CustomerCreated(UserDO user)
@@ -153,6 +163,45 @@ namespace Data.Infrastructure
             AlertManager.AlertBookingRequestCheckedOut += ProcessBookingRequestCheckedOut;
             AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChange;
             AlertManager.AlertError_EmailSendFailure += Error_EmailSendFailure;
+            AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
+        }
+
+        private static void OnPostResolutionNegotiationResponseReceived(int negotiationId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationId);
+                
+                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+
+                const string subject = "New response to resolved negotiation request";
+                const string messageTemplate = "A customer has submitted a new response to an already-resolved negotiation request ({0}). Click {1} to view the booking request.";
+
+                var bookingRequestURL = String.Format("{0}/BookingRequest/Details/{1}", Server.ServerUrl, negotiationDO.BookingRequestID);
+                var message = String.Format(messageTemplate, negotiationDO.Name, "<a href='" + bookingRequestURL + "'>here</a>");
+
+                var toRecipient = negotiationDO.BookingRequest.Booker.EmailAddress;
+
+                EmailDO curEmail = new EmailDO
+                {
+                    Subject = subject,
+                    PlainText = message,
+                    HTMLText = message,
+                    From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
+                    Recipients = new List<RecipientDO>()
+                    {
+                        new RecipientDO
+                        {
+                            EmailAddress = toRecipient,
+                            EmailParticipantType = EmailParticipantType.To
+                        }
+                    }
+                };
+
+                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                uow.SaveChanges();
+            }
         }
 
         private void NewExplicitCustomerCreated(string curUserId)

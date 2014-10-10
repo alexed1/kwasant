@@ -7,5 +7,7 @@ namespace KwasantWeb.ViewModels
         public List<int> LinkedCalendarIds { get; set; }
         public int? LinkedNegotiationID { get; set; }
         public int ActiveCalendarId { get; set; }
+        
     }
+
 }

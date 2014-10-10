@@ -53,6 +53,11 @@ namespace KwasantWeb.Controllers
                 return View(new DashboardShowVM
                 {
                     CalendarVM = calWidget,
+                    ResolvedNegotiations = bookingRequestDO.Negotiations.Where(n => n.NegotiationState == NegotiationState.Resolved).Select(n => new DashboardNegotiationVM
+                    {
+                        Id = n.Id,
+                        Name = n.Name
+                    }).ToList(),
                     BookingRequestVM = TempData["requestInfo"] as BookingRequestAdminVM
                 });
             }

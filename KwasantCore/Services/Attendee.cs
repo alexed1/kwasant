@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 
 namespace KwasantCore.Services
 {
@@ -98,6 +99,7 @@ namespace KwasantCore.Services
             {
                 attendee.Negotiation = negotiationDO;
                 attendee.NegotiationID = negotiationDO.Id;
+                attendee.ParticipationStatus = ParticipationStatus.NeedsAction;
                 uow.AttendeeRepository.Add(attendee);
             }
         }
