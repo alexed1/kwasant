@@ -192,7 +192,7 @@ namespace KwasantCore.Services
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
             //Add the booking request user
-            var curAttendeeDO = _attendee.Create(eventDO.BookingRequest.User);
+            var curAttendeeDO = _attendee.Create(uow, eventDO.BookingRequest.User.EmailAddress.Address,eventDO, eventDO.BookingRequest.User.FirstName);
             eventDO.Attendees.Add(curAttendeeDO);
             var emailAddresses = _emailAddress.GetEmailAddresses(uow, eventDO.BookingRequest.HTMLText, eventDO.BookingRequest.PlainText, eventDO.BookingRequest.Subject);
 

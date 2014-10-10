@@ -17,15 +17,6 @@ namespace KwasantCore.Services
             _emailAddress = emailAddress;
         }
 
-        public AttendeeDO Create (UserDO curUserDO)
-        {
-            AttendeeDO curAttendeeDO;
-            curAttendeeDO = new AttendeeDO();
-            curAttendeeDO.EmailAddress = curUserDO.EmailAddress;
-
-            return curAttendeeDO;
-        }
-
         public AttendeeDO Create(IUnitOfWork uow, string emailAddressString, EventDO curEventDO, String name = null)
         {
             //create a new AttendeeDO
@@ -36,6 +27,7 @@ namespace KwasantCore.Services
             EmailAddressDO emailAddress = emailAddressRepository.GetOrCreateEmailAddress(emailAddressString, name);
             curAttendee.EmailAddressID = emailAddress.Id;
             curAttendee.EmailAddress = emailAddress;
+            curAttendee.ParticipationStatus = ParticipationStatus.NeedsAction;
             curAttendee.Name = emailAddress.Name;
             curAttendee.Event = curEventDO;  //do we have to also manually set the EventId? Seems unDRY
             //uow.AttendeeRepository.Add(curAttendee); //is this line necessary?
@@ -95,6 +87,11 @@ namespace KwasantCore.Services
             var existingAttendeeSet = negotiationDO.Attendees ?? new List<AttendeeDO>();
             
             List<AttendeeDO> newAttendees = ManageAttendeeList(uow, existingAttendeeSet, attendees);
+
+            foreach (var oldAttendee in existingAttendeeSet)
+                if (oldAttendee.ParticipationStatus == 0)
+                    oldAttendee.ParticipationStatus = ParticipationStatus.NeedsAction;
+
             foreach (var attendee in newAttendees)
             {
                 attendee.Negotiation = negotiationDO;
