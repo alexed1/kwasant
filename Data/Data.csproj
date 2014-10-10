@@ -280,6 +280,10 @@
     <Compile Include="Migrations\201410080749315_MigrateAspNetRolesDiscriminator.Designer.cs">
       <DependentUpon>201410080749315_MigrateAspNetRolesDiscriminator.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201410081307475_Sync.Rob2.08.10.2014.cs" />
+    <Compile Include="Migrations\201410081307475_Sync.Rob2.08.10.2014.Designer.cs">
+      <DependentUpon>201410081307475_Sync.Rob2.08.10.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201409291852449_UserProfiles.cs" />
     <Compile Include="Migrations\201409291852449_UserProfiles.Designer.cs">
       <DependentUpon>201409291852449_UserProfiles.cs</DependentUpon>
@@ -1100,6 +1104,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410080749315_MigrateAspNetRolesDiscriminator.resx">
       <DependentUpon>201410080749315_MigrateAspNetRolesDiscriminator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410081307475_Sync.Rob2.08.10.2014.resx">
+      <DependentUpon>201410081307475_Sync.Rob2.08.10.2014.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201409291852449_UserProfiles.resx">
       <DependentUpon>201409291852449_UserProfiles.cs</DependentUpon>

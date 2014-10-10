@@ -66,7 +66,7 @@ namespace KwasantWeb.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var currBooker = this.GetUserId();
-            
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
@@ -77,10 +77,53 @@ namespace KwasantWeb.Controllers
                 bookingRequestDO.LastUpdated = DateTimeOffset.Now;
                 uow.SaveChanges();
                 AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
-            }
 
+                //Get the most recent conversation for this Booking Request
+                var curEmail = uow.EmailRepository.GetAll().Where(e => e.Id == id || e.ConversationId == id).OrderByDescending(e => e.DateReceived).First();
+                const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
+
+                var attachmentInfo = String.Join("<br />",
+                            curEmail.Attachments.Select(
+                                attachment =>
+                                "<a href='" + String.Format(fileViewURLStr, attachment.Id) + "' target='" +
+                                attachment.OriginalName + "'>" + attachment.OriginalName + "</a>"));
+
+                string booker = "none";
+                string bookerId = uow.BookingRequestRepository.GetByKey(id).BookerID;
+                if (bookerId != null)
+                {
+                    var curbooker = uow.UserRepository.GetByKey(bookerId);
+                    if (curbooker.EmailAddress != null)
+                        booker = curbooker.EmailAddress.Address;
+                    else
+                        booker = curbooker.FirstName;
+                }
+
+                BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
+                {
+                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestDO.Id).Select(e => e.Id).ToList(),
+                    BookingRequestId = bookingRequestDO.Id,
+                    CurEmailData = new EmailDO
+                    {
+                        Attachments = curEmail.Attachments,
+                        From = curEmail.From,
+                        Recipients = curEmail.Recipients,
+                        HTMLText = curEmail.HTMLText,
+                        Id = curEmail.Id,
+                        FromID = curEmail.FromID,
+                        DateCreated = curEmail.DateCreated,
+                        Subject = curEmail.Subject
+                    },
+                    EmailTo = String.Join(", ", curEmail.To.Select(a => a.Address)),
+                    EmailCC = String.Join(", ", curEmail.CC.Select(a => a.Address)),
+                    EmailBCC = String.Join(", ", curEmail.BCC.Select(a => a.Address)),
+                    EmailAttachments = attachmentInfo,
+                    Booker = booker
+                };
+                TempData["requestInfo"] = bookingInfo;
             //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
-            return RedirectToAction("Index", new RouteValueDictionary(new { controller = "Dashboard", action = "Index", id = id }));
+                return RedirectToAction("Index", "Dashboard", new { id = id });
+            }
         }
 
         [HttpGet]
@@ -114,24 +157,24 @@ namespace KwasantWeb.Controllers
             }
         }
 
-         [HttpGet]
-         public ActionResult Invalidate(int id)
-         {
-             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-             {
-                 //call to VerifyOwnership
-                 var currBooker = this.GetUserId();
-                 string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
-                 if (verifyOwnership != "valid")
-                     return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+        [HttpGet]
+        public ActionResult Invalidate(int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //call to VerifyOwnership
+                var currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
+                if (verifyOwnership != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
 
-                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                 bookingRequestDO.State = BookingRequestState.Invalid;
-                 uow.SaveChanges();
-                 AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
-                 return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
-             }
-         }
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                bookingRequestDO.State = BookingRequestState.Invalid;
+                uow.SaveChanges();
+                AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
+                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" }, JsonRequestBehavior.AllowGet);
+            }
+        }
 
         [HttpGet]
         public ActionResult GetBookingRequests(int? bookingRequestId, int draw, int start, int length)
@@ -181,7 +224,7 @@ namespace KwasantWeb.Controllers
             {
                 return new JsonResult() { Data = new { Message = "Sorry! Something went wrong. Alpha software..." }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
-            
+
         }
 
         // GET: /RelatedItems 
@@ -190,14 +233,14 @@ namespace KwasantWeb.Controllers
         {
             List<RelatedItemShowVM> obj = new List<RelatedItemShowVM>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            { 
+            {
                 var jsonResult = Json(new
                 {
                     draw = draw,
                     data = _jsonPackager.Pack(BuildRelatedItemsJSON(uow, bookingRequestId, start, length)),
                     recordsTotal = recordcount,
                     recordsFiltered = recordcount,
-                   
+
                 }, JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;

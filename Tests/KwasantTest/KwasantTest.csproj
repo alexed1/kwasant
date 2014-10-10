@@ -155,6 +155,7 @@
     <Compile Include="Services\EmailTests.cs" />
     <Compile Include="Services\EventServiceTests.cs" />
     <Compile Include="Services\SMSTests.cs" />
+    <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Timeslots\TimeslotMergeTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
     <Compile Include="Integration\BookingITests\IntegrationTests.cs" />

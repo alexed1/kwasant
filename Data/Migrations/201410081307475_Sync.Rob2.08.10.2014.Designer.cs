@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class FixUserRoles : IMigrationMetadata
+    public sealed partial class SyncRob208102014 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(FixUserRoles));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(SyncRob208102014));
         
         string IMigrationMetadata.Id
         {
-            get { return "201410061330516_FixUserRoles"; }
+            get { return "201410081307475_Sync.Rob2.08.10.2014"; }
         }
         
         string IMigrationMetadata.Source
