@@ -31,7 +31,9 @@ namespace Data.Entities
         public int State { get; set; }
         public virtual _BookingRequestStateTemplate BookingRequestStateTemplate { get; set; }
 
+        [ForeignKey("Booker")]
         public string BookerID { get; set; }
+        public virtual UserDO Booker { get; set; }
         
         public void AfterCreate()
         {

@@ -281,8 +281,12 @@
         }, 5 * 1000);
     }
 
-    function getNegotiationReview() {
-        Kwasant.IFrame.Display('/Negotiation/Review?negotiationID=' + linkedNegotiationID,
+    function getCurrentNegotiationReview() {
+        getNegotiationReview(linkedNegotiationID);
+    }
+
+    function getNegotiationReview(negotiationID) {
+        Kwasant.IFrame.Display('/Negotiation/Review?negotiationID=' + negotiationID,
                 {
                     horizontalAlign: 'right',
                     minHeight: 700,

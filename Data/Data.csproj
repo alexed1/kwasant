@@ -312,6 +312,10 @@
     <Compile Include="Migrations\201410101037019_Sync.Rob.10.10.2014.Designer.cs">
       <DependentUpon>201410101037019_Sync.Rob.10.10.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201410101302405_UpdateBookingRequestBookerRelation.cs" />
+    <Compile Include="Migrations\201410101302405_UpdateBookingRequestBookerRelation.Designer.cs">
+      <DependentUpon>201410101302405_UpdateBookingRequestBookerRelation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
@@ -1132,6 +1136,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410101037019_Sync.Rob.10.10.2014.resx">
       <DependentUpon>201410101037019_Sync.Rob.10.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410101302405_UpdateBookingRequestBookerRelation.resx">
+      <DependentUpon>201410101302405_UpdateBookingRequestBookerRelation.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
