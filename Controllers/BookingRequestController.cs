@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Web.Mvc;
-using System.Web.Routing;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
@@ -10,8 +9,6 @@ using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using KwasantWeb.ViewModels.JsonConverters;
-using Segment;
-using Segment.Model;
 using StructureMap;
 using System.Net.Mail;
 using System;
@@ -342,7 +339,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_datatables.Pack(_br.GetAllBookingRequests(uow)), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_jsonPackager.Pack(_br.GetAllBookingRequests(uow)), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
