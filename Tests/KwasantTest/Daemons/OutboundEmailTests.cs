@@ -7,7 +7,7 @@ using Daemons;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
@@ -135,8 +135,7 @@ namespace KwasantTest.Daemons
                         EmailParticipantType = EmailParticipantType.To
                     }
                 };
-                var role = new Role();
-                role.Add(uow, fixture.TestRole());
+                uow.AspNetRolesRepository.Add(fixture.TestRole());
                 var u = new UserDO();
                 var user = new User();
                 UserDO currUserDO = new UserDO();

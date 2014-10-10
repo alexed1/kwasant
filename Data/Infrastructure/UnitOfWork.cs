@@ -349,7 +349,37 @@ namespace Data.Infrastructure
                 return _logRepository ?? (_logRepository = new LogRepository(this));
             }
         }
-        
+
+        private ProfileNodeRepository _profileNodeRepository;
+
+        public ProfileNodeRepository ProfileNodeRepository
+        {
+            get
+            {
+                return _profileNodeRepository ?? (_profileNodeRepository = new ProfileNodeRepository(this));
+            }
+        }
+
+        private ProfileItemRepository _profileItemRepository;
+
+        public ProfileItemRepository ProfileItemRepository
+        {
+            get
+            {
+                return _profileItemRepository ?? (_profileItemRepository = new ProfileItemRepository(this));
+            }
+        }
+
+        private ProfileRepository _profileRepository;
+
+        public ProfileRepository ProfileRepository
+        {
+            get
+            {
+                return _profileRepository ?? (_profileRepository = new ProfileRepository(this));
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();

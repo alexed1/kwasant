@@ -7,10 +7,10 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.Managers;
+using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
-using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 
 namespace KwasantWeb.Controllers
 {

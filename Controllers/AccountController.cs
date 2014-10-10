@@ -1,9 +1,5 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System;
 using System.Linq;
-using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
 using System.Web;
@@ -13,13 +9,10 @@ using Data.Interfaces;
 using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Services;
-using KwasantWeb.Controllers.Helpers;
 using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using Utilities;
-using ViewModel.Models;
 
 namespace KwasantWeb.Controllers
 {
@@ -105,7 +98,7 @@ namespace KwasantWeb.Controllers
                     RegistrationStatus curRegStatus = new Account().ProcessRegistrationRequest(model.Email.Trim(), model.Password.Trim());
                     if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
-                        ModelState.AddModelError("", "You are already registered with us. Please login.");
+                        ModelState.AddModelError("", @"You are already registered with us. Please login.");
                     }
                     else
                     {
@@ -141,15 +134,17 @@ namespace KwasantWeb.Controllers
                     switch (curLoginStatus)
                     {
                         case LoginStatus.InvalidCredential:
-                            ModelState.AddModelError("", "Invalid Email id or Password.");
+                            ModelState.AddModelError("", @"Invalid Email id or Password.");
                             break;
 
                         case LoginStatus.ImplicitUser:
-                            ModelState.AddModelError("", "We already have a record of that email address, but No password exists for this Email id. \nPlease register first.");
+                            ModelState.AddModelError("", @"We already have a record of that email address, but No password exists for this Email id. 
+Please register first.");
                             break;
 
                         case LoginStatus.UnregisteredUser:
-                            ModelState.AddModelError("", "We do not have a registered account associated with this email address. \nPlease register first.");
+                            ModelState.AddModelError("", @"We do not have a registered account associated with this email address. 
+Please register first.");
                             break;
 
                         default:
@@ -161,9 +156,8 @@ namespace KwasantWeb.Controllers
                                 bool isAdmin;
                                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                                 {
-                                    var userManager = KwasantCore.Services.User.GetUserManager(uow);
-                                    var user = userManager.FindByName(username);
-                                    isAdmin = userManager.IsInRole(user.Id, "Admin");
+                                    var user = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == username);
+                                    isAdmin = uow.AspNetUserRolesRepository.UserHasRole("Admin", user.Id);
                                 }
 
                                 if (isAdmin)
@@ -188,21 +182,6 @@ namespace KwasantWeb.Controllers
             return View("Index", model);
         }
 
-        /// <summary>
-        /// Send email for confirmation
-        /// </summary>
-        /// <param name="curUserDO"></param>
-        private async Task SendEmailConfirmation(UserDO curUserDO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var um = KwasantCore.Services.User.GetUserManager(uow);
-                string code = await um.GenerateEmailConfirmationTokenAsync(curUserDO.Id);
-                var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = curUserDO.Id, code = code }, protocol: Request.Url.Scheme);
-                um.EmailService = new KwasantEmailService();
-                await um.SendEmailAsync(curUserDO.Id, "Confirm your account", "Please confirm your account by clicking this link: <a href=\"" + callbackUrl + "\">Click here</a>");
-            }
-        }
 
         [HttpGet]
         [AllowAnonymous]
@@ -229,38 +208,17 @@ namespace KwasantWeb.Controllers
 
             return RedirectToAction(returnViewName);
         }
-
-
-        //public ActionResult Edit(String userId, String roleId)
-        //{
-        //    if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-        //    UsersAdmin currUsersAdmin = new UsersAdmin();
-        //    List<UsersAdminData> currUsersAdminDataList = currUsersAdmin.GetUsersAdminViewData(userId, roleId);
-
-
-        //    List<UsersAdminVM> currUsersAdminVMs = currUsersAdminDataList != null && currUsersAdminDataList.Count > 0 ? ObjectMapper.GetMappedUsersAdminVMList(currUsersAdminDataList) : null;
-
-        //    UsersAdminVM currUsersAdminVM = currUsersAdminVMs == null || currUsersAdminVMs.Count == 0 ? new UsersAdminVM() : currUsersAdminVMs[0];
-
-        //    return View(currUsersAdminVM);
-        //}
-
+        
         [System.Web.Http.HttpPost]
-        public ActionResult Edit(UsersAdminVM usersAdminVM)
+        public ActionResult Edit(UserVM usersAdminVM)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //Check if any field edited by user on the font-end.
-                if (!IsDirty(usersAdminVM))
-                    return RedirectToAction("Index", "User");
-
-                var userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.Id == usersAdminVM.UserId);
-                userDO.Id = usersAdminVM.UserId;
+                var userDO = uow.UserRepository.GetByKey(usersAdminVM.Id);
+                userDO.Id = usersAdminVM.Id;
                 userDO.FirstName = usersAdminVM.FirstName;
                 userDO.LastName = usersAdminVM.LastName;
-                userDO.EmailAddress = new EmailAddressDO()
+                userDO.EmailAddress = new EmailAddressDO
                 {
                     Id = usersAdminVM.EmailAddressID,
                     Address = usersAdminVM.EmailAddress
@@ -269,31 +227,12 @@ namespace KwasantWeb.Controllers
                 userDO.EmailAddressID = usersAdminVM.EmailAddressID;
                 userDO.UserName = usersAdminVM.EmailAddress;
 
-                IdentityUserRole identityUserRole = null;
-
                 // Set RoleId & UserId if role is changed on the font-end other wise IdentityUserRole is set to null and user's role will not be updated.
-                if (usersAdminVM.RoleId != usersAdminVM.PreviousRoleId)
-                {
-                    identityUserRole = new IdentityUserRole();
-                    identityUserRole.RoleId = usersAdminVM.RoleId;
-                    identityUserRole.UserId = usersAdminVM.UserId;
-
-                    User user = new User();
-                    user.ChangeUserRole(uow, identityUserRole);
-                }
+                uow.AspNetUserRolesRepository.AssignRoleIDToUser(usersAdminVM.RoleId, usersAdminVM.Id);
 
                 uow.SaveChanges();
                 return RedirectToAction("Index", "User");
             }
-        }
-
-        private bool IsDirty(UsersAdminVM usersAdminVM)
-        {
-            bool blnIsDirty = false;
-
-            blnIsDirty = usersAdminVM.FirstName != usersAdminVM.PreviousFirstName ? true : usersAdminVM.LastName != usersAdminVM.PreviousLasttName ? true : usersAdminVM.FirstName != usersAdminVM.PreviousFirstName ? true : usersAdminVM.LastName != usersAdminVM.PreviousLasttName ? true : usersAdminVM.EmailAddress != usersAdminVM.PreviousEmailAddress ? true : usersAdminVM.RoleId != usersAdminVM.PreviousRoleId ? true : false;
-
-            return blnIsDirty;
         }
     }
 }
