@@ -65,8 +65,6 @@ namespace KwasantTest.MockedDB
         {
             //Force a seed -- helps with debug
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                uow.SaveChanges();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var negDO = new NegotiationDO();
                 negDO.Id = 1;

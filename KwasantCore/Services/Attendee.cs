@@ -92,7 +92,7 @@ namespace KwasantCore.Services
 
         public void ManageNegotiationAttendeeList(IUnitOfWork uow, NegotiationDO negotiationDO, List<String> attendees)
         {
-            List<AttendeeDO> existingAttendeeSet = negotiationDO.Attendees ?? new List<AttendeeDO>();
+            var existingAttendeeSet = negotiationDO.Attendees ?? new List<AttendeeDO>();
             
             List<AttendeeDO> newAttendees = ManageAttendeeList(uow, existingAttendeeSet, attendees);
             foreach (var attendee in newAttendees)
@@ -104,7 +104,7 @@ namespace KwasantCore.Services
             }
         }
 
-        public List<AttendeeDO> ManageAttendeeList(IUnitOfWork uow, List<AttendeeDO> existingAttendeeSet, List<String> attendees)
+        public List<AttendeeDO> ManageAttendeeList(IUnitOfWork uow, IList<AttendeeDO> existingAttendeeSet, List<String> attendees)
         {
             var attendeesToDelete = existingAttendeeSet.Where(attendee => !attendees.Contains(attendee.EmailAddress.Address)).ToList();
             foreach (var attendeeToDelete in attendeesToDelete)
