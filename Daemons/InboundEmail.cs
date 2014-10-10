@@ -28,7 +28,7 @@ namespace Daemons
         }
 
         public delegate void ExplicitCustomerCreatedHandler(string subject);
-        public static event ExplicitCustomerCreatedHandler TestMessageRecieved;
+        public static event ExplicitCustomerCreatedHandler TestMessageReceived;
 
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
@@ -63,8 +63,8 @@ namespace Daemons
 
         public String Password;
         private string GetPassword()
-            {
-            return Password ??_configRepository.Get("INBOUND_EMAIL_PASSWORD");
+        {
+            return Password ?? _configRepository.Get("INBOUND_EMAIL_PASSWORD");
         }
 
         private bool UseSSL()
@@ -80,32 +80,6 @@ namespace Daemons
             }
         }
 
-        private IImapClient Client
-        {
-            get
-            {
-                if (_client != null)
-                    return _client;
-
-                try
-                {
-                    _client = ObjectFactory.GetInstance<IImapClient>();
-                    _client.Initialize(GetIMAPServer(), GetIMAPPort(), UseSSL());
-
-                    string curUser = GetUserName();
-                    string curPwd = GetPassword();
-                    _client.Login(curUser, curPwd, AuthMethod.Login);
-                }
-                catch (Exception ex)
-                {
-                    LogFail(ex, "Error occured on startup... shutting down");
-                    throw;
-                }
-
-                return _client;
-            }
-        }
-
         private bool _alreadyListening;
         private readonly object _alreadyListeningLock = new object();
 
@@ -116,11 +90,18 @@ namespace Daemons
             {
                 if (!_alreadyListening)
                 {
+                    _client = ObjectFactory.GetInstance<IImapClient>();
+                    _client.Initialize(GetIMAPServer(), GetIMAPPort(), UseSSL());
+
+                    string curUser = GetUserName();
+                    string curPwd = GetPassword();
+                    _client.Login(curUser, curPwd, AuthMethod.Login);
+
                     LogEvent("Waiting for messages at " + GetUserName() + "...");
-                    Client.NewMessage += OnNewMessage;
-                    Client.IdleError += OnIdleError;
+                    _client.NewMessage += OnNewMessage;
+                    _client.IdleError += OnIdleError;
                     
-                    GetUnreadMessages(Client);
+                    GetUnreadMessages(_client);
 
                     _alreadyListening = true;
                 }
@@ -129,13 +110,30 @@ namespace Daemons
 
         private void OnIdleError(object sender, IdleErrorEventArgsWrapper args)
         {
-            LogFail(args.Exception, "Idle error recieved.");
+            //Instead of logging it as an error - log it as an event. This doesn't mean we've lost any emails, so there's no reason to reduce success %.
+            //This happens often on Kwasant - yet to be diagnosed.
+            var eventName = "Idle error recieved.";
+            var currException = args.Exception;
+            var exceptionMessages = new List<String>();
+            while (currException != null)
+            {
+                exceptionMessages.Add(currException.Message);
+                currException = currException.InnerException;
+            }
+            exceptionMessages.Add("*** Stacktrace ***");
+            exceptionMessages.Add(args.Exception.StackTrace);
+
+            var exceptionMessage = String.Join(Environment.NewLine, exceptionMessages);
+
+            eventName += " " + exceptionMessage;
+            LogEvent(eventName);
+
             RestartClient();
         }
 
         public void OnNewMessage(object sender, IdleMessageEventArgsWrapper args)
         {
-            LogEvent("New email notification recieved.");
+            LogEvent("New email notification received.");
             GetUnreadMessages(args.Client);
         }
 
@@ -143,11 +141,9 @@ namespace Daemons
         {
             lock (_alreadyListeningLock)
             {
-                CleanUp();
-
                 LogEvent("Restarting...");
 
-                _alreadyListening = false;
+                CleanUp();
             }
         }
         
@@ -157,7 +153,7 @@ namespace Daemons
             {
                 LogEvent("Querying for messages...");
                 var messages = client.GetMessages(client.Search(SearchCondition.Unseen())).ToList();
-                LogSuccess(messages.Count + " messages recieved.");
+                LogSuccess(messages.Count + " messages received.");
 
                 foreach (var message in messages)
                     ProcessMessageInfo(message);
@@ -188,9 +184,9 @@ namespace Daemons
                     LogEvent("Test message detected.");
                     _testSubjects.Remove(messageInfo.Subject);
 
-                    if (TestMessageRecieved != null)
+                    if (TestMessageReceived != null)
                     {
-                        TestMessageRecieved(messageInfo.Subject);
+                        TestMessageReceived(messageInfo.Subject);
                         LogSuccess();
                     }
                     else
@@ -225,7 +221,10 @@ namespace Daemons
                 _client.IdleError -= OnIdleError;
                 _client.Dispose();
                 _client = null;
-            }   
+            }
+
+            LogEvent("Shutting down...");
+            _alreadyListening = false;
         }
     }
 }

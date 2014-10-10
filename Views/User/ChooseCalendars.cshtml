@@ -1,12 +1,12 @@
-﻿@model KwasantWeb.ViewModels.UserQueryVM
+﻿@model KwasantWeb.ViewModels.UserVM
 <div>
-    <input id="hdnUserId" type="hidden" value="@Model.User.Id" />
+    <input id="hdnUserId" type="hidden" value="@Model.Id" />
     <br />
     <br />
     Show Calendars :
     <br />
     <div id="divCalendarChooser">
-        @foreach (var calendar in Model.User.Calendars)
+        @foreach (var calendar in Model.Calendars)
         {
             <input type="checkbox" value="@calendar.Id" onclick="refreshCalendar()" checked="checked" />@calendar.Name
         }

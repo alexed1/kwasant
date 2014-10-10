@@ -15,7 +15,7 @@ using Utilities;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Booker")]
     public class DiagnosticsController : Controller
     {
         public ActionResult Index(int? pageAmount)
@@ -174,120 +174,127 @@ namespace KwasantWeb.Controllers
             if (diagnosticsTest == null)
                 return new JsonResult {Data = false};
 
-            diagnosticsTest.RunAllTests();
-            return new JsonResult {Data = true};
+            return RunAsync(diagnosticsTest.RunAllTests);
         }
 
         [HttpPost]
         public ActionResult OutboundEmailDaemon_TestGmail(String key, String testName)
         {
-            return SendTestEmail(testName, (uow, curEmail) => uow.EnvelopeRepository.ConfigurePlainEmail(curEmail));
+            return RunAsync(() => SendTestEmail(testName, (uow, curEmail) => uow.EnvelopeRepository.ConfigurePlainEmail(curEmail)));
         }
 
         [HttpPost]
         public ActionResult OutboundEmailDaemon_TestMandrill(String key, String testName)
         {
-            return SendTestEmail(testName, (uow, curEmail) => uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "test_template", null));
+            return RunAsync(() => SendTestEmail(testName, (uow, curEmail) => uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "test_template", null)));
         }
 
-        private void StartTest<T>(String testName)
+        private JsonResult RunAsync(ThreadStart action)
+        {
+            new Thread(action).Start();
+            return new JsonResult {Data = true};
+        }
+
+        private static void MarkRunningTest<T>(String testName)
         {
             ServiceManager.StartingTest<T>();
             ServiceManager.LogEvent<T>("Running test '" + testName + "'...");
         }
 
-        private void PassTest<T>(String testName)
+        private static void MarkTestSuccess<T>(String testName)
         {
             ServiceManager.FinishedTest<T>();
             ServiceManager.LogEvent<T>("Test '" + testName + "' succeeded.");
             ServiceManager.LogSuccess<T>();
         }
 
-        private static void FailTest<T>(String testName, string results)
+        private static void MarkTestFail<T>(String testName, string results)
         {
             ServiceManager.FinishedTest<T>();
             ServiceManager.LogEvent<T>("Test '" + testName + "' failed.");
             ServiceManager.LogFail<T>();
 
-            //Dispatch an email which alerts us about failed tests
-            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            if (!Utilities.Server.IsDevMode)
             {
-                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
-                Email email = ObjectFactory.GetInstance<Email>();
-                EmailAddressDO curEmailAddress = new EmailAddressDO("ops@kwasant.com");
-                string message = String.Format(@"
+                //Dispatch an email which alerts us about failed tests
+                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                    string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+
+                    Email email = ObjectFactory.GetInstance<Email>();
+                    string message = String.Format(@"
 Test failed at {0}. Results:
 {1}.
-", DateTime.Now, results);
-                string subject = String.Format("Alert! Service test failed. Service: {0} Test: {1}", typeof(T).Name, testName);
-                var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, "techops@kwasant.com");
-                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
-                uow.SaveChanges();
+See more: {2}
+", DateTime.Now, results, Utilities.Server.ServerUrl);
+                    string subject = String.Format("Alert! Service test failed. Service: {0} Test: {1}", typeof (T).Name,
+                        testName);
+                    var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, "techops@kwasant.com");
+                    uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                    uow.SaveChanges();
+                }
             }
         }
 
-        public JsonResult SendTestEmail(String testName, Action<IUnitOfWork, EmailDO> configureEmail)
+        public void SendTestEmail(String testName, Action<IUnitOfWork, EmailDO> configureEmail)
         {
-            StartTest<OutboundEmail>(testName);
-            StartTest<InboundEmail>(testName);
+            MarkRunningTest<OutboundEmail>(testName);
+            MarkRunningTest<InboundEmail>(testName);
             
             var inboundEmailDaemon = ServiceManager.GetInformationForService<InboundEmail>().Instance as InboundEmail;
             if (inboundEmailDaemon == null)
-                return new JsonResult { Data = false };
+            {
+                MarkTestFail<OutboundEmail>(testName, "No InboundEmail daemon found.");
+                MarkTestFail<InboundEmail>(testName, "No InboundEmail daemon found.");
+                return;
+            }               
 
             var subjKey = Guid.NewGuid().ToString();
 
             inboundEmailDaemon.RegisterTestEmailSubject(subjKey);
-            bool messageRecieved = false;
+            bool messageReceived = false;
 
-            InboundEmail.ExplicitCustomerCreatedHandler testMessageRecieved = subject =>
+            InboundEmail.ExplicitCustomerCreatedHandler testMessageReceived = subject =>
             {
                 if (subjKey == subject)
-                    messageRecieved = true;
+                    messageReceived = true;
             };
 
-            InboundEmail.TestMessageRecieved += testMessageRecieved;
+            InboundEmail.TestMessageReceived += testMessageReceived;
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Email _email = ObjectFactory.GetInstance<Email>();
+                Email email = ObjectFactory.GetInstance<Email>();
                 IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                 string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
-                EmailAddressDO curEmailAddress = new EmailAddressDO("ops@kwasant.com");
-                EmailDO curEmail = new EmailDO();
                 const string message = "This is a test message";
                 string subject = subjKey;
-                curEmail = _email.GenerateBasicMessage(uow, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
+                var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
                 configureEmail(uow, curEmail);
                 uow.SaveChanges();
 
                 ServiceManager.LogEvent<OutboundEmail>("Queued email to " + inboundEmailDaemon.GetUserName());
             }
 
-            new Thread(() =>
+            var startTime = DateTime.Now;
+            var endTime = startTime.Add(TimeSpan.FromMinutes(10));
+            while (DateTime.Now < endTime)
             {
-                var startTime = DateTime.Now;
-                var maxTime = TimeSpan.FromMinutes(2);
-                while (DateTime.Now < startTime.Add(maxTime))
+                    if (messageReceived)
                 {
-                    if (messageRecieved)
-                    {
-                        PassTest<OutboundEmail>(testName);
-                        PassTest<InboundEmail>(testName);
-                        return;
-                    }
-
-                    Thread.Sleep(100);
+                    MarkTestSuccess<OutboundEmail>(testName);
+                    MarkTestSuccess<InboundEmail>(testName);
+                    return;
                 }
 
-                const string errorMessage = "No email was reported with the correct subject within the given timeframe.";
-                FailTest<OutboundEmail>(testName, errorMessage);
-                FailTest<InboundEmail>(testName, errorMessage);
-            }).Start();
+                Thread.Sleep(100);
+            }
 
-            return new JsonResult { Data = true };
+            const string errorMessage = "No email was reported with the correct subject within the given timeframe.";
+            MarkTestFail<OutboundEmail>(testName, errorMessage);
+            MarkTestFail<InboundEmail>(testName, errorMessage);
         }
     }
 }

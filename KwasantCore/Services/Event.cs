@@ -181,13 +181,6 @@ namespace KwasantCore.Services
             return newAttendees.Any() ? newAttendees : null;
         }
 
-        public EventDO AddAttendee(UserDO curUserDO, EventDO curEvent)
-        {
-            var curAttendeeDO = _attendee.Create(curUserDO);
-            curEvent.Attendees.Add(curAttendeeDO);
-            return curEvent;
-        }
-
         public static iCalendar GenerateICSCalendarStructure(EventDO eventDO)
         {
             if (eventDO == null)

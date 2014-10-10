@@ -2,8 +2,7 @@
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Validations;
-using FluentValidation;
+using Microsoft.AspNet.Identity;
 
 namespace Data.Repositories
 {
@@ -12,51 +11,66 @@ namespace Data.Repositories
         internal UserRepository(IUnitOfWork uow)
             : base(uow)
         {
-            
+
         }
         public override void Add(UserDO entity)
         {
             base.Add(entity);
             AddDefaultCalendar(entity);
+            AddDefaultProfile(entity);
         }
 
-        public UserDO GetByEmailAddress(EmailAddressDO emailAddressDO)
+        public UserDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null)
         {
-            if (emailAddressDO == null)
-                throw new ArgumentNullException("emailAddressDO");
-            string fromEmailAddress = emailAddressDO.Address;
-            return UnitOfWork.UserRepository.GetQuery().FirstOrDefault(c => c.EmailAddress.Address == fromEmailAddress);
+            return UpdateUserCredentials(UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress), userName, password);
         }
 
-        public UserDO CreateFromEmail(EmailAddressDO emailAddressDO,
-            string userName = null, string firstName = null, string lastName = null)
+        public UserDO UpdateUserCredentials(EmailAddressDO emailAddressDO, String userName = null, String password = null)
         {
-            var curUser = new UserDO
-            {
-                UserName = userName ?? emailAddressDO.Address,
-                FirstName = firstName ?? (emailAddressDO.Name ?? emailAddressDO.Address),
-                EmailAddress = emailAddressDO,
-                EmailConfirmed = false,
-                TestAccount = false,
-                SecurityStamp = Guid.NewGuid().ToString()
-            };
-            UnitOfWork.UserRepository.Add(curUser);
+            return UpdateUserCredentials(UnitOfWork.UserRepository.GetOrCreateUser(emailAddressDO), userName, password);
+        }
 
-            var customerRole = UnitOfWork.AspNetRolesRepository.GetQuery().FirstOrDefault(r => r.Name == "Customer");
-            if (customerRole != null)
+        public UserDO UpdateUserCredentials(UserDO userDO, String userName = null, String password = null)
+        {
+            if (userName != null)
+                userDO.UserName = userName;
+            if (password != null)
             {
-                var role = new AspNetUserRolesDO();
-                role.UserId = curUser.Id;
-                role.RoleId = customerRole.Id;
-                UnitOfWork.AspNetUserRolesRepository.Add(role);    
+                var passwordHasher = new PasswordHasher();
+                userDO.PasswordHash = passwordHasher.HashPassword(password);       
             }
             
-            UserValidator curUserValidator = new UserValidator();
-            curUserValidator.ValidateAndThrow(curUser);
-            _uow.UserRepository.Add(curUser);
-            _uow.CalendarRepository.CheckUserHasCalendar(curUser);
-            return curUser;
+            return userDO;
         }
+
+
+        public UserDO GetOrCreateUser(String emailAddress)
+        {
+            return GetOrCreateUser(UnitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress));
+        }
+
+        public UserDO GetOrCreateUser(EmailAddressDO emailAddressDO)
+        {
+            var matchingUser = UnitOfWork.UserRepository.DBSet.Local.FirstOrDefault(u => u.EmailAddress.Address == emailAddressDO.Address);
+            if (matchingUser == null)
+                matchingUser = UnitOfWork.UserRepository.GetQuery().FirstOrDefault(u => u.EmailAddress.Address == emailAddressDO.Address);
+
+            if (matchingUser == null)
+            {
+                matchingUser = 
+                    new UserDO
+                    {
+                        EmailAddress = emailAddressDO,
+                        UserName = emailAddressDO.Address,
+                        FirstName = emailAddressDO.Name,
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                    };
+                UnitOfWork.UserRepository.Add(matchingUser);
+            }
+            
+            return matchingUser;
+        }
+
 
         public void AddDefaultCalendar(UserDO curUser)
         {
@@ -72,6 +86,22 @@ namespace Data.Repositories
                     OwnerID = curUser.Id
                 };
                 curUser.Calendars.Add(curCalendar);
+            }
+        }
+
+
+        public void AddDefaultProfile(UserDO curUser)
+        {
+            if (curUser == null)
+                throw new ArgumentNullException("curUser");
+
+            if (!curUser.Profiles.Any())
+            {
+                var defaultProfile = new ProfileDO() {Name = "Default Profile", User = curUser};
+                defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Communications", Profile = defaultProfile, ProfileID = defaultProfile.Id});
+                defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Locations", Profile = defaultProfile, ProfileID = defaultProfile.Id });
+                defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Travel", Profile = defaultProfile, ProfileID = defaultProfile.Id });
+                curUser.Profiles.Add(defaultProfile);
             }
         }
     }

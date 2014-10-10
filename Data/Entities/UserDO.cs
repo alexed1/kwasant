@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Data.Infrastructure;
-using Data.Repositories;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 
@@ -18,9 +17,11 @@ namespace Data.Entities
             BookingRequests = new List<BookingRequestDO>();
             Calendars = new List<CalendarDO>();
             RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
+            Profiles = new List<ProfileDO>();
         }
 
-        public virtual IEnumerable<BookingRequestDO> BookingRequests { get; set; }
+        [InverseProperty("User")]
+        public virtual IList<BookingRequestDO> BookingRequests { get; set; }
 
         public String FirstName { get; set; }
         public String LastName { get; set; }
@@ -39,6 +40,9 @@ namespace Data.Entities
 
         [InverseProperty("Owner")]
         public virtual IList<CalendarDO> Calendars { get; set; }
+
+        [InverseProperty("User")]
+        public virtual IList<ProfileDO> Profiles { get; set; }
 
         [InverseProperty("User")]
         public virtual IList<RemoteCalendarAuthDataDO> RemoteCalendarAuthData { get; set; }
@@ -61,9 +65,11 @@ namespace Data.Entities
         {
             //we only want to treat explicit customers, who have sent us a BR, a welcome message
             //if there exists a booking request with this user as its created by...
-            var bookingRequestRepo = new BookingRequestRepository(new UnitOfWork(new KwasantDbContext()));
-            if (bookingRequestRepo.FindOne(br => br.User.Id == Id) != null)
-                AlertManager.ExplicitCustomerCreated(Id);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                if (uow.BookingRequestRepository.FindOne(br => br.User.Id == Id) != null)
+                    AlertManager.ExplicitCustomerCreated(Id);
+            }
 
             AlertManager.CustomerCreated(this);
         }

@@ -4,12 +4,11 @@ using System.Linq;
 using System.Threading;
 using Data.Entities;
 using KwasantCore.ExternalServices.REST;
-using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers.Mandrill.APIStructures;
 using Newtonsoft.Json;
 using StructureMap;
 using Utilities;
-using JsonSerializer = KwasantCore.Managers.APIManagers.Serializers.Json.JsonSerializer;
+using JsonSerializer = Utilities.Serializers.Json.JsonSerializer;
 
 namespace KwasantCore.Managers.APIManagers.Packagers.Mandrill
 { 
@@ -265,7 +264,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.Mandrill
                 string firstTag = response.Msg.Tags.FirstOrDefault();
                 if (firstTag == null)
                 {
-                    OnEmailCriticalError(-1, "No email ID was stored in tags.", "An email webhook was recieved, but we couldn't identify the email.", -1);
+                    OnEmailCriticalError(-1, "No email ID was stored in tags.", "An email webhook was received, but we couldn't identify the email.", -1);
                     return;
                 }
                 int emailID = int.Parse(firstTag);

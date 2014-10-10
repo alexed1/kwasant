@@ -106,7 +106,7 @@
 		<div class="space form-actions">
 			<input id="btnSave" type="submit" value="OK" class="btn btn-default pull-left" />
             <input id="btnDraft" type="submit" value="Draft" class="btn btn-default pull-left" />
-		    <a href="javascript:closeWithUnsavedDataCheck(modifiedState);" class="cancel-btn pull-left">Cancel</a>
+		    <a href="javascript:closeWithUnsavedDataCheck(modifiedState, '@Model.Summary' , '@Model.Id');" class="cancel-btn pull-left">Cancel</a>
             <a href="javascript:deleteEvent();" style="margin-left:15px;" class="delete-btn pull-left">Delete</a>
 		</div>
 	</form>
@@ -130,8 +130,8 @@
 	        }());
         }
 
-		$(document).ready(function () {
-			$(".form-control").change(function () {
+	    $(document).ready(function () {
+	       $(".form-control").change(function () {
 				modifiedState.modified = true;
 			});
 		});
@@ -159,7 +159,7 @@
 		    updateDraftSummary(this);
 
 			if (!modifiedState.modified) {
-				close();
+				//close();
 				return false;
 			}
 

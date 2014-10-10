@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KwasantCore.Managers.APIManager.Packagers
+namespace KwasantCore.Managers.APIManagers.Packagers
 {
     public class UnknownEmailPackagerException : ApplicationException
     {
