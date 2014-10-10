@@ -97,7 +97,7 @@ namespace KwasantWeb.Controllers
                         booker = curbooker.EmailAddress.Address;
                     else
                         booker = curbooker.FirstName;
-            }
+                }
 
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
                 {

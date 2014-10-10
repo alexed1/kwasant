@@ -55,7 +55,11 @@ namespace KwasantWeb.Controllers
                 string bookerId = uow.BookingRequestRepository.GetByKey(emailId).BookerID;
                 if (bookerId != null)
                 {
-                    booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
+                    var curbooker = uow.UserRepository.GetByKey(bookerId);
+                    if (curbooker.EmailAddress != null)
+                        booker = curbooker.EmailAddress.Address;
+                    else
+                        booker = curbooker.FirstName;
                 }
 
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
