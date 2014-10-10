@@ -89,6 +89,7 @@ namespace KwasantTest.Services
 
                 Assert.AreEqual(1, customersNow.Count);
                 Assert.AreEqual("customer@gmail.com", customersNow.First().EmailAddress.Address);
+                Assert.AreEqual("customer@gmail.com", customersNow.First().UserName);
                 Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
                 //test analytics system
 

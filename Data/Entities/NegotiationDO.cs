@@ -27,10 +27,10 @@ namespace Data.Entities
         public virtual BookingRequestDO BookingRequest { get; set; }
 
         [InverseProperty("Negotiation")]
-        public virtual List<AttendeeDO> Attendees { get; set; }
+        public virtual IList<AttendeeDO> Attendees { get; set; }
 
         [InverseProperty("Negotiation")]
-        public virtual List<QuestionDO> Questions { get; set; }
+        public virtual IList<QuestionDO> Questions { get; set; }
 
         public DateTime DateCreated { get; set; }
 

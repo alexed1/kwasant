@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using Utilities;
 
-namespace KwasantCore.Managers.APIManager.Transmitters.Restful
+namespace KwasantCore.Managers.APIManagers.Transmitters.Restful
 {
     /// <summary>
     /// Container for data used to make requests

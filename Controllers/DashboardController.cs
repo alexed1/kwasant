@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
@@ -19,6 +21,9 @@ namespace KwasantWeb.Controllers
         {
             if (id <= 0)
                 throw new HttpException(400, "Booking request not found");
+
+            if (TempData["requestInfo"] == null)
+                GetRequestInfo(id);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -44,18 +49,64 @@ namespace KwasantWeb.Controllers
                     //In the future, we won't need this - the 'main' calendar will be picked by the booker
                     ActiveCalendarId = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
                 };
-                BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
-                {
-                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestDO.Id).Select(e => e.Id).ToList(),
-                    BookingRequestId = bookingRequestDO.Id,
-                    CurEmailData = uow.EmailRepository.GetByKey(id)
-                };
 
                 return View(new DashboardShowVM
                 {
                     CalendarVM = calWidget,
-                    BookingRequestVM = bookingInfo
+                    ResolvedNegotiations = bookingRequestDO.Negotiations.Where(n => n.NegotiationState == NegotiationState.Resolved).Select(n => new DashboardNegotiationVM
+                    {
+                        Id = n.Id,
+                        Name = n.Name
+                    }).ToList(),
+                    BookingRequestVM = TempData["requestInfo"] as BookingRequestAdminVM
                 });
+            }
+        }
+
+        public void GetRequestInfo(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curEmail = uow.EmailRepository.GetAll().Where(e => e.Id == bookingRequestId || e.ConversationId == bookingRequestId).OrderByDescending(e => e.DateReceived).FirstOrDefault();
+
+
+                const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
+
+                var attachmentInfo = String.Join("<br />",
+                            curEmail.Attachments.Select(
+                                attachment =>
+                                "<a href='" + String.Format(fileViewURLStr, attachment.Id) + "' target='" +
+                                attachment.OriginalName + "'>" + attachment.OriginalName + "</a>"));
+
+                string booker = "none";
+                string bookerId = uow.BookingRequestRepository.GetByKey(bookingRequestId).BookerID;
+                if (bookerId != null)
+                {
+                    booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
+                }
+
+                BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
+                {
+                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
+                    BookingRequestId = bookingRequestId,
+                    CurEmailData = new EmailDO
+                    {
+                        Attachments = curEmail.Attachments,
+                        From = curEmail.From,
+                        Recipients = curEmail.Recipients,
+                        HTMLText = curEmail.HTMLText,
+                        Id = curEmail.Id,
+                        FromID = curEmail.FromID,
+                        DateCreated = curEmail.DateCreated,
+                        Subject = curEmail.Subject
+                    },
+                    EmailTo = String.Join(", ", curEmail.To.Select(a => a.Address)),
+                    EmailCC = String.Join(", ", curEmail.CC.Select(a => a.Address)),
+                    EmailBCC = String.Join(", ", curEmail.BCC.Select(a => a.Address)),
+                    EmailAttachments = attachmentInfo,
+                    Booker = booker
+                };
+                TempData["requestInfo"] = bookingInfo;
             }
         }
 	}

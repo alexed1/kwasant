@@ -30,8 +30,7 @@ namespace KwasantTest.Entities
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var fixture = new FixtureData(uow);
-                var role = new Role();
-                role.Add(uow, fixture.TestRole());
+                uow.AspNetRolesRepository.Add(fixture.TestRole());
                 var u = new UserDO();
                 var user = new User();
 

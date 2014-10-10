@@ -81,23 +81,16 @@ function close(saved) {
 }
 
 /*** Check Email Validation ***/
-
-var returnval;
-//var initValues;
-var data;
 function getValidEmailAddress(attendeesSel) {
     $(attendeesSel).select2({
         createSearchChoice: function (term) {
             return { id: term, text: term };
         },
         validateFormat: function (term) {
-            returnval = "";
             if (isValidEmail(term)) {
-                if (returnval == true)
-                    return null;
-                else
-                    return returnval;
+                return null;
             }
+            return 'Invalid Email';
         },
         multiple: true,
         data: [],
@@ -106,16 +99,12 @@ function getValidEmailAddress(attendeesSel) {
 }
 
 function isValidEmail(term) {
-    return $.ajax({
-        type: "Get",
-        async: false,
-        dataType: 'json',
-        contentType: 'application/json; charset=utf-8 ',
-        url: '/Data/ValidateEmailAddress',
-        data: { emailString: term },
-        success: function (data) {
-            returnval = data;
-        },
-        cache: false
-    });
+    var atIndex = term.indexOf('@');
+    var dotIndex = term.lastIndexOf('.');
+    if (atIndex > 0 //We need something before the at sign
+        && dotIndex > atIndex + 1 //We need a dot, and it should have at least one character between the at and the dot
+        && dotIndex < term.length - 1 //The dot can't be at the end
+    )
+        return true;
+    return false;
 }

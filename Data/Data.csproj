@@ -103,11 +103,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Authentication\Account.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
+    <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
+    <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
     <Compile Include="Entities\InvitationResponseDO.cs" />
     <Compile Include="Entities\LogDO.cs" />
+    <Compile Include="Entities\ProfileDO.cs" />
+    <Compile Include="Entities\ProfileItemDO.cs" />
+    <Compile Include="Entities\ProfileNodeDO.cs" />
     <Compile Include="Entities\QuestionResponseDO.cs" />
     <Compile Include="Infrastructure\StructureMap\ISecurityServices.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedSecurityServices.cs" />
@@ -264,7 +268,57 @@
     <Compile Include="Migrations\201409290708187_Sync_Fix.Designer.cs">
       <DependentUpon>201409290708187_Sync_Fix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201410061310205_Sync.Rob.06.10.2014.cs" />
+    <Compile Include="Migrations\201410061310205_Sync.Rob.06.10.2014.Designer.cs">
+      <DependentUpon>201410061310205_Sync.Rob.06.10.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410061330516_FixUserRoles.cs" />
+    <Compile Include="Migrations\201410061330516_FixUserRoles.Designer.cs">
+      <DependentUpon>201410061330516_FixUserRoles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410080749315_MigrateAspNetRolesDiscriminator.cs" />
+    <Compile Include="Migrations\201410080749315_MigrateAspNetRolesDiscriminator.Designer.cs">
+      <DependentUpon>201410080749315_MigrateAspNetRolesDiscriminator.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410081307475_Sync.Rob2.08.10.2014.cs" />
+    <Compile Include="Migrations\201410081307475_Sync.Rob2.08.10.2014.Designer.cs">
+      <DependentUpon>201410081307475_Sync.Rob2.08.10.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409291852449_UserProfiles.cs" />
+    <Compile Include="Migrations\201409291852449_UserProfiles.Designer.cs">
+      <DependentUpon>201409291852449_UserProfiles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409292102211_ProfileNodeAncestorsCTEView.cs" />
+    <Compile Include="Migrations\201409292102211_ProfileNodeAncestorsCTEView.Designer.cs">
+      <DependentUpon>201409292102211_ProfileNodeAncestorsCTEView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409292127594_ProfileNodeDescendantsCTEView.cs" />
+    <Compile Include="Migrations\201409292127594_ProfileNodeDescendantsCTEView.Designer.cs">
+      <DependentUpon>201409292127594_ProfileNodeDescendantsCTEView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410031357380_AddNameToProfileDO.cs" />
+    <Compile Include="Migrations\201410031357380_AddNameToProfileDO.Designer.cs">
+      <DependentUpon>201410031357380_AddNameToProfileDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410031525089_Sync.Rob.03.10.2014.cs" />
+    <Compile Include="Migrations\201410031525089_Sync.Rob.03.10.2014.Designer.cs">
+      <DependentUpon>201410031525089_Sync.Rob.03.10.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410081114430_Sync.Rob.08.10.2014.cs" />
+    <Compile Include="Migrations\201410081114430_Sync.Rob.08.10.2014.Designer.cs">
+      <DependentUpon>201410081114430_Sync.Rob.08.10.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410101037019_Sync.Rob.10.10.2014.cs" />
+    <Compile Include="Migrations\201410101037019_Sync.Rob.10.10.2014.Designer.cs">
+      <DependentUpon>201410101037019_Sync.Rob.10.10.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410101302405_UpdateBookingRequestBookerRelation.cs" />
+    <Compile Include="Migrations\201410101302405_UpdateBookingRequestBookerRelation.Designer.cs">
+      <DependentUpon>201410101302405_UpdateBookingRequestBookerRelation.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
+    <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
+    <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\InvitationResponseRepository.cs" />
@@ -322,6 +376,7 @@
       <DependentUpon>201409021727515_NewNegotiationStructure.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\AnswerRepository.cs" />
+    <Compile Include="Repositories\ProfileNodeRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\CommunicationMode.cs" />
@@ -331,6 +386,7 @@
     <Compile Include="States\EventSyncState.cs" />
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
+    <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AnswerStatusTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
@@ -382,15 +438,9 @@
     <Compile Include="Entities\GenericCustomField.cs" />
     <Compile Include="Entities\UserAgentInfoDO.cs" />
     <Compile Include="Infrastructure\AlertManager.cs" />
-    <Compile Include="Infrastructure\KwasantRoleStore.cs" />
-    <Compile Include="Infrastructure\KwasantUserStore.cs" />
-    <Compile Include="Infrastructure\StructureMap\IKwasantRoleStore.cs" />
-    <Compile Include="Infrastructure\StructureMap\IKwasantUserStore.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedDBContext.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedDbSet.cs" />
     <Compile Include="Infrastructure\StructureMap\DatabaseStructureMapBootStrapper.cs" />
-    <Compile Include="Infrastructure\StructureMap\MockedRoleStore.cs" />
-    <Compile Include="Infrastructure\StructureMap\MockedUserStore.cs" />
     <Compile Include="Infrastructure\TrackingStatus.cs" />
     <Compile Include="Interfaces\IAspNetRoles.cs" />
     <Compile Include="Interfaces\IAspNetUserRoles.cs" />
@@ -1054,8 +1104,45 @@
     <EmbeddedResource Include="Migrations\201409290708187_Sync_Fix.resx">
       <DependentUpon>201409290708187_Sync_Fix.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410061310205_Sync.Rob.06.10.2014.resx">
+      <DependentUpon>201410061310205_Sync.Rob.06.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410061330516_FixUserRoles.resx">
+      <DependentUpon>201410061330516_FixUserRoles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410080749315_MigrateAspNetRolesDiscriminator.resx">
+      <DependentUpon>201410080749315_MigrateAspNetRolesDiscriminator.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410081307475_Sync.Rob2.08.10.2014.resx">
+      <DependentUpon>201410081307475_Sync.Rob2.08.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409291852449_UserProfiles.resx">
+      <DependentUpon>201409291852449_UserProfiles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409292102211_ProfileNodeAncestorsCTEView.resx">
+      <DependentUpon>201409292102211_ProfileNodeAncestorsCTEView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409292127594_ProfileNodeDescendantsCTEView.resx">
+      <DependentUpon>201409292127594_ProfileNodeDescendantsCTEView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410031357380_AddNameToProfileDO.resx">
+      <DependentUpon>201410031357380_AddNameToProfileDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410031525089_Sync.Rob.03.10.2014.resx">
+      <DependentUpon>201410031525089_Sync.Rob.03.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410081114430_Sync.Rob.08.10.2014.resx">
+      <DependentUpon>201410081114430_Sync.Rob.08.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410101037019_Sync.Rob.10.10.2014.resx">
+      <DependentUpon>201410101037019_Sync.Rob.10.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410101302405_UpdateBookingRequestBookerRelation.resx">
+      <DependentUpon>201410101302405_UpdateBookingRequestBookerRelation.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Authentication\" />
     <Folder Include="Constants\" />
     <Folder Include="Entities\Enumerations\" />
   </ItemGroup>

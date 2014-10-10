@@ -5,7 +5,6 @@ using System.Net.Mime;
 using System.Text;
 using Data.Entities;
 using KwasantCore.ExternalServices;
-using KwasantCore.Managers.APIManager.Packagers;
 using StructureMap;
 using Utilities;
 
