@@ -5,7 +5,6 @@ using Data.Validations;
 using Data.Entities;
 using Data.States;
 using StructureMap;
-using System.Collections.Generic;
 
 namespace KwasantCore.Services
 {
@@ -65,7 +64,7 @@ namespace KwasantCore.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curUser = uow.UserRepository.GetAll().Where(e => e.Id == curUserId).FirstOrDefault();
+                var curUser = uow.UserRepository.GetAll().FirstOrDefault(e => e.Id == curUserId);
                 return new UserDO
                 {
                     Id = curUser.Id,
@@ -77,35 +76,7 @@ namespace KwasantCore.Services
                 };
             }
         }
-
-        public List<UserDO> Query(IUnitOfWork uow, UserDO curUserSearch)
-        {
-            List<UserDO> filteredUsers = new List<UserDO>();
-            uow.UserRepository.GetAll().Where(e =>
-                  curUserSearch.FirstName != null ?
-                  e.FirstName != null ?
-                  e.FirstName.Contains(curUserSearch.FirstName) : false : false ||
-                  curUserSearch.LastName != null ?
-                  e.LastName != null ?
-                  e.LastName.Contains(curUserSearch.LastName) : false : false ||
-                  curUserSearch.EmailAddress.Address != null ?
-                  e.EmailAddress.Address != null ?
-                  e.EmailAddress.Address.Contains(curUserSearch.EmailAddress.Address) : false : false
-                  ).ToList().ForEach(cur => filteredUsers.Add(new UserDO
-                  {
-                      FirstName = cur.FirstName,
-                      LastName = cur.LastName,
-                      EmailAddress = new EmailAddressDO
-                      {
-                          Address = cur.EmailAddress.Address,
-                          Id = cur.EmailAddress.Id,
-                          Name = cur.EmailAddress.Name
-                      },
-                      Id = cur.Id
-                  }));
-            return filteredUsers;
-        }
-
+        
         public void Create(IUnitOfWork uow, UserDO submittedUserData, string role, bool sendEmail)
         {
             if (sendEmail)

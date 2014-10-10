@@ -6,7 +6,7 @@ namespace KwasantWeb.ViewModels
     public class UserProfilesVM
     {
         public String UserName { get; set; }
-        public List<UserProfileVM> UserProfiles { get; set; } 
+        public List<UserProfileVM> UserProfiles { get; set; }
     }
 
     public class UserProfileVM
