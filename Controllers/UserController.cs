@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Net;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Managers;
@@ -20,7 +19,7 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize]
     public class UserController : Controller
     {
-        private JsonPackager _jsonPackager;
+        private readonly JsonPackager _jsonPackager;
 
         public UserController()
         {
@@ -33,48 +32,13 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 List<UserDO> userList = uow.UserRepository.GetAll().ToList();
-                UserShowAllVM userShowAllVM = new UserShowAllVM();
-                List<UserShowVM> userShowVMList = new List<UserShowVM>();
+                
+                var userVMList = userList.Select(u => CreateUserVM(u, uow)).ToList();
 
-                userList.ForEach(u => userShowVMList.Add(new UserShowVM
-                {
-                    Id = u.Id,
-                    FirstName = u.FirstName,
-                    LastName = u.LastName,
-                    EmailAddress = u.EmailAddress.Address,
-                    Role = uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Name).FirstOrDefault(),
-                    RoleId = uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Id.ToString()).FirstOrDefault(),
-                }));
-                userShowAllVM.Users = userShowVMList;
-
-                return View(userShowAllVM);
+                return View(userVMList);
             }
         }
-
-        [KwasantAuthorize(Roles = "Admin")]
-        public ActionResult Details(String userId, String roleId)
-        {
-            if (String.IsNullOrEmpty(userId) || String.IsNullOrEmpty(roleId))
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                UserDO curUser = uow.UserRepository.GetByKey(userId);
-                UserShowVM userShowVM = new UserShowVM
-                {
-                    Id = curUser.Id,
-                    FirstName = curUser.FirstName,
-                    LastName = curUser.LastName,
-                    EmailAddress = curUser.EmailAddress.Address,
-                    Role = uow.AspNetUserRolesRepository.GetRoles(curUser.Id).Select(r => r.Name).FirstOrDefault(),
-                    RoleId =
-                        uow.AspNetUserRolesRepository.GetRoles(curUser.Id).Select(r => r.Id.ToString()).FirstOrDefault(),
-                };
-                return View(userShowVM);
-            }
-
-        }
-
+        
         public async Task<ActionResult> GrantRemoteCalendarAccess(string providerName)
         {
             var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
@@ -139,13 +103,13 @@ namespace KwasantWeb.Controllers
             return View((UserDO) null);
         }
 
-        public ActionResult Validate(UserCreateVM curCreateUserVM)
+        public ActionResult Validate(UserVM userVM)
         {
-            UserDO curUser = curCreateUserVM.User;
-            string selectedRole = curCreateUserVM.UserRole;
+            //UserDO curUser = curCreateUserVM.User;
+            //string selectedRole = curCreateUserVM.UserRole;
 
-            if (string.IsNullOrEmpty(curUser.EmailAddress.Address) || string.IsNullOrEmpty(curUser.FirstName) ||
-                string.IsNullOrEmpty(curUser.LastName) || string.IsNullOrEmpty(selectedRole))
+            if (string.IsNullOrEmpty(userVM.EmailAddress) || string.IsNullOrEmpty(userVM.FirstName) ||
+                string.IsNullOrEmpty(userVM.LastName) || string.IsNullOrEmpty(userVM.RoleName))
             {
                 var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "All Fields are required"}),
                     JsonRequestBehavior.AllowGet);
@@ -153,7 +117,7 @@ namespace KwasantWeb.Controllers
             }
 
             EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-            if (!(emailAddressValidator.Validate(curUser.EmailAddress).IsValid))
+            if (!(emailAddressValidator.Validate(new EmailAddressDO(userVM.EmailAddress)).IsValid))
             {
                 var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Please provide valid email address"}),
                     JsonRequestBehavior.AllowGet);
@@ -164,39 +128,32 @@ namespace KwasantWeb.Controllers
         }
 
         [KwasantAuthorize(Roles = "Admin")]
-        public ActionResult Detail(String userId)
+        public ActionResult Details(String userId)
         {
-            UserAdministerVM curUserAdminVM = new UserAdministerVM();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                curUserAdminVM.User = uow.UserRepository.GetByKey(userId);
-                curUserAdminVM.Role = uow.AspNetUserRolesRepository.GetRoles(userId).Select(r => r.Name).FirstOrDefault();
-                return View(curUserAdminVM);
+                var userDO = uow.UserRepository.GetByKey(userId);
+                var userVM = CreateUserVM(userDO, uow);
+
+                return View(userVM);
             }
         }
 
-        [KwasantAuthorize(Roles = "Admin")]
-        public ActionResult FindUser(UserAdministerVM curUserAdminVM) //This wasn't even searching before...???
-        {
-            return View(new UserAdministerVM());
-        }
 
         [HttpPost]
-        public ActionResult RunQuery(UserQueryVM curUserQueryVM)
+        public ActionResult RunQuery(UserVM queryParams)
         {
-            UserDO queryParams = curUserQueryVM.User;
-
-            if (string.IsNullOrEmpty(queryParams.EmailAddress.Address) && string.IsNullOrEmpty(queryParams.FirstName) &&
+            if (string.IsNullOrEmpty(queryParams.EmailAddress) && string.IsNullOrEmpty(queryParams.FirstName) &&
                 string.IsNullOrEmpty(queryParams.LastName))
             {
                 var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Atleast one field is required"}),
                     JsonRequestBehavior.AllowGet);
                 return jsonErrorResult;
             }
-            if (queryParams.EmailAddress.Address != null)
+            if (queryParams.EmailAddress != null)
             {
                 EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
-                if (!(emailAddressValidator.Validate(queryParams.EmailAddress).IsValid))
+                if (!(emailAddressValidator.Validate(new EmailAddressDO(queryParams.EmailAddress)).IsValid))
                 {
                     var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Please provide valid email address"}),
                         JsonRequestBehavior.AllowGet);
@@ -210,35 +167,34 @@ namespace KwasantWeb.Controllers
                     query = query.Where(u => u.FirstName.Contains(queryParams.FirstName));
                 if (!String.IsNullOrWhiteSpace(queryParams.LastName))
                     query = query.Where(u => u.LastName.Contains(queryParams.LastName));
-                if (!String.IsNullOrWhiteSpace(queryParams.EmailAddress.Address))
-                    query = query.Where(u => u.EmailAddress.Address.Contains(queryParams.EmailAddress.Address));
+                if (!String.IsNullOrWhiteSpace(queryParams.EmailAddress))
+                    query = query.Where(u => u.EmailAddress.Address.Contains(queryParams.EmailAddress));
 
                 var matchedUsers = query.ToList();
 
                 var jsonResult = Json(_jsonPackager.Pack(matchedUsers), JsonRequestBehavior.AllowGet);
-                // var jsonResult = Json(_jsonPackager.Pack(_user.Query(uow, queryParams)), JsonRequestBehavior.AllowGet);
+
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
         }
 
         [HttpPost]
-        public ActionResult ProcessSubmittedForm(UserCreateVM curCreateUserVM, bool sendEmail)
+        public ActionResult ProcessSubmittedForm(UserVM curUserVM, bool sendEmail)
         {
-            UserDO curUser = curCreateUserVM.User;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var matchingRole =
-                    uow.AspNetRolesRepository.GetQuery().FirstOrDefault(e => e.Id == curCreateUserVM.UserRole);
+                var matchingRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(e => e.Id == curUserVM.RoleId);
                 if (matchingRole != null)
                 {
                     string role = matchingRole.Name;
+                    var newUser = uow.UserRepository.GetOrCreateUser(curUserVM.EmailAddress);
 
                     if (sendEmail)
-                        new Email().SendUserSettingsNotification(uow, curUser);
+                        new Email().SendUserSettingsNotification(uow, newUser);
 
-                    var newUser = uow.UserRepository.GetOrCreateUser(curUser.EmailAddress.Address);
-                    uow.UserRepository.UpdateUserCredentials(newUser, curUser.UserName, Guid.NewGuid().ToString());
+                    
+                    uow.UserRepository.UpdateUserCredentials(newUser, curUserVM.UserName, Guid.NewGuid().ToString());
                     uow.AspNetUserRolesRepository.AssignRoleToUser(role, newUser.Id);
                     uow.SaveChanges();
                 }
@@ -247,19 +203,31 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Update(UserCreateVM curCreateUserVM)
+        public ActionResult Update(UserVM curCreateUserVM)
         {
-            UserDO curUser = curCreateUserVM.User;
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string role = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(r => r.Id == curCreateUserVM.UserRole).Name;
-                var existingUser = uow.UserRepository.GetOrCreateUser(curUser.EmailAddress.Address);
-                uow.UserRepository.UpdateUserCredentials(existingUser, curUser.UserName, Guid.NewGuid().ToString());
+                string role = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(r => r.Id == curCreateUserVM.RoleId).Name;
+                var existingUser = uow.UserRepository.GetOrCreateUser(curCreateUserVM.EmailAddress);
+                uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName, Guid.NewGuid().ToString());
                 uow.AspNetUserRolesRepository.AssignRoleToUser(role, existingUser.Id);
             }
             var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
             return jsonSuccessResult;
+        }
+
+        private static UserVM CreateUserVM(UserDO u, IUnitOfWork uow)
+        {
+            return new UserVM
+            {
+                Id = u.Id,
+                FirstName = u.FirstName,
+                LastName = u.LastName,
+                UserName = u.UserName,
+                EmailAddress = u.EmailAddress.Address,
+                RoleName = uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Name).FirstOrDefault(),
+                RoleId = uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Id.ToString()).FirstOrDefault(),
+            };
         }
 
     }

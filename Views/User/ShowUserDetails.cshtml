@@ -1,4 +1,6 @@
-﻿@model KwasantWeb.ViewModels.UserCreateVM
+﻿@using Data.Interfaces
+@using StructureMap
+@model KwasantWeb.ViewModels.UserVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 <div style="padding-right: 40px;">
     <form id="userInfoForm" action="@Url.Action("ProcessSubmittedForm","User")" method="post">
@@ -12,29 +14,29 @@
                 <td>First Name 
                 </td>
                 <td>
-                    @Html.TextBoxFor(curUser => curUser.User.FirstName, new { id = "firstname" })
+                    @Html.TextBoxFor(curUser => curUser.FirstName, new { id = "firstname" })
                 </td>
             </tr>
             <tr>
                 <td>Last Name 
                 </td>
                 <td>
-                    @Html.TextBoxFor(curUser => curUser.User.LastName, new { id = "lastname" })
+                    @Html.TextBoxFor(curUser => curUser.LastName, new { id = "lastname" })
                 </td>
             </tr>
             <tr>
                 <td>Email Address
                 </td>
                 <td>
-                    @Html.TextBoxFor(curUser => curUser.User.EmailAddress.Address, new { id = "email" })
+                    @Html.TextBoxFor(curUser => curUser.EmailAddress, new { id = "email" })
                 </td>
             </tr>
             <tr>
                 <td>Email ID
                 </td>
                 <td>
-                    @Html.TextBoxFor(curUser => curUser.User.EmailAddress.Id, new { id = "emailId", disabled = "disabled" })
-                    @Html.HiddenFor(curUser => curUser.User.EmailAddress.Id)
+                    @Html.TextBoxFor(curUser => curUser.EmailAddressID, new { id = "emailId", disabled = "disabled" })
+                    @Html.HiddenFor(curUser => curUser.EmailAddressID)
                 </td>
             </tr>
             <tr>
@@ -43,12 +45,18 @@
                 <td>
                     <select id="role" name="UserRole">
                         <option value="">-- Select Role --</option>
-                        @foreach (var role in new KwasantCore.Services.Role().GetRoles())
-                        {
-                            if (role.Name != Model.UserRole)
-                            {<option value="@role.Id">@role.Name</option>}
-                            else
-                            {<option value="@role.Id" selected="selected">@role.Name</option>}
+                        @{
+                            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                            {
+                                var roles = uow.AspNetRolesRepository.GetAll();
+                                foreach (var role in roles)
+                                {
+                                    if (role.Name != Model.RoleName)
+                                    {<option value="@role.Id">@role.Name</option>}
+                                    else
+                                    {<option value="@role.Id" selected="selected">@role.Name</option>}
+                                }
+                            }
                         }
                     </select>
                 </td>
@@ -68,9 +76,9 @@
                 </td>
             </tr>
         </table>
-        <input id="hdnUserId" type="hidden" value="@Model.User.Id" />
+        <input id="hdnUserId" type="hidden" value="@Model.Id" />
         <br />
-        <a style="color: #428bca; text-decoration: underline;" href="/Profile/ProfilesForUser?userID=@Model.User.Id">View Profiles</a>
+        <a style="color: #428bca; text-decoration: underline;" href="/Profile/ProfilesForUser?userID=@Model.Id">View Profiles</a>
     </form>
 </div>
 <script>
@@ -79,17 +87,18 @@
         var table;
 
         //following condition checking if user already exists then setting the view to edit mode
-        if ("@Model.UserRole" != "") {
-            toggleFields(true);
+        @if (String.IsNullOrEmpty(Model.RoleName))
+        {
+            @:toggleFields(true);
         }
-
+        
         //Binding click function to cancel button
         $("#btnCancel").click(function () {
             if ($("#hdnUserId").val() != "") {
                 toggleFields(true);
-                $("#firstname").val("@Model.User.FirstName");
-                $("#lastname").val("@Model.User.LastName");
-                $("#email").val("@Model.User.EmailAddress.Address");
+                $("#firstname").val("@Model.FirstName");
+                $("#lastname").val("@Model.LastName");
+                $("#email").val("@Model.EmailAddress");
             }
             else {
                 window.location.href = "@Url.Action("Dashboard", "Admin")";

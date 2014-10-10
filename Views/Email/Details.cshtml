@@ -1,34 +1,52 @@
-﻿@model Data.Entities.EmailDO
-
+﻿@model KwasantWeb.ViewModels.UserVM
 @{
     ViewBag.Title = "Details";
 }
+@section styles{
+    @Styles.Render("~/bundles/css/daypilot")
+}
+@section immediateScripts
+{
+    @Scripts.Render("~/bundles/js/jquery")
+    @Scripts.Render("~/bundles/js/daypilot")
+    @Scripts.Render("~/bundles/js/kwasantcalendar")
+    @Scripts.Render("~/bundles/js/kwasantpopup")
 
+}
+@section scripts
+{
+    @Scripts.Render("~/bundles/js/modernizr")
+    @Scripts.Render("~/bundles/js/bootstrap")
+    @Scripts.Render("~/bundles/js/common")
+}
 <h2>Details</h2>
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/smoothness/jquery-ui.min.css" rel="stylesheet" type="text/css" />
+@*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>*@
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+<script>
+    $(function () {
+        $("#tabs").tabs();
+    });
+</script>
+<table width="100%">
+    <tr>
+        <td width="45%" style="vertical-align: top; padding-right: 40px;">
+            <div id="tabs">
+                <ul>
+                    <li><a href="#tduserblock">Calendars</a></li>
+                    <li><a href="#divUserDetails">Details</a></li>
+                </ul>
+                <div id="tduserblock">
+                    @Html.Partial("ChooseCalendars", Model)
+                </div>
+                <div id="divUserDetails">
+                    @Html.Partial("ShowUserDetails", Model)
+                </div>
+            </div>
+        </td>
+        <td width="55%" style="vertical-align: top;">
+            @Html.Partial("ShowCalendarEvents", Model)
+        </td>
+    </tr>
+</table>
 
-<div>
-    <h4>Email</h4>
-	<hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.HTMLText)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.HTMLText)
-        </dd>
-
-        <dt>
-            @Html.DisplayNameFor(model => model.Subject)
-        </dt>
-
-        <dd>
-            @Html.DisplayFor(model => model.Subject)
-        </dd>
-
-    </dl>
-</div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>

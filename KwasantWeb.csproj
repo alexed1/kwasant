@@ -321,14 +321,8 @@
     <Compile Include="ViewModels\NegotiationVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\RemoteCalendarVM.cs" />
-    <Compile Include="ViewModels\UserAdministerVM.cs" />
-    <Compile Include="ViewModels\UserCreateVM.cs" />
     <Compile Include="ViewModels\ProfileVM.cs" />
-    <Compile Include="ViewModels\UserProfilesVM.cs" />
-    <Compile Include="ViewModels\UserQueryVM.cs" />
-    <Compile Include="ViewModels\UsersAdminVM.cs" />
-    <Compile Include="ViewModels\UserShowAllVM.cs" />
-    <Compile Include="ViewModels\UserShowVM.cs" />
+    <Compile Include="ViewModels\UserVM.cs" />
     <Compile Include="Webhooks\MandrillWebhookController.cs" />
   </ItemGroup>
   <ItemGroup>

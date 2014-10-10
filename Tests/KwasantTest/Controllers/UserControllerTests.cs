@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
@@ -61,7 +60,7 @@ namespace KwasantTest.Controllers
         [Test]
         public void ShowAllTestWithUserWithRoles()
         {
-            string roleName = "Admin";
+            const string roleName = "Admin";
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //Create a user
@@ -89,6 +88,24 @@ namespace KwasantTest.Controllers
 
             //Check he has the correct role
             Assert.AreEqual(roleName, model.Users.First().Role);
-        } 
+        }
+
+
+        [Test]
+        public void TestDetail()
+        {
+            UserDO userDO;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Create a user
+                userDO = uow.UserRepository.GetOrCreateUser("rjrudman@gmail.com");
+                uow.SaveChanges();
+            }
+
+            var controller = new UserController();
+            //Check we get a view back
+            var res = controller.Detail(userDO.Id) as ViewResult;
+            Assert.NotNull(res);
+        }
     }
 }
