@@ -5,7 +5,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Managers;
-using KwasantCore.Managers.APIManager.Packagers.Kwasant;
+using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using KwasantWeb.ViewModels;
 using StructureMap;
 using Utilities;
@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Booker")]
     public class EmailController : Controller
     {
         private IUnitOfWork _uow;

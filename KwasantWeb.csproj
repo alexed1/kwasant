@@ -795,6 +795,8 @@
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\Diagnostics\Index.cshtml" />
     <Content Include="Views\BookingRequest\ShowConversation.cshtml" />
+    <Content Include="Views\BookingRequest\ShowInProcessBRs.cshtml" />
+    <Content Include="Views\BookingRequest\ShowMyBRs.cshtml" />
     <Content Include="Views\Email\Show.cshtml" />
   </ItemGroup>
   <ItemGroup>

@@ -90,7 +90,7 @@ namespace KwasantTest.Integration.BookingITests
                 //Check each attendee recieves an invitation email
                 foreach (var attendeeDO in eventDO.Attendees)
                 {
-                    Assert.True(unreadSentMails.Any(m => m.Subject.StartsWith("Invitation from me@gmail.com") && m.To.First().Address == attendeeDO.EmailAddress.Address), "Invitation not found for " + attendeeDO.Name);
+                    Assert.True(unreadSentMails.Any(m => m.Subject.StartsWith("Invitation from me") && m.To.First().Address == attendeeDO.EmailAddress.Address), "Invitation not found for " + attendeeDO.Name);
                 }
             }
         }

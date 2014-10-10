@@ -7,7 +7,7 @@ using Daemons;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;

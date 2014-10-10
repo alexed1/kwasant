@@ -9,7 +9,7 @@ using KwasantWeb.ViewModels;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Booker")]
     public class AdminController : Controller
     {
         //

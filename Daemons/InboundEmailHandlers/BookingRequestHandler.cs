@@ -28,8 +28,7 @@ namespace Daemons.InboundEmailHandlers
                 if (curEmail != null)
                 {
                     email.ConversationId = curEmail.Id;
-                    var user = new User();
-                    UserDO curUser = user.GetOrCreateFromBR(uow, email.From);
+                    uow.UserRepository.GetOrCreateUser(email.From);
                     uow.SaveChanges();
                 }
                 else

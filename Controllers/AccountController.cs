@@ -269,17 +269,10 @@ namespace KwasantWeb.Controllers
                 userDO.EmailAddressID = usersAdminVM.EmailAddressID;
                 userDO.UserName = usersAdminVM.EmailAddress;
 
-                IdentityUserRole identityUserRole = null;
-
                 // Set RoleId & UserId if role is changed on the font-end other wise IdentityUserRole is set to null and user's role will not be updated.
                 if (usersAdminVM.RoleId != usersAdminVM.PreviousRoleId)
                 {
-                    identityUserRole = new IdentityUserRole();
-                    identityUserRole.RoleId = usersAdminVM.RoleId;
-                    identityUserRole.UserId = usersAdminVM.UserId;
-
-                    User user = new User();
-                    user.ChangeUserRole(uow, identityUserRole);
+                    uow.AspNetUserRolesRepository.AssignRoleIDToUser(usersAdminVM.RoleId, usersAdminVM.UserId);
                 }
 
                 uow.SaveChanges();

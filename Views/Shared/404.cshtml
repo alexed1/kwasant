@@ -1,4 +1,8 @@
-﻿@using Utilities
+﻿@using Data.Infrastructure.StructureMap
+@using Data.Interfaces
+@using StructureMap
+@using Utilities
+@using Roles = Data.States.Roles
 @model HandleErrorInfo
 @{
     Layout = null;
@@ -61,8 +65,16 @@
                     <div id="logotext" class="text" style="margin:auto; float:none; cursor:default; width:100%;">
                         <h1>Error: 404</h1>
                         <p>@Model.Exception.Message
-                            @if (Model != null && HttpContext.Current.IsDebuggingEnabled)
-                            {
+                            @{
+                                bool isAdminUser;
+                                var userID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser();
+                                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                                {
+                                    isAdminUser = uow.AspNetUserRolesRepository.UserHasRole(Roles.Admin, userID);
+                                }
+                            }
+                            @if (Model != null && isAdminUser)
+                            { 
                                 <div style="overflow-wrap:break-word">
                                     <p>
                                         <b>Controller:</b> @Html.Raw(Model.ControllerName.StringCSharpLineBreakToHTMLLineBreak())<br />

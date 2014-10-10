@@ -56,8 +56,7 @@ namespace Data.Repositories
                     var firstTo = email.To.SingleOrDefault();
                     if (firstTo != null)
                     {
-                        var userDO =  UnitOfWork.UserRepository.GetByEmailAddress(firstTo) ??
-                                      UnitOfWork.UserRepository.CreateFromEmail(firstTo);
+                        var userDO =  UnitOfWork.UserRepository.GetOrCreateUser(firstTo);
 
                         var tokenURL = UnitOfWork.AuthorizationTokenRepository.GetAuthorizationTokenURL(Server.ServerUrl, userDO);
                         mergeData["kwasantBaseURL"] = tokenURL;
