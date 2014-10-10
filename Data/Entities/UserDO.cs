@@ -17,6 +17,7 @@ namespace Data.Entities
             BookingRequests = new List<BookingRequestDO>();
             Calendars = new List<CalendarDO>();
             RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
+            Profiles = new List<ProfileDO>();
         }
 
         [InverseProperty("User")]
@@ -39,6 +40,9 @@ namespace Data.Entities
 
         [InverseProperty("Owner")]
         public virtual IList<CalendarDO> Calendars { get; set; }
+
+        [InverseProperty("User")]
+        public virtual IList<ProfileDO> Profiles { get; set; }
 
         [InverseProperty("User")]
         public virtual IList<RemoteCalendarAuthDataDO> RemoteCalendarAuthData { get; set; }

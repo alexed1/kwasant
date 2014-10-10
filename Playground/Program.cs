@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Repositories;
 using KwasantCore.StructureMap;
 using StructureMap;
 
@@ -18,13 +19,9 @@ namespace Playground
             KwasantDbContext db = new KwasantDbContext();
             db.Database.Initialize(true);
 
-
-            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var firstUser = uow.UserRepository.GetQuery().First();
-                var tokenLink = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL("www.google.com", firstUser);
-
+                var result = uow.ProfileNodeRepository.GetQuery().Where(pn => pn.Id == 2).WithFullHeirarchy(uow).ToList();
             }
         }
 

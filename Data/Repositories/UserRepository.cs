@@ -17,6 +17,7 @@ namespace Data.Repositories
         {
             base.Add(entity);
             AddDefaultCalendar(entity);
+            AddDefaultProfile(entity);
         }
 
         public UserDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null)
@@ -41,6 +42,7 @@ namespace Data.Repositories
             
             return userDO;
         }
+
 
         public UserDO GetOrCreateUser(String emailAddress)
         {
@@ -84,6 +86,22 @@ namespace Data.Repositories
                     OwnerID = curUser.Id
                 };
                 curUser.Calendars.Add(curCalendar);
+            }
+        }
+
+
+        public void AddDefaultProfile(UserDO curUser)
+        {
+            if (curUser == null)
+                throw new ArgumentNullException("curUser");
+
+            if (!curUser.Profiles.Any())
+            {
+                var defaultProfile = new ProfileDO() {Name = "Default Profile", User = curUser};
+                defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Communications", Profile = defaultProfile, ProfileID = defaultProfile.Id});
+                defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Locations", Profile = defaultProfile, ProfileID = defaultProfile.Id });
+                defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Travel", Profile = defaultProfile, ProfileID = defaultProfile.Id });
+                curUser.Profiles.Add(defaultProfile);
             }
         }
     }

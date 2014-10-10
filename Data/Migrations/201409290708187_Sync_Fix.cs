@@ -7,12 +7,10 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            //AddColumn("dbo.Emails", "ConversationId", c => c.Int(nullable: false));
         }
         
         public override void Down()
         {
-            //DropColumn("dbo.Emails", "ConversationId");
         }
     }
 }

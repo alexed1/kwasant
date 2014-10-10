@@ -51,6 +51,7 @@ namespace Data.Migrations
             SeedRemoteCalendarProviders(uow);
 
             AddCalendars(uow);
+            AddProfiles(uow);
             AddEvents(uow);
         }
 
@@ -237,7 +238,7 @@ namespace Data.Migrations
                                      let name = constant.Name
                                      let value = constant.GetValue(null)
                                      select creatorFunc((string)value, name)).ToList();
-            
+
             var repo = new GenericRepository<AspNetRolesDO>(uow);
             var existingRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
             foreach (var row in existingRows) //Delete old rows that are no longer seeded
@@ -245,7 +246,7 @@ namespace Data.Migrations
                 if (!rolesToAdd.Select(i => i.Name).Contains(row.Name))
                 {
                     repo.Remove(row);
-                }
+            }
             }
             foreach (var row in rolesToAdd)
             {
@@ -354,6 +355,13 @@ namespace Data.Migrations
             }
         }
 
+        private void AddProfiles(IUnitOfWork uow)
+        {
+            var users = uow.UserRepository.GetAll().ToList();
+            foreach (var user in users)
+                uow.UserRepository.AddDefaultProfile(user);
+        }
+
         private static void CreateCalendars(string calendarName, string curUserEmail, IUnitOfWork uow) 
         {
             UserDO curUser = uow.UserRepository.GetOrCreateUser(curUserEmail);
@@ -385,7 +393,7 @@ namespace Data.Migrations
 
             var bookingRequestID = curUser.BookingRequests.First().Id;
             var calendarID = curUser.Calendars.FirstOrDefault(e => e.Name == calendarName).Id;
-            
+
             for (int eventNumber = 1; eventNumber < 11; eventNumber++)
             {
                 DateTimeOffset start = GetRandomEventStartTime();

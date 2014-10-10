@@ -86,7 +86,7 @@ namespace KwasantCore.Services
                     }
                     else
                     {
-                        curLoginStatus = await Login(uow, username, password, isPersistent);
+                        curLoginStatus = Login(uow, userDO, password, isPersistent);
                     }
                 }
                 else
@@ -106,16 +106,16 @@ namespace KwasantCore.Services
             return userDO;
         }
 
-        public async Task<LoginStatus> Login(IUnitOfWork uow, string username, string password, bool isPersistent)
+        public LoginStatus Login(IUnitOfWork uow, UserDO userDO, string password, bool isPersistent)
         {
             LoginStatus curLogingStatus = LoginStatus.Successful;
-            UserManager<UserDO> curUserManager = User.GetUserManager(uow);
-            UserDO curUser = await curUserManager.FindAsync(username, password);
-            if (curUser != null)
+
+            var passwordHasher = new PasswordHasher();
+            if (passwordHasher.VerifyHashedPassword(userDO.PasswordHash, password) == PasswordVerificationResult.Success)
             {
                 var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
                 securityServices.Logout();
-                securityServices.Login(uow, curUser);
+                securityServices.Login(uow, userDO);
             }
             else
             {

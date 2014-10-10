@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Validations;
 using Data.Entities;
 using Data.States;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 using System.Collections.Generic;
 
@@ -80,15 +78,6 @@ namespace KwasantCore.Services
             }
         }
 
-        public string GetRole(string curUserId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curManager = User.GetUserManager(uow);
-                return curManager.GetRoles(curUserId).Count() > 0 ? curManager.GetRoles(curUserId)[0] : "";
-            }
-        }
-
         public List<UserDO> Query(IUnitOfWork uow, UserDO curUserSearch)
         {
             List<UserDO> filteredUsers = new List<UserDO>();
@@ -150,14 +139,5 @@ namespace KwasantCore.Services
             return curEmailAddress.Address.Split(new[] {'@'})[0];
         }
 
-        public static UserManager<UserDO> GetUserManager(IUnitOfWork uow)
-        {
-            var userStore = ObjectFactory.GetInstance<IKwasantUserStore>();
-            var um = new UserManager<UserDO>(userStore.SetUnitOfWork(uow));
-            var provider = new Microsoft.Owin.Security.DataProtection.DpapiDataProtectionProvider("Sample");
-            um.UserTokenProvider = new Microsoft.AspNet.Identity.Owin.DataProtectorTokenProvider<UserDO>(provider.Create("EmailConfirmation"));
-
-            return um;
-        }
     }
 }

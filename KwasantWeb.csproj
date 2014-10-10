@@ -290,6 +290,7 @@
     <Compile Include="Controllers\KController.cs" />
     <Compile Include="Controllers\MonthController.cs" />
     <Compile Include="Controllers\NegotiationController.cs" />
+    <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\QuestionController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SchedulerController.cs" />
@@ -322,6 +323,8 @@
     <Compile Include="ViewModels\RemoteCalendarVM.cs" />
     <Compile Include="ViewModels\UserAdministerVM.cs" />
     <Compile Include="ViewModels\UserCreateVM.cs" />
+    <Compile Include="ViewModels\ProfileVM.cs" />
+    <Compile Include="ViewModels\UserProfilesVM.cs" />
     <Compile Include="ViewModels\UserQueryVM.cs" />
     <Compile Include="ViewModels\UsersAdminVM.cs" />
     <Compile Include="ViewModels\UserShowAllVM.cs" />
@@ -377,6 +380,7 @@
     <Content Include="Content\css\daypilot\scheduler_transparent.css" />
     <Content Include="Content\css\daypilot\scheduler_white.css" />
     <Content Include="Content\css\frontcss\main.css" />
+    <Content Include="Content\css\jqtree.css" />
     <Content Include="Content\css\NegotiationWidgets.css" />
     <Content Include="Content\css\temp\temp.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.css" />
@@ -556,6 +560,7 @@
     <Content Include="Content\js\moment.js" />
     <Content Include="Content\js\placeholder.js" />
     <Content Include="Content\js\select2.js" />
+    <Content Include="Content\js\tree.jquery.js" />
     <Content Include="Content\js\waypoints.js" />
     <Content Include="Content\templates\inline_html_template_v1.html" />
     <Content Include="Content\templates\googletemplate1.html" />
@@ -798,6 +803,8 @@
     <Content Include="Views\BookingRequest\ShowInProcessBRs.cshtml" />
     <Content Include="Views\BookingRequest\ShowMyBRs.cshtml" />
     <Content Include="Views\Email\Show.cshtml" />
+    <Content Include="Views\Profile\Index.cshtml" />
+    <Content Include="Views\Profile\ProfilesForUser.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
