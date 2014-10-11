@@ -11,28 +11,32 @@
                 </td>
             </tr>
             <tr>
-                <td>First Name 
+                <td>
+                    First Name
                 </td>
                 <td>
                     @Html.TextBoxFor(curUser => curUser.FirstName, new { id = "firstname" })
                 </td>
             </tr>
             <tr>
-                <td>Last Name 
+                <td>
+                    Last Name
                 </td>
                 <td>
                     @Html.TextBoxFor(curUser => curUser.LastName, new { id = "lastname" })
                 </td>
             </tr>
             <tr>
-                <td>Email Address
+                <td>
+                    Email Address
                 </td>
                 <td>
                     @Html.TextBoxFor(curUser => curUser.EmailAddress, new { id = "email" })
                 </td>
             </tr>
             <tr>
-                <td>Email ID
+                <td>
+                    Email ID
                 </td>
                 <td>
                     @Html.TextBoxFor(curUser => curUser.EmailAddressID, new { id = "emailId", disabled = "disabled" })
@@ -40,7 +44,8 @@
                 </td>
             </tr>
             <tr>
-                <td>Role
+                <td>
+                    Role
                 </td>
                 <td>
                     <select id="role" name="RoleId">
@@ -70,7 +75,8 @@
             <tr id="trNewUser">
                 <td colspan="2">
                     <input type="button" id="btnSave" value="Save" />&nbsp;&nbsp;
-                    <input type="button" id="btnCancel" value="Cancel" /></td>
+                    <input type="button" id="btnCancel" value="Cancel" />
+                </td>
             </tr>
             <tr id="trEditUser" style="display: none;">
                 <td>
@@ -93,7 +99,7 @@
         {
             @:toggleFields(true);
         }
-        
+
         //Binding click function to cancel button
         $("#btnCancel").click(function () {
             if ($("#hdnUserId").val() != "") {

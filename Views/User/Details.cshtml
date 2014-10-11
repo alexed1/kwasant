@@ -1,4 +1,4 @@
-﻿@using KwasantWeb.ViewModelss
+﻿@using KwasantWeb.ViewModels
 @model UserVM
 @{
     ViewBag.Title = "Details";
@@ -48,7 +48,7 @@
             </div>
         </td>
         <td width="55%" style="vertical-align: top;">
-            @Html.Partial("ShowCalendarEvents", new CalendarShowVM { LinkedCalendarIds = Model.Calendarsd.Select(c => c.Id).ToList() })
+            @Html.Partial("ShowCalendarEvents", new CalendarShowVM { LinkedCalendarIds = Model.Calendars.Select(c => c.Id).ToList() })
         </td>
     </tr>
 </table>
