@@ -45,7 +45,7 @@ namespace KwasantWeb
             if (httpException != null)
             {
                 statusCode = httpException.GetHttpCode();
-                var viewPath = String.Format("Views/Shared/{0}.cshtml", statusCode);
+                var viewPath = String.Format("Views/Shared/Error{0}.cshtml", statusCode);
                 var explicitPath = Path.Combine(Utilities.Server.ServerPhysicalPath, viewPath);
                 if (File.Exists(explicitPath))
                 {
