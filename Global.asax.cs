@@ -49,7 +49,7 @@ namespace KwasantWeb
                 else
                     throw new Exception("Invalid BasePageURL (check web.config)");
             }
-            l
+
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
 
             CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
