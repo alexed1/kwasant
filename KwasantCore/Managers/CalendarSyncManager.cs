@@ -191,12 +191,13 @@ namespace KwasantCore.Managers
                 catch (Exception ex)
                 {
                     calendarLink.LastSynchronizationResult = string.Concat("Error: ", ex.Message);
-                    Logger.GetLogger().Error(
+                    Logger.GetLogger().Warn(
                         string.Format("Error occurred on calendar '{0}' synchronization with '{1} @ {2}'.",
                                       calendarLink.LocalCalendar.Name,
                                       calendarLink.RemoteCalendarName,
                                       calendarLink.Provider.Name),
                         ex);
+                    AlertManager.ErrorSyncingCalendar(calendarLink);
                 }
             }
         }
