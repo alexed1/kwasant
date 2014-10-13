@@ -1,4 +1,4 @@
-﻿@model KwasantWeb.ViewModels.UserVM
+﻿@model KwasantWeb.ViewModels.UserAdministerVM
 @{
     ViewBag.Title = "Add User";
 }
@@ -24,7 +24,7 @@
 <table width="100%">
     <tr>
         <td width="45%" style="vertical-align: top;padding-right:40px;">
-            @Html.Partial("ShowUserDetails", Model)
+            @Html.Partial("ShowUserDetails", new KwasantWeb.ViewModels.UserCreateVM { User = Model.User })
         </td>
         <td width="55%" style="vertical-align: top;">
             @Html.Partial("ShowUserCreationSettings")
