@@ -6,6 +6,8 @@ using Data.Repositories;
 using KwasantCore.Services;
 using System.Linq;
 using StructureMap;
+using Data.States;
+using Utilities.Logging;
 
 namespace Daemons.InboundEmailHandlers
 {
@@ -20,16 +22,19 @@ namespace Daemons.InboundEmailHandlers
                 EmailRepository emailRepo = uow.EmailRepository;
                 EmailDO email = Email.ConvertMailMessageToEmail(emailRepo, message);
 
-                var curEmail = (from t in uow.BookingRequestRepository.GetAll()
+                var existingBR = (from t in uow.BookingRequestRepository.GetAll()
                             where t.Subject == email.Subject
                             && (t.Recipients.Any(e => e.EmailID == email.From.Id) || t.FromID == email.From.Id)
                             select t).FirstOrDefault();
 
-                if (curEmail != null)
+                if (existingBR != null)
                 {
-                    email.ConversationId = curEmail.Id;
+                    email.ConversationId = existingBR.Id;
                     uow.UserRepository.GetOrCreateUser(email.From);
+                    existingBR.State = BookingRequestState.NeedsBooking;
                     uow.SaveChanges();
+                    string loggerInfo = "Adding inbound email id = " + email.Id + ", subject = " + existingBR.Subject + " to existing conversation id = " + existingBR.Id + ", with BR subject = " + existingBR.Subject;
+                    Logger.GetLogger().Info(loggerInfo);
                 }
                 else
                 {
