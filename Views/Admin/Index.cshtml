@@ -83,7 +83,11 @@
              bLengthChange: false,
              data: JSON.parse(response),
              columns: [
-                 { data: 'create_time' },
+                 {
+                    data: function (data) {
+                        return convertToDateString(data.create_time);
+                    }
+                 },
                  { data: 'primary_category' },
                  { data: 'secondary_category' },
                  { data: 'activity' },
