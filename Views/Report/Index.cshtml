@@ -66,7 +66,11 @@
         switch ("@ViewBag.type") {
             case "incident":
                 columns = [
-                    { data: 'create_time' },
+                    {
+                        data: function (data) {
+                            return ConvertToDateString(data.create_time);
+                        }
+                    },
                     { data: 'primary_category' },
                     { data: 'secondary_category' },
                     { data: 'activity' },
@@ -75,7 +79,11 @@
                 break;
             case "usage":
                 columns = [
-                    { data: 'create_date' },
+                    {
+                        data: function (data) {
+                            return ConvertToDateString(data.create_date);
+                        }
+                    },
                     { data: 'primary_category' },
                     { data: 'secondary_category' },
                     { data: 'activity' },
@@ -84,7 +92,11 @@
                 break;
             case "alllogs":
                 columns = [
-                    { data: 'date' },
+                    {
+                        data: function (data) {
+                            return ConvertToDateString(data.date);
+                        }
+                    },
                     { data: 'name' },
                     { data: 'level' },
                     { data: 'message' },
@@ -132,4 +144,20 @@
             return false;
         });
     }
+
+    function ConvertToDateString(dateFormat) {
+        var datevalue = new Date(dateFormat);
+        var formate = "AM"; var hour = 0;
+        if (datevalue.getHours() >= 12) {
+            hour = parseInt(datevalue.getHours()) - 12;
+            formate = "PM";
+        } else {
+            hour = datevalue.getHours();
+            formate = "AM";
+        }
+        dateFormat = datevalue.getMonth() + 1 + "-" + datevalue.getDate() + "-" + datevalue.getFullYear().toString().substring(2, 4) + " " + hour + ":" + datevalue.getMinutes() +" " + formate;
+        return dateFormat;
+
+    }
+
 </script>
