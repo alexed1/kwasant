@@ -29,7 +29,7 @@ namespace Data.Repositories
         {
             if (email == null)
                 throw new ArgumentNullException("email");
-            return ConfigureEnvelope(email, EnvelopeDO.GmailHander);
+            return ConfigureEnvelope(email, EnvelopeDO.SendGridHander);
         }
 
         public EnvelopeDO ConfigureTemplatedEmail(IEmail email, string templateName, IDictionary<string, string> mergeData)
