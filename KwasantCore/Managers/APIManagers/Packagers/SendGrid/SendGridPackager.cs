@@ -1,27 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Mail;
-using System.Net.Mime;
-using System.Text;
 using Data.Entities;
-using KwasantCore.ExternalServices;
 using SendGrid;
-using StructureMap;
-using Utilities;
 
-namespace KwasantCore.Managers.APIManagers.Packagers
+namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
 {
     public class SendGridPackager : IEmailPackager
     {
-        private readonly IConfigRepository _configRepository;
+        private readonly ITransport _transport;
 
-        public SendGridPackager(IConfigRepository configRepository)
+        public SendGridPackager(ITransport transport)
         {
-            if (configRepository == null)
-                throw new ArgumentNullException("configRepository");
-            _configRepository = configRepository;
+            if (transport == null)
+                throw new ArgumentNullException("transport");
+            _transport = transport;
         }
 
         public delegate void EmailSuccessArgs(int emailID);
@@ -107,14 +101,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers
 
                 try
                 {
-                    var credentials = new NetworkCredential
-                    {
-                        UserName = _configRepository.Get("OutboundUserName"),
-                        Password = _configRepository.Get("OutboundUserPassword")
-                    };
-                    var transportWeb = new Web(credentials);
-
-                    await transportWeb.DeliverAsync(mailMessage);
+                    await _transport.DeliverAsync(mailMessage);
 
                     OnEmailSent(email.Id);
                 }

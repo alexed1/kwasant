@@ -1,3 +1,4 @@
+using System.Net;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
@@ -11,10 +12,12 @@ using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
 using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
+using KwasantCore.Managers.APIManagers.Packagers.SendGrid;
 using KwasantCore.Managers.APIManagers.Packagers.Twilio;
 using KwasantCore.Security;
 using KwasantCore.Services;
 using Moq;
+using SendGrid;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using AutoMapper;
@@ -74,7 +77,7 @@ namespace KwasantCore.StructureMap
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
-                For<ISmtpClient>().Use<SmtpClientWrapper>();
+                For<ITransport>().Use<Web>(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
                 For<IRestfullCall>().Use<RestfulCallWrapper>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
             }

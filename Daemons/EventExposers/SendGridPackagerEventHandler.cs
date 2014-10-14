@@ -1,4 +1,5 @@
 ﻿using KwasantCore.Managers.APIManagers.Packagers;
+using KwasantCore.Managers.APIManagers.Packagers.SendGrid;
 
 namespace Daemons.EventExposers
 {
