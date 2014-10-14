@@ -21,7 +21,7 @@ namespace Daemons
 
         public OutboundEmail()
         {
-            RegisterEvent<int>(GmailPackagerEventHandler.EmailSent, emailID =>
+            RegisterEvent<int>(SendGridPackagerEventHandler.EmailSent, emailID =>
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
@@ -38,7 +38,7 @@ namespace Daemons
                 }
             });
 
-            RegisterEvent<string, int>(GmailPackagerEventHandler.EmailRejected, (reason, emailID) =>
+            RegisterEvent<string, int>(SendGridPackagerEventHandler.EmailRejected, (reason, emailID) =>
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
@@ -49,7 +49,7 @@ namespace Daemons
                 }
             });
 
-            RegisterEvent<int, string, string, int>(GmailPackagerEventHandler.EmailCriticalError,
+            RegisterEvent<int, string, string, int>(SendGridPackagerEventHandler.EmailCriticalError,
                 (errorCode, name, message, emailID) =>
                 {
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
