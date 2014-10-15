@@ -137,7 +137,7 @@ namespace Data.Entities
             #endregion
         }
 
-        public const string GmailHander = "Gmail";
+        public const string SendGridHander = "Gmail";
         public const string MandrillHander = "Mandrill";
 
         private readonly MergeDataDictionary _mergeData;
