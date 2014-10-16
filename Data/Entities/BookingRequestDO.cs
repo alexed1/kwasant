@@ -27,7 +27,7 @@ namespace Data.Entities
         public string BookerID { get; set; }
         public virtual UserDO Booker { get; set; }
 
-        [InverseProperty("BookingRequest")]
+        //Do not add InverseProperty - The relationship is handled in KwasantDbContext
         public virtual List<InstructionDO> Instructions { get; set; }
 
         [InverseProperty("BookingRequest")]
