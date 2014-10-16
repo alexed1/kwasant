@@ -6,8 +6,6 @@ namespace Data.Entities
 {
     public class AnswerDO
     {
-        #region Implementation of Answer
-
         [Key]
         public int Id { get; set; }
         [ForeignKey("Question")]
@@ -26,8 +24,5 @@ namespace Data.Entities
         public string UserID { get; set; }
         public virtual UserDO UserDO { get; set; }
         public string Text { get; set; }
-
-        
-        #endregion
     }
 }

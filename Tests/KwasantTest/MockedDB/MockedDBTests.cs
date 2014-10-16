@@ -106,5 +106,18 @@ namespace KwasantTest.MockedDB
             if (exceptionMessages.Any())
                 Assert.Fail(String.Join(Environment.NewLine, exceptionMessages));
         }
+
+        [Test, ExpectedException(ExpectedMessage = "Foreign row does not exist.\nValue '0' on 'NegotiationDO.NegotiationState' pointing to '_NegotiationStateTemplate.Id'")]
+        public void TestForeignKeyEnforced()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var negDO = new NegotiationDO();
+                negDO.Id = 1;
+                uow.NegotiationsRepository.Add(negDO);
+
+                uow.SaveChanges();
+            }
+        }
     }
 }
