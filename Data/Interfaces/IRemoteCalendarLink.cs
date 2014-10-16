@@ -7,10 +7,10 @@ namespace Data.Interfaces
         int Id { get; set; }
         string RemoteCalendarName { get; set; }
 
-        int LocalCalendarID { get; set; }
+        int? LocalCalendarID { get; set; }
         ICalendar LocalCalendar { get; set; }
 
-        int ProviderID { get; set; }
+        int? ProviderID { get; set; }
         IRemoteCalendarProvider Provider { get; set; }
 
         DateTimeOffset DateSynchronizationAttempted { get; set; }

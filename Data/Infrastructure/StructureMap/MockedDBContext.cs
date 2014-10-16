@@ -11,18 +11,19 @@ using System.Reflection;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
+using Segment.Model;
 using Utilities;
 
 namespace Data.Infrastructure.StructureMap
 {
     public class MockedDBContext : IDBContext
     {
-        private static readonly List<MockedDbSet> SetsToClear = new List<MockedDbSet>();
+        private static readonly List<MockedDbSet> _SetsToClear = new List<MockedDbSet>();
         public static void WipeMockedDatabase()
         {
-            lock (SetsToClear)
+            lock (_SetsToClear)
             {
-                foreach (var set in SetsToClear)
+                foreach (var set in _SetsToClear)
                 {
                     set.WipeDatabase();
                 }
@@ -31,12 +32,12 @@ namespace Data.Infrastructure.StructureMap
 
         public MockedDBContext()
         {
-            MigrationConfiguration.Seed(new UnitOfWork(this));
-
             SetUnique<EmailAddressDO, String>(ea => ea.Address);
-            SetUnique<UserDO, int>(u => u.EmailAddressID);
+            SetUnique<UserDO, int?>(u => u.EmailAddressID);
 
             SetPrimaryKey<UserDO, String>(u => u.Id);
+
+            MigrationConfiguration.Seed(new UnitOfWork(this));
         }
 
         private readonly Dictionary<Type, PropertyInfo> _forcedDOPrimaryKey = new Dictionary<Type, PropertyInfo>();
@@ -69,23 +70,11 @@ namespace Data.Infrastructure.StructureMap
         private object[] _addedEntities;
         public int SaveChanges()
         {
-            //When we save in memory, we need to make sure foreign entities are saved. An example:
-            //eventDO.Emails.Add(new EmailDO();
-            //This new EmailDO is added to the event's Email collection - however, it's not automatically added to a set.
-            //When we save, we parse all the row's foreign links, including collections. We then add missing rows to the collection
-            //We loop, because in this instance:
-            //eventDO.Emails.Add(new EmailDO { Customer = new CustomerDO }) - once we've added the email, we still haven't added the customer.
-            //Looping causes us to pickup each foreign link and be sure everything is persisted in memory
-
-            
-            //the only way we know what is being created is to look at EntityState.Added. But after the savechanges, that will all be erased.
-            //so we have to build a little list of entities that will have their AfterCreate hook called.
-
             AddForeignRows();
 
-            var adds = GetAdds();
+            var adds = GetAdds().ToList();
             var createdEntityList = adds.OfType<ICreateHook>().ToList();
-            
+
             SaveSets();
 
             DetectChanges();
@@ -95,7 +84,7 @@ namespace Data.Infrastructure.StructureMap
             UpdateForeignKeyReferences(adds);
 
             AssertConstraints();
-            
+
             foreach (var createdEntity in createdEntityList)
             {
                 createdEntity.AfterCreate();
@@ -153,10 +142,10 @@ namespace Data.Infrastructure.StructureMap
                         //Check nullable constraint enforced
                         foreach (var prop in row.GetType().GetProperties())
                         {
-                            var hasAttribute = prop.GetCustomAttributes(typeof (RequiredAttribute)).Any();
+                            var hasAttribute = prop.GetCustomAttributes(typeof(RequiredAttribute)).Any();
                             if (hasAttribute)
                             {
-                                if(prop.GetValue(row) == null)
+                                if (prop.GetValue(row) == null)
                                     throw new Exception("Property '" + prop.Name + "' on '" + row.GetType().Name + "' is marked as required, but is being saved with a null value.");
                             }
                         }
@@ -191,7 +180,7 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
-        private IList<object> GetAdds()
+        private IEnumerable<object> GetAdds()
         {
             lock (_cachedSets)
             {
@@ -236,7 +225,7 @@ namespace Data.Infrastructure.StructureMap
 
         private void UpdateForeignKeyReferences(IEnumerable<object> newRows)
         {
-            foreach(var grouping in newRows.GroupBy(r => r.GetType()))
+            foreach (var grouping in newRows.GroupBy(r => r.GetType()))
             {
                 if (!grouping.Any())
                     continue;
@@ -279,7 +268,7 @@ namespace Data.Infrastructure.StructureMap
 
                     var foreignCollectionProps = foreignType.GetProperties()
                         .Where(p => p.PropertyType.IsGenericType &&
-                                    typeof (IList).IsAssignableFrom(p.PropertyType) &&
+                                    typeof(IList<>).MakeGenericType(propType).IsAssignableFrom(p.PropertyType) &&
                                     p.PropertyType.GetGenericArguments()[0] == propType).ToList();
 
                     if (linkedID == null)
@@ -309,24 +298,21 @@ namespace Data.Infrastructure.StructureMap
                                     break;
                                 }
                             }
-                            if (foreignDO != null)
-                            {
-                                parentFKDOProperty.SetValue(value, foreignDO);
-                            }
+                            if (foreignDO == null)
+                                throw new Exception(String.Format("Foreign row does not exist.\nValue '{0}' on '{1}.{2}' pointing to '{3}.{4}'", fkID, grouping.Key.Name, parentFKIDProperty.Name, parentFKDOProperty.PropertyType.Name, foreignIDProperty.Name));
+                            
+                            parentFKDOProperty.SetValue(value, foreignDO);
                         }
 
-                        if (foreignDO != null)
+                        //Now we add ourselves to their collection (if they have one)
+                        foreach (var foreignCollectionProp in foreignCollectionProps)
                         {
-                            //Now we add ourselves to their collection (if they have one)
-                            foreach (var foreignCollectionProp in foreignCollectionProps)
-                            {
-                                var collectionToAddTo = foreignCollectionProp.GetValue(foreignDO) as IList;
-                                if (collectionToAddTo == null)
-                                    continue;
+                            var collectionToAddTo = foreignCollectionProp.GetValue(foreignDO) as IList;
+                            if (collectionToAddTo == null)
+                                continue;
 
-                                if (!collectionToAddTo.Contains(value))
-                                    collectionToAddTo.Add(value);
-                            }
+                            if (!collectionToAddTo.Contains(value))
+                                collectionToAddTo.Add(value);
                         }
                     }
                 }
@@ -340,7 +326,7 @@ namespace Data.Infrastructure.StructureMap
                 currentPass = new List<object>(_cachedSets.SelectMany(c => c.Value.LocalEnumerable.OfType<object>()));
 
             var nextPass = new List<Object>();
-            
+
             while (currentPass.Any())
             {
                 foreach (var row in currentPass)
@@ -363,7 +349,7 @@ namespace Data.Infrastructure.StructureMap
                                 nextPass.Add(value);
                         }
                         else if (prop.PropertyType.IsGenericType &&
-                                 typeof (IEnumerable).IsAssignableFrom(prop.PropertyType) &&
+                                 typeof(IEnumerable).IsAssignableFrom(prop.PropertyType) &&
                                  IsEntity(prop.PropertyType.GetGenericArguments()[0]))
                         {
                             //It's a collection!
@@ -371,11 +357,7 @@ namespace Data.Infrastructure.StructureMap
                             if (collection == null)
                                 continue;
 
-                            foreach (var obj in collection.OfType<object>())
-                            {
-                                if (AddValueToForeignSet(obj))
-                                    nextPass.Add(obj);
-                            }
+                            nextPass.AddRange(collection.OfType<object>().Where(AddValueToForeignSet));
                         }
                     }
                 }
@@ -418,10 +400,10 @@ namespace Data.Infrastructure.StructureMap
                 }
 
                 var returnSet = _cachedSets[entityType];
-                lock (SetsToClear)
+                lock (_SetsToClear)
                 {
-                    if (!SetsToClear.Contains(returnSet))
-                        SetsToClear.Add(returnSet);
+                    if (!_SetsToClear.Contains(returnSet))
+                        _SetsToClear.Add(returnSet);
                 }
                 return returnSet;
             }

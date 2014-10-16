@@ -3,7 +3,10 @@
 
 <div id="emailInfoBox" class="col-md-7">
     <div class="emailInfoBox">
-        <iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.BookingRequestId"></iframe>
+        @*<iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.BookingRequestId"></iframe>*@
+        <div id="divEmailViewer">
+            @Html.Partial("../Email/Show", Model)
+        </div>
         <div class="">
             <input type="radio" id="rdnshowOtherBRs" name="group1" value="ShowOtherBRs" />
             Show Other BR's  &nbsp;&nbsp; 
@@ -43,8 +46,9 @@
         }    
         $("#hdnrequestid").val(id);
         $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("MarkAsProcessed", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
-        $("#emailInfoFrame")[0].contentWindow.location.replace("/Api/GetEmailHTML.aspx?emailID=" + id);
         
+        $("#divEmailViewer").load('@Url.Action("GetInfo","Email")?emailId=' + id);
+
         if (window.parent.calendar !== undefined) {
             window.parent.calendar.updateBackendURLs("@Url.Content("~/Calendar/Day?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Month?calendarIDs=")" + linkedCalendarIDs, "@Url.Content("~/Calendar/Navigator?calendarIDs=")" + linkedCalendarIDs);
         }
@@ -63,7 +67,7 @@
         //dp_navigator = calendar.getNavigator();
         $('#divConversationPanel').hide();
     });
-   
+
 
     //This function will bind a click function on every button in table "tblbookingrequest"
     $('#tbluserrequests').on('click', 'tr', function () {
@@ -145,12 +149,11 @@
     }
 
     var table;
-    function showOtherBRs()
-    {
+    function showOtherBRs() {
         $('#tbluserrequests').show();
         $('#tblRelatedItems_wrapper').hide();
         $('#divConversationPanel').hide();
-        
+
         //Parsing and binding the booking requests viewer
         table = $('#tbluserrequests').DataTable({
             destroy: true,
@@ -164,11 +167,11 @@
             {
                 //Ajax call to get all unprocessed booking request from server according to user.
                 "url": "@Url.Action("GetBookingRequests", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestId",
-            "dataSrc": function (json) {
-                var orgdata = JSON.parse(json.data);
-                return orgdata;
-            }
-        },
+                "dataSrc": function (json) {
+                    var orgdata = JSON.parse(json.data);
+                    return orgdata;
+                }
+            },
             //Callback function for row created.
             createdRow: function (row, data, index) {
                 if (data.id == $("#hdnrequestid").val() && $('#tbluserrequests tr').length > 2) {
@@ -178,65 +181,65 @@
                     $(row).removeClass('current-row');
                 }
             },
-        columns: [
-            {
-                data: function (data) {
-                    return ConvertTODateString(data.date_received);
-                }
-            },
-            { data: 'subject' }
-        ]
-    });
+            columns: [
+                {
+                    data: function (data) {
+                        return ConvertTODateString(data.date_received);
+                    }
+                },
+                { data: 'subject' }
+            ]
+        });
 
-    var datenow = new Date();
-    var dp_day = window.parent.storedCalendar[0];
-    dp_day.startDate = datenow;
-    window.parent.calendar.refreshCalendars();
-    dp_navigator.select(new DayPilot.Date(datenow));
-    }
+            var datenow = new Date();
+            var dp_day = window.parent.storedCalendar[0];
+            dp_day.startDate = datenow;
+            window.parent.calendar.refreshCalendars();
+            dp_navigator.select(new DayPilot.Date(datenow));
+        }
 
 
-    var table1;
-    function showRelatedItems() {
+        var table1;
+        function showRelatedItems() {
 
-        $('#tbluserrequests_wrapper').hide();
+            $('#tbluserrequests_wrapper').hide();
         $('#divConversationPanel').hide();
-        table1 = $('#tblRelatedItems').DataTable({
-            destroy: true,
-            order: [0, 'desc'],
-            searching: false,
-            ordering: false,
-            bLengthChange: false,
-            processing: true,
-            serverSide: true, 
-            ajax:
-            {
-                "url": "@Url.Action("ShowRelatedItems", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestId",
-            "dataSrc": function (json) {
-                var orgdata = JSON.parse(json.data);
-                return orgdata;
-            }
-        },
+            table1 = $('#tblRelatedItems').DataTable({
+                destroy: true,
+                order: [0, 'desc'],
+                searching: false,
+                ordering: false,
+                bLengthChange: false,
+                processing: true,
+                serverSide: true, 
+                ajax:
+                {
+                    "url": "@Url.Action("ShowRelatedItems", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestId",
+                    "dataSrc": function (json) {
+                        var orgdata = JSON.parse(json.data);
+                        return orgdata;
+                    }
+                },
             
-            createdRow: function (row, data, index) {
-                if (data.id == $("#hdnrequestid").val() && $('#tblRelatedItems tr').length > 2) {
-                    $(row).addClass('current-row');
-                }
-                else {
-                    $(row).removeClass('current-row');
-                }
+                createdRow: function (row, data, index) {
+                    if (data.id == $("#hdnrequestid").val() && $('#tblRelatedItems tr').length > 2) {
+                        $(row).addClass('current-row');
+                    }
+                    else {
+                        $(row).removeClass('current-row');
+                    }
 
-                // $(row).attr("style", "cursor:pointer;");
-            },
-        columns: [
-            {
-                data: function (data) {
-                    return ConvertTODateString(data.date);
-                }
-            },
-            { data: 'type' }
-        ]
-    });
+                    // $(row).attr("style", "cursor:pointer;");
+                },
+                columns: [
+                    {
+                        data: function (data) {
+                            return ConvertTODateString(data.date);
+                        }
+                    },
+                    { data: 'type' }
+                ]
+            });
 
     }
    
@@ -244,7 +247,7 @@
         //$("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
         //$(this).attr("style", "background-color: #aaa;");
         $('#tblRelatedItems tr').removeClass('current-row');
-        if ( $('#tblRelatedItems tr').length > 2) {     	
+        if ($('#tblRelatedItems tr').length > 2) {
             $(this).addClass('current-row');
         }
         var data = table1.row($(this)).data();
@@ -253,14 +256,13 @@
         window.parent.calendar.refreshCalendars();
         var datevalue = new Date(data.date);
         dp_navigator.select(new DayPilot.Date(datevalue));
-        if(data.type=="Clarification")
+        if (data.type == "Clarification")
             clarificationPopUpWindow(data.id);
     });
 
-    function clarificationPopUpWindow(id)
-    {
+    function clarificationPopUpWindow(id) {
         if (Kwasant.IFrame.PopupsActive()) { return; }
-        var bookingrequest="@Model.BookingRequestId";
+        var bookingrequest = "@Model.BookingRequestId";
         var path = '/ClarificationRequest/Edit/?bookingRequestId=' + bookingrequest + '&clarificationRequestId=' + id;
         Kwasant.IFrame.Display(path,
             {
@@ -274,18 +276,22 @@
         var notification = $('#notificationGroup');
         $('#notificationMessage').html(message);
         notification.fadeIn('slow');
-        setTimeout(function() {
+        setTimeout(function () {
             notification.fadeOut('slow');
         }, 5 * 1000);
     }
 
-    function getNegotiationReview() {
-        Kwasant.IFrame.Display('/Negotiation/Review?negotiationID=' + linkedNegotiationID,
+    function getCurrentNegotiationReview() {
+        getNegotiationReview(linkedNegotiationID);
+    }
+
+    function getNegotiationReview(negotiationID) {
+        Kwasant.IFrame.Display('/Negotiation/Review?negotiationID=' + negotiationID,
                 {
                     horizontalAlign: 'right',
                     minHeight: 700,
                     minWidth: 630,
-                    callback: function(result) {
+                    callback: function (result) {
                         if (result)
                             displayNegotiation('Your negotiation was successfully updated');
                     }
@@ -296,25 +302,24 @@
     function getNegotiationWindow() {
         if (linkedNegotiationID != null) {
             var bookingRequestId = $("#hdnrequestid").val();
-            var url= '/Negotiation/Edit';
+            var url = '/Negotiation/Edit';
             $.ajax({
                 url: url,
                 type: 'Get',
-                data: {negotiationID:linkedNegotiationID,bookingRequestID:bookingRequestId},
+                data: { negotiationID: linkedNegotiationID, bookingRequestID: bookingRequestId },
                 async: false, 
-                success: function(response) {
+                success: function (response) {
                     var oldOwner = response.Message;
                     var Id = $("#hdnrequestid").val();
                     if (response.Name == "DifferentOwner") 
                         ShowFailedOwnershipVerification(oldOwner, Id);
-                    else 
-                    {
-                        Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID +'&bookingRequestID=' + bookingRequestId,
+                    else {
+                        Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID + '&bookingRequestID=' + bookingRequestId,
                         {
                             horizontalAlign: 'right',
                             minHeight: 700,
                             minWidth: 630,
-                            callback: function(result) {
+                            callback: function (result) {
                                 if (result)
                                     displayNegotiation('Your negotiation was successfully updated');
                             }
@@ -329,7 +334,7 @@
                         horizontalAlign: 'right',
                         minHeight: 700,
                         minWidth: 300,
-                        callback: function(result) {
+                            callback: function (result) {
                             if (result) {
                                 $('#liCreateOrEditNegotiation').html('Edit');
                                 linkedNegotiationID = result;
@@ -338,43 +343,42 @@
                             }
                         }
                     });
+            }
         }
-    }
 
-    function resolveActiveNegotiation(negotiationID)
-    {
-        if (confirm("Are you sure you want to resolve this negotiation?")) {
-            var url = "/Negotiation/MarkResolved?negotiationID=" + negotiationID;
-            Kwasant.IFrame.DispatchUrlRequest(url, function (data) {
-                if (!data) {
-                    alert('An error occured on the server. Your changes were not saved.');
-                } else {
-                    displayNegotiation('Your negotiation was successfully resolved.');
-                    linkedNegotiationID = null;
-                    $('#liCreateOrEditNegotiation').html('Create');
-                    updateCreateResolveButtons();
-                }
-            });
-        }       
-    }
+        function resolveActiveNegotiation(negotiationID) {
+            if (confirm("Are you sure you want to resolve this negotiation?")) {
+                var url = "/Negotiation/MarkResolved?negotiationID=" + negotiationID;
+                Kwasant.IFrame.DispatchUrlRequest(url, function (data) {
+                    if (!data) {
+                        alert('An error occured on the server. Your changes were not saved.');
+                    } else {
+                        displayNegotiation('Your negotiation was successfully resolved.');
+                        linkedNegotiationID = null;
+                        $('#liCreateOrEditNegotiation').html('Create');
+                        updateCreateResolveButtons();
+                    }
+                });
+            }       
+        }
     
-    function updateCreateResolveButtons() {
-        if (linkedNegotiationID == null) {
-            $('#liReview').hide();
-            $('#liResolveNegotiation').hide();
-        } else {
-            $('#liReview').show();
-            $('#liResolveNegotiation').show();
+        function updateCreateResolveButtons() {
+            if (linkedNegotiationID == null) {
+                $('#liReview').hide();
+                $('#liResolveNegotiation').hide();
+            } else {
+                $('#liReview').show();
+                $('#liResolveNegotiation').show();
+            }
         }
-    }
   
-    $(document).ready(function() {
-        updateCreateResolveButtons();
+        $(document).ready(function () {
+            updateCreateResolveButtons();
 
-        $('.navbar .dropdown').hover(function() {
-            $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
-        }, function() {
-            $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
+            $('.navbar .dropdown').hover(function () {
+                $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
+            }, function () {
+                $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
+            });
         });
-    });
 </script>

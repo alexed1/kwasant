@@ -137,7 +137,7 @@ namespace Data.Entities
             #endregion
         }
 
-        public const string GmailHander = "Gmail";
+        public const string SendGridHander = "Gmail";
         public const string MandrillHander = "Mandrill";
 
         private readonly MergeDataDictionary _mergeData;
@@ -147,10 +147,6 @@ namespace Data.Entities
             _mergeData = new MergeDataDictionary(this);
         }
 
-        [Key]
-        public int Id { get; set; }
-        public string Handler { get; set; }
-        public string TemplateName { get; set; }
         [NotMapped]
         public IDictionary<string, string> MergeData { get { return _mergeData; } }
         [NotMapped]
@@ -159,13 +155,17 @@ namespace Data.Entities
             get { return Email; }
             set { Email = (EmailDO)value; }
         }
-        [Required]
+
+        [Key]
+        public int Id { get; set; }
+        public string Handler { get; set; }
+        public string TemplateName { get; set; }
+
+        [ForeignKey("Email"), Required]
+        public int? EmailID { get; set; }
         public virtual EmailDO Email { get; set; }
         
         [Column("MergeData")]
         public string MergeDataString { get; set; } // change notifications to MergeData dictionary should be added (by calling _mergeData.Refresh()) in future if needed.
-        
-        [ForeignKey("Email"), Required]
-        public int EmailID { get; set; }
     }
 }

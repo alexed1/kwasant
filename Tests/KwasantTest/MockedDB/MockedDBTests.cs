@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Data.Entities;
 using Data.Interfaces;
+using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
 
@@ -18,9 +19,9 @@ namespace KwasantTest.MockedDB
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var brOne = new BookingRequestDO();
+                var brOne = new FixtureData(uow).TestBookingRequest1();
                 brOne.Id = 1;
-                brOne.UserID = "Rob";
+                brOne.User = uow.UserRepository.GetOrCreateUser("tempuser@gmail.com");
                 uow.BookingRequestRepository.Add(brOne);
 
                 using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -48,7 +49,7 @@ namespace KwasantTest.MockedDB
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var user = new UserDO();
-                var brOne = new BookingRequestDO();
+                var brOne = new FixtureData(uow).TestBookingRequest1();
                 brOne.Id = 1;
                 brOne.UserID = user.Id;
                 uow.BookingRequestRepository.Add(brOne);
@@ -65,10 +66,8 @@ namespace KwasantTest.MockedDB
         {
             //Force a seed -- helps with debug
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                uow.SaveChanges();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var negDO = new NegotiationDO();
+                var negDO = new FixtureData(uow).TestNegotiation1();
                 negDO.Id = 1;
                 uow.NegotiationsRepository.Add(negDO);
 
@@ -107,6 +106,21 @@ namespace KwasantTest.MockedDB
             }
             if (exceptionMessages.Any())
                 Assert.Fail(String.Join(Environment.NewLine, exceptionMessages));
+        }
+
+        [Test, ExpectedException(ExpectedMessage = "Foreign row does not exist.\nValue '0' on 'NegotiationDO.NegotiationState' pointing to '_NegotiationStateTemplate.Id'")]
+        public void TestForeignKeyEnforced()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var br = new FixtureData(uow).TestBookingRequest1();
+                var negDO = new NegotiationDO {Id = 1};
+                negDO.NegotiationState = 0;
+                negDO.BookingRequest = br;
+                uow.NegotiationsRepository.Add(negDO);
+
+                uow.SaveChanges();
+            }
         }
     }
 }

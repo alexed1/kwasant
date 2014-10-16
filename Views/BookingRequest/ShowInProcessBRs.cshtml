@@ -1,0 +1,57 @@
+﻿<h2>Show In-Process Booking Request</h2>
+<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+
+<table id="tblinprocessbookingrequest" class="data-table table-with-action">
+    <thead>
+        <tr>
+            <th width="15%">Date Received</th>
+            <th>From</th>
+            <th>Subject</th>
+            <th>Body</th>
+            <th class="action-cell">Action</th>
+        </tr>
+    </thead>
+</table>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //Ajax call to get all check out  booking request from server.
+        $.getJSON("/BookingRequest/GetInProcessBRS", {}, showRequests);
+       
+        function showRequests(response) {
+            var table = $('#tblinprocessbookingrequest').DataTable({
+                data: JSON.parse(response),
+                order: [2, 'desc'],
+                columns: [
+                    { data: 'date_received' },
+                    { data: 'from_address' },
+                    { data: 'subject' },
+                    { data: 'body' },
+                    {
+                        data: null,
+                        defaultContent: "<button value='Release' class='custom-btn glyphicon glyphicon-folder-open'>Release</button>"
+                    }
+                ],
+            });
+
+            //This function will bind a click function on every button in table "tblinprocessbookingrequest"
+            $('#tblinprocessbookingrequest tbody').on('click', 'button', function () {
+                var data = table.row($(this).parents('tr')).data();
+                var parentcontrol = this;
+                //checking clicked button value for appropriate action this will be "Release" 
+                switch ($(this).val()) {
+                    case "Release":
+                        $.post("/BookingRequest/ReleaseBooker?bookingRequestId=" + data.id, function (response) {
+                                $(parentcontrol).parents('tr').remove();
+                        });
+                        break;
+                    default:
+                        alert("Not a valid action!");
+                }
+            });
+        }
+    });
+
+   
+</script>

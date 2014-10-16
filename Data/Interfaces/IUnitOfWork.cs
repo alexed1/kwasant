@@ -36,6 +36,9 @@ namespace Data.Interfaces
         QuestionResponseRepository QuestionResponseRepository { get; }
         AuthorizationTokenRepository AuthorizationTokenRepository { get; }
         LogRepository LogRepository { get; }
+        ProfileNodeRepository ProfileNodeRepository { get; }
+        ProfileItemRepository ProfileItemRepository { get; }
+        ProfileRepository ProfileRepository { get; }
 
         /// <summary>
         /// Call this to commit the unit of work

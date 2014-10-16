@@ -1048,31 +1048,34 @@ input[type="checkbox"].input-validation-error {
 
 /*styles for email-info-section iframe*/
 
-body.email-info-section {
+/*Removing "body" from all below css class as we are converting this to partial view and "body" tag no longer available*/
+
+.email-info-section {
 	background: #f8f8f8!important;	
 	border: 1px solid #e7e7e7;	
 	padding: 15px;
 	overflow-y: auto;	
+    text-align: left;
 }
 
-body.email-info-section .email-subject h4 {
+.email-info-section .email-subject h4 {
 	margin: 0;
 	color: #0e0e0e;
 	font-weight: bold;		
 	font-size: 16px;	
 }
 
-body.email-info-section .email-subject {
+.email-info-section .email-subject {
 	padding-bottom: 15px;	
 }
 
-body.email-info-section .email-details {
+.email-info-section .email-details {
 	font-size: 14px;
 	padding-bottom: 15px;
 	margin-bottom: 15px;	
 }
 
-body.email-info-section .email-content {
+.email-info-section .email-content {
 	font-size: 14px;
 }
 

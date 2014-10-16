@@ -33,9 +33,8 @@ namespace KwasantWeb.Controllers
                 UserDO userDO;
                 if (!String.IsNullOrEmpty(emailAddress))
                 {
-                    var user = new User();
                     var emailAddressDO = uow.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress);
-                    userDO = user.GetOrCreateFromBR(uow, emailAddressDO);
+                    userDO = uow.UserRepository.GetOrCreateUser(emailAddressDO);
                     
                     //Save incase we created..
                     uow.SaveChanges();

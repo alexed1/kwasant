@@ -29,7 +29,7 @@ namespace Data.Repositories
         {
             if (email == null)
                 throw new ArgumentNullException("email");
-            return ConfigureEnvelope(email, EnvelopeDO.GmailHander);
+            return ConfigureEnvelope(email, EnvelopeDO.SendGridHander);
         }
 
         public EnvelopeDO ConfigureTemplatedEmail(IEmail email, string templateName, IDictionary<string, string> mergeData)
@@ -56,8 +56,7 @@ namespace Data.Repositories
                     var firstTo = email.To.SingleOrDefault();
                     if (firstTo != null)
                     {
-                        var userDO =  UnitOfWork.UserRepository.GetByEmailAddress(firstTo) ??
-                                      UnitOfWork.UserRepository.CreateFromEmail(firstTo);
+                        var userDO =  UnitOfWork.UserRepository.GetOrCreateUser(firstTo);
 
                         var tokenURL = UnitOfWork.AuthorizationTokenRepository.GetAuthorizationTokenURL(Server.ServerUrl, userDO);
                         mergeData["kwasantBaseURL"] = tokenURL;
@@ -69,7 +68,8 @@ namespace Data.Repositories
                 }
             }
             email.EmailStatus = EmailState.Queued;
-            ((IEnvelope) envelope).Email = email;
+            ((IEnvelope)envelope).Email = email;
+            envelope.EmailID = email.Id;
             
             UnitOfWork.EnvelopeRepository.Add(envelope);
             return envelope;

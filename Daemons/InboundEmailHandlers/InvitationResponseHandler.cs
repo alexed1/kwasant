@@ -24,7 +24,7 @@ namespace Daemons.InboundEmailHandlers
 
                 uow.SaveChanges();
 
-                AlertManager.EmailReceived(curInvitationResponse.Id, uow.UserRepository.GetByEmailAddress(curInvitationResponse.From).Id);
+                AlertManager.EmailReceived(curInvitationResponse.Id, uow.UserRepository.GetOrCreateUser(curInvitationResponse.From).Id);
             }
             return true;
         }

@@ -7,7 +7,7 @@ using Daemons;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using KwasantCore.Managers.APIManager.Packagers;
+using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
@@ -22,7 +22,7 @@ namespace KwasantTest.Daemons
     {
         [Test]
         [Category("OutboundEmail")]
-        public void CanSendGmailEnvelope()
+        public void CanSendSendGridEnvelope()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -45,11 +45,11 @@ namespace KwasantTest.Daemons
                 var mockEmailer = new Mock<IEmailPackager>();
                 mockEmailer.Setup(a => a.Send(envelope)).Verifiable();
                 ObjectFactory.Configure(
-                    a => a.For<IEmailPackager>().Use(mockEmailer.Object).Named(EnvelopeDO.GmailHander));
+                    a => a.For<IEmailPackager>().Use(mockEmailer.Object).Named(EnvelopeDO.SendGridHander));
                 DaemonTests.RunDaemonOnce(outboundEmailDaemon);
 
                 // VERIFY
-                mockEmailer.Verify(a => a.Send(envelope), "OutboundEmail daemon didn't dispatch email via Gmail.");
+                mockEmailer.Verify(a => a.Send(envelope), "OutboundEmail daemon didn't dispatch email via SendGrid.");
             }
         }
 
@@ -108,10 +108,10 @@ namespace KwasantTest.Daemons
                 mockMandrillEmailer.Setup(a => a.Send(envelope)).Throws<ApplicationException>(); // shouldn't be invoked
                 ObjectFactory.Configure(
                     a => a.For<IEmailPackager>().Use(mockMandrillEmailer.Object).Named(EnvelopeDO.MandrillHander));
-                var mockGmailEmailer = new Mock<IEmailPackager>();
-                mockGmailEmailer.Setup(a => a.Send(envelope)).Throws<ApplicationException>(); // shouldn't be invoked
+                var mockSendGridEmailer = new Mock<IEmailPackager>();
+                mockSendGridEmailer.Setup(a => a.Send(envelope)).Throws<ApplicationException>(); // shouldn't be invoked
                 ObjectFactory.Configure(
-                    a => a.For<IEmailPackager>().Use(mockGmailEmailer.Object).Named(EnvelopeDO.GmailHander));
+                    a => a.For<IEmailPackager>().Use(mockSendGridEmailer.Object).Named(EnvelopeDO.SendGridHander));
 
                 // VERIFY
                 Assert.Throws<UnknownEmailPackagerException>(
@@ -135,8 +135,7 @@ namespace KwasantTest.Daemons
                         EmailParticipantType = EmailParticipantType.To
                     }
                 };
-                var role = new Role();
-                role.Add(uow, fixture.TestRole());
+                uow.AspNetRolesRepository.Add(fixture.TestRole());
                 var u = new UserDO();
                 var user = new User();
                 UserDO currUserDO = new UserDO();

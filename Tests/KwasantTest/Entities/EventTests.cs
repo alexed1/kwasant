@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
@@ -154,12 +155,12 @@ namespace KwasantTest.Entities
                 curOriginalEventDO.CreatedByID = null;
 
                 //EXECUTE
-                Assert.Throws<ValidationException>(() =>
+                Assert.Throws<Exception>(() =>
                 {
                     uow.EventRepository.Add(curOriginalEventDO);
                     uow.SaveChanges();
 
-                });
+                }, "Property 'CreatedByID' on 'EventDO' is marked as required, but is being saved with a null value.");
             }
         }
     }

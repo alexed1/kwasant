@@ -16,11 +16,9 @@ namespace Data.Interfaces
         DateTimeOffset DateReceived { get; set; }
 
         IEnumerable<EmailAddressDO> To { get; }
-        //IEnumerable<EmailAddress> BCC { get; set; }
-        //IEnumerable<EmailAddress> CC { get; set; }
-        //IEnumerable<Attachment> Attachments { get; set; }
+       
         List<EventDO> Events { get; set; }
         DateTimeOffset DateCreated { get; set; }
-        int EmailStatus { get; set; }
+        int? EmailStatus { get; set; }
     }
 }

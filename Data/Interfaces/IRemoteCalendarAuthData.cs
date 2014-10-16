@@ -4,7 +4,7 @@ namespace Data.Interfaces
     {
         int Id { get; set; }
         
-        int ProviderID { get; set; }
+        int? ProviderID { get; set; }
         IRemoteCalendarProvider Provider { get; set; }
 
         string UserID { get; set; }

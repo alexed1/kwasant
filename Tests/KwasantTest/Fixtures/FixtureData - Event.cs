@@ -38,6 +38,7 @@ namespace KwasantTest.Fixtures
                 CreatedByID = "1",
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddHours(1),
+                Calendar = TestCalendar1(),
                 Description = "Description of  Event",
                 Priority = 1,
                 Sequence = 1,
@@ -51,6 +52,7 @@ namespace KwasantTest.Fixtures
             {
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddHours(1),
+                Calendar = TestCalendar1(),
                 CreatedByID = "1",
                 Priority = 1,
                 Sequence = 1,
@@ -79,6 +81,7 @@ namespace KwasantTest.Fixtures
             {
                 StartDate = DateTime.Today,
                 EndDate = DateTime.Today,
+                Calendar = TestCalendar1(),
                 Priority = 1,
                 Sequence = 1,
                 IsAllDay = false,
@@ -106,6 +109,7 @@ namespace KwasantTest.Fixtures
             {
                 CreatedByID = "1",
                 EventStatus = EventState.Booking,
+                Calendar = TestCalendar1(),
                 Description = "This is my test invitation",
                 Summary = @"My test invitation",
                 Location = @"Some place!",

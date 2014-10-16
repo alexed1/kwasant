@@ -8,11 +8,7 @@ namespace Data.Entities
     {
         [Key]
         public int Id { get; set; }
-
-        [ForeignKey("User")]
-        public String UserID { get; set; }
-        public UserDO User { get; set; }
-
+        
         public string RequestingURL { get; set; }
 
         public string DeviceFamily { get; set; }
@@ -28,5 +24,9 @@ namespace Data.Entities
         public String AgentMajor { get; set; }
         public String AgentMinor { get; set; }
         public String AgentPatch { get; set; }
+
+        [ForeignKey("User")]
+        public String UserID { get; set; }
+        public UserDO User { get; set; }
     }
 }

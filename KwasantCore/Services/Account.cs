@@ -5,7 +5,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using KwasantCore.Security;
+using Data.States;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Utilities;
@@ -49,13 +49,13 @@ namespace KwasantCore.Services
                     }
                     else
                     {
-                        newUserDO = Register(uow, email, email, email, password, "Customer");
+                        newUserDO = Register(uow, email, email, email, password, Roles.Customer);
                         curRegStatus = RegistrationStatus.Successful;
                     }
                 }
                 else
                 {
-                    newUserDO = Register(uow, email, email, email, password, "Customer");
+                    newUserDO = Register(uow, email, email, email, password, Roles.Customer);
                     curRegStatus = RegistrationStatus.Successful;
                 }
 
@@ -71,17 +71,11 @@ namespace KwasantCore.Services
             }
         }
 
-        private UserDO ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, string role)
-        {
-            var user = new User();
-            return Register(uow, email, email, email, password, role);
-        }
-
         public async Task<LoginStatus> ProcessLoginRequest(string username, string password, bool isPersistent)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                LoginStatus curLoginStatus = LoginStatus.Pending;
+                LoginStatus curLoginStatus;
 
                 UserDO userDO = uow.UserRepository.FindOne(x => x.UserName == username);
                 if (userDO != null)
@@ -92,7 +86,7 @@ namespace KwasantCore.Services
                     }
                     else
                     {
-                        curLoginStatus = await Login(uow, username, password, isPersistent);
+                        curLoginStatus = Login(uow, userDO, password, isPersistent);
                     }
                 }
                 else
@@ -104,47 +98,24 @@ namespace KwasantCore.Services
             }
         }
 
-        public UserDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string role)
+        public UserDO Register(IUnitOfWork uow, string userName, string firstName, string lastName, string password, string roleID)
         {
-            UserDO userDO = new UserDO();
-            try
-            {
-            EmailAddressDO curEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(userName);
-
-                userDO = uow.UserRepository.CreateFromEmail(
-                emailAddressDO: curEmailAddress,
-                userName: userName,
-                firstName: firstName,
-                lastName: lastName);
-
-            UserManager<UserDO> userManager = KwasantCore.Services.User.GetUserManager(uow); ;
-            IdentityResult result = userManager.Create(userDO, password);
-            if (result.Succeeded)
-            {
-                userManager.AddToRole(userDO.Id, role);
-            }
-            else
-            {
-                throw new ApplicationException("There was a problem trying to register you. Please try again.");
-            }
-            }
-            catch (Exception ex)
-            {
-                LogRegistrationError(ex);
-            }
+            var userDO = uow.UserRepository.GetOrCreateUser(userName);
+            uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
             return userDO;
         }
 
-        public async Task<LoginStatus> Login(IUnitOfWork uow, string username, string password, bool isPersistent)
+        public LoginStatus Login(IUnitOfWork uow, UserDO userDO, string password, bool isPersistent)
         {
             LoginStatus curLogingStatus = LoginStatus.Successful;
-            UserManager<UserDO> curUserManager = User.GetUserManager(uow); ;
-            UserDO curUser = await curUserManager.FindAsync(username, password);
-            if (curUser != null)
+
+            var passwordHasher = new PasswordHasher();
+            if (passwordHasher.VerifyHashedPassword(userDO.PasswordHash, password) == PasswordVerificationResult.Success)
             {
                 var securityServices = ObjectFactory.GetInstance<ISecurityServices>();
                 securityServices.Logout();
-                securityServices.Login(uow, curUser);
+                securityServices.Login(uow, userDO);
             }
             else
             {
@@ -177,24 +148,5 @@ namespace KwasantCore.Services
 
             Logger.GetLogger().Info(logData);
         }
-
-
-        //this doesn't seem to get called. let's watch for a while and then delete it
-        //public void UpdateUser(UserDO userDO, IdentityUserRole identityUserRole)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        EmailAddressDO currEmailAddressDO = uow.EmailAddressRepository.GetByKey(userDO.EmailAddressID);
-        //        currEmailAddressDO.Address = userDO.EmailAddress.Address;
-
-        //        //Change user's role in DB using Identity Framework if only role is changed on the fone-end.
-        //        if (identityUserRole != null)
-        //        {
-        //            User user = new User();
-        //            user.ChangeUserRole(uow, identityUserRole);
-        //        }
-        //        uow.SaveChanges();
-        //    }
-        //}
     }
 }

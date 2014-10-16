@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.States;
 using Data.States.Templates;
 
 namespace Data.Entities
@@ -13,12 +14,22 @@ namespace Data.Entities
         {
             Calendars = new List<CalendarDO>();
             Negotiations = new List<NegotiationDO>();
+            State = BookingRequestState.Unstarted;
         }
 
         [Required, ForeignKey("User")]
         public string UserID { get; set; }        
         public virtual UserDO User { get; set; }
 
+        [Required, ForeignKey("BookingRequestStateTemplate")]
+        public int? State { get; set; }
+        public virtual _BookingRequestStateTemplate BookingRequestStateTemplate { get; set; }
+
+        [ForeignKey("Booker")]
+        public string BookerID { get; set; }
+        public virtual UserDO Booker { get; set; }
+
+        //Do not add InverseProperty - The relationship is handled in KwasantDbContext
         public virtual List<InstructionDO> Instructions { get; set; }
 
         [InverseProperty("BookingRequest")]
@@ -26,12 +37,6 @@ namespace Data.Entities
 
         [InverseProperty("BookingRequests")]
         public virtual List<CalendarDO> Calendars { get; set; }
-
-        [Required, ForeignKey("BookingRequestStateTemplate")]
-        public int State { get; set; }
-        public virtual _BookingRequestStateTemplate BookingRequestStateTemplate { get; set; }
-
-        public string BookerID { get; set; }
         
         public void AfterCreate()
         {

@@ -19,7 +19,7 @@ using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Booker")]
     public class EventController : KController
     {
         public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss\z";
@@ -246,7 +246,7 @@ namespace KwasantWeb.Controllers
                 foreach (var attendeeDO in updatedEventInfo.Attendees)
                 {
                     var user = new User();
-                    var userDO = user.GetOrCreateFromBR(uow, attendeeDO.EmailAddress);
+                    var userDO = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress);
                     if (user.GetMode(userDO) == CommunicationMode.Delegate)
                     {
                         ObjectFactory.GetInstance<ITracker>().Track(userDO, "User", "InvitedAsPreCustomerAttendee",

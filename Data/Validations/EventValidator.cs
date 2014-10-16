@@ -16,11 +16,6 @@ namespace Data.Validations
                 .NotEmpty().WithMessage("End date is required")
                 .GreaterThanOrEqualTo(eventDO => eventDO.StartDate)
                 .WithMessage("End date must after Start date");
-
-            RuleFor(eventDO => eventDO.CreatedByID)
-                .NotNull()
-                .WithMessage("CreatedByID is Required");
-
         }
 
         //=================================================================

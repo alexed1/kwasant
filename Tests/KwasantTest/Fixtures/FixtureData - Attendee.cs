@@ -5,14 +5,8 @@ namespace KwasantTest.Fixtures
 {
     partial class FixtureData
     {
-
-
-
-
-
         public AttendeeDO TestAttendee1()
         {
-
             return new AttendeeDO()
             {
                 EmailAddress = TestEmailAddress1(),

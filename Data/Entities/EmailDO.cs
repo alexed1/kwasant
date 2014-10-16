@@ -11,6 +11,15 @@ namespace Data.Entities
 {
     public class EmailDO : IEmail
     {
+        public EmailDO()
+        {
+            Recipients = new List<RecipientDO>();
+            Attachments = new List<AttachmentDO>();
+            Events = new List<EventDO>();
+            DateCreated = DateTimeOffset.UtcNow;
+            DateReceived = DateTimeOffset.UtcNow;
+        }
+
         [Key]
         public int Id { get; set; }
         
@@ -20,12 +29,23 @@ namespace Data.Entities
         public DateTimeOffset DateReceived { get; set; }
         public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
-        public int ConversationId { get; set; }
+
+        [ForeignKey("Conversation")]
+        public int? ConversationId { get; set; }
+        public BookingRequestDO Conversation { get; set; }
 
         [ForeignKey("EmailStatusTemplate")]
-        public int EmailStatus { get; set; }
+        public int? EmailStatus { get; set; }
         public _EmailStatusTemplate EmailStatusTemplate { get; set; }
+
+        [ForeignKey("From"), Required]
+        public int? FromID { get; set; }
+        public virtual EmailAddressDO From { get; set; }
         
+        [ForeignKey("ReplyTo")]
+        public int? ReplyToID { get; set; }
+        public virtual EmailAddressDO ReplyTo { get; set; }
+
         [InverseProperty("Email")]
         public virtual List<RecipientDO> Recipients { get; set; }
 
@@ -34,10 +54,6 @@ namespace Data.Entities
 
         [InverseProperty("Emails")]
         public virtual List<EventDO> Events { get; set; }
-
-        [ForeignKey("From"), Required]
-        public int FromID { get; set; }
-        public virtual EmailAddressDO From { get; set; }
 
         public IEnumerable<EmailAddressDO> To
         {
@@ -61,19 +77,6 @@ namespace Data.Entities
             {
                 return Recipients.Where(eea => eea.EmailParticipantType == EmailParticipantType.Cc).Select(eea => eea.EmailAddress).ToList();
             }
-        }
-
-        [ForeignKey("ReplyTo")]
-        public int? ReplyToID { get; set; }
-        public virtual EmailAddressDO ReplyTo { get; set; }
-
-        public EmailDO()
-        {
-            Recipients = new List<RecipientDO>();
-            Attachments = new List<AttachmentDO>();
-            Events = new List<EventDO>();
-            DateCreated = DateTimeOffset.UtcNow;
-            DateReceived = DateTimeOffset.UtcNow;
         }
 
         public void AddEmailRecipient(int type, EmailAddressDO emailAddress)

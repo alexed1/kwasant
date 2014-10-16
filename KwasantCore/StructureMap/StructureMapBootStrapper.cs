@@ -1,20 +1,23 @@
+using System.Net;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Repositories;
 using KwasantCore.Interfaces;
 using KwasantCore.ExternalServices;
 using KwasantCore.ExternalServices.REST;
-using KwasantCore.Managers.APIManager.Packagers;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
 using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
+using KwasantCore.Managers.APIManagers.Packagers.SendGrid;
 using KwasantCore.Managers.APIManagers.Packagers.Twilio;
 using KwasantCore.Security;
 using KwasantCore.Services;
 using Moq;
+using SendGrid;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using AutoMapper;
@@ -61,7 +64,7 @@ namespace KwasantCore.StructureMap
                 For<IConfigRepository>().Use<ConfigRepository>();
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
-                For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
+                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.SendGridHander);
                 For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);
                 For<IBookingRequest>().Use<BookingRequest>();
                 For<IAttendee>().Use<Attendee>();
@@ -72,11 +75,9 @@ namespace KwasantCore.StructureMap
 
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
-                For<IKwasantRoleStore>().Use(new KwasantRoleStore());
-                For<IKwasantUserStore>().Use(new KwasantUserStore());
-
+                For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
-                For<ISmtpClient>().Use<SmtpClientWrapper>();
+                For<ITransport>().Use<Web>(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
                 For<IRestfullCall>().Use<RestfulCallWrapper>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
             }
@@ -89,16 +90,14 @@ namespace KwasantCore.StructureMap
                 For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
-                For<IEmailPackager>().Use<GmailPackager>().Singleton().Named(EnvelopeDO.GmailHander);
+                For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.SendGridHander);
                 For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);
                 For<IBookingRequest>().Use<BookingRequest>();
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<ITracker>().Use<SegmentIO>();
 
-                For<IKwasantRoleStore>().Use(new MockedRoleStore());
-                For<IKwasantUserStore>().Use(new MockedUserStore());
-
+                For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
             }

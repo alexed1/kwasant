@@ -20,16 +20,15 @@ namespace Daemons.InboundEmailHandlers
                 EmailRepository emailRepo = uow.EmailRepository;
                 EmailDO email = Email.ConvertMailMessageToEmail(emailRepo, message);
 
-                var curEmail = (from t in uow.BookingRequestRepository.GetAll()
+                var existingBookingRequest = (from t in uow.BookingRequestRepository.GetAll()
                             where t.Subject == email.Subject
                             && (t.Recipients.Any(e => e.EmailID == email.From.Id) || t.FromID == email.From.Id)
                             select t).FirstOrDefault();
 
-                if (curEmail != null)
+                if (existingBookingRequest != null)
                 {
-                    email.ConversationId = curEmail.Id;
-                    var user = new User();
-                    UserDO curUser = user.GetOrCreateFromBR(uow, email.From);
+                    email.ConversationId = existingBookingRequest.Id;
+                    uow.UserRepository.GetOrCreateUser(email.From);
                     uow.SaveChanges();
                 }
                 else

@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Mime;
-using Data.Authentication;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Data.Validations;
 using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 using RazorEngine;
-using Segment;
 using Utilities;
 using Encoding = System.Text.Encoding;
 
@@ -68,8 +65,7 @@ namespace KwasantCore.Services
             var replyToAddress = emailAddressRepository.GetOrCreateEmailAddress(replyToEmail);
             curInvitation.ReplyTo = replyToAddress;
 
-            var user = new User();
-            var userID = user.GetOrCreateFromBR(uow, curAttendee.EmailAddress).Id;
+            var userID = uow.UserRepository.GetOrCreateUser(curAttendee.EmailAddress).Id;
 
             if (curType == InvitationType.ChangeNotification)
             {

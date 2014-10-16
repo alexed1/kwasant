@@ -18,7 +18,7 @@ using StructureMap;
 namespace KwasantWeb.Controllers
 {
     [HandleError]
-    [KwasantAuthorize(Roles = "Admin")]
+    [KwasantAuthorize(Roles = "Booker")]
     public class CalendarController : Controller
     {
 
@@ -107,7 +107,7 @@ namespace KwasantWeb.Controllers
                     calendarsViaNegotiationRequest = calendarDO.Negotiation.Calendars;
                     var user = new User();
                     var recipientAddresses = calendarDO.Negotiation.Attendees.Select(r => r.EmailAddress) //Get email addresses for each recipient
-                        .Select(a => user.Get(uow, a)).Where(u => u != null).SelectMany(u => u.Calendars).ToList(); //Grab the user from the email and find their calendars
+                        .Select(a => uow.UserRepository.GetOrCreateUser(a)).Where(u => u != null).SelectMany(u => u.Calendars).ToList(); //Grab the user from the email and find their calendars
                     
                     //Grab the user from the email and find their calendars
                     calendarsViaNegotiationRequest = calendarsViaNegotiationRequest.Union(recipientAddresses);

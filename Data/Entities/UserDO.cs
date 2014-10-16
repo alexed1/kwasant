@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Data.Infrastructure;
-using Data.Repositories;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 
@@ -13,33 +12,36 @@ namespace Data.Entities
 {
     public class UserDO : IdentityUser, IUser, ISaveHook, ICreateHook
     {
-        public UserDO()
-        {
-            BookingRequests = new List<BookingRequestDO>();
-            Calendars = new List<CalendarDO>();
-            RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
-        }
-
-        [InverseProperty("User")]
-        public virtual IList<BookingRequestDO> BookingRequests { get; set; }
-
-        public String FirstName { get; set; }
-        public String LastName { get; set; }
-        public Boolean TestAccount { get; set; }
-
-        [ForeignKey("EmailAddress")]
-        public int EmailAddressID { get; set; }
-
-        public virtual EmailAddressDO EmailAddress { get; set; }
-
         [NotMapped]
         IEmailAddressDO IUser.EmailAddress
         {
             get { return EmailAddress; }
         }
 
+        public UserDO()
+        {
+            BookingRequests = new List<BookingRequestDO>();
+            Calendars = new List<CalendarDO>();
+            RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
+            Profiles = new List<ProfileDO>();
+        }
+
+        public String FirstName { get; set; }
+        public String LastName { get; set; }
+        public Boolean TestAccount { get; set; }
+
+        [ForeignKey("EmailAddress")]
+        public int? EmailAddressID { get; set; }
+        public virtual EmailAddressDO EmailAddress { get; set; }
+        
+        [InverseProperty("User")]
+        public virtual IList<BookingRequestDO> BookingRequests { get; set; }
+
         [InverseProperty("Owner")]
         public virtual IList<CalendarDO> Calendars { get; set; }
+
+        [InverseProperty("User")]
+        public virtual IList<ProfileDO> Profiles { get; set; }
 
         [InverseProperty("User")]
         public virtual IList<RemoteCalendarAuthDataDO> RemoteCalendarAuthData { get; set; }
