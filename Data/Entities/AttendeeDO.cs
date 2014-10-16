@@ -15,7 +15,7 @@ namespace Data.Entities
         public String Name { get; set; }
 
         [ForeignKey("EmailAddress")]
-        public int EmailAddressID { get; set; }
+        public int? EmailAddressID { get; set; }
         public virtual EmailAddressDO EmailAddress { get; set; }
 
         [ForeignKey("Event")]
@@ -27,7 +27,7 @@ namespace Data.Entities
         public virtual NegotiationDO Negotiation { get; set; }
 
         [ForeignKey("ParticipationStatusTemplate"), DefaultValue(0)]
-        public int ParticipationStatus { get; set; }
+        public int? ParticipationStatus { get; set; }
         public _ParticipationStatusTemplate ParticipationStatusTemplate { get; set; }
     }
 }

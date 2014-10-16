@@ -19,6 +19,15 @@ namespace Data.Entities
         public string UserID { get; set; }        
         public virtual UserDO User { get; set; }
 
+        [Required, ForeignKey("BookingRequestStateTemplate")]
+        public int? State { get; set; }
+        public virtual _BookingRequestStateTemplate BookingRequestStateTemplate { get; set; }
+
+        [ForeignKey("Booker")]
+        public string BookerID { get; set; }
+        public virtual UserDO Booker { get; set; }
+
+        [InverseProperty("BookingRequest")]
         public virtual List<InstructionDO> Instructions { get; set; }
 
         [InverseProperty("BookingRequest")]
@@ -26,14 +35,6 @@ namespace Data.Entities
 
         [InverseProperty("BookingRequests")]
         public virtual List<CalendarDO> Calendars { get; set; }
-
-        [Required, ForeignKey("BookingRequestStateTemplate")]
-        public int State { get; set; }
-        public virtual _BookingRequestStateTemplate BookingRequestStateTemplate { get; set; }
-
-        [ForeignKey("Booker")]
-        public string BookerID { get; set; }
-        public virtual UserDO Booker { get; set; }
         
         public void AfterCreate()
         {

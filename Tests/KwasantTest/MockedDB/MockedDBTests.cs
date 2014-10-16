@@ -112,8 +112,7 @@ namespace KwasantTest.MockedDB
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var negDO = new NegotiationDO();
-                negDO.Id = 1;
+                var negDO = new NegotiationDO {Id = 1};
                 uow.NegotiationsRepository.Add(negDO);
 
                 uow.SaveChanges();
