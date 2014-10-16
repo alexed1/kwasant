@@ -36,7 +36,7 @@ namespace KwasantWeb.Controllers
                     throw new HttpException(404, "Negotiation not found.");
 
                 var answerIDs = negotiationDO.Questions.SelectMany(q => q.Answers.Select(a => a.Id)).ToList();
-                var userAnswerIDs = uow.QuestionResponseRepository.GetQuery().Where(qr => answerIDs.Contains(qr.AnswerID) && qr.UserID == userID).Select(a => a.AnswerID).ToList();
+                var userAnswerIDs = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.AnswerID.HasValue && answerIDs.Contains(qr.AnswerID.Value) && qr.UserID == userID).Select(a => a.AnswerID).ToList();
 
                 var originatingUser = negotiationDO.BookingRequest.User.FirstName;
                 if (!String.IsNullOrEmpty(negotiationDO.BookingRequest.User.LastName))
@@ -154,7 +154,7 @@ namespace KwasantWeb.Controllers
                     var currentSelectedAnswerIDs = question.Answers.Where(a => a.Selected).Select(a => a.Id).ToList();
 
                     //First, remove old answers
-                    foreach (var previousAnswer in previousAnswers.Where(previousAnswer => !currentSelectedAnswerIDs.Contains(previousAnswer.AnswerID)))
+                    foreach (var previousAnswer in previousAnswers.Where(previousAnswer => !previousAnswer.AnswerID.HasValue || !currentSelectedAnswerIDs.Contains(previousAnswer.AnswerID.Value)))
                     {
                         uow.QuestionResponseRepository.Remove(previousAnswer);
                     }
