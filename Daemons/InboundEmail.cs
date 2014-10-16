@@ -19,6 +19,7 @@ namespace Daemons
         private IImapClient _client;
         private readonly IConfigRepository _configRepository;
         private readonly IInboundEmailHandler[] _handlers;
+        private HashSet<String> _ignoreEmailsFrom;
 
         private readonly HashSet<String> _testSubjects = new HashSet<string>(); 
         public void RegisterTestEmailSubject(String subject)
@@ -34,7 +35,15 @@ namespace Daemons
         public InboundEmail()
         {
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-          
+
+            _ignoreEmailsFrom = new HashSet<string>();
+            var ignoreEmailsString = _configRepository.Get("IgnoreEmailsFrom");
+            if (!String.IsNullOrWhiteSpace(ignoreEmailsString))
+            {
+                foreach (var emailToIgnore in ignoreEmailsString.Split(','))
+                    _ignoreEmailsFrom.Add(emailToIgnore);
+            }
+
             _handlers = new IInboundEmailHandler[]
                             {
                                 new InvitationResponseHandler(),
@@ -195,6 +204,9 @@ namespace Daemons
                     return;
                 }
             }
+
+            if (_ignoreEmailsFrom.Contains(messageInfo.From.Address))
+                LogEvent("Email ignored from " + messageInfo.From.Address);
 
             try
             {
