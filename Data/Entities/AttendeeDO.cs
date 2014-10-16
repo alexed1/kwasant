@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Interfaces;
 using Data.States.Templates;
+using ParticipationStatus = Data.States.ParticipationStatus;
 
 namespace Data.Entities
 {
@@ -26,7 +27,7 @@ namespace Data.Entities
         public int? NegotiationID { get; set; }
         public virtual NegotiationDO Negotiation { get; set; }
 
-        [ForeignKey("ParticipationStatusTemplate"), DefaultValue(0)]
+        [ForeignKey("ParticipationStatusTemplate"), DefaultValue(States.ParticipationStatus.NeedsAction)]
         public int? ParticipationStatus { get; set; }
         public _ParticipationStatusTemplate ParticipationStatusTemplate { get; set; }
     }

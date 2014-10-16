@@ -16,7 +16,9 @@ namespace KwasantTest.Fixtures
                 NegotiationState = NegotiationState.InProcess,
                 Name = "Negotiation 1"
             };
-            curNegotiationDO.Questions.Add(TestQuestion1());
+            var question = TestQuestion1();
+            question.Negotiation = curNegotiationDO;
+            curNegotiationDO.Questions.Add(question);
             return curNegotiationDO;
         }
     }

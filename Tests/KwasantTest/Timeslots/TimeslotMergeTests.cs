@@ -26,18 +26,19 @@ namespace KwasantTest.Timeslots
         
         private void CreateOriginalTimeSlot(int calendarID, String startTime, String endTime, bool nextDay = false)
         {
-            var originalTimeSlot = new EventDO();
-            originalTimeSlot.CreatedByID = "NOONE";
-
-            originalTimeSlot.CalendarID = calendarID;
-            originalTimeSlot.StartDate = GetFormattedDate(startTime);
-            if (nextDay)
-                originalTimeSlot.StartDate = originalTimeSlot.StartDate.AddDays(1);
-            originalTimeSlot.EndDate = GetFormattedDate(endTime);
-            if (nextDay)
-                originalTimeSlot.EndDate = originalTimeSlot.EndDate.AddDays(1);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var originalTimeSlot = new EventDO();
+                originalTimeSlot.CreatedBy = uow.UserRepository.GetOrCreateUser("tempuser@gmail.com");
+
+                originalTimeSlot.CalendarID = calendarID;
+                originalTimeSlot.StartDate = GetFormattedDate(startTime);
+                if (nextDay)
+                    originalTimeSlot.StartDate = originalTimeSlot.StartDate.AddDays(1);
+                originalTimeSlot.EndDate = GetFormattedDate(endTime);
+                if (nextDay)
+                    originalTimeSlot.EndDate = originalTimeSlot.EndDate.AddDays(1);
+
                 uow.EventRepository.Add(originalTimeSlot);
                 var calendarDO = uow.CalendarRepository.GetQuery().FirstOrDefault(c => c.Id == calendarID);
 

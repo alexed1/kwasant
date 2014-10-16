@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.States;
 using Data.States.Templates;
 
 namespace Data.Entities
@@ -13,6 +14,7 @@ namespace Data.Entities
         {
             Calendars = new List<CalendarDO>();
             Negotiations = new List<NegotiationDO>();
+            State = BookingRequestState.Unstarted;
         }
 
         [Required, ForeignKey("User")]

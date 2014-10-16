@@ -321,6 +321,10 @@
     <Compile Include="Migrations\201410161004336_FixForeignKeys.Designer.cs">
       <DependentUpon>201410161004336_FixForeignKeys.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201410161105117_ParticipantStatusIsRequired.cs" />
+    <Compile Include="Migrations\201410161105117_ParticipantStatusIsRequired.Designer.cs">
+      <DependentUpon>201410161105117_ParticipantStatusIsRequired.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
@@ -1146,6 +1150,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410161004336_FixForeignKeys.resx">
       <DependentUpon>201410161004336_FixForeignKeys.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410161105117_ParticipantStatusIsRequired.resx">
+      <DependentUpon>201410161105117_ParticipantStatusIsRequired.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
