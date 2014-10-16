@@ -22,18 +22,18 @@ namespace Daemons.InboundEmailHandlers
                 EmailRepository emailRepo = uow.EmailRepository;
                 EmailDO email = Email.ConvertMailMessageToEmail(emailRepo, message);
 
-                var existingBR = (from t in uow.BookingRequestRepository.GetAll()
+                var existingBookingRequest = (from t in uow.BookingRequestRepository.GetAll()
                             where t.Subject == email.Subject
                             && (t.Recipients.Any(e => e.EmailID == email.From.Id) || t.FromID == email.From.Id)
                             select t).FirstOrDefault();
 
-                if (existingBR != null)
+                if (existingBookingRequest != null)
                 {
-                    email.ConversationId = existingBR.Id;
+                    email.ConversationId = existingBookingRequest.Id;
                     uow.UserRepository.GetOrCreateUser(email.From);
-                    existingBR.State = BookingRequestState.NeedsBooking;
+                    existingBookingRequest.State = BookingRequestState.NeedsBooking;
                     uow.SaveChanges();
-                    string loggerInfo = "Adding inbound email id = " + email.Id + ", subject = " + existingBR.Subject + " to existing conversation id = " + existingBR.Id + ", with BR subject = " + existingBR.Subject;
+                    string loggerInfo = "Adding inbound email id = " + email.Id + ", subject = " + existingBookingRequest.Subject + " to existing conversation id = " + existingBookingRequest.Id + ", with BR subject = " + existingBookingRequest.Subject;
                     Logger.GetLogger().Info(loggerInfo);
                 }
                 else

@@ -11,7 +11,7 @@ namespace Data.Entities
         public int Id { get; set; }
 
         [ForeignKey("CommunicationTypeTemplate")]
-        public int CommunicationType { get; set; }
+        public int? CommunicationType { get; set; }
         public _CommunicationTypeTemplate CommunicationTypeTemplate { get; set; }
         
         public String ToAddress { get; set; }

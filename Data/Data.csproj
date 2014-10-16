@@ -115,6 +115,7 @@
     <Compile Include="Entities\QuestionResponseDO.cs" />
     <Compile Include="Infrastructure\StructureMap\ISecurityServices.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedSecurityServices.cs" />
+    <Compile Include="Interfaces\IEmail.cs" />
     <Compile Include="Interfaces\IInvitationResponse.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.Designer.cs">
@@ -315,6 +316,18 @@
     <Compile Include="Migrations\201410101302405_UpdateBookingRequestBookerRelation.cs" />
     <Compile Include="Migrations\201410101302405_UpdateBookingRequestBookerRelation.Designer.cs">
       <DependentUpon>201410101302405_UpdateBookingRequestBookerRelation.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410161004336_FixForeignKeys.cs" />
+    <Compile Include="Migrations\201410161004336_FixForeignKeys.Designer.cs">
+      <DependentUpon>201410161004336_FixForeignKeys.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410161105117_ParticipantStatusIsRequired.cs" />
+    <Compile Include="Migrations\201410161105117_ParticipantStatusIsRequired.Designer.cs">
+      <DependentUpon>201410161105117_ParticipantStatusIsRequired.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410161158390_Sync.Rob.16.10.2014.cs" />
+    <Compile Include="Migrations\201410161158390_Sync.Rob.16.10.2014.Designer.cs">
+      <DependentUpon>201410161158390_Sync.Rob.16.10.2014.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
@@ -734,7 +747,6 @@
     <Compile Include="Interfaces\IAttachment.cs" />
     <Compile Include="Interfaces\IAttendee.cs" />
     <Compile Include="Interfaces\IBookingRequest.cs" />
-    <Compile Include="Interfaces\IEmail.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Entities\EventDO.cs" />
     <Compile Include="Interfaces\IUser.cs" />
@@ -1139,6 +1151,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410101302405_UpdateBookingRequestBookerRelation.resx">
       <DependentUpon>201410101302405_UpdateBookingRequestBookerRelation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410161004336_FixForeignKeys.resx">
+      <DependentUpon>201410161004336_FixForeignKeys.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410161105117_ParticipantStatusIsRequired.resx">
+      <DependentUpon>201410161105117_ParticipantStatusIsRequired.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410161158390_Sync.Rob.16.10.2014.resx">
+      <DependentUpon>201410161158390_Sync.Rob.16.10.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -13,7 +13,7 @@ namespace KwasantWeb.ViewModels
         }
 
         public int? Id { get; set; }
-        public int BookingRequestID { get; set; }
+        public int? BookingRequestID { get; set; }
         public string Name { get; set; }
         public List<NegotiationQuestionVM> Questions { get; set; }
         public List<String> Attendees { get; set; }
@@ -49,7 +49,7 @@ namespace KwasantWeb.ViewModels
         public DateTimeOffset? EventEndDate { get; set; }
         
         public bool Selected { get; set; }
-        public int AnswerState { get; set; }
+        public int? AnswerState { get; set; }
 
         public List<String> VotedByList { get; set; }
         public String VotedBy { get { return VotedByList != null ? String.Join(",", VotedByList.Where(a => !String.IsNullOrEmpty(a)).Select(a => "'" + a + "'")) : ""; } set {  } }

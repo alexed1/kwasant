@@ -61,42 +61,16 @@ namespace KwasantCore.Services
                 .ToList();
         }
 
-        //the Event View Model returns attendees as a string. we'll want to do something more sophisticated involving typeahead and ajax but for now this is it
-        //we want to convert that string into objects as quickly as possible once the data is on the server.
-/*
-        public void ManageEventAttendeeList(IUnitOfWork uow, EventDO eventDO, string curAttendees)
-        {
-            List<AttendeeDO> existingAttendeeSet = eventDO.Attendees ?? new List<AttendeeDO>();
-            if (String.IsNullOrEmpty(curAttendees))
-                curAttendees = String.Empty;
-
-            var attendees = curAttendees.Split(',').ToList();
-
-            List<AttendeeDO> newAttendees = ManageAttendeeList(uow, existingAttendeeSet, attendees);
-            foreach (var attendee in newAttendees)
-            {
-                attendee.Event = eventDO;
-                attendee.EventID = eventDO.Id;
-                uow.AttendeeRepository.Add(attendee);
-            }         
-        }
-*/
-
         public void ManageNegotiationAttendeeList(IUnitOfWork uow, NegotiationDO negotiationDO, List<String> attendees)
         {
             var existingAttendeeSet = negotiationDO.Attendees ?? new List<AttendeeDO>();
             
             List<AttendeeDO> newAttendees = ManageAttendeeList(uow, existingAttendeeSet, attendees);
 
-            foreach (var oldAttendee in existingAttendeeSet)
-                if (oldAttendee.ParticipationStatus == 0)
-                    oldAttendee.ParticipationStatus = ParticipationStatus.NeedsAction;
-
             foreach (var attendee in newAttendees)
             {
                 attendee.Negotiation = negotiationDO;
                 attendee.NegotiationID = negotiationDO.Id;
-                attendee.ParticipationStatus = ParticipationStatus.NeedsAction;
                 uow.AttendeeRepository.Add(attendee);
             }
         }
