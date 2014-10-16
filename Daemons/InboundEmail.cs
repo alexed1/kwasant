@@ -37,7 +37,7 @@ namespace Daemons
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
 
             _ignoreEmailsFrom = new HashSet<string>();
-            var ignoreEmailsString = _configRepository.Get("IgnoreEmailsFrom");
+            var ignoreEmailsString = _configRepository.Get("IgnoreEmailsFrom", String.Empty);
             if (!String.IsNullOrWhiteSpace(ignoreEmailsString))
             {
                 foreach (var emailToIgnore in ignoreEmailsString.Split(','))
