@@ -11,6 +11,7 @@ using System.Reflection;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
+using Segment.Model;
 using Utilities;
 
 namespace Data.Infrastructure.StructureMap
@@ -32,7 +33,7 @@ namespace Data.Infrastructure.StructureMap
         public MockedDBContext()
         {
             SetUnique<EmailAddressDO, String>(ea => ea.Address);
-            SetUnique<UserDO, int>(u => u.EmailAddressID);
+            SetUnique<UserDO, int?>(u => u.EmailAddressID);
 
             SetPrimaryKey<UserDO, String>(u => u.Id);
 
@@ -297,24 +298,21 @@ namespace Data.Infrastructure.StructureMap
                                     break;
                                 }
                             }
-                            if (foreignDO != null)
-                            {
-                                parentFKDOProperty.SetValue(value, foreignDO);
-                            }
+                            if (foreignDO == null)
+                                throw new Exception(String.Format("Foreign row does not exist.\nValue '{0}' on '{1}.{2}' pointing to '{3}.{4}'", fkID, grouping.Key.Name, parentFKIDProperty.Name, parentFKDOProperty.PropertyType.Name, foreignIDProperty.Name));
+                            
+                            parentFKDOProperty.SetValue(value, foreignDO);
                         }
 
-                        if (foreignDO != null)
+                        //Now we add ourselves to their collection (if they have one)
+                        foreach (var foreignCollectionProp in foreignCollectionProps)
                         {
-                            //Now we add ourselves to their collection (if they have one)
-                            foreach (var foreignCollectionProp in foreignCollectionProps)
-                            {
-                                var collectionToAddTo = foreignCollectionProp.GetValue(foreignDO) as IList;
-                                if (collectionToAddTo == null)
-                                    continue;
+                            var collectionToAddTo = foreignCollectionProp.GetValue(foreignDO) as IList;
+                            if (collectionToAddTo == null)
+                                continue;
 
-                                if (!collectionToAddTo.Contains(value))
-                                    collectionToAddTo.Add(value);
-                            }
+                            if (!collectionToAddTo.Contains(value))
+                                collectionToAddTo.Add(value);
                         }
                     }
                 }

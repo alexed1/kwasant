@@ -141,6 +141,7 @@
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="Fixtures\FixtureData - Attendee.cs" />
     <Compile Include="Fixtures\FixtureData - BookingRequest.cs" />
+    <Compile Include="Fixtures\FixtureData - Calendar.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />

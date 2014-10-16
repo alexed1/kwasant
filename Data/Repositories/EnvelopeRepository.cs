@@ -68,7 +68,8 @@ namespace Data.Repositories
                 }
             }
             email.EmailStatus = EmailState.Queued;
-            ((IEnvelope) envelope).Email = email;
+            ((IEnvelope)envelope).Email = email;
+            envelope.EmailID = email.Id;
             
             UnitOfWork.EnvelopeRepository.Add(envelope);
             return envelope;

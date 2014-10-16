@@ -159,9 +159,6 @@ namespace KwasantWeb.Controllers
                     negotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
 
                 negotiationDO.Name = value.Name;
-                if (negotiationDO.NegotiationState == 0)
-                    negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
-
                 negotiationDO.BookingRequestID = value.BookingRequestID;
 
                 _attendee.ManageNegotiationAttendeeList(uow, negotiationDO, value.Attendees);

@@ -66,7 +66,7 @@ namespace KwasantCore.Managers
                     calendarSyncManager = ObjectFactory.GetInstance<CalendarSyncManager>();
                 // should be run async-ly to prevent user interface blocking.
                 calendarSyncManager.SyncByLocalCalendarAsync(
-                    curCalendarGroup.Key,
+                    curCalendarGroup.Key.Value,
                     curCalendarGroup.Min(e => e.StartDate),
                     curCalendarGroup.Max(e => e.EndDate));
             }

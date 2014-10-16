@@ -12,6 +12,12 @@ namespace Data.Entities
 {
     public class UserDO : IdentityUser, IUser, ISaveHook, ICreateHook
     {
+        [NotMapped]
+        IEmailAddressDO IUser.EmailAddress
+        {
+            get { return EmailAddress; }
+        }
+
         public UserDO()
         {
             BookingRequests = new List<BookingRequestDO>();
@@ -20,23 +26,16 @@ namespace Data.Entities
             Profiles = new List<ProfileDO>();
         }
 
-        [InverseProperty("User")]
-        public virtual IList<BookingRequestDO> BookingRequests { get; set; }
-
         public String FirstName { get; set; }
         public String LastName { get; set; }
         public Boolean TestAccount { get; set; }
 
         [ForeignKey("EmailAddress")]
-        public int EmailAddressID { get; set; }
-
+        public int? EmailAddressID { get; set; }
         public virtual EmailAddressDO EmailAddress { get; set; }
-
-        [NotMapped]
-        IEmailAddressDO IUser.EmailAddress
-        {
-            get { return EmailAddress; }
-        }
+        
+        [InverseProperty("User")]
+        public virtual IList<BookingRequestDO> BookingRequests { get; set; }
 
         [InverseProperty("Owner")]
         public virtual IList<CalendarDO> Calendars { get; set; }
