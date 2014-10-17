@@ -525,7 +525,8 @@
                 AnswerState: settings.AnswerProposedStatus,
                 Selected: this.Answers.length == 0 ? true : false,
                 QuestionGUID: questionInitValues.QuestionGUID,
-                PromptText: 'Enter an alternative suggestion here...',
+                //PromptText: 'Enter an alternative suggestion here...',
+                PromptText: settings.DisplayMode == 'reply' ? "Enter an alternative suggestion here..." : "",
                 Text: ''
             }, initialValues);
 

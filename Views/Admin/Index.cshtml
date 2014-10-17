@@ -71,30 +71,34 @@
 <a href="/">Go to kwasant.com</a>
 <script type="text/javascript">
     $(document).ready(function () {
-
+        
         $('.navbar .dropdown').hover(function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
         }, function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
         });
         $.getJSON("/Report/ShowReport", { queryPeriod: "", type: "fiveRecentIncident" }, showIncident);
-    });
+ });
     // show 5 most Recent Incident on datatable
-    function showIncident(response) {
-        var table = $('#tblIncident').DataTable({
-            order: [0, 'desc'],
-            paging: false,
-            searching: false,
-            bLengthChange: false,
-            data: JSON.parse(response),
-            columns: [
-                { data: 'create_time' },
-                { data: 'primary_category' },
-                { data: 'secondary_category' },
-                { data: 'activity' },
-                { data: 'notes' }
-            ],
-        });
-    }
-
+     function showIncident(response) {
+         var table = $('#tblIncident').DataTable({
+             order: [0, 'desc'],
+             paging: false,
+             searching: false,
+             bLengthChange: false,
+             data: JSON.parse(response),
+             columns: [
+                 {
+                    data: function (data) {
+                        return convertToDateString(data.create_time);
+                    }
+                 },
+                 { data: 'primary_category' },
+                 { data: 'secondary_category' },
+                 { data: 'activity' },
+                 { data: 'notes' }
+             ],
+         });
+     }
+     
 </script>

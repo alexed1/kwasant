@@ -68,7 +68,7 @@
     <Compile Include="CalendarSync.cs" />
     <Compile Include="Daemon.cs" />
     <Compile Include="DiagnosticsTest.cs" />
-    <Compile Include="EventExposers\GmailPackagerEventHandler.cs" />
+    <Compile Include="EventExposers\SendGridPackagerEventHandler.cs" />
     <Compile Include="EventExposers\ExposedEvent.cs" />
     <Compile Include="EventExposers\MandrillPackagerEventHandler.cs" />
     <Compile Include="InboundEmail.cs" />

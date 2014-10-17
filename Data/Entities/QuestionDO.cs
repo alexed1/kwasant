@@ -8,20 +8,22 @@ namespace Data.Entities
 {
     public class QuestionDO : IQuestion
     {
-        #region Implementation of IQuestion
+        public QuestionDO()
+        {
+            Answers = new List<AnswerDO>();
+        }
 
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("QuestionStatusTemplate")]
-        public int QuestionStatus { get; set; }
-        public _QuestionStatusTemplate QuestionStatusTemplate { get; set; }
-
         [Required]
         public string Text { get; set; }
         public string AnswerType { get; set; }
-        
         public string Response { get; set; }
+
+        [ForeignKey("QuestionStatusTemplate")]
+        public int? QuestionStatus { get; set; }
+        public _QuestionStatusTemplate QuestionStatusTemplate { get; set; }
 
         [ForeignKey("Calendar")]
         public int? CalendarID { get; set; }
@@ -33,11 +35,5 @@ namespace Data.Entities
 
         [InverseProperty("Question")]
         public virtual List<AnswerDO> Answers { get; set; }
-        #endregion
-
-        public QuestionDO()
-        {
-            Answers = new List<AnswerDO>();
-        }
     }
 }

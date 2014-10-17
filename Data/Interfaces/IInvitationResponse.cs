@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Data.Interfaces
+﻿namespace Data.Interfaces
 {
     public interface IInvitationResponse : IEmail
     {
-        int AttendeeId { get; set; }
+        int? AttendeeId { get; set; }
     }
 }

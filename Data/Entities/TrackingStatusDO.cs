@@ -10,11 +10,11 @@ namespace Data.Entities
         public string ForeignTableName { get; set; }
 
         [ForeignKey("TrackingTypeTemplate")]
-        public int TrackingType { get; set; }
+        public int? TrackingType { get; set; }
         public _TrackingTypeTemplate TrackingTypeTemplate { get; set; }
 
         [ForeignKey("TrackingStatusTemplate")]
-        public int TrackingStatus { get; set; }
+        public int? TrackingStatus { get; set; }
         public _TrackingStatusTemplate TrackingStatusTemplate { get; set; }
     }
 }
