@@ -76,11 +76,20 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
 
                 mailMessage.Subject = email.Subject;
 
-                if (email.PlainText == null || email.HTMLText == null)
+                if ((email.PlainText == null || email.HTMLText == null) && string.IsNullOrEmpty(envelope.TemplateName))
+                {
                     throw new ArgumentException("Trying to send an email that doesn't have both an HTML and plain text body");
-
-                mailMessage.Html = email.HTMLText;
-                mailMessage.Text = email.PlainText;
+                }
+                else if (email.PlainText == null || email.HTMLText == null)
+                {
+                    mailMessage.Html = "<html></html>";
+                    mailMessage.Text = "";
+                }
+                else
+                {
+                    mailMessage.Html = email.HTMLText;
+                    mailMessage.Text = email.PlainText;
+                }
 
                 foreach (var attachment in email.Attachments)
                 {
@@ -89,7 +98,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
 
                 if (!string.IsNullOrEmpty(envelope.TemplateName))
                 {
-                    mailMessage.EnableTemplateEngine(envelope.TemplateName);
+                    mailMessage.EnableTemplateEngine(envelope.TemplateName);//Now TemplateName will be TemplateId on Sendgrid.
                     if (envelope.MergeData != null)
                     {
                         foreach (var pair in envelope.MergeData)
