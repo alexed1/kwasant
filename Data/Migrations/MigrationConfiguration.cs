@@ -328,10 +328,13 @@ namespace Data.Migrations
             if (userDO == null)
                 userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == curUserName);
 
+            var fromUser = uow.EmailAddressRepository.GetOrCreateEmailAddress(curUserName);
+
             var curBookingRequestDO = new BookingRequestDO
             {
                 DateCreated = DateTimeOffset.UtcNow,
-                From = uow.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
+                From = fromUser,
+                FromID = fromUser.Id,
                 Subject = subject,
                 HTMLText = htmlText,
                 EmailStatus = EmailState.Unprocessed,
