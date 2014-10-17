@@ -93,7 +93,7 @@ namespace KwasantCore.Managers
                 emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}",
                     negotiationDO.BookingRequest.User.FirstName,
                     (negotiationDO.BookingRequest.User.LastName ?? ""),
-                    negotiationDO.Name);
+                    "RE: " + negotiationDO.Name);
 
                 var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", negotiationDO.Id);
 
