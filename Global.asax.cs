@@ -102,8 +102,17 @@ namespace KwasantWeb
                                 };
             foreach (var provider in providers)
             {
-                if (uow.RemoteCalendarProviderRepository.GetByName(provider.Name) == null)
+                var existingRow = uow.RemoteCalendarProviderRepository.GetByName(provider.Name);
+                if (existingRow == null)
+                {
                     uow.RemoteCalendarProviderRepository.Add(provider);
+                }
+                else
+                {
+                    existingRow.AuthType = provider.AuthType;
+                    existingRow.AppCreds = provider.AppCreds;
+                    existingRow.CalDAVEndPoint = provider.CalDAVEndPoint;
+                }
             }
         }
 
