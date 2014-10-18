@@ -4,12 +4,16 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Data.Entities;
 using Data.Infrastructure;
+using Data.Interfaces;
+using Data.States;
 using KwasantCore.ModelBinders;
 using KwasantCore.Services;
 using KwasantCore.Managers;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
+using Newtonsoft.Json;
 using Segment;
 using StructureMap;
 using Utilities;
@@ -66,6 +70,41 @@ namespace KwasantWeb
 
 //            ModelBinders.Binders.Add(typeof(EventViewModel), new KwasantDateBinder());
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                CreateRemoteCalendarProviders(uow);
+                uow.SaveChanges();
+            }
+        }
+
+
+        private void CreateRemoteCalendarProviders(IUnitOfWork uow)
+        {
+            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+            var clientID = configRepository.Get("GoogleCalendarClientId");
+            var clientSecret = configRepository.Get("GoogleCalendarClientSecret");
+            var providers = new[]
+                                {
+                                    new RemoteCalendarProviderDO
+                                        {
+                                            Name = "Google",
+                                            AuthType = ServiceAuthorizationType.OAuth2,
+                                            AppCreds = JsonConvert.SerializeObject(
+                                                new
+                                                    {
+                                                        ClientId = clientID,
+                                                        ClientSecret = clientSecret,
+                                                        Scopes = "https://www.googleapis.com/auth/calendar"
+                                                    }),
+                                            CalDAVEndPoint = "https://apidata.googleusercontent.com/caldav/v2"
+                                        }
+                                };
+            foreach (var provider in providers)
+            {
+                if (uow.RemoteCalendarProviderRepository.GetByName(provider.Name) == null)
+                    uow.RemoteCalendarProviderRepository.Add(provider);
+            }
         }
 
         protected void Application_Error(Object sender, EventArgs e)
