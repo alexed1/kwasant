@@ -8,39 +8,32 @@ namespace Data.Entities
 {
     public class NegotiationDO
     {
-        #region Implementation of Negotiation
+        public NegotiationDO()
+        {
+            Questions = new List<QuestionDO>();
+            Attendees = new List<AttendeeDO>();
+        }
 
         [Key]
         public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime DateCreated { get; set; }
 
         [ForeignKey("NegotiationStateTemplate")]
-        public int NegotiationState { get; set; }
+        public int? NegotiationState { get; set; }
         public _NegotiationStateTemplate NegotiationStateTemplate { get; set; }
        
-        public string Name { get; set; }
+        [ForeignKey("BookingRequest"), Required]
+        public int? BookingRequestID { get; set; }
+        public virtual BookingRequestDO BookingRequest { get; set; }
 
         [InverseProperty("Negotiation")]
         public virtual IList<CalendarDO> Calendars { get; set; }
-
-        [ForeignKey("BookingRequest"), Required]
-        public int BookingRequestID { get; set; }
-        public virtual BookingRequestDO BookingRequest { get; set; }
 
         [InverseProperty("Negotiation")]
         public virtual IList<AttendeeDO> Attendees { get; set; }
 
         [InverseProperty("Negotiation")]
         public virtual IList<QuestionDO> Questions { get; set; }
-
-        public DateTime DateCreated { get; set; }
-
-        public NegotiationDO ()
-        {
-            Questions = new List<QuestionDO>();
-            Attendees = new List<AttendeeDO>();
-        }
-
-
-        #endregion
     }
 }

@@ -68,6 +68,8 @@ namespace Daemons
                         {
                             var serverCall = test.Key;
                             var method = _methodMap[serverCall];
+                            
+                            service.RunningTest = true;
                             method.Invoke(_controller, new object[] { test.Key, test.Value });
 
                             LogEvent("Running test '" + test.Key + "' on service '" + service.ServiceName + "'.");

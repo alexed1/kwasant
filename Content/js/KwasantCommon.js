@@ -108,3 +108,18 @@ function isValidEmail(term) {
         return true;
     return false;
 }
+
+
+function convertToDateString(dateFormat) {
+    var datevalue = new Date(dateFormat);
+    var timeSuffix = "AM"; var hour = 0;
+    if (datevalue.getHours() >= 12) {
+        hour = parseInt(datevalue.getHours()) - 12;
+        timeSuffix = "PM";
+    } else {
+        hour = datevalue.getHours();
+        timeSuffix = "AM";
+    }
+    dateFormat = datevalue.getMonth() + 1 + "-" + datevalue.getDate() + "-" + datevalue.getFullYear().toString().substring(2, 4) + " " + hour + ":" + datevalue.getMinutes() + " " + timeSuffix;
+    return dateFormat;
+}

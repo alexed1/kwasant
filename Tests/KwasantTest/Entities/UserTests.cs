@@ -17,6 +17,7 @@ namespace KwasantTest.Entities
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.EmailAddressRepository.Add(new EmailAddressDO() {Id = 1});
                 uow.UserRepository.Add(new UserDO() { EmailAddressID = 1});
                 uow.UserRepository.Add(new UserDO() { EmailAddressID = 1 });
                 uow.SaveChanges();

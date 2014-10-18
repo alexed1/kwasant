@@ -8,6 +8,7 @@ namespace Data.Entities
     {
         [Key]
         public int Id { get; set; }
+        public string Name { get; set; }
 
         [ForeignKey("Profile"), Required]
         public int? ProfileID { get; set; }
@@ -19,8 +20,6 @@ namespace Data.Entities
 
         [InverseProperty("ParentNode")]
         public virtual IList<ProfileNodeDO> ChildNodes { get; set; }
-
-        public string Name { get; set; }
 
         [InverseProperty("ProfileNode")]
         public virtual IList<ProfileItemDO> ProfileItems { get; set; } 

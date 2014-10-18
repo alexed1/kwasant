@@ -34,6 +34,7 @@ namespace KwasantTest.Controllers
                 var userDO = new UserDO();
                 userDO.EmailAddress = new EmailAddressDO("rjrudman@gmail.com");
 
+                br.From = userDO.EmailAddress;
                 br.UserID = userDO.Id;
 
                 uow.BookingRequestRepository.Add(br);

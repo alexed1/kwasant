@@ -799,6 +799,7 @@
     <Content Include="Views\Email\Show.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Profile\ProfilesForUser.cshtml" />
+    <Content Include="Views\BookingRequest\ShowAllBookingRequests.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

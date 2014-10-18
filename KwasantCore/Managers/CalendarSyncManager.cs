@@ -66,7 +66,7 @@ namespace KwasantCore.Managers
                     calendarSyncManager = ObjectFactory.GetInstance<CalendarSyncManager>();
                 // should be run async-ly to prevent user interface blocking.
                 calendarSyncManager.SyncByLocalCalendarAsync(
-                    curCalendarGroup.Key,
+                    curCalendarGroup.Key.Value,
                     curCalendarGroup.Min(e => e.StartDate),
                     curCalendarGroup.Max(e => e.EndDate));
             }
@@ -191,12 +191,13 @@ namespace KwasantCore.Managers
                 catch (Exception ex)
                 {
                     calendarLink.LastSynchronizationResult = string.Concat("Error: ", ex.Message);
-                    Logger.GetLogger().Error(
+                    Logger.GetLogger().Warn(
                         string.Format("Error occurred on calendar '{0}' synchronization with '{1} @ {2}'.",
                                       calendarLink.LocalCalendar.Name,
                                       calendarLink.RemoteCalendarName,
                                       calendarLink.Provider.Name),
                         ex);
+                    AlertManager.ErrorSyncingCalendar(calendarLink);
                 }
             }
         }

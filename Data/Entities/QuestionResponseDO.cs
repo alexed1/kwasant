@@ -10,7 +10,7 @@ namespace Data.Entities
         public int Id { get; set; }
 
         [ForeignKey("Answer")]
-        public int AnswerID { get; set; }
+        public int? AnswerID { get; set; }
         public virtual AnswerDO Answer { get; set; }
 
         [ForeignKey("User")]
