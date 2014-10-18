@@ -254,7 +254,9 @@ namespace KwasantCore.Services
 
         public EmailDO AddFromAddress(IUnitOfWork uow, EmailDO curEmail, string fromAddress)
         {
-            curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+            var from = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+            curEmail.From = from;
+            curEmail.FromID = from.Id;
             return curEmail;
         }
 

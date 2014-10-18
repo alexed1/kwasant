@@ -1,0 +1,72 @@
+﻿<h2>Booking Request</h2>
+<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+
+<table id="tblbookingrequest" class="data-table table-with-action">
+    <thead>
+        <tr>
+            <th width="15%">Date Received</th>
+            <th>From</th>
+            <th>Subject</th>
+            <th>Body</th>
+            <th class="action-cell">Action</th>
+        </tr>
+    </thead>
+</table>
+
+<script type="text/javascript">
+    //Document ready function, will run after page is ready and all elements are loaded.
+    $(document).ready(function () {
+        //Ajax call to get all unprocessed booking request from server.
+        $.getJSON("/BookingRequest/GetAllBookingRequests", {}, showRequests);
+
+        //Inserts retrieved booking request json into DataTable Widget
+        function showRequests(response) {
+            //This configuration supports two buttons (Invalid and Details) and several columns of data
+            var table = $('#tblbookingrequest').DataTable({
+                data: JSON.parse(response),
+                order: [2, 'desc'],
+                columns: [
+                    { data: 'date_received' },
+                    { data: 'from_address' },
+                    { data: 'subject' },
+                    { data: 'body' },
+                    {
+                        data: null,
+                        defaultContent: "<button value='detail' class='custom-btn glyphicon glyphicon-folder-open'>Details</button><button value='invalid' class='custom-btn glyphicon glyphicon-remove'>Invalid</button>"
+                    }
+                ],
+            });
+
+            //This function will bind a click function on every button in table "tblbookingrequest"
+            $('#tblbookingrequest tbody').on('click', 'button', function () {
+
+                var data = table.row($(this).parents('tr')).data();
+                var parentcontrol = this;
+                //checking clicked button value for appropriate action this will be either "detail" or "invalid"
+                switch ($(this).val()) {
+                    case "detail":
+                        //redirecting to main calendar view for details
+                        window.location.href = '@Url.Action("Details")' + "/" + data.id;
+                        break;
+                    case "invalid":
+                        //setting status of booking request to "INVALID" and removing the row
+                        $.getJSON("/BookingRequest/Invalidate?id=" + data.id, function (response) {
+                            var oldOwner = response.Message;
+                            var Id = data.id;
+                            if (response.Name == "DifferentOwner")
+                                ShowFailedOwnershipVerification(oldOwner, Id);
+                            else
+                                $(parentcontrol).parents('tr').remove();
+                        });
+                        break;
+                    default:
+                        //generates an alert for invalid selection, generally it won't happen.
+                        alert("Not a valid action!");
+                }
+            });
+        }
+    });
+
+  
+</script>
