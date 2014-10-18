@@ -77,7 +77,7 @@ namespace KwasantCore.StructureMap
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
-                For<ITransport>().Use<Web>(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
+                For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
                 For<IRestfullCall>().Use<RestfulCallWrapper>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
             }
