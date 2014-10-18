@@ -48,9 +48,8 @@ namespace Data.Migrations
             AddCustomers(uow);
             AddBookingRequest(uow);
 
-            SeedRemoteCalendarProviders(uow);
-
             AddCalendars(uow);
+
             AddProfiles(uow);
             AddEvents(uow);
         }
@@ -138,31 +137,6 @@ namespace Data.Migrations
             }
         }
 
-        private static void SeedRemoteCalendarProviders(IUnitOfWork uow)
-        {
-            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            var providers = new[]
-                                {
-                                    new RemoteCalendarProviderDO
-                                        {
-                                            Name = "Google",
-                                            AuthType = ServiceAuthorizationType.OAuth2,
-                                            AppCreds = JsonConvert.SerializeObject(
-                                                new
-                                                    {
-                                                        ClientId = configRepository.Get("GoogleCalendarClientId"),
-                                                        ClientSecret = configRepository.Get("GoogleCalendarClientSecret"),
-                                                        Scopes = "https://www.googleapis.com/auth/calendar"
-                                                    }),
-                                            CalDAVEndPoint = "https://apidata.googleusercontent.com/caldav/v2"
-                                        }
-                                };
-            foreach (var provider in providers)
-            {
-                if (uow.RemoteCalendarProviderRepository.GetByName(provider.Name) == null)
-                    uow.RemoteCalendarProviderRepository.Add(provider);
-            }
-        }
 
         //Do not remove. Resharper says it's not in use, but it's being used via reflection
         // ReSharper disable UnusedMember.Local
@@ -328,10 +302,13 @@ namespace Data.Migrations
             if (userDO == null)
                 userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == curUserName);
 
+            var fromUser = uow.EmailAddressRepository.GetOrCreateEmailAddress(curUserName);
+
             var curBookingRequestDO = new BookingRequestDO
             {
                 DateCreated = DateTimeOffset.UtcNow,
-                From = uow.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
+                From = fromUser,
+                FromID = fromUser.Id,
                 Subject = subject,
                 HTMLText = htmlText,
                 EmailStatus = EmailState.Unprocessed,

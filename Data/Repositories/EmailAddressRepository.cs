@@ -23,9 +23,9 @@ namespace Data.Repositories
             if (!regexUtil.IsValidEmail(email))
                 throw new ArgumentException(@"Invalid email format");
 
-            var matchingEmailAddress = UnitOfWork.EmailAddressRepository.DBSet.Local.FirstOrDefault(e => e.Address == email);
+            var matchingEmailAddress = DBSet.Local.FirstOrDefault(e => e.Address == email);
             if (matchingEmailAddress == null)
-                matchingEmailAddress = UnitOfWork.EmailAddressRepository.GetQuery().FirstOrDefault(e => e.Address == email);
+                matchingEmailAddress = GetQuery().FirstOrDefault(e => e.Address == email);
 
             if (matchingEmailAddress == null)
             {

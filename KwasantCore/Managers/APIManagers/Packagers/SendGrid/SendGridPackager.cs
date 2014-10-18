@@ -87,8 +87,8 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
                 }
                 else
                 {
-                    mailMessage.Html = email.HTMLText;
-                    mailMessage.Text = email.PlainText;
+                mailMessage.Html = email.HTMLText;
+                mailMessage.Text = email.PlainText;
                 }
 
                 foreach (var attachment in email.Attachments)
