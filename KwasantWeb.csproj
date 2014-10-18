@@ -785,7 +785,6 @@
     <Content Include="Views\User\FindUser.cshtml" />
     <Content Include="Views\User\ShowAddUser.cshtml" />
     <Content Include="Views\User\ShowCalendarEvents.cshtml" />
-    <Content Include="Views\User\ShowQuery.cshtml" />
     <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
     <Content Include="Views\User\ShowUserDetails.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />

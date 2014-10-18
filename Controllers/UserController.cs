@@ -172,8 +172,38 @@ namespace KwasantWeb.Controllers
                         uow.AspNetUserRolesRepository.RevokeRoleFromUser(existingRole.Name, existingUser.Id);
                 }
 
-                //Add new roles
-                foreach (var role in curCreateUserVM.Roles)
+        public ActionResult FindUser()
+        {
+            return View();
+        }
+
+        public ActionResult Search(String firstName, String lastName, String emailAddress)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var users = uow.UserRepository.GetQuery();
+                if (!String.IsNullOrWhiteSpace(firstName))
+                    users = users.Where(u => u.FirstName.Contains(firstName));
+                if (!String.IsNullOrWhiteSpace(lastName))
+                    users = users.Where(u => u.LastName.Contains(lastName));
+                if (!String.IsNullOrWhiteSpace(emailAddress))
+                    users = users.Where(u => u.EmailAddress.Address.Contains(emailAddress));
+
+                return new JsonResult
+                {
+                    Data = users.ToList().Select(u => new
+                    {
+                        Id = u.Id,
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        EmailAddress = u.EmailAddress.Address
+                    }).ToList()
+                };
+            }
+        }
+
+        [HttpPost]
+        public ActionResult Update(UserVM curCreateUserVM)
                 {
                     if (!existingRoles.Select(newRole => newRole.Name).Contains(role))
                         uow.AspNetUserRolesRepository.AssignRoleToUser(role, existingUser.Id);    
