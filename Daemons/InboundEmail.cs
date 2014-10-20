@@ -41,8 +41,7 @@ namespace Daemons
                                 new BookingRequestHandler()
                             };
 
-            AddTest("OutboundEmailDaemon_TestGmail", "Test Gmail");
-            AddTest("OutboundEmailDaemon_TestMandrill", "Test Mandrill");
+            AddTest("OutboundEmailDaemon_Test", "Test");
         }
 
         private string GetIMAPServer()
