@@ -67,8 +67,7 @@ namespace Daemons
                     _email.SendAlertEmail();
                 });
 
-            AddTest("OutboundEmailDaemon_TestGmail", "Test Gmail");
-            AddTest("OutboundEmailDaemon_TestMandrill", "Test Mandrill");
+            AddTest("OutboundEmailDaemon_Test", "Test");
         }
 
         public override int WaitTimeBetweenExecution
