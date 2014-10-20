@@ -157,8 +157,8 @@ namespace Daemons
                 UserDO user = uow.UserRepository.FindOne(e => e.EmailAddress.Address == recipient.EmailAddress.Address);
                 if (user != null && !user.TestAccount)
                 {
-                    uow.RecipientRepository.Remove(recipient);
                     recipientsRemoved.Add(recipient.EmailAddress.Address);
+                    uow.RecipientRepository.Remove(recipient);
                 }
             }
             return recipientsRemoved;
