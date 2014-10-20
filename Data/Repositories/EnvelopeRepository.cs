@@ -38,7 +38,8 @@ namespace Data.Repositories
                 throw new ArgumentNullException("email");
             if (string.IsNullOrEmpty(templateName))
                 throw new ArgumentNullException("templateName", "Template name is null or empty.");
-            return ConfigureEnvelope(email, EnvelopeDO.MandrillHander, templateName, mergeData);
+
+            return ConfigureEnvelope(email, EnvelopeDO.SendGridHander, templateName, mergeData);
         }
 
         private EnvelopeDO ConfigureEnvelope(IEmail email, string handler, string templateName = null, IDictionary<string, string> mergeData = null)

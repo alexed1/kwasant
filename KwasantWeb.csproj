@@ -325,7 +325,6 @@
     <Compile Include="ViewModels\ProfileVM.cs" />
     <Compile Include="ViewModels\UserProfilesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
-    <Compile Include="Webhooks\MandrillWebhookController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
@@ -809,6 +808,7 @@
     <Folder Include="Content\img\forms\" />
     <Folder Include="Views\CommunicationManager\" />
     <Folder Include="Views\Data\" />
+    <Folder Include="Webhooks\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Configuration\Configuration.csproj">
