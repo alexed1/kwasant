@@ -140,6 +140,14 @@ namespace Daemons
                         catch (StructureMapConfigurationException ex)
                         {
                             Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", curEnvelopeDO.Handler);
+
+                            try
+                            {
+                                var email = envelope.Email;
+                                email.EmailStatus = EmailState.Invalid;
+                                subUow.SaveChanges();
+                            } catch (Exception) {}
+
                             throw new UnknownEmailPackagerException(string.Format("Unknown email packager: {0}", curEnvelopeDO.Handler), ex);
                         }
                     }
