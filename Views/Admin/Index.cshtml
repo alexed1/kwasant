@@ -3,7 +3,6 @@
 }
 <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
-<h2>Kwasant Admin Console</h2>
 @*@Html.ActionLink("Show Booking Requests", "Index", "BookingRequest", null, new { @class = "" })
     <p></p>
 @Html.ActionLink("Show Incident Report", "Index", "Report", new { type = "incident" }, new { @class = "" })
@@ -11,7 +10,8 @@
 @Html.ActionLink("Show Usage Report", "Index", "Report", new { type = "usage" }, new { @class = "" })
     <p></p>
 @Html.ActionLink("View History ", "History", "Report", new{area=""}, new { @class = "" })
-    <p></p>*@
+    <p></p>
+*@
 <nav class="navbar navbar-default top-toolbar-section" role="navigation">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -46,11 +46,16 @@
                         <li>@Html.ActionLink("Add", "ShowAddUser", "User")</li>
                     </ul>
                 </li>
-
+                <li class="dropdown"><a id="btnReports">Admin Menu</a>
+                    <ul class="dropdown-menu">
+                        <li>@Html.ActionLink("Show All Booking Requests", "ShowAllBookingRequests", "BookingRequest", new { type = "alllogs" }, new { @class = "" }) </li>
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>
 </nav>
+<h2>Kwasant Admin Console</h2>
 
 <table id="tblIncident" class="data-table">
     <thead>
@@ -65,11 +70,11 @@
 </table>
 <a href="/">Go to kwasant.com</a>
 <script type="text/javascript">
- $(document).ready(function() {
+    $(document).ready(function () {
         
-        $('.navbar .dropdown').hover(function() {
+        $('.navbar .dropdown').hover(function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
-        }, function() {
+        }, function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
         });
         $.getJSON("/Report/ShowReport", { queryPeriod: "", type: "fiveRecentIncident" }, showIncident);
