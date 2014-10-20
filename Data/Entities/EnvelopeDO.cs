@@ -138,8 +138,7 @@ namespace Data.Entities
         }
 
         public const string SendGridHander = "Gmail";
-        public const string MandrillHander = "Mandrill";
-
+        
         private readonly MergeDataDictionary _mergeData;
 
         public EnvelopeDO()

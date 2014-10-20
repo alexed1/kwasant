@@ -22,7 +22,7 @@ namespace KwasantTest.Daemons
     {
         [Test]
         [Category("OutboundEmail")]
-        public void CanSendSendGridEnvelope()
+        public void CanSendPlainEmail()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -55,7 +55,7 @@ namespace KwasantTest.Daemons
 
         [Test]
         [Category("OutboundEmail")]
-        public void CanSendMandrillEnvelope()
+        public void CanSendTemplateEmail()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -75,7 +75,7 @@ namespace KwasantTest.Daemons
                 var mockEmailer = new Mock<IEmailPackager>();
                 mockEmailer.Setup(a => a.Send(envelope)).Verifiable();
                 ObjectFactory.Configure(
-                    a => a.For<IEmailPackager>().Use(mockEmailer.Object).Named(EnvelopeDO.MandrillHander));
+                    a => a.For<IEmailPackager>().Use(mockEmailer.Object).Named(EnvelopeDO.SendGridHander));
                 DaemonTests.RunDaemonOnce(outboundEmailDaemon);
 
                 // VERIFY
@@ -107,7 +107,7 @@ namespace KwasantTest.Daemons
                 var mockMandrillEmailer = new Mock<IEmailPackager>();
                 mockMandrillEmailer.Setup(a => a.Send(envelope)).Throws<ApplicationException>(); // shouldn't be invoked
                 ObjectFactory.Configure(
-                    a => a.For<IEmailPackager>().Use(mockMandrillEmailer.Object).Named(EnvelopeDO.MandrillHander));
+                    a => a.For<IEmailPackager>().Use(mockMandrillEmailer.Object).Named(EnvelopeDO.SendGridHander));
                 var mockSendGridEmailer = new Mock<IEmailPackager>();
                 mockSendGridEmailer.Setup(a => a.Send(envelope)).Throws<ApplicationException>(); // shouldn't be invoked
                 ObjectFactory.Configure(

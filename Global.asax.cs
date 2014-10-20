@@ -44,16 +44,7 @@ namespace KwasantWeb
             AutoMapperBootStrapper.ConfigureAutoMapper();
 
             Logger.GetLogger().Info("Kwasant web starting...");
-
-            var baseURL = ConfigurationManager.AppSettings["BasePageURL"];
-            if (!String.IsNullOrEmpty(baseURL))
-            {
-                if (Uri.IsWellFormedUriString(baseURL, UriKind.Absolute))
-                    Email.InitialiseWebhook(baseURL + "MandrillWebhook/");
-                else
-                    throw new Exception("Invalid BasePageURL (check web.config)");
-            }
-
+            
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
 
             CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
