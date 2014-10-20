@@ -128,7 +128,7 @@ namespace KwasantWeb.Controllers
 
                 return View("~/Views/Negotiation/Edit.cshtml", new NegotiationVM
                 {
-                    Name = "Negotiation 1",
+                    Name = uow.EmailRepository.GetByKey(bookingRequestID).Subject,
                     BookingRequestID = bookingRequestID,
                     Attendees = emailAddresses.Select(ea => ea.Address).ToList(),
                     Questions = new List<NegotiationQuestionVM>

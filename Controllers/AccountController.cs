@@ -228,7 +228,7 @@ Please register first.");
                 userDO.UserName = usersAdminVM.EmailAddress;
 
                 // Set RoleId & UserId if role is changed on the font-end other wise IdentityUserRole is set to null and user's role will not be updated.
-                uow.AspNetUserRolesRepository.AssignRoleIDToUser(usersAdminVM.RoleId, usersAdminVM.Id);
+                //uow.AspNetUserRolesRepository.AssignRoleIDToUser(usersAdminVM.RoleId, usersAdminVM.Id);
 
                 uow.SaveChanges();
                 return RedirectToAction("Index", "User");

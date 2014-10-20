@@ -67,8 +67,7 @@ namespace Daemons
                     _email.SendAlertEmail();
                 });
 
-            AddTest("OutboundEmailDaemon_TestGmail", "Test Gmail");
-            AddTest("OutboundEmailDaemon_TestMandrill", "Test Mandrill");
+            AddTest("OutboundEmailDaemon_Test", "Test");
         }
 
         public override int WaitTimeBetweenExecution
@@ -140,6 +139,14 @@ namespace Daemons
                         catch (StructureMapConfigurationException ex)
                         {
                             Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", curEnvelopeDO.Handler);
+
+                            try
+                            {
+                                var email = envelope.Email;
+                                email.EmailStatus = EmailState.Invalid;
+                                subUow.SaveChanges();
+                            } catch (Exception) {}
+
                             throw new UnknownEmailPackagerException(string.Format("Unknown email packager: {0}", curEnvelopeDO.Handler), ex);
                         }
                     }
@@ -157,8 +164,8 @@ namespace Daemons
                 UserDO user = uow.UserRepository.FindOne(e => e.EmailAddress.Address == recipient.EmailAddress.Address);
                 if (user != null && !user.TestAccount)
                 {
-                    uow.RecipientRepository.Remove(recipient);
                     recipientsRemoved.Add(recipient.EmailAddress.Address);
+                    uow.RecipientRepository.Remove(recipient);
                 }
             }
             return recipientsRemoved;

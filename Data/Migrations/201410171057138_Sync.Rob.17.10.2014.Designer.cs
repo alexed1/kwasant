@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class ParticipantStatusIsRequired : IMigrationMetadata
+    public sealed partial class SyncRob17102014 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ParticipantStatusIsRequired));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(SyncRob17102014));
         
         string IMigrationMetadata.Id
         {
-            get { return "201410161105117_ParticipantStatusIsRequired"; }
+            get { return "201410171057138_Sync.Rob.17.10.2014"; }
         }
         
         string IMigrationMetadata.Source

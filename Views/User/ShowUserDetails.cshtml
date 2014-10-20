@@ -3,7 +3,7 @@
 @model KwasantWeb.ViewModels.UserVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 <div style="padding-right: 40px;">
-    <form id="userInfoForm" action="@Url.Action("ProcessSubmittedForm","User")" method="post">
+    <form id="userInfoForm">
         <table>
             <tr>
                 <td colspan="2">
@@ -40,27 +40,21 @@
                 </td>
             </tr>
             <tr>
-                <td>Role
+                <td>Roles
                 </td>
                 <td>
-                    <select id="role" name="RoleId">
-                        <option value="">-- Select Role --</option>
-                        @{
-                            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                    @{
+                        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                        {
+                            var allRows = uow.AspNetRolesRepository.GetAll();
+                            foreach (var role in allRows)
                             {
-                                var roles = uow.AspNetRolesRepository.GetAll();
-                                foreach (var role in roles)
-                                {
-                                    if (role.Name != Model.RoleName)
-                                    {
-                                        <option value="@role.Id">@role.Name</option>}
-                                    else
-                                    {
-                                        <option value="@role.Id" selected="selected">@role.Name</option>}
-                                }
+                                <input id="@role.Id" type="checkbox" class="roleCheckbox" value="@role.Name" @Html.Raw(Model.Roles.Contains(role.Name) ? "checked" : String.Empty)/>
+                                <label for="@role.Id">@role.Name</label>
+                                <br/>
                             }
                         }
-                    </select>
+                    }
                 </td>
             </tr>
             <tr>
@@ -86,14 +80,6 @@
 <script>
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
-        var table;
-
-        //following condition checking if user already exists then setting the view to edit mode
-        @if (String.IsNullOrEmpty(Model.RoleName))
-        {
-            @:toggleFields(true);
-        }
-        
         //Binding click function to cancel button
         $("#btnCancel").click(function () {
             if ($("#hdnUserId").val() != "") {
@@ -107,59 +93,37 @@
             }
         });
 
-        $("#btnEdit").click(function () {
+        $("#btnEdit").click(function() {
             toggleFields(false);
         });
 
         //Binding click event handler to Save button.
-        $("#btnSave").click(function () {
-            $.ajax({
-                url: '@Url.Action("Validate", "User")',
-                type: 'post',
-                data: $('#userInfoForm').serialize(),
-                success: function (response) {
-                    $("#lblSaveError").html("");
-                    if (JSON.parse(response).error != undefined) {
-                        $("#lblSaveError").html(JSON.parse(response).error);
-                    }
-                    else {
-                        createUpdateUser();
-                    }
-                }
+        $("#btnSave").click(function() {
+            var dataObj = {};
+            dataObj.Id = '@Model.Id';
+            dataObj.FirstName = $("#firstname").val();
+            dataObj.LastName = $("#lastname").val();
+            dataObj.EmailAddress = $("#email").val();
+            dataObj.Roles = [];
+            $.each($('.roleCheckbox'), function(i, o) {
+                var wrappedObj = $(o);
+                if (wrappedObj.is(':checked'))
+                    dataObj.Roles.push(wrappedObj.val());
             });
-        });
 
-        //Create or update user if all input values are valid.
-        function createUpdateUser() {
-            if ($("#hdnUserId").val() != "") {
-                updateUser();
-            }
-            else {
-                createUser();
-            }
-        }
+            var dataStr = JSON.stringify(dataObj);
 
-        //Create new user
-        function createUser() {
-            var sendMail = $("#chkSendEmail").is(':checked');
-            var action = $('#userInfoForm').attr("action") + "?sendEmail=" + sendMail;
-            $('#userInfoForm').attr("action", action);
-            $('#userInfoForm').submit();
-        }
-
-        //Update existing user
-        function updateUser() {
             $.ajax({
                 url: '@Url.Action("Update", "User")',
-                type: 'post',
-                data: $('#userInfoForm').serialize(),
-                success: function (response) {
+                type: 'POST',
+                contentType: 'application/json',
+                data: dataStr,
+                success: function () {
                     $("#lblSaveError").html("User updated successfully");
                     toggleFields(true);
                 }
             });
-        }
-
+        });
     });
 
     //toggle fields state, enabling/disabling the user text fields to switch user form Mode

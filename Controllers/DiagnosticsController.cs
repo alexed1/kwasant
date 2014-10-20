@@ -178,15 +178,9 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult OutboundEmailDaemon_TestGmail(String key, String testName)
+        public ActionResult OutboundEmailDaemon_Test(String key, String testName)
         {
             return RunAsync(() => SendTestEmail(testName, (uow, curEmail) => uow.EnvelopeRepository.ConfigurePlainEmail(curEmail)));
-        }
-
-        [HttpPost]
-        public ActionResult OutboundEmailDaemon_TestMandrill(String key, String testName)
-        {
-            return RunAsync(() => SendTestEmail(testName, (uow, curEmail) => uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "test_template", null)));
         }
 
         private JsonResult RunAsync(ThreadStart action)
