@@ -154,14 +154,15 @@ namespace KwasantWeb.Controllers
                 return jsonResult;
             }
         }
-        
+
         [HttpPost]
         public ActionResult Update(UserVM curCreateUserVM)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var existingUser = uow.UserRepository.GetOrCreateUser(curCreateUserVM.EmailAddress);
-                uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName, Guid.NewGuid().ToString());
+                uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName,
+                    Guid.NewGuid().ToString());
 
                 var existingRoles = uow.AspNetUserRolesRepository.GetRoles(existingUser.Id).ToList();
 
@@ -171,6 +172,22 @@ namespace KwasantWeb.Controllers
                     if (!curCreateUserVM.Roles.Select(newRole => newRole).Contains(existingRole.Name))
                         uow.AspNetUserRolesRepository.RevokeRoleFromUser(existingRole.Name, existingUser.Id);
                 }
+
+                //Add new roles
+                foreach (var role in curCreateUserVM.Roles)
+                {
+                    if (!existingRoles.Select(newRole => newRole.Name).Contains(role))
+                        uow.AspNetUserRolesRepository.AssignRoleToUser(role, existingUser.Id);    
+                }
+
+                existingUser.FirstName = curCreateUserVM.FirstName;
+                existingUser.LastName = curCreateUserVM.LastName;
+                existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress, curCreateUserVM.FirstName);
+                uow.SaveChanges();
+            }
+            var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
+            return jsonSuccessResult;
+        }
 
         public ActionResult FindUser()
         {
@@ -200,22 +217,6 @@ namespace KwasantWeb.Controllers
                     }).ToList()
                 };
             }
-        }
-
-        [HttpPost]
-        public ActionResult Update(UserVM curCreateUserVM)
-                {
-                    if (!existingRoles.Select(newRole => newRole.Name).Contains(role))
-                        uow.AspNetUserRolesRepository.AssignRoleToUser(role, existingUser.Id);    
-                }
-
-                existingUser.FirstName = curCreateUserVM.FirstName;
-                existingUser.LastName = curCreateUserVM.LastName;
-                existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress, curCreateUserVM.FirstName);
-                uow.SaveChanges();
-            }
-            var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
-            return jsonSuccessResult;
         }
 
         private static UserVM CreateUserVM(UserDO u, IUnitOfWork uow)
