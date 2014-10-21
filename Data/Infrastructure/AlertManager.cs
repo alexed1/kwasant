@@ -413,6 +413,7 @@ namespace Data.Infrastructure
                 incidentDO.Activity = "Failure";
                 incidentDO.ObjectId = calendarLink.Id;
                 incidentDO.CustomerId = calendarLink.LocalCalendar.OwnerID;
+                incidentDO.Notes = calendarLink.LastSynchronizationResult;
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
