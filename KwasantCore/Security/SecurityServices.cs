@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Security.Claims;
+using System.Threading;
 using System.Web;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using KwasantCore.Interfaces;
-using KwasantCore.Services;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using StructureMap;
 
@@ -28,17 +29,17 @@ namespace KwasantCore.Security
 
         public String GetCurrentUser()
         {
-            return HttpContext.Current.User.Identity.GetUserId();
+            return Thread.CurrentPrincipal.Identity.GetUserId();
         }
 
         public String GetUserName()
         {
-            return HttpContext.Current.User.Identity.GetUserName();
+            return Thread.CurrentPrincipal.Identity.GetUserName();
         }
 
         public bool IsAuthenticated()
         {
-            return HttpContext.Current.User.Identity.IsAuthenticated;
+            return Thread.CurrentPrincipal.Identity.IsAuthenticated;
         }
 
         public void Logout()
