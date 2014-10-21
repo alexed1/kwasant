@@ -751,6 +751,19 @@ input[type="submit"].btn.gradient-button:hover, input[type="button"].btn.gradien
     float: none;    
 }
 
+.login-section .validation-summary-errors ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;           
+}
+
+.login-section .validation-summary-errors ul li {
+    background: #b94a48;
+    color: #f2e9df;
+    padding: 5px 10px;
+    margin-top: 10px;
+}
+                          
 .login-section .wrapper {
     padding: 15px;
     background: url(/Content/img/backgrounds/login-wrapper-bg.png);
