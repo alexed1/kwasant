@@ -131,6 +131,7 @@ namespace KwasantWeb
             {
                 SetServerUrl(HttpContext.Current);
                 Utilities.Server.IsDevMode = Utilities.Server.ServerHostName.Contains("localhost");
+                Logger.GetLogger().Info("Starting server on " + Utilities.Server.ServerHostName);
                 _IsInitialised = true;
             }
         }
