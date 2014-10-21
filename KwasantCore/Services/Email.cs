@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
@@ -10,7 +9,6 @@ using Data.Repositories;
 using Data.States;
 using Data.Validations;
 using FluentValidation;
-using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
 using StructureMap;
 using Utilities;
 
@@ -56,22 +54,6 @@ namespace KwasantCore.Services
         public EnvelopeDO Send(IUnitOfWork uow, EmailDO emailDO)
         {
             return uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
-        }
-
-        public static void InitialiseWebhook(String url)
-        {
-            MandrillPackager.InitialiseWebhook(url);
-        }
-
-        public static void HandleWebhookResponse(String responseStr)
-        {
-            MandrillPackager.HandleWebhookResponse(responseStr);
-        }
-
-        public static void Ping()
-        {
-            string results = MandrillPackager.PostPing();
-            Debug.WriteLine(results);
         }
 
         public void SendUserSettingsNotification(IUnitOfWork uow, UserDO submittedUserData) 
@@ -254,7 +236,9 @@ namespace KwasantCore.Services
 
         public EmailDO AddFromAddress(IUnitOfWork uow, EmailDO curEmail, string fromAddress)
         {
-            curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+            var from = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+            curEmail.From = from;
+            curEmail.FromID = from.Id;
             return curEmail;
         }
 

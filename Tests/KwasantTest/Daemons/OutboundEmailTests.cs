@@ -22,7 +22,7 @@ namespace KwasantTest.Daemons
     {
         [Test]
         [Category("OutboundEmail")]
-        public void CanSendSendGridEnvelope()
+        public void CanSendPlainEmail()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -55,7 +55,7 @@ namespace KwasantTest.Daemons
 
         [Test]
         [Category("OutboundEmail")]
-        public void CanSendMandrillEnvelope()
+        public void CanSendTemplateEmail()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -66,7 +66,8 @@ namespace KwasantTest.Daemons
                 var email = fixture.TestEmail1();
 
                 // EXECUTE
-                var envelope = uow.EnvelopeRepository.ConfigureTemplatedEmail(email, "template", null);
+                //var envelope = uow.EnvelopeRepository.ConfigureTemplatedEmail(email, "template", null);
+                var envelope = uow.EnvelopeRepository.ConfigureTemplatedEmail(email, "a16da250-a48b-42ad-88e1-bdde24ae1dee", null);
                 uow.SaveChanges();
 
                 //adding user for alerts at outboundemail.cs  //If we don't add user, AlertManager at outboundemail generates error and test fails.
@@ -75,7 +76,7 @@ namespace KwasantTest.Daemons
                 var mockEmailer = new Mock<IEmailPackager>();
                 mockEmailer.Setup(a => a.Send(envelope)).Verifiable();
                 ObjectFactory.Configure(
-                    a => a.For<IEmailPackager>().Use(mockEmailer.Object).Named(EnvelopeDO.MandrillHander));
+                    a => a.For<IEmailPackager>().Use(mockEmailer.Object).Named(EnvelopeDO.SendGridHander));
                 DaemonTests.RunDaemonOnce(outboundEmailDaemon);
 
                 // VERIFY
@@ -96,7 +97,7 @@ namespace KwasantTest.Daemons
                 var email = fixture.TestEmail1();
 
                 // EXECUTE
-                var envelope = uow.EnvelopeRepository.ConfigureTemplatedEmail(email, "template", null);
+                var envelope = uow.EnvelopeRepository.ConfigureTemplatedEmail(email, "a16da250-a48b-42ad-88e1-bdde24ae1dee", null);
 
                 envelope.Handler = "INVALID EMAIL PACKAGER";
                 uow.SaveChanges();
@@ -107,7 +108,7 @@ namespace KwasantTest.Daemons
                 var mockMandrillEmailer = new Mock<IEmailPackager>();
                 mockMandrillEmailer.Setup(a => a.Send(envelope)).Throws<ApplicationException>(); // shouldn't be invoked
                 ObjectFactory.Configure(
-                    a => a.For<IEmailPackager>().Use(mockMandrillEmailer.Object).Named(EnvelopeDO.MandrillHander));
+                    a => a.For<IEmailPackager>().Use(mockMandrillEmailer.Object).Named(EnvelopeDO.SendGridHander));
                 var mockSendGridEmailer = new Mock<IEmailPackager>();
                 mockSendGridEmailer.Setup(a => a.Send(envelope)).Throws<ApplicationException>(); // shouldn't be invoked
                 ObjectFactory.Configure(

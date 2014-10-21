@@ -123,3 +123,8 @@ function convertToDateString(dateFormat) {
     dateFormat = datevalue.getMonth() + 1 + "-" + datevalue.getDate() + "-" + datevalue.getFullYear().toString().substring(2, 4) + " " + hour + ":" + datevalue.getMinutes() + " " + timeSuffix;
     return dateFormat;
 }
+
+
+function autoResizeTextArea(e) {
+    $(e).css({ 'height': 'auto', 'overflow-y': 'hidden' }).height(e.scrollHeight);
+}

@@ -4,12 +4,16 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Data.Entities;
 using Data.Infrastructure;
+using Data.Interfaces;
+using Data.States;
 using KwasantCore.ModelBinders;
 using KwasantCore.Services;
 using KwasantCore.Managers;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
+using Newtonsoft.Json;
 using Segment;
 using StructureMap;
 using Utilities;
@@ -40,16 +44,7 @@ namespace KwasantWeb
             AutoMapperBootStrapper.ConfigureAutoMapper();
 
             Logger.GetLogger().Info("Kwasant web starting...");
-
-            var baseURL = ConfigurationManager.AppSettings["BasePageURL"];
-            if (!String.IsNullOrEmpty(baseURL))
-            {
-                if (Uri.IsWellFormedUriString(baseURL, UriKind.Absolute))
-                    Email.InitialiseWebhook(baseURL + "MandrillWebhook/");
-                else
-                    throw new Exception("Invalid BasePageURL (check web.config)");
-            }
-
+            
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
 
             CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
@@ -66,6 +61,50 @@ namespace KwasantWeb
 
 //            ModelBinders.Binders.Add(typeof(EventViewModel), new KwasantDateBinder());
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                CreateRemoteCalendarProviders(uow);
+                uow.SaveChanges();
+            }
+        }
+
+
+        private void CreateRemoteCalendarProviders(IUnitOfWork uow)
+        {
+            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+            var clientID = configRepository.Get("GoogleCalendarClientId");
+            var clientSecret = configRepository.Get("GoogleCalendarClientSecret");
+            var providers = new[]
+                                {
+                                    new RemoteCalendarProviderDO
+                                        {
+                                            Name = "Google",
+                                            AuthType = ServiceAuthorizationType.OAuth2,
+                                            AppCreds = JsonConvert.SerializeObject(
+                                                new
+                                                    {
+                                                        ClientId = clientID,
+                                                        ClientSecret = clientSecret,
+                                                        Scopes = "https://www.googleapis.com/auth/calendar"
+                                                    }),
+                                            CalDAVEndPoint = "https://apidata.googleusercontent.com/caldav/v2"
+                                        }
+                                };
+            foreach (var provider in providers)
+            {
+                var existingRow = uow.RemoteCalendarProviderRepository.GetByName(provider.Name);
+                if (existingRow == null)
+                {
+                    uow.RemoteCalendarProviderRepository.Add(provider);
+                }
+                else
+                {
+                    existingRow.AuthType = provider.AuthType;
+                    existingRow.AppCreds = provider.AppCreds;
+                    existingRow.CalDAVEndPoint = provider.CalDAVEndPoint;
+                }
+            }
         }
 
         protected void Application_Error(Object sender, EventArgs e)
@@ -92,6 +131,7 @@ namespace KwasantWeb
             {
                 SetServerUrl(HttpContext.Current);
                 Utilities.Server.IsDevMode = Utilities.Server.ServerHostName.Contains("localhost");
+                Logger.GetLogger().Info("Starting server on " + Utilities.Server.ServerHostName);
                 _IsInitialised = true;
             }
         }
