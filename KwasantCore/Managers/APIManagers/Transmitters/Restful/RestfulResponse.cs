@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 
-namespace KwasantCore.Managers.APIManager.Transmitters.Restful
+namespace KwasantCore.Managers.APIManagers.Transmitters.Restful
 {
     /// <summary>
     /// Container class for common properties shared by RestResponse

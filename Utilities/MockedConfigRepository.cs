@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 
 namespace Utilities
 {
     public class MockedConfigRepository : IConfigRepository
     {
+        private static readonly Dictionary<String, String> _mockedSettings = new Dictionary<String, String>(); 
         public string Get(string key)
         {
             return Get<string>(key);
@@ -25,18 +27,30 @@ namespace Utilities
             return InternalGet(key, defaultValue, true);
         }
 
+        public void Set(string key, String value)
+        {
+            _mockedSettings[key] = value;
+        }
+
         private T InternalGet<T>(String key, T defaultValue = default(T), bool defaultProvided = false)
         {
-            var stringValue = ConfigurationManager.AppSettings[key];
-
-            if (String.IsNullOrEmpty(stringValue))
+            String stringValue;
+            if (_mockedSettings.ContainsKey(key))
             {
-                if (!defaultProvided)
-                    throw new ConfigurationException("Key '" + key + "' not found.");
-
-                return defaultValue;
+                stringValue = _mockedSettings[key];
             }
+            else
+            {
+                stringValue = ConfigurationManager.AppSettings[key];
 
+                if (String.IsNullOrEmpty(stringValue))
+                {
+                    if (!defaultProvided)
+                        throw new ConfigurationException("Key '" + key + "' not found.");
+
+                    return defaultValue;
+                }
+            }
 
             var returnType = typeof(T);
 

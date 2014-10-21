@@ -1,4 +1,4 @@
-﻿@model KwasantWeb.ViewModels.UserQueryVM
+﻿@model KwasantWeb.ViewModels.UserVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
@@ -16,7 +16,7 @@
                     First Name 
                 </td>
                 <td>
-                    @Html.TextBoxFor(curUser => curUser.User.FirstName)
+                    @Html.TextBoxFor(curUser => curUser.FirstName)
                 </td>
             </tr>
             <tr>
@@ -24,7 +24,7 @@
                     Last Name 
                 </td>
                 <td>
-                    @Html.TextBoxFor(curUser => curUser.User.LastName)
+                    @Html.TextBoxFor(curUser => curUser.LastName)
                 </td>
             </tr>
             <tr>
@@ -32,7 +32,7 @@
                     Email Address
                 </td>
                 <td>
-                    @Html.TextBoxFor(curUser => curUser.User.EmailAddress.Address)
+                    @Html.TextBoxFor(curUser => curUser.EmailAddress)
                 </td>
             </tr>
         </table>
@@ -41,7 +41,7 @@
     <input type="button" id="btnSearch" value="Search" />&nbsp;&nbsp;
         <input type="button" id="btnClose" value="Close" />
     <br /><br />
-    <input type="hidden" id="hdnUserId" value="@Model.User.Id" />
+    <input type="hidden" id="hdnUserId" value="@Model.Id" />
     <table id="tblusers" class="table table-with-action" style="visibility:hidden;">
         <thead>
             <tr>

@@ -7,10 +7,10 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.Managers;
+using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
-using KwasantCore.Managers.APIManager.Packagers.Kwasant;
 
 namespace KwasantWeb.Controllers
 {
@@ -128,7 +128,7 @@ namespace KwasantWeb.Controllers
 
                 return View("~/Views/Negotiation/Edit.cshtml", new NegotiationVM
                 {
-                    Name = "Negotiation 1",
+                    Name = uow.EmailRepository.GetByKey(bookingRequestID).Subject,
                     BookingRequestID = bookingRequestID,
                     Attendees = emailAddresses.Select(ea => ea.Address).ToList(),
                     Questions = new List<NegotiationQuestionVM>
@@ -159,9 +159,6 @@ namespace KwasantWeb.Controllers
                     negotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
 
                 negotiationDO.Name = value.Name;
-                if (negotiationDO.NegotiationState == 0)
-                    negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
-
                 negotiationDO.BookingRequestID = value.BookingRequestID;
 
                 _attendee.ManageNegotiationAttendeeList(uow, negotiationDO, value.Attendees);

@@ -9,6 +9,8 @@ namespace Utilities
         String Get(String key, String defaultValue);
         T Get<T>(String key);
         T Get<T>(String key, T defaultValue);
+
+        void Set(String key, String value);
     }
 
     public class ConfigRepository : IConfigRepository
@@ -33,6 +35,11 @@ namespace Utilities
             return InternalGet(key, defaultValue, true);
         }
 
+        public void Set(string key, String value)
+        {
+            throw new Exception("Setting config settings not supported on live instances.");
+        }
+
         private T InternalGet<T>(String key, T defaultValue = default(T), bool defaultProvided = false)
         {
             var stringValue = CloudConfigurationManager.GetSetting(key);
@@ -44,8 +51,7 @@ namespace Utilities
 
                 return defaultValue;
             }
-                
-
+            
             var returnType = typeof(T);
 
             if (returnType == typeof(String))

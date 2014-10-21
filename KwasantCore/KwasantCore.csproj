@@ -42,6 +42,10 @@
     <Reference Include="AutoMapper.Net4">
       <HintPath>..\packages\AutoMapper.3.3.0-ci1027\lib\net40\AutoMapper.Net4.dll</HintPath>
     </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="FluentValidation">
       <HintPath>..\packages\FluentValidation.5.1.0.0\lib\Net40\FluentValidation.dll</HintPath>
     </Reference>
@@ -112,6 +116,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\S22.Imap.dll</HintPath>
     </Reference>
+    <Reference Include="SendGrid.SmtpApi">
+      <HintPath>..\packages\SendGrid.SmtpApi.1.1.3\lib\net40\SendGrid.SmtpApi.dll</HintPath>
+    </Reference>
+    <Reference Include="SendGridMail">
+      <HintPath>..\packages\Sendgrid.5.0.0\lib\SendGridMail.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
@@ -155,6 +165,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
+    <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
@@ -187,18 +198,18 @@
     <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillTemplatePackage.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookAddRequest.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookResponse.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\IAuthorizingHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\OAuthHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\GmailPackager.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\SendGrid\SendGridPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\IEmailPackager.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\MandrillPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Kwasant\KwasantPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\ISMSPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Twilio\TwilioPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\UnknownEmailPackagerException.cs" />
-    <Compile Include="Managers\APIManagers\Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulCall.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulResponse.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulTransmitter.cs" />
@@ -225,7 +236,6 @@
     <Compile Include="Services\Invitation.cs" />
     <Compile Include="Services\InvitationResponse.cs" />
     <Compile Include="Services\Report.cs" />
-    <Compile Include="Services\Role.cs" />
     <Compile Include="Services\SegmentIO.cs" />
     <Compile Include="Services\User.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 
 namespace KwasantCore.Services
 {
@@ -16,15 +17,6 @@ namespace KwasantCore.Services
             _emailAddress = emailAddress;
         }
 
-        public AttendeeDO Create (UserDO curUserDO)
-        {
-            AttendeeDO curAttendeeDO;
-            curAttendeeDO = new AttendeeDO();
-            curAttendeeDO.EmailAddress = curUserDO.EmailAddress;
-
-            return curAttendeeDO;
-        }
-
         public AttendeeDO Create(IUnitOfWork uow, string emailAddressString, EventDO curEventDO, String name = null)
         {
             //create a new AttendeeDO
@@ -35,6 +27,7 @@ namespace KwasantCore.Services
             EmailAddressDO emailAddress = emailAddressRepository.GetOrCreateEmailAddress(emailAddressString, name);
             curAttendee.EmailAddressID = emailAddress.Id;
             curAttendee.EmailAddress = emailAddress;
+            curAttendee.ParticipationStatus = ParticipationStatus.NeedsAction;
             curAttendee.Name = emailAddress.Name;
             curAttendee.Event = curEventDO;  //do we have to also manually set the EventId? Seems unDRY
             //uow.AttendeeRepository.Add(curAttendee); //is this line necessary?
@@ -68,32 +61,12 @@ namespace KwasantCore.Services
                 .ToList();
         }
 
-        //the Event View Model returns attendees as a string. we'll want to do something more sophisticated involving typeahead and ajax but for now this is it
-        //we want to convert that string into objects as quickly as possible once the data is on the server.
-/*
-        public void ManageEventAttendeeList(IUnitOfWork uow, EventDO eventDO, string curAttendees)
-        {
-            List<AttendeeDO> existingAttendeeSet = eventDO.Attendees ?? new List<AttendeeDO>();
-            if (String.IsNullOrEmpty(curAttendees))
-                curAttendees = String.Empty;
-
-            var attendees = curAttendees.Split(',').ToList();
-
-            List<AttendeeDO> newAttendees = ManageAttendeeList(uow, existingAttendeeSet, attendees);
-            foreach (var attendee in newAttendees)
-            {
-                attendee.Event = eventDO;
-                attendee.EventID = eventDO.Id;
-                uow.AttendeeRepository.Add(attendee);
-            }         
-        }
-*/
-
         public void ManageNegotiationAttendeeList(IUnitOfWork uow, NegotiationDO negotiationDO, List<String> attendees)
         {
-            List<AttendeeDO> existingAttendeeSet = negotiationDO.Attendees ?? new List<AttendeeDO>();
+            var existingAttendeeSet = negotiationDO.Attendees ?? new List<AttendeeDO>();
             
             List<AttendeeDO> newAttendees = ManageAttendeeList(uow, existingAttendeeSet, attendees);
+
             foreach (var attendee in newAttendees)
             {
                 attendee.Negotiation = negotiationDO;
@@ -102,7 +75,7 @@ namespace KwasantCore.Services
             }
         }
 
-        public List<AttendeeDO> ManageAttendeeList(IUnitOfWork uow, List<AttendeeDO> existingAttendeeSet, List<String> attendees)
+        public List<AttendeeDO> ManageAttendeeList(IUnitOfWork uow, IList<AttendeeDO> existingAttendeeSet, List<String> attendees)
         {
             var attendeesToDelete = existingAttendeeSet.Where(attendee => !attendees.Contains(attendee.EmailAddress.Address)).ToList();
             foreach (var attendeeToDelete in attendeesToDelete)

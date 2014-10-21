@@ -8,35 +8,28 @@ using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
 using KwasantCore.Services;
-using KwasantCore.StructureMap;
 using KwasantICS.DDay.iCal;
 using KwasantTest.Fixtures;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
+using Assert = NUnit.Framework.Assert;
 
 namespace KwasantTest.Managers
 {
     [TestFixture]
-    public class CalendarSyncManagerTest
+    public class CalendarSyncManagerTest : BaseTest
     {
-        private IUnitOfWork _uow;
-        private FixtureData _fixtureData;
         private CalendarSyncManager _calendarSyncManager;
-        private UserDO _curUser;
-        private  List<iCalendar> _remoteCalendarEvents;
-        private RemoteCalendarProviderDO _curProvider;
-        private RemoteCalendarAuthDataDO _curAuthData;
-
+        private List<iCalendar> _remoteCalendarEvents;
+        
         [SetUp]
-        public void SetUp()
+        public override void SetUp()
         {
+            base.SetUp();
             _remoteCalendarEvents = new List<iCalendar>();
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             CalendarSyncManager.DisableAutoSynchronization = true;
-            _uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            _fixtureData = new FixtureData();
-
+            
             var clientMock = new Mock<ICalDAVClient>();
             clientMock.Setup(c =>
                              c.GetEventsAsync(
@@ -57,11 +50,6 @@ namespace KwasantTest.Managers
             clientFactoryMock.Setup(f => f.Create(It.IsAny<IRemoteCalendarAuthData>())).Returns(clientMock.Object);
             ObjectFactory.Configure(expression => expression.For<ICalDAVClientFactory>().Use(clientFactoryMock.Object));
 
-            _curUser = _fixtureData.TestUser1();
-            _curProvider = _fixtureData.TestRemoteCalendarProvider();
-            _curAuthData = _fixtureData.TestRemoteCalendarAuthData(_curProvider, _curUser);
-            _curUser.RemoteCalendarAuthData.Add(_curAuthData);
-
             _calendarSyncManager = ObjectFactory.GetInstance<CalendarSyncManager>();
         }
 
@@ -78,112 +66,162 @@ namespace KwasantTest.Managers
         [Category("CalendarSyncManager")]
         public async void CanAddToLocalCalendar()
         {
-            // SETUP
-            var curEvent = _fixtureData.TestEvent2();
-            var iCalEvent = Event.GenerateICSCalendarStructure(curEvent);
-            _remoteCalendarEvents.Add(iCalEvent);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var curUser = fixture.TestUser1();
+                var curProvider = fixture.TestRemoteCalendarProvider();
+                var curAuthData = fixture.TestRemoteCalendarAuthData(curProvider, curUser);
+                curUser.RemoteCalendarAuthData.Add(curAuthData);
 
-            // EXECUTE
-            Assert.AreEqual(1, _remoteCalendarEvents.Count, "One event must be in the remote storage before synchronization.");
-            Assert.AreEqual(0, _uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted), "No events must be in the repository before synchronization.");
-            await _calendarSyncManager.SyncNowAsync(_uow, _curUser);
-            _uow.SaveChanges();
+                // SETUP
+                var curEvent = fixture.TestEvent2();
+                var iCalEvent = Event.GenerateICSCalendarStructure(curEvent);
+                _remoteCalendarEvents.Add(iCalEvent);
 
-            // VERIFY
-            var events = _uow.EventRepository.GetAll().Where(e => e.EventStatus != EventState.Deleted).ToArray();
-            Assert.AreEqual(1, events.Length, "One event must be in the repository after synchronization.");
-            var newEvent = events[0];
-            AssertEventsAreEqual(curEvent, newEvent);
+                uow.SaveChanges();
+                // EXECUTE
+                Assert.AreEqual(1, _remoteCalendarEvents.Count,
+                    "One event must be in the remote storage before synchronization.");
+                Assert.AreEqual(0, uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted),
+                    "No events must be in the repository before synchronization.");
+                
+                await _calendarSyncManager.SyncNowAsync(uow, curUser);
+                uow.SaveChanges();
+
+                // VERIFY
+                var events = uow.EventRepository.GetAll().Where(e => e.EventStatus != EventState.Deleted).ToArray();
+                Assert.AreEqual(1, events.Length, "One event must be in the repository after synchronization.");
+                var newEvent = events[0];
+                AssertEventsAreEqual(curEvent, newEvent);
+            }
         }
 
         [Test]
         [Category("CalendarSyncManager")]
         public async void CanAddToRemoteCalendar()
         {
-            // SETUP
-            var curEvent = _fixtureData.TestEvent2();
-            curEvent.DateCreated = DateTimeOffset.UtcNow;
-            curEvent.SyncStatus = EventSyncState.SyncWithExternal;
-            var curCalendarLink = _fixtureData.TestRemoteCalendarLink(_curProvider, _curUser);
-            curCalendarLink.LocalCalendar.Events.Add(curEvent);
-            _uow.RemoteCalendarLinkRepository.Add(curCalendarLink);
-            _uow.SaveChanges();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var curUser = fixture.TestUser1();
+                var curProvider = fixture.TestRemoteCalendarProvider();
+                var curAuthData = fixture.TestRemoteCalendarAuthData(curProvider, curUser);
+                curUser.RemoteCalendarAuthData.Add(curAuthData);
+                
+                // SETUP
+                var curEvent = fixture.TestEvent2();
+                curEvent.DateCreated = DateTimeOffset.UtcNow;
+                curEvent.SyncStatus = EventSyncState.SyncWithExternal;
+                var curCalendarLink = fixture.TestRemoteCalendarLink(curProvider, curUser);
+                curCalendarLink.LocalCalendar.Events.Add(curEvent);
+                uow.RemoteCalendarLinkRepository.Add(curCalendarLink);
+                uow.SaveChanges();
 
-            // EXECUTE
-            Assert.AreEqual(1, _uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted), "One event must be in the repository before synchronization.");
-            Assert.AreEqual(0, _remoteCalendarEvents.Count, "No events must be in the remote storage before synchronization.");
-            await _calendarSyncManager.SyncNowAsync(_uow, _curUser);
-            _uow.SaveChanges();
+                // EXECUTE
+                Assert.AreEqual(1, uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted),
+                    "One event must be in the repository before synchronization.");
+                Assert.AreEqual(0, _remoteCalendarEvents.Count,
+                    "No events must be in the remote storage before synchronization.");
+                await _calendarSyncManager.SyncNowAsync(uow, curUser);
+                uow.SaveChanges();
 
-            // VERIFY
-            Assert.AreEqual(1, _remoteCalendarEvents.Count, "One event must be in the remote storage after synchronization.");
-            var newEvent = Event.CreateEventFromICSCalendar(_uow, _remoteCalendarEvents[0]);
-            AssertEventsAreEqual(curEvent, newEvent);
+                // VERIFY
+                Assert.AreEqual(1, _remoteCalendarEvents.Count,
+                    "One event must be in the remote storage after synchronization.");
+                var newEvent = Event.CreateEventFromICSCalendar(uow, _remoteCalendarEvents[0]);
+                AssertEventsAreEqual(curEvent, newEvent);
+            }
         }
 
         [Test]
         [Category("CalendarSyncManager")]
         public async void CanRemoveFromLocalCalendar()
         {
-            // SETUP
-            var curEvent = _fixtureData.TestEvent2();
-            curEvent.DateCreated = DateTimeOffset.UtcNow - TimeSpan.FromDays(1);
-            curEvent.SyncStatus = EventSyncState.SyncWithExternal;
-            _uow.EventRepository.Add(curEvent);
-            var curCalendarLink = _fixtureData.TestRemoteCalendarLink(_curProvider, _curUser);
-            curCalendarLink.LocalCalendar.Events.Add(curEvent);
-            curCalendarLink.DateSynchronized = DateTimeOffset.UtcNow - TimeSpan.FromHours(1);
-            _uow.RemoteCalendarLinkRepository.Add(curCalendarLink);
-            _uow.SaveChanges();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var curUser = fixture.TestUser1();
+                var curProvider = fixture.TestRemoteCalendarProvider();
+                var curAuthData = fixture.TestRemoteCalendarAuthData(curProvider, curUser);
+                curUser.RemoteCalendarAuthData.Add(curAuthData);
+                
+                // SETUP
+                var curEvent = fixture.TestEvent2();
+                curEvent.DateCreated = DateTimeOffset.UtcNow - TimeSpan.FromDays(1);
+                curEvent.SyncStatus = EventSyncState.SyncWithExternal;
+                uow.EventRepository.Add(curEvent);
+                var curCalendarLink = fixture.TestRemoteCalendarLink(curProvider, curUser);
+                curCalendarLink.LocalCalendar.Events.Add(curEvent);
+                curCalendarLink.DateSynchronized = DateTimeOffset.UtcNow - TimeSpan.FromHours(1);
+                uow.RemoteCalendarLinkRepository.Add(curCalendarLink);
+                uow.SaveChanges();
 
-            // EXECUTE
-            Assert.AreEqual(1, _uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted), "One event must be in the repository before synchronization.");
-            Assert.AreEqual(0, _remoteCalendarEvents.Count, "No events must be in the remote storage before synchronization.");
-            await _calendarSyncManager.SyncNowAsync(_uow, _curUser);
-            _uow.SaveChanges();
+                // EXECUTE
+                Assert.AreEqual(1, uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted),
+                    "One event must be in the repository before synchronization.");
+                Assert.AreEqual(0, _remoteCalendarEvents.Count,
+                    "No events must be in the remote storage before synchronization.");
+                await _calendarSyncManager.SyncNowAsync(uow, curUser);
+                uow.SaveChanges();
 
-            // VERIFY
-            Assert.AreEqual(0, _uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted), "No events must be in the repository after synchronization.");
-            Assert.AreEqual(0, _remoteCalendarEvents.Count, "No events must be in the remote storage after synchronization.");
+                // VERIFY
+                Assert.AreEqual(0, uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted),
+                    "No events must be in the repository after synchronization.");
+                Assert.AreEqual(0, _remoteCalendarEvents.Count,
+                    "No events must be in the remote storage after synchronization.");
+            }
         }
 
         [Test]
         [Category("CalendarSyncManager")]
         public async void CanMergeCalendars()
         {
-            // SETUP
-            var curLocalEvent = _fixtureData.TestEvent2();
-            curLocalEvent.DateCreated = DateTimeOffset.UtcNow;
-            curLocalEvent.SyncStatus = EventSyncState.SyncWithExternal;
-            _uow.EventRepository.Add(curLocalEvent);
-            var curCalendarLink = _fixtureData.TestRemoteCalendarLink(_curProvider, _curUser);
-            curCalendarLink.LocalCalendar.Events.Add(curLocalEvent);
-            _uow.RemoteCalendarLinkRepository.Add(curCalendarLink);
-            _uow.SaveChanges();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var curUser = fixture.TestUser1();
+                var curProvider = fixture.TestRemoteCalendarProvider();
+                var curAuthData = fixture.TestRemoteCalendarAuthData(curProvider, curUser);
+                curUser.RemoteCalendarAuthData.Add(curAuthData);
+                
+                // SETUP
+                var curLocalEvent = fixture.TestEvent2();
+                curLocalEvent.DateCreated = DateTimeOffset.UtcNow;
+                curLocalEvent.SyncStatus = EventSyncState.SyncWithExternal;
+                uow.EventRepository.Add(curLocalEvent);
+                var curCalendarLink = fixture.TestRemoteCalendarLink(curProvider, curUser);
+                curCalendarLink.LocalCalendar.Events.Add(curLocalEvent);
+                uow.RemoteCalendarLinkRepository.Add(curCalendarLink);
+                uow.SaveChanges();
 
-            var curRemoteEvent = _fixtureData.TestEvent2();
-            curRemoteEvent.DateCreated = curLocalEvent.DateCreated;
-            curRemoteEvent.StartDate = curLocalEvent.StartDate;
-            curRemoteEvent.EndDate = curLocalEvent.EndDate;
-            curRemoteEvent.Location = "changed location";
-            curRemoteEvent.Description = "changed description";
-            var iCalEvent = Event.GenerateICSCalendarStructure(curRemoteEvent);
-            _remoteCalendarEvents.Add(iCalEvent);
+                var curRemoteEvent = fixture.TestEvent2();
+                curRemoteEvent.DateCreated = curLocalEvent.DateCreated;
+                curRemoteEvent.StartDate = curLocalEvent.StartDate;
+                curRemoteEvent.EndDate = curLocalEvent.EndDate;
+                curRemoteEvent.Location = "changed location";
+                curRemoteEvent.Description = "changed description";
+                var iCalEvent = Event.GenerateICSCalendarStructure(curRemoteEvent);
+                _remoteCalendarEvents.Add(iCalEvent);
 
-            // EXECUTE
-            Assert.AreEqual(1, _uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted), "One event must be in the repository before synchronization.");
-            Assert.AreEqual(1, _remoteCalendarEvents.Count, "One event must be in the remote storage before synchronization.");
-            await _calendarSyncManager.SyncNowAsync(_uow, _curUser);
-            _uow.SaveChanges();
+                // EXECUTE
+                Assert.AreEqual(1, uow.EventRepository.GetAll().Count(e => e.EventStatus != EventState.Deleted),
+                    "One event must be in the repository before synchronization.");
+                Assert.AreEqual(1, _remoteCalendarEvents.Count,
+                    "One event must be in the remote storage before synchronization.");
+                await _calendarSyncManager.SyncNowAsync(uow, curUser);
+                uow.SaveChanges();
 
-            // VERIFY
-            var localEvents = _uow.EventRepository.GetAll().Where(e => e.EventStatus != EventState.Deleted).ToArray();
-            Assert.AreEqual(1, localEvents.Length, "One event must be in the repository after synchronization.");
-            Assert.AreEqual(1, _remoteCalendarEvents.Count, "One event must be in the remote storage after synchronization.");
-            var newLocalEvent = localEvents[0];
-            var newRemoteEvent = Event.CreateEventFromICSCalendar(_uow, _remoteCalendarEvents[0]);
-            AssertEventsAreEqual(newLocalEvent, newRemoteEvent);
-            AssertEventsAreEqual(curRemoteEvent, newRemoteEvent);
+                // VERIFY
+                var localEvents = uow.EventRepository.GetAll().Where(e => e.EventStatus != EventState.Deleted).ToArray();
+                Assert.AreEqual(1, localEvents.Length, "One event must be in the repository after synchronization.");
+                Assert.AreEqual(1, _remoteCalendarEvents.Count,
+                    "One event must be in the remote storage after synchronization.");
+                var newLocalEvent = localEvents[0];
+                var newRemoteEvent = Event.CreateEventFromICSCalendar(uow, _remoteCalendarEvents[0]);
+                AssertEventsAreEqual(newLocalEvent, newRemoteEvent);
+                AssertEventsAreEqual(curRemoteEvent, newRemoteEvent);
+            }
         }
     }
 }

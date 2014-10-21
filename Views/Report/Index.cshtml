@@ -1,7 +1,6 @@
 ﻿<h2>@ViewBag.Title</h2>
 <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
-
 <nav class="navbar navbar-default top-toolbar-section" role="navigation">
 	<div class="container-fluid">
 		<div class="navbar-header">
@@ -66,7 +65,11 @@
         switch ("@ViewBag.type") {
             case "incident":
                 columns = [
-                    { data: 'create_time' },
+                    {
+                        data: function (data) {
+                            return convertToDateString(data.create_time);
+                        }
+                    },
                     { data: 'primary_category' },
                     { data: 'secondary_category' },
                     { data: 'activity' },
@@ -75,7 +78,11 @@
                 break;
             case "usage":
                 columns = [
-                    { data: 'create_date' },
+                    {
+                        data: function (data) {
+                            return convertToDateString(data.create_date);
+                        }
+                    },
                     { data: 'primary_category' },
                     { data: 'secondary_category' },
                     { data: 'activity' },
@@ -84,7 +91,11 @@
                 break;
             case "alllogs":
                 columns = [
-                    { data: 'date' },
+                    {
+                        data: function (data) {
+                            return convertToDateString(data.date);
+                        }
+                    },
                     { data: 'name' },
                     { data: 'level' },
                     { data: 'message' },
@@ -132,4 +143,7 @@
             return false;
         });
     }
+
+    
+
 </script>

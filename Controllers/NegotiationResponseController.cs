@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.Managers;
@@ -35,7 +36,7 @@ namespace KwasantWeb.Controllers
                     throw new HttpException(404, "Negotiation not found.");
 
                 var answerIDs = negotiationDO.Questions.SelectMany(q => q.Answers.Select(a => a.Id)).ToList();
-                var userAnswerIDs = uow.QuestionResponseRepository.GetQuery().Where(qr => answerIDs.Contains(qr.AnswerID) && qr.UserID == userID).Select(a => a.AnswerID).ToList();
+                var userAnswerIDs = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.AnswerID.HasValue && answerIDs.Contains(qr.AnswerID.Value) && qr.UserID == userID).Select(a => a.AnswerID).ToList();
 
                 var originatingUser = negotiationDO.BookingRequest.User.FirstName;
                 if (!String.IsNullOrEmpty(negotiationDO.BookingRequest.User.LastName))
@@ -103,9 +104,10 @@ namespace KwasantWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (value.Id == null)
-                    throw new HttpException(404, "Negotiation not found");
-                
+                var negotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
+                if (negotiationDO == null)
+                    throw new HttpException(404, "Negotiation not found.");
+
                 //Here we add/update questions based on our proposed negotiation
                 foreach (var question in value.Questions)
                 {
@@ -113,7 +115,6 @@ namespace KwasantWeb.Controllers
                         throw new HttpException(400, "Invalid parameter: Id of question cannot be 0.");
                     
                     var questionDO = uow.QuestionRepository.GetByKey(question.Id);
-
 
                     var currentSelectedAnswers = new List<AnswerDO>();
                     //Previous answers are read-only, we only allow updating of new answers
@@ -153,7 +154,7 @@ namespace KwasantWeb.Controllers
                     var currentSelectedAnswerIDs = question.Answers.Where(a => a.Selected).Select(a => a.Id).ToList();
 
                     //First, remove old answers
-                    foreach (var previousAnswer in previousAnswers.Where(previousAnswer => !currentSelectedAnswerIDs.Contains(previousAnswer.AnswerID)))
+                    foreach (var previousAnswer in previousAnswers.Where(previousAnswer => !previousAnswer.AnswerID.HasValue || !currentSelectedAnswerIDs.Contains(previousAnswer.AnswerID.Value)))
                     {
                         uow.QuestionResponseRepository.Remove(previousAnswer);
                     }
@@ -168,6 +169,11 @@ namespace KwasantWeb.Controllers
                         };
                         uow.QuestionResponseRepository.Add(newAnswer);
                     }
+                }
+
+                if (negotiationDO.NegotiationState == NegotiationState.Resolved)
+                {
+                    AlertManager.PostResolutionNegotiationResponseReceived(negotiationDO.Id);
                 }
 
                 uow.SaveChanges();

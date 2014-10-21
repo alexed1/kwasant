@@ -1,4 +1,5 @@
 ﻿@using Data.States
+@using Microsoft.Ajax.Utilities
 @model KwasantWeb.ViewModels.DashboardShowVM
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @{
@@ -57,11 +58,26 @@
                         </li>
                         <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
                             <ul class="dropdown-menu">
-                                <li><a id="liReview" onclick="getNegotiationReview(); " href="#">Review</a></li>
+                                <li><a id="liReview" onclick="getCurrentNegotiationReview(); " href="#">Review</a></li>
                                 <li><a id="liCreateOrEditNegotiation" onclick="getNegotiationWindow();" data-value='@(Model.CalendarVM.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.CalendarVM.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
                                 <li id="liResolveNegotiation"><a onclick="resolveActiveNegotiation(linkedNegotiationID);" href="#">Mark Resolved</a></li>
                             </ul>
                         </li>
+                    @{
+                        if (Model.ResolvedNegotiations != null && Model.ResolvedNegotiations.Any())
+                        {
+                            <li class="dropdown">
+                                <a>Resolved negotiations</a>
+                                <ul class="dropdown-menu">
+                                    @foreach (var negotiation in Model.ResolvedNegotiations)
+                                    {
+
+                                        <li><a onclick="getNegotiationReview(@negotiation.Id);" href="#">@negotiation.Name</a></li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                    }
                         <li class="dropdown"><a id="btnReport">Reports</a>
                             <ul class="dropdown-menu">
                                 <li><a id="btnHistory" onclick="HistoryClick(@Model.BookingRequestVM.BookingRequestId);" class="btnHistory" href="#">Show History</a></li>

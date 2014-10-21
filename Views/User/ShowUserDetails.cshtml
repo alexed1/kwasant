@@ -1,7 +1,9 @@
-﻿@model KwasantWeb.ViewModels.CreateUserVM
+﻿@using Data.Interfaces
+@using StructureMap
+@model KwasantWeb.ViewModels.UserVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 <div style="padding-right: 40px;">
-    <fieldset id="userInfoForm">
+    <form id="userInfoForm">
         <table>
             <tr>
                 <td colspan="2">
@@ -12,44 +14,47 @@
                 <td>First Name 
                 </td>
                 <td>
-                    @Html.TextBoxFor(curUser => curUser.User.FirstName, new { id = "firstname" })
+                    @Html.TextBoxFor(curUser => curUser.FirstName, new { id = "firstname" })
                 </td>
             </tr>
             <tr>
                 <td>Last Name 
                 </td>
                 <td>
-                    @Html.TextBoxFor(curUser => curUser.User.LastName, new { id = "lastname" })
+                    @Html.TextBoxFor(curUser => curUser.LastName, new { id = "lastname" })
                 </td>
             </tr>
             <tr>
                 <td>Email Address
                 </td>
                 <td>
-                    @Html.TextBoxFor(curUser => curUser.User.EmailAddress.Address, new { id = "email" })
+                    @Html.TextBoxFor(curUser => curUser.EmailAddress, new { id = "email" })
                 </td>
             </tr>
             <tr>
                 <td>Email ID
                 </td>
                 <td>
-                    @Html.TextBoxFor(curUser => curUser.User.EmailAddress.Id, new { id = "emailId", disabled = "disabled" })
+                    @Html.TextBoxFor(curUser => curUser.EmailAddressID, new { id = "emailId", disabled = "disabled" })
+                    @Html.HiddenFor(curUser => curUser.EmailAddressID)
                 </td>
             </tr>
             <tr>
-                <td>Role
+                <td>Roles
                 </td>
                 <td>
-                    <select id="role" name="UserRole">
-                        <option value="">-- Select Role --</option>
-                        @foreach (var role in Model.Roles)
+                    @{
+                        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                         {
-                            if (role.Name != Model.UserRole)
-                            {<option value="@role.Id">@role.Name</option>}
-                            else
-                            {<option value="@role.Id" selected="selected">@role.Name</option>}
+                            var allRows = uow.AspNetRolesRepository.GetAll();
+                            foreach (var role in allRows)
+                            {
+                                <input id="@role.Id" type="checkbox" class="roleCheckbox" value="@role.Name" @Html.Raw(Model.Roles.Contains(role.Name) ? "checked" : String.Empty)/>
+                                <label for="@role.Id">@role.Name</label>
+                                <br/>
+                            }
                         }
-                    </select>
+                    }
                 </td>
             </tr>
             <tr>
@@ -67,93 +72,61 @@
                 </td>
             </tr>
         </table>
-        <input id="hdnUserId" type="hidden" value="@Model.User.Id" />
-    </fieldset>
+        <input id="hdnUserId" type="hidden" value="@Model.Id" />
+        <br />
+        <a style="color: #428bca; text-decoration: underline;" href="/Profile/ProfilesForUser?userID=@Model.Id">View Profiles</a>
+    </form>
 </div>
 <script>
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
-        var table;
-
-        //following condition checking if user already exists then setting the view to edit mode
-        if ("@Model.UserRole" != "") {
-            toggleFields(true);
-        }
-
         //Binding click function to cancel button
         $("#btnCancel").click(function () {
             if ($("#hdnUserId").val() != "") {
                 toggleFields(true);
-                $("#firstname").val("@Model.User.FirstName");
-                $("#lastname").val("@Model.User.LastName");
-                $("#email").val("@Model.User.EmailAddress.Address");
+                $("#firstname").val("@Model.FirstName");
+                $("#lastname").val("@Model.LastName");
+                $("#email").val("@Model.EmailAddress");
             }
             else {
                 window.location.href = "@Url.Action("Dashboard", "Admin")";
             }
         });
 
-        $("#btnEdit").click(function () {
+        $("#btnEdit").click(function() {
             toggleFields(false);
         });
 
         //Binding click event handler to Save button.
-        $("#btnSave").click(function () {
-            $.ajax({
-                url: '@Url.Action("Validate", "User")',
-                type: 'post',
-                data: $('#userInfoForm').serialize(),
-                success: function (response) {
-                    $("#lblSaveError").html("");
-                    if (JSON.parse(response).error != undefined) {
-                        $("#lblSaveError").html(JSON.parse(response).error);
-                    }
-                    else {
-                        createUpdateUser();
-                    }
-                }
+        $("#btnSave").click(function() {
+            var dataObj = {};
+            dataObj.Id = '@Model.Id';
+            dataObj.FirstName = $("#firstname").val();
+            dataObj.LastName = $("#lastname").val();
+            dataObj.EmailAddress = $("#email").val();
+            dataObj.Roles = [];
+            $.each($('.roleCheckbox'), function(i, o) {
+                var wrappedObj = $(o);
+                if (wrappedObj.is(':checked'))
+                    dataObj.Roles.push(wrappedObj.val());
             });
-        });
 
-        //Create or update user if all input values are valid.
-        function createUpdateUser() {
-            if ($("#hdnUserId").val() != "") {
-                updateUser();
-            }
-            else {
-                createUser();
-            }
-        }
+            var dataStr = JSON.stringify(dataObj);
 
-        //Create new user
-        function createUser() {
-            var sendMail = $("#chkSendEmail").is(':checked');
-            $.ajax({
-                url: '@Url.Action("AddFromForm", "User")',
-                type: 'post',
-                data: $('#userInfoForm').serialize() + "&sendEmail=" + sendMail,
-                success: function (response) {
-                    window.location.href = "@Url.Action("Dashboard", "Admin")";
-                }
-            });
-        }
-
-        //Update existing user
-        function updateUser() {
             $.ajax({
                 url: '@Url.Action("Update", "User")',
-                type: 'post',
-                data: $('#userInfoForm').serialize(),
-                success: function (response) {
+                type: 'POST',
+                contentType: 'application/json',
+                data: dataStr,
+                success: function () {
                     $("#lblSaveError").html("User updated successfully");
                     toggleFields(true);
                 }
             });
-        }
-
+        });
     });
 
-    //toggle fields state
+    //toggle fields state, enabling/disabling the user text fields to switch user form Mode
     function toggleFields(state) {
         $("#firstname").prop("disabled", state);
         $("#lastname").prop("disabled", state);

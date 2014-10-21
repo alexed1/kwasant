@@ -21,7 +21,7 @@
         $(function() {
             var settings = {
                 DisplayMode: 'reply',
-
+                PrefixQuestionText:'',
                 MaxAdditionalAnswers: 1,
 
                 AllowModifyNegotiationRequest: false,
@@ -136,6 +136,23 @@
             -moz-box-shadow: 0px 0px 54px 10px rgba(0,0,0,0.75);
             box-shadow: 0px 0px 54px 10px rgba(0,0,0,0.75);
         }
+
+.negotiationsidebar .answerBox {
+    margin: 10px 40PX;
+}
+        .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .Heading-text h2 {
+        font-size: 1.5em;
+
+}
+        .QuesText {
+        font-size:20px;
+        }
                                                                                                                
     </style>
 }
@@ -144,16 +161,29 @@
 
 <div style="padding:15px;">
     <form id="f" class="negotiationsidebar ourBox">
+<table class="Heading-text">
+<tr>
+<td>
         <h2>
             @Html.Raw(
-                Model.CommunicationMode == CommunicationMode.DIRECT
-                ? "Regarding " + Model.Name + ", please clarify the following"
-                                  : "Kwasant helps " + Model.OriginatingUser + " to schedule their calendar. Can you respond to the following:")
+                Model.CommunicationMode == CommunicationMode.Direct
+                ? "Regarding " + Model.Name + ", please clarify the following" 
+                                  : "Kwasant helps " + Model.OriginatingUser + " with calendar scheduling. <br />Please give us the following information:")
         </h2>
+ </td>
+<td> <img  class="floating" src="/Content/img/site/perfect-krawsant.png" alt="Kwasant" title="Kwasant" height="50px"> </td>
+</tr>
+
+</table>
+
         <div id="negotiation"></div>
 
-        <div class="space form-actions negotiation-form-actions" style="display:inline-block">
-            <input id="btnSave" type="button" value="OK" class="btn btn-default pull-left" onclick="submitResponse()" />
+        <div class="space form-actions negotiation-form-actions" style="display:inline-block;width:100%;">
+            <input id="btnSave" type="button" value="OK" class="btn small-dialog-button shadow-button pull-left" onclick="submitResponse()" />
+           
         </div>
     </form>
 </div>
+
+
+        

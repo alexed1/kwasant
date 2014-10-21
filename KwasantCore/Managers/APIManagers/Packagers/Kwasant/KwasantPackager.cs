@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Entities;
-using KwasantCore.Managers.APIManagers.Serializers.Json;
 using Utilities;
+using Utilities.Serializers.Json;
 
-namespace KwasantCore.Managers.APIManager.Packagers.Kwasant
+namespace KwasantCore.Managers.APIManagers.Packagers.Kwasant
 {
     /// <summary>
     /// This class converts JSON to Objects and vice versa, so that RESTful calls can be processed.

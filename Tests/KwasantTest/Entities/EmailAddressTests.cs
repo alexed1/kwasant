@@ -1,20 +1,13 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
-using KwasantCore.StructureMap;
 using NUnit.Framework;
 using StructureMap;
 
 namespace KwasantTest.Entities
 {
     [TestFixture]
-    public class EmailAddressTests
+    public class EmailAddressTests : BaseTest
     {
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-        }
-
         [Test, ExpectedException(ExpectedMessage = "Duplicate values for 'Address' on 'EmailAddressDO' are not allowed. Duplicated value: 'rjrudman@gmail.com'")]
         public void TestDuplicateEmailRejected()
         {

@@ -6,24 +6,20 @@ using Daemons;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.ExternalServices;
+using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Daemons;
 using Moq;
 using NUnit.Framework;
+using SendGrid;
 using StructureMap;
 
 namespace KwasantTest.Integration.BookingITests
 {
     [TestFixture]
-    public class IntegrationTests
+    public class IntegrationTests : BaseTest
     {
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-        }
-
         [Test]
         [Category("IntegrationTests")]
         public void ITest_CanProcessBRCreateEventAndSendInvite()
@@ -51,12 +47,12 @@ namespace KwasantTest.Integration.BookingITests
                     return returnMails;
                 });
 
-            var mockedSmtpClient = new Mock<ISmtpClient>();
+            var mockedSendGridTransport = new Mock<ITransport>();
             //When we are asked to send an email, store it in unreadSentEmails
-            mockedSmtpClient.Setup(m => m.Send(It.IsAny<MailMessage>())).Callback<MailMessage>(unreadSentMails.Add);
+            mockedSendGridTransport.Setup(m => m.DeliverAsync(It.IsAny<ISendGrid>())).Callback<ISendGrid>(sgm => unreadSentMails.Add(sgm.CreateMimeMessage()));
 
             ObjectFactory.Configure(o => o.For<IImapClient>().Use(mockedImapClient.Object));
-            ObjectFactory.Configure(o => o.For<ISmtpClient>().Use(mockedSmtpClient.Object));
+            ObjectFactory.Configure(o => o.For<ITransport>().Use(mockedSendGridTransport.Object));
 
             //Create an email to be sent by the outbound email daemon
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -84,9 +80,11 @@ namespace KwasantTest.Integration.BookingITests
                 //Create an event
                 var e = ObjectFactory.GetInstance<Event>();
                 var eventDO = e.Create(uow, bookingRequestDO.Id, DateTime.Now.ToString(), DateTime.Now.AddHours(1).ToString());
+                uow.SaveChanges();
                 
                 //Dispatch invites for the event
                 e.InviteAttendees(uow, eventDO, eventDO.Attendees, new List<AttendeeDO>());
+                uow.SaveChanges();
 
                 //Run our outbound email daemon so we can check if emails are created
                 DaemonTests.RunDaemonOnce(outboundEmailDaemon);
@@ -94,7 +92,7 @@ namespace KwasantTest.Integration.BookingITests
                 //Check each attendee recieves an invitation email
                 foreach (var attendeeDO in eventDO.Attendees)
                 {
-                    Assert.True(unreadSentMails.Any(m => m.Subject.StartsWith("Invitation from me@gmail.com") && m.To.First().Address == attendeeDO.EmailAddress.Address), "Invitation not found for " + attendeeDO.Name);
+                    Assert.True(unreadSentMails.Any(m => m.Subject.StartsWith("Invitation from me") && m.To.First().Address == attendeeDO.EmailAddress.Address), "Invitation not found for " + attendeeDO.Name);
                 }
             }
         }

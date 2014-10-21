@@ -10,22 +10,14 @@ using StructureMap;
 namespace KwasantTest.Entities
 {
     [TestFixture]
-    public class UserTests
+    public class UserTests : BaseTest
     {
-        private FixtureData _fixture;
-
-        [SetUp]
-        public void Setup()
-        {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-            _fixture = new FixtureData();
-        }
-
         [Test, ExpectedException(ExpectedMessage = "Duplicate values for 'EmailAddressID' on 'UserDO' are not allowed. Duplicated value: '1'")]
         public void TestDuplicateUserEmailIDRejected()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                uow.EmailAddressRepository.Add(new EmailAddressDO() {Id = 1});
                 uow.UserRepository.Add(new UserDO() { EmailAddressID = 1});
                 uow.UserRepository.Add(new UserDO() { EmailAddressID = 1 });
                 uow.SaveChanges();
@@ -38,8 +30,8 @@ namespace KwasantTest.Entities
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var role = new Role();
-                role.Add(uow, _fixture.TestRole());
+                var fixture = new FixtureData(uow);
+                uow.AspNetRolesRepository.Add(fixture.TestRole());
                 var u = new UserDO();
                 var user = new User();
 
@@ -49,9 +41,7 @@ namespace KwasantTest.Entities
                 uow.UserRepository.Add(currUserDO);
                
                 UserDO currRetrivedUserDO = uow.UserRepository.GetQuery().FirstOrDefault(uu => currUserDO.EmailAddressID == uu.EmailAddressID);
-                
             }
         }
-
     }
 }

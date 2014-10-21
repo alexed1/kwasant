@@ -13,6 +13,9 @@ namespace Daemons
         private readonly object _controller;
         private const string runAllKey = "DiagnosticsTest_RunAll";
         private readonly object _testRunLocker = new object();
+
+        protected override String ServiceGroupName { get { return "Tests (Daemon)"; } }
+
         public DiagnosticsTest()
         {
             lock (_testRunLocker)
@@ -65,6 +68,8 @@ namespace Daemons
                         {
                             var serverCall = test.Key;
                             var method = _methodMap[serverCall];
+                            
+                            service.RunningTest = true;
                             method.Invoke(_controller, new object[] { test.Key, test.Value });
 
                             LogEvent("Running test '" + test.Key + "' on service '" + service.ServiceName + "'.");

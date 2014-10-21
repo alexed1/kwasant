@@ -1,6 +1,6 @@
-﻿using KwasantCore.Managers.APIManagers.Serializers.Json;
+﻿using Utilities.Serializers.Json;
 
-namespace KwasantCore.Managers.APIManager.Packagers.DataTable
+namespace KwasantCore.Managers.APIManagers.Packagers.DataTable
 {
     public class DataTablesPackager
     {
@@ -10,7 +10,8 @@ namespace KwasantCore.Managers.APIManager.Packagers.DataTable
         {
             jsonSerializer = new JsonSerializer();
         }
-        public string Pack(object dataObject) {
+        public string Pack(object dataObject)
+        {
             return jsonSerializer.Serialize(dataObject);
         }
     }

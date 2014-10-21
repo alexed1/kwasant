@@ -57,9 +57,15 @@ function getURLParameter(name) {
 }
 
 /*** Kwasant.IFrame functions ***/
-function closeWithUnsavedDataCheck(modifiedState) {
+function closeWithUnsavedDataCheck(modifiedState, summery, eventId) {
+
     if (!modifiedState.modified) {
-        close();
+        if (summery == '') {
+            $.getJSON('/Event/ConfirmDelete?eventID=' + eventId, function (response) {
+                window.parent.calendar.refreshCalendars;
+                close();
+            });
+        }
     }
     else if (confirm("you are about to lose data, continue?")) {
         modifiedState.modified = false;
@@ -75,23 +81,16 @@ function close(saved) {
 }
 
 /*** Check Email Validation ***/
-
-var returnval;
-//var initValues;
-var data;
 function getValidEmailAddress(attendeesSel) {
     $(attendeesSel).select2({
         createSearchChoice: function (term) {
             return { id: term, text: term };
         },
         validateFormat: function (term) {
-            returnval = "";
             if (isValidEmail(term)) {
-                if (returnval == true)
-                    return null;
-                else
-                    return returnval;
+                return null;
             }
+            return 'Invalid Email';
         },
         multiple: true,
         data: [],
@@ -100,16 +99,32 @@ function getValidEmailAddress(attendeesSel) {
 }
 
 function isValidEmail(term) {
-    return $.ajax({
-        type: "Get",
-        async: false,
-        dataType: 'json',
-        contentType: 'application/json; charset=utf-8 ',
-        url: '/Data/ValidateEmailAddress',
-        data: { emailString: term },
-        success: function (data) {
-            returnval = data;
-        },
-        cache: false
-    });
+    var atIndex = term.indexOf('@');
+    var dotIndex = term.lastIndexOf('.');
+    if (atIndex > 0 //We need something before the at sign
+        && dotIndex > atIndex + 1 //We need a dot, and it should have at least one character between the at and the dot
+        && dotIndex < term.length - 1 //The dot can't be at the end
+    )
+        return true;
+    return false;
+}
+
+
+function convertToDateString(dateFormat) {
+    var datevalue = new Date(dateFormat);
+    var timeSuffix = "AM"; var hour = 0;
+    if (datevalue.getHours() >= 12) {
+        hour = parseInt(datevalue.getHours()) - 12;
+        timeSuffix = "PM";
+    } else {
+        hour = datevalue.getHours();
+        timeSuffix = "AM";
+    }
+    dateFormat = datevalue.getMonth() + 1 + "-" + datevalue.getDate() + "-" + datevalue.getFullYear().toString().substring(2, 4) + " " + hour + ":" + datevalue.getMinutes() + " " + timeSuffix;
+    return dateFormat;
+}
+
+
+function autoResizeTextArea(e) {
+    $(e).css({ 'height': 'auto', 'overflow-y': 'hidden' }).height(e.scrollHeight);
 }

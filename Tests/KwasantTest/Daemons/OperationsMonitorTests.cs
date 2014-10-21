@@ -14,7 +14,7 @@ using Utilities;
 namespace KwasantTest.Daemons
 {
     [TestFixture]
-    public class OperationsMonitorTests
+    public class OperationsMonitorTests : BaseTest
     {
         [SetUp]
         public void Setup()
@@ -41,22 +41,24 @@ namespace KwasantTest.Daemons
         [Test]
         public void TestOperationManager()
         {
-            var uow = ObjectFactory.GetInstance<IUnitOfWork>();
-            BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
-            TrackingStatusRepository trackingStatusRepository = uow.TrackingStatusRepository;
-            var bookingRequestDO = new BookingRequestDO();
-            bookingRequestDO.State = BookingRequestState.Unstarted;
-            bookingRequestDO.User = new FixtureData().TestUser1();
-            bookingRequestRepo.Add(bookingRequestDO);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                TrackingStatusRepository trackingStatusRepository = uow.TrackingStatusRepository;
+                var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
+                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.User = new FixtureData(uow).TestUser1();
+                bookingRequestRepo.Add(bookingRequestDO);
 
-            uow.SaveChanges();
+                uow.SaveChanges();
 
-            Assert.AreEqual(0, trackingStatusRepository.GetAll().Count());
+                Assert.AreEqual(0, trackingStatusRepository.GetAll().Count());
 
-            var om = new OperationsMonitor();
-            DaemonTests.RunDaemonOnce(om);
+                var om = new OperationsMonitor();
+                DaemonTests.RunDaemonOnce(om);
 
-            Assert.AreEqual(1, trackingStatusRepository.GetAll().Count());
+                Assert.AreEqual(1, trackingStatusRepository.GetAll().Count());
+            }
         }
     }
 }
