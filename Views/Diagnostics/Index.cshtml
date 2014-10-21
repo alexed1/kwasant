@@ -38,11 +38,8 @@
 
 <div>
     <h2>Diagnostics</h2>
-    <label>
-        <input id="autoRefresh" type="checkbox" />
-        Auto-Refresh page
-    </label>
     <label>IsProduction: @Utilities.Server.IsProduction</label>
+    <br />
     <label>IsDev: @Utilities.Server.IsDevMode</label>
 </div>
 @foreach (var group in Model.GroupBy(m => m.GroupName))
@@ -129,28 +126,6 @@
 </div>
 <script type="text/javascript">
     $(function() {
-
-        var timeoutFunc;
-        $('#autoRefresh').click(function(a) {
-            var t = $(this);
-            if (this.checked) {
-                $.cookie('AutoRefreshDiagostics', 'true', { path: '/foo' });
-                timeoutFunc =setTimeout(function () {
-                    location.reload();
-                }, 5000);
-            } else {
-                $.cookie('AutoRefreshDiagostics', 'false', { path: '/foo' });
-                if (timeoutFunc)
-                    clearTimeout(timeoutFunc);
-            }
-        });
-
-        if ($.cookie('AutoRefreshDiagostics', { path: '/foo' }) == 'true') {
-            $('#autoRefresh').click();
-        }
-
-        
-
         var showFunc = function(link) {
             $(link.attr('targettable')).show();
             link.attr('expanded', 'true');
