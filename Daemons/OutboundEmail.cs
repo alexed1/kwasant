@@ -64,7 +64,7 @@ namespace Daemons
 
                     AlertManager.Error_EmailSendFailure();
                     Email _email = ObjectFactory.GetInstance<Email>();
-                    _email.SendAlertEmail();
+                    _email.SendAlertEmail("Alert! Kwasant Error Reported: EmailSendFailure");
                 });
 
             AddTest("OutboundEmailDaemon_Test", "Test");
