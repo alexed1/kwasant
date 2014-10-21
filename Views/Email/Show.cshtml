@@ -49,7 +49,7 @@
             </table>
         </div>
         <div id="emailContent" class="email-content">
-            @Model.CurEmailData.HTMLText
+            @Html.Raw(Model.CurEmailData.HTMLText)
         </div>
     </div>
     <div class="context-menu box menu-1"></div>
