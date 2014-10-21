@@ -45,7 +45,8 @@ namespace KwasantTest.Services
 
                 // SETUP
                 EmailDO _curEmailDO = fixture.TestEmail1();
-                const string templateName = "test_template";
+                //const string templateName = "test_template";
+                const string templateName = "a16da250-a48b-42ad-88e1-bdde24ae1dee";
 
                 // EXECUTE
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(_curEmailDO,
@@ -102,7 +103,7 @@ namespace KwasantTest.Services
 
                 // VERIFY
                 Assert.Throws<ValidationException>(
-                    () => uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmailDO, "test_template", null),
+                    () => uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmailDO, "a16da250-a48b-42ad-88e1-bdde24ae1dee", null),
                     "Email should fail to be sent as it is invalid.");
             }
         }

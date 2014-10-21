@@ -11,7 +11,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
 {
     class TransportFactory
     {
-        public static Web CreateWeb(IConfigRepository configRepository)
+        public static ITransport CreateWeb(IConfigRepository configRepository)
         {
             if (configRepository == null)
                 throw new ArgumentNullException("configRepository");
@@ -20,7 +20,8 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
                 UserName = configRepository.Get("OutboundUserName"),
                 Password = configRepository.Get("OutboundUserPassword")
             };
-            return new Web(credentials);
+            var web = new Web(credentials);
+            return new TransportWrapper(web);
         }
     }
 }

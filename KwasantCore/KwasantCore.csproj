@@ -199,6 +199,7 @@
     <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookAddRequest.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookResponse.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\IAuthorizingHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\OAuthHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Packagers\DataTable\DataTablesPackager.cs" />
