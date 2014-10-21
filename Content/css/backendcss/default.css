@@ -175,6 +175,26 @@ td .custom-btn:first-child {
 	margin-left: 0;
 }
 
+.form-actions .btn.small-dialog-button {         
+    padding: 10px 25px;
+    font-size: 14px;
+    line-height: 16px;        
+}
+
+.btn.shadow-button, .form-actions .btn.shadow-button {
+	-moz-box-shadow: 0 8px 5px -6px #333;
+	-webkit-box-shadow: 0 8px 5px -6px #333;
+	box-shadow: 0 8px 5px -6px #333;
+	text-decoration: none;
+	text-shadow: 0 1px 0 #333;
+    margin-bottom: 6px;
+}
+
+.btn.shadow-button:active, .form-actions .btn.shadow-button:active {
+	position: relative;
+	top: 1px;
+}
+
 /* Main marketing message and sign up button */
 .jumbotron {
     text-align: center;
@@ -576,9 +596,41 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
     background: #f16d20;
 }
 
+.btn.gradient-button:active {
+	position: relative;
+	top: 1px;
+}
+
+input[type="submit"].btn.gradient-button, input[type="button"].btn.gradient-button, .btn.gradient-button {
+	-moz-box-shadow: inset 0 1px 0 0 #d65d17;
+	-webkit-box-shadow: inset 0 1px 0 0 #d65d17;
+	box-shadow: inset 0 1px 0 0 #d65d17;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f16d20), color-stop(1, #b85a32));
+	background: -moz-linear-gradient(top, #f16d20 5%, #b85a32 100%);
+	background: -webkit-linear-gradient(top, #f16d20 5%, #b85a32 100%);
+	background: -o-linear-gradient(top, #f16d20 5%, #b85a32 100%);
+	background: -ms-linear-gradient(top, #f16d20 5%, #b85a32 100%);
+	background: linear-gradient(to bottom, #f16d20 5%, #b85a32 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f16d20', endColorstr='#b85a32',GradientType=0);
+	background-color: #f16d20;
+	text-shadow: 0 1px 0 #333;
+    transition: all ease-in-out .3s;
+}
+
+input[type="submit"].btn.gradient-button:hover, input[type="button"].btn.gradient-button:hover, .btn.gradient-button:hover {
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #b85a32), color-stop(1, #f16d20));
+	background: -moz-linear-gradient(top, #b85a32 5%, #f16d20 100%);
+	background: -webkit-linear-gradient(top, #b85a32 5%, #f16d20 100%);
+	background: -o-linear-gradient(top, #b85a32 5%, #f16d20 100%);
+	background: -ms-linear-gradient(top, #b85a32 5%, #f16d20 100%);
+	background: linear-gradient(to bottom, #b85a32 5%, #f16d20 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b85a32', endColorstr='#f16d20',GradientType=0);
+	background-color: #b85a32;
+} 
+
 .cancel-btn {
-	border: 1px solid #8b4f34;
-    background: #8E8E8E;
+	border: 1px solid #575557;
+    background: #8e8e8e;
     background-image: none;
     text-shadow: none;
     color: #f2e9df;
@@ -588,18 +640,45 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
     filter: none;
     padding: 11px 25px;
     font-size: 18px;	
+    transition: all ease-in-out .3s;    
 }
 
 .cancel-btn:hover {
-    border-color: #8b4f34;
+    border-color: #575557;
     background: #717171;
 	color: #f2e9df;
 	text-decoration: none;
 }
 
+.btn.cancel-btn.gradient-button {
+	-moz-box-shadow: inset 0 1px 0 0 #9c9c9c;
+	-webkit-box-shadow: inset 0 1px 0 0 #9c9c9c;
+	box-shadow: inset 0 1px 0 0 #9c9c9c;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #b8b8b8), color-stop(1, #757575));
+	background: -moz-linear-gradient(top, #b8b8b8 5%, #757575 100%);
+	background: -webkit-linear-gradient(top, #b8b8b8 5%, #757575 100%);
+	background: -o-linear-gradient(top, #b8b8b8 5%, #757575 100%);
+	background: -ms-linear-gradient(top, #b8b8b8 5%, #757575 100%);
+	background: linear-gradient(to bottom, #b8b8b8 5%, #757575 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#b8b8b8', endColorstr='#757575',GradientType=0);
+	background-color: #b8b8b8;
+	text-shadow: 0 1px 0 #333;
+}
+
+.btn.cancel-btn.gradient-button:hover {
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #757575), color-stop(1, #b8b8b8));
+	background: -moz-linear-gradient(top, #757575 5%, #b8b8b8 100%);
+	background: -webkit-linear-gradient(top, #757575 5%, #b8b8b8 100%);
+	background: -o-linear-gradient(top, #757575 5%, #b8b8b8 100%);
+	background: -ms-linear-gradient(top, #757575 5%, #b8b8b8 100%);
+	background: linear-gradient(to bottom, #757575 5%, #b8b8b8 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#757575', endColorstr='#b8b8b8',GradientType=0);
+	background-color: #757575;
+} 
+
 .delete-btn {
 	border: 1px solid #8b4f34;
-    background: #E44242;
+    background: #e44242;
     background-image: none;
     text-shadow: none;
     color: #f2e9df;
@@ -609,14 +688,42 @@ input[type="submit"].btn:hover, input[type="button"].btn:hover, input[type="subm
     filter: none;
     padding: 11px 25px;
     font-size: 18px;	
+    transition: all ease-in-out .3s;
 }
 
 .delete-btn:hover {
     border-color:  #8b4f34;
-    background: #B44141;
+    background: #db0606;
 	color: #f2e9df;
 	text-decoration: none;
 }
+
+.btn.delete-btn.gradient-button {
+	-moz-box-shadow: inset 0 1px 0 0 #f5978e;
+	-webkit-box-shadow: inset 0 1px 0 0 #f5978e;
+	box-shadow: inset 0 1px 0 0 #f5978e;
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #f24537), color-stop(1, #c62d1f));
+	background: -moz-linear-gradient(top, #f24537 5%, #c62d1f 100%);
+	background: -webkit-linear-gradient(top, #f24537 5%, #c62d1f 100%);
+	background: -o-linear-gradient(top, #f24537 5%, #c62d1f 100%);
+	background: -ms-linear-gradient(top, #f24537 5%, #c62d1f 100%);
+	background: linear-gradient(to bottom, #f24537 5%, #c62d1f 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f24537', endColorstr='#c62d1f',GradientType=0);
+	background-color: #f24537;
+	text-shadow: 0 1px 0 #333;
+    transition: all ease-in-out .3s;   
+}
+
+.btn.delete-btn.gradient-button:hover {
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #c62d1f), color-stop(1, #f24537));
+	background: -moz-linear-gradient(top, #c62d1f 5%, #f24537 100%);
+	background: -webkit-linear-gradient(top, #c62d1f 5%, #f24537 100%);
+	background: -o-linear-gradient(top, #c62d1f 5%, #f24537 100%);
+	background: -ms-linear-gradient(top, #c62d1f 5%, #f24537 100%);
+	background: linear-gradient(to bottom, #c62d1f 5%, #f24537 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#c62d1f', endColorstr='#f24537',GradientType=0);
+	background-color: #c62d1f;
+} 
 
 /*Login section*/
 
