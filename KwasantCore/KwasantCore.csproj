@@ -186,6 +186,7 @@
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\CalDAVModels.cs" />
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\CalDAVClientFactory.cs" />
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\CalDAVClient.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\CalDAV\GoogleCalDAVClient.cs" />
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClient.cs" />
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClientFactory.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\ActiveMandrillWebhook.cs" />

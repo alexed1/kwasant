@@ -256,6 +256,7 @@ namespace KwasantCore.Services
                 Transparency = icsEvent.Transparency.ToString(),
                 DateCreated = icsEvent.Created != null ? icsEvent.Created.UTC : DateTimeOffset.UtcNow,
                 Attendees = icsEvent.Attendees
+                    .Where(a => a.Value != null)
                     .Select(a => new AttendeeDO()
                     {
                         EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(a.Value.OriginalString.Remove(0, a.Value.Scheme.Length + 1)),

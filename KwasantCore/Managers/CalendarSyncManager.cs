@@ -173,8 +173,7 @@ namespace KwasantCore.Managers
                                             DateTimeOffset to)
         {
             var client = _clientFactory.Create(authData);
-            // TODO: obtain a real list from remote calendar provider
-            var remoteCalendars = new[] {authData.User.EmailAddress.Address};
+            var remoteCalendars = await client.GetCalendars(authData);
             // if localDefaultCalendar is null then each new calendar link will get a new local calendar.
             var localDefaultCalendar = uow.CalendarRepository.GetQuery().FirstOrDefault(c => c.OwnerID == authData.UserID);
             foreach (var remoteName in remoteCalendars)
