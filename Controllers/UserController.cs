@@ -154,14 +154,15 @@ namespace KwasantWeb.Controllers
                 return jsonResult;
             }
         }
-        
+
         [HttpPost]
         public ActionResult Update(UserVM curCreateUserVM)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var existingUser = uow.UserRepository.GetOrCreateUser(curCreateUserVM.EmailAddress);
-                uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName, Guid.NewGuid().ToString());
+                uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName,
+                    Guid.NewGuid().ToString());
 
                 var existingRoles = uow.AspNetUserRolesRepository.GetRoles(existingUser.Id).ToList();
 
@@ -186,6 +187,36 @@ namespace KwasantWeb.Controllers
             }
             var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
             return jsonSuccessResult;
+        }
+
+        public ActionResult FindUser()
+        {
+            return View();
+        }
+
+        public ActionResult Search(String firstName, String lastName, String emailAddress)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var users = uow.UserRepository.GetQuery();
+                if (!String.IsNullOrWhiteSpace(firstName))
+                    users = users.Where(u => u.FirstName.Contains(firstName));
+                if (!String.IsNullOrWhiteSpace(lastName))
+                    users = users.Where(u => u.LastName.Contains(lastName));
+                if (!String.IsNullOrWhiteSpace(emailAddress))
+                    users = users.Where(u => u.EmailAddress.Address.Contains(emailAddress));
+
+                return new JsonResult
+                {
+                    Data = users.ToList().Select(u => new
+                    {
+                        Id = u.Id,
+                        FirstName = u.FirstName,
+                        LastName = u.LastName,
+                        EmailAddress = u.EmailAddress.Address
+                    }).ToList()
+                };
+            }
         }
 
         private static UserVM CreateUserVM(UserDO u, IUnitOfWork uow)

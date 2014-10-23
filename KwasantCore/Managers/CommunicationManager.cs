@@ -88,7 +88,9 @@ namespace KwasantCore.Managers
             foreach (var attendee in negotiationDO.Attendees)
             {
                 var emailDO = new EmailDO();
-                emailDO.From = _emailAddress.GetFromEmailAddress(uow, attendee.EmailAddress, negotiationDO.BookingRequest.User);
+                var emailAddressDO = _emailAddress.GetFromEmailAddress(uow, attendee.EmailAddress, negotiationDO.BookingRequest.User);
+                emailDO.From = emailAddressDO;
+                emailDO.FromID = emailAddressDO.Id;
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
                 //emailDO.Subject = "Regarding:" + negotiationDO.Name;
                 emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}",
@@ -142,9 +144,8 @@ Proposed Answers: {2}
                         ,
                         {"questions", String.Join("<br/>", generated)}
                     });
-
-
             }
+            negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
         }
 
         private bool EventHasChanged(IUnitOfWork uow, EventDO eventDO)
