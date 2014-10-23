@@ -28,8 +28,10 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
         
+        public string RemoteCalendarHref { get; set; }
         public string RemoteCalendarName { get; set; }
-        
+        public bool IsDisabled { get; set; }
+
         [Required, ForeignKey("LocalCalendar")]
         public int? LocalCalendarID { get; set; }
         public virtual CalendarDO LocalCalendar { get; set; }

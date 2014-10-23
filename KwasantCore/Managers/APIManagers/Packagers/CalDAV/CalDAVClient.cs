@@ -55,10 +55,11 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
             "</C:calendar-query>";
 
         private const string CalendarsQuery =
-            "<D:propfind xmlns:D=\"DAV:\">" +
-            "  <D:prop>" +
-            "    <D:resourcetype/>" +
-            "  </D:prop>" +
+            "<D:propfind xmlns:D=\"DAV:\">\r\n" +
+            "  <D:prop>\r\n" +
+            "    <D:displayname/>\r\n" +
+            "    <D:resourcetype/>\r\n" +
+            "  </D:prop>\r\n" +
             "</D:propfind>";        
         
         /// <summary>
@@ -74,7 +75,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
             if (calendarLink == null)
                 throw new ArgumentNullException("calendarLink");
 
-            var calendarId = calendarLink.RemoteCalendarName;
+            var calendarId = calendarLink.RemoteCalendarHref;
             var userId = calendarLink.LocalCalendar.Owner.Id;
             
             // Standard structure to get responses from CalDAV (WebDAV) services.
@@ -122,7 +123,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
             if (calendarEvent.Events == null || calendarEvent.Events.Count == 0)
                 throw new ArgumentException("iCalendar object must contain at least one event.", "calendarEvent");
 
-            var calendarId = calendarLink.RemoteCalendarName;
+            var calendarId = calendarLink.RemoteCalendarHref;
             var userId = calendarLink.LocalCalendar.Owner.Id;
             var eventId = calendarEvent.Events.First().UID;
             var uri = new Uri(_endPointUri, calendarId);
@@ -149,7 +150,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
             return authData.User.EmailAddress.Address;
         }
 
-        public async Task<IEnumerable<string>> GetCalendars(IRemoteCalendarAuthData authData)
+        public async Task<IDictionary<string, string>> GetCalendars(IRemoteCalendarAuthData authData)
         {
             if (authData == null)
                 throw new ArgumentNullException("authData");
@@ -178,18 +179,18 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
                 }
             }
 
-            return multiStatus.Items != null
-                ? multiStatus
-                    .Items
-                    .Where(r => r.PropStat.Any(
-                        propstat => propstat != null && 
+            Func<multistatusResponsePropstat, bool> propStatFilter =
+                propstat => propstat != null &&
                             string.Equals(propstat.Status, "HTTP/1.1 200 OK", StringComparison.Ordinal) &&
                             propstat.Prop != null &&
                             propstat.Prop.ResourceType != null &&
-                            propstat.Prop.ResourceType.Calendar != null))
-                    .Select(r => HttpUtility.UrlDecode(r.Href))
-                    .ToArray()
-                : new string[0];
+                            propstat.Prop.ResourceType.Calendar != null;
+            return multiStatus.Items != null
+                ? multiStatus
+                    .Items
+                    .Where(r => r.PropStat.Any(propStatFilter))
+                    .ToDictionary(r => HttpUtility.UrlDecode(r.Href), r => r.PropStat.First(propStatFilter).Prop.DisplayName)
+                : new Dictionary<string, string>();
         }
 
     }

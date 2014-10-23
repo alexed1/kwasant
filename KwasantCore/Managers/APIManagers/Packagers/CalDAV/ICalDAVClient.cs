@@ -10,6 +10,6 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
     {
         Task<IEnumerable<iCalendar>> GetEventsAsync(IRemoteCalendarLink calendarLink, DateTimeOffset @from, DateTimeOffset to);
         Task CreateEventAsync(IRemoteCalendarLink calendarLink, iCalendar calendarEvent);
-        Task<IEnumerable<string>> GetCalendars(IRemoteCalendarAuthData authData);
+        Task<IDictionary<string, string>> GetCalendars(IRemoteCalendarAuthData authData);
     }
 }

@@ -88,6 +88,9 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
         [XmlElement("calendar-data", Namespace = "urn:ietf:params:xml:ns:caldav")]
         public string CalendarData { get; set; }
 
+        [XmlElement("displayname")]
+        public string DisplayName { get; set; }
+
         /// <remarks/>
         [XmlElement("resourcetype")]
         public MultiStatusResponsePropstatPropResourceType ResourceType { get; set; }

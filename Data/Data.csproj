@@ -333,6 +333,10 @@
     <Compile Include="Migrations\201410171057138_Sync.Rob.17.10.2014.Designer.cs">
       <DependentUpon>201410171057138_Sync.Rob.17.10.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201410232019045_AddRemoteCalendarLinkFields.cs" />
+    <Compile Include="Migrations\201410232019045_AddRemoteCalendarLinkFields.Designer.cs">
+      <DependentUpon>201410232019045_AddRemoteCalendarLinkFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
@@ -1167,6 +1171,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410171057138_Sync.Rob.17.10.2014.resx">
       <DependentUpon>201410171057138_Sync.Rob.17.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410232019045_AddRemoteCalendarLinkFields.resx">
+      <DependentUpon>201410232019045_AddRemoteCalendarLinkFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
