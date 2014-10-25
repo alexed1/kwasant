@@ -30,7 +30,7 @@
                     { data: 'body' },
                     {
                         data: null,
-                        defaultContent: "<button value='Release' class='custom-btn glyphicon glyphicon-folder-open'>Release</button>"
+                        defaultContent: "<button value='detail' class='custom-btn glyphicon glyphicon-folder-open'>Details</button><button value='Release' class='custom-btn glyphicon glyphicon-folder-open'>Release</button>"
                     }
                 ],
             });
@@ -41,6 +41,10 @@
                 var parentcontrol = this;
                 //checking clicked button value for appropriate action this will be "Release" 
                 switch ($(this).val()) {
+                    case "detail":
+                        //redirecting to main calendar view for details
+                        window.location.href = '@Url.Action("Details")' + "/" + data.id;
+                        break;
                     case "Release":
                         $.post("/BookingRequest/ReleaseBooker?bookingRequestId=" + data.id, function (response) {
                                 $(parentcontrol).parents('tr').remove();
