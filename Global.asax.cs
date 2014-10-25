@@ -125,14 +125,23 @@ namespace KwasantWeb
             Logger.GetLogger().Error(errorMessage, exception);
         }
 
+        private readonly object _initLocker = new object();
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
-            if (!_IsInitialised)
+            if (Utilities.Server.IsDevMode || !_IsInitialised)
             {
-                SetServerUrl(HttpContext.Current);
-                Utilities.Server.IsDevMode = Utilities.Server.ServerHostName.Contains("localhost");
-                Logger.GetLogger().Info("Starting server on " + Utilities.Server.ServerHostName);
-                _IsInitialised = true;
+                lock (_initLocker)
+                {
+                    // Not redundant checking - we to a quick check outside of our lock to improve performance.
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+                    if (Utilities.Server.IsDevMode || !_IsInitialised)
+                    {
+                        SetServerUrl(HttpContext.Current);
+                        Utilities.Server.IsDevMode = Utilities.Server.ServerHostName.Contains("localhost");
+                        Logger.GetLogger().Info("Starting server on " + Utilities.Server.ServerHostName);
+                        _IsInitialised = true;
+                    }
+                }
             }
         }
 
