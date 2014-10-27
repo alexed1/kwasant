@@ -4,11 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Interfaces;
 using Data.States.Templates;
-using ParticipationStatus = Data.States.ParticipationStatus;
 
 namespace Data.Entities
 {
-    public class AttendeeDO : IAttendeeDO
+    public class AttendeeDO : BaseDO, IAttendeeDO
     {
         [Key]
         public int Id { get; set; }

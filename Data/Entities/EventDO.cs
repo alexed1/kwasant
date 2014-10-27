@@ -8,7 +8,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class EventDO
+    public class EventDO : BaseDO
     {
         public EventDO()
         {

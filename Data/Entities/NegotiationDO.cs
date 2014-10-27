@@ -9,7 +9,7 @@ using NegotiationState = Data.States.NegotiationState;
 
 namespace Data.Entities
 {
-    public class NegotiationDO
+    public class NegotiationDO : BaseDO
     {
         public NegotiationDO()
         {

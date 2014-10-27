@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class AuthorizationTokenDO
+    public class AuthorizationTokenDO : BaseDO
     {
         public AuthorizationTokenDO()
         {

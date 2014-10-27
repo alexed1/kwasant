@@ -104,6 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
+    <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
@@ -332,6 +333,10 @@
     <Compile Include="Migrations\201410171057138_Sync.Rob.17.10.2014.cs" />
     <Compile Include="Migrations\201410171057138_Sync.Rob.17.10.2014.Designer.cs">
       <DependentUpon>201410171057138_Sync.Rob.17.10.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410271701291_ImplementLastUpdated.cs" />
+    <Compile Include="Migrations\201410271701291_ImplementLastUpdated.Designer.cs">
+      <DependentUpon>201410271701291_ImplementLastUpdated.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
@@ -1167,6 +1172,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410171057138_Sync.Rob.17.10.2014.resx">
       <DependentUpon>201410171057138_Sync.Rob.17.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410271701291_ImplementLastUpdated.resx">
+      <DependentUpon>201410271701291_ImplementLastUpdated.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
