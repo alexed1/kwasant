@@ -433,6 +433,7 @@
     <Content Include="Content\img\backgrounds\background_coffe_and_phone.jpg" />
     <Content Include="Content\img\backgrounds\bg-overlay.png" />
     <Content Include="Content\img\backgrounds\ie-black-bg.png" />
+    <Content Include="Content\img\backgrounds\login-wrapper-bg.png" />
     <Content Include="Content\img\Croissant\croissant_nolic.jpg" />
     <Content Include="Content\img\Cross.png" />
     <Content Include="Content\img\EmailLogo.png" />
@@ -785,7 +786,6 @@
     <Content Include="Views\User\FindUser.cshtml" />
     <Content Include="Views\User\ShowAddUser.cshtml" />
     <Content Include="Views\User\ShowCalendarEvents.cshtml" />
-    <Content Include="Views\User\ShowQuery.cshtml" />
     <Content Include="Views\User\ShowUserCreationSettings.cshtml" />
     <Content Include="Views\User\ShowUserDetails.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />

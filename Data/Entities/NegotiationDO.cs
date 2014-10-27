@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.States.Templates;
+using Microsoft.AspNet.Identity;
+using NegotiationState = Data.States.NegotiationState;
 
 namespace Data.Entities
 {
@@ -12,6 +15,8 @@ namespace Data.Entities
         {
             Questions = new List<QuestionDO>();
             Attendees = new List<AttendeeDO>();
+
+            NegotiationState = States.NegotiationState.InProcess;
         }
 
         [Key]
