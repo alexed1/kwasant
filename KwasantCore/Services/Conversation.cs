@@ -15,7 +15,7 @@ namespace KwasantCore.Services
         public static BookingRequestDO Match(IUnitOfWork uow, EmailDO curEmail)
         {
             return (from t in uow.BookingRequestRepository.GetQuery()
-                    where "RE: " + t.Subject == curEmail.Subject
+                    where ("RE: " + t.Subject == curEmail.Subject || t.Subject == curEmail.Subject)
                     && (t.Recipients.Any(e => e.EmailAddressID == curEmail.From.Id) || t.FromID == curEmail.From.Id)
                     select t).FirstOrDefault();
         }
