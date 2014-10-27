@@ -17,5 +17,22 @@ namespace Utilities
             }
             else { return false; }
         }
+
+        public static IEnumerable<string> StripReservedEmailAddresses(string reservedEmailAddress)
+        {
+            var lstReservedEmailAddress = new List<string>();
+
+            if (!string.IsNullOrWhiteSpace(reservedEmailAddress))
+            {
+                foreach (var emailtoignore in reservedEmailAddress.Split(','))
+                { 
+                    lstReservedEmailAddress.Add(emailtoignore);
+                }
+            }
+            return lstReservedEmailAddress;
+        }
+
     }
+
+   
 }

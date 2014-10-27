@@ -22,8 +22,7 @@ namespace KwasantWeb.Controllers
         private readonly IAttendee _attendee;
         private readonly IEmailAddress _emailAddress;
         private readonly IConfigRepository _configRepository;
-        private HashSet<String> _ignoreEmailsFrom;
-
+        
         public NegotiationController()
         {
             _booker = new Booker();
@@ -128,21 +127,15 @@ namespace KwasantWeb.Controllers
                 emailAddresses.Add(bookingRequestDO.User.EmailAddress);
 
                 //need to add the addresses of people cc'ed or on the To line of the BookingRequest
-                _ignoreEmailsFrom = new HashSet<string>();
-                var ignoreEmailsString = _configRepository.Get("IgnoreNegotiationAttendees");
-                if (!String.IsNullOrWhiteSpace(ignoreEmailsString))
-                {
-                    foreach (var emailToIgnore in ignoreEmailsString.Split(','))
-                    { _ignoreEmailsFrom.Add(emailToIgnore); }
-                }
-
+                string reservedEmailAddress = _configRepository.Get("IgnoreNegotiationAttendees");
+                IEnumerable<string> stripReservedEmailAddresses = FilterUtility.StripReservedEmailAddresses(reservedEmailAddress);
+              
                 var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress).ToList();
 
                 foreach (var attendeeEmailAddress in attendees)
                 {
-                    if (!_ignoreEmailsFrom.Contains(attendeeEmailAddress.Address))
+                    if (!stripReservedEmailAddresses.Contains(attendeeEmailAddress.Address))
                     {
-                        //emailAddresses.AddRange(bookingRequestDO.Recipients.Select(r => r.EmailAddress).ToList());
                         emailAddresses.Add(attendeeEmailAddress);
                     }
                 }
