@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 namespace Data.Entities
 {
-   public class IncidentDO
+    public class IncidentDO : BaseDO
     {
         [Key]
         public int Id { get; set; }
