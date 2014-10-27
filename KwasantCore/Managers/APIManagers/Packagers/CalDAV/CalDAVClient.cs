@@ -150,7 +150,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
             return authData.User.EmailAddress.Address;
         }
 
-        public async Task<IDictionary<string, string>> GetCalendars(IRemoteCalendarAuthData authData)
+        public async Task<IDictionary<string, string>> GetCalendarsAsync(IRemoteCalendarAuthData authData)
         {
             if (authData == null)
                 throw new ArgumentNullException("authData");

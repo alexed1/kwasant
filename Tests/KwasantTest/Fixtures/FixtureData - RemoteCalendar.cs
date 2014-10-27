@@ -42,7 +42,8 @@ namespace KwasantTest.Fixtures
                            LocalCalendarID = calendar.Id,
                            Provider = provider,
                            ProviderID = provider.Id,
-                           RemoteCalendarHref = user.EmailAddress.Address
+                           RemoteCalendarHref = "url",
+                           RemoteCalendarName = "name"
                        };
         }
     }
