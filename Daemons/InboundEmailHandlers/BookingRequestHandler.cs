@@ -23,9 +23,9 @@ namespace Daemons.InboundEmailHandlers
                 EmailDO email = Email.ConvertMailMessageToEmail(emailRepo, message);
 
                 var existingBookingRequest = (from t in uow.BookingRequestRepository.GetAll()
-                            where t.Subject == email.Subject
-                            && (t.Recipients.Any(e => e.EmailID == email.From.Id) || t.FromID == email.From.Id)
-                            select t).FirstOrDefault();
+                                              where "RE: " + t.Subject == email.Subject
+                                              && (t.Recipients.Any(e => e.EmailAddressID == email.From.Id) || t.FromID == email.From.Id)
+                                              select t).FirstOrDefault();
 
                 if (existingBookingRequest != null)
                 {
@@ -38,6 +38,7 @@ namespace Daemons.InboundEmailHandlers
                 }
                 else
                 {
+                    emailRepo.Remove(email);
                     BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
                     (new BookingRequest()).Process(uow, bookingRequest);
                     uow.SaveChanges();
