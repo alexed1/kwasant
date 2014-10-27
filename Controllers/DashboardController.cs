@@ -85,6 +85,8 @@ namespace KwasantWeb.Controllers
                     booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
                 }
 
+                var journaling = uow.FactRepository.GetJournalingForBookingRequest(bookingRequestId).ToList();
+
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
                 {
                     ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
@@ -100,6 +102,7 @@ namespace KwasantWeb.Controllers
                         DateCreated = curEmail.DateCreated,
                         Subject = curEmail.Subject
                     },
+                    VerbalisedHistory = journaling,
                     EmailTo = String.Join(", ", curEmail.To.Select(a => a.Address)),
                     EmailCC = String.Join(", ", curEmail.CC.Select(a => a.Address)),
                     EmailBCC = String.Join(", ", curEmail.BCC.Select(a => a.Address)),

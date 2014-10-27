@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Data.Entities;
 
 namespace KwasantWeb.ViewModels
@@ -12,6 +13,7 @@ namespace KwasantWeb.ViewModels
         public string EmailCC { get; set; }
         public string EmailBCC { get; set; }
         public string EmailAttachments { get; set; }
-        public string Booker { get; set; } 
+        public string Booker { get; set; }
+        public List<String> VerbalisedHistory { get; set; } 
     }
 }

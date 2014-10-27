@@ -44,44 +44,63 @@
                 </div>
                 <div class="collapse navbar-collapse" id="navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li class="dropdown"><a id="btnBookingRequest">BookingRequest</a>
+                        <li class="dropdown">
+                            <a id="btnBookingRequest">BookingRequest</a>
                             <ul class="dropdown-menu">
                                 <li>@Html.ActionLink("Get All", "Index", "BookingRequest")</li>
                             </ul>
                         </li>
-                        <li class="dropdown"><a id="btnUser">User</a>
+                        <li class="dropdown">
+                            <a id="btnUser">User</a>
                             <ul class="dropdown-menu">
                                 <li>@Html.ActionLink("Get All", "Index", "User") </li>
                                 <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestVM.BookingRequestId })');" href="#">Mark Processed</a></li>
                             </ul>
                         </li>
-                        <li class="dropdown"><a id="btnNegotiation">Negotiation</a>
+                        <li class="dropdown">
+                            <a id="btnNegotiation">Negotiation</a>
                             <ul class="dropdown-menu">
                                 <li><a id="liReview" onclick="getCurrentNegotiationReview(); " href="#">Review</a></li>
                                 <li><a id="liCreateOrEditNegotiation" onclick="getNegotiationWindow();" data-value='@(Model.CalendarVM.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.CalendarVM.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
                                 <li id="liResolveNegotiation"><a onclick="resolveActiveNegotiation(linkedNegotiationID);" href="#">Mark Resolved</a></li>
                             </ul>
                         </li>
-                    @{
-                        if (Model.ResolvedNegotiations != null && Model.ResolvedNegotiations.Any())
-                        {
-                            <li class="dropdown">
-                                <a>Resolved negotiations</a>
-                                <ul class="dropdown-menu">
-                                    @foreach (var negotiation in Model.ResolvedNegotiations)
-                                    {
+                        @{
+                            if (Model.ResolvedNegotiations != null && Model.ResolvedNegotiations.Any())
+                            {
+                                <li class="dropdown">
+                                    <a>Resolved negotiations</a>
+                                    <ul class="dropdown-menu">
+                                        @foreach (var negotiation in Model.ResolvedNegotiations)
+                                        {
 
-                                        <li><a onclick="getNegotiationReview(@negotiation.Id);" href="#">@negotiation.Name</a></li>
-                                    }
-                                </ul>
-                            </li>
+                                            <li><a onclick="getNegotiationReview(@negotiation.Id);" href="#">@negotiation.Name</a></li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
                         }
-                    }
-                        <li class="dropdown"><a id="btnReport">Reports</a>
+                        <li class="dropdown">
+                            <a id="btnReport">Reports</a>
                             <ul class="dropdown-menu">
                                 <li><a id="btnHistory" onclick="HistoryClick(@Model.BookingRequestVM.BookingRequestId);" class="btnHistory" href="#">Show History</a></li>
                             </ul>
                         </li>
+                        @{
+                            if (Model.BookingRequestVM.VerbalisedHistory != null && Model.BookingRequestVM.VerbalisedHistory.Any())
+                            {
+                                <li class="dropdown">
+                                    <a id="btnReport">History</a>
+                                    <ul class="dropdown-menu">
+                                        @foreach (var historyItem in Model.BookingRequestVM.VerbalisedHistory)
+                                        {
+                                            <li><a style="font-size:13px; cursor:default;">@historyItem</a></li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                        }
+
                     </ul>
                 </div>
             </div>

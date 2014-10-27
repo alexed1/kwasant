@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
+using Newtonsoft.Json;
 using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
@@ -13,7 +15,16 @@ namespace Data.Infrastructure
 {
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
-    {       
+    {
+        public delegate void TrackablePropertyUpdatedHandler(string name, string contextTable, int id, object status);
+        public static event TrackablePropertyUpdatedHandler AlertTrackablePropertyUpdated;
+
+        public delegate void TrackablePropertyCreatedHandler(string name, string contextTable, int id, object status);
+        public static event TrackablePropertyCreatedHandler AlertTrackablePropertyCreated;
+
+        public delegate void TrackablePropertyDeletedHandler(string name, string contextTable, int id, int parentId, object status);
+        public static event TrackablePropertyDeletedHandler AlertTrackablePropertyDeleted;
+        
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
 
@@ -60,7 +71,25 @@ namespace Data.Infrastructure
         public static event ErrorSyncingCalendarHandler AlertErrorSyncingCalendar;
 
         #region Method
-        
+
+        public static void TrackablePropertyUpdated(string name, string contextTable, int id, object status)
+        {
+            if (AlertTrackablePropertyUpdated != null)
+                AlertTrackablePropertyUpdated(name, contextTable, id, status);
+        }
+
+        public static void TrackablePropertyCreated(string name, string contextTable, int id, object status)
+        {
+            if (AlertTrackablePropertyCreated != null)
+                AlertTrackablePropertyCreated(name, contextTable, id, status);
+        }
+
+        public static void TrackablePropertyDeleted(string name, string contextTable, int id, int parentID, object status)
+        {
+            if (AlertTrackablePropertyDeleted != null)
+                AlertTrackablePropertyDeleted(name, contextTable, id, parentID, status);
+        }
+
         /// <summary>
         /// Publish Customer Created event
         /// </summary>
@@ -162,6 +191,10 @@ namespace Data.Infrastructure
         //Register for interesting events
         public void SubscribeToAlerts()
         {
+            AlertManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
+            AlertManager.AlertTrackablePropertyCreated += TrackablePropertyCreated;
+            AlertManager.AlertTrackablePropertyDeleted += TrackablePropertyDeleted;
+
             AlertManager.AlertEmailReceived += NewEmailReceived;
             AlertManager.AlertEventBooked += NewEventBooked;
             AlertManager.AlertEmailSent += EmailDispatched;
@@ -175,6 +208,69 @@ namespace Data.Infrastructure
             AlertManager.AlertError_EmailSendFailure += Error_EmailSendFailure;
             AlertManager.AlertErrorSyncingCalendar += ErrorSyncingCalendar;
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
+        }
+
+        private static void TrackablePropertyUpdated(string name, string contextTable, int id,
+            object status)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFactDO = new FactDO
+                {
+                    Name = name,
+                    PrimaryCategory = contextTable,
+                    SecondaryCategory = "Journaling",
+                    Activity = "Update",
+                    ObjectId = id,
+                    CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    Status = JsonConvert.SerializeObject(status),
+                    CreateDate = DateTime.Now
+                };
+                uow.FactRepository.Add(newFactDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private static void TrackablePropertyCreated(string name, string contextTable, int id,
+            object status)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFactDO = new FactDO
+                {
+                    Name = name,
+                    PrimaryCategory = contextTable,
+                    SecondaryCategory = "Journaling",
+                    Activity = "Create",
+                    ObjectId = id,
+                    CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    Status = JsonConvert.SerializeObject(status),
+                    CreateDate = DateTime.Now
+                };
+                uow.FactRepository.Add(newFactDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private static void TrackablePropertyDeleted(string name, string contextTable, int id, int parentID, object status)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFactDO = new FactDO
+                {
+                    Name = name,
+                    PrimaryCategory = contextTable,
+                    SecondaryCategory = "Journaling",
+                    Activity = "Delete",
+                    ObjectId = id,
+                    TaskId = parentID,
+                    CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    Status = JsonConvert.SerializeObject(status),
+                    CreateDate = DateTime.Now
+                };
+                uow.FactRepository.Add(newFactDO);
+                uow.SaveChanges();
+            }
         }
 
         private static void OnPostResolutionNegotiationResponseReceived(int negotiationId)
