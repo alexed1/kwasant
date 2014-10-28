@@ -100,7 +100,7 @@ namespace KwasantWeb.Controllers
 
         public ActionResult ShowAddUser()
         {
-            return View((UserDO) null);
+            return View(new UserVM());
         }
 
         [KwasantAuthorize(Roles = "Admin")]
@@ -160,7 +160,15 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var existingUser = uow.UserRepository.GetOrCreateUser(curCreateUserVM.EmailAddress);
+                UserDO existingUser;
+                if (!String.IsNullOrWhiteSpace(curCreateUserVM.Id))
+                    existingUser = uow.UserRepository.GetByKey(curCreateUserVM.Id);
+                else
+                {
+                    existingUser = new UserDO();
+                }
+
+                existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress);
                 uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName,
                     Guid.NewGuid().ToString());
 
