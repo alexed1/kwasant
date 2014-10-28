@@ -31,7 +31,7 @@ namespace Data.Entities
         
         [ForeignKey("Conversation")]
         public int? ConversationId { get; set; }
-        public BookingRequestDO Conversation { get; set; }
+        public virtual BookingRequestDO Conversation { get; set; }
 
         [ForeignKey("EmailStatusTemplate")]
         public int? EmailStatus { get; set; }

@@ -38,7 +38,7 @@ namespace Daemons
             _handlers = new IInboundEmailHandler[]
                             {
                                 new InvitationResponseHandler(),
-                                new BookingRequestHandler()
+                                new GeneralEmailHandler()
                             };
 
             AddTest("OutboundEmailDaemon_Test", "Test");

@@ -37,6 +37,9 @@ namespace Data.Entities
 
         [InverseProperty("BookingRequests")]
         public virtual List<CalendarDO> Calendars { get; set; }
+
+        [InverseProperty("Conversation")]
+        public virtual List<EmailDO> ConversationMembers { get; set; }
         
         public void AfterCreate()
         {
