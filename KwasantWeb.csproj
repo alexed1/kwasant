@@ -744,7 +744,6 @@
     <Content Include="Views\Calendar\GoogleLike.cshtml" />
     <Content Include="Views\Calendar\HeaderAutoFit.cshtml" />
     <Content Include="Views\Calendar\Height100Pct.cshtml" />
-    <Content Include="Views\Calendar\Index.cshtml" />
     <Content Include="Views\Calendar\JQuery.cshtml" />
     <Content Include="Views\Calendar\Message.cshtml" />
     <Content Include="Views\Calendar\Navigation.json" />
