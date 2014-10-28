@@ -127,17 +127,12 @@ namespace KwasantWeb.Controllers
                 emailAddresses.Add(bookingRequestDO.User.EmailAddress);
 
                 //need to add the addresses of people cc'ed or on the To line of the BookingRequest
-                string reservedEmailAddress = _configRepository.Get("IgnoreNegotiationAttendees");
-                IEnumerable<string> stripReservedEmailAddresses = FilterUtility.StripReservedEmailAddresses(reservedEmailAddress);
-              
-                var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress).ToList();
-
-                foreach (var attendeeEmailAddress in attendees)
+                var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress.Address).ToList();
+               
+                IEnumerable<string> stripReservedEmailAddresses = FilterUtility.StripReservedEmailAddresses(attendees);
+                foreach (var attendeeEmailAddress in stripReservedEmailAddresses)
                 {
-                    if (!stripReservedEmailAddresses.Contains(attendeeEmailAddress.Address))
-                    {
-                        emailAddresses.Add(attendeeEmailAddress);
-                    }
+                    emailAddresses.Add(new EmailAddressDO { Address = attendeeEmailAddress });
                 }
 
                 return View("~/Views/Negotiation/Edit.cshtml", new NegotiationVM

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Utilities
 {
     public static class FilterUtility
@@ -18,15 +19,16 @@ namespace Utilities
             else { return false; }
         }
 
-        public static IEnumerable<string> StripReservedEmailAddresses(string reservedEmailAddress)
+        public static IEnumerable<string> StripReservedEmailAddresses(List<string> attendees)
         {
+            List<string> lstInvalidAttendee = new List<string>() { "hq@kwasant.com", "kwa@sant.com" };
             var lstReservedEmailAddress = new List<string>();
 
-            if (!string.IsNullOrWhiteSpace(reservedEmailAddress))
+            foreach (var attendeeEmailAddress in attendees)
             {
-                foreach (var emailtoignore in reservedEmailAddress.Split(','))
-                { 
-                    lstReservedEmailAddress.Add(emailtoignore);
+                if (!lstInvalidAttendee.Contains(attendeeEmailAddress))
+                {
+                    lstReservedEmailAddress.Add(attendeeEmailAddress);
                 }
             }
             return lstReservedEmailAddress;
