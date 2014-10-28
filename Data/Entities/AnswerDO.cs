@@ -4,7 +4,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class AnswerDO
+    public class AnswerDO : BaseDO
     {
         [Key]
         public int Id { get; set; }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Data.Entities
 {
-    public class LogDO
+    public class LogDO : BaseDO
     {
         [Key]
         public int Id { get; set; }

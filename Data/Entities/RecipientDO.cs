@@ -4,7 +4,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class RecipientDO
+    public class RecipientDO : BaseDO
     {
         [Key]
         public int Id { get; set; }
