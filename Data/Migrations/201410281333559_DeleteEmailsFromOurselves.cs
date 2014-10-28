@@ -7,25 +7,9 @@ namespace Data.Migrations
         public override void Up()
         {
             Sql(@"
-DELETE FROM Envelopes
-WHERE EmailID IN (
-	SELECT ID FROM Emails
-		WHERE FromID IN (
-		select Id from EmailAddresses
-		WHERE Address like 'info@kwasant.com'
-	)
-)
-
-DELETE FROM BookingRequests
+UPDATE BookingRequests
+SET State = 4
 WHERE ID IN (
-	SELECT ID FROM Emails
-		WHERE FromID IN (
-		select Id from EmailAddresses
-		WHERE Address like 'info@kwasant.com'
-	)
-)
-
-DELETE FROM Emails WHERE ID IN (
 	SELECT ID FROM Emails
 		WHERE FromID IN (
 		select Id from EmailAddresses
