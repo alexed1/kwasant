@@ -346,6 +346,10 @@
     <Compile Include="Migrations\201410281309322_FixLastUpdated.Designer.cs">
       <DependentUpon>201410281309322_FixLastUpdated.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201410290705052_Sync.29.10.2014.cs" />
+    <Compile Include="Migrations\201410290705052_Sync.29.10.2014.Designer.cs">
+      <DependentUpon>201410290705052_Sync.29.10.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
@@ -1189,6 +1193,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410281309322_FixLastUpdated.resx">
       <DependentUpon>201410281309322_FixLastUpdated.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410290705052_Sync.29.10.2014.resx">
+      <DependentUpon>201410290705052_Sync.29.10.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
