@@ -81,20 +81,20 @@ namespace KwasantWeb.Controllers
                     BookingRequestID = negotiationDO.BookingRequestID,
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
-                        {
+                    {
                         var answers = q.Answers.Select(a =>
-                                new NegotiationAnswerVM
-                                {
-                                    Id = a.Id,
-                                    Text = a.Text,
-                                    AnswerState = a.AnswerStatus,
-                                    VotedByList = uow.QuestionResponseRepository.GetQuery()
-                                                                                    .Where(qr => qr.AnswerID == a.Id)
-                                                                                    .Select(qr => qr.User.FirstName + " " + qr.User.LastName)
-                                                                                    .ToList(),
-                                    EventID = a.EventID,
-                                    EventStartDate = a.Event == null ? (DateTimeOffset?)null : a.Event.StartDate,
-                                    EventEndDate = a.Event == null ? (DateTimeOffset?)null : a.Event.EndDate,
+                            new NegotiationAnswerVM
+                            {
+                                Id = a.Id,
+                                Text = a.Text,
+                                AnswerState = a.AnswerStatus,
+                                VotedByList = uow.QuestionResponseRepository.GetQuery()
+                                    .Where(qr => qr.AnswerID == a.Id)
+                                    .Select(qr => qr.User.FirstName + " " + qr.User.LastName)
+                                    .ToList(),
+                                EventID = a.EventID,
+                                EventStartDate = a.Event == null ? (DateTimeOffset?) null : a.Event.StartDate,
+                                EventEndDate = a.Event == null ? (DateTimeOffset?) null : a.Event.EndDate,
                             });
 
                         answers = orders.Aggregate(answers, (current, t) => current.OrderBy(t));
@@ -106,7 +106,7 @@ namespace KwasantWeb.Controllers
                             CalendarID = q.CalendarID,
                             Text = q.Text,
                             Answers = answers.ToList()
-                };
+                        };
                     }).ToList()
                 };
                 return curVM;

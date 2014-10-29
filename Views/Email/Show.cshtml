@@ -1,16 +1,17 @@
-﻿@model KwasantWeb.ViewModels.BookingRequestAdminVM
+﻿@using Newtonsoft.Json
+@model KwasantWeb.ViewModels.BookingRequestAdminVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
-@System.Web.Optimization.Styles.Render("~/bundles/css/bootstrap30")
-@System.Web.Optimization.Styles.Render("~/bundles/css/backendcss")
-@System.Web.Optimization.Styles.Render("~/bundles/css/colorbox")
-@System.Web.Optimization.Styles.Render("~/bundles/css/temp")
+@Styles.Render("~/bundles/css/bootstrap30")
+@Styles.Render("~/bundles/css/backendcss")
+@Styles.Render("~/bundles/css/colorbox")
+@Styles.Render("~/bundles/css/temp")
 <script src="~/Scripts/ContextMenu/jquery.contextMenu.js"></script>
 <link href="~/Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
 <div class="email-info-section">
     <!--style="width: 400px;"-->
     <div class="info">
         <div id="emailSubject" class="subHeading email-subject">
-            <h4 class="with-border">@Model.CurEmailData.Subject</h4>
+            <h4 class="with-border">@Model.Subject</h4>
         </div>
         <div class="email-details with-border">
             <table width="100%">
@@ -23,11 +24,11 @@
                 </tr>
                 <tr>
                     <td class="displayLabel">From:</td>
-                    <td>@Model.CurEmailData.From.Name</td>
+                    <td>@Model.FromName</td>
                 </tr>
                 <tr>
                     <td class="displayLabel">From:</td>
-                    <td>@Model.CurEmailData.From.Address</td>
+                    <td>@Model.FromAddress</td>
                 </tr>
                 <tr>
                     <td class="displayLabel">To:</td>
@@ -48,8 +49,7 @@
                 </tr>
             </table>
         </div>
-        <div id="emailContent" class="email-content">
-            @Html.Raw(Model.CurEmailData.HTMLText)
+        <div id="conversations">
         </div>
     </div>
     <div class="context-menu box menu-1"></div>
@@ -68,3 +68,75 @@
 </div>
 
 <script src="~/Content/js/Kwasant/quickcopy.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var conversationMembers = @Html.Raw(JsonConvert.SerializeObject(Model.Conversations, Formatting.Indented));
+        var performedExplicitExpand = false;
+        $.each(conversationMembers, function(ind, conversationMember) {
+            var convoHolder = $('<div>');
+            convoHolder.css('border', 'solid 1px #E7E7E7');
+
+            var convoHeader = $('<div>');
+            convoHeader
+                .css('background-color', '#DBDBDB')
+                .css('cursor', 'pointer')
+                .css('padding-left', '5px');
+            convoHeader.html(conversationMember.Header);
+
+            var convoBody = $('<div>');
+            convoBody
+                .addClass('email-content')
+                .css('padding-left', '5px');
+            convoBody.html(conversationMember.Body);
+
+            var resetStyles = function(expanded) {
+                if (expanded) {
+                    convoHeader.css('background-color', '#FFFFFF');
+                } else {
+                    convoHeader.css('background-color', '#DBDBDB');
+                }
+            };
+
+            var doingAnimation = false;
+            var isExpanded = false;
+            convoHeader.click(function() {
+                if (doingAnimation)
+                    return;
+                doingAnimation = true;
+                if (isExpanded) {
+                    convoBody.slideUp(function() { resetStyles(false); });
+                    isExpanded = false;
+                } else {
+                    convoBody.slideDown(function() { resetStyles(true); });
+                    isExpanded = true;
+                }
+                doingAnimation = false;
+            });
+
+            //If we explicitly opened other conversations, don't open the last email by default
+            if (conversationMember.ExplicitOpen) {
+                isExpanded = true;
+                resetStyles(true);
+                performedExplicitExpand = true;
+            } else {
+                if (performedExplicitExpand || ind < conversationMembers.length - 1)
+                {
+                    convoBody.hide();
+                } else {
+                    isExpanded = true;
+                    resetStyles(true);
+                }
+            }
+            
+            convoHolder.append(convoHeader);
+            convoHolder.append(convoBody);
+
+            $('#conversations').append(convoHolder);
+        });
+
+        $('#emailContent').hide();
+        $('#blah').click(function() {
+            $('#emailContent').slideDown();
+        });
+    });
+</script>

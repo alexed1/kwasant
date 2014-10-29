@@ -2,6 +2,7 @@
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using Microsoft.AspNet.Identity;
 
 namespace Data.Repositories
@@ -66,6 +67,8 @@ namespace Data.Repositories
                         SecurityStamp = Guid.NewGuid().ToString(),
                     };
                 UnitOfWork.UserRepository.Add(matchingUser);
+
+                UnitOfWork.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, matchingUser.Id);
             }
             
             return matchingUser;

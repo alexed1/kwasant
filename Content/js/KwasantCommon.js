@@ -56,24 +56,6 @@ function getURLParameter(name) {
     return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
 }
 
-/*** Kwasant.IFrame functions ***/
-function closeWithUnsavedDataCheck(modifiedState, summery, eventId) {
-
-    if (!modifiedState.modified) {
-        if (summery == '') {
-            $.getJSON('/Event/ConfirmDelete?eventID=' + eventId, function (response) {
-                window.parent.calendar.refreshCalendars;
-                close();
-            });
-        }
-    }
-    else if (confirm("you are about to lose data, continue?")) {
-        modifiedState.modified = false;
-        close();
-    }
-    return false;
-}
-
 function close(saved) {
     if (saved === undefined || saved == null)
         saved = false;

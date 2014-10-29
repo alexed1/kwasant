@@ -1,4 +1,5 @@
-﻿using Data.Entities;
+﻿using System.Net.Mail;
+using Data.Entities;
 using Data.States;
 
 namespace KwasantTest.Fixtures
@@ -30,6 +31,32 @@ namespace KwasantTest.Fixtures
             curEmailDO.HTMLText = "This Email is intended to be used with KwasantIntegration account ";
             return curEmailDO;
 
+        }
+
+        public MailMessage TestMessage1() 
+        {
+            string testSubject = "Conversation Test Subject";
+            string testBody = "Conversation Test Body";
+            var mailMessage1 = new MailMessage();
+            mailMessage1.Body = testBody;
+            mailMessage1.Subject = testSubject;
+            mailMessage1.From = new MailAddress("a@gmail.com");
+            mailMessage1.To.Add(new MailAddress("b@gmail.com"));
+            mailMessage1.To.Add(new MailAddress("c@gmail.com"));
+            return mailMessage1;
+        }
+
+        public MailMessage TestMessage2()
+        {
+            string testSubject = "Conversation Test Subject";
+            string testBody = "Conversation Test Body";
+            var mailMessage2 = new MailMessage();
+            mailMessage2.Body = testBody;
+            mailMessage2.Subject = testSubject;
+            mailMessage2.From = new MailAddress("b@gmail.com");
+            mailMessage2.To.Add(new MailAddress("a@gmail.com"));
+            mailMessage2.To.Add(new MailAddress("c@gmail.com"));
+            return mailMessage2;
         }
 
     }

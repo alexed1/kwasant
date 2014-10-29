@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 namespace Data.Entities
 {
-    public class ConceptDO
+    public class ConceptDO : BaseDO
     {
         [Key]
         public int Id { get; set; }

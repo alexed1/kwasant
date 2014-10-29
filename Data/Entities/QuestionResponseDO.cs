@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
-    public class QuestionResponseDO
+    public class QuestionResponseDO : BaseDO
     {
         [Key]
         public int Id { get; set; }

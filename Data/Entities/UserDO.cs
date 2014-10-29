@@ -10,7 +10,7 @@ using StructureMap;
 
 namespace Data.Entities
 {
-    public class UserDO : IdentityUser, IUser, ISaveHook, ICreateHook
+    public class UserDO : IdentityUser, IUser, ISaveHook, ICreateHook, IBaseDO
     {
         [NotMapped]
         IEmailAddressDO IUser.EmailAddress
@@ -72,6 +72,8 @@ namespace Data.Entities
 
             AlertManager.CustomerCreated(this);
         }
+
+        public DateTimeOffset LastUpdated { get; set; }
     }
 }
 

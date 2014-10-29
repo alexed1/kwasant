@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
@@ -11,6 +12,7 @@ using Data.Validations;
 using FluentValidation;
 using StructureMap;
 using Utilities;
+using Utilities.Logging;
 
 
 namespace KwasantCore.Services
@@ -194,18 +196,15 @@ namespace KwasantCore.Services
             return curEmail;
         }
 
-        public void SendAlertEmail()
+        public void SendAlertEmail(string subject, string message = null)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                 string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
-                EmailAddressDO curEmailAddress = new EmailAddressDO("ops@kwasant.com");
                 EmailDO curEmail = new EmailDO();
-                string message = "Alert! Kwasant Error Reported: EmailSendFailure";
-                string subject = "Alert! Kwasant Error Reported: EmailSendFailure";
-                curEmail = GenerateBasicMessage(uow, subject, message, fromAddress, "ops@kwasant.com");
+                curEmail = GenerateBasicMessage(uow, subject, message ?? subject, fromAddress, "ops@kwasant.com");
                 uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }
@@ -242,5 +241,23 @@ namespace KwasantCore.Services
             return curEmail;
         }
 
+        public static void ProcessReceivedMessage(IUnitOfWork uow, EmailDO curEmail, MailMessage message)
+        {
+            BookingRequestDO existingBookingRequest = Conversation.Match(uow, curEmail);
+
+            if (existingBookingRequest != null)
+            {
+                Conversation.AddEmail(uow, existingBookingRequest, curEmail);
+            }
+            else
+            {
+                uow.EmailRepository.Remove(curEmail);
+                BookingRequestDO bookingRequest = ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
+                (new BookingRequest()).Process(uow, bookingRequest);
+                uow.SaveChanges();
+                //AlertManager.BookingRequestCreated(bookingRequest.Id);
+                AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+            }
+        }
     }
 }

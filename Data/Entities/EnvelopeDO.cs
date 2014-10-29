@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Data.Entities
 {
-    public class EnvelopeDO : IEnvelope
+    public class EnvelopeDO : BaseDO, IEnvelope
     {
         class MergeDataDictionary : IDictionary<string, string>
         {

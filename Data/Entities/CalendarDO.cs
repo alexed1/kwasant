@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {    
-    public class CalendarDO : ICalendar
+    public class CalendarDO : BaseDO, ICalendar
     {
         public CalendarDO()
         {

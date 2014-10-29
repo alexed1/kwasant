@@ -87,6 +87,32 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
         /// <remarks/>
         [XmlElement("calendar-data", Namespace = "urn:ietf:params:xml:ns:caldav")]
         public string CalendarData { get; set; }
+
+        [XmlElement("displayname")]
+        public string DisplayName { get; set; }
+
+        /// <remarks/>
+        [XmlElement("resourcetype")]
+        public MultiStatusResponsePropstatPropResourceType ResourceType { get; set; }
     }
 
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "DAV:")]
+    public class MultiStatusResponsePropstatPropResourceType
+    {
+        /// <remarks/>
+        [XmlElement("calendar", Namespace = "urn:ietf:params:xml:ns:caldav")]
+        public MultiStatusResponsePropstatPropCalendar Calendar { get; set; }
+    }
+
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "urn:ietf:params:xml:ns:caldav:")]
+    public class MultiStatusResponsePropstatPropCalendar
+    {
+        
+    }
 }
