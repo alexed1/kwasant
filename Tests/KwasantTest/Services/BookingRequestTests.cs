@@ -9,6 +9,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Daemons;

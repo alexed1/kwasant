@@ -5,7 +5,9 @@ namespace Data.Interfaces
     public interface IRemoteCalendarLink
     {
         int Id { get; set; }
+        string RemoteCalendarHref { get; set; }
         string RemoteCalendarName { get; set; }
+        bool IsDisabled { get; set; }
 
         int? LocalCalendarID { get; set; }
         ICalendar LocalCalendar { get; set; }

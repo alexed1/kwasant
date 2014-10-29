@@ -5,7 +5,9 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Xml.Serialization;
+using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManagers.Transmitters.Http;
 using KwasantICS.DDay.iCal;
@@ -18,12 +20,11 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
     /// </summary>
     class CalDAVClient : ICalDAVClient
     {
-        private readonly IAuthorizingHttpChannel _channel;
+        protected readonly IAuthorizingHttpChannel Channel;
 
         private readonly string _endPoint;
-        private readonly string _calendarBaseUrlFormat;
-        private readonly string _eventsUrlFormat;
-        private readonly string _eventUrlFormat;
+        private readonly Uri _endPointUri;
+        private readonly string _userUrlFormat;
 
         public CalDAVClient(string endPoint, IAuthorizingHttpChannel channel)
         {
@@ -31,12 +32,10 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
                 throw new ArgumentNullException("channel");
             if (string.IsNullOrEmpty(endPoint))
                 throw new ArgumentException("CalDAV endpoint cannot be empty or null.", "endPoint");
-            _channel = channel;
+            Channel = channel;
             _endPoint = endPoint;
-
-            _calendarBaseUrlFormat = string.Concat(_endPoint, "/{0}");
-            _eventsUrlFormat = string.Concat(_calendarBaseUrlFormat, "/events");
-            _eventUrlFormat = string.Concat(_eventsUrlFormat, "/{1}");
+            _endPointUri = new Uri(_endPoint);
+            _userUrlFormat = string.Concat(_endPoint, "/{0}");
         }
 
         private const string EventsQueryFormat =
@@ -55,6 +54,14 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
             "</C:filter>\r\n" +
             "</C:calendar-query>";
 
+        private const string CalendarsQuery =
+            "<D:propfind xmlns:D=\"DAV:\">\r\n" +
+            "  <D:prop>\r\n" +
+            "    <D:displayname/>\r\n" +
+            "    <D:resourcetype/>\r\n" +
+            "  </D:prop>\r\n" +
+            "</D:propfind>";        
+        
         /// <summary>
         /// Creates a request to CalDAV service for retrieving all calendar events in range of from..to. 
         /// See CalDAV reference for more details.
@@ -68,7 +75,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
             if (calendarLink == null)
                 throw new ArgumentNullException("calendarLink");
 
-            var calendarId = calendarLink.RemoteCalendarName;
+            var calendarId = calendarLink.RemoteCalendarHref;
             var userId = calendarLink.LocalCalendar.Owner.Id;
             
             // Standard structure to get responses from CalDAV (WebDAV) services.
@@ -78,13 +85,13 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
             // See that method documentation for more details.
             Func<HttpRequestMessage> requestFactoryMethod = () =>
             {
-                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("REPORT"), string.Format(_eventsUrlFormat, calendarId));
+                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("REPORT"), new Uri(_endPointUri, calendarId));
                 request.Headers.Add("Depth", "1");
                 request.Content = new StringContent(string.Format(EventsQueryFormat, @from.UtcDateTime, to.UtcDateTime), Encoding.UTF8, "application/xml");
                 return request;
             };
 
-            using (var response = await _channel.SendRequestAsync(requestFactoryMethod, userId))
+            using (var response = await Channel.SendRequestAsync(requestFactoryMethod, userId))
             {
                 using (var xmlStream = await response.Content.ReadAsStreamAsync())
                 {
@@ -116,15 +123,16 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
             if (calendarEvent.Events == null || calendarEvent.Events.Count == 0)
                 throw new ArgumentException("iCalendar object must contain at least one event.", "calendarEvent");
 
-            var calendarId = calendarLink.RemoteCalendarName;
+            var calendarId = calendarLink.RemoteCalendarHref;
             var userId = calendarLink.LocalCalendar.Owner.Id;
             var eventId = calendarEvent.Events.First().UID;
+            var uri = new Uri(_endPointUri, calendarId);
 
             // We need factory method rather than just an instance here as it is required by IHttpChannel.SendRequestAsync. 
             // See that method documentation for more details.
             Func<HttpRequestMessage> requestFactoryMethod = () =>
             {
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, string.Format(_eventUrlFormat, calendarId, eventId));
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, string.Concat(uri, eventId));
                 request.Headers.Add("If-None-Match", "*");
                 iCalendarSerializer serializer = new iCalendarSerializer(calendarEvent);
                 string calendarString = serializer.Serialize(calendarEvent);
@@ -132,9 +140,57 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
                 return request;
             };
 
-            using (var response = await _channel.SendRequestAsync(requestFactoryMethod, userId))
+            using (var response = await Channel.SendRequestAsync(requestFactoryMethod, userId))
             {
             }
+        }
+
+        protected virtual async Task<string> GetCalIdAsync(IRemoteCalendarAuthData authData)
+        {
+            return authData.User.EmailAddress.Address;
+        }
+
+        public async Task<IDictionary<string, string>> GetCalendarsAsync(IRemoteCalendarAuthData authData)
+        {
+            if (authData == null)
+                throw new ArgumentNullException("authData");
+
+            var calId = await GetCalIdAsync(authData);
+
+            // Standard structure to get responses from CalDAV (WebDAV) services.
+            MultiStatus multiStatus;
+
+            // We need factory method rather than just an instance here as it is required by IHttpChannel.SendRequestAsync. 
+            // See that method documentation for more details.
+            Func<HttpRequestMessage> requestFactoryMethod = () =>
+            {
+                HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PROPFIND"), string.Format(_userUrlFormat, calId));
+                request.Headers.Add("Depth", "1");
+                request.Content = new StringContent(CalendarsQuery, Encoding.UTF8, "application/xml");
+                return request;
+            };
+
+            using (var response = await Channel.SendRequestAsync(requestFactoryMethod, authData.UserID))
+            {
+                using (var xmlStream = await response.Content.ReadAsStreamAsync())
+                {
+                    XmlSerializer serializer = new XmlSerializer(typeof(MultiStatus));
+                    multiStatus = (MultiStatus)serializer.Deserialize(xmlStream);
+                }
+            }
+
+            Func<multistatusResponsePropstat, bool> propStatFilter =
+                propstat => propstat != null &&
+                            string.Equals(propstat.Status, "HTTP/1.1 200 OK", StringComparison.Ordinal) &&
+                            propstat.Prop != null &&
+                            propstat.Prop.ResourceType != null &&
+                            propstat.Prop.ResourceType.Calendar != null;
+            return multiStatus.Items != null
+                ? multiStatus
+                    .Items
+                    .Where(r => r.PropStat.Any(propStatFilter))
+                    .ToDictionary(r => HttpUtility.UrlDecode(r.Href), r => r.PropStat.First(propStatFilter).Prop.DisplayName)
+                : new Dictionary<string, string>();
         }
 
     }
