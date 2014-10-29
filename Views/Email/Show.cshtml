@@ -82,7 +82,8 @@
     
     function displayConversation(conversationMembers) {
         var performedExplicitExpand = false;
-        $.each(conversationMembers, function(ind, conversationMember) {
+
+        var displayConvoMember = function(conversationMember, ind) {
             var convoHolder = $('<div>');
             convoHolder.css('border', 'solid 1px #E7E7E7');
 
@@ -129,20 +130,23 @@
                 resetStyles(true);
                 performedExplicitExpand = true;
             } else {
-                if (performedExplicitExpand || ind < conversationMembers.length - 1)
-                {
+                if (performedExplicitExpand || ind < conversationMembers.length - 1) {
                     convoBody.hide();
                 } else {
                     isExpanded = true;
                     resetStyles(true);
                 }
             }
-            
+
             convoHolder.append(convoHeader);
             convoHolder.append(convoBody);
 
             $('#conversations').append(convoHolder);
-        });
+        };
+
+        for (var ind = conversationMembers.length - 1; ind >= 0; ind--) {
+            displayConvoMember(conversationMembers[ind], ind);
+        }
     }
 
     $(function () {
