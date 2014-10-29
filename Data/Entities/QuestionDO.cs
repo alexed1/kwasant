@@ -6,7 +6,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class QuestionDO : IQuestion
+    public class QuestionDO : BaseDO, IQuestion
     {
         public QuestionDO()
         {

@@ -177,11 +177,16 @@ namespace KwasantCore.Services
             Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + bookingRequestDO.Id);
             bookingRequestDO.BookerID = null;
             // Send mail to Booker
-            var userDO = uow.UserRepository.GetByKey(bookerId);
-            EmailAddressDO emailAddressDO = new EmailAddressDO(userDO.EmailAddress.Address);
-            string message = "BookingRequest ID :" + bookingRequestDO.Id + " Timed Out";
+            var curbooker = uow.UserRepository.GetByKey(bookerId);
+            string message = "BookingRequest ID : " + bookingRequestDO.Id + " Timed Out <br/>Subject : " + bookingRequestDO.Subject;
+
+            if (curbooker.EmailAddress != null)
+                message += "<br/>Booker : " + curbooker.EmailAddress.Address;
+            else
+                message += "<br/>Booker : " + curbooker.FirstName;
+
             string subject = "BookingRequest Timeout";
-            string toRecipient = emailAddressDO.Address;
+            string toRecipient = curbooker.EmailAddress.Address;
             IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             string fromAddress = configRepository.Get<string>("EmailAddress_GeneralInfo");
             EmailDO curEmail = _email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);

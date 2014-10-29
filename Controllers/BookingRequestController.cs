@@ -75,51 +75,7 @@ namespace KwasantWeb.Controllers
                 uow.SaveChanges();
                 AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
 
-                //Get the most recent conversation for this Booking Request
-                var curEmail = uow.EmailRepository.GetAll().Where(e => e.Id == id || e.ConversationId == id).OrderByDescending(e => e.DateReceived).First();
-                const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
-
-                var attachmentInfo = String.Join("<br />",
-                            curEmail.Attachments.Select(
-                                attachment =>
-                                "<a href='" + String.Format(fileViewURLStr, attachment.Id) + "' target='" +
-                                attachment.OriginalName + "'>" + attachment.OriginalName + "</a>"));
-
-                string booker = "none";
-                string bookerId = uow.BookingRequestRepository.GetByKey(id).BookerID;
-                if (bookerId != null)
-                {
-                    var curbooker = uow.UserRepository.GetByKey(bookerId);
-                    if (curbooker.EmailAddress != null)
-                        booker = curbooker.EmailAddress.Address;
-                    else
-                        booker = curbooker.FirstName;
-                }
-
-                BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
-                {
-                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestDO.Id).Select(e => e.Id).ToList(),
-                    BookingRequestId = bookingRequestDO.Id,
-                    CurEmailData = new EmailDO
-                    {
-                        Attachments = curEmail.Attachments,
-                        From = curEmail.From,
-                        Recipients = curEmail.Recipients,
-                        HTMLText = curEmail.HTMLText,
-                        Id = curEmail.Id,
-                        FromID = curEmail.FromID,
-                        DateCreated = curEmail.DateCreated,
-                        Subject = curEmail.Subject
-                    },
-                    EmailTo = String.Join(", ", curEmail.To.Select(a => a.Address)),
-                    EmailCC = String.Join(", ", curEmail.CC.Select(a => a.Address)),
-                    EmailBCC = String.Join(", ", curEmail.BCC.Select(a => a.Address)),
-                    EmailAttachments = attachmentInfo,
-                    Booker = booker
-                };
-                TempData["requestInfo"] = bookingInfo;
-            //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
-                return RedirectToAction("Index", "Dashboard", new { id = id });
+                return RedirectToAction("Index", "Dashboard", new { id });
             }
         }
 

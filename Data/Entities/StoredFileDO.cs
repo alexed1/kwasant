@@ -8,7 +8,7 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class StoredFileDO : ISaveHook
+    public class StoredFileDO : BaseDO, ISaveHook
     {
         [Key]
         public int Id { get; set; }

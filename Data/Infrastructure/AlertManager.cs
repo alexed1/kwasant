@@ -337,12 +337,12 @@ namespace Data.Infrastructure
             var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
             if (string.IsNullOrEmpty(curAction.Data))
             {
-                curAction.Data = string.Format("{0} {1} {2}:" + " ObjectId: {3} CustomerId: {4}",
+                curAction.Data = string.Format("{0} {1} {2}:" + " ObjectId: {3} EmailAddress: {4}",
                     curAction.PrimaryCategory,
                     curAction.SecondaryCategory,
                     curAction.Activity,
                     curAction.ObjectId,
-                    curAction.CustomerId);
+                    uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
             }
             if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
                 Logger.GetLogger().Info(curAction.Data);

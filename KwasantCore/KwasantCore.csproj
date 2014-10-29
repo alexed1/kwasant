@@ -229,6 +229,7 @@
     <Compile Include="Services\Attendee.cs" />
     <Compile Include="Services\Booker.cs" />
     <Compile Include="Services\Calendar.cs" />
+    <Compile Include="Services\Conversation.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Envelope.cs" />
     <Compile Include="Services\Event.cs" />

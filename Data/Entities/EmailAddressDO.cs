@@ -6,7 +6,7 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class EmailAddressDO : IEmailAddressDO
+    public class EmailAddressDO : BaseDO, IEmailAddressDO
     {
         public EmailAddressDO()
         {
