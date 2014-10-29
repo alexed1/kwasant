@@ -98,6 +98,7 @@ namespace KwasantWeb.Controllers
                         Header = String.Format("From: {0}  {1}", e.From.Address, e.DateReceived.TimeAgo()),
                         Body = e.HTMLText
                     }).ToList(),
+                    FromName = bookingRequest.From.ToDisplayName(),
                     Subject = bookingRequest.Subject,
                     BookingRequestId = bookingRequestId,
                     EmailTo = String.Join(", ", bookingRequest.To.Select(a => a.Address)),

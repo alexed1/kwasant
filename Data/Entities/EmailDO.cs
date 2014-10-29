@@ -92,5 +92,6 @@ namespace Data.Entities
             Recipients.Add(newLink);
             emailAddress.Recipients.Add(newLink);
         }
+
     }
 }

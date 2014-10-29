@@ -96,6 +96,7 @@ namespace KwasantWeb.Controllers
                         Body = e.HTMLText,
                         ExplicitOpen = e == curEmail
                     }).ToList(),
+                    FromName = curEmail.From.ToDisplayName(),
                     Subject = curEmail.Subject,
                     BookingRequestId = emailId,
                     EmailTo = String.Join(", ", curEmail.To.Select(a => a.Address)),

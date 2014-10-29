@@ -14,7 +14,6 @@ namespace KwasantWeb.ViewModels
         public List<ConversationVM> Conversations { get; set; }
         public int BookingRequestId { get; set; }
         public string FromName { get; set; }
-        public string FromAddress { get; set; }
         public string Subject { get; set; }
         public string EmailTo { get; set; }
         public string EmailCC { get; set; }
