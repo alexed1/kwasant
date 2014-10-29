@@ -24,6 +24,7 @@ namespace Data.Entities
             Calendars = new List<CalendarDO>();
             RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
             Profiles = new List<ProfileDO>();
+            SecurityStamp = Guid.NewGuid().ToString();
         }
 
         public String FirstName { get; set; }
