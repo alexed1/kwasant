@@ -323,7 +323,7 @@ namespace KwasantCore.Managers
                         Status = status,
                         CreateDate = DateTimeOffset.Now,
                     };
-                //curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
+                
                 curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
                 AddFact(uow, curAction);
                 uow.SaveChanges();
@@ -349,7 +349,7 @@ namespace KwasantCore.Managers
                         Status = status,
                         CreateDate = DateTimeOffset.Now,
                     };
-                //curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
+                
                 curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
                 AddFact(uow, curAction);
                 uow.SaveChanges();
