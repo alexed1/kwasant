@@ -5,6 +5,8 @@ namespace KwasantWeb.ViewModels
 {
     public class EventVM
     {
+        public bool IsNew { get; set; }
+
         public int Id { get; set; }
         public DateTimeOffset StartDate { get; set; }
         public DateTimeOffset EndDate { get; set; }

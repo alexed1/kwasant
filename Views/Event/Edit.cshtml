@@ -112,7 +112,7 @@
 		<div class="space form-actions">
             <input id="btnSave" type="submit" value="OK" class="btn small-dialog-button shadow-button pull-left" />
             <input id="btnDraft" type="submit" value="Draft" class="btn small-dialog-button shadow-button pull-left" />
-            <a href="javascript:closeWithUnsavedDataCheck(modifiedState);" class="cancel-btn btn small-dialog-button shadow-button pull-left">Cancel</a>
+            <a href="javascript:closeEvent();" class="cancel-btn btn small-dialog-button shadow-button pull-left">Cancel</a>
             <a href="javascript:deleteEvent();" style="margin-left:15px;" class="delete-btn btn small-dialog-button shadow-button pull-left">Delete</a>
 		</div>
 	</form>
@@ -122,6 +122,22 @@
 	    var modifiedState = { modified: false };
 	    var fromdata;
 	    var todata;
+
+	    function closeEvent() {
+	        if (!modifiedState.modified || confirm("You are about to lose data. Continue?")) {
+	            @if (Model.IsNew)
+	            {
+                    @:$.getJSON('/Event/ConfirmDelete?eventID=' + @Model.Id, function (response) {
+                        @:Kwasant.IFrame.CloseMe(false);
+                    @:});
+	            }
+	            else
+                {
+                    @:Kwasant.IFrame.CloseMe(false);
+	            }
+	        }
+	        return false;
+	    }
 
 	    function deleteEvent() {
 	        $(function() {
