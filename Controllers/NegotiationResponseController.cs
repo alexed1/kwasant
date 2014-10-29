@@ -10,7 +10,6 @@ using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 
 namespace KwasantWeb.Controllers

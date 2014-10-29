@@ -8,12 +8,14 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using KwasantCore.Managers;
 using KwasantWeb.ViewModels;
 using StructureMap;
 using Utilities;
 
 namespace KwasantWeb.Controllers
 {
+    [KwasantAuthorize(Roles = Roles.Booker)]
     public class DashboardController : Controller
     {
         //
