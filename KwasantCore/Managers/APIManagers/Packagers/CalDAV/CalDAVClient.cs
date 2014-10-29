@@ -76,6 +76,8 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
                 throw new ArgumentNullException("calendarLink");
 
             var calendarId = calendarLink.RemoteCalendarHref;
+            if (string.IsNullOrEmpty(calendarId))
+                throw new ArgumentException("Remote calendar url is empty.", "calendarLink");
             var userId = calendarLink.LocalCalendar.Owner.Id;
             
             // Standard structure to get responses from CalDAV (WebDAV) services.
