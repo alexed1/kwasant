@@ -92,18 +92,27 @@ namespace KwasantCore.Managers
 
         public void NewEmailReceived(int emailId, string customerId)
         {
-            FactDO curAction = new FactDO()
-                {
-                    Name = "EmailReceived",
-                    PrimaryCategory = "Email",
-                    SecondaryCategory = "Intake",
-                    Activity = "Received",
-                    CustomerId = customerId,
-                    CreateDate = DateTimeOffset.Now,
-                    ObjectId = emailId
-                };
-            SaveFact(curAction);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                string emailSubject = uow.EmailRepository.GetByKey(emailId).Subject;
+                emailSubject = emailSubject.Length <= 10 ? emailSubject : (emailSubject.Substring(0, 10) + "...");
+
+                FactDO curAction = new FactDO()
+                    {
+                        Name = "EmailReceived",
+                        PrimaryCategory = "Email",
+                        SecondaryCategory = "Intake",
+                        Activity = "Received",
+                        CustomerId = customerId,
+                        CreateDate = DateTimeOffset.Now,
+                        ObjectId = emailId
+                    };
+                curAction.Data = string.Format("{0} {1} {2}: ObjectId: {3} EmailAddress: {4} Subject: {5}", curAction.PrimaryCategory, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address), emailSubject);
+
+                SaveFact(curAction);
+            }
         }
+
         public void NewEventBooked(int eventId, string customerId)
         {
             FactDO curAction = new FactDO()
@@ -314,7 +323,8 @@ namespace KwasantCore.Managers
                         Status = status,
                         CreateDate = DateTimeOffset.Now,
                     };
-                curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
+                //curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
+                curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
                 AddFact(uow, curAction);
                 uow.SaveChanges();
             }
@@ -339,7 +349,8 @@ namespace KwasantCore.Managers
                         Status = status,
                         CreateDate = DateTimeOffset.Now,
                     };
-                curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
+                //curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
+                curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
                 AddFact(uow, curAction);
                 uow.SaveChanges();
 
