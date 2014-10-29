@@ -11,6 +11,7 @@ using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
+using Utilities;
 
 namespace KwasantWeb.Controllers
 {
@@ -20,12 +21,14 @@ namespace KwasantWeb.Controllers
         string _currBooker;
         private readonly IAttendee _attendee;
         private readonly IEmailAddress _emailAddress;
-
+        private readonly IConfigRepository _configRepository;
+        
         public NegotiationController()
         {
             _booker = new Booker();
             _attendee = ObjectFactory.GetInstance<IAttendee>();
             _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
         }
 
         public ActionResult Edit(int negotiationID, int bookingRequestID)
@@ -119,25 +122,27 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
-             
-                var emailAddresses = _emailAddress.GetEmailAddresses(uow, bookingRequestDO.HTMLText, bookingRequestDO.PlainText, bookingRequestDO.Subject);
-                emailAddresses.Add(bookingRequestDO.User.EmailAddress);
 
                 //need to add the addresses of people cc'ed or on the To line of the BookingRequest
-                emailAddresses.AddRange(bookingRequestDO.Recipients.Select(r => r.EmailAddress));
+                var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress.Address).ToList();
+                attendees.Add(bookingRequestDO.User.EmailAddress.Address);
+               
+                var stripReservedEmailAddresses = FilterUtility.StripReservedEmailAddresses(attendees, _configRepository).Distinct().ToList();
 
-                return View("~/Views/Negotiation/Edit.cshtml", new NegotiationVM
-                {
-                    Name = uow.EmailRepository.GetByKey(bookingRequestID).Subject,
-                    BookingRequestID = bookingRequestID,
-                    Attendees = emailAddresses.Select(ea => ea.Address).ToList(),
-                    Questions = new List<NegotiationQuestionVM>
-                    { new NegotiationQuestionVM
-                        {
-                            Type = "Text"
-                        }
-                    }
-                });
+                return View("~/Views/Negotiation/Edit.cshtml",
+                            new NegotiationVM
+                                {
+                                    Name = bookingRequestDO.Subject,
+                                    BookingRequestID = bookingRequestID,
+                                    Attendees = stripReservedEmailAddresses,
+                                    Questions = new List<NegotiationQuestionVM>
+                                        {
+                                            new NegotiationQuestionVM
+                                                {
+                                                    Type = "Text"
+                                                }
+                                        }
+                                });
             }
         }
 
