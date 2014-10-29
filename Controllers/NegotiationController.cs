@@ -123,30 +123,26 @@ namespace KwasantWeb.Controllers
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
 
-                var emailAddresses = _emailAddress.GetEmailAddresses(uow, bookingRequestDO.HTMLText, bookingRequestDO.PlainText, bookingRequestDO.Subject);
-                emailAddresses.Add(bookingRequestDO.User.EmailAddress);
-
                 //need to add the addresses of people cc'ed or on the To line of the BookingRequest
                 var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress.Address).ToList();
+                attendees.Add(bookingRequestDO.User.EmailAddress.Address);
                
-                IEnumerable<string> stripReservedEmailAddresses = FilterUtility.StripReservedEmailAddresses(attendees);
-                foreach (var attendeeEmailAddress in stripReservedEmailAddresses)
-                {
-                    emailAddresses.Add(new EmailAddressDO { Address = attendeeEmailAddress });
-                }
+                var stripReservedEmailAddresses = FilterUtility.StripReservedEmailAddresses(attendees, _configRepository).Distinct().ToList();
 
-                return View("~/Views/Negotiation/Edit.cshtml", new NegotiationVM
-                {
-                    Name = uow.EmailRepository.GetByKey(bookingRequestID).Subject,
-                    BookingRequestID = bookingRequestID,
-                    Attendees = emailAddresses.Select(ea => ea.Address).ToList(),
-                    Questions = new List<NegotiationQuestionVM>
-                    { new NegotiationQuestionVM
-                        {
-                            Type = "Text"
-                        }
-                    }
-                });
+                return View("~/Views/Negotiation/Edit.cshtml",
+                            new NegotiationVM
+                                {
+                                    Name = bookingRequestDO.Subject,
+                                    BookingRequestID = bookingRequestID,
+                                    Attendees = stripReservedEmailAddresses,
+                                    Questions = new List<NegotiationQuestionVM>
+                                        {
+                                            new NegotiationQuestionVM
+                                                {
+                                                    Type = "Text"
+                                                }
+                                        }
+                                });
             }
         }
 
