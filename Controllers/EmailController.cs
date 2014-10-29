@@ -42,8 +42,10 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                List<EmailDO> conversationEmails = new List<EmailDO>();
                 EmailDO curEmail;
+
+                List<EmailDO> conversationEmails = new List<EmailDO>();
+                
                 var emailDO = uow.EmailRepository.GetByKey(emailId);
 
                 var bookingRequestDO = emailDO as BookingRequestDO;
@@ -94,7 +96,7 @@ namespace KwasantWeb.Controllers
                     {
                         Header = String.Format("From: {0}  {1}", e.From.Address, e.DateReceived.TimeAgo()),
                         Body = e.HTMLText,
-                        ExplicitOpen = e == curEmail
+                        ExplicitOpen = e == curEmail && curEmail != bookingRequestDO
                     }).ToList(),
                     Subject = curEmail.Subject,
                     BookingRequestId = emailId,
@@ -108,5 +110,18 @@ namespace KwasantWeb.Controllers
                 return PartialView("Show", bookingInfo);
             }
         }
+
+        public JsonResult GetConversationMembers(int emailID)
+        {
+            var view = GetInfo(emailID) as PartialViewResult;
+            if (view == null)
+                return new JsonResult { Data = null, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            var model = view.Model as BookingRequestAdminVM;
+            if (model == null)
+                return new JsonResult { Data = null, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+
+            return new JsonResult { Data = model.Conversations, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+
     }
 }
