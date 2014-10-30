@@ -127,14 +127,14 @@ namespace KwasantWeb.Controllers
                 var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress.Address).ToList();
                 attendees.Add(bookingRequestDO.User.EmailAddress.Address);
                
-                var stripReservedEmailAddresses = FilterUtility.StripReservedEmailAddresses(attendees, _configRepository).Distinct().ToList();
+                var filteredEmailAddresses = FilterUtility.StripReservedEmailAddresses(attendees, _configRepository).Distinct().ToList();
 
                 return View("~/Views/Negotiation/Edit.cshtml",
                             new NegotiationVM
                                 {
                                     Name = bookingRequestDO.Subject,
                                     BookingRequestID = bookingRequestID,
-                                    Attendees = stripReservedEmailAddresses,
+                                    Attendees = filteredEmailAddresses,
                                     Questions = new List<NegotiationQuestionVM>
                                         {
                                             new NegotiationQuestionVM
