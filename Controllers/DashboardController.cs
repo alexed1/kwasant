@@ -95,7 +95,7 @@ namespace KwasantWeb.Controllers
                 {
                     Conversations = emails.OrderBy(c => c.DateReceived).Select(e => new ConversationVM
                     {
-                        Header = String.Format("From: {0}  {1}", e.From.Address, e.DateReceived.TimeAgo()),
+                        Header = "<span class='email-address'>" + String.Format("From: {0}", e.From.Address) + "</span><span class='date-received'>" + String.Format("{0}", e.DateReceived.TimeAgo()) + "</span>",
                         Body = e.HTMLText
                     }).ToList(),
                     FromName = bookingRequest.From.ToDisplayName(),

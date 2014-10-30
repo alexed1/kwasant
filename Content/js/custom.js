@@ -8,7 +8,11 @@ $(document).ready(function () {
 		});   
 	} else {    
 	    $('#main-container').removeClass('login-page');
-	}
+    }
+
+    if ($('#emailInfoBox').length > 0) {
+        $("body").removeClass('view-popup-window');
+    }
 	
 });
 
