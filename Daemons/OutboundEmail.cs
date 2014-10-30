@@ -62,9 +62,7 @@ namespace Daemons
                         uow.SaveChanges();
                     }
 
-                    AlertManager.Error_EmailSendFailure();
-                    Email _email = ObjectFactory.GetInstance<Email>();
-                    _email.SendAlertEmail();
+                    AlertManager.Error_EmailSendFailure(emailID, message);
                 });
 
             AddTest("OutboundEmailDaemon_Test", "Test");

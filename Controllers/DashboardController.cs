@@ -8,11 +8,14 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using KwasantCore.Managers;
 using KwasantWeb.ViewModels;
 using StructureMap;
+using Utilities;
 
 namespace KwasantWeb.Controllers
 {
+    [KwasantAuthorize(Roles = Roles.Booker)]
     public class DashboardController : Controller
     {
         //
@@ -67,13 +70,12 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curEmail = uow.EmailRepository.GetAll().Where(e => e.Id == bookingRequestId || e.ConversationId == bookingRequestId).OrderByDescending(e => e.DateReceived).FirstOrDefault();
-
-
+                var bookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                
                 const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
 
                 var attachmentInfo = String.Join("<br />",
-                            curEmail.Attachments.Select(
+                            bookingRequest.Attachments.Select(
                                 attachment =>
                                 "<a href='" + String.Format(fileViewURLStr, attachment.Id) + "' target='" +
                                 attachment.OriginalName + "'>" + attachment.OriginalName + "</a>"));
@@ -85,24 +87,23 @@ namespace KwasantWeb.Controllers
                     booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
                 }
 
+                var emails = new List<EmailDO>();
+                emails.Add(bookingRequest);
+                emails.AddRange(bookingRequest.ConversationMembers);
+
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
                 {
-                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
-                    BookingRequestId = bookingRequestId,
-                    CurEmailData = new EmailDO
+                    Conversations = emails.OrderBy(c => c.DateReceived).Select(e => new ConversationVM
                     {
-                        Attachments = curEmail.Attachments,
-                        From = curEmail.From,
-                        Recipients = curEmail.Recipients,
-                        HTMLText = curEmail.HTMLText,
-                        Id = curEmail.Id,
-                        FromID = curEmail.FromID,
-                        DateCreated = curEmail.DateCreated,
-                        Subject = curEmail.Subject
-                    },
-                    EmailTo = String.Join(", ", curEmail.To.Select(a => a.Address)),
-                    EmailCC = String.Join(", ", curEmail.CC.Select(a => a.Address)),
-                    EmailBCC = String.Join(", ", curEmail.BCC.Select(a => a.Address)),
+                        Header = String.Format("From: {0}  {1}", e.From.Address, e.DateReceived.TimeAgo()),
+                        Body = e.HTMLText
+                    }).ToList(),
+                    FromName = bookingRequest.From.ToDisplayName(),
+                    Subject = bookingRequest.Subject,
+                    BookingRequestId = bookingRequestId,
+                    EmailTo = String.Join(", ", bookingRequest.To.Select(a => a.Address)),
+                    EmailCC = String.Join(", ", bookingRequest.CC.Select(a => a.Address)),
+                    EmailBCC = String.Join(", ", bookingRequest.BCC.Select(a => a.Address)),
                     EmailAttachments = attachmentInfo,
                     Booker = booker
                 };

@@ -11,8 +11,6 @@
             <input type="radio" id="rdnshowOtherBRs" name="group1" value="ShowOtherBRs" />
             Show Other BR's  &nbsp;&nbsp; 
 					<input type="radio" id="rdnShowRelatedItems" name="group1" value="ShowRelatedItems" checked="checked" />Show Related Items
-                     &nbsp;&nbsp; 
-					<input type="radio" id="rdnShowConversationPanel" name="group1" value="ShowConversationPanel" />Conversation Panel
         </div>
         <table id="tblRelatedItems" class="email-info-table data-table">
             <thead>
@@ -31,8 +29,6 @@
                 </tr>
             </thead>
         </table>
-
-        <div id="divConversationPanel"></div>
     </div>
 </div>
 <input type="hidden" value="@Model.BookingRequestId" id="hdnrequestid" name="requestid" />
@@ -62,10 +58,6 @@
         showRelatedItems();
         $('#tbluserrequests').hide();
         $('#notificationGroup').hide();
-
-        //storedCalendar = calendar.getStoredCalendar();
-        //dp_navigator = calendar.getNavigator();
-        $('#divConversationPanel').hide();
     });
 
 
@@ -133,26 +125,11 @@
     $("#rdnshowOtherBRs").click(function () {
         showOtherBRs();
     });
-
-    $("#rdnShowConversationPanel").click(function () {
-        showConversationPanel();
-    });
-
-    function showConversationPanel() {
-        $('#divConversationPanel').show();
-        $('#tbluserrequests').hide();
-        $('#tblRelatedItems_wrapper').hide();
-        $('tbluserrequests_wrapper').hide();
-        var bookingRequestId = $("#hdnrequestid").val();
-        $('#tbluserrequests_wrapper').attr('style','display:none;');
-        $('#divConversationPanel').load("@Url.Action("ShowConversation","BookingRequest")" + "?bookingRequestId=" + bookingRequestId + '&CurEmailId=@Model.CurEmailData.Id');
-    }
-
+    
     var table;
     function showOtherBRs() {
         $('#tbluserrequests').show();
         $('#tblRelatedItems_wrapper').hide();
-        $('#divConversationPanel').hide();
 
         //Parsing and binding the booking requests viewer
         table = $('#tbluserrequests').DataTable({
@@ -203,7 +180,6 @@
         function showRelatedItems() {
 
             $('#tbluserrequests_wrapper').hide();
-        $('#divConversationPanel').hide();
             table1 = $('#tblRelatedItems').DataTable({
                 destroy: true,
                 order: [0, 'desc'],

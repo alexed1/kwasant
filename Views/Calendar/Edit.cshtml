@@ -2,9 +2,6 @@
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 <div id="CalendarDiv" class="col-md-5"></div>
 <script type="text/javascript">
-    @*var calendar;
-    var dp_navigator, storedCalendar;
-    var linkedNegotiationID = @Html.Raw(Model.LinkedNegotiationID == null ? "null" : Model.LinkedNegotiationID.ToString())*@
     $(function() {
         @{
             var calendarsToDisplay = new List<int>();
@@ -37,14 +34,14 @@
                 Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&calendarID=' + @Model.ActiveCalendarId + '&start=' + start + 'z&end=' + end + 'z',
                     {
                         horizontalAlign: 'right',
-                        callback: calendar.refreshCalendars
+                        callback: function(requiresRefresh) {
+                            if (requiresRefresh)
+                                calendar.refreshCalendars();
+                        }
                     });
             },
         });
         window.parent.storedCalendar = window.parent.calendar.getStoredCalendar();
         window.parent.dp_navigator = window.parent.calendar.getNavigator();
     });
-     
-    //window.parent.storedCalendar = window.parent.calendar.getStoredCalendar();
-    //window.parent.dp_navigator = window.parent.calendar.getNavigator();
 </script>
