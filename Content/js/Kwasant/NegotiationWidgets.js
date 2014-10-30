@@ -44,7 +44,7 @@
         if (initValues.Attendees != null) {
             var sanitizedAttendees = [];
             for (var i = 0; i < initValues.Attendees.length; i++) {
-                var obj = initValues.Attendees[0];
+                var obj = initValues.Attendees[i];
                 if (typeof obj === "string") {
                     sanitizedAttendees.push({
                         id: obj,
