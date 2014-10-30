@@ -102,7 +102,7 @@ namespace KwasantTest.Controllers
 
         [Test]
         [Category("BRM")]
-        public void CanGetBookingRequestLink()
+        public void TestMenuItem_BRShowAll()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/BookingRequest");
             var response = (HttpWebResponse)webRequest.GetResponse();
@@ -111,7 +111,7 @@ namespace KwasantTest.Controllers
 
         [Test]
         [Category("BRM")]
-        public void CanGetBookerBRLink()
+        public void TestMenuItem_ShowMyBR()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/BookingRequest/ShowBRSOwnedByBooker");
             var response = (HttpWebResponse)webRequest.GetResponse();
@@ -120,7 +120,7 @@ namespace KwasantTest.Controllers
 
         [Test]
         [Category("BRM")]
-        public void CanGetInProgressBRLink()
+        public void TestMenuItem_ShowInProcessBR()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/BookingRequest/ShowInProcessBRS");
             var response = (HttpWebResponse)webRequest.GetResponse();
@@ -129,7 +129,7 @@ namespace KwasantTest.Controllers
 
         [Test]
         [Category("BRM")]
-        public void CanGetAllBRAdminLink()
+        public void TestMenuItem_BRShowAllAdmin()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/BookingRequest/ShowAllBookingRequests?type=alllogs");
             var response = (HttpWebResponse)webRequest.GetResponse();

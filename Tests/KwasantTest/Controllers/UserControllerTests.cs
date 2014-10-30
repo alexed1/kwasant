@@ -286,7 +286,7 @@ namespace KwasantTest.Controllers
         }
 
         [Test]
-        public void CanGetUserLink()
+        public void TestMenuItem_UsersShowAll()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/User");
             var response = (HttpWebResponse)webRequest.GetResponse();
@@ -294,7 +294,7 @@ namespace KwasantTest.Controllers
         }
 
         [Test]
-        public void CanGetAddUserViewLink()
+        public void TestMenuItem_UsersAdd()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/User/ShowAddUser");
             var response = (HttpWebResponse)webRequest.GetResponse();
@@ -302,7 +302,7 @@ namespace KwasantTest.Controllers
         }
 
         [Test]
-        public void CanGetFindUserViewLink()
+        public void TestMenuItem_UsersFind()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/User/FindUser");
             var response = (HttpWebResponse)webRequest.GetResponse();
