@@ -75,7 +75,8 @@ namespace KwasantWeb.Controllers
                 uow.SaveChanges();
                 AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
 
-                return RedirectToAction("Index", "Dashboard", new { id });
+                //Redirect to Calendar control to open Booking Agent UI. It takes email id as parameter to which email message will be dispalyed in the left column of Booking Agent UI
+                return RedirectToAction("Index", "Dashboard", new { id = id });
             }
         }
 

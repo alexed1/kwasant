@@ -1,12 +1,23 @@
 ﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
 
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
+using Newtonsoft.Json;
 
 namespace Data.Infrastructure
 {
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
-    {       
+    {
+        public delegate void TrackablePropertyUpdatedHandler(string name, string contextTable, int id, object status);
+        public static event TrackablePropertyUpdatedHandler AlertTrackablePropertyUpdated;
+
+        public delegate void TrackablePropertyCreatedHandler(string name, string contextTable, int id, object status);
+        public static event TrackablePropertyCreatedHandler AlertTrackablePropertyCreated;
+
+        public delegate void TrackablePropertyDeletedHandler(string name, string contextTable, int id, int parentId, object status);
+        public static event TrackablePropertyDeletedHandler AlertTrackablePropertyDeleted;
+        
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
 
@@ -53,7 +64,25 @@ namespace Data.Infrastructure
         public static event ErrorSyncingCalendarHandler AlertErrorSyncingCalendar;
 
         #region Method
-        
+
+        public static void TrackablePropertyUpdated(string name, string contextTable, int id, object status)
+        {
+            if (AlertTrackablePropertyUpdated != null)
+                AlertTrackablePropertyUpdated(name, contextTable, id, status);
+        }
+
+        public static void TrackablePropertyCreated(string name, string contextTable, int id, object status)
+        {
+            if (AlertTrackablePropertyCreated != null)
+                AlertTrackablePropertyCreated(name, contextTable, id, status);
+        }
+
+        public static void TrackablePropertyDeleted(string name, string contextTable, int id, int parentID, object status)
+        {
+            if (AlertTrackablePropertyDeleted != null)
+                AlertTrackablePropertyDeleted(name, contextTable, id, parentID, status);
+        }
+
         /// <summary>
         /// Publish Customer Created event
         /// </summary>

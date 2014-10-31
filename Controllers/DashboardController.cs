@@ -87,6 +87,8 @@ namespace KwasantWeb.Controllers
                     booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
                 }
 
+                var journaling = uow.FactRepository.GetJournalingForBookingRequest(bookingRequestId).ToList();
+
                 var emails = new List<EmailDO>();
                 emails.Add(bookingRequest);
                 emails.AddRange(bookingRequest.ConversationMembers);
@@ -104,6 +106,7 @@ namespace KwasantWeb.Controllers
                     EmailTo = String.Join(", ", bookingRequest.To.Select(a => a.Address)),
                     EmailCC = String.Join(", ", bookingRequest.CC.Select(a => a.Address)),
                     EmailBCC = String.Join(", ", bookingRequest.BCC.Select(a => a.Address)),
+                    VerbalisedHistory = journaling,
                     EmailAttachments = attachmentInfo,
                     Booker = booker
                 };
