@@ -113,7 +113,7 @@
                 if (Kwasant.IFrame.PopupsActive()) {
                     return;
                 }
-                Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z&mergeEvents=@mergeEvents', calendar.refreshCalendars);
+                Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z&mergeEvents=@mergeEvents', calendar.refreshCalendars, 'POST');
             },
 
             editRequiresConfirmation: @requiresConfirmation,

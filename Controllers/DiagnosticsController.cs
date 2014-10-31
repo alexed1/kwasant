@@ -150,9 +150,9 @@ namespace KwasantWeb.Controllers
             if (daemon != null)
             {
                 daemon.Start();
-                return new JsonResult { Data = true };
+                return Json(true);
             }
-            return new JsonResult { Data = false };
+            return Json(false);
         }
 
         [HttpPost]
@@ -162,9 +162,9 @@ namespace KwasantWeb.Controllers
             if (daemon != null)
             {
                 daemon.Stop();
-                return new JsonResult { Data = true };
+                return Json(true);
             }
-            return new JsonResult { Data = false };
+            return Json(false);
         }
 
         [HttpPost]
@@ -172,7 +172,7 @@ namespace KwasantWeb.Controllers
         {
             var diagnosticsTest = ServiceManager.GetInformationForService<DiagnosticsTest>().Instance as DiagnosticsTest;
             if (diagnosticsTest == null)
-                return new JsonResult {Data = false};
+                return Json(false);
 
             return RunAsync(diagnosticsTest.RunAllTests);
         }
@@ -186,7 +186,7 @@ namespace KwasantWeb.Controllers
         private JsonResult RunAsync(ThreadStart action)
         {
             new Thread(action).Start();
-            return new JsonResult {Data = true};
+            return Json(true);
         }
 
         private static void MarkRunningTest<T>(String testName)

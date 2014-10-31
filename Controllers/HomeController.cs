@@ -80,6 +80,7 @@ namespace KwasantWeb.Controllers
 
 
         //Validate emailAddress and meetingInfo then call Generate() parameterized method in BookingRequest controller
+        [HttpPost]
         public ActionResult ProcessHomePageBookingRequest(string emailAddress, string meetingInfo)
         {
             string result = "";
@@ -91,18 +92,18 @@ namespace KwasantWeb.Controllers
                 emailAddressValidator.ValidateAndThrow(emailAddressDO);
 
                 if (meetingInfo.Trim().Length < 30)
-                    return new JsonResult() { Data = new { Message = "Meeting information must have at least 30 characters" } };
+                    return Json(new { Message = "Meeting information must have at least 30 characters" });
                
                 return RedirectToAction("Generate", "BookingRequest", new { emailAddress = emailAddress, meetingInfo = meetingInfo });
             }
             catch (ValidationException ex)
             {
-                return new JsonResult() { Data = new { Message = "You need to provide a valid Email Address.", JsonRequestBehavior = JsonRequestBehavior.AllowGet } };
+                return Json(new { Message = "You need to provide a valid Email Address." });
             }
             catch (Exception ex)
             {
                 Logger.GetLogger().Error("Error processing a home page try it out form schedule me", ex);
-                return new JsonResult() { Data = new { Message = "Something went wrong. Sorry about that", JsonRequestBehavior = JsonRequestBehavior.AllowGet } };
+                return Json(new { Message = "Something went wrong. Sorry about that" });
                 
             }
         }
