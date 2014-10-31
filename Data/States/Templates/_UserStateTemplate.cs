@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.States.Templates
 {
-    public class _UserStateTemplate : IStateTemplate<BookingRequestState>
+    public class _UserStateTemplate : IStateTemplate<UserState>
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int Id { get; set; }

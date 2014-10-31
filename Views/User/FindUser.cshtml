@@ -130,6 +130,24 @@
                     <input type="text" id="emailAddress" />
                 </td>
             </tr>
+            <tr>
+                <td>Status
+                </td>
+                <td>
+                    @{
+                        using (var uow = StructureMap.ObjectFactory.GetInstance<Data.Interfaces.IUnitOfWork>())
+                        {
+                            var allStatus = uow.UserStatusRepository.GetAll();
+                            foreach (var status in allStatus)
+                            {
+                        <input id="@status.Id" type="checkbox" class="roleCheckbox" value="@status.Name" />
+                        <label for="@status.Id">@status.Name</label>
+                        <br />
+                    }
+                    }
+                        }
+                </td>
+            </tr>
         </table>
     </fieldset>
     <br /><br />
