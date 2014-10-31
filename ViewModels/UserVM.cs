@@ -16,6 +16,7 @@ namespace KwasantWeb.ViewModels
         public String LastName { get; set; }
         public String UserName { get; set; }
         public String EmailAddress { get; set; }
+        public int Status { get; set; }
         public int EmailAddressID { get; set; }
 
         public List<String> Roles { get; set; } 

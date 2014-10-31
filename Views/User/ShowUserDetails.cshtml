@@ -49,9 +49,9 @@
                             var allRows = uow.AspNetRolesRepository.GetAll();
                             foreach (var role in allRows)
                             {
-                                <input id="@role.Id" type="checkbox" class="roleCheckbox" value="@role.Name" @Html.Raw(Model.Roles.Contains(role.Name) ? "checked" : String.Empty)/>
-                                <label for="@role.Id">@role.Name</label>
-                                <br/>
+                        <input id="@role.Id" type="checkbox" class="roleCheckbox" value="@role.Name" @Html.Raw(Model.Roles.Contains(role.Name) ? "checked" : String.Empty)/>
+                        <label for="@role.Id">@role.Name</label>
+                        <br />
                             }
                         }
                     }
@@ -64,7 +64,10 @@
             <tr id="trNewUser">
                 <td colspan="2">
                     <input type="button" id="btnSave" value="Save" />&nbsp;&nbsp;
-                    <input type="button" id="btnCancel" value="Cancel" /></td>
+                    <input type="button" id="btnCancel" value="Cancel" />&nbsp;&nbsp;
+                    <input type="button" id="btnDelete" value="Delete" onclick="updateStatus(@Data.States.UserState.Deleted)"/>
+                    <input type="button" id="btnActivate" value="Activate" onclick="updateStatus(@Data.States.UserState.Active)"/>
+                </td>
             </tr>
             <tr id="trEditUser" style="display: none;">
                 <td>
@@ -80,6 +83,10 @@
 <script>
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
+
+        //Show/Hide user status buttons
+        toggleStatusButtons(@Model.Status);
+
         //Binding click function to cancel button
         $("#btnCancel").click(function () {
             if ($("#hdnUserId").val() != "") {
@@ -93,19 +100,19 @@
             }
         });
 
-        $("#btnEdit").click(function() {
+        $("#btnEdit").click(function () {
             toggleFields(false);
         });
 
         //Binding click event handler to Save button.
-        $("#btnSave").click(function() {
+        $("#btnSave").click(function () {
             var dataObj = {};
             dataObj.Id = '@Model.Id';
             dataObj.FirstName = $("#firstname").val();
             dataObj.LastName = $("#lastname").val();
             dataObj.EmailAddress = $("#email").val();
             dataObj.Roles = [];
-            $.each($('.roleCheckbox'), function(i, o) {
+            $.each($('.roleCheckbox'), function (i, o) {
                 var wrappedObj = $(o);
                 if (wrappedObj.is(':checked'))
                     dataObj.Roles.push(wrappedObj.val());
@@ -134,6 +141,35 @@
         $("#role").prop("disabled", state);
         $("#trNewUser").toggle();
         $("#trEditUser").toggle();
+    }
+
+    //Click function to update user Status
+    function updateStatus(status)
+    {
+        if(confirm("Are you sure?")){
+            $.ajax({
+                url: '@Url.Action("UpdateStatus", "User")',
+                type: 'GET',
+                contentType: 'application/json',
+                data: { userId: '@Model.Id', status: status },
+                success: function () {
+                    toggleStatusButtons(status);
+                }
+            });
+        }
+    }
+
+    //function to Show/Hide user status buttons
+    function toggleStatusButtons(status)
+    {
+        if (status == "@Data.States.UserState.Active"){
+            $("#btnActivate").hide();
+            $("#btnDelete").show();
+        }
+        else {
+            $("#btnActivate").show();
+            $("#btnDelete").hide();
+        }
     }
 </script>
 

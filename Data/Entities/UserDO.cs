@@ -7,6 +7,8 @@ using System.Collections.Generic;
 
 using Data.Interfaces;
 using StructureMap;
+using System.ComponentModel.DataAnnotations;
+using Data.States.Templates;
 
 namespace Data.Entities
 {
@@ -34,6 +36,10 @@ namespace Data.Entities
         [ForeignKey("EmailAddress")]
         public int? EmailAddressID { get; set; }
         public virtual EmailAddressDO EmailAddress { get; set; }
+
+        [Required, ForeignKey("UserStateTemplate")]
+        public int? State { get; set; }
+        public virtual _UserStateTemplate UserStateTemplate { get; set; }
         
         [InverseProperty("User")]
         public virtual IList<BookingRequestDO> BookingRequests { get; set; }

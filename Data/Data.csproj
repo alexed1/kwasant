@@ -350,6 +350,10 @@
     <Compile Include="Migrations\201410290705052_Sync.29.10.2014.Designer.cs">
       <DependentUpon>201410290705052_Sync.29.10.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201410311036361_Add_State_to_UserDO.cs" />
+    <Compile Include="Migrations\201410311036361_Add_State_to_UserDO.Designer.cs">
+      <DependentUpon>201410311036361_Add_State_to_UserDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
@@ -412,6 +416,7 @@
     <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="Repositories\ProfileNodeRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
+    <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\CommunicationMode.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
@@ -463,6 +468,7 @@
     <Compile Include="States\CommunicationType.cs" />
     <Compile Include="States\EmailParticipantType.cs" />
     <Compile Include="States\EmailState.cs" />
+    <Compile Include="States\Templates\_UserStateTemplate.cs" />
     <Compile Include="States\TrackingState.cs" />
     <Compile Include="States\TrackingType.cs" />
     <Compile Include="Entities\RemoteCalendarProviderDO.cs" />
@@ -778,6 +784,7 @@
     <Compile Include="Repositories\TrackingStatusRepository.cs" />
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="States\UserState.cs" />
     <Compile Include="Validations\BookingRequestValidator.cs" />
     <Compile Include="Validations\EnvelopeValidator.cs" />
     <Compile Include="Validations\EventValidator.cs" />
@@ -1196,6 +1203,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410290705052_Sync.29.10.2014.resx">
       <DependentUpon>201410290705052_Sync.29.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410311036361_Add_State_to_UserDO.resx">
+      <DependentUpon>201410311036361_Add_State_to_UserDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

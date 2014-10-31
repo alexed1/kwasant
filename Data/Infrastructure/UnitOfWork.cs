@@ -239,6 +239,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private UserStatusRepository _userStatusRepository;
+
+        public UserStatusRepository UserStatusRepository
+        {
+            get
+            {
+                return _userStatusRepository ?? (_userStatusRepository = new UserStatusRepository(this));
+            }
+        }
+
         private UserAgentInfoRepository _userAgentInfoRepository;
 
         public UserAgentInfoRepository UserAgentInfoRepository
