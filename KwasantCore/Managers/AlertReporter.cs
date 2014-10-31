@@ -24,8 +24,9 @@ namespace KwasantCore.Managers
             AlertManager.AlertEmailSent += EmailDispatched;
             AlertManager.AlertBookingRequestCreated += ProcessBookingRequestCreated;
             AlertManager.AlertBookingRequestStateChange += ProcessBookingRequestStateChange;
-            AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerCreated;
             AlertManager.AlertBookingRequestProcessingTimeout += ProcessTimeout;
+            AlertManager.AlertBookingRequestNeedsProcessing += OnBookingRequestNeedsProcessing;
+            AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerCreated;
             AlertManager.AlertUserRegistration += UserRegistration;
             AlertManager.AlertBookingRequestCheckedOut += ProcessBookingRequestCheckedOut;
             AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChange;
@@ -422,6 +423,29 @@ namespace KwasantCore.Managers
                 AddFact(uow, curAction);
                 uow.SaveChanges();
 
+            }
+        }
+
+        private void OnBookingRequestNeedsProcessing(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                IncidentDO curAction = new IncidentDO()
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "State",
+                    Activity = "Change",
+                    CustomerId = bookingRequestDO.User.Id,
+                    ObjectId = bookingRequestDO.Id,
+                    Priority = 0,
+                    CreateTime = DateTimeOffset.Now,
+                };
+
+                uow.IncidentRepository.Add(curAction);
+                uow.SaveChanges();
             }
         }
     }

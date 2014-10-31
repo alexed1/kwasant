@@ -36,6 +36,24 @@ namespace KwasantCore.Managers
             AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerWorkflow;
             AlertManager.AlertCustomerCreated += NewCustomerWorkflow;
             AlertManager.AlertBookingRequestCreated += BookingRequestCreated;
+            AlertManager.AlertBookingRequestNeedsProcessing += BookingRequestNeedsProcessing;
+        }
+
+        private void BookingRequestNeedsProcessing(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                var email = ObjectFactory.GetInstance<Email>();
+                string message = "BookingRequest ID : " + bookingRequestDO.Id + " Needs Processing <br/>Subject : " + bookingRequestDO.Subject;
+                string subject = "BookingRequest Needs Processing";
+                string toRecipient = _configRepository.Get("EmailAddress_BrNotify");
+                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                string fromAddress = configRepository.Get<string>("EmailAddress_GeneralInfo");
+                EmailDO curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
+                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                uow.SaveChanges();
+            }
         }
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.

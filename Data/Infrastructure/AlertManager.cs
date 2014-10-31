@@ -9,6 +9,9 @@ namespace Data.Infrastructure
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
     {
+        public delegate void BookingRequestNeedsProcessingHandler(int bookingRequestId);
+        public static event BookingRequestNeedsProcessingHandler AlertBookingRequestNeedsProcessing;
+
         public delegate void TrackablePropertyUpdatedHandler(string name, string contextTable, int id, object status);
         public static event TrackablePropertyUpdatedHandler AlertTrackablePropertyUpdated;
 
@@ -173,6 +176,13 @@ namespace Data.Infrastructure
             var handler = AlertErrorSyncingCalendar;
             if (handler != null)
                 handler(calendarLink);
+        }
+
+        public static void BookingRequestNeedsProcessing(int bookingRequestId)
+        {
+            var handler = AlertBookingRequestNeedsProcessing;
+            if (handler != null)
+                handler(bookingRequestId);
         }
 
         #endregion
