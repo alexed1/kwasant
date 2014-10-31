@@ -71,12 +71,12 @@ namespace KwasantTest.Timeslots
             var controller = new EventController();
 
             var res = controller.NewTimeSlot(calendarID, GetFormattedDateString(startTime), GetFormattedDateString(endTime), true);
-            var converted = res as JavaScriptResult;
+            var converted = res as JsonResult;
             if (converted == null)
                 throw new Exception("Invalid return type");
 
-            if (converted.Script != SimpleJsonSerializer.Serialize(true))
-                throw new Exception("Error processing on server. Returned response: '" + converted.Script + "'");
+            if ((bool)converted.Data != true)
+                throw new Exception("Error processing on server. Returned response: '" + converted.Data + "'");
         }
 
         [Test]
