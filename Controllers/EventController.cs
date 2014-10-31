@@ -69,7 +69,7 @@ namespace KwasantWeb.Controllers
 
                 uow.SaveChanges();
 
-                return JavaScript(SimpleJsonSerializer.Serialize(true));
+                return Json(true, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -183,10 +183,10 @@ namespace KwasantWeb.Controllers
                 {
                     uow.EventRepository.Remove(eventDO);
                     uow.SaveChanges();
-                    return JavaScript(SimpleJsonSerializer.Serialize(true));
+                    return Json(true, JsonRequestBehavior.AllowGet);
                 }
 
-                return JavaScript(SimpleJsonSerializer.Serialize(false));
+                return Json(false, JsonRequestBehavior.AllowGet);
             }
         }
 
