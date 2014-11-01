@@ -5,7 +5,7 @@ html {
 }
 
 body {
-	background: #f2e9df;
+	background: #f2e9df!important;
 	display: table-cell;
 	width: 100%;
 	min-height: 100%;
