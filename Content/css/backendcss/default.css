@@ -572,17 +572,17 @@ nav.top-toolbar-section ul.navbar-nav li ul.dropdown-menu li a {
     background: #3e3e3e;
     border-radius: 0;
     border: 1px solid #d85e17;
-    color: #87989e;
+    color: #000;
 }
 
 input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px #3e3e3e inset;
-    -webkit-text-fill-color: #87989e;
+    -webkit-text-fill-color: #000;
 }
 
 input:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0px 1000px #000 inset;
-    -webkit-text-fill-color: #87989e;
+    -webkit-text-fill-color: #000;
 }
 
 input[type="submit"].btn, input[type="button"].btn {
@@ -798,12 +798,12 @@ input[type="submit"].btn.gradient-button:hover, input[type="button"].btn.gradien
 
 .login-section .custom-form input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px #f2e9df inset;
-    -webkit-text-fill-color: #333;
+    -webkit-text-fill-color: #000;
 }
 
 .login-section .custom-form input:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0px 1000px #f2dfc9 inset;
-    -webkit-text-fill-color: #333;
+    -webkit-text-fill-color: #000;
 }
 
 /*Registration section*/
