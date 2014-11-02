@@ -350,6 +350,10 @@
     <Compile Include="Migrations\201410290705052_Sync.29.10.2014.Designer.cs">
       <DependentUpon>201410290705052_Sync.29.10.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411021415158_BookingRequestRelationships.cs" />
+    <Compile Include="Migrations\201411021415158_BookingRequestRelationships.Designer.cs">
+      <DependentUpon>201411021415158_BookingRequestRelationships.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
@@ -1196,6 +1200,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410290705052_Sync.29.10.2014.resx">
       <DependentUpon>201410290705052_Sync.29.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411021415158_BookingRequestRelationships.resx">
+      <DependentUpon>201411021415158_BookingRequestRelationships.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

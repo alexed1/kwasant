@@ -4,11 +4,11 @@ namespace KwasantWeb.AlertQueues
 {
     public class BookingRequestUpdatedQueue : PersonalAlertQueue<BookingRequestUpdatedData>
     {
-        public BookingRequestUpdatedQueue(int bookingRequestID) 
+        public BookingRequestUpdatedQueue() 
         {
             AlertManager.AlertConversationMemberAdded += id =>
             {
-                if (bookingRequestID == id)
+                if (ObjectID == id)
                     AppendUpdate(new BookingRequestUpdatedData());
             };
         }

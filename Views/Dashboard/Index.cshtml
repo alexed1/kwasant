@@ -27,11 +27,11 @@
         $(function() {
             var popupAlreadyShowing;
             var jacked = humane.create({ baseCls: 'humane-jackedup', addnCls: 'humane-jackedup-success', clickToClose: true, timeout: 0 });
-            getUpdateForPage('Blah', @Model.BookingRequestVM.BookingRequestId, function(result) {
+            getUpdateForPage('BookingRequestUpdatedQueue', @Model.BookingRequestVM.BookingRequestId, function(result) {
                 if (result.length > 0) {
                     if (!popupAlreadyShowing) {
                         popupAlreadyShowing = true;
-                        jacked.log("Change detected. Click here to refresh", function() {
+                        jacked.log("A new email relating to this booking request has arrived. Click here to refresh.", function() {
                             popupAlreadyShowing = false;
                             refreshConversation();
                         });

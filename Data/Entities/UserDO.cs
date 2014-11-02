@@ -20,7 +20,8 @@ namespace Data.Entities
 
         public UserDO()
         {
-            BookingRequests = new List<BookingRequestDO>();
+            UserBookingRequests = new List<BookingRequestDO>();
+            BookerBookingRequests = new List<BookingRequestDO>();
             Calendars = new List<CalendarDO>();
             RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
             Profiles = new List<ProfileDO>();
@@ -36,7 +37,10 @@ namespace Data.Entities
         public virtual EmailAddressDO EmailAddress { get; set; }
         
         [InverseProperty("User")]
-        public virtual IList<BookingRequestDO> BookingRequests { get; set; }
+        public virtual IList<BookingRequestDO> UserBookingRequests { get; set; }
+
+        [InverseProperty("Booker")]
+        public virtual IList<BookingRequestDO> BookerBookingRequests { get; set; }
 
         [InverseProperty("Owner")]
         public virtual IList<CalendarDO> Calendars { get; set; }

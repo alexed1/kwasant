@@ -7,6 +7,7 @@ namespace KwasantWeb.AlertQueues
 {
     public interface IPersonalAlertQueue
     {
+        int ObjectID { get; set; }
         IEnumerable<object> GetUpdates();
     }
 
@@ -18,6 +19,7 @@ namespace KwasantWeb.AlertQueues
     public class PersonalAlertQueue<T> : IPersonalAlertQueue<T>
         where T : class
     {
+        public int ObjectID { get; set; }
         private readonly SynchronizedCollection<T> _baseCollection = new SynchronizedCollection<T>();
         public IEnumerable<object> GetUpdates()
         {
@@ -68,7 +70,12 @@ namespace KwasantWeb.AlertQueues
         private readonly ConcurrentDictionary<Object, DateTime> _objectExpirations = new ConcurrentDictionary<object, DateTime>();
         private readonly SynchronizedCollection<T> _baseCollection = new SynchronizedCollection<T>(); 
         private readonly ConcurrentDictionary<String, SynchronizedCollection<T>> _interestedPartyQueues = new ConcurrentDictionary<String, SynchronizedCollection<T>>();
-        
+
+        protected virtual TimeSpan ExpireUpdateAfter
+        {
+            get { return TimeSpan.FromMinutes(5); }
+        }
+
         public void RegisterInterest(string guid)
         {
             var newList = new SynchronizedCollection<T>();
@@ -114,7 +121,7 @@ namespace KwasantWeb.AlertQueues
         {
             if (_interestedPartyQueues.Any())
             {
-                MarkExpiration(update, _expireInterestedPartiesAfter);
+                MarkExpiration(update, ExpireUpdateAfter);
 
                 foreach (var interestedPartyQueue in _interestedPartyQueues)
                 {

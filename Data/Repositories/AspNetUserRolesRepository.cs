@@ -42,7 +42,7 @@ namespace Data.Repositories
             return GetQuery().Any(ur => ur.RoleId == roleID && ur.UserId == userID);
         }
 
-        private String GetRoleID(String roleName)
+        public String GetRoleID(String roleName)
         {
             var roleID = UnitOfWork.AspNetRolesRepository.DBSet.Local.Where(r => r.Name == roleName).Select(r => r.Id).FirstOrDefault();
             if (roleID == null)

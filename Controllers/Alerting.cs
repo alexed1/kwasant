@@ -18,9 +18,10 @@ namespace KwasantWeb.Controllers
 
             if (Session[guid] == null)
             {
-                //Somehow get the event... via 'eventName'
-                var ev = new BookingRequestUpdatedQueue(objectID);
-                Session[guid] = ev;
+                var queue = PersonalAlertQueues.GetQueueByName(eventName);
+                queue.ObjectID = objectID;
+
+                Session[guid] = queue;
             } 
             
             return new JsonResult { Data = guid };

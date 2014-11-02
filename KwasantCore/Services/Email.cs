@@ -253,10 +253,23 @@ namespace KwasantCore.Services
             {
                 uow.EmailRepository.Remove(curEmail);
                 BookingRequestDO bookingRequest = ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
-                (new BookingRequest()).Process(uow, bookingRequest);
+
+                var newBookingRequest = new BookingRequest();
+                newBookingRequest.Process(uow, bookingRequest);
                 uow.SaveChanges();
-                //AlertManager.BookingRequestCreated(bookingRequest.Id);
+                
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+
+                var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
+                if (preferredUser != null)
+                {
+                    bookingRequest.State = BookingRequestState.Booking;
+                    bookingRequest.BookerID = preferredUser.Id;
+                    bookingRequest.LastUpdated = DateTimeOffset.Now;
+                    uow.SaveChanges();
+
+                    AlertManager.NewBookingRequestForPreferredBooker(preferredUser.Id, bookingRequest.Id);
+                }
             }
         }
     }

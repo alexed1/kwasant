@@ -1,4 +1,9 @@
-﻿using Data.Infrastructure;
+﻿using System;
+using Data.Infrastructure;
+using Data.Interfaces;
+using KwasantCore.Services;
+using StructureMap;
+using Utilities;
 
 namespace KwasantWeb.AlertQueues
 {
@@ -15,10 +20,33 @@ namespace KwasantWeb.AlertQueues
                     });
         }
 
+        protected override TimeSpan ExpireUpdateAfter
+        {
+            get { return TimeSpan.FromSeconds(30); }
+        }
+
         protected override void ObjectExpired(NewBookingRequestForUserQueueData item)
         {
-            var t = 0;
-            //Now we email the person...
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var userDo = uow.UserRepository.GetByKey(item.UserID);
+                var em = new Email();
+                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+
+
+                const string message = @"Dear {0},<br/>
+A new booking request has been assigned to you.<br/>
+Click <a href='{1}'>here</a> to check it out.";
+
+                var formattedMessage = string.Format(message,
+                    userDo.UserName,
+                    Server.ServerUrl + "Dashboard/Index?id=" + item.BookingRequestID
+                    );
+                var emailDO = em.GenerateBasicMessage(uow, "New booking request was assigned to you", formattedMessage, fromAddress, userDo.EmailAddress.Address);
+                uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
+                uow.SaveChanges();
+            }
         }
     }
 
