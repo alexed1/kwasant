@@ -12,6 +12,7 @@ using KwasantCore.ModelBinders;
 using KwasantCore.Services;
 using KwasantCore.Managers;
 using KwasantCore.StructureMap;
+using KwasantWeb.AlertQueues;
 using KwasantWeb.App_Start;
 using Newtonsoft.Json;
 using Segment;
@@ -61,6 +62,8 @@ namespace KwasantWeb
 
 //            ModelBinders.Binders.Add(typeof(EventViewModel), new KwasantDateBinder());
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
+
+            StaticAlertQueues.Begin();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

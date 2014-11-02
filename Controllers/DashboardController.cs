@@ -25,7 +25,10 @@ namespace KwasantWeb.Controllers
                 throw new HttpException(400, "Booking request not found");
 
             if (TempData["requestInfo"] == null)
-                GetRequestInfo(id);
+            {
+                var data = new EmailController().GetInfo(id);
+                TempData["requestInfo"] = data.Model;
+            }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -66,49 +69,6 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public void GetRequestInfo(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                
-                const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
-
-                var attachmentInfo = String.Join("<br />",
-                            bookingRequest.Attachments.Select(
-                                attachment =>
-                                "<a href='" + String.Format(fileViewURLStr, attachment.Id) + "' target='" +
-                                attachment.OriginalName + "'>" + attachment.OriginalName + "</a>"));
-
-                string booker = "none";
-                string bookerId = uow.BookingRequestRepository.GetByKey(bookingRequestId).BookerID;
-                if (bookerId != null)
-                {
-                    booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
-                }
-
-                var emails = new List<EmailDO>();
-                emails.Add(bookingRequest);
-                emails.AddRange(bookingRequest.ConversationMembers);
-
-                BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
-                {
-                    Conversations = emails.OrderBy(c => c.DateReceived).Select(e => new ConversationVM
-                    {
-                        Header = "<span class='email-address'>" + String.Format("From: {0}", e.From.Address) + "</span><span class='date-received'>" + String.Format("{0}", e.DateReceived.TimeAgo()) + "</span>",
-                        Body = e.HTMLText
-                    }).ToList(),
-                    FromName = bookingRequest.From.ToDisplayName(),
-                    Subject = bookingRequest.Subject,
-                    BookingRequestId = bookingRequestId,
-                    EmailTo = String.Join(", ", bookingRequest.To.Select(a => a.Address)),
-                    EmailCC = String.Join(", ", bookingRequest.CC.Select(a => a.Address)),
-                    EmailBCC = String.Join(", ", bookingRequest.BCC.Select(a => a.Address)),
-                    EmailAttachments = attachmentInfo,
-                    Booker = booker
-                };
-                TempData["requestInfo"] = bookingInfo;
-            }
-        }
+        
 	}
 }

@@ -1,24 +1,23 @@
-﻿using System;
-using Data.Infrastructure;
+﻿using Data.Infrastructure;
 
 namespace KwasantWeb.AlertQueues
 {
-    public class NewBookingRequestForUserQueue : ExpiringAlertQueue<NewBookingRequestForUserQueueData>
+    public class NewBookingRequestForUserQueue : SharedSharedAlertQueue<NewBookingRequestForUserQueueData>
     {
         public NewBookingRequestForUserQueue() 
-            : base(TimeSpan.FromMinutes(5))
         {
             AlertManager.AlertNewBookingRequestForPreferredBooker +=
                 (bookerID, bookingRequestID) =>
-                    AppendItem(new NewBookingRequestForUserQueueData
+                    AppendUpdate(new NewBookingRequestForUserQueueData
                     {
                         UserID = bookerID,
                         BookingRequestID = bookingRequestID
                     });
         }
 
-        public override void ExpireItem(NewBookingRequestForUserQueueData item)
+        protected override void ObjectExpired(NewBookingRequestForUserQueueData item)
         {
+            var t = 0;
             //Now we email the person...
         }
     }

@@ -38,7 +38,7 @@ namespace KwasantWeb.Controllers
             return API.PackResponseGetEmail(thisEmailDO);
         }
 
-        public ActionResult GetInfo(int emailId)
+        public PartialViewResult GetInfo(int emailId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -94,9 +94,9 @@ namespace KwasantWeb.Controllers
                 {
                     Conversations = conversationEmails.OrderBy(c => c.DateReceived).Select(e => new ConversationVM
                     {
-                        Header = String.Format("From: {0}  {1}", e.From.Address, e.DateReceived.TimeAgo()),
-                        Body = e.HTMLText,
-                        ExplicitOpen = e == curEmail && curEmail != bookingRequestDO
+                        FromEmailAddress = String.Format("From: {0}", e.From.Address),
+                        DateRecieved = String.Format("{0}", e.DateReceived.TimeAgo()),
+                        Body = e.HTMLText
                     }).ToList(),
                     FromName = curEmail.From.ToDisplayName(),
                     Subject = curEmail.Subject,
@@ -114,9 +114,7 @@ namespace KwasantWeb.Controllers
 
         public JsonResult GetConversationMembers(int emailID)
         {
-            var view = GetInfo(emailID) as PartialViewResult;
-            if (view == null)
-                return new JsonResult { Data = null, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            var view = GetInfo(emailID);
             var model = view.Model as BookingRequestAdminVM;
             if (model == null)
                 return new JsonResult { Data = null, JsonRequestBehavior = JsonRequestBehavior.AllowGet };

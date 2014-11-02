@@ -19,7 +19,7 @@ namespace KwasantWeb.Controllers
             if (Session[guid] == null)
             {
                 //Somehow get the event... via 'eventName'
-                var ev = new BookingRequestUpdatedQueue {FilterObjectID = objectID};
+                var ev = new BookingRequestUpdatedQueue(objectID);
                 Session[guid] = ev;
             } 
             
@@ -31,12 +31,12 @@ namespace KwasantWeb.Controllers
             if (String.IsNullOrEmpty(guid))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            var queue = Session[guid] as IAlertQueue;
-            
+            var queue = Session[guid] as IPersonalAlertQueue;
+
             if (queue == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            return new JsonResult {Data = queue.GetItems()};
+            return new JsonResult { Data = queue.GetUpdates() };
         }
 
         public ActionResult RegisterInterestInUserUpdates(string eventName)
@@ -45,7 +45,9 @@ namespace KwasantWeb.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             var guid = Guid.NewGuid().ToString();
-            Session[guid] = StaticQueues.GetQueueByName(eventName);
+            var queue = StaticAlertQueues.GetQueueByName(eventName);
+            queue.RegisterInterest(guid);
+            Session[guid] = queue;
 
             return new JsonResult { Data = guid };
         }
@@ -55,12 +57,12 @@ namespace KwasantWeb.Controllers
             if (String.IsNullOrEmpty(guid))
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            var queue = Session[guid] as IAlertQueue<IUserUpdateData>;
+            var queue = Session[guid] as ISharedAlertQueue<IUserUpdateData>;
 
             if (queue == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            return new JsonResult { Data = queue.GetItems(i => i.UserID == this.GetUserId()) };
+            return new JsonResult { Data = queue.GetUpdates(guid, i => i.UserID == this.GetUserId()) };
         }
     }
 }

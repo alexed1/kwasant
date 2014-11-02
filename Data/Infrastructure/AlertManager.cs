@@ -1,5 +1,6 @@
 ﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
 
+using System;
 using Data.Entities;
 
 namespace Data.Infrastructure

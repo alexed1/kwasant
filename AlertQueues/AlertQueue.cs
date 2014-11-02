@@ -1,112 +1,191 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace KwasantWeb.AlertQueues
 {
-    public interface IAlertQueue
+    public interface IPersonalAlertQueue
     {
-        IEnumerable<object> GetItems();
-        int FilterObjectID { get; set; }
-    }
-    
-    public interface IAlertQueue<out T> : IAlertQueue
-    {
-        new IEnumerable<T> GetItems();
-        IEnumerable<T> GetItems(Func<T, bool> predicate);
+        IEnumerable<object> GetUpdates();
     }
 
-    public interface IPrunableAlertQueue
+    public interface IPersonalAlertQueue<out T> : IPersonalAlertQueue
     {
-        void PruneExpired();
+        IEnumerable<T> GetUpdates(Func<T, bool> predicate);
     }
 
-    public abstract class BaseAlertQueue<T> : IAlertQueue<T>
+    public class PersonalAlertQueue<T> : IPersonalAlertQueue<T>
         where T : class
     {
-        protected readonly SynchronizedCollection<T> InnerList = new SynchronizedCollection<T>();
-
-        public int FilterObjectID { get; set; }
-
-        public virtual IEnumerable<T> GetItems(Func<T, bool> predicate)
+        private readonly SynchronizedCollection<T> _baseCollection = new SynchronizedCollection<T>();
+        public IEnumerable<object> GetUpdates()
         {
-            return InnerList.Where(predicate);
+            return GetUpdates(null);
         }
-        public virtual IEnumerable<T> GetItems()
+        public IEnumerable<T> GetUpdates(Func<T, bool> predicate)
         {
-            return InnerList;
-        }
-
-        IEnumerable<object> IAlertQueue.GetItems()
-        {
-            return GetItems();
-        }
-    }
-
-    public abstract class ExpiringAlertQueue<T> : BaseAlertQueue<T>, IPrunableAlertQueue
-        where T : class
-    {
-        public abstract void ExpireItem(T item);
-
-        private readonly TimeSpan _expireAfter;        
-        private readonly bool _removeOnRetrieve;
-        
-        private readonly Dictionary<T, DateTime> _itemExpirations = new Dictionary<T, DateTime>();
-
-        protected ExpiringAlertQueue(
-            TimeSpan expireAfter, 
-            bool removeOnRetrieve = true)
-        {
-            _expireAfter = expireAfter;
-            _removeOnRetrieve = removeOnRetrieve;
-        }
-
-        protected void AppendItem(T item)
-        {
-            RemoveExpired();
-
-            InnerList.Add(item);
-            _itemExpirations[item] = DateTime.Now.Add(_expireAfter);
-        }
-
-        public override IEnumerable<T> GetItems(Func<T, bool> predicate)
-        {
-            RemoveExpired();
-
-            var items = base.GetItems(predicate).ToList();
-            if (_removeOnRetrieve)
-                foreach (var item in items)
-                    InnerList.Remove(item);
-
-            return items;
-        }
-
-        public override IEnumerable<T> GetItems()
-        {
-            RemoveExpired();
-
-            var items = base.GetItems().ToList();
-            if (_removeOnRetrieve)
-                InnerList.Clear();
-            return items;
-        }
-
-        private void RemoveExpired()
-        {
-            var clonedList = new List<T>(InnerList);
-            foreach (var item in clonedList)
+            if (predicate == null)
             {
-                if (DateTime.Now > _itemExpirations[item])
-                {
-                    InnerList.Remove(item);
-                    ExpireItem(item);
-                }
+                var itemsToReturn = new List<T>(_baseCollection);
+                _baseCollection.Clear();
+                return itemsToReturn;
+            }
+            else
+            {
+                var itemsToReturn = new List<T>(_baseCollection.Where(predicate));
+                foreach (var itemToReturn in itemsToReturn)
+                    _baseCollection.Remove(itemToReturn);
+
+                return itemsToReturn;
             }
         }
 
-        public void PruneExpired()
+        protected void AppendUpdate(T update)
         {
-            RemoveExpired();
+            _baseCollection.Add(update);
+        }
+    }
+
+    public interface IStaticQueue
+    {
+        void PruneOldEntries();
+    }
+    public interface ISharedAlertQueue
+    {
+        IEnumerable<object> GetUpdates(String guid);
+    }
+
+    public interface ISharedAlertQueue<out T> : ISharedAlertQueue
+    {
+        void RegisterInterest(string guid);
+        IEnumerable<T> GetUpdates(String guid, Func<T, bool> predicate);
+    }
+    public class SharedSharedAlertQueue<T> : ISharedAlertQueue<T>, IStaticQueue
+        where T : class
+    {
+        private readonly TimeSpan _expireInterestedPartiesAfter = TimeSpan.FromMinutes(15);
+        private readonly ConcurrentDictionary<Object, DateTime> _objectExpirations = new ConcurrentDictionary<object, DateTime>();
+        private readonly SynchronizedCollection<T> _baseCollection = new SynchronizedCollection<T>(); 
+        private readonly ConcurrentDictionary<String, SynchronizedCollection<T>> _interestedPartyQueues = new ConcurrentDictionary<String, SynchronizedCollection<T>>();
+        
+        public void RegisterInterest(string guid)
+        {
+            var newList = new SynchronizedCollection<T>();
+            _interestedPartyQueues[guid] = newList;
+
+            MarkExpiration(newList, _expireInterestedPartiesAfter);
+        }
+
+        public IEnumerable<object> GetUpdates(string guid)
+        {
+            return GetUpdates(guid, null);
+        }
+
+        public virtual IEnumerable<T> GetUpdates(String guid, Func<T, bool> predicate)
+        {
+            if (_interestedPartyQueues.ContainsKey(guid))
+            {
+                var interestedPartyQueue = _interestedPartyQueues[guid];
+
+                MarkExpiration(interestedPartyQueue, _expireInterestedPartiesAfter);
+
+                var updates = predicate != null
+                    ? interestedPartyQueue.Where(predicate).ToList()
+                    : interestedPartyQueue.ToList();
+
+                MarkUpdatesRead(updates);   // This may be changed to have an explict 'read' call (if the user clicks the notification)
+                                            // For now, though - we assume they read it when it's displayed
+
+                if (predicate == null)
+                    interestedPartyQueue.Clear();
+                else
+                {
+                    foreach (var update in updates)
+                        interestedPartyQueue.Remove(update);
+                }
+                return updates;
+            }
+
+            return new T[0];
+        }
+
+        protected void AppendUpdate(T update)
+        {
+            if (_interestedPartyQueues.Any())
+            {
+                MarkExpiration(update, _expireInterestedPartiesAfter);
+
+                foreach (var interestedPartyQueue in _interestedPartyQueues)
+                {
+                    _interestedPartyQueues[interestedPartyQueue.Key].Add(update);
+                }
+                _baseCollection.Add(update);
+            }
+            else
+            {
+                ObjectExpired(update);
+            }
+        }
+
+
+        private void MarkUpdatesRead(IEnumerable<T> updates)
+        {
+            MarkUpdatesRead(updates.ToArray());
+        }
+
+        private void MarkUpdatesRead(params T[] updates)
+        {
+            foreach (var update in updates)
+                _baseCollection.Remove(update);
+        }
+
+        private void MarkExpiration(Object obj, TimeSpan timeSpan)
+        {
+            _objectExpirations[obj] = DateTime.Now.Add(timeSpan);
+        }
+
+        private bool ObjectHasExpired(Object obj)
+        {
+            if (_objectExpirations.ContainsKey(obj))
+                return _objectExpirations[obj] < DateTime.Now;
+
+            return false;
+        }
+
+        protected virtual void ObjectExpired(T obj)
+        {
+            //Do nothing - overridable
+        }
+
+        public void PruneOldEntries()
+        {
+            //Prune listeners
+            foreach (var interestedPartyQueue in _interestedPartyQueues)
+            {
+                if (ObjectHasExpired(interestedPartyQueue.Value))
+                {
+                    SynchronizedCollection<T> garbage;
+                    const int maxAttempts = 5;
+                    var currAttempt = 1;
+                    bool success;
+                    do
+                    {
+                        success = _interestedPartyQueues.TryRemove(interestedPartyQueue.Key, out garbage);
+                    } while (!success && currAttempt++ < maxAttempts);
+                }
+            }
+
+            //Remove expired updates and dispatch the call on them
+            var clonedList = new List<T>(_baseCollection);
+            foreach (var update in clonedList)
+            {
+                if (ObjectHasExpired(update))
+                {
+                    ObjectExpired(update);
+                    _baseCollection.Remove(update);
+                }
+            }
         }
     }
 
