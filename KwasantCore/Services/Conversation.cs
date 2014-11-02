@@ -24,6 +24,7 @@ namespace KwasantCore.Services
             existingBookingRequest.State = BookingRequestState.NeedsBooking;
 
             AlertManager.ConversationMemberAdded(existingBookingRequest.Id);
+            AlertManager.NewBookingRequestForPreferredBooker("efc368fa-4c2c-4d84-9346-85feca228eb2", existingBookingRequest.Id);
 
             uow.SaveChanges();
             string loggerInfo = "Adding inbound email id = " + curEmail.Id + ", subject = " + existingBookingRequest.Subject + " to existing conversation id = " + existingBookingRequest.Id + ", with BR subject = " + existingBookingRequest.Subject;

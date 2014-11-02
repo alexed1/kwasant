@@ -14,6 +14,9 @@ namespace Data.Infrastructure
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
     {
+        public delegate void NewBookingRequestForPreferredBookerHandler(String bookerID, int bookingRequestID);
+        public static event NewBookingRequestForPreferredBookerHandler AlertNewBookingRequestForPreferredBooker;
+
         public delegate void ConversationMemberAddedHandler(int bookingRequestID);
         public static event ConversationMemberAddedHandler AlertConversationMemberAdded;
         
@@ -63,6 +66,12 @@ namespace Data.Infrastructure
         public static event ErrorSyncingCalendarHandler AlertErrorSyncingCalendar;
 
         #region Method
+
+        public static void NewBookingRequestForPreferredBooker(String bookerID, int bookingRequestID)
+        {
+            if (AlertNewBookingRequestForPreferredBooker != null)
+                AlertNewBookingRequestForPreferredBooker(bookerID, bookingRequestID);
+        }
 
         public static void ConversationMemberAdded(int bookingRequestID)
         {

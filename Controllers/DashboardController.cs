@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
@@ -18,19 +17,6 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize(Roles = Roles.Booker)]
     public class DashboardController : Controller
     {
-        private const string SessionCacheKey = "DashboardController_Cache";
-        private MemoryCache<int> Cache
-        {
-            get
-            {
-                return Session[SessionCacheKey] as MemoryCache<int>;
-            }
-            set
-            {
-                Session[SessionCacheKey] = value;
-            }
-        } 
-
         //
         // GET: /Dashboard/
         public ActionResult Index(int id = 0)
@@ -66,12 +52,7 @@ namespace KwasantWeb.Controllers
                     ActiveCalendarId = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
                 };
 
-                Cache = new MemoryCache<int>(TimeSpan.FromMinutes(5));
-                //We need to do this, because the callback is on a seperate (sessionless) thread.
-                //Assigning it to a local variable causes it to be captured into the lambda
-                var capturedCache = Cache;
-                AlertManager.AlertConversationMemberAdded += capturedCache.Append;
-
+                
                 return View(new DashboardShowVM
                 {
                     CalendarVM = calWidget,
@@ -83,11 +64,6 @@ namespace KwasantWeb.Controllers
                     BookingRequestVM = TempData["requestInfo"] as BookingRequestAdminVM
                 });
             }
-        }
-
-        public ActionResult HasUpdate(int bookingRequestId)
-        {
-            return new JsonResult {Data = Cache != null && Cache.GetAndRemove(v => v == bookingRequestId).Any(), JsonRequestBehavior = JsonRequestBehavior.AllowGet};
         }
 
         public void GetRequestInfo(int bookingRequestId)

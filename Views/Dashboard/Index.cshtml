@@ -22,22 +22,24 @@
     @Scripts.Render("~/bundles/js/bootstrap")
     @Scripts.Render("~/bundles/js/common")
     <script src="/Content/js/humane.js"></script>
+    
     <script type="text/javascript">
         $(function() {
+            var popupAlreadyShowing;
             var jacked = humane.create({ baseCls: 'humane-jackedup', addnCls: 'humane-jackedup-success', clickToClose: true, timeout: 0 });
-
-            var pollTimeInSeconds = 5;
-            setInterval(function() {
-                $.get('/Dashboard/HasUpdate?bookingRequestId=@Model.BookingRequestVM.BookingRequestId', function(result) {
-                    if (result) {
+            getUpdateForPage('Blah', @Model.BookingRequestVM.BookingRequestId, function(result) {
+                if (result.length > 0) {
+                    if (!popupAlreadyShowing) {
+                        popupAlreadyShowing = true;
                         jacked.log("Change detected. Click here to refresh", function() {
+                            popupAlreadyShowing = false;
                             refreshConversation();
                         });
                     }
-
-                });
-            }, pollTimeInSeconds * 1000);
-        });
+                }
+            });
+        }
+        );
     </script>
 }
 <script type="text/javascript">
