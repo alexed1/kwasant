@@ -214,7 +214,7 @@ namespace KwasantCore.Services
             }
         }
 
-
+        //if curBooker is null, will return all BR's of state "Booking"
         public object GetCheckOutBookingRequest(IUnitOfWork uow, string curBooker)
         {
             return

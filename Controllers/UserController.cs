@@ -165,7 +165,7 @@ namespace KwasantWeb.Controllers
                     existingUser = uow.UserRepository.GetByKey(curCreateUserVM.Id);
                 else
                 {
-                    existingUser = new UserDO();
+                    existingUser = uow.UserRepository.GetOrCreateUser(curCreateUserVM.EmailAddress);
                 }
 
                 existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress);

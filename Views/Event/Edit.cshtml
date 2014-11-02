@@ -127,8 +127,10 @@
 	        if (!modifiedState.modified || confirm("You are about to lose data. Continue?")) {
 	            @if (Model.IsNew)
 	            {
+	                @:var spinner = Kwasant.IFrame.DisplaySpinner();
                     @:$.getJSON('/Event/ConfirmDelete?eventID=' + @Model.Id, function (response) {
                         @:Kwasant.IFrame.CloseMe(false);
+                        @:spinner.hide();
                     @:});
 	            }
 	            else

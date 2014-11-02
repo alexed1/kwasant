@@ -5,7 +5,7 @@ html {
 }
 
 body {
-	background: #f2e9df;
+	background: #f2e9df!important;
 	display: table-cell;
 	width: 100%;
 	min-height: 100%;
@@ -572,17 +572,17 @@ nav.top-toolbar-section ul.navbar-nav li ul.dropdown-menu li a {
     background: #3e3e3e;
     border-radius: 0;
     border: 1px solid #d85e17;
-    color: #87989e;
+    color: #000;
 }
 
 input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px #3e3e3e inset;
-    -webkit-text-fill-color: #87989e;
+    -webkit-text-fill-color: #000;
 }
 
 input:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0px 1000px #000 inset;
-    -webkit-text-fill-color: #87989e;
+    -webkit-text-fill-color: #000;
 }
 
 input[type="submit"].btn, input[type="button"].btn {
@@ -798,12 +798,12 @@ input[type="submit"].btn.gradient-button:hover, input[type="button"].btn.gradien
 
 .login-section .custom-form input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0px 1000px #f2e9df inset;
-    -webkit-text-fill-color: #333;
+    -webkit-text-fill-color: #000;
 }
 
 .login-section .custom-form input:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0px 1000px #f2dfc9 inset;
-    -webkit-text-fill-color: #333;
+    -webkit-text-fill-color: #000;
 }
 
 /*Registration section*/
@@ -1153,6 +1153,58 @@ input[type="checkbox"].input-validation-error {
 	font-size: 14px;
 }
 
+/*styles for email conversation section*/
+
+.email-info-section .email-conversations {
+    
+}
+
+.email-info-section .email-conversations .email-message {
+    border: solid 1px #e7e7e7;
+    margin-top: 10px;
+}
+
+.email-info-section .email-conversations .email-message:first-child {
+    margin-top: 0;
+}
+
+.email-info-section .email-conversations .message-header {
+    background: #dbdbdb;
+    width: 100%;
+    padding: 5px 0;
+    overflow: hidden;
+}
+
+.email-info-section .email-conversations .message-header .glyphicon {
+    background: #cacaca;
+    color: #fff;
+    height: 41px;
+    line-height: 41px;
+    padding: 0 10px;
+    margin: -6px 0 -5px;
+    font-size: 12px;
+}
+
+.email-info-section .email-conversations .message-header .glyphicon.glyphicon-chevron-down {
+    background: #d85e17;    
+}
+
+.email-info-section .email-conversations .message-header .email-address {
+    float: left;
+    width: 60%;
+    padding-left: 15px;
+    font-weight: bold;
+}
+.email-info-section .email-conversations .message-header .date-received {
+    float: right;
+    width: 30%;
+    padding-right: 15px;
+    text-align: right;        
+}
+
+.email-info-section .email-conversations .email-content {
+    padding: 15px;    
+}
 /*styles for email-info-table section*/
 
 .calendar-section table.email-info-table {

@@ -196,18 +196,15 @@ namespace KwasantCore.Services
             return curEmail;
         }
 
-        public void SendAlertEmail()
+        public void SendAlertEmail(string subject, string message = null)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                 string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
-                EmailAddressDO curEmailAddress = new EmailAddressDO("ops@kwasant.com");
                 EmailDO curEmail = new EmailDO();
-                string message = "Alert! Kwasant Error Reported: EmailSendFailure";
-                string subject = "Alert! Kwasant Error Reported: EmailSendFailure";
-                curEmail = GenerateBasicMessage(uow, subject, message, fromAddress, "ops@kwasant.com");
+                curEmail = GenerateBasicMessage(uow, subject, message ?? subject, fromAddress, "ops@kwasant.com");
                 uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }
