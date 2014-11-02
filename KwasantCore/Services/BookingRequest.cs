@@ -289,7 +289,7 @@ namespace KwasantCore.Services
 
                 var preferredBookers =
                     uow.UserRepository.GetQuery()
-                        .Where(u => bookerIDs.Contains(u.Id))
+                        .Where(u => bookerIDs.Contains(u.Id) && u.Available)
                         .OrderBy(u => u.BookerBookingRequests.Count(br => br.State == BookingRequestState.Booking)).ToList();
 
                 

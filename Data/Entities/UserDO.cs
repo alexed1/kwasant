@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Data.Infrastructure;
@@ -31,6 +32,10 @@ namespace Data.Entities
         public String FirstName { get; set; }
         public String LastName { get; set; }
         public Boolean TestAccount { get; set; }
+
+        //Booker only
+        [DefaultValue(true)]
+        public bool Available { get; set; }
 
         [ForeignKey("EmailAddress")]
         public int? EmailAddressID { get; set; }
