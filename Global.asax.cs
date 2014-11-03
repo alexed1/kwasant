@@ -63,7 +63,7 @@ namespace KwasantWeb
 //            ModelBinders.Binders.Add(typeof(EventViewModel), new KwasantDateBinder());
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
 
-            StaticAlertQueues.Begin();
+            SharedAlertQueues.Begin();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

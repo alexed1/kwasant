@@ -46,7 +46,7 @@ namespace KwasantWeb.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
             var guid = Guid.NewGuid().ToString();
-            var queue = StaticAlertQueues.GetQueueByName(eventName);
+            var queue = SharedAlertQueues.GetQueueByName(eventName);
             queue.RegisterInterest(guid);
             Session[guid] = queue;
 

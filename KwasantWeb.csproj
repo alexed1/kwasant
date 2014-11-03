@@ -276,7 +276,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
-    <Compile Include="Controllers\Alerting.cs" />
+    <Compile Include="Controllers\AlertingController.cs" />
     <Compile Include="Controllers\AnswerController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DataController.cs" />
@@ -556,7 +556,6 @@
     <Content Include="Content\js\jquery.colorbox.js" />
     <Content Include="Content\js\jquery.js" />
     <Content Include="Content\js\jquery.validate.js" />
-    <Content Include="Content\js\Kwasant\CustomerAlerts.js" />
     <Content Include="Content\js\Kwasant\NegotiationWidgets.js" />
     <Content Include="Content\js\Kwasant\Popup.js" />
     <Content Include="Content\js\Kwasant\quickcopy.js" />
@@ -809,6 +808,7 @@
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Profile\ProfilesForUser.cshtml" />
     <Content Include="Views\BookingRequest\ShowAllBookingRequests.cshtml" />
+    <Content Include="Views\Shared\QueuePollingScript.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

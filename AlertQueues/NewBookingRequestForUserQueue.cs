@@ -7,7 +7,7 @@ using Utilities;
 
 namespace KwasantWeb.AlertQueues
 {
-    public class NewBookingRequestForUserQueue : SharedSharedAlertQueue<NewBookingRequestForUserQueueData>
+    public class NewBookingRequestForUserQueue : SharedAlertQueue<NewBookingRequestForUserQueueData>
     {
         public NewBookingRequestForUserQueue() 
         {

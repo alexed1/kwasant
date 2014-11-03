@@ -5,6 +5,50 @@ using System.Linq;
 
 namespace KwasantWeb.AlertQueues
 {
+    /*
+     * The following classes define queues for alerts to be displayed to users while they browse the wesbite.
+     * There are two types of queues:
+     * 1. PersonalAlertQueue<T>
+     *      - This queue is for things like an update on a page. It is not an important update, but can be something like 'The booking request recieved a new email, click here to refresh'
+     *      - If no one is viewing the page which is affected by an update, no event listener is executed
+     *      - This means that we only listen to events which will affect us
+     *      - The queue is valid for the lifetime of the session, after which it will be cleared up
+     *      
+     * 2. SharedAlertQueue<T>
+     *      - This queue is for important messages, which we need to listen for even if no user is online
+     *      - This can be used for things like 'A new booking request has been assigned to you'
+     *      - These queues are static, and exist for the lifetime of the application
+     *      - When a user logs in, they register their interest in particular queues
+     *      - When new messages arrive in the static queue, they are forwarded to the interested parties
+     *      - When messages are retrieved, they are marked as 'viewed' and removed from the queue
+     *      - Occasionally, a process will run and prune the queues
+     *          - Pruning does two things:
+     *          - 1. Removing messages which have expired. When this happens, we execute the 'ObjectExpired' method
+     *               Subclasses of this queue implement 'ObjectExpired'. Currently, we email users about a new booking request if they never recieved an update on screen
+     *          - 2. Removing stale interested parties
+     *               Interested party queues need to be cleaned to prevent memory leaks. 
+     *               When we stop recieving 'GetUpdates' messages, we decide that the user is no longer connected, and delete their queue
+     *  
+     *  These queues have been designed to be simple to use and ensure thread safety and try to minimize the memory footprint
+     *  
+     *  To define a new queue, simply implement PersonalAlertQueue<T> or SharedAlertQueue<T>
+     *  Once your queue is implemented, please refer to StaticAlertQueues.cs and define your queue and implement GetQueueByName
+     *  Be sure to put it in the correct class (Personal vs Shared)!
+     *  
+     *  If your queue should always be polled (on any page), then:
+     *  1. Go to Views/Shared/QueuePollingScript
+     *  2. Define a new function at the bottom of the file, (see pollNewBookingRequest for an example)
+     *  3. Update registerPolling to call your new queue function
+     *  4. Note, individual pages can override the queue function if they require different functionality (different popup for example)
+     *     The queues can also be disabled (see NewBookingRequestForUserQueueListenerEnabled for an example)
+     * 
+     *  If your queue is specific for a page, then:
+     *  1. Take a look at Dashboard/Index
+     *  2. Use the method getUpdateForPage. 
+     *     The first parameter is the queue name, the second parameter is the ID used to build the page.
+     *     For example, for Dashboard/Index the ID would be the ID of the booking request
+     */
+
     public interface IPersonalAlertQueue
     {
         int ObjectID { get; set; }
@@ -63,7 +107,7 @@ namespace KwasantWeb.AlertQueues
         void RegisterInterest(string guid);
         IEnumerable<T> GetUpdates(String guid, Func<T, bool> predicate);
     }
-    public class SharedSharedAlertQueue<T> : ISharedAlertQueue<T>, IStaticQueue
+    public class SharedAlertQueue<T> : ISharedAlertQueue<T>, IStaticQueue
         where T : class
     {
         private readonly TimeSpan _expireInterestedPartiesAfter = TimeSpan.FromMinutes(15);
@@ -172,12 +216,12 @@ namespace KwasantWeb.AlertQueues
             {
                 if (ObjectHasExpired(interestedPartyQueue.Value))
                 {
-                    SynchronizedCollection<T> garbage;
                     const int maxAttempts = 5;
                     var currAttempt = 1;
                     bool success;
                     do
                     {
+                        SynchronizedCollection<T> garbage;
                         success = _interestedPartyQueues.TryRemove(interestedPartyQueue.Key, out garbage);
                     } while (!success && currAttempt++ < maxAttempts);
                 }

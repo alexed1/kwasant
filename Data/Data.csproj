@@ -354,6 +354,14 @@
     <Compile Include="Migrations\201411021415158_BookingRequestRelationships.Designer.cs">
       <DependentUpon>201411021415158_BookingRequestRelationships.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411021440258_BookerAvailability.cs" />
+    <Compile Include="Migrations\201411021440258_BookerAvailability.Designer.cs">
+      <DependentUpon>201411021440258_BookerAvailability.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411031359120_FixUpAvailableproperty.cs" />
+    <Compile Include="Migrations\201411031359120_FixUpAvailableproperty.Designer.cs">
+      <DependentUpon>201411031359120_FixUpAvailableproperty.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
@@ -1203,6 +1211,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411021415158_BookingRequestRelationships.resx">
       <DependentUpon>201411021415158_BookingRequestRelationships.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411021440258_BookerAvailability.resx">
+      <DependentUpon>201411021440258_BookerAvailability.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411031359120_FixUpAvailableproperty.resx">
+      <DependentUpon>201411031359120_FixUpAvailableproperty.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

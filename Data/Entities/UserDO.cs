@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Data.Infrastructure;
@@ -33,9 +34,9 @@ namespace Data.Entities
         public String LastName { get; set; }
         public Boolean TestAccount { get; set; }
 
-        //Booker only
-        [DefaultValue(true)]
-        public bool Available { get; set; }
+        //Booker only. Needs to be nullable otherwise DefaultValue doesn't work
+        [Required, DefaultValue(true)]
+        public bool? Available { get; set; }
 
         [ForeignKey("EmailAddress")]
         public int? EmailAddressID { get; set; }

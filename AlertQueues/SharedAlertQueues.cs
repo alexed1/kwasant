@@ -5,7 +5,11 @@ namespace KwasantWeb.AlertQueues
 {
     public static class PersonalAlertQueues
     {
+        //Define new queues with a string constant
+        //Remember to update GetQueueByName
         public const String StrBookingRequestUpdatedQueue = @"BookingRequestUpdatedQueue";
+
+
         public static IPersonalAlertQueue GetQueueByName(String name)
         {
             switch (name)
@@ -17,11 +21,15 @@ namespace KwasantWeb.AlertQueues
         }
     }
 
-    public static class StaticAlertQueues
+    public static class SharedAlertQueues
     {
-        public const String StrNewBookingRequestForUserQueue = @"NewBookingRequestForUserQueue";
+        //Define new queues with a string constant, and a static instance of your queue.
+        //Remember to update GetQueueByName, 
+        //As well as the Begin() method (add your queue to 'staticQueues' array) - failing to update Begin will cause memory leaks!
 
+        public const String StrNewBookingRequestForUserQueue = @"NewBookingRequestForUserQueue";
         public static NewBookingRequestForUserQueue NewBookingRequestForUserQueue = new NewBookingRequestForUserQueue();
+
 
         public static ISharedAlertQueue<IUserUpdateData> GetQueueByName(String name)
         {
