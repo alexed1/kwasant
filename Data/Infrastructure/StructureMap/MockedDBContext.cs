@@ -150,17 +150,8 @@ namespace Data.Infrastructure.StructureMap
                                     prop.SetValue(row, defaultAttribute.Value);
                                 }
                             }
-                        }
-                    }
-                }
 
-                foreach (var set in _cachedSets)
-                {
-                    foreach (object row in set.Value)
-                    {
-                        //Check nullable constraint enforced
-                        foreach (var prop in row.GetType().GetProperties())
-                        {
+                            //Check nullable constraint enforced
                             var hasAttribute = prop.GetCustomAttributes(typeof(RequiredAttribute)).Any();
                             if (hasAttribute)
                             {
