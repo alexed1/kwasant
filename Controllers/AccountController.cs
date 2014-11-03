@@ -153,15 +153,17 @@ Please register first.");
                                 if (!String.IsNullOrEmpty(returnUrl))
                                     return Redirect(returnUrl);
 
-                                bool isAdmin;
                                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                                 {
                                     var user = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == username);
-                                    isAdmin = uow.AspNetUserRolesRepository.UserHasRole("Admin", user.Id);
-                                }
+                                    var getRoles = uow.AspNetUserRolesRepository.GetRoles(user.Id).ToList();
+                                    foreach (var role in getRoles)
+                                    {
+                                        if (role.Name == "Admin" || role.Name == "Booker")
+                                        { return RedirectToAction("Index", "Admin"); }
 
-                                if (isAdmin)
-                                    return RedirectToAction("Index", "Admin");
+                                    }
+                                }
 
                                 return RedirectToAction("MyAccount", "User");
                             }
