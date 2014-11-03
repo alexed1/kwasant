@@ -169,8 +169,7 @@ namespace KwasantWeb.Controllers
                 }
 
                 existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress);
-                uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName,
-                    Guid.NewGuid().ToString());
+                uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName);
 
                 var existingRoles = uow.AspNetUserRolesRepository.GetRoles(existingUser.Id).ToList();
 
