@@ -366,6 +366,10 @@
     <Compile Include="Migrations\201411031359120_FixUpAvailableproperty.Designer.cs">
       <DependentUpon>201411031359120_FixUpAvailableproperty.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411031452569_Sync.Rob.03.11.2014.cs" />
+    <Compile Include="Migrations\201411031452569_Sync.Rob.03.11.2014.Designer.cs">
+      <DependentUpon>201411031452569_Sync.Rob.03.11.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
@@ -1224,6 +1228,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411031359120_FixUpAvailableproperty.resx">
       <DependentUpon>201411031359120_FixUpAvailableproperty.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411031452569_Sync.Rob.03.11.2014.resx">
+      <DependentUpon>201411031452569_Sync.Rob.03.11.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
