@@ -251,7 +251,7 @@
     <Compile Include="AlertQueues\AlertQueue.cs" />
     <Compile Include="AlertQueues\BookingRequestUpdatedQueue.cs" />
     <Compile Include="AlertQueues\NewBookingRequestForUserQueue.cs" />
-    <Compile Include="AlertQueues\StaticAlertQueues.cs" />
+    <Compile Include="AlertQueues\SharedAlertQueues.cs" />
     <Compile Include="Api\EventResponse.aspx.cs">
       <DependentUpon>EventResponse.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
