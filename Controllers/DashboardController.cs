@@ -71,4 +71,33 @@ namespace KwasantWeb.Controllers
 
         
 	}
+
+                var journaling = uow.FactRepository.GetJournalingForBookingRequest(bookingRequestId).ToList();
+
+                BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
+                {
+                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
+                    BookingRequestId = bookingRequestId,
+                    CurEmailData = new EmailDO
+                    {
+                        Attachments = curEmail.Attachments,
+                        From = curEmail.From,
+                        Recipients = curEmail.Recipients,
+                        HTMLText = curEmail.HTMLText,
+                        Id = curEmail.Id,
+                        FromID = curEmail.FromID,
+                        DateCreated = curEmail.DateCreated,
+                        Subject = curEmail.Subject
+                    },
+                    VerbalisedHistory = journaling,
+                    EmailTo = String.Join(", ", curEmail.To.Select(a => a.Address)),
+                    EmailCC = String.Join(", ", curEmail.CC.Select(a => a.Address)),
+                    EmailBCC = String.Join(", ", curEmail.BCC.Select(a => a.Address)),
+                    EmailAttachments = attachmentInfo,
+                    Booker = booker
+                };
+                TempData["requestInfo"] = bookingInfo;
+            }
+        }
+	}
 }

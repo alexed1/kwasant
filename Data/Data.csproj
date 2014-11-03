@@ -334,6 +334,10 @@
     <Compile Include="Migrations\201410171057138_Sync.Rob.17.10.2014.Designer.cs">
       <DependentUpon>201410171057138_Sync.Rob.17.10.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201410271400353_TrackUserMakingChangesToFactDO.cs" />
+    <Compile Include="Migrations\201410271400353_TrackUserMakingChangesToFactDO.Designer.cs">
+      <DependentUpon>201410271400353_TrackUserMakingChangesToFactDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201410232019045_AddRemoteCalendarLinkFields.cs" />
     <Compile Include="Migrations\201410232019045_AddRemoteCalendarLinkFields.Designer.cs">
       <DependentUpon>201410232019045_AddRemoteCalendarLinkFields.cs</DependentUpon>
@@ -1196,6 +1200,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410171057138_Sync.Rob.17.10.2014.resx">
       <DependentUpon>201410171057138_Sync.Rob.17.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410271400353_TrackUserMakingChangesToFactDO.resx">
+      <DependentUpon>201410271400353_TrackUserMakingChangesToFactDO.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410232019045_AddRemoteCalendarLinkFields.resx">
       <DependentUpon>201410232019045_AddRemoteCalendarLinkFields.cs</DependentUpon>

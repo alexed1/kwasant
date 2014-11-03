@@ -20,6 +20,7 @@ namespace KwasantWeb.ViewModels
         public string EmailBCC { get; set; }
         public string EmailAttachments { get; set; }
         public string Booker { get; set; } 
+        public List<String> VerbalisedHistory { get; set; } 
     }
 
     public class ConversationVM
