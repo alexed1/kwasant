@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantWeb.ViewModels;
@@ -156,6 +157,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
+        [KwasantAuthorize(Roles = Roles.Admin)]
         public ActionResult Update(UserVM curCreateUserVM)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -169,8 +171,11 @@ namespace KwasantWeb.Controllers
                 }
 
                 existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress);
-                uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName);
-
+                if (!String.IsNullOrEmpty(curCreateUserVM.NewPassword))
+                {
+                    uow.UserRepository.UpdateUserCredentials(existingUser, password: curCreateUserVM.NewPassword);
+                }
+               
                 var existingRoles = uow.AspNetUserRolesRepository.GetRoles(existingUser.Id).ToList();
 
                 //Remove old roles

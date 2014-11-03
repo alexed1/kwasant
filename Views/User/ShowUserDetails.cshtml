@@ -5,6 +5,12 @@
 <div style="padding-right: 40px;">
     <form id="userInfoForm">
         <table>
+            <thead>
+                <tr>
+                    <th style="min-width: 150px"></th>
+                    <th></th>
+                </tr>
+            </thead>
             <tr>
                 <td colspan="2">
                     <label id="lblSaveError" style="color: red;"></label>
@@ -37,6 +43,14 @@
                 <td>
                     @Html.TextBoxFor(curUser => curUser.EmailAddressID, new { id = "emailId", disabled = "disabled" })
                     @Html.HiddenFor(curUser => curUser.EmailAddressID)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    New password
+                </td>
+                <td>
+                    <input type="text" id="newPassword"/>
                 </td>
             </tr>
             <tr>
@@ -104,6 +118,7 @@
             dataObj.FirstName = $("#firstname").val();
             dataObj.LastName = $("#lastname").val();
             dataObj.EmailAddress = $("#email").val();
+            dataObj.NewPassword = $("#newPassword").val();
             dataObj.Roles = [];
             $.each($('.roleCheckbox'), function(i, o) {
                 var wrappedObj = $(o);
