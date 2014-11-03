@@ -77,7 +77,7 @@
         }, function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
         });
-        $.getJSON("/Report/ShowReport", { queryPeriod: "", type: "fiveRecentIncident" }, showIncident);
+        $.post("/Report/ShowReport", { queryPeriod: "", type: "fiveRecentIncident" }, showIncident, 'json');
  });
     // show 5 most Recent Incident on datatable
      function showIncident(response) {

@@ -293,7 +293,7 @@
             };
 
             if (this.CalendarID == null) {
-                Kwasant.IFrame.DispatchUrlRequest('/Question/EditTimeslots?calendarID=null&negotiationID=' + initValues.Id, launchCalendar);
+                Kwasant.IFrame.DispatchUrlRequest('/Question/EditTimeslots?calendarID=null&negotiationID=' + initValues.Id, launchCalendar, 'POST');
             } else {
                 launchCalendar(_that.CalendarID);
             }

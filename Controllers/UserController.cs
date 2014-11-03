@@ -123,8 +123,7 @@ namespace KwasantWeb.Controllers
             if (string.IsNullOrEmpty(queryParams.EmailAddress) && string.IsNullOrEmpty(queryParams.FirstName) &&
                 string.IsNullOrEmpty(queryParams.LastName))
             {
-                var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Atleast one field is required"}),
-                    JsonRequestBehavior.AllowGet);
+                var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Atleast one field is required"}));
                 return jsonErrorResult;
             }
             if (queryParams.EmailAddress != null)
@@ -132,8 +131,7 @@ namespace KwasantWeb.Controllers
                 EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
                 if (!(emailAddressValidator.Validate(new EmailAddressDO(queryParams.EmailAddress)).IsValid))
                 {
-                    var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Please provide valid email address"}),
-                        JsonRequestBehavior.AllowGet);
+                    var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Please provide valid email address"}));
                     return jsonErrorResult;
                 }
             }
@@ -149,7 +147,7 @@ namespace KwasantWeb.Controllers
 
                 var matchedUsers = query.ToList();
 
-                var jsonResult = Json(_jsonPackager.Pack(matchedUsers), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_jsonPackager.Pack(matchedUsers));
 
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
@@ -197,7 +195,7 @@ namespace KwasantWeb.Controllers
                 existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress, curCreateUserVM.FirstName);
                 uow.SaveChanges();
             }
-            var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
+            var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."));
             return jsonSuccessResult;
         }
 
@@ -206,6 +204,7 @@ namespace KwasantWeb.Controllers
             return View();
         }
 
+        [HttpPost]
         public ActionResult Search(String firstName, String lastName, String emailAddress)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -218,16 +217,14 @@ namespace KwasantWeb.Controllers
                 if (!String.IsNullOrWhiteSpace(emailAddress))
                     users = users.Where(u => u.EmailAddress.Address.Contains(emailAddress));
 
-                return new JsonResult
-                {
-                    Data = users.ToList().Select(u => new
+                return Json(users.ToList().Select(u => new
                     {
                         Id = u.Id,
                         FirstName = u.FirstName,
                         LastName = u.LastName,
                         EmailAddress = u.EmailAddress.Address
                     }).ToList()
-                };
+                );
             }
         }
 
