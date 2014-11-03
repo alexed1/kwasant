@@ -13,6 +13,7 @@ using StructureMap;
 using Data.Validations;
 using System.Linq;
 using Utilities;
+using Data.Infrastructure;
 
 namespace KwasantWeb.Controllers
 {
@@ -161,6 +162,7 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 UserDO existingUser;
+                string generatedPwd = Guid.NewGuid().ToString();
                 if (!String.IsNullOrWhiteSpace(curCreateUserVM.Id))
                     existingUser = uow.UserRepository.GetByKey(curCreateUserVM.Id);
                 else
@@ -169,8 +171,7 @@ namespace KwasantWeb.Controllers
                 }
 
                 existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress);
-                uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName,
-                    Guid.NewGuid().ToString());
+                uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName,generatedPwd);
 
                 var existingRoles = uow.AspNetUserRolesRepository.GetRoles(existingUser.Id).ToList();
 
@@ -185,13 +186,29 @@ namespace KwasantWeb.Controllers
                 foreach (var role in curCreateUserVM.Roles)
                 {
                     if (!existingRoles.Select(newRole => newRole.Name).Contains(role))
-                        uow.AspNetUserRolesRepository.AssignRoleToUser(role, existingUser.Id);    
+                        uow.AspNetUserRolesRepository.AssignRoleToUser(role, existingUser.Id);
                 }
 
                 existingUser.FirstName = curCreateUserVM.FirstName;
                 existingUser.LastName = curCreateUserVM.LastName;
                 existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress, curCreateUserVM.FirstName);
                 uow.SaveChanges();
+
+                //Checking if user is new user
+                if (String.IsNullOrWhiteSpace(curCreateUserVM.Id))
+                {
+                    AlertManager.ExplicitCustomerCreated(existingUser.Id);
+                }
+                //Sending a mail to user with newly created credentials if send email is checked
+                if (curCreateUserVM.SendMail)
+                {
+                    string message = "Your Kwasant Login Credentials : <br/><br/> Email : " + curCreateUserVM.EmailAddress + "<br/> Password : " + generatedPwd;
+                    string toRecipient = curCreateUserVM.EmailAddress;
+                    string fromAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
+                    EmailDO emailDO = (ObjectFactory.GetInstance<KwasantCore.Services.Email>()).GenerateBasicMessage(uow, "Kwasant Credentials", message, fromAddress, toRecipient);
+                    uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
+                    uow.SaveChanges();
+                }
             }
             var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
             return jsonSuccessResult;

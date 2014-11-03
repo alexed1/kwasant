@@ -58,6 +58,11 @@
                 </td>
             </tr>
             <tr>
+                <td colspan="2">
+                    @Html.Partial("ShowUserCreationSettings")
+                </td>
+            </tr>
+            <tr>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>
             </tr>
@@ -98,13 +103,14 @@
         });
 
         //Binding click event handler to Save button.
-        $("#btnSave").click(function() {
+        $("#btnSave").click(function () {
             var dataObj = {};
             dataObj.Id = '@Model.Id';
             dataObj.FirstName = $("#firstname").val();
             dataObj.LastName = $("#lastname").val();
             dataObj.EmailAddress = $("#email").val();
             dataObj.Roles = [];
+            dataObj.SendMail = $("#chkSendEmail").prop("checked");
             $.each($('.roleCheckbox'), function(i, o) {
                 var wrappedObj = $(o);
                 if (wrappedObj.is(':checked'))
