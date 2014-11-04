@@ -11,7 +11,7 @@ namespace KwasantTest.Controllers
     class ReportControllerTests
     {
         [Test]
-        public void TestMenuItem_ReportsShowIncidents()
+        public void CanGetReportLink()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/Report?type=incident");
             var response = (HttpWebResponse)webRequest.GetResponse();
@@ -19,7 +19,7 @@ namespace KwasantTest.Controllers
         }
 
         [Test]
-        public void TestMenuItem_ReportsShowHistory()
+        public void CanGetReportHistoryLink()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/Report/History");
             var response = (HttpWebResponse)webRequest.GetResponse();
