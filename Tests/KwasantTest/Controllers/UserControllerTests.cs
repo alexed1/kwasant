@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
@@ -283,30 +282,6 @@ namespace KwasantTest.Controllers
                 uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
                 uow.SaveChanges();
             }
-        }
-
-        [Test]
-        public void CanGetUserLink()
-        {
-            WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/User");
-            var response = (HttpWebResponse)webRequest.GetResponse();
-            Assert.AreEqual("OK", response.StatusCode.ToString());
-        }
-
-        [Test]
-        public void CanGetAddUserViewLink()
-        {
-            WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/User/ShowAddUser");
-            var response = (HttpWebResponse)webRequest.GetResponse();
-            Assert.AreEqual("OK", response.StatusCode.ToString());
-        }
-
-        [Test]
-        public void CanGetFindUserViewLink()
-        {
-            WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/User/FindUser");
-            var response = (HttpWebResponse)webRequest.GetResponse();
-            Assert.AreEqual("OK", response.StatusCode.ToString());
         }
     }
 }

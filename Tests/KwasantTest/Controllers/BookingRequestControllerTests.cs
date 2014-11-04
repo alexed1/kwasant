@@ -11,7 +11,6 @@ using System.Web.Mvc;
 using System.Net.Mail;
 using System.Linq;
 using Utilities;
-using System.Net;
 namespace KwasantTest.Controllers
 {
     public class BookingRequestControllerTests : BaseTest
@@ -100,40 +99,6 @@ namespace KwasantTest.Controllers
             }
         }
 
-        [Test]
-        [Category("BRM")]
-        public void CanGetBookingRequestLink()
-        {
-            WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/BookingRequest");
-            var response = (HttpWebResponse)webRequest.GetResponse();
-            Assert.AreEqual("OK", response.StatusCode.ToString());
-        }
-
-        [Test]
-        [Category("BRM")]
-        public void CanGetBookerBRLink()
-        {
-            WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/BookingRequest/ShowBRSOwnedByBooker");
-            var response = (HttpWebResponse)webRequest.GetResponse();
-            Assert.AreEqual("OK", response.StatusCode.ToString());
-        }
-
-        [Test]
-        [Category("BRM")]
-        public void CanGetInProgressBRLink()
-        {
-            WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/BookingRequest/ShowInProcessBRS");
-            var response = (HttpWebResponse)webRequest.GetResponse();
-            Assert.AreEqual("OK", response.StatusCode.ToString());
-        }
-
-        [Test]
-        [Category("BRM")]
-        public void CanGetAllBRAdminLink()
-        {
-            WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/BookingRequest/ShowAllBookingRequests?type=alllogs");
-            var response = (HttpWebResponse)webRequest.GetResponse();
-            Assert.AreEqual("OK", response.StatusCode.ToString());
-        }        
+        
     }
 }
