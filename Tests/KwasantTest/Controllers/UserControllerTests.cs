@@ -285,7 +285,7 @@ namespace KwasantTest.Controllers
             }
         }
 
-        [Test, Ignore]
+        [Test]
         public void TestMenuItem_UsersShowAll()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/User");
@@ -293,7 +293,7 @@ namespace KwasantTest.Controllers
             Assert.AreEqual("OK", response.StatusCode.ToString());
         }
 
-        [Test, Ignore]
+        [Test]
         public void TestMenuItem_UsersAdd()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/User/ShowAddUser");
@@ -301,7 +301,7 @@ namespace KwasantTest.Controllers
             Assert.AreEqual("OK", response.StatusCode.ToString());
         }
 
-        [Test, Ignore]
+        [Test]
         public void TestMenuItem_UsersFind()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/User/FindUser");

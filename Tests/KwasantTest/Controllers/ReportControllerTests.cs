@@ -10,7 +10,7 @@ namespace KwasantTest.Controllers
 {
     class ReportControllerTests
     {
-        [Test, Ignore]
+        [Test]
         public void TestMenuItem_ReportsShowIncidents()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/Report?type=incident");
@@ -18,7 +18,7 @@ namespace KwasantTest.Controllers
             Assert.AreEqual("OK", response.StatusCode.ToString());
         }
 
-        [Test, Ignore]
+        [Test]
         public void TestMenuItem_ReportsShowHistory()
         {
             WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/Report/History");
