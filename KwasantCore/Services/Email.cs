@@ -85,18 +85,16 @@ namespace KwasantCore.Services
             {
                 foreach (var av in mailMessage.AlternateViews)
                 {
+                    av.ContentStream.Position = 0;
                     if (av.ContentType.MediaType == "text/html")
                     {
                         body = new StreamReader(av.ContentStream).ReadToEnd();
                         break;
                     }
-                }
-                foreach (var av in mailMessage.AlternateViews)
-                {
+
                     if (av.ContentType.MediaType == "text/plain")
                     {
                         plainBody = new StreamReader(av.ContentStream).ReadToEnd();
-                        break;
                     }
                 }
             }
@@ -180,6 +178,7 @@ namespace KwasantCore.Services
             {
                 OriginalName = String.IsNullOrEmpty(av.ContentType.Name) ? "unnamed" : av.ContentType.Name,
                 Type = av.ContentType.MediaType,
+                ContentID = av.ContentId
             };
 
             att.SetData(av.ContentStream);
@@ -259,7 +258,28 @@ namespace KwasantCore.Services
                 BookingRequestDO bookingRequest = ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
                 (new BookingRequest()).Process(uow, bookingRequest);
                 uow.SaveChanges();
-                //AlertManager.BookingRequestCreated(bookingRequest.Id);
+
+                //Fix the HTML text
+                var attachmentSubstitutions =
+                    bookingRequest.Attachments.Where(a => !String.IsNullOrEmpty(a.ContentID))
+                        .ToDictionary(a => a.ContentID, a => a.Id);
+
+                const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
+
+                //The following fixes inline images
+                if (attachmentSubstitutions.Any())
+                {
+                    var curBody = bookingRequest.HTMLText;
+                    foreach (var keyToReplace in attachmentSubstitutions.Keys)
+                    {
+                        var keyStr = String.Format("cid:{0}", keyToReplace);
+                        curBody = curBody.Replace(keyStr,
+                            String.Format(fileViewURLStr, attachmentSubstitutions[keyToReplace]));
+                    }
+                    bookingRequest.HTMLText = curBody;
+                    uow.SaveChanges();
+                }
+
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
             }
         }
