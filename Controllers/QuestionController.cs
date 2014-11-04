@@ -8,6 +8,7 @@ namespace KwasantWeb.Controllers
 {
     public class QuestionController : Controller
     {
+        [HttpPost]
         public ActionResult EditTimeslots(int? calendarID, int? negotiationID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -29,7 +30,7 @@ namespace KwasantWeb.Controllers
                     uow.CalendarRepository.Add(calendarDO);
                     uow.SaveChanges();
                 }
-                return Json(calendarDO.Id, JsonRequestBehavior.AllowGet);
+                return Json(calendarDO.Id);
             }
         }
     }

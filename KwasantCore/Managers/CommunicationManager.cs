@@ -68,8 +68,8 @@ namespace KwasantCore.Managers
                 curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
                 curEmail.Subject = "Welcome to Kwasant";
-                //uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "welcome_to_kwasant_v2", null);
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "2e411208-7a0d-4a72-a005-e39ae018d708", null);
+               
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "2e411208-7a0d-4a72-a005-e39ae018d708", null); //welcome to kwasant v2 template
                 uow.SaveChanges();
             }
         }
@@ -201,9 +201,9 @@ Proposed Answers: {2}
 
                 var toEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress);
                 outboundEmail.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
-
                 outboundEmail.From = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, bookingRequest.User);
 
+                uow.EnvelopeRepository.ConfigurePlainEmail(outboundEmail);
                 emailRepo.Add(outboundEmail);
             }
         }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantWeb.ViewModels;
@@ -122,8 +123,7 @@ namespace KwasantWeb.Controllers
             if (string.IsNullOrEmpty(queryParams.EmailAddress) && string.IsNullOrEmpty(queryParams.FirstName) &&
                 string.IsNullOrEmpty(queryParams.LastName))
             {
-                var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Atleast one field is required"}),
-                    JsonRequestBehavior.AllowGet);
+                var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Atleast one field is required"}));
                 return jsonErrorResult;
             }
             if (queryParams.EmailAddress != null)
@@ -131,8 +131,7 @@ namespace KwasantWeb.Controllers
                 EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
                 if (!(emailAddressValidator.Validate(new EmailAddressDO(queryParams.EmailAddress)).IsValid))
                 {
-                    var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Please provide valid email address"}),
-                        JsonRequestBehavior.AllowGet);
+                    var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Please provide valid email address"}));
                     return jsonErrorResult;
                 }
             }
@@ -148,7 +147,7 @@ namespace KwasantWeb.Controllers
 
                 var matchedUsers = query.ToList();
 
-                var jsonResult = Json(_jsonPackager.Pack(matchedUsers), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_jsonPackager.Pack(matchedUsers));
 
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
@@ -156,6 +155,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
+        [KwasantAuthorize(Roles = Roles.Admin)]
         public ActionResult Update(UserVM curCreateUserVM)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -169,9 +169,11 @@ namespace KwasantWeb.Controllers
                 }
 
                 existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress);
-                uow.UserRepository.UpdateUserCredentials(existingUser, curCreateUserVM.UserName,
-                    Guid.NewGuid().ToString());
-
+                if (!String.IsNullOrEmpty(curCreateUserVM.NewPassword))
+                {
+                    uow.UserRepository.UpdateUserCredentials(existingUser, password: curCreateUserVM.NewPassword);
+                }
+               
                 var existingRoles = uow.AspNetUserRolesRepository.GetRoles(existingUser.Id).ToList();
 
                 //Remove old roles
@@ -193,7 +195,7 @@ namespace KwasantWeb.Controllers
                 existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress, curCreateUserVM.FirstName);
                 uow.SaveChanges();
             }
-            var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."), JsonRequestBehavior.AllowGet);
+            var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."));
             return jsonSuccessResult;
         }
 
@@ -202,6 +204,7 @@ namespace KwasantWeb.Controllers
             return View();
         }
 
+        [HttpPost]
         public ActionResult Search(String firstName, String lastName, String emailAddress)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -214,16 +217,14 @@ namespace KwasantWeb.Controllers
                 if (!String.IsNullOrWhiteSpace(emailAddress))
                     users = users.Where(u => u.EmailAddress.Address.Contains(emailAddress));
 
-                return new JsonResult
-                {
-                    Data = users.ToList().Select(u => new
+                return Json(users.ToList().Select(u => new
                     {
                         Id = u.Id,
                         FirstName = u.FirstName,
                         LastName = u.LastName,
                         EmailAddress = u.EmailAddress.Address
                     }).ToList()
-                };
+                );
             }
         }
 

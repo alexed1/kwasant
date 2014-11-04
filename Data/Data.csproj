@@ -354,6 +354,10 @@
     <Compile Include="Migrations\201410290705052_Sync.29.10.2014.Designer.cs">
       <DependentUpon>201410290705052_Sync.29.10.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411031555378_Sync.Rob2.03.11.2014.cs" />
+    <Compile Include="Migrations\201411031555378_Sync.Rob2.03.11.2014.Designer.cs">
+      <DependentUpon>201411031555378_Sync.Rob2.03.11.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201411021415158_BookingRequestRelationships.cs" />
     <Compile Include="Migrations\201411021415158_BookingRequestRelationships.Designer.cs">
       <DependentUpon>201411021415158_BookingRequestRelationships.cs</DependentUpon>
@@ -1219,6 +1223,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410290705052_Sync.29.10.2014.resx">
       <DependentUpon>201410290705052_Sync.29.10.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411031555378_Sync.Rob2.03.11.2014.resx">
+      <DependentUpon>201411031555378_Sync.Rob2.03.11.2014.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411021415158_BookingRequestRelationships.resx">
       <DependentUpon>201411021415158_BookingRequestRelationships.cs</DependentUpon>

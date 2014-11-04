@@ -31,6 +31,21 @@ namespace KwasantWeb.Controllers
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
         }
 
+        [HttpPost]
+        public ActionResult CheckOwnership(int negotiationID, int bookingRequestID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
+                return Json(new KwasantPackagedMessage
+                    {
+                        Name = verifyOwnership != "valid" ? "DifferentOwner" : verifyOwnership, 
+                        Message = verifyOwnership
+                    });
+            }
+        }
+
         public ActionResult Edit(int negotiationID, int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -38,7 +53,7 @@ namespace KwasantWeb.Controllers
                 _currBooker = this.GetUserId();
                 string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
                 if (verifyOwnership != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+                    throw new ApplicationException("This negotiation is owned by another booker. Please try again to take ownership.");
 
                 //First - we order by start date
                 Func<NegotiationAnswerVM, DateTimeOffset?> firstSort = a => a.EventStartDate;
@@ -231,10 +246,11 @@ namespace KwasantWeb.Controllers
                     subUoW.SaveChanges();
                 }
 
-                return Json(negotiationDO.Id, JsonRequestBehavior.AllowGet);
+                return Json(negotiationDO.Id);
             }
         }
 
+        [HttpPost]
         public ActionResult MarkResolved(int negotiationID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -246,7 +262,7 @@ namespace KwasantWeb.Controllers
                 negotiationDO.NegotiationState = NegotiationState.Resolved;
                 uow.SaveChanges();
             }
-            return Json(true, JsonRequestBehavior.AllowGet);
+            return Json(true);
         }
     }
 }
