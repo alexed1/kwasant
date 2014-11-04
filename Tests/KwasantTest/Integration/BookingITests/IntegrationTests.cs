@@ -109,6 +109,7 @@ namespace KwasantTest.Integration.BookingITests
                 //Creating a new user
                 UserVM newUser = new UserVM();
                 newUser.SendMail = true;
+                newUser.NewPassword = "testpassword";
                 newUser.FirstName = "FirstName";
                 newUser.LastName = "LastName";
                 newUser.EmailAddress = "test.user@kwasant.net";
