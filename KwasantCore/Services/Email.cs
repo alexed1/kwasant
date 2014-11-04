@@ -143,8 +143,12 @@ namespace KwasantCore.Services
                 emailDO.AddEmailRecipient(EmailParticipantType.Cc, addr);
             }
 
-            emailDO.Attachments.ForEach(a => a.Email = emailDO);
-            //emailDO.EmailStatus = EmailStatus.QUEUED; we no longer want to set this here. not all Emails are outbound emails. This should only be set in functions like Event#Dispatch
+            emailDO.Attachments.ForEach(a =>
+            {
+                a.Email = emailDO;
+                a.EmailID = emailDO.Id;
+            });
+            
             emailDO.EmailStatus = EmailState.Unstarted; //we'll use this new state so that every email has a valid status.
             emailRepository.Add(emailDO);
             return emailDO;
@@ -174,7 +178,7 @@ namespace KwasantCore.Services
 
             AttachmentDO att = new AttachmentDO
             {
-                OriginalName = String.IsNullOrEmpty(av.ContentType.Name)? av.ContentType.MediaType : "File",
+                OriginalName = String.IsNullOrEmpty(av.ContentType.Name) ? "unnamed" : av.ContentType.Name,
                 Type = av.ContentType.MediaType,
             };
 

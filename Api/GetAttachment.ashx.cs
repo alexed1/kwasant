@@ -36,6 +36,7 @@ namespace KwasantWeb.Api
             response.ContentType = "application/octet-stream";
             response.AddHeader("Content-Disposition", "attachment; filename=\"" + attachment.OriginalName + "\";");
             response.AddHeader("Content-Length", fileData.LongLength.ToString());
+            response.AddHeader("Content-Type", attachment.Type);
             //Write the data
             response.BinaryWrite(fileData);
         }
