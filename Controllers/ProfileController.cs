@@ -68,10 +68,11 @@ namespace KwasantWeb.Controllers
                 CreateNewNodes(uow, value.Id, null, value.Nodes);
                 uow.SaveChanges();
             }
-            return new JsonResult { Data = true };
+            return Json(true);
         }
 
         [KwasantAuthorize(Roles = "Admin")]
+        [HttpPost]
         public ActionResult CreateNewProfile()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -79,10 +80,11 @@ namespace KwasantWeb.Controllers
                 uow.ProfileRepository.Add(new ProfileDO {Name = "New Profile", UserID = this.GetUserId()});
                 uow.SaveChanges();
             }
-            return new JsonResult { Data = true };
+            return Json(true);
         }
 
         [KwasantAuthorize(Roles = "Admin")]
+        [HttpPost]
         public ActionResult DeleteProfile(int profileID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -91,10 +93,11 @@ namespace KwasantWeb.Controllers
                 uow.ProfileRepository.Remove(profileDO);
                 uow.SaveChanges();
             }
-            return new JsonResult { Data = true };
+            return Json(true);
         }
 
         [KwasantAuthorize(Roles = "Admin")]
+        [HttpPost]
         public ActionResult RenameProfile(int profileID, String newUserName)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -103,7 +106,7 @@ namespace KwasantWeb.Controllers
                 profileDO.Name = newUserName;
                 uow.SaveChanges();
             }
-            return new JsonResult {Data = true};
+            return Json(true);
         }
 
         private void CreateNewNodes(IUnitOfWork uow, int profileID, ProfileNodeDO parentProfileNodeDO, IEnumerable<ProfileVM.ProfileNodeVM> nodes)

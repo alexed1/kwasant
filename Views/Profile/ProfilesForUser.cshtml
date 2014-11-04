@@ -12,7 +12,7 @@
         $(function() {
             $('#createProfile').click(function () {
                 Kwasant.IFrame.DisplaySpinner();
-                $.get('/Profile/CreateNewProfile')
+                $.post('/Profile/CreateNewProfile')
                     .always(function() {
                         location.reload();
                     });
@@ -21,7 +21,7 @@
                 var t = $(this);
                 var targetProfileID = t.attr('targetProfileID');
                 Kwasant.IFrame.DisplaySpinner();
-                $.get('/Profile/DeleteProfile?profileID=' + targetProfileID)
+                $.post('/Profile/DeleteProfile?profileID=' + targetProfileID)
                     .always(function () {
                         location.reload();
                     });
@@ -35,7 +35,7 @@
 
                 okayButton.click(function () {
                     Kwasant.IFrame.DisplaySpinner();
-                    $.get('/Profile/RenameProfile?profileID=' + targetProfileID + '&newUserName=' + inputText.val())
+                    $.post('/Profile/RenameProfile?profileID=' + targetProfileID + '&newUserName=' + inputText.val())
                         .always(function() {
                             location.reload();
                         });
