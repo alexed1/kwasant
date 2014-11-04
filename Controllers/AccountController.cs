@@ -13,6 +13,7 @@ using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Utilities;
+using Utilities.Logging;
 
 namespace KwasantWeb.Controllers
 {
@@ -43,6 +44,13 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize]
     public class AccountController : Controller
     {
+        private readonly Account _account;
+
+        public AccountController()
+        {
+            _account = ObjectFactory.GetInstance<Account>();
+        }
+
         [AllowAnonymous]
         public ActionResult InterceptLogin(string returnUrl)
         {
@@ -95,7 +103,7 @@ namespace KwasantWeb.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    RegistrationStatus curRegStatus = new Account().ProcessRegistrationRequest(model.Email.Trim(), model.Password.Trim());
+                    RegistrationStatus curRegStatus = _account.ProcessRegistrationRequest(model.Email.Trim(), model.Password.Trim());
                     if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", @"You are already registered with us. Please login.");
@@ -233,6 +241,83 @@ Please register first.");
                 uow.SaveChanges();
                 return RedirectToAction("Index", "User");
             }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult> ForgotPassword(ForgotPasswordVM model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _account.ForgotPasswordAsync(model.Email);
+                    return View("ForgotPasswordConfirmation", model);
+                }
+                catch (Exception ex)
+                {
+                    Logger.GetLogger().Error("ForgotPassword failed.", ex);
+                    ModelState.AddModelError("", ex);
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult ResetPassword(string userId, string code)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var userDO = uow.UserRepository.GetByKey(userId);
+                if (userDO == null)
+                    return HttpNotFound();
+                return View(
+                    new ResetPasswordVM()
+                    {
+                        UserId = userId,
+                        Code = code,
+                        Email = userDO.EmailAddress.Address
+                    });
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult> ResetPassword(ResetPasswordVM viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var result = await _account.ResetPasswordAsync(viewModel.UserId, viewModel.Code, viewModel.Password);
+                    if (result.Succeeded)
+                    {
+                        return View("ResetPasswordConfirmation", viewModel);
+                    }
+                    else
+                    {
+                        Array.ForEach(result.Errors.ToArray(), e => ModelState.AddModelError("", e));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.GetLogger().Error("ResetPassword failed.", ex);
+                    ModelState.AddModelError("", ex);
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(viewModel);
         }
     }
 }

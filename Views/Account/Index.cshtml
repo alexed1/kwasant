@@ -36,7 +36,10 @@
                                                 @Html.CheckBoxFor(m => m.RememberMe)
                                                 @Html.LabelFor(m => m.RememberMe)
                                             </div>
-                                           <!-- <p>@Html.ActionLink("register", "register") if you don't have a local account.</p> -->
+                                            <div>
+                                                @Html.ActionLink("Forgot Password", "ForgotPassword", "Account")
+                                            </div>
+                                            <!-- <p>@Html.ActionLink("register", "register") if you don't have a local account.</p> -->
                                         </div>
                                         <input type="submit" value="Log in" class="btn btn-default pull-right" />
                                     </div>
