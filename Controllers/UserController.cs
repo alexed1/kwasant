@@ -15,6 +15,7 @@ using Data.Validations;
 using System.Linq;
 using Utilities;
 using Data.Infrastructure;
+using KwasantCore.Services;
 
 namespace KwasantWeb.Controllers
 {
@@ -204,12 +205,7 @@ namespace KwasantWeb.Controllers
                 //Sending a mail to user with newly created credentials if send email is checked
                 if (curCreateUserVM.SendMail && !String.IsNullOrEmpty(curCreateUserVM.NewPassword))
                 {
-                    string message = "Your Kwasant Login Credentials : <br/><br/> Email : " + curCreateUserVM.EmailAddress + "<br/> Password : " + curCreateUserVM.NewPassword;
-                    string toRecipient = curCreateUserVM.EmailAddress;
-                    string fromAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
-                    EmailDO emailDO = (ObjectFactory.GetInstance<KwasantCore.Services.Email>()).GenerateBasicMessage(uow, "Kwasant Credentials", message, fromAddress, toRecipient);
-                    uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
-                    uow.SaveChanges();
+                    new Email().SendLoginCredentials(uow, curCreateUserVM.EmailAddress, curCreateUserVM.NewPassword);
                 }
             }
             var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."));

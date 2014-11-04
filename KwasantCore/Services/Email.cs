@@ -259,5 +259,18 @@ namespace KwasantCore.Services
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
             }
         }
+
+        public void SendLoginCredentials(IUnitOfWork uow, string toRecipient, string newPassword) 
+        {
+            string credentials = "<br/> Email : " + toRecipient + "<br/> Password : " + newPassword;
+            string fromAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
+            EmailDO emailDO = GenerateBasicMessage(uow, "Kwasant Credentials", null, fromAddress, toRecipient);
+            uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "e4da63fd-2459-4caf-8e4f-b4d6f457e95a",
+                    new Dictionary<string, string>
+                    {
+                        {"credentials_string", credentials}
+                    });
+            uow.SaveChanges();
+        }
     }
 }
