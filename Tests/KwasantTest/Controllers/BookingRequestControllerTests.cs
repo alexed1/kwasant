@@ -100,7 +100,7 @@ namespace KwasantTest.Controllers
             }
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("BRM")]
         public void TestMenuItem_BRShowAll()
         {
@@ -109,7 +109,7 @@ namespace KwasantTest.Controllers
             Assert.AreEqual("OK", response.StatusCode.ToString());
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("BRM")]
         public void TestMenuItem_ShowMyBR()
         {
@@ -118,7 +118,7 @@ namespace KwasantTest.Controllers
             Assert.AreEqual("OK", response.StatusCode.ToString());
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("BRM")]
         public void TestMenuItem_ShowInProcessBR()
         {
@@ -127,7 +127,7 @@ namespace KwasantTest.Controllers
             Assert.AreEqual("OK", response.StatusCode.ToString());
         }
 
-        [Test, Ignore]
+        [Test]
         [Category("BRM")]
         public void TestMenuItem_BRShowAllAdmin()
         {
