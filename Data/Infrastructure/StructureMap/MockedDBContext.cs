@@ -223,18 +223,6 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
-        /// <summary>
-        /// This method will take all 'new' rows, and assign them foreign IDs _if_ they have set a foreign row.
-        /// This fixes an issue with EF, so we can do this:
-        /// attachment.Email = emailDO
-        /// 
-        /// instead of this:
-        /// 
-        /// attachment.Email = emailDO;
-        /// attachment.EmailID = emailDO.Id;
-        /// 
-        /// We look at the attributes on the properties of our entities, and figure out which rows require updating
-        /// </summary>
         private void UpdateForeignKeyReferences(IEnumerable<object> newRows)
         {
             var evaledRows = newRows.ToList();
