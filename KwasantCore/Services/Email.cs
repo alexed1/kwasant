@@ -127,7 +127,9 @@ namespace KwasantCore.Services
             };
             var uow = emailRepository.UnitOfWork;
 
-            emailDO.From = GenerateEmailAddress(uow, mailMessage.From);
+            var fromAddress = GenerateEmailAddress(uow, mailMessage.From);
+            emailDO.From = fromAddress;
+            
             foreach (var addr in mailMessage.To.Select(a => GenerateEmailAddress(uow, a)))
             {
                 emailDO.AddEmailRecipient(EmailParticipantType.To, addr);    
@@ -141,11 +143,7 @@ namespace KwasantCore.Services
                 emailDO.AddEmailRecipient(EmailParticipantType.Cc, addr);
             }
 
-            emailDO.Attachments.ForEach(a =>
-            {
-                a.Email = emailDO;
-                a.EmailID = emailDO.Id;
-            });
+            emailDO.Attachments.ForEach(a => a.Email = emailDO);
             
             emailDO.EmailStatus = EmailState.Unstarted; //we'll use this new state so that every email has a valid status.
             emailRepository.Add(emailDO);

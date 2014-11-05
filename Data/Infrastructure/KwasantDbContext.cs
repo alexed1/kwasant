@@ -6,11 +6,13 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.SqlServer;
 using System.Linq;
+using System.Reflection;
 using Data.Entities.CTE;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
+using Utilities;
 
 namespace Data.Infrastructure
 {
@@ -101,6 +103,7 @@ namespace Data.Infrastructure
                createdEntityList.Add(entity);
             }
 
+            FixForeignKeyIDs(adds);
             var saveResult = base.SaveChanges();
 
 
@@ -122,6 +125,64 @@ namespace Data.Infrastructure
         {
             return base.Set<TEntity>();
         }
+
+        private void FixForeignKeyIDs(IEnumerable<object> adds)
+        {
+            foreach (var grouping in adds.GroupBy(r => r.GetType()))
+            {
+                if (!grouping.Any())
+                    continue;
+
+                var propType = grouping.Key;
+                var props = propType.GetProperties();
+                var propsWithForeignKeyNotation = props.Where(p => p.GetCustomAttribute<ForeignKeyAttribute>(true) != null).ToList();
+                if (!propsWithForeignKeyNotation.Any())
+                    continue;
+
+                foreach (var prop in propsWithForeignKeyNotation)
+                {
+                    var attr = prop.GetCustomAttribute<ForeignKeyAttribute>(true);
+                    //Now.. find out which way it goes..
+
+                    var linkedName = attr.Name;
+                    var linkedProp = propType.GetProperties().FirstOrDefault(n => n.Name == linkedName);
+                    if (linkedProp == null)
+                        continue;
+
+                    PropertyInfo foreignIDProperty;
+                    PropertyInfo parentFKIDProperty;
+                    PropertyInfo parentFKDOProperty;
+
+                    var linkedID = ReflectionHelper.EntityPrimaryKeyPropertyInfo(linkedProp.PropertyType);
+                    if (linkedID != null)
+                    {
+                        foreignIDProperty = linkedID;
+                        parentFKIDProperty = prop;
+                        parentFKDOProperty = linkedProp;
+                    }
+                    else
+                    {
+                        foreignIDProperty = ReflectionHelper.EntityPrimaryKeyPropertyInfo(prop.PropertyType);
+                        parentFKIDProperty = linkedProp;
+                        parentFKDOProperty = prop;
+                    }
+
+                    if (foreignIDProperty == null)
+                        continue;
+
+                    foreach (var value in grouping)
+                    {
+                        var foreignDO = parentFKDOProperty.GetValue(value);
+                        if (foreignDO != null) //If the DO is set, then we update the ID
+                        {
+                            var fkID = foreignIDProperty.GetValue(foreignDO);
+                            parentFKIDProperty.SetValue(value, fkID);
+                        }
+                    }
+                }
+            }
+        }
+
 
         public IUnitOfWork UnitOfWork { get; set; }
 

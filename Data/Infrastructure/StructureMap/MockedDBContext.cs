@@ -223,9 +223,22 @@ namespace Data.Infrastructure.StructureMap
             }
         }
 
+        /// <summary>
+        /// This method will take all 'new' rows, and assign them foreign IDs _if_ they have set a foreign row.
+        /// This fixes an issue with EF, so we can do this:
+        /// attachment.Email = emailDO
+        /// 
+        /// instead of this:
+        /// 
+        /// attachment.Email = emailDO;
+        /// attachment.EmailID = emailDO.Id;
+        /// 
+        /// We look at the attributes on the properties of our entities, and figure out which rows require updating
+        /// </summary>
         private void UpdateForeignKeyReferences(IEnumerable<object> newRows)
         {
-            foreach (var grouping in newRows.GroupBy(r => r.GetType()))
+            var evaledRows = newRows.ToList();
+            foreach (var grouping in evaledRows.GroupBy(r => r.GetType()))
             {
                 if (!grouping.Any())
                     continue;
@@ -250,7 +263,7 @@ namespace Data.Infrastructure.StructureMap
                     PropertyInfo parentFKIDProperty;
                     PropertyInfo parentFKDOProperty;
 
-                    var linkedID = EntityPrimaryKeyPropertyInfo(linkedProp.PropertyType);
+                    var linkedID = ReflectionHelper.EntityPrimaryKeyPropertyInfo(linkedProp.PropertyType);
                     var foreignType = linkedProp.PropertyType;
                     if (linkedID != null)
                     {
@@ -260,19 +273,19 @@ namespace Data.Infrastructure.StructureMap
                     }
                     else
                     {
-                        foreignIDProperty = EntityPrimaryKeyPropertyInfo(prop.PropertyType);
+                        foreignIDProperty = ReflectionHelper.EntityPrimaryKeyPropertyInfo(prop.PropertyType);
                         foreignType = prop.PropertyType;
                         parentFKIDProperty = linkedProp;
                         parentFKDOProperty = prop;
                     }
 
+                    if (foreignIDProperty == null)
+                        continue;
+
                     var foreignCollectionProps = foreignType.GetProperties()
                         .Where(p => p.PropertyType.IsGenericType &&
                                     typeof(IList<>).MakeGenericType(propType).IsAssignableFrom(p.PropertyType) &&
                                     p.PropertyType.GetGenericArguments()[0] == propType).ToList();
-
-                    if (linkedID == null)
-                        continue;
 
                     foreach (var value in grouping)
                     {
