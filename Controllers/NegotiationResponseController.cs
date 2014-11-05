@@ -6,18 +6,25 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Repositories;
 using Data.States;
+using Data.States.Templates;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
+using Utilities;
 
 namespace KwasantWeb.Controllers
 {
     public class NegotiationResponseController : Controller
     {
         private const bool EnforceUserInAttendees = true;
+        private IAttendee _attendee;
+        private IQuestion _question;
+        private INegotiation _negotiation;
 
+        //The main NegotiationResponse view displays Question and Answer data to an attendee
         [KwasantAuthorize(Roles = "Customer")]
         public ActionResult View(int negotiationID)
         {
@@ -25,40 +32,55 @@ namespace KwasantWeb.Controllers
             
             var user = new User();
             var userID = this.GetUserId();
+          
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userDO = uow.UserRepository.GetByKey(userID);
+                
+                _question = new Question();
+                _negotiation = new Negotiation();
 
-                var negotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
-                if (negotiationDO == null)
+
+                var curNegotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
+                if (curNegotiationDO == null)
                     throw new HttpException(404, "Negotiation not found.");
 
-                var answerIDs = negotiationDO.Questions.SelectMany(q => q.Answers.Select(a => a.Id)).ToList();
-                var userAnswerIDs = uow.QuestionResponseRepository.GetQuery().Where(qr => qr.AnswerID.HasValue && answerIDs.Contains(qr.AnswerID.Value) && qr.UserID == userID).Select(a => a.AnswerID).ToList();
+                //get all of the Answers responded to by this user
+                var userAnswerIDs = _negotiation.GetAnswersByUser(curNegotiationDO,userDO,uow);
 
-                var originatingUser = negotiationDO.BookingRequest.User.FirstName;
-                if (!String.IsNullOrEmpty(negotiationDO.BookingRequest.User.LastName))
-                    originatingUser += " " + negotiationDO.BookingRequest.User.LastName;
+                var originatingUser = curNegotiationDO.BookingRequest.User.FirstName;
+                if (!String.IsNullOrEmpty(curNegotiationDO.BookingRequest.User.LastName))
+                    originatingUser += " " + curNegotiationDO.BookingRequest.User.LastName;
+
+
                 var model = new NegotiationResponseVM
                 {
-                    Id = negotiationDO.Id,
-                    Name = negotiationDO.Name,
-                    BookingRequestID = negotiationDO.BookingRequestID,
+                    Id = curNegotiationDO.Id,
+                    Name = curNegotiationDO.Name,
+                    BookingRequestID = curNegotiationDO.BookingRequestID,
 
                     CommunicationMode = user.GetMode(userDO),
                     OriginatingUser = originatingUser,
 
-                    Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
-                    Questions = negotiationDO.Questions.Select(q =>
-                    {
-                        var selectedAnswer = q.Answers.FirstOrDefault(a => userAnswerIDs.Contains(a.Id));
+                    Attendees = curNegotiationDO.Attendees.Select(a => a.Name).ToList(),
 
+                    //Building the List of NegotiationQuestionVM's
+                    //Starting with all of the Questions in the Negotiation...
+                    Questions = curNegotiationDO.Questions.Select(q =>
+                    {
+                        //select the Answer that is in our list of the answers to which the  user has responded
+                        // var selectedAnswer = q.Answers.FirstOrDefault(a => userAnswerIDs.Contains(a.Id));
+                        var selectedAnswer = _attendee.GetSelectedAnswer(q, userAnswerIDs);
+
+                        
+                        //build a list of NegotiationAnswerVMs
                         var answers = q.Answers.Select(a =>
                             (NegotiationAnswerVM) new NegotiationResponseAnswerVM
                             {
                                 Id = a.Id,
 
+                                //indicates which one, if any, the user has previously provided as a response 
                                 Selected = a == selectedAnswer,
                                 EventID = a.EventID,
                                 UserAnswer = a.UserID == userID,
@@ -71,10 +93,12 @@ namespace KwasantWeb.Controllers
                             }).OrderBy(a => a.EventStartDate).ThenBy(a => a.EventEndDate).ToList();
 
                         //We select the answer that the user previously selected
-                        //If they don't have a previous selection, then we select the first answer by default.
+                        //If they don't have a previous selection, then we select the first answer by default. this encourages attendees to agree to what has been proposed by the booker.
+                        //this Selected concept is presentation-specific, so it belongs here in the VM code
                         if (!answers.Any(a => a.Selected))
                             answers.First().Selected = true;
 
+                        //Pack the list of NegotiationAnswerVMs into a NegotiationQuestionVM
                         return (NegotiationQuestionVM) new NegotiationResponseQuestionVM
                         {
                             Type = q.AnswerType,
