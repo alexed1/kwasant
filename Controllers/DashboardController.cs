@@ -75,7 +75,7 @@ namespace KwasantWeb.Controllers
                 const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
 
                 var attachmentInfo = String.Join("<br />",
-                            bookingRequest.Attachments.Select(
+                            bookingRequest.Attachments.Where(a => String.IsNullOrEmpty(a.ContentID)).Select(
                                 attachment =>
                                 "<a href='" + String.Format(fileViewURLStr, attachment.Id) + "' target='" +
                                 attachment.OriginalName + "'>" + attachment.OriginalName + "</a>"));

@@ -6,11 +6,13 @@ using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.SqlServer;
 using System.Linq;
+using System.Reflection;
 using Data.Entities.CTE;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Migrations;
+using Utilities;
 
 namespace Data.Infrastructure
 {
@@ -101,6 +103,7 @@ namespace Data.Infrastructure
                createdEntityList.Add(entity);
             }
 
+            FixForeignKeyIDs(adds);
             var saveResult = base.SaveChanges();
 
 
@@ -122,6 +125,95 @@ namespace Data.Infrastructure
         {
             return base.Set<TEntity>();
         }
+
+        /// <summary>
+        /// This method will take all 'new' rows, and assign them foreign IDs _if_ they have set a foreign row.
+        /// This fixes an issue with EF, so we can do this:
+        /// attachment.Email = emailDO
+        /// 
+        /// instead of this:
+        /// 
+        /// attachment.Email = emailDO;
+        /// attachment.EmailID = emailDO.Id;
+        /// 
+        /// We look at the attributes on the properties of our entities, and figure out which rows require updating
+        /// </summary>
+        private void FixForeignKeyIDs(IEnumerable<object> adds)
+        {
+            foreach (var grouping in adds.GroupBy(r => r.GetType()))
+            {
+                if (!grouping.Any())
+                    continue;
+
+                //First, we check if the entity has foreign relationships
+                var propType = grouping.Key;
+                var props = propType.GetProperties();
+                var propsWithForeignKeyNotation = props.Where(p => p.GetCustomAttribute<ForeignKeyAttribute>(true) != null).ToList();
+                if (!propsWithForeignKeyNotation.Any())
+                    continue;
+
+                //Then we loop through each relationship
+                foreach (var prop in propsWithForeignKeyNotation)
+                {
+                    var attr = prop.GetCustomAttribute<ForeignKeyAttribute>(true);
+                    
+                    //Now.. find out which way it goes..
+                    var linkedName = attr.Name;
+                    var linkedProp = propType.GetProperties().FirstOrDefault(n => n.Name == linkedName);
+                    if (linkedProp == null)
+                        continue;
+
+                    PropertyInfo foreignIDProperty;
+                    PropertyInfo parentFKIDProperty;
+                    PropertyInfo parentFKDOProperty;
+
+                    var linkedID = ReflectionHelper.EntityPrimaryKeyPropertyInfo(linkedProp.PropertyType);
+
+                    //If linkedID != null, it means we defined the attribute on the KEY property, rather than the row property
+                    //Ie, we defined something like this:
+
+                    //[ForeignKey("Email")]
+                    //int EmailID {get;set;}
+                    //EmailDO Email {get;set;}
+                    if (linkedID != null)
+                    {
+                        foreignIDProperty = linkedID;
+                        parentFKIDProperty = prop;
+                        parentFKDOProperty = linkedProp;
+                    }
+
+                    //If linkedID == null, it means we defined the attribute on the ROW property, rather than the key property
+                    //Ie, we defined something like this:
+
+                    //int EmailID {get;set;}
+                    //[ForeignKey("EmailID")]
+                    //EmailDO Email {get;set;}
+                    else
+                    {
+                        foreignIDProperty = ReflectionHelper.EntityPrimaryKeyPropertyInfo(prop.PropertyType);
+                        parentFKIDProperty = linkedProp;
+                        parentFKDOProperty = prop;
+                    }
+
+                    //Something bad happened - it means we defined the keys using fluent code-to-sql
+                    //In this case, there's nothing we can do.. ignore this attempt
+                    if (foreignIDProperty == null)
+                        continue;
+
+                    foreach (var value in grouping)
+                    {
+                        //Find the foreign row
+                        var foreignDO = parentFKDOProperty.GetValue(value);
+                        if (foreignDO != null) //If the DO is set, then we update the ID
+                        {
+                            var fkID = foreignIDProperty.GetValue(foreignDO);
+                            parentFKIDProperty.SetValue(value, fkID);
+                        }
+                    }
+                }
+            }
+        }
+
 
         public IUnitOfWork UnitOfWork { get; set; }
 
