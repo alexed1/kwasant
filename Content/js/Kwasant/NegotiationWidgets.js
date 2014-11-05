@@ -610,9 +610,17 @@
         if (settings.DisplayMode != 'reply')
             radioSelect.hide();
 
+        var suggestedByText = 'Suggested by ';
+        if (answerInitValues.SuggestedBy === '') {
+            suggestedByText += ' the booker';
+        } else {
+            suggestedByText += answerInitValues.SuggestedBy;
+        }
+
         var answerText = $('<input />')
             .addClass('form-control')
             .addClass('col-md-1')
+            .attr('title', suggestedByText)
             .val(answerInitValues.Text);
 
         if (settings.DisplayMode != 'review')
@@ -622,14 +630,23 @@
             radioSelect.click();
         });
 
+        var suggestedBy = $('<span />')
+            .css('float', 'right')
+            .css('padding-top', '6px')
+            .css('padding-right', '16px')
+            .css('color', 'grey')
+            .text('[' + suggestedByText + ']');
+        suggestedBy.hide();
+
         var canEditAnswer =
             !answerInitValues.DisableManualEdit && (
                 settings.AllowModifyAnswer ||
                 answerInitValues.Id == 0
             );
 
-        if (!canEditAnswer)
+        if (!canEditAnswer) {
             answerText.attr('disabled', 'disabled');
+        }
 
         var deleteButton = $('<img src="/Content/img/Cross.png" />')
             .addClass('handIcon')
@@ -638,17 +655,20 @@
             });
 
         var peopleWhoVoted = 'No one voted for this answer.';
-        for (var i = 0; i < answerInitValues.VotedBy.length; i++) {
+        if (answerInitValues.VotedByList === undefined)
+            answerInitValues.VotedByList = [];
+        
+        for (var i = 0; i < answerInitValues.VotedByList.length; i++) {
             if (i > 0)
                 peopleWhoVoted += ', ';
             else
                 peopleWhoVoted = 'The following people voted for this answer: ';
 
-            peopleWhoVoted += answerInitValues.VotedBy[i];
+            peopleWhoVoted += answerInitValues.VotedByList[i];
         }
 
         var votesIcon = $('<label>')
-            .append(answerInitValues.VotedBy.length);
+            .append(answerInitValues.VotedByList.length);
 
         answerObject.markMeSelected = function () {
             answerDiv
@@ -699,6 +719,11 @@
 
         if (!answerInitValues.CanDelete)
             deleteButton.hide();
+        
+        if (answerInitValues.CanDelete || !canEditAnswer) {
+            suggestedBy.show();
+        }
+
 
         var answerDiv =
             $('<div />')
@@ -710,22 +735,37 @@
                             $('<tr />')
                                 .append(
                                     $('<td />')
+                                        .css('width', settings.DisplayMode == 'reply' ? '20px' : '0px')
+                                        .css('padding-left', settings.DisplayMode == 'reply' ? '1px' : '0px')
+                                        .css('padding-right', settings.DisplayMode == 'reply' ? '1px' : '0px')
                                         .append(
                                             radioSelect
                                         )
                                 ).append(
                                     $('<td />')
-                                        .css('width', '100%')
                                         .append(
                                             answerText
                                         )
                                 ).append(
                                     $('<td />')
+                                        .css('padding-left', answerInitValues.CanDelete || !canEditAnswer ? '1px' : '0px')
+                                        .css('padding-right', answerInitValues.CanDelete || !canEditAnswer ? '1px' : '0px')
+                                        .append(
+                                            suggestedBy
+                                        )
+                                ).append(
+                                    $('<td />')
+                                        .css('width', answerInitValues.CanDelete ? '34px' : '0px')
+                                        .css('padding-left', answerInitValues.CanDelete ? '1px' : '0px')
+                                        .css('padding-right', answerInitValues.CanDelete ? '1px' : '0px')
                                         .append(
                                             deleteButton
                                         )
                                 ).append(
                                     $('<td />')
+                                        .css('width', settings.DisplayMode == 'review' ? '25px' : '0px')
+                                        .css('padding-left', settings.DisplayMode == 'review' ? '1px' : '0px')
+                                        .css('padding-right', settings.DisplayMode == 'review' ? '1px' : '0px')
                                         .append(
                                             votesIcon
                                         )
