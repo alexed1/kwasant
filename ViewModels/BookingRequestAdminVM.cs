@@ -20,6 +20,7 @@ namespace KwasantWeb.ViewModels
         public string EmailBCC { get; set; }
         public string EmailAttachments { get; set; }
         public string Booker { get; set; } 
+        public bool ReadOnly { get; set; }
     }
 
     public class ConversationVM

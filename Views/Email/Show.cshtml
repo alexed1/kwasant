@@ -5,8 +5,12 @@
 @Styles.Render("~/bundles/css/backendcss")
 @Styles.Render("~/bundles/css/colorbox")
 @Styles.Render("~/bundles/css/temp")
+
+<script src="~/Content/js/jquery.js"></script>
 <script src="~/Scripts/ContextMenu/jquery.contextMenu.js"></script>
 <link href="~/Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
+<link href="~/Content/css/backendcss/default.css" rel="stylesheet" />
+
 <div class="email-info-section">
     <!--style="width: 400px;"-->
     <div class="info">
@@ -19,7 +23,7 @@
                     <td class="displayLabel">Booker:</td>
                     <td id="tdbookerinfo">
                         @Model.Booker
-                        @(Model.Booker != "none" ? Html.Raw("<span style='padding-left:15px;'><a href='javascript:void(0);' onclick='javascript:releaseBooker(" + Model.BookingRequestId + ")'>Release</a></span>") : Html.Raw(""))
+                        @(Model.Booker != "none" && !Model.ReadOnly ? Html.Raw("<span style='padding-left:15px;'><a href='javascript:void(0);' onclick='javascript:releaseBooker(" + Model.BookingRequestId + ")'>Release</a></span>") : Html.Raw(""))
                     </td>
                 </tr>
                 <tr>
@@ -65,12 +69,13 @@
 
 <script src="~/Content/js/Kwasant/quickcopy.js"></script>
 <script type="text/javascript">
+
     $(function () {
         var conversationMembers = @Html.Raw(JsonConvert.SerializeObject(Model.Conversations, Formatting.Indented));
         var performedExplicitExpand = false;
         $.each(conversationMembers, function(ind, conversationMember) {
             var convoHolder = $('<div class="email-message">');
-   
+
             var convoHeader = $('<div class="message-header">');
             convoHeader.html(conversationMember.Header);
             convoHeader.prepend('<span class="glyphicon glyphicon-chevron-down pull-left"></span>');
@@ -82,10 +87,10 @@
 
             var resetStyles = function(expanded) {
                 if (expanded) {
-                    $(".message-header .glyphicon").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");    
+                    $(".message-header .glyphicon").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");
                     //convoHeader.css('background-color', '#DBDBDB');
                 } else {
-                    $(".message-header .glyphicon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");                        
+                    $(".message-header .glyphicon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");
                     //convoHeader.css('background-color', '#DBDBDB');
                 }
             };
@@ -120,7 +125,7 @@
                     resetStyles(true);
                 }
             }
-            
+
             convoHolder.append(convoHeader);
             convoHolder.append(convoBody);
 

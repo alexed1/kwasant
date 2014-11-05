@@ -38,7 +38,7 @@ namespace KwasantWeb.Controllers
             return API.PackResponseGetEmail(thisEmailDO);
         }
 
-        public ActionResult GetInfo(int emailId)
+        public ActionResult GetInfo(int emailId, bool? readonlyView)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -103,6 +103,7 @@ namespace KwasantWeb.Controllers
                     EmailCC = String.Join(", ", curEmail.CC.Select(a => a.Address)),
                     EmailBCC = String.Join(", ", curEmail.BCC.Select(a => a.Address)),
                     EmailAttachments = attachmentInfo,
+                    ReadOnly = readonlyView.HasValue && readonlyView.Value,
                     Booker = booker
                 };
 
