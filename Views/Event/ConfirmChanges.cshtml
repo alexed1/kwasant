@@ -61,6 +61,8 @@
 
 				var data = @Html.Raw(JsonConvert.SerializeObject(Model));
 				$.post(f.prop('action'), data, function (result) {
+				    if(result)
+				    { var startDate= new Date('@Model.StartDate'); displayNotification('Event Created Starting ' + (startDate.getMonth() + 1) + "/" + startDate.getDate()); } 
 					close(eval(result));
 				});
 				return false;
