@@ -195,11 +195,14 @@ namespace Data.Infrastructure
                         parentFKDOProperty = prop;
                     }
 
+                    //Something bad happened - it means we defined the keys using fluent code-to-sql
+                    //In this case, there's nothing we can do.. ignore this attempt
                     if (foreignIDProperty == null)
                         continue;
 
                     foreach (var value in grouping)
                     {
+                        //Find the foreign row
                         var foreignDO = parentFKDOProperty.GetValue(value);
                         if (foreignDO != null) //If the DO is set, then we update the ID
                         {
