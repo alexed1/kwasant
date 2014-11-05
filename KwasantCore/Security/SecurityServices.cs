@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Web;
@@ -50,7 +51,13 @@ namespace KwasantCore.Security
         public ClaimsIdentity GetIdentity(IUnitOfWork uow, UserDO userDO)
         {
             var um = new KwasantUserManager(uow);
-            return um.CreateIdentity(userDO, DefaultAuthenticationTypes.ApplicationCookie);
+            var identity = um.CreateIdentity(userDO, DefaultAuthenticationTypes.ApplicationCookie);
+            foreach (var roleId in userDO.Roles.Select(r => r.RoleId))
+            {
+                var role = uow.AspNetRolesRepository.GetByKey(roleId);
+                identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
+            }
+            return identity;
         }
     }
 }
