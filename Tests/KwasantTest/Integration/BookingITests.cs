@@ -6,19 +6,17 @@ using Daemons;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.ExternalServices;
-using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Services;
-using KwasantCore.StructureMap;
 using KwasantTest.Daemons;
 using Moq;
 using NUnit.Framework;
 using SendGrid;
 using StructureMap;
 
-namespace KwasantTest.Integration.BookingITests
+namespace KwasantTest.Integration
 {
     [TestFixture]
-    public class IntegrationTests : BaseTest
+    public class BookingITests : BaseTest
     {
         [Test]
         [Category("IntegrationTests")]

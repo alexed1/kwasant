@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Data.Entity;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
@@ -9,10 +10,13 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.ModelBinders;
+using KwasantCore.Security;
 using KwasantCore.Services;
 using KwasantCore.Managers;
 using KwasantCore.StructureMap;
 using KwasantWeb.App_Start;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Newtonsoft.Json;
 using Segment;
 using StructureMap;
@@ -35,7 +39,7 @@ namespace KwasantWeb
             // StructureMap Dependencies configuration
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE); //set to either "test" or "live"
 
-            KwasantDbContext db = new KwasantDbContext();
+            var db = ObjectFactory.GetInstance<DbContext>();
             db.Database.Initialize(true);
 
             Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
