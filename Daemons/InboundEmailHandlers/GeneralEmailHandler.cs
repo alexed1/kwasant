@@ -19,8 +19,7 @@ namespace Daemons.InboundEmailHandlers
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                EmailDO email = Email.ConvertMailMessageToEmail(uow.EmailRepository, message);
-                Email.ProcessReceivedMessage(uow, email, message);
+                Email.ProcessReceivedMessage(uow, message);
             }
             return true;
         }
