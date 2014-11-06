@@ -44,6 +44,7 @@ namespace KwasantWeb.ViewModels
         public string UserId { get; set; }
         public string Text { get; set; }
         public int? EventID { get; set; }
+        public String SuggestedBy { get; set; }
 
         public DateTimeOffset? EventStartDate { get; set; }
         public DateTimeOffset? EventEndDate { get; set; }

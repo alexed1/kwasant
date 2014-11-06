@@ -108,8 +108,9 @@ namespace KwasantWeb.Controllers
                                 AnswerState = a.AnswerStatus,
                                 VotedByList = uow.QuestionResponseRepository.GetQuery()
                                     .Where(qr => qr.AnswerID == a.Id)
-                                    .Select(qr => qr.User.FirstName + " " + qr.User.LastName)
+                                    .Select(qr => qr.User.UserName)
                                     .ToList(),
+                                SuggestedBy = a.UserDO == null ? String.Empty : a.UserDO.UserName,
                                 EventID = a.EventID,
                                 EventStartDate = a.Event == null ? (DateTimeOffset?) null : a.Event.StartDate,
                                 EventEndDate = a.Event == null ? (DateTimeOffset?) null : a.Event.EndDate,
