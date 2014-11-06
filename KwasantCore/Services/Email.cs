@@ -255,7 +255,7 @@ namespace KwasantCore.Services
                 BookingRequestDO bookingRequest = ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
                 (new BookingRequest()).Process(uow, bookingRequest);
                 uow.SaveChanges();
-                //AlertManager.BookingRequestCreated(bookingRequest.Id);
+                
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
             }
         }

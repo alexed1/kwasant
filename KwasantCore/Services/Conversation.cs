@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
-using Utilities.Logging;
 
 namespace KwasantCore.Services
 {
@@ -26,8 +22,8 @@ namespace KwasantCore.Services
             uow.UserRepository.GetOrCreateUser(curEmail.From);
             existingBookingRequest.State = BookingRequestState.NeedsBooking;
             uow.SaveChanges();
-            string loggerInfo = "Adding inbound email id = " + curEmail.Id + ", subject = " + existingBookingRequest.Subject + " to existing conversation id = " + existingBookingRequest.Id + ", with BR subject = " + existingBookingRequest.Subject;
-            Logger.GetLogger().Info(loggerInfo);
+
+            AlertManager.ConversationMatched(curEmail.Id, curEmail.Subject, existingBookingRequest.Id);
         }
     }
 }
