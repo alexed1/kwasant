@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
@@ -6,6 +7,7 @@ using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Security;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Utilities;
@@ -147,6 +149,48 @@ namespace KwasantCore.Services
                     incidentDO.CustomerId);
 
             Logger.GetLogger().Info(logData);
+        }
+
+        public async Task ForgotPasswordAsync(string userEmail)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var userManager = new KwasantUserManager(uow);
+                var user = await userManager.FindByEmailAsync(userEmail);
+                if (user == null/* || !(await userManager.IsEmailConfirmedAsync(user.Id))*/)
+                {
+                    // Don't reveal that the user does not exist or is not confirmed
+                    return;
+                }
+
+                var code = await userManager.GeneratePasswordResetTokenAsync(user.Id);
+                var callbackUrl = string.Format("{0}Account/ResetPassword?UserId={1}&code={2}", Server.ServerUrl, user.Id, code);
+
+                var emailDO = new EmailDO();
+                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+                var emailAddressDO = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+                emailDO.From = emailAddressDO;
+                emailDO.FromID = emailAddressDO.Id;
+                emailDO.AddEmailRecipient(EmailParticipantType.To, uow.EmailAddressRepository.GetOrCreateEmailAddress(userEmail));
+                emailDO.Subject = "Password Recovery Request";
+
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("ForgotPassword_template"),
+                                                               new Dictionary<string, string>()
+                                                                   {{"-callback_url-", callbackUrl}});
+                uow.SaveChanges();
+            }
+        }
+
+        public async Task<IdentityResult> ResetPasswordAsync(string userId, string code, string password)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var userManager = new KwasantUserManager(uow);
+                var result = await userManager.ResetPasswordAsync(userId, code, password);
+                uow.SaveChanges();
+                return result;
+            }
         }
     }
 }

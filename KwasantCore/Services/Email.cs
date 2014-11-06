@@ -85,18 +85,16 @@ namespace KwasantCore.Services
             {
                 foreach (var av in mailMessage.AlternateViews)
                 {
+                    av.ContentStream.Position = 0;
                     if (av.ContentType.MediaType == "text/html")
                     {
                         body = new StreamReader(av.ContentStream).ReadToEnd();
                         break;
                     }
-                }
-                foreach (var av in mailMessage.AlternateViews)
-                {
+
                     if (av.ContentType.MediaType == "text/plain")
                     {
                         plainBody = new StreamReader(av.ContentStream).ReadToEnd();
-                        break;
                     }
                 }
             }
@@ -129,7 +127,9 @@ namespace KwasantCore.Services
             };
             var uow = emailRepository.UnitOfWork;
 
-            emailDO.From = GenerateEmailAddress(uow, mailMessage.From);
+            var fromAddress = GenerateEmailAddress(uow, mailMessage.From);
+            emailDO.From = fromAddress;
+            
             foreach (var addr in mailMessage.To.Select(a => GenerateEmailAddress(uow, a)))
             {
                 emailDO.AddEmailRecipient(EmailParticipantType.To, addr);    
@@ -144,7 +144,7 @@ namespace KwasantCore.Services
             }
 
             emailDO.Attachments.ForEach(a => a.Email = emailDO);
-            //emailDO.EmailStatus = EmailStatus.QUEUED; we no longer want to set this here. not all Emails are outbound emails. This should only be set in functions like Event#Dispatch
+            
             emailDO.EmailStatus = EmailState.Unstarted; //we'll use this new state so that every email has a valid status.
             emailRepository.Add(emailDO);
             return emailDO;
@@ -174,8 +174,9 @@ namespace KwasantCore.Services
 
             AttachmentDO att = new AttachmentDO
             {
-                OriginalName = String.IsNullOrEmpty(av.ContentType.Name)? av.ContentType.MediaType : "File",
+                OriginalName = String.IsNullOrEmpty(av.ContentType.Name) ? "unnamed" : av.ContentType.Name,
                 Type = av.ContentType.MediaType,
+                ContentID = av.ContentId
             };
 
             att.SetData(av.ContentStream);
@@ -255,8 +256,43 @@ namespace KwasantCore.Services
                 BookingRequestDO bookingRequest = ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
                 (new BookingRequest()).Process(uow, bookingRequest);
                 uow.SaveChanges();
+
+                //Fix the HTML text
+                var attachmentSubstitutions =
+                    bookingRequest.Attachments.Where(a => !String.IsNullOrEmpty(a.ContentID))
+                        .ToDictionary(a => a.ContentID, a => a.Id);
+
+                const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
+
+                //The following fixes inline images
+                if (attachmentSubstitutions.Any())
+                {
+                    var curBody = bookingRequest.HTMLText;
+                    foreach (var keyToReplace in attachmentSubstitutions.Keys)
+                    {
+                        var keyStr = String.Format("cid:{0}", keyToReplace);
+                        curBody = curBody.Replace(keyStr,
+                            String.Format(fileViewURLStr, attachmentSubstitutions[keyToReplace]));
+                    }
+                    bookingRequest.HTMLText = curBody;
+                    uow.SaveChanges();
+                }
+
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
             }
         }
+
+        public void SendLoginCredentials(IUnitOfWork uow, string toRecipient, string newPassword) 
+        {
+            string credentials = "<br/> Email : " + toRecipient + "<br/> Password : " + newPassword;
+            string fromAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
+            EmailDO emailDO = GenerateBasicMessage(uow, "Kwasant Credentials", null, fromAddress, toRecipient);
+            uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "e4da63fd-2459-4caf-8e4f-b4d6f457e95a",
+                    new Dictionary<string, string>
+                    {
+                        {"credentials_string", credentials}
+                    });
+            uow.SaveChanges();
     }
+}
 }

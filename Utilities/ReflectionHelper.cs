@@ -1,5 +1,8 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Utilities
 {
@@ -13,6 +16,20 @@ namespace Utilities
                 return (expression.Body as dynamic).Member.Name;
 
             throw new Exception("Cannot contain complex expressions. An example of a supported expression is 'ev => ev.Id'");
+        }
+    }
+
+    public class ReflectionHelper
+    {
+        public static PropertyInfo EntityPrimaryKeyPropertyInfo(object entity)
+        {
+            Type entityType;
+            if (entity is Type)
+                entityType = (Type) entity;
+            else
+                entityType = entity.GetType();
+
+            return entityType.GetProperties().FirstOrDefault(p => p.GetCustomAttribute<KeyAttribute>(true) != null);
         }
     }
 }
