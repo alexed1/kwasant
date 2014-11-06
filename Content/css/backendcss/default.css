@@ -757,12 +757,17 @@ input[type="submit"].btn.gradient-button:hover, input[type="button"].btn.gradien
     list-style: none;           
 }
 
-.login-section .validation-summary-errors ul li {
+.login-section .validation-summary-errors ul li, .login-section span.field-validation-error {
     background: #b94a48;
     color: #f2e9df;
     padding: 5px 10px;
     margin-top: 10px;
 }
+
+.login-section span.field-validation-error {
+    float: none;
+    display: block;
+} 
                           
 .login-section .wrapper {
     padding: 15px;
@@ -788,7 +793,7 @@ input[type="submit"].btn.gradient-button:hover, input[type="button"].btn.gradien
     margin-bottom: 0;
 }
 
-.login-section .custom-form input[type="text"], .login-section .custom-form input[type="password"] {
+.login-section .custom-form input[type="text"], .login-section .custom-form input[type="password"], .login-section .custom-form input[type="email"] {
     background: #f2e9df;
 }
 
@@ -804,6 +809,10 @@ input[type="submit"].btn.gradient-button:hover, input[type="button"].btn.gradien
 .login-section .custom-form input:-webkit-autofill:focus {
     -webkit-box-shadow: 0 0 0px 1000px #f2dfc9 inset;
     -webkit-text-fill-color: #000;
+}
+
+.login-section .custom-form p.forgot-lnk {
+    padding: 0 0 8px;
 }
 
 /*Registration section*/
@@ -1543,7 +1552,12 @@ today-calendar-tbl .first-col {
 
     .login-page .container {
         max-width: 100%;
-    }           
+    }  
+    
+    .login-section .custom-form p.forgot-lnk {
+        float: none;
+        text-align: left;
+    }         
 
     .table-with-action tr td:last-child button {
 	    font-size: 0;
