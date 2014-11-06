@@ -8,5 +8,6 @@
         public const int Invalid = 4;
         public const int AwaitingClient = 5;
         public const int NeedsBooking = 6;
+        public const int Finished = 7;
     }
 }

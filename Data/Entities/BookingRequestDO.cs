@@ -15,6 +15,7 @@ namespace Data.Entities
             Calendars = new List<CalendarDO>();
             Negotiations = new List<NegotiationDO>();
             State = BookingRequestState.Unstarted;
+            ConversationMembers = new List<EmailDO>();
         }
 
         [Required, ForeignKey("User")]

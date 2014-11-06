@@ -132,6 +132,7 @@
     <Compile Include="Controllers\EventControllerTests.cs" />
     <Compile Include="Controllers\NegotiationControllerTests.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />
+    <Compile Include="Conversations\ConversationTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="Daemons\InboundEmailTests.cs" />
     <Compile Include="Daemons\ThroughputMonitorTests.cs" />
