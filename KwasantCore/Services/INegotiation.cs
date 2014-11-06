@@ -7,7 +7,7 @@ namespace KwasantCore.Services
 {
     public interface INegotiation
     {
-        List<Int32> GetAnswers(NegotiationDO curNegotiationDO);
-        IList<Int32?> GetAnswersByUser(NegotiationDO curNegotiationDO, UserDO curUserDO, IUnitOfWork uow);
+        List<Int32> GetAnswerIDs(NegotiationDO curNegotiationDO);
+        IList<Int32?> GetAnswerIDsByUser(NegotiationDO curNegotiationDO, UserDO curUserDO, IUnitOfWork uow);
     }
 }

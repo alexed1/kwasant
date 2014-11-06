@@ -6,14 +6,11 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Repositories;
 using Data.States;
-using Data.States.Templates;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
-using Utilities;
 
 namespace KwasantWeb.Controllers
 {
@@ -47,7 +44,7 @@ namespace KwasantWeb.Controllers
                     throw new HttpException(404, "Negotiation not found.");
 
                 //get all of the Answers responded to by this user
-                var userAnswerIDs = _negotiation.GetAnswersByUser(curNegotiationDO,userDO,uow);
+                var userAnswerIDs = _negotiation.GetAnswerIDsByUser(curNegotiationDO,userDO,uow);
 
                 var originatingUser = curNegotiationDO.BookingRequest.User.FirstName;
                 if (!String.IsNullOrEmpty(curNegotiationDO.BookingRequest.User.LastName))
@@ -95,7 +92,7 @@ namespace KwasantWeb.Controllers
                         //We select the answer that the user previously selected
                         //If they don't have a previous selection, then we select the first answer by default. this encourages attendees to agree to what has been proposed by the booker.
                         //this Selected concept is presentation-specific, so it belongs here in the VM code
-                        if (!answers.Any(a => a.Selected))
+                        if (answers.Any() && !answers.Any(a => a.Selected))
                             answers.First().Selected = true;
 
                         //Pack the list of NegotiationAnswerVMs into a NegotiationQuestionVM
