@@ -293,6 +293,7 @@ namespace KwasantCore.Services
                     AlertManager.NewBookingRequestForPreferredBooker(preferredUser.Id, bookingRequest.Id);
                 }
             }
+        }
 
         public void SendLoginCredentials(IUnitOfWork uow, string toRecipient, string newPassword) 
         {
