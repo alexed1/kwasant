@@ -6,7 +6,10 @@ namespace Data.Infrastructure
 {
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
-    {       
+    {
+        public delegate void ConversationmatchedHandler(int emailID, string subject, int bookingRequestID);
+        public static event ConversationmatchedHandler AlertConversationMatched;
+
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
 
@@ -53,7 +56,13 @@ namespace Data.Infrastructure
         public static event ErrorSyncingCalendarHandler AlertErrorSyncingCalendar;
 
         #region Method
-        
+
+        public static void ConversationMatched(int emailID, string subject, int bookingRequestID)
+        {
+            if (AlertConversationMatched != null)
+                AlertConversationMatched(emailID, subject, bookingRequestID);
+        }
+
         /// <summary>
         /// Publish Customer Created event
         /// </summary>

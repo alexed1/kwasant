@@ -17,6 +17,7 @@ namespace KwasantCore.Managers
         //Register for interesting events
         public void SubscribeToAlerts()
         {
+            AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
             AlertManager.AlertEmailReceived += NewEmailReceived;
             AlertManager.AlertEventBooked += NewEventBooked;
             AlertManager.AlertEmailSent += EmailDispatched;
@@ -30,6 +31,27 @@ namespace KwasantCore.Managers
             AlertManager.AlertError_EmailSendFailure += Error_EmailSendFailure;
             AlertManager.AlertErrorSyncingCalendar += ErrorSyncingCalendar;
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
+        }
+
+        private void AlertManagerOnAlertConversationMatched(int emailID, string subject, int bookingRequestID)
+        {
+            const string logMessageFormat = "Inbound Email ID {0} with subject '{1}' was matched to BR ID {2}";
+            var logMessage = String.Format(logMessageFormat, emailID, subject, bookingRequestID);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var incidentDO = new IncidentDO
+                {
+                    ObjectId = emailID,
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Conversation",
+                    Notes = logMessage
+                };
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+            }
+
+            Logger.GetLogger().Info(logMessage);
         }
 
         private static void OnPostResolutionNegotiationResponseReceived(int negotiationId)
