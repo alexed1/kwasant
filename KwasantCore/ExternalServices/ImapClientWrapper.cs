@@ -41,7 +41,7 @@ namespace KwasantCore.ExternalServices
             _serviceManager.LogEvent("Retrieving messages...");
             try
             {
-                var messages = _internalClient.GetMessages(uids, seen, mailbox).ToList();
+                var messages = (_internalClient.GetMessages(uids, seen, mailbox) ?? Enumerable.Empty<MailMessage>()).ToList();
                 _serviceManager.LogSucessful(messages.Count + " messages retrieved.");
                 return messages;
             }

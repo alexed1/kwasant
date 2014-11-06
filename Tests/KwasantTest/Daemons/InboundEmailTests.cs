@@ -63,6 +63,57 @@ namespace KwasantTest.Daemons
         }
 
         [Test]
+        public void CanProcessAttachments()
+        {
+            // SETUP
+            const string testFromEmailAddress = "test.user@gmail.com";
+            const string testSubject = "Test Subject";
+            const string testBody = "Test Body";
+            const string testToEmailAddress = "test.recipient@gmail.com";
+
+            var mailMessage = new MailMessage();
+
+            mailMessage.Body = testBody;
+            mailMessage.Subject = testSubject;
+            mailMessage.From = new MailAddress(testFromEmailAddress);
+            mailMessage.To.Add(new MailAddress(testToEmailAddress));
+
+            var memStr = new MemoryStream();
+            var data = new byte[] {1, 2, 3};
+            memStr.Write(data, 0, data.Length);
+            mailMessage.AlternateViews.Add(new AlternateView(memStr, "image/png"));
+
+            var clientMock = new Mock<IImapClient>();
+
+            clientMock.Setup(c => c.GetMessages(It.IsAny<IEnumerable<uint>>(), true, null))
+                .Returns(new List<MailMessage> { mailMessage });
+
+            var imapClient = clientMock.Object;
+
+            ObjectFactory.Configure(a => a.For<IImapClient>().Use(imapClient));
+
+            var ie = new InboundEmail();
+            DaemonTests.RunDaemonOnce(ie);
+
+            // VERIFY
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestRepo = uow.BookingRequestRepository;
+                var bookingRequests = bookingRequestRepo.GetAll().ToList();
+
+                Assert.AreEqual(1, bookingRequests.Count);
+                var bookingRequest = bookingRequests.First();
+                Assert.AreEqual(testFromEmailAddress, bookingRequest.From.Address);
+                Assert.AreEqual(testSubject, bookingRequest.Subject);
+                Assert.AreEqual(testBody, bookingRequest.HTMLText);
+                Assert.AreEqual(testFromEmailAddress, bookingRequest.User.EmailAddress.Address);
+                Assert.AreEqual(1, bookingRequest.To.Count());
+                Assert.AreEqual(testToEmailAddress, bookingRequest.To.First().Address);
+                Assert.AreEqual(1, bookingRequest.Attachments.Count());
+            }
+        }
+
+        [Test]
         public void CanProcessInvitationResponse()
         {
             // SETUP

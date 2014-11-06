@@ -1,3 +1,4 @@
+using System.Data.Entity;
 using System.Net;
 using Data.Entities;
 using Data.Infrastructure;
@@ -16,6 +17,7 @@ using KwasantCore.Managers.APIManagers.Packagers.SendGrid;
 using KwasantCore.Managers.APIManagers.Packagers.Twilio;
 using KwasantCore.Security;
 using KwasantCore.Services;
+using Microsoft.AspNet.Identity;
 using Moq;
 using SendGrid;
 using StructureMap;
@@ -94,6 +96,8 @@ namespace KwasantCore.StructureMap
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<ITracker>().Use<SegmentIO>();
+
+                For<ISecurityServices>().Use(new MockedSecurityServices());
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
