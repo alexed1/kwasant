@@ -35,17 +35,23 @@ namespace Daemons
 
         protected override void Run()
         {
+
+            //Event: BR's are Not getting Processed
+            //Action: Alert specified targets via SMS
+
+            //this is a kludge that prevents Alex from getting SMS alarms all night long. 
+            //ultimately, we'll need around-the-clock monitoring
             var startTimeStr = _configRepository.Get<string>("ThroughputCheckingStartTime");
             var endTimeStr = _configRepository.Get<string>("ThroughputCheckingEndTime");
-
             var startTime = DateTimeOffset.Parse(startTimeStr);
             var endTime = DateTimeOffset.Parse(endTimeStr).AddDays(1);    //We need to add days - since the end time is in the morning (For example 8pm -> 4am).
                                                                     //Not adding the AddDays() would mean we're never in the time frame (after 8pm and before 4am on the same dame).
-
             var currentTime = DateTimeOffset.Now;
 
+           
             if (currentTime > startTime && currentTime < endTime)
             {
+                //The current time is in the specified time range (currently daytime, PST)....
                 //We have to compare with a datetime - EF doesn't support operations like subtracts of datetimes, checking by ticks, etc.
                 //The below creates a datetime which represents thirty minutes ago. Anything 'less' than this time is older than 30 minutes.
                 var thirtyMinutesAgo = currentTime.Subtract(new TimeSpan(0, 0, 30, 0));
