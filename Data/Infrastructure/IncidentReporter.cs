@@ -16,11 +16,11 @@ namespace Data.Infrastructure
             using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Email";
-                incidentDO.SecondaryCategory = "Intake Failure";
+                incidentDO.PrimaryCategory = "EmailFailure";
+                incidentDO.SecondaryCategory = "Email";
                 incidentDO.CreateTime = Convert.ToDateTime(dateReceived);
                 incidentDO.Priority = 5;
-                incidentDO.Activity = "Created";
+                incidentDO.Activity = "IntakeFailure";
                 incidentDO.Notes = errorMessage;
                 _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();

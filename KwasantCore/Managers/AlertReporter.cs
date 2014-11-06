@@ -119,8 +119,8 @@ namespace KwasantCore.Managers
                 {
                     Name = "EventBooked",
                     PrimaryCategory = "Event",
-                    SecondaryCategory = "Booking",
-                    Activity = "Received",
+                    SecondaryCategory = "",
+                    Activity = "Created",
                     CustomerId = customerId,
                     CreateDate = DateTimeOffset.Now,
                     ObjectId = eventId
@@ -133,7 +133,7 @@ namespace KwasantCore.Managers
                 {
                     Name = "EmailSent",
                     PrimaryCategory = "Email",
-                    SecondaryCategory = "Outbound",
+                    SecondaryCategory = "",
                     Activity = "Sent",
                     CustomerId = customerId,
                     CreateDate = DateTimeOffset.Now,
@@ -150,8 +150,8 @@ namespace KwasantCore.Managers
                 FactDO curAction = new FactDO()
                     {
                         Name = "BookingRequest Created",
-                        PrimaryCategory = "Email",
-                        SecondaryCategory = "BookingRequest",
+                        PrimaryCategory = "BookingRequest",
+                        SecondaryCategory = "",
                         Activity = "Created",
                         CustomerId = bookingRequestDO.UserID,
                         CreateDate = DateTimeOffset.Now,
@@ -217,10 +217,10 @@ namespace KwasantCore.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "BookingRequest";
-                incidentDO.SecondaryCategory = "Processing";
+                incidentDO.PrimaryCategory = "Timeout";
+                incidentDO.SecondaryCategory = "BookingRequest";
                 incidentDO.CreateTime = DateTime.Now;
-                incidentDO.Activity = "TimeOut";
+                incidentDO.Activity = "";
                 incidentDO.ObjectId = bookingRequestDO.Id;
                 incidentDO.CustomerId = bookingRequestDO.User.Id;
                 incidentDO.BookerId = bookingRequestDO.UserID;
@@ -238,8 +238,8 @@ namespace KwasantCore.Managers
                     {
                         Name = "UserRegistration Created",
                         PrimaryCategory = "User",
-                        SecondaryCategory = "User",
-                        Activity = "Created",
+                        SecondaryCategory = "",
+                        Activity = "Registered",
                         CustomerId = curUser.Id,
                         CreateDate = DateTimeOffset.Now,
                         ObjectId = 0,
@@ -257,10 +257,10 @@ namespace KwasantCore.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Email";
-                incidentDO.SecondaryCategory = "Send";
+                incidentDO.PrimaryCategory = "EmailFailure";
+                incidentDO.SecondaryCategory = "Email";
                 incidentDO.CreateTime = DateTime.Now; ;
-                incidentDO.Activity = "Failure";
+                incidentDO.Activity = "SendFailure";
                 incidentDO.ObjectId = emailId;
                 incidentDO.Notes = message;
                 uow.IncidentRepository.Add(incidentDO);
@@ -279,10 +279,10 @@ namespace KwasantCore.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Calendar";
-                incidentDO.SecondaryCategory = "Sync";
+                incidentDO.PrimaryCategory = "SyncFailure";
+                incidentDO.SecondaryCategory = "Calendar";
                 incidentDO.CreateTime = DateTime.Now;
-                incidentDO.Activity = "Failure";
+                incidentDO.Activity = "SyncFailure";
                 incidentDO.ObjectId = calendarLink.Id;
                 incidentDO.CustomerId = calendarLink.LocalCalendar.OwnerID;
                 incidentDO.Notes = calendarLink.LastSynchronizationResult;
@@ -330,6 +330,7 @@ namespace KwasantCore.Managers
             }
         }
 
+        //Do we need/use both this and the immediately preceding event? 
         public void BookingRequestOwnershipChange(int bookingRequestId, string bookerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
