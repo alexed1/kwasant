@@ -470,7 +470,6 @@
     <Compile Include="States\TrackingState.cs" />
     <Compile Include="States\TrackingType.cs" />
     <Compile Include="Entities\RemoteCalendarProviderDO.cs" />
-    <Compile Include="Infrastructure\IncidentReporter.cs" />
     <Compile Include="Infrastructure\JSONDataStore.cs" />
     <Compile Include="Infrastructure\JoinTables\EventEmailDO.cs" />
     <Compile Include="Entities\GenericCustomField.cs" />
