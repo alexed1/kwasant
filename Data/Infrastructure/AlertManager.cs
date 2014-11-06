@@ -1,5 +1,6 @@
 ﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
 
+using System;
 using Data.Entities;
 
 namespace Data.Infrastructure
@@ -7,6 +8,21 @@ namespace Data.Infrastructure
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
     {
+        public delegate void TrackablePropertyUpdatedHandler(string name, string contextTable, int id, object status);
+        public static event TrackablePropertyUpdatedHandler AlertTrackablePropertyUpdated;
+
+        public delegate void TrackablePropertyCreatedHandler(string name, string contextTable, int id, object status);
+        public static event TrackablePropertyCreatedHandler AlertTrackablePropertyCreated;
+
+        public delegate void TrackablePropertyDeletedHandler(string name, string contextTable, int id, int parentId, object status);
+        public static event TrackablePropertyDeletedHandler AlertTrackablePropertyDeleted;
+        
+        public delegate void NewBookingRequestForPreferredBookerHandler(String bookerID, int bookingRequestID);
+        public static event NewBookingRequestForPreferredBookerHandler AlertNewBookingRequestForPreferredBooker;
+
+        public delegate void ConversationMemberAddedHandler(int bookingRequestID);
+        public static event ConversationMemberAddedHandler AlertConversationMemberAdded;
+        
         public delegate void ConversationmatchedHandler(int emailID, string subject, int bookingRequestID);
         public static event ConversationmatchedHandler AlertConversationMatched;
 
@@ -56,6 +72,36 @@ namespace Data.Infrastructure
         public static event ErrorSyncingCalendarHandler AlertErrorSyncingCalendar;
 
         #region Method
+
+        public static void TrackablePropertyUpdated(string name, string contextTable, int id, object status)
+        {
+            if (AlertTrackablePropertyUpdated != null)
+                AlertTrackablePropertyUpdated(name, contextTable, id, status);
+        }
+
+        public static void TrackablePropertyCreated(string name, string contextTable, int id, object status)
+        {
+            if (AlertTrackablePropertyCreated != null)
+                AlertTrackablePropertyCreated(name, contextTable, id, status);
+        }
+
+        public static void TrackablePropertyDeleted(string name, string contextTable, int id, int parentID, object status)
+        {
+            if (AlertTrackablePropertyDeleted != null)
+                AlertTrackablePropertyDeleted(name, contextTable, id, parentID, status);
+        }
+
+        public static void NewBookingRequestForPreferredBooker(String bookerID, int bookingRequestID)
+        {
+            if (AlertNewBookingRequestForPreferredBooker != null)
+                AlertNewBookingRequestForPreferredBooker(bookerID, bookingRequestID);
+        }
+
+        public static void ConversationMemberAdded(int bookingRequestID)
+        {
+            if (AlertConversationMemberAdded != null)
+                AlertConversationMemberAdded(bookingRequestID);
+        }
 
         public static void ConversationMatched(int emailID, string subject, int bookingRequestID)
         {

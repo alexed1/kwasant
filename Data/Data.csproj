@@ -334,6 +334,10 @@
     <Compile Include="Migrations\201410171057138_Sync.Rob.17.10.2014.Designer.cs">
       <DependentUpon>201410171057138_Sync.Rob.17.10.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201410271400353_TrackUserMakingChangesToFactDO.cs" />
+    <Compile Include="Migrations\201410271400353_TrackUserMakingChangesToFactDO.Designer.cs">
+      <DependentUpon>201410271400353_TrackUserMakingChangesToFactDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201410232019045_AddRemoteCalendarLinkFields.cs" />
     <Compile Include="Migrations\201410232019045_AddRemoteCalendarLinkFields.Designer.cs">
       <DependentUpon>201410232019045_AddRemoteCalendarLinkFields.cs</DependentUpon>
@@ -353,6 +357,22 @@
     <Compile Include="Migrations\201411031555378_Sync.Rob2.03.11.2014.cs" />
     <Compile Include="Migrations\201411031555378_Sync.Rob2.03.11.2014.Designer.cs">
       <DependentUpon>201411031555378_Sync.Rob2.03.11.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411021415158_BookingRequestRelationships.cs" />
+    <Compile Include="Migrations\201411021415158_BookingRequestRelationships.Designer.cs">
+      <DependentUpon>201411021415158_BookingRequestRelationships.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411021440258_BookerAvailability.cs" />
+    <Compile Include="Migrations\201411021440258_BookerAvailability.Designer.cs">
+      <DependentUpon>201411021440258_BookerAvailability.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411031359120_FixUpAvailableproperty.cs" />
+    <Compile Include="Migrations\201411031359120_FixUpAvailableproperty.Designer.cs">
+      <DependentUpon>201411031359120_FixUpAvailableproperty.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411031452569_Sync.Rob.03.11.2014.cs" />
+    <Compile Include="Migrations\201411031452569_Sync.Rob.03.11.2014.Designer.cs">
+      <DependentUpon>201411031452569_Sync.Rob.03.11.2014.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
@@ -1189,6 +1209,9 @@
     <EmbeddedResource Include="Migrations\201410171057138_Sync.Rob.17.10.2014.resx">
       <DependentUpon>201410171057138_Sync.Rob.17.10.2014.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410271400353_TrackUserMakingChangesToFactDO.resx">
+      <DependentUpon>201410271400353_TrackUserMakingChangesToFactDO.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410232019045_AddRemoteCalendarLinkFields.resx">
       <DependentUpon>201410232019045_AddRemoteCalendarLinkFields.cs</DependentUpon>
     </EmbeddedResource>
@@ -1203,6 +1226,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411031555378_Sync.Rob2.03.11.2014.resx">
       <DependentUpon>201411031555378_Sync.Rob2.03.11.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411021415158_BookingRequestRelationships.resx">
+      <DependentUpon>201411021415158_BookingRequestRelationships.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411021440258_BookerAvailability.resx">
+      <DependentUpon>201411021440258_BookerAvailability.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411031359120_FixUpAvailableproperty.resx">
+      <DependentUpon>201411031359120_FixUpAvailableproperty.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411031452569_Sync.Rob.03.11.2014.resx">
+      <DependentUpon>201411031452569_Sync.Rob.03.11.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -50,6 +50,9 @@ namespace KwasantCore.Services
             curEmail.ConversationId = existingBookingRequest.Id;
             uow.UserRepository.GetOrCreateUser(curEmail.From);
             existingBookingRequest.State = BookingRequestState.NeedsBooking;
+
+            AlertManager.ConversationMemberAdded(existingBookingRequest.Id);
+            
             uow.SaveChanges();
 
             AlertManager.ConversationMatched(curEmail.Id, curEmail.Subject, existingBookingRequest.Id);

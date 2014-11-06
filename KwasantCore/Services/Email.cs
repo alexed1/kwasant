@@ -245,7 +245,7 @@ namespace KwasantCore.Services
         public static void ProcessReceivedMessage(IUnitOfWork uow, MailMessage message)
         {
             BookingRequestDO existingBookingRequest = Conversation.Match(uow, message.Subject, message.From.Address);
-            
+
             if (existingBookingRequest != null)
             {
                 EmailDO email = ConvertMailMessageToEmail(uow.EmailRepository, message);
@@ -254,7 +254,9 @@ namespace KwasantCore.Services
             else
             {
                 BookingRequestDO bookingRequest = ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
-                (new BookingRequest()).Process(uow, bookingRequest);
+
+                var newBookingRequest = new BookingRequest();
+                newBookingRequest.Process(uow, bookingRequest);
                 uow.SaveChanges();
 
                 //Fix the HTML text
@@ -279,6 +281,17 @@ namespace KwasantCore.Services
                 }
 
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+
+                var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
+                if (preferredUser != null)
+                {
+                    bookingRequest.State = BookingRequestState.Booking;
+                    bookingRequest.BookerID = preferredUser.Id;
+                    bookingRequest.LastUpdated = DateTimeOffset.Now;
+                    uow.SaveChanges();
+
+                    AlertManager.NewBookingRequestForPreferredBooker(preferredUser.Id, bookingRequest.Id);
+                }
             }
         }
 
@@ -293,6 +306,6 @@ namespace KwasantCore.Services
                         {"credentials_string", credentials}
                     });
             uow.SaveChanges();
+        }
     }
-}
 }

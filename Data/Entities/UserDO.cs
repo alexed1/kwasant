@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Data.Infrastructure;
@@ -20,7 +22,8 @@ namespace Data.Entities
 
         public UserDO()
         {
-            BookingRequests = new List<BookingRequestDO>();
+            UserBookingRequests = new List<BookingRequestDO>();
+            BookerBookingRequests = new List<BookingRequestDO>();
             Calendars = new List<CalendarDO>();
             RemoteCalendarAuthData = new List<RemoteCalendarAuthDataDO>();
             Profiles = new List<ProfileDO>();
@@ -31,12 +34,19 @@ namespace Data.Entities
         public String LastName { get; set; }
         public Boolean TestAccount { get; set; }
 
+        //Booker only. Needs to be nullable otherwise DefaultValue doesn't work
+        [Required, DefaultValue(true)]
+        public bool? Available { get; set; }
+
         [ForeignKey("EmailAddress")]
         public int? EmailAddressID { get; set; }
         public virtual EmailAddressDO EmailAddress { get; set; }
         
         [InverseProperty("User")]
-        public virtual IList<BookingRequestDO> BookingRequests { get; set; }
+        public virtual IList<BookingRequestDO> UserBookingRequests { get; set; }
+
+        [InverseProperty("Booker")]
+        public virtual IList<BookingRequestDO> BookerBookingRequests { get; set; }
 
         [InverseProperty("Owner")]
         public virtual IList<CalendarDO> Calendars { get; set; }

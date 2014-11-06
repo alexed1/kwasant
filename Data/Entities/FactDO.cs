@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Data.Entities
 {
@@ -28,6 +29,10 @@ namespace Data.Entities
         public string BookerId { get; set; }
         public int AdminId { get; set; }
         public string Data { get; set; }
+
+        [ForeignKey("CreatedBy")]
+        public string CreatedByID { get; set; }
+        public virtual UserDO CreatedBy { get; set; }
 
         public string Status { get; set; }
         public DateTimeOffset CreateDate { get; set; }
