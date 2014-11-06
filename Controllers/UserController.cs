@@ -218,7 +218,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Search(String firstName, String lastName, String emailAddress)
+        public ActionResult Search(String firstName, String lastName, String emailAddress,int[] states)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -229,6 +229,8 @@ namespace KwasantWeb.Controllers
                     users = users.Where(u => u.LastName.Contains(lastName));
                 if (!String.IsNullOrWhiteSpace(emailAddress))
                     users = users.Where(u => u.EmailAddress.Address.Contains(emailAddress));
+
+                users = users.Where(u => states.Contains(u.State.Value));
 
                 return Json(users.ToList().Select(u => new
                     {

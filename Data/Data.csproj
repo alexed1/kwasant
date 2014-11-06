@@ -358,6 +358,10 @@
     <Compile Include="Migrations\201410311036361_Add_State_to_UserDO.Designer.cs">
       <DependentUpon>201410311036361_Add_State_to_UserDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411060808088_Sync.Pending.06.11.2014.cs" />
+    <Compile Include="Migrations\201411060808088_Sync.Pending.06.11.2014.Designer.cs">
+      <DependentUpon>201411060808088_Sync.Pending.06.11.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
@@ -1213,6 +1217,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410311036361_Add_State_to_UserDO.resx">
       <DependentUpon>201410311036361_Add_State_to_UserDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411060808088_Sync.Pending.06.11.2014.resx">
+      <DependentUpon>201411060808088_Sync.Pending.06.11.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
