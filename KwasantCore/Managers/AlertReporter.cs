@@ -20,16 +20,16 @@ namespace KwasantCore.Managers
         //Register for interesting events
         public void SubscribeToAlerts()
         {
-            AlertManager.AlertEmailReceived += NewEmailReceived;
-            AlertManager.AlertEventBooked += NewEventBooked;
-            AlertManager.AlertEmailSent += EmailDispatched;
-            AlertManager.AlertBookingRequestCreated += ProcessBookingRequestCreated;
-            AlertManager.AlertBookingRequestStateChange += ProcessBookingRequestStateChange;
-            AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerCreated;
+            AlertManager.AlertEmailReceived += ReportEmailReceived;
+            AlertManager.AlertEventBooked += ReportEventBooked;
+            AlertManager.AlertEmailSent += ReportEmailSent;
+            AlertManager.AlertBookingRequestCreated += ReportBookingRequestCreated;
+            AlertManager.AlertBookingRequestStateChange += ReportBookingRequestStateChanged;
+            AlertManager.AlertExplicitCustomerCreated += ReportCustomerCreated;
         
-            AlertManager.AlertUserRegistration += UserRegistration;
-            AlertManager.AlertBookingRequestCheckedOut += ProcessBookingRequestCheckedOut;
-            AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChange;
+            AlertManager.AlertUserRegistration += ReportUserRegistered;
+            AlertManager.AlertBookingRequestCheckedOut += ReportBookingRequestCheckedOut;
+            AlertManager.AlertBookingRequestOwnershipChange += ReportBookingRequestOwnershipChanged;
   
             
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
@@ -73,15 +73,15 @@ namespace KwasantCore.Managers
             }
         }
 
-        private void NewExplicitCustomerCreated(string curUserId)
+        private void ReportCustomerCreated(string curUserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 FactDO curAction = new FactDO
                     {
-                        Name = "CustomerCreated",
+                        Name = "",
                         PrimaryCategory = "User",
-                        SecondaryCategory = "Customer",
+                        SecondaryCategory = "",
                         Activity = "Created",
                         CustomerId = curUserId,
                         CreateDate = DateTimeOffset.Now,
@@ -93,7 +93,7 @@ namespace KwasantCore.Managers
             }
         }
 
-        public void NewEmailReceived(int emailId, string customerId)
+        public void ReportEmailReceived(int emailId, string customerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -102,9 +102,9 @@ namespace KwasantCore.Managers
 
                 FactDO curAction = new FactDO()
                     {
-                        Name = "EmailReceived",
+                        Name = "",
                         PrimaryCategory = "Email",
-                        SecondaryCategory = "Intake",
+                        SecondaryCategory = "",
                         Activity = "Received",
                         CustomerId = customerId,
                         CreateDate = DateTimeOffset.Now,
@@ -116,21 +116,21 @@ namespace KwasantCore.Managers
             }
         }
 
-        public void NewEventBooked(int eventId, string customerId)
+        public void ReportEventBooked(int eventId, string customerId)
         {
             FactDO curAction = new FactDO()
                 {
-                    Name = "EventBooked",
+                    Name = "",
                     PrimaryCategory = "Event",
                     SecondaryCategory = "",
-                    Activity = "Created",
+                    Activity = "Booked",
                     CustomerId = customerId,
                     CreateDate = DateTimeOffset.Now,
                     ObjectId = eventId
                 };
             SaveFact(curAction);
         }
-        public void EmailDispatched(int emailId, string customerId)
+        public void ReportEmailSent(int emailId, string customerId)
         {
             FactDO curAction = new FactDO()
                 {
@@ -145,7 +145,7 @@ namespace KwasantCore.Managers
             SaveFact(curAction);
         }
 
-        public void ProcessBookingRequestCreated(int bookingRequestId) 
+        public void ReportBookingRequestCreated(int bookingRequestId) 
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -165,7 +165,7 @@ namespace KwasantCore.Managers
                 uow.SaveChanges();
             }
         }
-        public void ProcessBookingRequestStateChange(int bookingRequestId)
+        public void ReportBookingRequestStateChanged(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -176,7 +176,7 @@ namespace KwasantCore.Managers
                 FactDO curAction = new FactDO()
                     {
                         PrimaryCategory = "BookingRequest",
-                        SecondaryCategory = "None",
+                        SecondaryCategory = "",
                         Activity = "StateChange",
                         CustomerId = bookingRequestDO.User.Id,
                         ObjectId = bookingRequestDO.Id,
@@ -189,6 +189,86 @@ namespace KwasantCore.Managers
                 
             }
         }
+     
+
+        public void ReportUserRegistered(UserDO curUser)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                FactDO curFactDO = new FactDO
+                    {
+                        Name = "",
+                        PrimaryCategory = "User",
+                        SecondaryCategory = "",
+                        Activity = "Registered",
+                        CustomerId = curUser.Id,
+                        CreateDate = DateTimeOffset.Now,
+                        ObjectId = 0,
+                        Data = "User registrated with " + curUser.EmailAddress.Address
+                    };
+                Logger.GetLogger().Info(curFactDO.Data);
+                uow.FactRepository.Add(curFactDO);
+                uow.SaveChanges();
+            }
+
+        }
+
+      
+
+        public void ReportBookingRequestCheckedOut(int bookingRequestId, string bookerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
+                FactDO curAction = new FactDO()
+                    {
+                        PrimaryCategory = "BookingRequest",
+                        SecondaryCategory = "Ownership",
+                        Activity = "Checkout",
+                        CustomerId = bookingRequestDO.User.Id,
+                        ObjectId = bookingRequestDO.Id,
+                        BookerId = bookerId,
+                        Status = status,
+                        CreateDate = DateTimeOffset.Now,
+                    };
+                
+                curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
+                AddFact(uow, curAction);
+                uow.SaveChanges();
+            }
+        }
+
+        //Do we need/use both this and the immediately preceding event? 
+        public void ReportBookingRequestOwnershipChanged(int bookingRequestId, string bookerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
+                FactDO curAction = new FactDO()
+                    {
+                        PrimaryCategory = "BookingRequest",
+                        SecondaryCategory = "Ownership",
+                        Activity = "Change",
+                        CustomerId = bookingRequestDO.User.Id,
+                        ObjectId = bookingRequestDO.Id,
+                        BookerId = bookerId,
+                        Status = status,
+                        CreateDate = DateTimeOffset.Now,
+                    };
+                
+                curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
+                AddFact(uow, curAction);
+                uow.SaveChanges();
+
+            }
+        }
+
         private void SaveFact(FactDO curAction)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -217,85 +297,5 @@ namespace KwasantCore.Managers
         }
 
 
-
-        public void UserRegistration(UserDO curUser)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                FactDO curFactDO = new FactDO
-                    {
-                        Name = "",
-                        PrimaryCategory = "User",
-                        SecondaryCategory = "",
-                        Activity = "Registered",
-                        CustomerId = curUser.Id,
-                        CreateDate = DateTimeOffset.Now,
-                        ObjectId = 0,
-                        Data = "User registrated with " + curUser.EmailAddress.Address
-                    };
-                Logger.GetLogger().Info(curFactDO.Data);
-                uow.FactRepository.Add(curFactDO);
-                uow.SaveChanges();
-            }
-
-        }
-
-       
-
-      
-
-        public void ProcessBookingRequestCheckedOut(int bookingRequestId, string bookerId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
-                FactDO curAction = new FactDO()
-                    {
-                        PrimaryCategory = "BookingRequest",
-                        SecondaryCategory = "Ownership",
-                        Activity = "Checkout",
-                        CustomerId = bookingRequestDO.User.Id,
-                        ObjectId = bookingRequestDO.Id,
-                        BookerId = bookerId,
-                        Status = status,
-                        CreateDate = DateTimeOffset.Now,
-                    };
-                
-                curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
-                AddFact(uow, curAction);
-                uow.SaveChanges();
-            }
-        }
-
-        //Do we need/use both this and the immediately preceding event? 
-        public void BookingRequestOwnershipChange(int bookingRequestId, string bookerId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
-                FactDO curAction = new FactDO()
-                    {
-                        PrimaryCategory = "BookingRequest",
-                        SecondaryCategory = "Ownership",
-                        Activity = "Change",
-                        CustomerId = bookingRequestDO.User.Id,
-                        ObjectId = bookingRequestDO.Id,
-                        BookerId = bookerId,
-                        Status = status,
-                        CreateDate = DateTimeOffset.Now,
-                    };
-                
-                curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
-                AddFact(uow, curAction);
-                uow.SaveChanges();
-
-            }
-        }
     }
 }
