@@ -14,6 +14,8 @@ using StructureMap;
 using Data.Validations;
 using System.Linq;
 using Utilities;
+using Data.Infrastructure;
+using KwasantCore.Services;
 
 namespace KwasantWeb.Controllers
 {
@@ -173,7 +175,7 @@ namespace KwasantWeb.Controllers
                 {
                     uow.UserRepository.UpdateUserCredentials(existingUser, password: curCreateUserVM.NewPassword);
                 }
-               
+
                 var existingRoles = uow.AspNetUserRolesRepository.GetRoles(existingUser.Id).ToList();
 
                 //Remove old roles
@@ -194,6 +196,17 @@ namespace KwasantWeb.Controllers
                 existingUser.LastName = curCreateUserVM.LastName;
                 existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress, curCreateUserVM.FirstName);
                 uow.SaveChanges();
+
+                //Checking if user is new user
+                if (String.IsNullOrWhiteSpace(curCreateUserVM.Id))
+                {
+                    AlertManager.ExplicitCustomerCreated(existingUser.Id);
+                }
+                //Sending a mail to user with newly created credentials if send email is checked
+                if (curCreateUserVM.SendMail && !String.IsNullOrEmpty(curCreateUserVM.NewPassword))
+                {
+                    new Email().SendLoginCredentials(uow, curCreateUserVM.EmailAddress, curCreateUserVM.NewPassword);
+                }
             }
             var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."));
             return jsonSuccessResult;

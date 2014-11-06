@@ -195,8 +195,8 @@ td .custom-btn:first-child {
 }
 
 .btn.shadow-button:active, .form-actions .btn.shadow-button:active {
-	position: relative;
-	top: 1px;
+	/*position: relative;
+	top: 1px;*/
 }
 
 /* Main marketing message and sign up button */
@@ -1192,6 +1192,7 @@ input[type="checkbox"].input-validation-error {
     padding: 0 10px;
     margin: -6px 0 -5px;
     font-size: 12px;
+    cursor: pointer;
 }
 
 .email-info-section .email-conversations .message-header .glyphicon.glyphicon-chevron-down {

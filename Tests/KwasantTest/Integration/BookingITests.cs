@@ -5,9 +5,12 @@ using System.Net.Mail;
 using Daemons;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.ExternalServices;
 using KwasantCore.Services;
 using KwasantTest.Daemons;
+using KwasantWeb.Controllers;
+using KwasantWeb.ViewModels;
 using Moq;
 using NUnit.Framework;
 using SendGrid;
@@ -94,5 +97,77 @@ namespace KwasantTest.Integration
                 }
             }
         }
+
+        [Test]
+        [Category("IntegrationTests")]
+        public void ITest_CanAddUserAndSendCredentialsEmail()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Creating a new user
+                UserVM newUser = new UserVM();
+                newUser.SendMail = true;
+                newUser.NewPassword = "testpassword";
+                newUser.FirstName = "FirstName";
+                newUser.LastName = "LastName";
+                newUser.EmailAddress = "test.user@kwasant.net";
+                newUser.UserName = "testuser";
+
+                //Calling controller method to Add user
+                new UserController().Update(newUser);
+                uow.SaveChanges();
+
+                //Getting the envelop in queue
+                EnvelopeDO queuedEnvelop = uow.EnvelopeRepository.GetAll().Where(e => e.Email.EmailStatus == EmailState.Queued).FirstOrDefault();
+                string customerEmailSuject = "Kwasant Credentials";
+
+                //This stores the emails which we have sent, but not yet read. It lets us pass emails between the outbound and inbound mocks
+                var unreadSentMails = new List<MailMessage>();
+                var mockedImapClient = new Mock<IImapClient>();
+
+                //When we are asked to fetch emails, return whatever we have in 'unreadSentEmails', then clear that list
+                mockedImapClient.Setup(m => m.GetMessages(It.IsAny<IEnumerable<uint>>(), It.IsAny<bool>(), It.IsAny<string>()))
+                    .Returns(() =>
+                    {
+                        var returnMails = new List<MailMessage>(unreadSentMails);
+                        unreadSentMails.Clear();
+                        return returnMails;
+                    });
+
+                var mockedSendGridTransport = new Mock<ITransport>();
+                //When we are asked to send an email, store it in unreadSentEmails
+                mockedSendGridTransport.Setup(m => m.DeliverAsync(It.IsAny<ISendGrid>())).Callback<ISendGrid>(sgm => unreadSentMails.Add(sgm.CreateMimeMessage()));
+
+                ObjectFactory.Configure(o => o.For<IImapClient>().Use(mockedImapClient.Object));
+                ObjectFactory.Configure(o => o.For<ITransport>().Use(mockedSendGridTransport.Object));
+
+                //Run outbound daemon to make sure we get 
+                var outboundEmailDaemon = new OutboundEmail();
+                DaemonTests.RunDaemonOnce(outboundEmailDaemon);
+
+                var clientMock = new Mock<IImapClient>();
+
+                var mailMessage = new MailMessage();
+                mailMessage.Body = queuedEnvelop.Email.HTMLText;
+                mailMessage.Subject = queuedEnvelop.Email.Subject;
+                mailMessage.From = new MailAddress(queuedEnvelop.Email.From.Address);
+                mailMessage.To.Add(new MailAddress(queuedEnvelop.Email.To.First().Address));
+
+                clientMock.Setup(c => c.GetMessages(It.IsAny<IEnumerable<uint>>(), true, null))
+                    .Returns(new List<MailMessage> { mailMessage });
+
+                var imapClient = clientMock.Object;
+
+                ObjectFactory.Configure(a => a.For<IImapClient>().Use(imapClient));
+
+                //Now the booking request should be created, if created that means our new customer is created and get the mail with credentials.
+                var inboundEmailDaemon = new InboundEmail();
+                DaemonTests.RunDaemonOnce(inboundEmailDaemon);
+
+                //Now, find the booking request
+                Assert.AreEqual(1, uow.BookingRequestRepository.GetQuery().Where(br => br.Subject == customerEmailSuject).Count());
+            }
+        }
+
     }
 }

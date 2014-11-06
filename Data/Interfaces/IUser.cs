@@ -7,7 +7,7 @@ namespace Data.Interfaces
     public interface IUser
     {
         string Id { get; set; }
-        IList<BookingRequestDO> BookingRequests { get; set; }
+        IList<BookingRequestDO> UserBookingRequests { get; set; }
         IEmailAddressDO EmailAddress { get; }
 
         [InverseProperty("User")]

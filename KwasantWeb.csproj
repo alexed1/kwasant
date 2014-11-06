@@ -170,6 +170,7 @@
       <HintPath>packages\Microsoft.Net.Http.2.2.22\lib\net45\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml" />
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -247,6 +248,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlertQueues\AlertQueue.cs" />
+    <Compile Include="AlertQueues\BookingRequestUpdatedQueue.cs" />
+    <Compile Include="AlertQueues\NewBookingRequestForUserQueue.cs" />
+    <Compile Include="AlertQueues\SharedAlertQueues.cs" />
     <Compile Include="Api\EventResponse.aspx.cs">
       <DependentUpon>EventResponse.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -271,6 +276,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\AlertingController.cs" />
     <Compile Include="Controllers\AnswerController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DataController.cs" />
@@ -377,6 +383,7 @@
     <Content Include="Content\css\daypilot\scheduler_transparent.css" />
     <Content Include="Content\css\daypilot\scheduler_white.css" />
     <Content Include="Content\css\frontcss\main.css" />
+    <Content Include="Content\css\jackedup.css" />
     <Content Include="Content\css\jqtree.css" />
     <Content Include="Content\css\NegotiationWidgets.css" />
     <Content Include="Content\css\temp\temp.css" />
@@ -533,6 +540,7 @@
     <Content Include="Content\js\bootstrap-transition.js" />
     <Content Include="Content\js\bootstrap.3.1.1.min.js" />
     <Content Include="Content\js\bootstrap.js" />
+    <Content Include="Content\js\humane.js" />
     <Content Include="Content\js\jquery.cookie-1.4.1.min.js" />
     <Content Include="Content\js\KwasantCalendar.js" />
     <Content Include="Content\js\collapse.js" />
@@ -556,6 +564,7 @@
     <Content Include="Content\js\main.js" />
     <Content Include="Content\js\modernizr.js" />
     <Content Include="Content\js\moment.js" />
+    <Content Include="Content\js\notify.js" />
     <Content Include="Content\js\placeholder.js" />
     <Content Include="Content\js\select2.js" />
     <Content Include="Content\js\tree.jquery.js" />
@@ -801,6 +810,7 @@
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Profile\ProfilesForUser.cshtml" />
     <Content Include="Views\BookingRequest\ShowAllBookingRequests.cshtml" />
+    <Content Include="Views\Shared\QueuePollingScript.cshtml" />
     <Content Include="Views\Account\ForgotPassword.cshtml" />
     <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
