@@ -23,6 +23,7 @@ namespace KwasantWeb.Controllers
             _emailAddressValidator = new EmailAddressValidator();
         }
 
+        [HttpPost]
         public ActionResult ValidateEmailAddress(string emailString)
         {
             try
@@ -31,15 +32,15 @@ namespace KwasantWeb.Controllers
                 {
                     EmailAddressDO emailAddressDO = _emailAddress.ConvertFromString(emailString, uow);
                     if (!(_emailAddressValidator.Validate(emailAddressDO).IsValid))
-                        return Json("Invalid email format", JsonRequestBehavior.AllowGet);
+                        return Json("Invalid email format");
                     else
-                        return Json(true, JsonRequestBehavior.AllowGet);
+                        return Json(true);
                 }
 
             }
             catch (Exception ex)
             {
-                return Json(ex.Message, JsonRequestBehavior.AllowGet);
+                return Json(ex.Message);
             }
         }
 

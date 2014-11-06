@@ -254,13 +254,13 @@ namespace KwasantWeb.Controllers
         #endregion "DayPilot-Related Methods"
 
         #region "Quick Copy Methods"
-        [HttpGet]
-        public ActionResult ProcessQuickCopy(string copyType,string selectedText)
+        [HttpPost]
+        public ActionResult ProcessQuickCopy(string copyType, string selectedText)
         {
             string value = (new Calendar()).ProcessQuickCopy(copyType, selectedText);
             string status = "valid";
             if (value == "Invalid Selection") { status = "invalid"; }
-            var jsonResult = Json(new { status = status, value = value, copytype = copyType }, JsonRequestBehavior.AllowGet);
+            var jsonResult = Json(new { status = status, value = value, copytype = copyType });
             return jsonResult;
         }
         #endregion "Quick Copy Methods"

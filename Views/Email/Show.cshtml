@@ -41,11 +41,11 @@
 
                 <tr>
                     <td class="displayLabel">Attachments:</td>
-                    <td>@Model.EmailAttachments</td>
+                    <td>@Html.Raw(Model.EmailAttachments)</td>
                 </tr>
             </table>
         </div>
-        <div id="conversations">
+        <div id="conversations" class="email-conversations">
         </div>
     </div>
     <div class="context-menu box menu-1"></div>
@@ -69,27 +69,24 @@
         var conversationMembers = @Html.Raw(JsonConvert.SerializeObject(Model.Conversations, Formatting.Indented));
         var performedExplicitExpand = false;
         $.each(conversationMembers, function(ind, conversationMember) {
-            var convoHolder = $('<div>');
-            convoHolder.css('border', 'solid 1px #E7E7E7');
-
-            var convoHeader = $('<div>');
-            convoHeader
-                .css('background-color', '#DBDBDB')
-                .css('cursor', 'pointer')
-                .css('padding-left', '5px');
+            var convoHolder = $('<div class="email-message">');
+   
+            var convoHeader = $('<div class="message-header">');
             convoHeader.html(conversationMember.Header);
+            convoHeader.prepend('<span class="glyphicon glyphicon-chevron-down pull-left"></span>');
 
             var convoBody = $('<div>');
             convoBody
-                .addClass('email-content')
-                .css('padding-left', '5px');
+                .addClass('email-content');
             convoBody.html(conversationMember.Body);
 
             var resetStyles = function(expanded) {
                 if (expanded) {
-                    convoHeader.css('background-color', '#FFFFFF');
+                    $(".message-header .glyphicon").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");    
+                    //convoHeader.css('background-color', '#DBDBDB');
                 } else {
-                    convoHeader.css('background-color', '#DBDBDB');
+                    $(".message-header .glyphicon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");                        
+                    //convoHeader.css('background-color', '#DBDBDB');
                 }
             };
 
