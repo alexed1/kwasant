@@ -151,6 +151,7 @@
     <Compile Include="Fixtures\FixtureData - Negotiation.cs" />
     <Compile Include="Fixtures\FixtureData - Role.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
+    <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="Security\AuthorizationTokenTests.cs" />
     <Compile Include="Services\AttendeeTests.cs" />
@@ -167,7 +168,7 @@
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Timeslots\TimeslotMergeTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
-    <Compile Include="Integration\BookingITests\IntegrationTests.cs" />
+    <Compile Include="Integration\BookingITests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">

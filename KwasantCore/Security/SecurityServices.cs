@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Web;
@@ -49,12 +50,14 @@ namespace KwasantCore.Security
 
         public ClaimsIdentity GetIdentity(IUnitOfWork uow, UserDO userDO)
         {
-            var um = new UserManager<UserDO>(new UserStore<UserDO>(uow.Db as DbContext));
-            var provider = new Microsoft.Owin.Security.DataProtection.DpapiDataProtectionProvider("Sample");
-            um.UserTokenProvider = new Microsoft.AspNet.Identity.Owin.DataProtectorTokenProvider<UserDO>(provider.Create("EmailConfirmation"));
-
-            UserManager<UserDO> curUserManager = um;
-            return curUserManager.CreateIdentity(userDO, DefaultAuthenticationTypes.ApplicationCookie);
+            var um = new KwasantUserManager(uow);
+            var identity = um.CreateIdentity(userDO, DefaultAuthenticationTypes.ApplicationCookie);
+            foreach (var roleId in userDO.Roles.Select(r => r.RoleId))
+            {
+                var role = uow.AspNetRolesRepository.GetByKey(roleId);
+                identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
+            }
+            return identity;
         }
     }
 }

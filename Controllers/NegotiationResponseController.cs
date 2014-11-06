@@ -55,18 +55,19 @@ namespace KwasantWeb.Controllers
                         var selectedAnswer = q.Answers.FirstOrDefault(a => userAnswerIDs.Contains(a.Id));
 
                         var answers = q.Answers.Select(a =>
-                                (NegotiationAnswerVM) new NegotiationResponseAnswerVM
-                                {
-                                    Id = a.Id,
+                            (NegotiationAnswerVM) new NegotiationResponseAnswerVM
+                            {
+                                Id = a.Id,
 
                                 Selected = a == selectedAnswer,
-                                    EventID = a.EventID,
+                                EventID = a.EventID,
                                 UserAnswer = a.UserID == userID,
+                                SuggestedBy = a.UserDO == null ? String.Empty : a.UserDO.UserName,
 
-                                    EventStartDate = a.Event == null ? (DateTimeOffset?)null : a.Event.StartDate,
-                                    EventEndDate = a.Event == null ? (DateTimeOffset?)null : a.Event.EndDate,
+                                EventStartDate = a.Event == null ? (DateTimeOffset?) null : a.Event.StartDate,
+                                EventEndDate = a.Event == null ? (DateTimeOffset?) null : a.Event.EndDate,
 
-                                    Text = a.Text,
+                                Text = a.Text,
                             }).OrderBy(a => a.EventStartDate).ThenBy(a => a.EventEndDate).ToList();
 
                         //We select the answer that the user previously selected

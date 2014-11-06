@@ -1,3 +1,4 @@
+using System.Data.Entity;
 using Data.Entities;
 using Data.Interfaces;
 using StructureMap.Configuration.DSL;
@@ -20,7 +21,8 @@ namespace Data.Infrastructure.StructureMap
                 For<ICalendar>().Use<CalendarDO>();
                 For<IAspNetRoles>().Use<AspNetRolesDO>();
                 For<IAspNetUserRoles>().Use<AspNetUserRolesDO>();
-             
+                //Do not remove _ => (This gives us lazy execution, and a new unit of work & context each call). Removing this will cause the application to be unstable with threads.
+                For<IUnitOfWork>().Use(_ => new UnitOfWork(_.GetInstance<IDBContext>()));
             }
         }
 
@@ -28,8 +30,8 @@ namespace Data.Infrastructure.StructureMap
         {
             public LiveMode()
             {
-                //Do not remove _ => (This gives us lazy execution, and a new unit of work & context each call). Removing this will cause the application to be unstable with threads.
-                For<IUnitOfWork>().Use(_ => new UnitOfWork(new KwasantDbContext()));
+                For<DbContext>().Use<KwasantDbContext>();
+                For<IDBContext>().Use<KwasantDbContext>();
             }
         }
 
@@ -37,8 +39,7 @@ namespace Data.Infrastructure.StructureMap
         {
             public TestMode()
             {
-                For<IUnitOfWork>().Use(_ => new UnitOfWork(new MockedDBContext()));
-                For<ISecurityServices>().Use(new MockedSecurityServices());
+                For<IDBContext>().Use<MockedDBContext>();
             }
         }
     }

@@ -33,12 +33,13 @@ namespace KwasantTest.Fixtures
 
         public EventDO TestEvent1()
         {
+            var calendar = TestCalendar1();
             return new EventDO()
             {
                 CreatedByID = "1",
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddHours(1),
-                Calendar = TestCalendar1(),
+                Calendar = calendar,
                 Description = "Description of  Event",
                 Priority = 1,
                 Sequence = 1,
