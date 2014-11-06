@@ -1,24 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using Data.Entities;
-using Data.Infrastructure;
-using Data.Interfaces;
-using Data.States;
-using KwasantCore.Managers;
-using KwasantCore.Services;
-using KwasantWeb.ViewModels;
-using StructureMap;
-using Utilities;
 
 
 namespace KwasantCore.Services
