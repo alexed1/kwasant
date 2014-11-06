@@ -47,8 +47,8 @@ namespace Data.Infrastructure.StructureMap
         {
             var reflectionHelper = new ReflectionHelper<TOnType>();
             var propName = reflectionHelper.GetPropertyName(expression);
-            var linkedProp = typeof (TOnType).GetProperties().FirstOrDefault(p => p.Name == propName);
-            lock(_forcedDOPrimaryKey)
+            var linkedProp = typeof(TOnType).GetProperties().FirstOrDefault(p => p.Name == propName);
+            lock (_forcedDOPrimaryKey)
                 _forcedDOPrimaryKey[typeof(TOnType)] = linkedProp;
         }
 
@@ -59,9 +59,9 @@ namespace Data.Infrastructure.StructureMap
             var propName = reflectionHelper.GetPropertyName(expression);
             lock (_uniqueProperties)
             {
-                if (!_uniqueProperties.ContainsKey(typeof (TOnType)))
+                if (!_uniqueProperties.ContainsKey(typeof(TOnType)))
                     _uniqueProperties[typeof(TOnType)] = new List<String>();
-                
+
                 _uniqueProperties[typeof(TOnType)].Add(propName);
             }
         }
@@ -218,14 +218,14 @@ namespace Data.Infrastructure.StructureMap
                         if (propertyInfo == null || propertyInfo.PropertyType != typeof(int))
                             continue;
 
-                        maxIDAlready = savedCollection.Max<object, int>(a => (int) propertyInfo.GetValue(a));
+                        maxIDAlready = savedCollection.Max<object, int>(a => (int)propertyInfo.GetValue(a));
                     }
                     foreach (var row in grouping)
                     {
                         var propInfo = EntityPrimaryKeyPropertyInfo(row);
                         if (propInfo == null)
                             continue;
-                        
+
                         if ((int)propInfo.GetValue(row) == 0)
                             propInfo.SetValue(row, ++maxIDAlready);
                     }
@@ -281,7 +281,7 @@ namespace Data.Infrastructure.StructureMap
                                     typeof(IList<>).MakeGenericType(propType).IsAssignableFrom(p.PropertyType) &&
                                     p.PropertyType.GetGenericArguments()[0] == propType).ToList();
 
-                    if (linkedID == null)
+                    if (foreignIDProperty == null)
                         continue;
 
                     foreach (var value in grouping)
@@ -310,7 +310,7 @@ namespace Data.Infrastructure.StructureMap
                             }
                             if (foreignDO == null)
                                 throw new Exception(String.Format("Foreign row does not exist.\nValue '{0}' on '{1}.{2}' pointing to '{3}.{4}'", fkID, grouping.Key.Name, parentFKIDProperty.Name, parentFKDOProperty.PropertyType.Name, foreignIDProperty.Name));
-                            
+
                             parentFKDOProperty.SetValue(value, foreignDO);
                         }
 
@@ -445,7 +445,7 @@ namespace Data.Infrastructure.StructureMap
                     return _forcedDOPrimaryKey[entityType];
             }
             return
-                entityType.GetProperties().FirstOrDefault(p => p.GetCustomAttribute<KeyAttribute>(true) != null);
+                ReflectionHelper.EntityPrimaryKeyPropertyInfo(entityType);
         }
 
         public void Dispose()

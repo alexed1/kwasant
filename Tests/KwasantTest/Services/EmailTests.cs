@@ -125,9 +125,8 @@ namespace KwasantTest.Services
 
                 //EXECUTE
                 var testEmail1 = Email.ConvertMailMessageToEmail(uow.EmailRepository, mailMessage1);
-                var testEmail2 = Email.ConvertMailMessageToEmail(uow.EmailRepository, mailMessage2);
-                Email.ProcessReceivedMessage(uow, testEmail1, mailMessage1);
-                Email.ProcessReceivedMessage(uow, testEmail2, mailMessage2);
+                Email.ProcessReceivedMessage(uow, mailMessage1);
+                Email.ProcessReceivedMessage(uow, mailMessage2);
 
                 //VERIFY
                 Assert.AreEqual(1, uow.EmailRepository.GetAll().Where(e => e.ConversationId == testEmail1.Id).Count());

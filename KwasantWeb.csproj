@@ -308,6 +308,7 @@
     <Compile Include="ViewModels\CalendarShowVM.cs" />
     <Compile Include="ViewModels\BookingRequestConversationVM.cs" />
     <Compile Include="ViewModels\DashboardShowVM.cs" />
+    <Compile Include="ViewModels\ForgotPasswordVM.cs" />
     <Compile Include="ViewModels\HomeVM.cs" />
     <Compile Include="ViewModels\DiagnosticInfoVM.cs" />
     <Compile Include="ViewModels\JsonConverters\RelatedItemShowVM.cs" />
@@ -329,6 +330,7 @@
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\RemoteCalendarVM.cs" />
     <Compile Include="ViewModels\ProfileVM.cs" />
+    <Compile Include="ViewModels\ResetPasswordVM.cs" />
     <Compile Include="ViewModels\UserProfilesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
   </ItemGroup>
@@ -809,6 +811,10 @@
     <Content Include="Views\Profile\ProfilesForUser.cshtml" />
     <Content Include="Views\BookingRequest\ShowAllBookingRequests.cshtml" />
     <Content Include="Views\Shared\QueuePollingScript.cshtml" />
+    <Content Include="Views\Account\ForgotPassword.cshtml" />
+    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -23,6 +23,9 @@ namespace Data.Infrastructure
         public delegate void ConversationMemberAddedHandler(int bookingRequestID);
         public static event ConversationMemberAddedHandler AlertConversationMemberAdded;
         
+        public delegate void ConversationmatchedHandler(int emailID, string subject, int bookingRequestID);
+        public static event ConversationmatchedHandler AlertConversationMatched;
+
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
 
@@ -98,6 +101,12 @@ namespace Data.Infrastructure
         {
             if (AlertConversationMemberAdded != null)
                 AlertConversationMemberAdded(bookingRequestID);
+        }
+
+        public static void ConversationMatched(int emailID, string subject, int bookingRequestID)
+        {
+            if (AlertConversationMatched != null)
+                AlertConversationMatched(emailID, subject, bookingRequestID);
         }
 
         /// <summary>

@@ -62,14 +62,14 @@ namespace KwasantTest.Daemons
             Thread workerThread = null;
             TestDaemon mockDaemon = new TestDaemon(
                 () =>
+                {
+                    lock (threadLocker)
                     {
-                        lock (threadLocker)
-                        {
-                            workerThread = Thread.CurrentThread;
-                            Monitor.Pulse(threadLocker);
-                        }
-                        daemonAction();
-                    }, timeoutInSeconds);
+                        workerThread = Thread.CurrentThread;
+                        Monitor.Pulse(threadLocker);
+                    }
+                    daemonAction();
+                }, timeoutInSeconds);
             Assert.True(mockDaemon.Start());
             lock (threadLocker)
             {
@@ -89,13 +89,13 @@ namespace KwasantTest.Daemons
             bool hasFinished = false;
             Thread workerThread;
             Daemon mockDaemon = StartDaemonAndAwaitStartup(() =>
-                {
-                    hasFinished = true;
-                }, out workerThread);
+            {
+                hasFinished = true;
+            }, out workerThread);
 
             mockDaemon.Stop();
             workerThread.Join();
-            
+
             Assert.True(hasFinished);
 
             workerThread.Join();
@@ -125,19 +125,19 @@ namespace KwasantTest.Daemons
 
             lock (workLock)
                 Monitor.Wait(workLock);
-            
+
             Assert.True(mockDaemon.IsRunning);
             Assert.True(finished);
             Assert.AreEqual(1, mockDaemon.LoggedExceptions.Count);
             Assert.AreEqual(testException, mockDaemon.LoggedExceptions.First().Message);
-            
+
             mockDaemon.Stop(); //If we don't stop it - the test runner won't ever finished since the thread is still spinning
 
             try
             {
                 workerThread.Abort();
             }
-            catch {}
+            catch { }
         }
     }
 }

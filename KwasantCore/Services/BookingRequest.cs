@@ -82,16 +82,20 @@ namespace KwasantCore.Services
                     .Select(
                         e =>
                         {
+                            var text = e.PlainText ?? e.HTMLText;
+                            if (String.IsNullOrEmpty(text))
+                                text = String.Empty;
+                            text = text.Trim();
+                            if (text.Length > 400)
+                                text = text.Substring(400);
+
                             return new
                             {
                                 id = e.Id,
                                 subject = e.Subject,
                                 fromAddress = e.From.Address,
                                 dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
-                                body =
-                                    e.HTMLText.Trim().Length > 400
-                                        ? e.HTMLText.Trim().Substring(0, 400)
-                                        : e.HTMLText.Trim()
+                                body = text
                             };
                         })
                     .ToList();

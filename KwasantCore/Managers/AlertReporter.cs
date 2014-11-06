@@ -22,6 +22,7 @@ namespace KwasantCore.Managers
             AlertManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
             AlertManager.AlertTrackablePropertyCreated += TrackablePropertyCreated;
             AlertManager.AlertTrackablePropertyDeleted += TrackablePropertyDeleted;
+            AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
             AlertManager.AlertEmailReceived += NewEmailReceived;
             AlertManager.AlertEventBooked += NewEventBooked;
             AlertManager.AlertEmailSent += EmailDispatched;
@@ -98,6 +99,27 @@ namespace KwasantCore.Managers
                 uow.FactRepository.Add(newFactDO);
                 uow.SaveChanges();
             }
+        }
+
+        private void AlertManagerOnAlertConversationMatched(int emailID, string subject, int bookingRequestID)
+        {
+            const string logMessageFormat = "Inbound Email ID {0} with subject '{1}' was matched to BR ID {2}";
+            var logMessage = String.Format(logMessageFormat, emailID, subject, bookingRequestID);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var incidentDO = new IncidentDO
+                {
+                    ObjectId = emailID,
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Conversation",
+                    Notes = logMessage
+                };
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+            }
+
+            Logger.GetLogger().Info(logMessage);
         }
 
         private static void OnPostResolutionNegotiationResponseReceived(int negotiationId)

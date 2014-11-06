@@ -225,6 +225,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Security\KwasantUserManager.cs" />
+    <Compile Include="Security\KwasantUserStore.cs" />
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\Account.cs" />
     <Compile Include="Services\Attendee.cs" />
