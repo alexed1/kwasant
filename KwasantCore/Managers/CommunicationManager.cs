@@ -130,7 +130,7 @@ Proposed Answers: {2}
                 for (var i = 0; i < negotiationDO.Questions.Count; i++)
                 {
                     var question = negotiationDO.Questions[i];
-                    var currentQuestion = String.Format(actualHtml, i + 1, question.Text, String.Join(", ", question.Answers.Select(a => a.Text)));
+                    var currentQuestion = String.Format(actualHtml, i + 1, question.Text, question.Answers.Any() ? String.Join(", ", question.Answers.Select(a => a.Text)) : "[None proposed]");
                     generated.Add(currentQuestion);
                 }
 
@@ -154,12 +154,14 @@ Proposed Answers: {2}
                         throw new ArgumentOutOfRangeException();
                 }
 
+                var currBr = new BookingRequest();
+                
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, templateName,
                     new Dictionary<string, string>
                     {
-                        {"RESP_URL", tokenURL}
-                        ,
-                        {"questions", String.Join("<br/>", generated)}
+                        {"RESP_URL", tokenURL},
+                        {"questions", String.Join("<br/>", generated)},
+                        {"conversationthread", currBr.GetConversationThread(negotiationDO.BookingRequest)}
                     });
             }
             negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
