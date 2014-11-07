@@ -147,6 +147,27 @@ namespace KwasantCore.Services
             
             emailDO.EmailStatus = EmailState.Unstarted; //we'll use this new state so that every email has a valid status.
             emailRepository.Add(emailDO);
+
+            //Fix the HTML text
+            var attachmentSubstitutions =
+                emailDO.Attachments.Where(a => !String.IsNullOrEmpty(a.ContentID))
+                    .ToDictionary(a => a.ContentID, a => a.Id);
+
+            const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
+
+            //The following fixes inline images
+            if (attachmentSubstitutions.Any())
+            {
+                var curBody = emailDO.HTMLText;
+                foreach (var keyToReplace in attachmentSubstitutions.Keys)
+                {
+                    var keyStr = String.Format("cid:{0}", keyToReplace);
+                    curBody = curBody.Replace(keyStr,
+                        String.Format(fileViewURLStr, attachmentSubstitutions[keyToReplace]));
+                }
+                emailDO.HTMLText = curBody;
+            }
+
             return emailDO;
         }
 
@@ -258,27 +279,6 @@ namespace KwasantCore.Services
                 var newBookingRequest = new BookingRequest();
                 newBookingRequest.Process(uow, bookingRequest);
                 uow.SaveChanges();
-
-                //Fix the HTML text
-                var attachmentSubstitutions =
-                    bookingRequest.Attachments.Where(a => !String.IsNullOrEmpty(a.ContentID))
-                        .ToDictionary(a => a.ContentID, a => a.Id);
-
-                const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
-
-                //The following fixes inline images
-                if (attachmentSubstitutions.Any())
-                {
-                    var curBody = bookingRequest.HTMLText;
-                    foreach (var keyToReplace in attachmentSubstitutions.Keys)
-                    {
-                        var keyStr = String.Format("cid:{0}", keyToReplace);
-                        curBody = curBody.Replace(keyStr,
-                            String.Format(fileViewURLStr, attachmentSubstitutions[keyToReplace]));
-                    }
-                    bookingRequest.HTMLText = curBody;
-                    uow.SaveChanges();
-                }
 
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
 
