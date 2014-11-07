@@ -38,7 +38,7 @@ namespace KwasantWeb.Controllers
             return API.PackResponseGetEmail(thisEmailDO);
         }
 
-        public PartialViewResult GetInfo(int emailId, bool? readonlyView)
+        public PartialViewResult GetInfo(int emailId, bool? readonlyView = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
