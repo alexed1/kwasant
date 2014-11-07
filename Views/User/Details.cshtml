@@ -29,9 +29,23 @@
         $('body').css('overflow-y', 'auto');
     });
 </script>
+
 <table width="100%">
     <tr>
+        <td>
+            <div id="notificationGroup">
+                <div class="col-md-11" style="text-align: left; padding: 0px;">
+                    <div id="notificationMessage" style="color: #d85e17; font-size: 16px; padding-left: 0px; font-size: 16px; font-weight: bold;">
+                    </div>
+                </div>
+                <div class="col-md-5">
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
         <td width="45%" style="vertical-align: top; padding-right: 40px;">
+
             <div id="tabs">
                 <ul>
                     <li><a href="#tduserblock">Calendars</a></li>
@@ -45,8 +59,7 @@
                 </div>
             </div>
         </td>
-        <td width="55%" style="vertical-align: top;">
-            @Html.Partial("ShowCalendarEvents", new CalendarShowVM { LinkedCalendarIds = Model.Calendars.Select(c => c.Id).ToList() })
+        <td width="55%" style="vertical-align: top;">@Html.Partial("ShowCalendarEvents", new CalendarShowVM { LinkedCalendarIds = Model.Calendars.Select(c => c.Id).ToList() })
         </td>
     </tr>
 </table>

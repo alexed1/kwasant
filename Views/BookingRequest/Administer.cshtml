@@ -250,15 +250,6 @@
 
     //this function will open the new iframe for negotiation window and close the iframe for Edit Event window.
 
-    function displayNegotiation(message) {
-        var notification = $('#notificationGroup');
-        $('#notificationMessage').html(message);
-        notification.fadeIn('slow');
-        setTimeout(function () {
-            notification.fadeOut('slow');
-        }, 5 * 1000);
-    }
-
     function getCurrentNegotiationReview() {
         getNegotiationReview(linkedNegotiationID);
     }
@@ -271,7 +262,7 @@
                     minWidth: 630,
                     callback: function (result) {
                         if (result)
-                            displayNegotiation('Your negotiation was successfully updated');
+                            displayNotification('Your negotiation was successfully updated');
                     }
                 });
     }
@@ -299,7 +290,7 @@
                             minWidth: 630,
                             callback: function (result) {
                                 if (result)
-                                    displayNegotiation('Your negotiation was successfully updated');
+                                    displayNotification('Your negotiation was successfully updated');
                             }
                         });
                     }
@@ -317,7 +308,7 @@
                                 $('#liCreateOrEditNegotiation').html('Edit');
                                 linkedNegotiationID = result;
                                 updateCreateResolveButtons();
-                                displayNegotiation('Your negotiation was successfully created');
+                                displayNotification('Your negotiation was successfully created');
                             }
                         }
                     });
@@ -331,7 +322,7 @@
                     if (!data) {
                         alert('An error occured on the server. Your changes were not saved.');
                     } else {
-                        displayNegotiation('Your negotiation was successfully resolved.');
+                        displayNotification('Your negotiation was successfully resolved.');
                         linkedNegotiationID = null;
                         $('#liCreateOrEditNegotiation').html('Create');
                         updateCreateResolveButtons();
