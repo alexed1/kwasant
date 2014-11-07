@@ -15,8 +15,6 @@ using Utilities.Logging;
 
 namespace KwasantCore.Services
 {
-
-
     public class BookingRequest : IBookingRequest
     {
         private IAttendee _attendee;
@@ -299,6 +297,21 @@ namespace KwasantCore.Services
                 preferredBookers = preferredBookers.Where(u => u.EmailAddress.Address == "rjrudman@gmail.com").ToList();
                 return preferredBookers.FirstOrDefault();
             }
+        }
+
+        public String GetConversationThread(BookingRequestDO bookingRequestDO)
+        {
+            const string conversationThreadFormat = @"
+From: {0} {1}<br/><br/>
+{2}
+";
+            var threads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO});
+
+            var result = String.Join("<br/><br/>", threads.OrderBy(b => b.DateReceived).Select(e =>
+                String.Format(conversationThreadFormat, e.From.Name,
+                    e.DateReceived.TimeAgo(), e.HTMLText)));
+
+            return result;
         }
     }
 }
