@@ -334,13 +334,13 @@
     <Compile Include="Migrations\201410171057138_Sync.Rob.17.10.2014.Designer.cs">
       <DependentUpon>201410171057138_Sync.Rob.17.10.2014.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201410271400353_TrackUserMakingChangesToFactDO.cs" />
-    <Compile Include="Migrations\201410271400353_TrackUserMakingChangesToFactDO.Designer.cs">
-      <DependentUpon>201410271400353_TrackUserMakingChangesToFactDO.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201410232019045_AddRemoteCalendarLinkFields.cs" />
     <Compile Include="Migrations\201410232019045_AddRemoteCalendarLinkFields.Designer.cs">
       <DependentUpon>201410232019045_AddRemoteCalendarLinkFields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410271400353_TrackUserMakingChangesToFactDO.cs" />
+    <Compile Include="Migrations\201410271400353_TrackUserMakingChangesToFactDO.Designer.cs">
+      <DependentUpon>201410271400353_TrackUserMakingChangesToFactDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201410271701291_ImplementLastUpdated.cs" />
     <Compile Include="Migrations\201410271701291_ImplementLastUpdated.Designer.cs">
@@ -354,10 +354,6 @@
     <Compile Include="Migrations\201410290705052_Sync.29.10.2014.Designer.cs">
       <DependentUpon>201410290705052_Sync.29.10.2014.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201411031555378_Sync.Rob2.03.11.2014.cs" />
-    <Compile Include="Migrations\201411031555378_Sync.Rob2.03.11.2014.Designer.cs">
-      <DependentUpon>201411031555378_Sync.Rob2.03.11.2014.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201411021415158_BookingRequestRelationships.cs" />
     <Compile Include="Migrations\201411021415158_BookingRequestRelationships.Designer.cs">
       <DependentUpon>201411021415158_BookingRequestRelationships.cs</DependentUpon>
@@ -370,9 +366,13 @@
     <Compile Include="Migrations\201411031359120_FixUpAvailableproperty.Designer.cs">
       <DependentUpon>201411031359120_FixUpAvailableproperty.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201411031452569_Sync.Rob.03.11.2014.cs" />
-    <Compile Include="Migrations\201411031452569_Sync.Rob.03.11.2014.Designer.cs">
-      <DependentUpon>201411031452569_Sync.Rob.03.11.2014.cs</DependentUpon>
+    <Compile Include="Migrations\201410311036361_Add_State_to_UserDO.cs" />
+    <Compile Include="Migrations\201410311036361_Add_State_to_UserDO.Designer.cs">
+      <DependentUpon>201410311036361_Add_State_to_UserDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411071305204_BookerAvailabilityIsNotRequired.cs" />
+    <Compile Include="Migrations\201411071305204_BookerAvailabilityIsNotRequired.Designer.cs">
+      <DependentUpon>201411071305204_BookerAvailabilityIsNotRequired.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
@@ -436,6 +436,7 @@
     <Compile Include="Repositories\AnswerRepository.cs" />
     <Compile Include="Repositories\ProfileNodeRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
+    <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\CommunicationMode.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
@@ -487,6 +488,7 @@
     <Compile Include="States\CommunicationType.cs" />
     <Compile Include="States\EmailParticipantType.cs" />
     <Compile Include="States\EmailState.cs" />
+    <Compile Include="States\Templates\_UserStateTemplate.cs" />
     <Compile Include="States\TrackingState.cs" />
     <Compile Include="States\TrackingType.cs" />
     <Compile Include="Entities\RemoteCalendarProviderDO.cs" />
@@ -801,6 +803,7 @@
     <Compile Include="Repositories\TrackingStatusRepository.cs" />
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
+    <Compile Include="States\UserState.cs" />
     <Compile Include="Validations\BookingRequestValidator.cs" />
     <Compile Include="Validations\EnvelopeValidator.cs" />
     <Compile Include="Validations\EventValidator.cs" />
@@ -1208,11 +1211,11 @@
     <EmbeddedResource Include="Migrations\201410171057138_Sync.Rob.17.10.2014.resx">
       <DependentUpon>201410171057138_Sync.Rob.17.10.2014.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201410271400353_TrackUserMakingChangesToFactDO.resx">
-      <DependentUpon>201410271400353_TrackUserMakingChangesToFactDO.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410232019045_AddRemoteCalendarLinkFields.resx">
       <DependentUpon>201410232019045_AddRemoteCalendarLinkFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410271400353_TrackUserMakingChangesToFactDO.resx">
+      <DependentUpon>201410271400353_TrackUserMakingChangesToFactDO.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410271701291_ImplementLastUpdated.resx">
       <DependentUpon>201410271701291_ImplementLastUpdated.cs</DependentUpon>
@@ -1223,9 +1226,6 @@
     <EmbeddedResource Include="Migrations\201410290705052_Sync.29.10.2014.resx">
       <DependentUpon>201410290705052_Sync.29.10.2014.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201411031555378_Sync.Rob2.03.11.2014.resx">
-      <DependentUpon>201411031555378_Sync.Rob2.03.11.2014.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411021415158_BookingRequestRelationships.resx">
       <DependentUpon>201411021415158_BookingRequestRelationships.cs</DependentUpon>
     </EmbeddedResource>
@@ -1234,9 +1234,13 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411031359120_FixUpAvailableproperty.resx">
       <DependentUpon>201411031359120_FixUpAvailableproperty.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201411031452569_Sync.Rob.03.11.2014.resx">
-      <DependentUpon>201411031452569_Sync.Rob.03.11.2014.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201410311036361_Add_State_to_UserDO.resx">
+      <DependentUpon>201410311036361_Add_State_to_UserDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411071305204_BookerAvailabilityIsNotRequired.resx">
+      <DependentUpon>201411071305204_BookerAvailabilityIsNotRequired.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

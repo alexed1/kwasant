@@ -72,6 +72,12 @@ namespace Data.Entities
                 {
                     AlertManager.TrackablePropertyUpdated("State changed", "BookingRequest", Id, uow.BookingRequestStatusRepository.GetByKey(State).Name);
                 }
+                var state = (int) currentValues[statePropertyName];
+                if (state == BookingRequestState.Unstarted || 
+                    state == BookingRequestState.NeedsBooking)
+                {
+                    AlertManager.BookingRequestNeedsProcessing(Id);
+                }
             }
 
             var bookerPropertyName = reflectionHelper.GetPropertyName(br => br.BookerID);

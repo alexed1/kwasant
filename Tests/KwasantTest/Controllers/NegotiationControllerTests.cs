@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantWeb.Controllers;
 using KwasantWeb.ViewModels;
 using NUnit.Framework;
@@ -32,6 +33,7 @@ namespace KwasantTest.Controllers
             {
                 br = new BookingRequestDO();
                 var userDO = new UserDO();
+                userDO.State = UserState.Active;
                 userDO.EmailAddress = new EmailAddressDO("rjrudman@gmail.com");
 
                 br.From = userDO.EmailAddress;

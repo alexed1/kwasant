@@ -37,7 +37,6 @@ namespace KwasantCore.Managers
             AlertManager.AlertBookingRequestCheckedOut += ReportBookingRequestCheckedOut;
             AlertManager.AlertBookingRequestOwnershipChange += ReportBookingRequestOwnershipChanged;
   
-            
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
         }
 
@@ -62,8 +61,7 @@ namespace KwasantCore.Managers
             }
         }
 
-        private static void TrackablePropertyCreated(string name, string contextTable, int id,
-            object status)
+        private static void TrackablePropertyCreated(string name, string contextTable, int id, object status)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -279,6 +277,32 @@ namespace KwasantCore.Managers
                 
             }
         }
+        private void SaveFact(FactDO curAction)
+        {
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                AddFact(uow, curAction);
+                uow.SaveChanges();
+            }
+        }
+        private void AddFact(IUnitOfWork uow, FactDO curAction)
+        {
+            Debug.Assert(uow != null);
+            Debug.Assert(curAction != null);
+            var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
+            if (string.IsNullOrEmpty(curAction.Data))
+            {
+                curAction.Data = string.Format("{0} {1} {2}:" + " ObjectId: {3} EmailAddress: {4}",
+                                               curAction.PrimaryCategory,
+                                               curAction.SecondaryCategory,
+                                               curAction.Activity,
+                                               curAction.ObjectId,
+                                               uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
+            }
+            if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
+                Logger.GetLogger().Info(curAction.Data);
+            uow.FactRepository.Add(curAction);
+        }
 
 
         public void ReportUserRegistered(UserDO curUser)
@@ -358,34 +382,5 @@ namespace KwasantCore.Managers
 
             }
         }
-
-        private void SaveFact(FactDO curAction)
-        {
-            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                AddFact(uow, curAction);
-                uow.SaveChanges();
-            }
-        }
-        private void AddFact(IUnitOfWork uow, FactDO curAction)
-        {
-            Debug.Assert(uow != null);
-            Debug.Assert(curAction != null);
-            var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
-            if (string.IsNullOrEmpty(curAction.Data))
-            {
-                curAction.Data = string.Format("{0} {1} {2}:" + " ObjectId: {3} EmailAddress: {4}",
-                                               curAction.PrimaryCategory,
-                                               curAction.SecondaryCategory,
-                                               curAction.Activity,
-                                               curAction.ObjectId,
-                                               uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
-            }
-            if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
-                Logger.GetLogger().Info(curAction.Data);
-            uow.FactRepository.Add(curAction);
-        }
-
-
     }
 }

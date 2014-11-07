@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
@@ -49,6 +50,7 @@ namespace KwasantTest.MockedDB
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var user = new UserDO();
+                user.State = UserState.Active;
                 var brOne = new FixtureData(uow).TestBookingRequest1();
                 brOne.Id = 1;
                 brOne.UserID = user.Id;

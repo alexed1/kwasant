@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
 using KwasantTest.Fixtures;
@@ -18,8 +19,8 @@ namespace KwasantTest.Entities
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.EmailAddressRepository.Add(new EmailAddressDO() {Id = 1});
-                uow.UserRepository.Add(new UserDO() { EmailAddressID = 1});
-                uow.UserRepository.Add(new UserDO() { EmailAddressID = 1 });
+                uow.UserRepository.Add(new UserDO() { EmailAddressID = 1, State = UserState.Active });
+                uow.UserRepository.Add(new UserDO() { EmailAddressID = 1, State = UserState.Active });
                 uow.SaveChanges();
             }
         }

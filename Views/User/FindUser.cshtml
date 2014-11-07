@@ -18,8 +18,8 @@
     @Scripts.Render("~/bundles/js/common")
 
     <script type="text/javascript">
-        $(function() {
-            var buildRow = function(row) {
+        $(function () {
+            var buildRow = function (row) {
                 var head = $('<tr>');
                 var firstName = $('<td>').html(row.FirstName);
                 var lastName = $('<td>').html(row.LastName);
@@ -39,12 +39,12 @@
 
             var timeoutBeforeSearch = 300;
             var previousTimeout = null;
-            var doTimeoutSearch = function() {
+            var doTimeoutSearch = function () {
                 if (previousTimeout != null)
                     clearTimeout(previousTimeout);
 
                 previousTimeout = setTimeout(
-                    function() {
+                    function () {
                         previousTimeout = null;
                         updateSearchResults();
                     }, timeoutBeforeSearch);
@@ -53,16 +53,23 @@
             $('#firstName').keyup(doTimeoutSearch);
             $('#lastName').keyup(doTimeoutSearch);
             $('#emailAddress').keyup(doTimeoutSearch);
+            $('.stateCheckbox').change(doTimeoutSearch);
 
-            var updateSearchResults = function() {
+            var updateSearchResults = function () {
                 var firstName = $('#firstName').val();
                 var lastName = $('#lastName').val();
                 var emailAddress = $('#emailAddress').val();
+                var selectedStates = [];
+                $('.stateCheckbox').each(function () {
+                    if ($(this).prop("checked"))
+                        selectedStates.push(this.id);
+                });
 
                 var dataObj = {};
                 dataObj.FirstName = firstName;
                 dataObj.LastName = lastName;
                 dataObj.emailAddress = emailAddress;
+                dataObj.states = selectedStates;
 
                 var dataStr = JSON.stringify(dataObj);
 
@@ -71,7 +78,7 @@
                     type: 'POST',
                     contentType: 'application/json',
                     data: dataStr,
-                    success: function(result) {
+                    success: function (result) {
                         var body = $('#tbody');
 
                         if (result.length == 0) {
@@ -83,7 +90,7 @@
                         }
                         body.empty();
 
-                        $.each(result, function(i, o) {
+                        $.each(result, function (i, o) {
                             var row = buildRow(o);
                             body.append(row);
                         });
@@ -98,41 +105,57 @@
     </script>
 }
 <h2>Find User</h2>
-<div style="padding-right:40px;">
+<div style="padding-right: 40px;">
     <fieldset id="searchInfoForm">
         <table>
             <tr>
                 <td colspan="2">
-                    <label id="lblError" style="color:red;"></label>
+                    <label id="lblError" style="color: red;"></label>
                 </td>
             </tr>
             <tr>
-                <td>
-                    First Name
+                <td>First Name
                 </td>
                 <td>
                     <input type="text" id="firstName" />
                 </td>
             </tr>
             <tr>
-                <td>
-                    Last Name
+                <td>Last Name
                 </td>
                 <td>
                     <input type="text" id="lastName" />
                 </td>
             </tr>
             <tr>
-                <td>
-                    Email Address
+                <td>Email Address
                 </td>
                 <td>
                     <input type="text" id="emailAddress" />
                 </td>
             </tr>
+            <tr>
+                <td>Status
+                </td>
+                <td>
+                    @{
+                        using (var uow = StructureMap.ObjectFactory.GetInstance<Data.Interfaces.IUnitOfWork>())
+                        {
+                            var allStatus = uow.UserStatusRepository.GetAll();
+                            foreach (var status in allStatus)
+                            {
+                        <input id="@status.Id" type="checkbox" class="stateCheckbox" value="@status.Name" checked="checked"/>
+                        <label for="@status.Id">@status.Name</label>
+                        <br />
+                            }
+                        }
+                    }
+                </td>
+            </tr>
         </table>
     </fieldset>
-    <br /><br />
+    <br />
+    <br />
     <table id="resultsTable" class="table table-with-action" style="display: none">
         <thead>
             <tr>
