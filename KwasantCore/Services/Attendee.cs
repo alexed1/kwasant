@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 
+
 namespace KwasantCore.Services
 {
+   
+
     public class Attendee : IAttendee
     {
         private readonly EmailAddress _emailAddress;
@@ -85,6 +87,23 @@ namespace KwasantCore.Services
                 .Where(att => !existingAttendeeSet.Select(a => a.EmailAddress.Address).Contains(att))
                 .ToList();
             return ConvertFromStringList(uow, newAttendees);
+        }
+
+        public IList<Int32?> GetRespondedAnswers(IUnitOfWork uow, List<Int32> answerIDs, string userID )
+        {
+            //Query all of the actual responses....
+            return  uow.QuestionResponseRepository.GetQuery()
+                //...find all of this attendee's responses that are associated with this Negotiation's Answers
+                .Where(qr => qr.AnswerID.HasValue && answerIDs.Contains(qr.AnswerID.Value) && qr.UserID == userID)
+                //...and create a list of just the Answers for which there is a response from this attendee
+                .Select(a => a.AnswerID).ToList();
+        }
+
+        public AnswerDO GetSelectedAnswer(QuestionDO curQuestion, IEnumerable<Int32?> curUserAnswers)
+        {
+            //select the Answer that is in our list of the answers to which the  attendee has responded
+
+            return curQuestion.Answers.FirstOrDefault(a => curUserAnswers.Contains(a.Id));
         }
 
        

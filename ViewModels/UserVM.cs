@@ -17,7 +17,9 @@ namespace KwasantWeb.ViewModels
         public String UserName { get; set; }
         public String EmailAddress { get; set; }
         public String NewPassword { get; set; }
+        public int Status { get; set; }
         public int EmailAddressID { get; set; }
+        public bool SendMail { get; set; }
 
         public List<String> Roles { get; set; } 
         public List<UserCalendarVM> Calendars { get; set; }

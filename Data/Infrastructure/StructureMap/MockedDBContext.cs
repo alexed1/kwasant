@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
@@ -139,9 +140,18 @@ namespace Data.Infrastructure.StructureMap
                 {
                     foreach (object row in set.Value)
                     {
-                        //Check nullable constraint enforced
                         foreach (var prop in row.GetType().GetProperties())
                         {
+                            var defaultAttribute = prop.GetCustomAttributes<DefaultValueAttribute>().FirstOrDefault();
+                            if (defaultAttribute != null)
+                            {
+                                if (prop.GetValue(row) == null)
+                                {
+                                    prop.SetValue(row, defaultAttribute.Value);
+                                }
+                            }
+
+                            //Check nullable constraint enforced
                             var hasAttribute = prop.GetCustomAttributes(typeof(RequiredAttribute)).Any();
                             if (hasAttribute)
                             {

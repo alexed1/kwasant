@@ -26,7 +26,7 @@ namespace KwasantCore.Services
         /// <returns>Direct if the user has a booking request or a password. Otherwise, Delegate.</returns>
         public CommunicationMode GetMode(UserDO userDO)
         {
-            if (userDO.BookingRequests != null && userDO.BookingRequests.Any())
+            if (userDO.UserBookingRequests != null && userDO.UserBookingRequests.Any())
                 return CommunicationMode.Direct;
             if(!String.IsNullOrEmpty(userDO.PasswordHash))
                 return CommunicationMode.Direct;

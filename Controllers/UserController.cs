@@ -14,6 +14,8 @@ using StructureMap;
 using Data.Validations;
 using System.Linq;
 using Utilities;
+using Data.Infrastructure;
+using KwasantCore.Services;
 
 namespace KwasantWeb.Controllers
 {
@@ -173,7 +175,7 @@ namespace KwasantWeb.Controllers
                 {
                     uow.UserRepository.UpdateUserCredentials(existingUser, password: curCreateUserVM.NewPassword);
                 }
-               
+
                 var existingRoles = uow.AspNetUserRolesRepository.GetRoles(existingUser.Id).ToList();
 
                 //Remove old roles
@@ -194,6 +196,17 @@ namespace KwasantWeb.Controllers
                 existingUser.LastName = curCreateUserVM.LastName;
                 existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress, curCreateUserVM.FirstName);
                 uow.SaveChanges();
+
+                //Checking if user is new user
+                if (String.IsNullOrWhiteSpace(curCreateUserVM.Id))
+                {
+                    AlertManager.ExplicitCustomerCreated(existingUser.Id);
+                }
+                //Sending a mail to user with newly created credentials if send email is checked
+                if (curCreateUserVM.SendMail && !String.IsNullOrEmpty(curCreateUserVM.NewPassword))
+                {
+                    new Email().SendLoginCredentials(uow, curCreateUserVM.EmailAddress, curCreateUserVM.NewPassword);
+                }
             }
             var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."));
             return jsonSuccessResult;
@@ -205,7 +218,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Search(String firstName, String lastName, String emailAddress)
+        public ActionResult Search(String firstName, String lastName, String emailAddress,int[] states)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -216,6 +229,8 @@ namespace KwasantWeb.Controllers
                     users = users.Where(u => u.LastName.Contains(lastName));
                 if (!String.IsNullOrWhiteSpace(emailAddress))
                     users = users.Where(u => u.EmailAddress.Address.Contains(emailAddress));
+
+                users = users.Where(u => states.Contains(u.State.Value));
 
                 return Json(users.ToList().Select(u => new
                     {
@@ -238,8 +253,24 @@ namespace KwasantWeb.Controllers
                 UserName = u.UserName,
                 EmailAddress = u.EmailAddress.Address,
                 Roles = uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Name).ToList(),
-                Calendars = u.Calendars.Select(c => new UserCalendarVM { Id = c.Id, Name = c.Name}).ToList()
+                Calendars = u.Calendars.Select(c => new UserCalendarVM { Id = c.Id, Name = c.Name }).ToList(),
+                Status = u.State.Value
             };
+        }
+
+        //Update User Status from user details view valid states are "Active" and "Deleted"
+        public void UpdateStatus(string userId, int status)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                UserDO curUser = uow.UserRepository.GetQuery().Where(user => user.Id == userId).FirstOrDefault();
+
+                if (curUser != null)
+                {
+                    curUser.State = status;
+                    uow.SaveChanges();
+                }
+            }
         }
 
     }

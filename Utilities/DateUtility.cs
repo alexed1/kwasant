@@ -32,16 +32,16 @@ namespace Utilities
             TimeSpan span = DateTimeOffset.Now - dt;
             if (span.Days > 365)
             {
-                int years = (span.Days/365);
-                if (span.Days%365 != 0)
+                int years = (span.Days / 365);
+                if (span.Days % 365 != 0)
                     years += 1;
                 return String.Format("about {0} {1} ago",
                     years, years == 1 ? "year" : "years");
             }
             if (span.Days > 30)
             {
-                int months = (span.Days/30);
-                if (span.Days%31 != 0)
+                int months = (span.Days / 30);
+                if (span.Days % 31 != 0)
                     months += 1;
                 return String.Format("about {0} {1} ago",
                     months, months == 1 ? "month" : "months");
@@ -60,6 +60,11 @@ namespace Utilities
             if (span.Seconds <= 5)
                 return "just now";
             return string.Empty;
+        }
+
+        public static string TimeAgo(this DateTime dt)
+        {
+            return TimeAgo((DateTimeOffset) dt);
         }
     }
 

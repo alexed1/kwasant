@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantWeb.Controllers;
 using KwasantWeb.ViewModels;
 using NUnit.Framework;
@@ -285,28 +285,29 @@ namespace KwasantTest.Controllers
             }
         }
 
-        [Test, Ignore]
-        public void TestMenuItem_UsersShowAll()
+        [Test]
+        public void TestCanDeleteAndChangeUserStatus()
         {
-            WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/User");
-            var response = (HttpWebResponse)webRequest.GetResponse();
-            Assert.AreEqual("OK", response.StatusCode.ToString());
-        }
+            UserDO userDO;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //SETUP
+                //Create a active user
+                userDO = uow.UserRepository.GetOrCreateUser("test.user@gmail.com");
+                userDO.State = UserState.Active;
+                uow.SaveChanges();
+                var controller = new UserController();
 
-        [Test, Ignore]
-        public void TestMenuItem_UsersAdd()
-        {
-            WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/User/ShowAddUser");
-            var response = (HttpWebResponse)webRequest.GetResponse();
-            Assert.AreEqual("OK", response.StatusCode.ToString());
-        }
-
-        [Test, Ignore]
-        public void TestMenuItem_UsersFind()
-        {
-            WebRequest webRequest = WebRequest.Create("https://www.kwasant.com/User/FindUser");
-            var response = (HttpWebResponse)webRequest.GetResponse();
-            Assert.AreEqual("OK", response.StatusCode.ToString());
+                //EXECUTE
+                //Calling controller action
+                controller.UpdateStatus(userDO.Id, UserState.Deleted);
+                
+                //VERIFY
+                Assert.AreEqual(1, uow.UserRepository.GetQuery().Where(e => e.State == UserState.Deleted).Count());
+                
+                controller.UpdateStatus(userDO.Id, UserState.Suspended);
+                Assert.AreEqual(1, uow.UserRepository.GetQuery().Where(e => e.State == UserState.Suspended).Count());
+            }
         }
     }
 }
