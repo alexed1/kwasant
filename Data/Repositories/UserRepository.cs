@@ -58,13 +58,14 @@ namespace Data.Repositories
 
             if (matchingUser == null)
             {
-                matchingUser = 
+                matchingUser =
                     new UserDO
                     {
                         EmailAddress = emailAddressDO,
                         UserName = emailAddressDO.Address,
                         FirstName = emailAddressDO.Name,
                         SecurityStamp = Guid.NewGuid().ToString(),
+                        State = UserState.Active
                     };
                 UnitOfWork.UserRepository.Add(matchingUser);
 

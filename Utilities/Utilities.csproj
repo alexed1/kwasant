@@ -64,6 +64,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConfigRepository.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="JsonPackager.cs" />
     <Compile Include="Logging\Logger.cs" />
     <Compile Include="MappingEngineExtensions.cs" />
+    <Compile Include="MemoryCache.cs" />
     <Compile Include="MiscUtils.cs" />
     <Compile Include="MockedConfigRepository.cs" />
     <Compile Include="PersistableIntCollection.cs" />

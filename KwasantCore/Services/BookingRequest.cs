@@ -77,21 +77,25 @@ namespace KwasantCore.Services
         {
             return
                 uow.BookingRequestRepository.GetAll()
-                    .Where(e => e.State == BookingRequestState.Unstarted)
+                    .Where(e => (e.State == BookingRequestState.Unstarted) || (e.State == BookingRequestState.NeedsBooking))
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
                         {
+                            var text = e.PlainText ?? e.HTMLText;
+                            if (String.IsNullOrEmpty(text))
+                                text = String.Empty;
+                            text = text.Trim();
+                            if (text.Length > 400)
+                                text = text.Substring(400);
+
                             return new
                             {
                                 id = e.Id,
                                 subject = e.Subject,
                                 fromAddress = e.From.Address,
                                 dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
-                                body =
-                                    e.HTMLText.Trim().Length > 400
-                                        ? e.HTMLText.Trim().Substring(0, 400)
-                                        : e.HTMLText.Trim()
+                                body = text
                             };
                         })
                     .ToList();
@@ -275,6 +279,26 @@ namespace KwasantCore.Services
                         })
                     .ToList();
         }
-    }
 
+        public UserDO GetPreferredBooker(BookingRequestDO bookingRequestDO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookerRoleID = uow.AspNetUserRolesRepository.GetRoleID(Roles.Booker);
+
+                var bookerIDs =
+                    uow.AspNetUserRolesRepository.GetQuery()
+                        .Where(ur => ur.RoleId == bookerRoleID)
+                        .Select(ur => ur.UserId);
+
+                var preferredBookers =
+                    uow.UserRepository.GetQuery()
+                        .Where(u => bookerIDs.Contains(u.Id) && u.Available.Value)
+                        .OrderBy(u => u.BookerBookingRequests.Count(br => br.State == BookingRequestState.Booking)).ToList();
+
+                preferredBookers = preferredBookers.Where(u => u.EmailAddress.Address == "rjrudman@gmail.com").ToList();
+                return preferredBookers.FirstOrDefault();
+            }
+        }
+    }
 }

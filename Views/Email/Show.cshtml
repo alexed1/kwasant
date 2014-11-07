@@ -41,7 +41,7 @@
 
                 <tr>
                     <td class="displayLabel">Attachments:</td>
-                    <td>@Model.EmailAttachments</td>
+                    <td>@Html.Raw(Model.EmailAttachments)</td>
                 </tr>
             </table>
         </div>
@@ -65,15 +65,29 @@
 
 <script src="~/Content/js/Kwasant/quickcopy.js"></script>
 <script type="text/javascript">
-    $(function () {
-        var conversationMembers = @Html.Raw(JsonConvert.SerializeObject(Model.Conversations, Formatting.Indented));
+    function refreshConversation() {
+        $('#conversations').css('opacity', 0.5);
+        $.get('/Email/GetConversationMembers?emailID=@Model.BookingRequestId', function(result) {
+            if (result !== null) {
+                $('#conversations').empty();
+                displayConversation(result);
+                $('#conversations').css('opacity', 1);
+            }
+        });
+    }
+    
+    function displayConversation(conversationMembers) {
         var performedExplicitExpand = false;
-        $.each(conversationMembers, function(ind, conversationMember) {
+
+        var displayConvoMember = function(conversationMember, ind) {
             var convoHolder = $('<div class="email-message">');
-   
+
             var convoHeader = $('<div class="message-header">');
-            convoHeader.html(conversationMember.Header);
-            convoHeader.prepend('<span class="glyphicon glyphicon-chevron-down pull-left"></span>');
+            convoHeader.append("<span class='email-address'>" + conversationMember.FromEmailAddress + "</span>");
+            convoHeader.append("<span class='date-received'>" + conversationMember.DateRecieved + "</span>");
+
+            var chevron = $('<span class="glyphicon glyphicon-chevron-right pull-left"></span>');
+            convoHeader.prepend(chevron);
 
             var convoBody = $('<div>');
             convoBody
@@ -82,28 +96,26 @@
 
             var resetStyles = function(expanded) {
                 if (expanded) {
-                    $(".message-header .glyphicon").removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");    
-                    //convoHeader.css('background-color', '#DBDBDB');
+                    chevron.removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-down");    
                 } else {
-                    $(".message-header .glyphicon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");                        
-                    //convoHeader.css('background-color', '#DBDBDB');
+                    chevron.removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-right");                        
                 }
             };
 
             var doingAnimation = false;
             var isExpanded = false;
-            convoHeader.click(function() {
+            chevron.click(function() {
                 if (doingAnimation)
                     return;
                 doingAnimation = true;
                 if (isExpanded) {
-                    convoBody.slideUp(function() { resetStyles(false); });
+                    convoBody.slideUp(function() { resetStyles(false); doingAnimation = false; });
                     isExpanded = false;
                 } else {
-                    convoBody.slideDown(function() { resetStyles(true); });
+                    convoBody.slideDown(function() { resetStyles(true); doingAnimation = false; });
                     isExpanded = true;
                 }
-                doingAnimation = false;
+                
             });
 
             //If we explicitly opened other conversations, don't open the last email by default
@@ -112,20 +124,28 @@
                 resetStyles(true);
                 performedExplicitExpand = true;
             } else {
-                if (performedExplicitExpand || ind < conversationMembers.length - 1)
-                {
+                if (performedExplicitExpand || ind < conversationMembers.length - 1) {
                     convoBody.hide();
                 } else {
                     isExpanded = true;
                     resetStyles(true);
                 }
             }
-            
+
             convoHolder.append(convoHeader);
             convoHolder.append(convoBody);
 
             $('#conversations').append(convoHolder);
-        });
+        };
+
+        for (var ind = conversationMembers.length - 1; ind >= 0; ind--) {
+            displayConvoMember(conversationMembers[ind], ind);
+        }
+    }
+
+    $(function () {
+        var conversationMembers = @Html.Raw(JsonConvert.SerializeObject(Model.Conversations, Formatting.Indented));
+        displayConversation(conversationMembers);
 
         $('#emailContent').hide();
         $('#blah').click(function() {

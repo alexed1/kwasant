@@ -54,8 +54,8 @@ namespace Data.Entities
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     AlertManager.TrackablePropertyUpdated("State changed", "NegotiationRequest", Id, new GenericRepository<_NegotiationStateTemplate>(uow).GetByKey(NegotiationState).Name);
-                }
-            }
+    }
+}
 
         }
 

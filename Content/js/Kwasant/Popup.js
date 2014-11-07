@@ -139,9 +139,9 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
         }
     };
 
-    Kwasant.IFrame.DispatchUrlRequest = function(url, callback) {
+    Kwasant.IFrame.DispatchUrlRequest = function(url, callback, type) {
         var spinner = Kwasant.IFrame.DisplaySpinner();
-        $.get(url)
+        $.ajax(url, { type: type })
             .success(callback)
             .fail(function() {
                 alert('Error connecting to server. Your changes were not saved.');

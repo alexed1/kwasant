@@ -53,6 +53,7 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        [HttpPost]
         public ActionResult NewTimeSlot(int calendarID, string start, string end, bool mergeEvents = false)
         {
             using (var uow = GetUnitOfWork())
@@ -69,7 +70,7 @@ namespace KwasantWeb.Controllers
 
                 uow.SaveChanges();
 
-                return JavaScript(SimpleJsonSerializer.Serialize(true));
+                return Json(true);
             }
         }
 
@@ -174,6 +175,7 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        [HttpPost]
         public ActionResult ConfirmDelete(int eventID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -183,10 +185,10 @@ namespace KwasantWeb.Controllers
                 {
                     uow.EventRepository.Remove(eventDO);
                     uow.SaveChanges();
-                    return JavaScript(SimpleJsonSerializer.Serialize(true));
+                    return Json(true);
                 }
 
-                return JavaScript(SimpleJsonSerializer.Serialize(false));
+                return Json(false);
             }
         }
 
@@ -262,7 +264,7 @@ namespace KwasantWeb.Controllers
                     }
                 }
             }
-            return Json(true, JsonRequestBehavior.AllowGet);
+            return Json(true);
         }
 
         public ActionResult DeleteEvent(int eventID, bool requiresConfirmation = true)

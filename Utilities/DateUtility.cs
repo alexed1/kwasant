@@ -61,6 +61,11 @@ namespace Utilities
                 return "just now";
             return string.Empty;
         }
+
+        public static string TimeAgo(this DateTime dt)
+        {
+            return TimeAgo((DateTimeOffset) dt);
+        }
     }
 
     public struct DateRange

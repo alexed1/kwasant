@@ -176,7 +176,7 @@
                     copyType: String(copytype),
                     selectedText: String(selectedtext)
                 });
-                $.getJSON("/Calendar/ProcessQuickCopy", data, copyRequest);
+                $.post("/Calendar/ProcessQuickCopy", data, copyRequest, 'json');
             }
 
             //getting the response from server

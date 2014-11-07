@@ -39,6 +39,7 @@ namespace Data.Interfaces
         ProfileNodeRepository ProfileNodeRepository { get; }
         ProfileItemRepository ProfileItemRepository { get; }
         ProfileRepository ProfileRepository { get; }
+        UserStatusRepository UserStatusRepository { get; }
 
         /// <summary>
         /// Call this to commit the unit of work

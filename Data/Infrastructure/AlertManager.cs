@@ -1,8 +1,7 @@
 ﻿//We rename .NET style "events" to "alerts" to avoid confusion with our business logic Alert concepts
 
+using System;
 using Data.Entities;
-using Data.Infrastructure.StructureMap;
-using Newtonsoft.Json;
 
 namespace Data.Infrastructure
 {
@@ -21,6 +20,15 @@ namespace Data.Infrastructure
         public delegate void TrackablePropertyDeletedHandler(string name, string contextTable, int id, int parentId, object status);
         public static event TrackablePropertyDeletedHandler AlertTrackablePropertyDeleted;
         
+        public delegate void NewBookingRequestForPreferredBookerHandler(String bookerID, int bookingRequestID);
+        public static event NewBookingRequestForPreferredBookerHandler AlertNewBookingRequestForPreferredBooker;
+
+        public delegate void ConversationMemberAddedHandler(int bookingRequestID);
+        public static event ConversationMemberAddedHandler AlertConversationMemberAdded;
+        
+        public delegate void ConversationmatchedHandler(int emailID, string subject, int bookingRequestID);
+        public static event ConversationmatchedHandler AlertConversationMatched;
+
         public delegate void ExplicitCustomerCreatedHandler(string curUserId);
         public static event ExplicitCustomerCreatedHandler AlertExplicitCustomerCreated;
 
@@ -84,6 +92,24 @@ namespace Data.Infrastructure
         {
             if (AlertTrackablePropertyDeleted != null)
                 AlertTrackablePropertyDeleted(name, contextTable, id, parentID, status);
+        }
+
+        public static void NewBookingRequestForPreferredBooker(String bookerID, int bookingRequestID)
+        {
+            if (AlertNewBookingRequestForPreferredBooker != null)
+                AlertNewBookingRequestForPreferredBooker(bookerID, bookingRequestID);
+        }
+
+        public static void ConversationMemberAdded(int bookingRequestID)
+        {
+            if (AlertConversationMemberAdded != null)
+                AlertConversationMemberAdded(bookingRequestID);
+        }
+
+        public static void ConversationMatched(int emailID, string subject, int bookingRequestID)
+        {
+            if (AlertConversationMatched != null)
+                AlertConversationMatched(emailID, subject, bookingRequestID);
         }
 
         /// <summary>

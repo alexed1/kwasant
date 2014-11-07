@@ -19,6 +19,10 @@ namespace KwasantCore.Managers
         //Register for interesting events
         public void SubscribeToAlerts()
         {
+            AlertManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
+            AlertManager.AlertTrackablePropertyCreated += TrackablePropertyCreated;
+            AlertManager.AlertTrackablePropertyDeleted += TrackablePropertyDeleted;
+            AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
             AlertManager.AlertEmailReceived += NewEmailReceived;
             AlertManager.AlertEventBooked += NewEventBooked;
             AlertManager.AlertEmailSent += EmailDispatched;
@@ -99,6 +103,90 @@ namespace KwasantCore.Managers
                 uow.FactRepository.Add(newFactDO);
                 uow.SaveChanges();
             }
+        }
+
+        private static void TrackablePropertyUpdated(string name, string contextTable, int id,
+            object status)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFactDO = new FactDO
+                {
+                    Name = name,
+                    PrimaryCategory = contextTable,
+                    SecondaryCategory = "Journaling",
+                    Activity = "Update",
+                    ObjectId = id,
+                    CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    Status = JsonConvert.SerializeObject(status),
+                    CreateDate = DateTime.Now
+                };
+                uow.FactRepository.Add(newFactDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private static void TrackablePropertyCreated(string name, string contextTable, int id,
+            object status)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFactDO = new FactDO
+                {
+                    Name = name,
+                    PrimaryCategory = contextTable,
+                    SecondaryCategory = "Journaling",
+                    Activity = "Create",
+                    ObjectId = id,
+                    CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    Status = JsonConvert.SerializeObject(status),
+                    CreateDate = DateTime.Now
+                };
+                uow.FactRepository.Add(newFactDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private static void TrackablePropertyDeleted(string name, string contextTable, int id, int parentID, object status)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFactDO = new FactDO
+                {
+                    Name = name,
+                    PrimaryCategory = contextTable,
+                    SecondaryCategory = "Journaling",
+                    Activity = "Delete",
+                    ObjectId = id,
+                    TaskId = parentID,
+                    CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    Status = JsonConvert.SerializeObject(status),
+                    CreateDate = DateTime.Now
+                };
+                uow.FactRepository.Add(newFactDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private void AlertManagerOnAlertConversationMatched(int emailID, string subject, int bookingRequestID)
+        {
+            const string logMessageFormat = "Inbound Email ID {0} with subject '{1}' was matched to BR ID {2}";
+            var logMessage = String.Format(logMessageFormat, emailID, subject, bookingRequestID);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var incidentDO = new IncidentDO
+                {
+                    ObjectId = emailID,
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Conversation",
+                    Notes = logMessage
+                };
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+            }
+
+            Logger.GetLogger().Info(logMessage);
         }
 
         private static void OnPostResolutionNegotiationResponseReceived(int negotiationId)

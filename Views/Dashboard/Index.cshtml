@@ -5,6 +5,7 @@
 }
 @section styles{
     @Styles.Render("~/bundles/css/daypilot")
+    <link href="/Content/css/jackedup.css" rel="stylesheet" />
 }
 @section immediateScripts
 {
@@ -20,6 +21,26 @@
     @Scripts.Render("~/bundles/js/modernizr")
     @Scripts.Render("~/bundles/js/bootstrap")
     @Scripts.Render("~/bundles/js/common")
+    <script src="/Content/js/humane.js"></script>
+    
+    <script type="text/javascript">
+        $(function() {
+            var popupAlreadyShowing;
+            var jacked = humane.create({ baseCls: 'humane-jackedup', addnCls: 'humane-jackedup-success', clickToClose: true, timeout: 0 });
+            getUpdateForPage('BookingRequestUpdatedQueue', @Model.BookingRequestVM.BookingRequestId, function(result) {
+                if (result.length > 0) {
+                    if (!popupAlreadyShowing) {
+                        popupAlreadyShowing = true;
+                        jacked.log("A new email relating to this booking request has arrived. Click here to refresh.", function() {
+                            popupAlreadyShowing = false;
+                            refreshConversation();
+                        });
+                    }
+                }
+            });
+        }
+        );
+    </script>
 }
 <script type="text/javascript">
     document.body.style.overflowY = 'scroll';

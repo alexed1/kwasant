@@ -38,6 +38,7 @@ namespace KwasantWeb.Controllers
             return View();
         }
 
+        [HttpPost]
         public ActionResult ShowReport(string queryPeriod, string type)
         {
             DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
@@ -45,7 +46,7 @@ namespace KwasantWeb.Controllers
             {
                 //var jsonResult = Json(_datatables.Pack(_report.Generate(uow, dateRange, type)), JsonRequestBehavior.AllowGet);
                 var report = _report.Generate(uow, dateRange, type);
-                var jsonResult = Json(_jsonPackager.Pack(report), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_jsonPackager.Pack(report));
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -56,7 +57,7 @@ namespace KwasantWeb.Controllers
             return View("History");
         }
 
-        //GET: /HistoryReport
+        [HttpPost]
         public ActionResult ShowHistoryReport(string primaryCategory, string bookingRequestId, string queryPeriod)
         {
             DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
@@ -64,7 +65,7 @@ namespace KwasantWeb.Controllers
             {
                 //var jsonResult = Json(_datatables.Pack(_report.GenerateHistoryReport(uow, dateRange, primaryCategory, bookingRequestId)), JsonRequestBehavior.AllowGet);
                 var historyReport = _report.GenerateHistoryReport(uow, dateRange, primaryCategory, bookingRequestId);
-                var jsonResult = Json(_jsonPackager.Pack(historyReport), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_jsonPackager.Pack(historyReport));
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -77,14 +78,14 @@ namespace KwasantWeb.Controllers
             return View("_History");
         }
 
-        //GET: /HistoryReport by BookingRequestId
+        [HttpPost]
         public ActionResult ShowHistoryByBookingRequestId(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                // var jsonResult = Json(_datatables.Pack(_report.GenerateHistoryByBookingRequestId(uow, bookingRequestId)), JsonRequestBehavior.AllowGet);
                 var historyByBRId = _report.GenerateHistoryByBookingRequestId(uow, bookingRequestId);
-                var jsonResult = Json(_jsonPackager.Pack(historyByBRId), JsonRequestBehavior.AllowGet);
+                var jsonResult = Json(_jsonPackager.Pack(historyByBRId));
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
              }

@@ -316,7 +316,7 @@ namespace Data.Migrations
                 State = BookingRequestState.Unstarted,
                 User = userDO
             };
-            userDO.BookingRequests.Add(curBookingRequestDO);
+            userDO.UserBookingRequests.Add(curBookingRequestDO);
 
             foreach (var calendar in curBookingRequestDO.User.Calendars)
                 curBookingRequestDO.Calendars.Add(calendar);
@@ -368,7 +368,7 @@ namespace Data.Migrations
             if (curUser == null)
                 curUser = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);
 
-            var bookingRequestID = curUser.BookingRequests.First().Id;
+            var bookingRequestID = curUser.UserBookingRequests.First().Id;
             var calendarID = curUser.Calendars.FirstOrDefault(e => e.Name == calendarName).Id;
 
             for (int eventNumber = 1; eventNumber < 11; eventNumber++)

@@ -85,14 +85,14 @@
 
     //Mark processed function will execute on click to update the Request status to "Processed".
     function updateStatus(path) {
-        $.getJSON(path, function (response) {
+        $.post(path, function (response) {
             var oldOwner = response.Message;
             var Id = $("#hdnrequestid").val();
             if (response.Name == "DifferentOwner") 
                 ShowFailedOwnershipVerification(oldOwner, Id);
             else 
                 window.location.href = "@Url.Action("Index", "BookingRequest")";
-        });
+        }, 'json');
     }
 
     function ShowFailedOwnershipVerification(bookingRequestOwner, bookingRequestId) {
@@ -147,7 +147,8 @@
                 "dataSrc": function (json) {
                     var orgdata = JSON.parse(json.data);
                     return orgdata;
-                }
+                },
+                "type": "POST"
             },
             //Callback function for row created.
             createdRow: function (row, data, index) {
@@ -194,7 +195,8 @@
                     "dataSrc": function (json) {
                         var orgdata = JSON.parse(json.data);
                         return orgdata;
-                    }
+                    },
+                    "type": "POST"
                 },
             
                 createdRow: function (row, data, index) {
@@ -278,10 +280,10 @@
     function getNegotiationWindow() {
         if (linkedNegotiationID != null) {
             var bookingRequestId = $("#hdnrequestid").val();
-            var url = '/Negotiation/Edit';
+            var url = '/Negotiation/CheckOwnership';
             $.ajax({
                 url: url,
-                type: 'Get',
+                type: 'POST',
                 data: { negotiationID: linkedNegotiationID, bookingRequestID: bookingRequestId },
                 async: false, 
                 success: function (response) {
@@ -334,7 +336,7 @@
                         $('#liCreateOrEditNegotiation').html('Create');
                         updateCreateResolveButtons();
                     }
-                });
+                }, 'POST');
             }       
         }
     

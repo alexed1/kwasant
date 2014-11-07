@@ -34,7 +34,7 @@ namespace Data.Entities
         public void AfterCreate()
         {
             AlertManager.TrackablePropertyCreated("Answer added", "Answer", Id, "Name: " + Text);
-        }
+    }
 
         public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
@@ -44,7 +44,7 @@ namespace Data.Entities
             if (!MiscUtils.AreEqual(originalValues[textPropertyName], currentValues[textPropertyName]))
             {
                 AlertManager.TrackablePropertyUpdated("Answer changed", "Answer", Id, Text);
-            }
+}
         }
 
         public void OnDelete(DbPropertyValues originalValues)

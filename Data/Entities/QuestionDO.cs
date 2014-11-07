@@ -9,7 +9,8 @@ using Utilities;
 
 namespace Data.Entities
 {
-    public class QuestionDO : BaseDO, IQuestion, ICreateHook, IModifyHook, IDeleteHook
+
+    public class QuestionDO : BaseDO, IQuestionDO, ICreateHook, IModifyHook, IDeleteHook
     {
         public QuestionDO()
         {
@@ -42,7 +43,7 @@ namespace Data.Entities
         public void AfterCreate()
         {
             AlertManager.TrackablePropertyCreated("Question added", "Question", Id, "Name: " + Text);
-        }
+    }
 
         public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
@@ -52,7 +53,7 @@ namespace Data.Entities
             if (!MiscUtils.AreEqual(originalValues[textPropertyName], currentValues[textPropertyName]))
             {
                 AlertManager.TrackablePropertyUpdated("Question changed", "Question", Id, Text);
-            }
+}
         }
 
         public void OnDelete(DbPropertyValues originalValues)

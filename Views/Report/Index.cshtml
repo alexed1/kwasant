@@ -128,7 +128,7 @@
 
         function loadReport() {
             //Ajax call to get report records from server.
-            $.getJSON("/Report/ShowReport", { queryPeriod: queryPeriod, type: "@ViewBag.type" }, showRequests);
+            $.post("/Report/ShowReport", { queryPeriod: queryPeriod, type: "@ViewBag.type" }, showRequests, 'json');
         }
 
         //Initializing click for all filter buttons.
