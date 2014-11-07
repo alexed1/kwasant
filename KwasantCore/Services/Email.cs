@@ -289,7 +289,7 @@ namespace KwasantCore.Services
                 currEmailDO.Attachments.Where(a => !String.IsNullOrEmpty(a.ContentID))
                     .ToDictionary(a => a.ContentID, a => a.Id);
 
-            const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
+            string fileViewURLStr = Server.ServerUrl + "Api/GetAttachment.ashx?AttachmentID={0}";
 
             //The following fixes inline images
             if (attachmentSubstitutions.Any())
