@@ -15,33 +15,25 @@ namespace KwasantCore.Services
             if (fromID == 0)
                 return null;
             
-            Func<BookingRequestDO, bool> isValidBookingRequest =
-                br => br.State != BookingRequestState.Invalid && //Don't match to invalid booking requests
-                        br.State != BookingRequestState.Finished;  //Don't match to old booking requests
-                    
-            Func<BookingRequestDO, bool> isSimilarSubject = 
-                br =>
-                ("RE: " + br.Subject == subject || //If the new message is 'RE: [oldSubject]"
-                    br.Subject == subject);        //If the new message is '[oldSubject]'
-
             var currentFromEmailID = fromID;
-            Func<BookingRequestDO, bool> isMatchingRecipient =
-                br =>
-                {
+
+            return uow.BookingRequestRepository.GetQuery().FirstOrDefault(br =>
+                (
+                    br.State != BookingRequestState.Invalid &&  //Don't match to invalid booking requests
+                    br.State != BookingRequestState.Finished    //Don't match to old booking requests
+                ) &&
+                (
+                    "RE: " + br.Subject == subject ||           //If the new message is 'RE: [oldSubject]"
+                    br.Subject == subject                       //If the new message is '[oldSubject]'
+                ) &&
+                (
                     //We want to check if they're a participant in either the booking request, OR the booking requests conversation
-                    var allEmailsInBookingRequestAndConversation = br.ConversationMembers.Union(new[] { br });
-                    return allEmailsInBookingRequestAndConversation.Any(
+                    br.ConversationMembers.Union(new[] {br}).Any(
                         c =>
                             c.Recipients.Any(r => r.EmailAddressID == currentFromEmailID) ||    //Check if they're a recipient
                             c.FromID == currentFromEmailID                                      //Check if they're the sender
-                        );
-                };
-
-            return uow.BookingRequestRepository.GetQuery().FirstOrDefault(
-                br => 
-                    isValidBookingRequest(br) && 
-                    isSimilarSubject(br) && 
-                    isMatchingRecipient(br)
+                        )
+                    )
                 );
         }
 
