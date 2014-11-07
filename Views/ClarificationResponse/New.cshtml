@@ -1,4 +1,4 @@
-﻿@model KwasantWeb.ViewModels.ClarificationResponseVM
+﻿@model KwasantWeb.ViewModels.NegotiationResponseVM
 
 @{ Layout = "~/Views/Shared/_Layout.cshtml"; }
 @section immediateScripts
@@ -25,7 +25,7 @@
 <h2>We need clarification about the following to finish booking your event:</h2>
 
 
-@foreach (var question in Model)
+@foreach (var question in Model.Questions)
 {
     <div class="formItem">
         <label>Question : </label>
@@ -36,7 +36,7 @@
         {
             <input type="radio" name="@question.Id" value="@ans.Id"/>   @ans.Text<br />
         }
-        @if (question.Response == "Text")
+        @if (question.Type == "Text")
         {
             <input type="radio" name="@question.Id" data-type="Text" value="suggestion"/>
             @Html.Raw("Suggest your own answer")<br />

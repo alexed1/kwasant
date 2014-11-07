@@ -11,6 +11,7 @@ using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
+using Utilities;
 
 namespace KwasantWeb.Controllers
 {
@@ -18,7 +19,6 @@ namespace KwasantWeb.Controllers
     {
         private const bool EnforceUserInAttendees = true;
         private IAttendee _attendee;
-        private IQuestion _question;
         private INegotiation _negotiation;
 
         //The main NegotiationResponse view displays Question and Answer data to an attendee
@@ -34,8 +34,8 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userDO = uow.UserRepository.GetByKey(userID);
-                
-                _question = new Question();
+
+                _attendee = new Attendee(new EmailAddress(new ConfigRepository()));
                 _negotiation = new Negotiation();
 
 

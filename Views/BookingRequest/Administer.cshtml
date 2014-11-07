@@ -3,7 +3,6 @@
 
 <div id="emailInfoBox" class="col-md-7">
     <div class="emailInfoBox">
-        @*<iframe id="emailInfoFrame" class="frminfo" onload=" emailFrameLoaded()" src="/Api/GetEmailHTML.aspx?emailID=@Model.BookingRequestId"></iframe>*@
         <div id="divEmailViewer">
             @Html.Partial("../Email/Show", Model)
         </div>

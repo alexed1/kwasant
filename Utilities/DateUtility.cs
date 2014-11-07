@@ -48,13 +48,13 @@ namespace Utilities
             }
             if (span.Days > 0)
                 return String.Format("about {0} {1} ago",
-                    span.Days, span.Days == 1 ? "day" : "days");
+                span.Days, span.Days == 1 ? "day" : "days");
             if (span.Hours > 0)
                 return String.Format("about {0} {1} ago",
-                    span.Hours, span.Hours == 1 ? "hour" : "hours");
+                span.Hours, span.Hours == 1 ? "hour" : "hours");
             if (span.Minutes > 0)
                 return String.Format("about {0} {1} ago",
-                    span.Minutes, span.Minutes == 1 ? "minute" : "minutes");
+                span.Minutes, span.Minutes == 1 ? "minute" : "minutes");
             if (span.Seconds > 5)
                 return String.Format("about {0} seconds ago", span.Seconds);
             if (span.Seconds <= 5)

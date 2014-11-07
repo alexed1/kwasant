@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using Data.Infrastructure;
+using Data.States;
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
 
@@ -37,14 +38,13 @@ namespace Data.Entities
         public Boolean TestAccount { get; set; }
 
         //Booker only. Needs to be nullable otherwise DefaultValue doesn't work
-        [Required, DefaultValue(true)]
         public bool? Available { get; set; }
 
         [ForeignKey("EmailAddress")]
         public int? EmailAddressID { get; set; }
         public virtual EmailAddressDO EmailAddress { get; set; }
 
-        [Required, ForeignKey("UserStateTemplate")]
+        [Required, ForeignKey("UserStateTemplate"), DefaultValue(UserState.Active)]
         public int? State { get; set; }
         public virtual _UserStateTemplate UserStateTemplate { get; set; }
         
