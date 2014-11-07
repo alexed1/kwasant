@@ -9,12 +9,16 @@ namespace KwasantWeb.AlertQueues
             AlertManager.AlertConversationMemberAdded += id =>
             {
                 if (ObjectID == id)
-                    AppendUpdate(new BookingRequestUpdatedData());
+                    AppendUpdate(new BookingRequestUpdatedData()
+                        {
+                            BookingRequestId = id
+                        });
             };
         }
     }
 
     public class BookingRequestUpdatedData
     {
+        public int BookingRequestId { get; set; }
     }
 }

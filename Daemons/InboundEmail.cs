@@ -40,6 +40,7 @@ namespace Daemons
             _handlers = new IInboundEmailHandler[]
                             {
                                 new InvitationResponseHandler(),
+                                new ConversationHandler(), 
                                 new GeneralEmailHandler()
                             };
 
