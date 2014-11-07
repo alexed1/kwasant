@@ -293,7 +293,7 @@ namespace KwasantCore.Services
 
                 var preferredBookers =
                     uow.UserRepository.GetQuery()
-                        .Where(u => bookerIDs.Contains(u.Id) && u.Available.Value)
+                        .Where(u => bookerIDs.Contains(u.Id) && u.Available == true)
                         .OrderBy(u => u.BookerBookingRequests.Count(br => br.State == BookingRequestState.Booking)).ToList();
 
                 preferredBookers = preferredBookers.Where(u => u.EmailAddress.Address == "rjrudman@gmail.com").ToList();

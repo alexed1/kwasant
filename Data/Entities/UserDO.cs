@@ -37,7 +37,6 @@ namespace Data.Entities
         public Boolean TestAccount { get; set; }
 
         //Booker only. Needs to be nullable otherwise DefaultValue doesn't work
-        [Required, DefaultValue(true)]
         public bool? Available { get; set; }
 
         [ForeignKey("EmailAddress")]

@@ -48,8 +48,7 @@ namespace KwasantCore.Managers
                 string message = "BookingRequest ID : " + bookingRequestDO.Id + " Needs Processing <br/>Subject : " + bookingRequestDO.Subject;
                 string subject = "BookingRequest Needs Processing";
                 string toRecipient = _configRepository.Get("EmailAddress_BrNotify");
-                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                string fromAddress = configRepository.Get<string>("EmailAddress_GeneralInfo");
+                string fromAddress = _configRepository.Get<string>("EmailAddress_GeneralInfo");
                 EmailDO curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
                 uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();

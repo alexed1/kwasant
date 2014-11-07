@@ -354,10 +354,6 @@
     <Compile Include="Migrations\201410290705052_Sync.29.10.2014.Designer.cs">
       <DependentUpon>201410290705052_Sync.29.10.2014.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201411031555378_Sync.Rob2.03.11.2014.cs" />
-    <Compile Include="Migrations\201411031555378_Sync.Rob2.03.11.2014.Designer.cs">
-      <DependentUpon>201411031555378_Sync.Rob2.03.11.2014.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201411021415158_BookingRequestRelationships.cs" />
     <Compile Include="Migrations\201411021415158_BookingRequestRelationships.Designer.cs">
       <DependentUpon>201411021415158_BookingRequestRelationships.cs</DependentUpon>
@@ -370,17 +366,13 @@
     <Compile Include="Migrations\201411031359120_FixUpAvailableproperty.Designer.cs">
       <DependentUpon>201411031359120_FixUpAvailableproperty.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201411031452569_Sync.Rob.03.11.2014.cs" />
-    <Compile Include="Migrations\201411031452569_Sync.Rob.03.11.2014.Designer.cs">
-      <DependentUpon>201411031452569_Sync.Rob.03.11.2014.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201410311036361_Add_State_to_UserDO.cs" />
     <Compile Include="Migrations\201410311036361_Add_State_to_UserDO.Designer.cs">
       <DependentUpon>201410311036361_Add_State_to_UserDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201411060808088_Sync.Pending.06.11.2014.cs" />
-    <Compile Include="Migrations\201411060808088_Sync.Pending.06.11.2014.Designer.cs">
-      <DependentUpon>201411060808088_Sync.Pending.06.11.2014.cs</DependentUpon>
+    <Compile Include="Migrations\201411071305204_BookerAvailabilityIsNotRequired.cs" />
+    <Compile Include="Migrations\201411071305204_BookerAvailabilityIsNotRequired.Designer.cs">
+      <DependentUpon>201411071305204_BookerAvailabilityIsNotRequired.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
@@ -1235,9 +1227,6 @@
     <EmbeddedResource Include="Migrations\201410290705052_Sync.29.10.2014.resx">
       <DependentUpon>201410290705052_Sync.29.10.2014.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201411031555378_Sync.Rob2.03.11.2014.resx">
-      <DependentUpon>201411031555378_Sync.Rob2.03.11.2014.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411021415158_BookingRequestRelationships.resx">
       <DependentUpon>201411021415158_BookingRequestRelationships.cs</DependentUpon>
     </EmbeddedResource>
@@ -1246,15 +1235,13 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411031359120_FixUpAvailableproperty.resx">
       <DependentUpon>201411031359120_FixUpAvailableproperty.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201411031452569_Sync.Rob.03.11.2014.resx">
-      <DependentUpon>201411031452569_Sync.Rob.03.11.2014.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410311036361_Add_State_to_UserDO.resx">
       <DependentUpon>201410311036361_Add_State_to_UserDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201411060808088_Sync.Pending.06.11.2014.resx">
-      <DependentUpon>201411060808088_Sync.Pending.06.11.2014.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201411071305204_BookerAvailabilityIsNotRequired.resx">
+      <DependentUpon>201411071305204_BookerAvailabilityIsNotRequired.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

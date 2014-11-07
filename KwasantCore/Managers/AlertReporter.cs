@@ -37,9 +37,6 @@ namespace KwasantCore.Managers
             AlertManager.AlertError_EmailSendFailure += Error_EmailSendFailure;
             AlertManager.AlertErrorSyncingCalendar += ErrorSyncingCalendar;
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
-            AlertManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
-            AlertManager.AlertTrackablePropertyCreated += TrackablePropertyCreated;
-            AlertManager.AlertTrackablePropertyDeleted += TrackablePropertyDeleted;
         }
 
         private static void TrackablePropertyUpdated(string name, string contextTable, int id,
@@ -63,71 +60,7 @@ namespace KwasantCore.Managers
             }
         }
 
-        private static void TrackablePropertyCreated(string name, string contextTable, int id,
-            object status)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var newFactDO = new FactDO
-                {
-                    Name = name,
-                    PrimaryCategory = contextTable,
-                    SecondaryCategory = "Journaling",
-                    Activity = "Create",
-                    ObjectId = id,
-                    CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
-                    Status = JsonConvert.SerializeObject(status),
-                    CreateDate = DateTime.Now
-                };
-                uow.FactRepository.Add(newFactDO);
-                uow.SaveChanges();
-            }
-        }
-
-        private static void TrackablePropertyDeleted(string name, string contextTable, int id, int parentID, object status)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var newFactDO = new FactDO
-                    {
-                        Name = name,
-                        PrimaryCategory = contextTable,
-                        SecondaryCategory = "Journaling",
-                        Activity = "Delete",
-                        ObjectId = id,
-                        TaskId = parentID,
-                        CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
-                        Status = JsonConvert.SerializeObject(status),
-                        CreateDate = DateTime.Now
-                    };
-                uow.FactRepository.Add(newFactDO);
-                uow.SaveChanges();
-            }
-        }
-
-        private static void TrackablePropertyUpdated(string name, string contextTable, int id,
-            object status)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var newFactDO = new FactDO
-                {
-                    Name = name,
-                    PrimaryCategory = contextTable,
-                    SecondaryCategory = "Journaling",
-                    Activity = "Update",
-                    ObjectId = id,
-                    CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
-                    Status = JsonConvert.SerializeObject(status),
-                    CreateDate = DateTime.Now
-                };
-                uow.FactRepository.Add(newFactDO);
-                uow.SaveChanges();
-            }
-        }
-
-        private static void TrackablePropertyCreated(string name, string contextTable, int id,
-            object status)
+        private static void TrackablePropertyCreated(string name, string contextTable, int id, object status)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
