@@ -71,7 +71,7 @@ namespace Data.Infrastructure
         public delegate void Error_EmailSendFailureHandler(int emailId, string message);
         public static event Error_EmailSendFailureHandler AlertError_EmailSendFailure;
 
-        public delegate void ErrorSyncingCalendarHandler(RemoteCalendarLinkDO calendarLink);
+        public delegate void ErrorSyncingCalendarHandler(IBaseDO calendarLink);
         public static event ErrorSyncingCalendarHandler AlertErrorSyncingCalendar;
 
         #region Method
@@ -197,7 +197,7 @@ namespace Data.Infrastructure
                 AlertError_EmailSendFailure(emailId, message);
         }
 
-        public static void ErrorSyncingCalendar(RemoteCalendarLinkDO calendarLink)
+        public static void ErrorSyncingCalendar(IBaseDO calendarLink)
         {
             var handler = AlertErrorSyncingCalendar;
             if (handler != null)

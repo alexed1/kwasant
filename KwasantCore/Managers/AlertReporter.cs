@@ -364,8 +364,10 @@ namespace KwasantCore.Managers
                                       emailId, message));
         }
 
-        private void ErrorSyncingCalendar(RemoteCalendarLinkDO calendarLink)
+        private void ErrorSyncingCalendar(IBaseDO data)
         {
+            var calendarLink = data as RemoteCalendarLinkDO;
+            var authData = data as RemoteCalendarAuthDataDO;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IncidentDO incidentDO = new IncidentDO();
@@ -373,25 +375,51 @@ namespace KwasantCore.Managers
                 incidentDO.SecondaryCategory = "Sync";
                 incidentDO.CreateTime = DateTime.Now;
                 incidentDO.Activity = "Failure";
-                incidentDO.ObjectId = calendarLink.Id;
-                incidentDO.CustomerId = calendarLink.LocalCalendar.OwnerID;
-                incidentDO.Notes = calendarLink.LastSynchronizationResult;
+                if (calendarLink != null)
+                {
+                    incidentDO.ObjectId = calendarLink.Id;
+                    incidentDO.CustomerId = calendarLink.LocalCalendar.OwnerID;
+                    incidentDO.Notes = calendarLink.LastSynchronizationResult;
+                }
+                else if (authData != null)
+                {
+                    incidentDO.ObjectId = authData.Id;
+                    incidentDO.CustomerId = authData.UserID;
+                    incidentDO.Notes = "Calendar set synchronization failure.";
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException("data");
+                }
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
 
             Email email = ObjectFactory.GetInstance<Email>();
-            email.SendAlertEmail("CalendarSync failure",
-                                 string.Format(
-                                     "CalendarSync failure for calendar link #{0} ({1}):\r\n" +
-                                     "Customer id: {2},\r\n" +
-                                     "Local calendar id: {3}\r\n," +
-                                     "Remote calendar url: {4}",
-                                     calendarLink.Id,
-                                     calendarLink.LastSynchronizationResult,
-                                     calendarLink.LocalCalendar.OwnerID,
-                                     calendarLink.LocalCalendarID,
-                                     calendarLink.RemoteCalendarHref));
+            string message;
+            if (calendarLink != null)
+            {
+                message = string.Format(
+                    "CalendarSync failure for calendar link #{0} ({1}):\r\n" +
+                    "Customer id: {2},\r\n" +
+                    "Local calendar id: {3}\r\n," +
+                    "Remote calendar url: {4}",
+                    calendarLink.Id,
+                    calendarLink.LastSynchronizationResult,
+                    calendarLink.LocalCalendar.OwnerID,
+                    calendarLink.LocalCalendarID,
+                    calendarLink.RemoteCalendarHref);
+            }
+            else
+            {
+                message = string.Format(
+                    "CalendarSync failure for calendar auth data #{0} ({1}):\r\n" +
+                    "Customer id: {2}",
+                    authData.Id,
+                    authData.Provider.Name,
+                    authData.UserID);
+            }
+            email.SendAlertEmail("CalendarSync failure", message);
         }
 
         public void ProcessBookingRequestCheckedOut(int bookingRequestId, string bookerId)
