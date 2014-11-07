@@ -242,19 +242,21 @@ namespace KwasantCore.Services
             return curEmail;
         }
 
-        public static void ProcessReceivedMessage(IUnitOfWork uow, EmailDO curEmail, MailMessage message)
+        public static void ProcessReceivedMessage(IUnitOfWork uow, MailMessage message)
         {
-            BookingRequestDO existingBookingRequest = Conversation.Match(uow, curEmail);
+            BookingRequestDO existingBookingRequest = Conversation.Match(uow, message.Subject, message.From.Address);
 
             if (existingBookingRequest != null)
             {
-                Conversation.AddEmail(uow, existingBookingRequest, curEmail);
+                EmailDO email = ConvertMailMessageToEmail(uow.EmailRepository, message);
+                Conversation.AddEmail(uow, existingBookingRequest, email);
             }
             else
             {
-                uow.EmailRepository.Remove(curEmail);
                 BookingRequestDO bookingRequest = ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
-                (new BookingRequest()).Process(uow, bookingRequest);
+
+                var newBookingRequest = new BookingRequest();
+                newBookingRequest.Process(uow, bookingRequest);
                 uow.SaveChanges();
 
                 //Fix the HTML text
@@ -279,6 +281,17 @@ namespace KwasantCore.Services
                 }
 
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+
+                var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
+                if (preferredUser != null)
+                {
+                    bookingRequest.State = BookingRequestState.Booking;
+                    bookingRequest.BookerID = preferredUser.Id;
+                    bookingRequest.LastUpdated = DateTimeOffset.Now;
+                    uow.SaveChanges();
+
+                    AlertManager.NewBookingRequestForPreferredBooker(preferredUser.Id, bookingRequest.Id);
+                }
             }
         }
 

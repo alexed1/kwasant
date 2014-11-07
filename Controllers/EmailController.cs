@@ -38,12 +38,14 @@ namespace KwasantWeb.Controllers
             return API.PackResponseGetEmail(thisEmailDO);
         }
 
-        public ActionResult GetInfo(int emailId)
+        public PartialViewResult GetInfo(int emailId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                List<EmailDO> conversationEmails = new List<EmailDO>();
                 EmailDO curEmail;
+
+                List<EmailDO> conversationEmails = new List<EmailDO>();
+                
                 var emailDO = uow.EmailRepository.GetByKey(emailId);
 
                 var bookingRequestDO = emailDO as BookingRequestDO;
@@ -92,9 +94,9 @@ namespace KwasantWeb.Controllers
                 {
                     Conversations = conversationEmails.OrderBy(c => c.DateReceived).Select(e => new ConversationVM
                     {
-                        Header = String.Format("From: {0}  {1}", e.From.Address, e.DateReceived.TimeAgo()),
-                        Body = e.HTMLText,
-                        ExplicitOpen = e == curEmail
+                        FromEmailAddress = String.Format("From: {0}", e.From.Address),
+                        DateRecieved = String.Format("{0}", e.DateReceived.TimeAgo()),
+                        Body = e.HTMLText
                     }).ToList(),
                     FromName = curEmail.From.ToDisplayName(),
                     Subject = curEmail.Subject,
@@ -109,5 +111,16 @@ namespace KwasantWeb.Controllers
                 return PartialView("Show", bookingInfo);
             }
         }
+
+        public JsonResult GetConversationMembers(int emailID)
+        {
+            var view = GetInfo(emailID);
+            var model = view.Model as BookingRequestAdminVM;
+            if (model == null)
+                return new JsonResult { Data = null, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+
+            return new JsonResult { Data = model.Conversations, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+
     }
 }

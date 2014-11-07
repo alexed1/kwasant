@@ -18,6 +18,7 @@ using KwasantCore.Security;
 using KwasantCore.Services;
 using KwasantCore.Managers;
 using KwasantCore.StructureMap;
+using KwasantWeb.AlertQueues;
 using KwasantWeb.App_Start;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
@@ -70,6 +71,8 @@ namespace KwasantWeb
 
 //            ModelBinders.Binders.Add(typeof(EventViewModel), new KwasantDateBinder());
             ModelBinders.Binders.Add(typeof (DateTimeOffset), new KwasantDateBinder());
+
+            SharedAlertQueues.Begin();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
