@@ -252,12 +252,14 @@ namespace KwasantCore.Services
             {
                 currEmailDO = ConvertMailMessageToEmail(uow.EmailRepository, message);
                 Conversation.AddEmail(uow, existingBookingRequest, currEmailDO);
+
+                FixInlineImages(currEmailDO);
+                uow.SaveChanges();
             }
             else
             {
                 BookingRequestDO bookingRequest = ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
-                currEmailDO = bookingRequest;
-
+                
                 var newBookingRequest = new BookingRequest();
                 newBookingRequest.Process(uow, bookingRequest);
                 uow.SaveChanges();
@@ -274,9 +276,14 @@ namespace KwasantCore.Services
 
                     AlertManager.NewBookingRequestForPreferredBooker(preferredUser.Id, bookingRequest.Id);
                 }
+
+                FixInlineImages(bookingRequest);
+                uow.SaveChanges();
             }
+        }
 
-
+        private static void FixInlineImages(EmailDO currEmailDO)
+        {
             //Fix the HTML text
             var attachmentSubstitutions =
                 currEmailDO.Attachments.Where(a => !String.IsNullOrEmpty(a.ContentID))
