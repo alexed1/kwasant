@@ -1,0 +1,161 @@
+﻿@using Newtonsoft.Json
+@model KwasantWeb.ViewModels.BookingRequestAdminVM
+@{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+@Styles.Render("~/bundles/css/bootstrap30")
+@Styles.Render("~/bundles/css/backendcss")
+@Styles.Render("~/bundles/css/colorbox")
+@Styles.Render("~/bundles/css/temp")
+
+<script src="~/Content/js/jquery.js"></script>
+<script src="~/Scripts/ContextMenu/jquery.contextMenu.js"></script>
+<link href="~/Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
+<link href="~/Content/css/backendcss/default.css" rel="stylesheet" />
+<script src="~/Content/js/jquery-ui.js"></script>
+<style type="text/css">
+    </style>
+
+<style>
+    .email-details table td {
+        padding-bottom: 5px;
+    }
+    .draggable {
+        cursor: pointer;
+        border: 1px solid #eee;
+        list-style-type: none;
+        margin: 0;
+        padding: 5px 0 0 0;
+        margin-right: 10px;
+        min-height: 47px;
+        background: #FAF5E9;
+        border-color: #DFDBD3;
+    }
+
+    .draggable li {
+        margin: 0 5px 5px 5px;
+        padding: 5px;
+        padding-left: 7px;
+        font-size: 1.2em;
+        -ms-border-radius: 15px;
+        border-radius: 15px;
+        border: 1px solid;
+        overflow-x: hidden;
+        overflow-y: hidden;
+    }
+
+    .addressBook {
+        width: 200px;
+        max-width: 200px;
+        min-height: 533px;
+    }
+
+    .addressField {
+        width: 450px;
+        max-width: 450px;
+        height: 100%;
+        float: right;
+        margin-right: 0;
+    }
+</style>
+<script>
+    $(function () {
+        $(".draggable").sortable({
+            connectWith: ".draggable"
+        }).disableSelection();
+    });
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#dragNeg').click(function () {
+            $("#bodyText").insertAtCaret('<negotiationLink key="21C6C81E-5D9E-4A49-8657-963B7FDCB064" />');
+            return false;
+        });
+    });
+
+    $.fn.insertAtCaret = function (myValue) {
+        return this.each(function () {
+            //IE support
+            if (document.selection) {
+                this.focus();
+                sel = document.selection.createRange();
+                sel.text = myValue;
+                this.focus();
+            }
+                //MOZILLA / NETSCAPE support
+            else if (this.selectionStart || this.selectionStart == '0') {
+                var startPos = this.selectionStart;
+                var endPos = this.selectionEnd;
+                var scrollTop = this.scrollTop;
+                this.value = this.value.substring(0, startPos) + myValue + this.value.substring(endPos, this.value.length);
+                this.focus();
+                this.selectionStart = startPos + myValue.length;
+                this.selectionEnd = startPos + myValue.length;
+                this.scrollTop = scrollTop;
+            } else {
+                this.value += myValue;
+                this.focus();
+            }
+        });
+    };
+</script>
+
+<div class="email-info-section" style="margin-top: 5px; margin-bottom: 5px; max-height:1000px;min-height:600px; height: 100%; width:800px;">
+    <div style="float:left; width:30%">
+        <h4 style="width:200px; text-align:center">Address book</h4>
+        <ul id="sortable1" class="draggable addressBook">
+            <li>rjrudman@gmail.com</li>
+            <li>alex@gmail.com</li>
+            <li>max@gmail.com</li>
+            <li>kate@gmail.com</li>
+        </ul>
+    </div>
+    <div style="float:right; width:70%; margin-top:10px;">
+        <div class="info">
+
+            <div class="email-details with-border">
+                <table style="width:100%; border-collapse: collapse">
+                    <tr>
+                        <td class="">Subject:</td>
+                        <td>
+                            <input type="text" class="addressField" placeholder="Enter subject..." />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="">To:</td>
+                        <td>
+                            <ul class="addressField draggable"></ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="">CC:</td>
+                        <td>
+                            <ul class="addressField draggable"></ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="">BCC:</td>
+                        <td>
+                            <ul class="addressField draggable"></ul>
+                        </td>
+                    </tr>
+                </table>
+                <div style="margin:5px;padding:5px;border:solid 1px">
+                    <a id="dragNeg" href="javascript:void(0);" ondrag="startDragNegotiationLink(event)">Insert link to negotiation</a>
+                </div>
+            </div>
+
+        </div>
+        <div class="">
+            <textarea id="bodyText" style="width:100%;height:310px; -moz-resize:none; -ms-resize:none; -o-resize:none; resize:none;" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+        </div>
+        <div class="space form-actions negotiation-form-actions">
+            <input id="btnSend" type="button" value="Send" class="btn pull-left small-dialog-button shadow-button" onclick="submitNegotiation()" />
+
+            <a href="javascript:close();" class="btn cancel-btn small-dialog-button shadow-button pull-left" style="margin-left:5px;">Cancel</a>
+        </div>
+    </div>
+</div>
+
+
+

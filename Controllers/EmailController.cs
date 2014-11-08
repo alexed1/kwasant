@@ -123,5 +123,10 @@ namespace KwasantWeb.Controllers
             return new JsonResult { Data = model.Conversations, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
+        public ActionResult Send()
+        {
+            return View((BookingRequestAdminVM)null);
+        }
+
     }
 }

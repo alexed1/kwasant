@@ -374,6 +374,10 @@
     <Compile Include="Migrations\201411071305204_BookerAvailabilityIsNotRequired.Designer.cs">
       <DependentUpon>201411071305204_BookerAvailabilityIsNotRequired.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411081534317_Sync.Rob.08.11.2014.cs" />
+    <Compile Include="Migrations\201411081534317_Sync.Rob.08.11.2014.Designer.cs">
+      <DependentUpon>201411081534317_Sync.Rob.08.11.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
@@ -1241,6 +1245,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411071305204_BookerAvailabilityIsNotRequired.resx">
       <DependentUpon>201411071305204_BookerAvailabilityIsNotRequired.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411081534317_Sync.Rob.08.11.2014.resx">
+      <DependentUpon>201411081534317_Sync.Rob.08.11.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
