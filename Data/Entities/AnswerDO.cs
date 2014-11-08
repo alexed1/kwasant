@@ -31,14 +31,6 @@ namespace Data.Entities
         public string UserID { get; set; }
         public virtual UserDO UserDO { get; set; }
 
-        /// <summary>
-        /// This is a link to the quasi-email generated via answers. 
-        /// See https://maginot.atlassian.net/wiki/display/SH/Creating+Email+analogues+for+Negotiation+Responses for more information
-        /// </summary>
-        [ForeignKey("Email"), Required]
-        public int? EmailID { get; set; }
-        public virtual EmailDO EmailDO { get; set; }
-
         public void AfterCreate()
         {
             AlertManager.TrackablePropertyCreated("Answer added", "Answer", Id, "Name: " + Text);

@@ -9,11 +9,11 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("Answer")]
+        [ForeignKey("Answer"), Required]
         public int? AnswerID { get; set; }
         public virtual AnswerDO Answer { get; set; }
 
-        [ForeignKey("User")]
+        [ForeignKey("User"), Required]
         public String UserID { get; set; }
         public virtual UserDO User { get; set; }
     }
