@@ -1,3 +1,4 @@
+using System.Data.Entity;
 using System.Net;
 using Data.Entities;
 using Data.Infrastructure;
@@ -16,6 +17,7 @@ using KwasantCore.Managers.APIManagers.Packagers.SendGrid;
 using KwasantCore.Managers.APIManagers.Packagers.Twilio;
 using KwasantCore.Security;
 using KwasantCore.Services;
+using Microsoft.AspNet.Identity;
 using Moq;
 using SendGrid;
 using StructureMap;
@@ -65,7 +67,6 @@ namespace KwasantCore.StructureMap
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.SendGridHander);
-                For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);
                 For<IBookingRequest>().Use<BookingRequest>();
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
@@ -77,7 +78,7 @@ namespace KwasantCore.StructureMap
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
-                For<ITransport>().Use<Web>(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
+                For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
                 For<IRestfullCall>().Use<RestfulCallWrapper>();
                 For<ITwilioRestClient>().Use<TwilioRestClientWrapper>();
             }
@@ -91,11 +92,12 @@ namespace KwasantCore.StructureMap
                 For<ISMSPackager>().Use<TwilioPackager>();
                 For<IMappingEngine>().Use(Mapper.Engine);
                 For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.SendGridHander);
-                For<IEmailPackager>().Use<MandrillPackager>().Singleton().Named(EnvelopeDO.MandrillHander);
                 For<IBookingRequest>().Use<BookingRequest>();
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<ITracker>().Use<SegmentIO>();
+
+                For<ISecurityServices>().Use(new MockedSecurityServices());
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();

@@ -15,8 +15,6 @@ using Utilities.Logging;
 
 namespace KwasantCore.Services
 {
-
-
     public class BookingRequest : IBookingRequest
     {
         private IAttendee _attendee;
@@ -52,7 +50,7 @@ namespace KwasantCore.Services
                     .Skip(start)
                     .Take(length)
                     .Select(e =>
-                        (object) new
+                        (object)new
                         {
                             id = e.Id,
                             subject = e.Subject,
@@ -69,29 +67,33 @@ namespace KwasantCore.Services
         public string GetUserId(IBookingRequestDORepository curBookingRequestRepository, int bookingRequestId)
         {
             return (from requests in curBookingRequestRepository.GetAll()
-                where requests.Id == bookingRequestId
-                select requests.User.Id).FirstOrDefault();
+                    where requests.Id == bookingRequestId
+                    select requests.User.Id).FirstOrDefault();
         }
 
         public object GetUnprocessed(IUnitOfWork uow)
         {
             return
                 uow.BookingRequestRepository.GetAll()
-                    .Where(e => e.State == BookingRequestState.Unstarted)
+                    .Where(e => (e.State == BookingRequestState.Unstarted) || (e.State == BookingRequestState.NeedsBooking))
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
                         {
+                            var text = e.PlainText ?? e.HTMLText;
+                            if (String.IsNullOrEmpty(text))
+                                text = String.Empty;
+                            text = text.Trim();
+                            if (text.Length > 400)
+                                text = text.Substring(400);
+
                             return new
                             {
                                 id = e.Id,
                                 subject = e.Subject,
                                 fromAddress = e.From.Address,
                                 dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
-                                body =
-                                    e.HTMLText.Trim().Length > 400
-                                        ? e.HTMLText.Trim().Substring(0, 400)
-                                        : e.HTMLText.Trim()
+                                body = text
                             };
                         })
                     .ToList();
@@ -99,7 +101,7 @@ namespace KwasantCore.Services
 
         private List<InstructionDO> ProcessShortHand(IUnitOfWork uow, string emailBody)
         {
-            List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?) travelTime).ToList();
+            List<int?> instructionIDs = ProcessTravelTime(emailBody).Select(travelTime => (int?)travelTime).ToList();
             instructionIDs.Add(ProcessAllDay(emailBody));
             instructionIDs = instructionIDs.Where(i => i.HasValue).Distinct().ToList();
             InstructionRepository instructionRepo = uow.InstructionRepository;
@@ -177,11 +179,16 @@ namespace KwasantCore.Services
             Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + bookingRequestDO.Id);
             bookingRequestDO.BookerID = null;
             // Send mail to Booker
-            var userDO = uow.UserRepository.GetByKey(bookerId);
-            EmailAddressDO emailAddressDO = new EmailAddressDO(userDO.EmailAddress.Address);
-            string message = "BookingRequest ID :" + bookingRequestDO.Id + " Timed Out";
+            var curbooker = uow.UserRepository.GetByKey(bookerId);
+            string message = "BookingRequest ID : " + bookingRequestDO.Id + " Timed Out <br/>Subject : " + bookingRequestDO.Subject;
+
+            if (curbooker.EmailAddress != null)
+                message += "<br/>Booker : " + curbooker.EmailAddress.Address;
+            else
+                message += "<br/>Booker : " + curbooker.FirstName;
+
             string subject = "BookingRequest Timeout";
-            string toRecipient = emailAddressDO.Address;
+            string toRecipient = curbooker.EmailAddress.Address;
             IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             string fromAddress = configRepository.Get<string>("EmailAddress_GeneralInfo");
             EmailDO curEmail = _email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
@@ -198,15 +205,18 @@ namespace KwasantCore.Services
 
             //need to add the addresses of people cc'ed or on the To line of the BookingRequest
             emailAddresses.AddRange(eventDO.BookingRequest.Recipients.Select(r => r.EmailAddress));
-            
+
             foreach (var email in emailAddresses)
             {
-                var curAttendee = _attendee.Create(uow, email.Address, eventDO, email.Name);
-                eventDO.Attendees.Add(curAttendee);
+                if (!FilterUtility.IsTestAttendee(email.Address))
+                {
+                    var curAttendee = _attendee.Create(uow, email.Address, eventDO, email.Name);
+                    eventDO.Attendees.Add(curAttendee);
+                }
             }
         }
 
-
+        //if curBooker is null, will return all BR's of state "Booking"
         public object GetCheckOutBookingRequest(IUnitOfWork uow, string curBooker)
         {
             return
@@ -244,6 +254,63 @@ namespace KwasantCore.Services
 
             return daysAgo;
         }
-    }
 
+        public object GetAllBookingRequests(IUnitOfWork uow)
+        {
+            return
+                uow.BookingRequestRepository.GetAll()
+                    .OrderByDescending(e => e.DateReceived)
+                    .Select(
+                        e =>
+                        {
+                            return new
+                            {
+                                id = e.Id,
+                                subject = e.Subject,
+                                fromAddress = e.From.Address,
+                                dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                                body =
+                                    e.HTMLText.Trim().Length > 400
+                                        ? e.HTMLText.Trim().Substring(0, 400)
+                                        : e.HTMLText.Trim()
+                            };
+                        })
+                    .ToList();
+        }
+
+        public UserDO GetPreferredBooker(BookingRequestDO bookingRequestDO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookerRoleID = uow.AspNetUserRolesRepository.GetRoleID(Roles.Booker);
+
+                var bookerIDs =
+                    uow.AspNetUserRolesRepository.GetQuery()
+                        .Where(ur => ur.RoleId == bookerRoleID)
+                        .Select(ur => ur.UserId);
+
+                var preferredBookers =
+                    uow.UserRepository.GetQuery()
+                        .Where(u => bookerIDs.Contains(u.Id) && u.Available == true)
+                        .OrderBy(u => u.BookerBookingRequests.Count(br => br.State == BookingRequestState.Booking)).ToList();
+
+                return preferredBookers.FirstOrDefault();
+            }
+        }
+
+        public String GetConversationThread(BookingRequestDO bookingRequestDO)
+        {
+            const string conversationThreadFormat = @"
+From: {0} {1}<br/><br/>
+{2}
+";
+            var threads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO});
+
+            var result = String.Join("<br/><br/>", threads.OrderBy(b => b.DateReceived).Select(e =>
+                String.Format(conversationThreadFormat, e.From.Name,
+                    e.DateReceived.TimeAgo(), e.HTMLText)));
+
+            return result;
+        }
+    }
 }

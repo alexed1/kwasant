@@ -1,28 +1,25 @@
-$(document).ready(function () {
-
-	var bgHeight = $(window).height() - $('.body-content').height() - $('.site-footer').height() - $('.site-header-wrap').height() - 21;
-	if ($('#loginform').length > 0) {
-		$('.site-header').addClass('login-bg');
+$(document).ready(function () {          
+    var containerHeight, loginFormTop 
+    getLogiTop();
+    if ($('#loginform, .registration-section, .login-section.status-message').length > 0) {
+	    $('#main-container').addClass('login-page');
 		$(window).resize(function () {
-			bgHeight = $(window).height() - $('.body-content').height() - $('.site-footer').height() - $('.site-header-wrap').height() - 21;
-			if (bgHeight <= 100) {
-				bgHeight = 100;
-			}
-			showLogo();
-			$('.site-header').css('padding-bottom', bgHeight);
-		});
-		$('.site-header').css('padding-bottom', bgHeight);
-	} else {
-		$('.site-header').removeClass('login-bg');
-	}
-	showLogo();
+		    getLogiTop();
+		});   
+	} else {    
+	    $('#main-container').removeClass('login-page');
+    }
+
+    if ($('#emailInfoBox').length > 0) {
+        $("body").removeClass('view-popup-window');
+    }
 	
 });
 
-function showLogo() {
-	if ($(window).height() <= 768) {
-		$('.login-bg .logotext').fadeOut();
-	} else {
-		$('.login-bg .logotext').fadeIn();
-	}
+function getLogiTop() {
+    containerHeight = $(window).height() - $('.site-footer').height() - $('.site-header-wrap').height() - 30;
+    loginFormTop = (containerHeight - $('.login-section').height()) / 2;
+    if (loginFormTop > 0) {
+        $('.login-section').css('margin-top', loginFormTop)
+    }
 }

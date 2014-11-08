@@ -31,6 +31,8 @@ namespace Daemons
         public delegate void ExplicitCustomerCreatedHandler(string subject);
         public static event ExplicitCustomerCreatedHandler TestMessageReceived;
 
+        private string _fromEmailAddress;
+
         //warning: if you remove this empty constructor, Activator calls to this type will fail.
         public InboundEmail()
         {
@@ -47,11 +49,11 @@ namespace Daemons
             _handlers = new IInboundEmailHandler[]
                             {
                                 new InvitationResponseHandler(),
-                                new BookingRequestHandler()
+                                new GeneralEmailHandler()
                             };
 
-            AddTest("OutboundEmailDaemon_TestGmail", "Test Gmail");
-            AddTest("OutboundEmailDaemon_TestMandrill", "Test Mandrill");
+            _fromEmailAddress = _configRepository.Get("EmailAddress_GeneralInfo");
+            AddTest("OutboundEmailDaemon_Test", "Test");
         }
 
         private string GetIMAPServer()
@@ -205,7 +207,7 @@ namespace Daemons
                 }
             }
 
-            if (_ignoreEmailsFrom.Contains(messageInfo.From.Address))
+            if (_ignoreEmailsFrom.Contains(messageInfo.From.Address) || String.Equals(messageInfo.From.Address, _fromEmailAddress, StringComparison.OrdinalIgnoreCase))
                 LogEvent("Email ignored from " + messageInfo.From.Address);
 
             try

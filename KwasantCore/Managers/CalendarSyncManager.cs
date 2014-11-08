@@ -143,7 +143,7 @@ namespace KwasantCore.Managers
             {
                 var calendarLinks = uow.RemoteCalendarLinkRepository
                     .GetQuery()
-                    .Where(rcl => rcl.LocalCalendarID == localCalendarId)
+                    .Where(rcl => rcl.LocalCalendarID == localCalendarId && !rcl.IsDisabled)
                     .ToList();
                 foreach (var remoteCalendarLink in calendarLinks)
                 {
@@ -173,31 +173,38 @@ namespace KwasantCore.Managers
                                             DateTimeOffset to)
         {
             var client = _clientFactory.Create(authData);
-            // TODO: obtain a real list from remote calendar provider
-            var remoteCalendars = new[] {authData.User.EmailAddress.Address};
+            var remoteCalendars = await client.GetCalendarsAsync(authData);
+            if (remoteCalendars.Count == 0)
+                return;
             // if localDefaultCalendar is null then each new calendar link will get a new local calendar.
             var localDefaultCalendar = uow.CalendarRepository.GetQuery().FirstOrDefault(c => c.OwnerID == authData.UserID);
-            foreach (var remoteName in remoteCalendars)
+            // take only first remote calendar for now
+            foreach (var remoteCalendar in remoteCalendars.Take(1))
             {
-                var calendarLink = uow.RemoteCalendarLinkRepository.GetOrCreate(authData, remoteName, localDefaultCalendar);
-                try
-                {
-                    calendarLink.DateSynchronizationAttempted = DateTimeOffset.UtcNow;
-                    await SyncCalendarAsync(uow, @from, to, client, calendarLink);
+                var calendarLink = uow.RemoteCalendarLinkRepository.GetOrCreate(authData, remoteCalendar.Key, localDefaultCalendar);
+                calendarLink.RemoteCalendarName = remoteCalendar.Value;
 
-                    calendarLink.LastSynchronizationResult = "Success";
-                    calendarLink.DateSynchronized = calendarLink.DateSynchronizationAttempted;
-                }
-                catch (Exception ex)
+                if (!calendarLink.IsDisabled)
                 {
-                    calendarLink.LastSynchronizationResult = string.Concat("Error: ", ex.Message);
-                    Logger.GetLogger().Warn(
-                        string.Format("Error occurred on calendar '{0}' synchronization with '{1} @ {2}'.",
-                                      calendarLink.LocalCalendar.Name,
-                                      calendarLink.RemoteCalendarName,
-                                      calendarLink.Provider.Name),
-                        ex);
-                    AlertManager.ErrorSyncingCalendar(calendarLink);
+                    try
+                    {
+                        calendarLink.DateSynchronizationAttempted = DateTimeOffset.UtcNow;
+                        await SyncCalendarAsync(uow, @from, to, client, calendarLink);
+
+                        calendarLink.LastSynchronizationResult = "Success";
+                        calendarLink.DateSynchronized = calendarLink.DateSynchronizationAttempted;
+                    }
+                    catch (Exception ex)
+                    {
+                        calendarLink.LastSynchronizationResult = string.Concat("Error: ", ex.Message);
+                        Logger.GetLogger().Warn(
+                            string.Format("Error occurred on calendar '{0}' synchronization with '{1} @ {2}'.",
+                                          calendarLink.LocalCalendar.Name,
+                                          calendarLink.RemoteCalendarHref,
+                                          calendarLink.Provider.Name),
+                            ex);
+                        AlertManager.ErrorSyncingCalendar(calendarLink);
+                    }
                 }
             }
         }

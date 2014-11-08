@@ -26,7 +26,7 @@ namespace KwasantCore.Services
         /// <returns>Direct if the user has a booking request or a password. Otherwise, Delegate.</returns>
         public CommunicationMode GetMode(UserDO userDO)
         {
-            if (userDO.BookingRequests != null && userDO.BookingRequests.Any())
+            if (userDO.UserBookingRequests != null && userDO.UserBookingRequests.Any())
                 return CommunicationMode.Direct;
             if(!String.IsNullOrEmpty(userDO.PasswordHash))
                 return CommunicationMode.Direct;
@@ -60,23 +60,6 @@ namespace KwasantCore.Services
                     return false;
         }
 
-        public UserDO Get(string curUserId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curUser = uow.UserRepository.GetAll().FirstOrDefault(e => e.Id == curUserId);
-                return new UserDO
-                {
-                    Id = curUser.Id,
-                    Calendars = curUser.Calendars,
-                    Email = curUser.Email,
-                    EmailAddress = curUser.EmailAddress,
-                    FirstName = curUser.FirstName,
-                    LastName = curUser.LastName
-                };
-            }
-        }
-        
         public void Create(IUnitOfWork uow, UserDO submittedUserData, string role, bool sendEmail)
         {
             if (sendEmail)

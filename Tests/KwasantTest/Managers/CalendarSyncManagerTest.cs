@@ -38,6 +38,9 @@ namespace KwasantTest.Managers
                                  It.IsAny<DateTimeOffset>()))
                 .ReturnsAsync(_remoteCalendarEvents);
             clientMock.Setup(c =>
+                             c.GetCalendarsAsync(It.IsAny<IRemoteCalendarAuthData>()))
+                .ReturnsAsync(new Dictionary<string, string>() { { "url", "name" } });
+            clientMock.Setup(c =>
                               c.CreateEventAsync(It.IsAny<IRemoteCalendarLink>(),
                                                  It.IsAny<iCalendar>()))
                 .Returns<IRemoteCalendarLink, iCalendar>((calendarLink, iCalEvent) =>

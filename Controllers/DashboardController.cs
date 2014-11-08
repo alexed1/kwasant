@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using KwasantCore.Managers;
 using KwasantWeb.ViewModels;
 using StructureMap;
 
 namespace KwasantWeb.Controllers
 {
+    [KwasantAuthorize(Roles = Roles.Booker)]
     public class DashboardController : Controller
     {
         //
@@ -23,7 +23,10 @@ namespace KwasantWeb.Controllers
                 throw new HttpException(400, "Booking request not found");
 
             if (TempData["requestInfo"] == null)
-                GetRequestInfo(id);
+            {
+                var data = new EmailController().GetInfo(id);
+                TempData["requestInfo"] = data.Model;
+            }
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -38,7 +41,7 @@ namespace KwasantWeb.Controllers
                         n =>
                             n.NegotiationState == NegotiationState.InProcess ||
                             n.NegotiationState == NegotiationState.AwaitingClient)
-                        .Select(n => (int?)n.Id)
+                        .Select(n => (int?) n.Id)
                         .FirstOrDefault();
 
                 CalendarShowVM calWidget = new CalendarShowVM
@@ -53,61 +56,16 @@ namespace KwasantWeb.Controllers
                 return View(new DashboardShowVM
                 {
                     CalendarVM = calWidget,
-                    ResolvedNegotiations = bookingRequestDO.Negotiations.Where(n => n.NegotiationState == NegotiationState.Resolved).Select(n => new DashboardNegotiationVM
-                    {
-                        Id = n.Id,
-                        Name = n.Name
-                    }).ToList(),
+                    ResolvedNegotiations =
+                        bookingRequestDO.Negotiations.Where(n => n.NegotiationState == NegotiationState.Resolved)
+                            .Select(n => new DashboardNegotiationVM
+                            {
+                                Id = n.Id,
+                                Name = n.Name
+                            }).ToList(),
                     BookingRequestVM = TempData["requestInfo"] as BookingRequestAdminVM
                 });
             }
         }
-
-        public void GetRequestInfo(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curEmail = uow.EmailRepository.GetAll().Where(e => e.Id == bookingRequestId || e.ConversationId == bookingRequestId).OrderByDescending(e => e.DateReceived).FirstOrDefault();
-
-
-                const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
-
-                var attachmentInfo = String.Join("<br />",
-                            curEmail.Attachments.Select(
-                                attachment =>
-                                "<a href='" + String.Format(fileViewURLStr, attachment.Id) + "' target='" +
-                                attachment.OriginalName + "'>" + attachment.OriginalName + "</a>"));
-
-                string booker = "none";
-                string bookerId = uow.BookingRequestRepository.GetByKey(bookingRequestId).BookerID;
-                if (bookerId != null)
-                {
-                    booker = uow.UserRepository.GetByKey(bookerId).EmailAddress.Address;
-                }
-
-                BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
-                {
-                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
-                    BookingRequestId = bookingRequestId,
-                    CurEmailData = new EmailDO
-                    {
-                        Attachments = curEmail.Attachments,
-                        From = curEmail.From,
-                        Recipients = curEmail.Recipients,
-                        HTMLText = curEmail.HTMLText,
-                        Id = curEmail.Id,
-                        FromID = curEmail.FromID,
-                        DateCreated = curEmail.DateCreated,
-                        Subject = curEmail.Subject
-                    },
-                    EmailTo = String.Join(", ", curEmail.To.Select(a => a.Address)),
-                    EmailCC = String.Join(", ", curEmail.CC.Select(a => a.Address)),
-                    EmailBCC = String.Join(", ", curEmail.BCC.Select(a => a.Address)),
-                    EmailAttachments = attachmentInfo,
-                    Booker = booker
-                };
-                TempData["requestInfo"] = bookingInfo;
-            }
-        }
-	}
+    }
 }

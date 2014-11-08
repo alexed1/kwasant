@@ -48,9 +48,8 @@ namespace Data.Migrations
             AddCustomers(uow);
             AddBookingRequest(uow);
 
-            SeedRemoteCalendarProviders(uow);
-
             AddCalendars(uow);
+
             AddProfiles(uow);
             AddEvents(uow);
         }
@@ -138,31 +137,6 @@ namespace Data.Migrations
             }
         }
 
-        private static void SeedRemoteCalendarProviders(IUnitOfWork uow)
-        {
-            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            var providers = new[]
-                                {
-                                    new RemoteCalendarProviderDO
-                                        {
-                                            Name = "Google",
-                                            AuthType = ServiceAuthorizationType.OAuth2,
-                                            AppCreds = JsonConvert.SerializeObject(
-                                                new
-                                                    {
-                                                        ClientId = configRepository.Get("GoogleCalendarClientId"),
-                                                        ClientSecret = configRepository.Get("GoogleCalendarClientSecret"),
-                                                        Scopes = "https://www.googleapis.com/auth/calendar"
-                                                    }),
-                                            CalDAVEndPoint = "https://apidata.googleusercontent.com/caldav/v2"
-                                        }
-                                };
-            foreach (var provider in providers)
-            {
-                if (uow.RemoteCalendarProviderRepository.GetByName(provider.Name) == null)
-                    uow.RemoteCalendarProviderRepository.Add(provider);
-            }
-        }
 
         //Do not remove. Resharper says it's not in use, but it's being used via reflection
         // ReSharper disable UnusedMember.Local
@@ -328,10 +302,13 @@ namespace Data.Migrations
             if (userDO == null)
                 userDO = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == curUserName);
 
+            var fromUser = uow.EmailAddressRepository.GetOrCreateEmailAddress(curUserName);
+
             var curBookingRequestDO = new BookingRequestDO
             {
                 DateCreated = DateTimeOffset.UtcNow,
-                From = uow.EmailAddressRepository.GetOrCreateEmailAddress(curUserName),
+                From = fromUser,
+                FromID = fromUser.Id,
                 Subject = subject,
                 HTMLText = htmlText,
                 EmailStatus = EmailState.Unprocessed,
@@ -339,7 +316,7 @@ namespace Data.Migrations
                 State = BookingRequestState.Unstarted,
                 User = userDO
             };
-            userDO.BookingRequests.Add(curBookingRequestDO);
+            userDO.UserBookingRequests.Add(curBookingRequestDO);
 
             foreach (var calendar in curBookingRequestDO.User.Calendars)
                 curBookingRequestDO.Calendars.Add(calendar);
@@ -391,7 +368,7 @@ namespace Data.Migrations
             if (curUser == null)
                 curUser = uow.UserRepository.FindOne(e => e.EmailAddress.Address == curUserEmail);
 
-            var bookingRequestID = curUser.BookingRequests.First().Id;
+            var bookingRequestID = curUser.UserBookingRequests.First().Id;
             var calendarID = curUser.Calendars.FirstOrDefault(e => e.Name == calendarName).Id;
 
             for (int eventNumber = 1; eventNumber < 11; eventNumber++)

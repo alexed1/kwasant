@@ -1,10 +1,12 @@
 ﻿using System;
-using StructureMap;
-using Data.Interfaces;
 using Data.Entities;
-namespace Data.Infrastructure
+using Data.Infrastructure;
+using Data.Interfaces;
+using StructureMap;
+
+namespace KwasantCore.Managers
 {
-   public class IncidentReporter
+    public class IncidentReporter
     {
         public void SubscribeToAlerts()
         {

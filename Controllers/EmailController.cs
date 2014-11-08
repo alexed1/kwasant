@@ -38,53 +38,90 @@ namespace KwasantWeb.Controllers
             return API.PackResponseGetEmail(thisEmailDO);
         }
 
-        public ActionResult GetInfo(int emailId)
+        public PartialViewResult GetInfo(int emailId, bool? readonlyView = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curEmail = uow.EmailRepository.GetAll().Where(e => e.Id == emailId || e.ConversationId == emailId).OrderByDescending(e => e.DateReceived).First();
+                EmailDO curEmail;
+
+                List<EmailDO> conversationEmails = new List<EmailDO>();
+                
+                var emailDO = uow.EmailRepository.GetByKey(emailId);
+
+                var bookingRequestDO = emailDO as BookingRequestDO;
+                if (bookingRequestDO != null)
+                {
+                    curEmail = bookingRequestDO;
+                    conversationEmails.Add(bookingRequestDO);
+                    conversationEmails.AddRange(bookingRequestDO.ConversationMembers);
+                }
+                else
+                {
+                    curEmail = emailDO;
+                    if (emailDO.Conversation != null)
+                    {
+                        conversationEmails.Add(emailDO.Conversation);
+                        conversationEmails.AddRange(emailDO.Conversation.ConversationMembers);
+                    }
+                    else
+                    {
+                        conversationEmails.Add(curEmail);
+                    }
+                }
+
+                //var curEmail = uow.EmailRepository.GetAll().Where(e => e.Id == emailId || e.ConversationId == emailId).OrderByDescending(e => e.DateReceived).First();
                 const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
 
                 var attachmentInfo = String.Join("<br />",
-                            curEmail.Attachments.Select(
+                            curEmail.Attachments.Where(a => String.IsNullOrEmpty(a.ContentID)).Select(
                                 attachment =>
                                 "<a href='" + String.Format(fileViewURLStr, attachment.Id) + "' target='" +
                                 attachment.OriginalName + "'>" + attachment.OriginalName + "</a>"));
 
                 string booker = "none";
-                string bookerId = uow.BookingRequestRepository.GetByKey(emailId).BookerID;
-                if (bookerId != null)
+                if (bookingRequestDO != null)
                 {
-                    var curbooker = uow.UserRepository.GetByKey(bookerId);
-                    if (curbooker.EmailAddress != null)
-                        booker = curbooker.EmailAddress.Address;
-                    else
-                        booker = curbooker.FirstName;
+                    if (bookingRequestDO.Booker != null)
+                    {
+                        if (bookingRequestDO.Booker.EmailAddress != null)
+                            booker = bookingRequestDO.Booker.EmailAddress.Address;
+                        else
+                            booker = bookingRequestDO.Booker.FirstName;
+                    }
                 }
-
+                
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
                 {
-                    BookingRequestId = emailId,
-                    CurEmailData = new EmailDO
+                    Conversations = conversationEmails.OrderBy(c => c.DateReceived).Select(e => new ConversationVM
                     {
-                        Attachments = curEmail.Attachments,
-                        From = curEmail.From,
-                        Recipients = curEmail.Recipients,
-                        HTMLText = curEmail.HTMLText,
-                        Id = curEmail.Id,
-                        FromID = curEmail.FromID,
-                        DateCreated = curEmail.DateCreated,
-                        Subject = curEmail.Subject
-                    },
+                        FromEmailAddress = String.Format("From: {0}", e.From.Address),
+                        DateRecieved = String.Format("{0}", e.DateReceived.TimeAgo()),
+                        Body = e.HTMLText
+                    }).ToList(),
+                    FromName = curEmail.From.ToDisplayName(),
+                    Subject = curEmail.Subject,
+                    BookingRequestId = emailId,
                     EmailTo = String.Join(", ", curEmail.To.Select(a => a.Address)),
                     EmailCC = String.Join(", ", curEmail.CC.Select(a => a.Address)),
                     EmailBCC = String.Join(", ", curEmail.BCC.Select(a => a.Address)),
                     EmailAttachments = attachmentInfo,
+                    ReadOnly = readonlyView.HasValue && readonlyView.Value,
                     Booker = booker
                 };
 
                 return PartialView("Show", bookingInfo);
             }
         }
+
+        public JsonResult GetConversationMembers(int emailID)
+        {
+            var view = GetInfo(emailID);
+            var model = view.Model as BookingRequestAdminVM;
+            if (model == null)
+                return new JsonResult { Data = null, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+
+            return new JsonResult { Data = model.Conversations, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        }
+
     }
 }

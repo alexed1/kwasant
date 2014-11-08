@@ -36,6 +36,23 @@ namespace KwasantCore.Managers
             AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerWorkflow;
             AlertManager.AlertCustomerCreated += NewCustomerWorkflow;
             AlertManager.AlertBookingRequestCreated += BookingRequestCreated;
+            AlertManager.AlertBookingRequestNeedsProcessing += BookingRequestNeedsProcessing;
+        }
+
+        private void BookingRequestNeedsProcessing(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                var email = ObjectFactory.GetInstance<Email>();
+                string message = "BookingRequest ID : " + bookingRequestDO.Id + " Needs Processing <br/>Subject : " + bookingRequestDO.Subject;
+                string subject = "BookingRequest Needs Processing";
+                string toRecipient = _configRepository.Get("EmailAddress_BrNotify");
+                string fromAddress = _configRepository.Get<string>("EmailAddress_GeneralInfo");
+                EmailDO curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
+                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                uow.SaveChanges();
+            }
         }
 
         //this is called when a new customer is created, because the communication manager has subscribed to the alertCustomerCreated alert.
@@ -68,7 +85,8 @@ namespace KwasantCore.Managers
                 curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
                 curEmail.Subject = "Welcome to Kwasant";
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "welcome_to_kwasant_v2", null);
+               
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "2e411208-7a0d-4a72-a005-e39ae018d708", null); //welcome to kwasant v2 template
                 uow.SaveChanges();
             }
         }
@@ -87,13 +105,15 @@ namespace KwasantCore.Managers
             foreach (var attendee in negotiationDO.Attendees)
             {
                 var emailDO = new EmailDO();
-                emailDO.From = _emailAddress.GetFromEmailAddress(uow, attendee.EmailAddress, negotiationDO.BookingRequest.User);
+                var emailAddressDO = _emailAddress.GetFromEmailAddress(uow, attendee.EmailAddress, negotiationDO.BookingRequest.User);
+                emailDO.From = emailAddressDO;
+                emailDO.FromID = emailAddressDO.Id;
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
                 //emailDO.Subject = "Regarding:" + negotiationDO.Name;
                 emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}",
                     negotiationDO.BookingRequest.User.FirstName,
                     (negotiationDO.BookingRequest.User.LastName ?? ""),
-                    negotiationDO.Name);
+                    "RE: " + negotiationDO.Name);
 
                 var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", negotiationDO.Id);
 
@@ -110,7 +130,7 @@ Proposed Answers: {2}
                 for (var i = 0; i < negotiationDO.Questions.Count; i++)
                 {
                     var question = negotiationDO.Questions[i];
-                    var currentQuestion = String.Format(actualHtml, i + 1, question.Text, String.Join(", ", question.Answers.Select(a => a.Text)));
+                    var currentQuestion = String.Format(actualHtml, i + 1, question.Text, question.Answers.Any() ? String.Join(", ", question.Answers.Select(a => a.Text)) : "[None proposed]");
                     generated.Add(currentQuestion);
                 }
 
@@ -134,16 +154,17 @@ Proposed Answers: {2}
                         throw new ArgumentOutOfRangeException();
                 }
 
+                var currBr = new BookingRequest();
+                
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, templateName,
                     new Dictionary<string, string>
                     {
-                        {"RESP_URL", tokenURL}
-                        ,
-                        {"questions", String.Join("<br/>", generated)}
+                        {"RESP_URL", tokenURL},
+                        {"questions", String.Join("<br/>", generated)},
+                        {"conversationthread", currBr.GetConversationThread(negotiationDO.BookingRequest)}
                     });
-
-
             }
+            negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
         }
 
         private bool EventHasChanged(IUnitOfWork uow, EventDO eventDO)
@@ -199,9 +220,9 @@ Proposed Answers: {2}
 
                 var toEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress);
                 outboundEmail.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
-
                 outboundEmail.From = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, bookingRequest.User);
 
+                uow.EnvelopeRepository.ConfigurePlainEmail(outboundEmail);
                 emailRepo.Add(outboundEmail);
             }
         }

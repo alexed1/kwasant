@@ -56,24 +56,6 @@ function getURLParameter(name) {
     return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null;
 }
 
-/*** Kwasant.IFrame functions ***/
-function closeWithUnsavedDataCheck(modifiedState, summery, eventId) {
-
-    if (!modifiedState.modified) {
-        if (summery == '') {
-            $.getJSON('/Event/ConfirmDelete?eventID=' + eventId, function (response) {
-                window.parent.calendar.refreshCalendars;
-                close();
-            });
-        }
-    }
-    else if (confirm("you are about to lose data, continue?")) {
-        modifiedState.modified = false;
-        close();
-    }
-    return false;
-}
-
 function close(saved) {
     if (saved === undefined || saved == null)
         saved = false;
@@ -109,17 +91,29 @@ function isValidEmail(term) {
     return false;
 }
 
+function convertToDateString(date) {
+    var hour, meridiem;
+    var datevalue = new Date(date);
+    hour = datevalue.getHours();
+    if (hour < 12)
+    { meridiem = "AM"; }
 
-function convertToDateString(dateFormat) {
-    var datevalue = new Date(dateFormat);
-    var timeSuffix = "AM"; var hour = 0;
-    if (datevalue.getHours() >= 12) {
-        hour = parseInt(datevalue.getHours()) - 12;
-        timeSuffix = "PM";
-    } else {
-        hour = datevalue.getHours();
-        timeSuffix = "AM";
-    }
-    dateFormat = datevalue.getMonth() + 1 + "-" + datevalue.getDate() + "-" + datevalue.getFullYear().toString().substring(2, 4) + " " + hour + ":" + datevalue.getMinutes() + " " + timeSuffix;
-    return dateFormat;
+    else
+    { meridiem = "PM"; }
+
+    if (hour === 0)
+    { hour = 12; }
+
+    if (hour > 12)
+    { hour = hour - 12; }
+
+    return (datevalue.getMonth() + 1) + "/" + datevalue.getDate() + "/" + datevalue.getFullYear() + " " + fmtZero(hour) + ":" + fmtZero(datevalue.getMinutes()) + " " + meridiem + " ";
+}
+
+fmtZero = function (str)
+{ return ('0' + str).slice(-2); }
+
+
+function autoResizeTextArea(e) {
+    $(e).css({ 'height': 'auto', 'overflow-y': 'hidden' }).height(e.scrollHeight);
 }

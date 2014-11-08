@@ -9,30 +9,36 @@
     <script src="/Content/js/Kwasant/Popup.js"></script>
 
     <script type="text/javascript">
-            var hideShowDates = function () {
-                var fromDate = $('#StartDate');
-                var toDate = $('#EndDate');
+        var hideShowDates = function () {
+            var fromDate = $('#StartDate');
+            var toDate = $('#EndDate');
 
-                if ($('#chkAllDay').prop('checked')) {
-                    fromDate.data("DateTimePicker").disable();
-                    toDate.data("DateTimePicker").disable();
-                } else {
-                    fromDate.data("DateTimePicker").enable();
-                    toDate.data("DateTimePicker").enable();
-                }
-            };
-            var data;
+            if ($('#chkAllDay').prop('checked')) {
+                fromDate.data("DateTimePicker").disable();
+                toDate.data("DateTimePicker").disable();
+            } else {
+                fromDate.data("DateTimePicker").enable();
+                toDate.data("DateTimePicker").enable();
+            }
+        };
+        var data;
         var returnval;
-            $(document).ready(function () {
-                $('#chkAllDay').click(hideShowDates);
+        $(document).ready(function () {
+            $('#chkAllDay').click(hideShowDates);
 
-                data = [@Html.Raw(String.Join(",", Model.Attendees.Split(',').Select(a =>
-                                "{id: '" + a + "', text: '" + a + "'}"
-                                )))];
+            data = [@Html.Raw(String.Join(",", Model.Attendees.Split(',').Select(a =>
+                            "{id: '" + a + "', text: '" + a + "'}"
+                            )))];
             getValidEmailAddress($('#attendeesSel'));
 
-                $('#attendeesSel').select2('data', data);
+            $('#attendeesSel').select2('data', data);
+
+            $('textarea').each(function () {
+                autoResizeTextArea(this);
+            }).on('input', function () {
+                autoResizeTextArea(this);
             });
+        });
     </script>
 }
 @section scripts
@@ -104,10 +110,10 @@
 			</div>
 		}
 		<div class="space form-actions">
-			<input id="btnSave" type="submit" value="OK" class="btn btn-default pull-left" />
-            <input id="btnDraft" type="submit" value="Draft" class="btn btn-default pull-left" />
-		    <a href="javascript:closeWithUnsavedDataCheck(modifiedState, '@Model.Summary' , '@Model.Id');" class="cancel-btn pull-left">Cancel</a>
-            <a href="javascript:deleteEvent();" style="margin-left:15px;" class="delete-btn pull-left">Delete</a>
+            <input id="btnSave" type="submit" value="OK" class="btn small-dialog-button shadow-button pull-left" />
+            <input id="btnDraft" type="submit" value="Draft" class="btn small-dialog-button shadow-button pull-left" />
+            <a href="javascript:closeEvent();" class="cancel-btn btn small-dialog-button shadow-button pull-left">Cancel</a>
+            <a href="javascript:deleteEvent();" style="margin-left:15px;" class="delete-btn btn small-dialog-button shadow-button pull-left">Delete</a>
 		</div>
 	</form>
 </div>
@@ -116,6 +122,24 @@
 	    var modifiedState = { modified: false };
 	    var fromdata;
 	    var todata;
+
+	    function closeEvent() {
+	        if (!modifiedState.modified || confirm("You are about to lose data. Continue?")) {
+	            @if (Model.IsNew)
+	            {
+	                @:var spinner = Kwasant.IFrame.DisplaySpinner();
+                    @:$.post('/Event/ConfirmDelete?eventID=' + @Model.Id, function (response) {
+                        @:Kwasant.IFrame.CloseMe(false);
+                        @:spinner.hide();
+                    @:}, 'json');
+	            }
+	            else
+                {
+                    @:Kwasant.IFrame.CloseMe(false);
+	            }
+	        }
+	        return false;
+	    }
 
 	    function deleteEvent() {
 	        $(function() {
@@ -128,110 +152,110 @@
 	                }
 	            });
 	        }());
-        }
+	    }
 
 	    $(document).ready(function () {
-	       $(".form-control").change(function () {
-				modifiedState.modified = true;
-			});
-		});
+	        $(".form-control").change(function () {
+	            modifiedState.modified = true;
+	        });
+	    });
 
-		function updateDraftSummary(formElmt){
-		    var summaryElmt = $("#summary");
-		    if($(formElmt).data('clicked') == "Draft"){
-		        if(summaryElmt.val().indexOf("DRAFT:") == -1){
-		            summaryElmt.val("DRAFT:" + summaryElmt.val());
-		        }
-		    }
-		    else {
-		        if(summaryElmt.val().indexOf("DRAFT:") != -1){
-		            summaryElmt.val(summaryElmt.val().replace("DRAFT:",""));
-		        }
-		    }
-		}
+	    function updateDraftSummary(formElmt){
+	        var summaryElmt = $("#summary");
+	        if($(formElmt).data('clicked') == "Draft"){
+	            if(summaryElmt.val().indexOf("DRAFT:") == -1){
+	                summaryElmt.val("DRAFT:" + summaryElmt.val());
+	            }
+	        }
+	        else {
+	            if(summaryElmt.val().indexOf("DRAFT:") != -1){
+	                summaryElmt.val(summaryElmt.val().replace("DRAFT:",""));
+	            }
+	        }
+	    }
 
-		$('#f').on('click', 'input[type=submit]', function(e) {
-		    $(this.form).data('clicked', this.value);
-		});
+	    $('#f').on('click', 'input[type=submit]', function(e) {
+	        $(this.form).data('clicked', this.value);
+	    });
 
-		$("#f").submit(function () {
+	    $("#f").submit(function () {
 
-		    updateDraftSummary(this);
+	        updateDraftSummary(this);
 
-			if (!modifiedState.modified) {
-				//close();
-				return false;
-			}
+	        if (!modifiedState.modified) {
+	            //close();
+	            return false;
+	        }
 
-			var fromDate = $('#StartDate');
-			var toDate = $('#EndDate');
+	        var fromDate = $('#StartDate');
+	        var toDate = $('#EndDate');
 
-			if (!($('#chkAllDay').is(':checked'))) {
-				if (fromDate.data("DateTimePicker").getDate() > toDate.data("DateTimePicker").getDate()) {
-					alert("Start date can't be greater than End Date");
-					return false;
-				}
-			}
+	        if (!($('#chkAllDay').is(':checked'))) {
+	            if (fromDate.data("DateTimePicker").getDate() > toDate.data("DateTimePicker").getDate()) {
+	                alert("Start date can't be greater than End Date");
+	                return false;
+	            }
+	        }
 
-			var f = $("#f");
-			if (!f.valid())
-				return false;
+	        var f = $("#f");
+	        if (!f.valid())
+	            return false;
 
-			fromDate.data("DateTimePicker").enable();
-			toDate.data("DateTimePicker").enable();
+	        fromDate.data("DateTimePicker").enable();
+	        toDate.data("DateTimePicker").enable();
 
-			var url = f.prop('action') + '/?' + f.serialize();
+	        var url = f.prop('action') + '/?' + f.serialize();
 
-			Kwasant.IFrame.Display(url,
+	        Kwasant.IFrame.Display(url,
 				{
-					modal: true,
-					callback: function (result) {
-						if ($('#chkAllDay').attr('checked')) {
-							fromDate.data("DateTimePicker").disable();
-							toDate.data("DateTimePicker").disable();
-						} else {
-							fromDate.data("DateTimePicker").enable();
-							toDate.data("DateTimePicker").enable();
-						}
-						if (result)
-							close(true);
-					}
+				    modal: true,
+				    callback: function (result) {
+				        if ($('#chkAllDay').attr('checked')) {
+				            fromDate.data("DateTimePicker").disable();
+				            toDate.data("DateTimePicker").disable();
+				        } else {
+				            fromDate.data("DateTimePicker").enable();
+				            toDate.data("DateTimePicker").enable();
+				        }
+				        if (result)
+				            close(true);
+				    }
 				});
 
-			return false;
-		});
+	        return false;
+	    });
 
-		$(function () {
-			$("#summary").focus();
-			$('#f').validate();
-		});
+	    $(function () {
+	        $("#summary").focus();
+	        $('#f').validate();
+	    });
 
-		$(function () {
-			var fromDate = $('#StartDate');
-			var toDate = $('#EndDate');
+	    $(function () {
+	        var fromDate = $('#StartDate');
+	        var toDate = $('#EndDate');
 
-			fromDate.datetimepicker( { offsetInMinutes: @Model.BookingRequestTimezoneOffsetInMinutes });
-			toDate.datetimepicker({ offsetInMinutes: @Model.BookingRequestTimezoneOffsetInMinutes });
+	        fromDate.datetimepicker( { offsetInMinutes: @Model.BookingRequestTimezoneOffsetInMinutes });
+	        toDate.datetimepicker({ offsetInMinutes: @Model.BookingRequestTimezoneOffsetInMinutes });
 
-			fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff")');
-			toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff")');
+	        fromDate.data("DateTimePicker").setDate('@Model.StartDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff")');
+	        toDate.data("DateTimePicker").setDate('@Model.EndDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff")');
 
-			fromdata = $('#StartDate').data("DateTimePicker");
-			todata = $('#EndDate').data("DateTimePicker");
+	        fromdata = $('#StartDate').data("DateTimePicker");
+	        todata = $('#EndDate').data("DateTimePicker");
 
-			hideShowDates();
-		});
+	        hideShowDates();
+	    });
 
-		//function to remove attendee on close icon click, which was added using quick copy function on mail info section
-		function removethis(id) {
-			var removedid = $(id).closest("li").find("div").html();
-			var existingAttendees = $("#attendeesSel").val().split(',');
+	    //function to remove attendee on close icon click, which was added using quick copy function on mail info section
+	    function removethis(id) {
+	        var removedid = $(id).closest("li").find("div").html();
+	        var existingAttendees = $("#attendeesSel").val().split(',');
 
-			var removeindex = existingAttendees.indexOf(removedid);
-			if (removeindex > -1) {
-				existingAttendees.splice(removeindex, 1);
-			}
-			$("#attendeesSel").val(existingAttendees.join());
-			$(id).closest("li").remove();
-		}
+	        var removeindex = existingAttendees.indexOf(removedid);
+	        if (removeindex > -1) {
+	            existingAttendees.splice(removeindex, 1);
+	        }
+	        $("#attendeesSel").val(existingAttendees.join());
+	        $(id).closest("li").remove();
+	    }
 	</script>

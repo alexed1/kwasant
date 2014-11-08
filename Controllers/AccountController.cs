@@ -13,6 +13,7 @@ using KwasantWeb.ViewModels;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Utilities;
+using Utilities.Logging;
 
 namespace KwasantWeb.Controllers
 {
@@ -43,6 +44,13 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize]
     public class AccountController : Controller
     {
+        private readonly Account _account;
+
+        public AccountController()
+        {
+            _account = ObjectFactory.GetInstance<Account>();
+        }
+
         [AllowAnonymous]
         public ActionResult InterceptLogin(string returnUrl)
         {
@@ -95,7 +103,7 @@ namespace KwasantWeb.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    RegistrationStatus curRegStatus = new Account().ProcessRegistrationRequest(model.Email.Trim(), model.Password.Trim());
+                    RegistrationStatus curRegStatus = _account.ProcessRegistrationRequest(model.Email.Trim(), model.Password.Trim());
                     if (curRegStatus == RegistrationStatus.UserMustLogIn)
                     {
                         ModelState.AddModelError("", @"You are already registered with us. Please login.");
@@ -153,15 +161,17 @@ Please register first.");
                                 if (!String.IsNullOrEmpty(returnUrl))
                                     return Redirect(returnUrl);
 
-                                bool isAdmin;
                                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                                 {
                                     var user = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == username);
-                                    isAdmin = uow.AspNetUserRolesRepository.UserHasRole("Admin", user.Id);
-                                }
+                                    var getRoles = uow.AspNetUserRolesRepository.GetRoles(user.Id).ToList();
+                                    foreach (var role in getRoles)
+                                    {
+                                        if (role.Name == "Admin" || role.Name == "Booker")
+                                        { return RedirectToAction("Index", "Admin"); }
 
-                                if (isAdmin)
-                                    return RedirectToAction("Index", "Admin");
+                                    }
+                                }
 
                                 return RedirectToAction("MyAccount", "User");
                             }
@@ -228,11 +238,88 @@ Please register first.");
                 userDO.UserName = usersAdminVM.EmailAddress;
 
                 // Set RoleId & UserId if role is changed on the font-end other wise IdentityUserRole is set to null and user's role will not be updated.
-                uow.AspNetUserRolesRepository.AssignRoleIDToUser(usersAdminVM.RoleId, usersAdminVM.Id);
+                //uow.AspNetUserRolesRepository.AssignRoleIDToUser(usersAdminVM.RoleId, usersAdminVM.Id);
 
                 uow.SaveChanges();
                 return RedirectToAction("Index", "User");
             }
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult> ForgotPassword(ForgotPasswordVM model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _account.ForgotPasswordAsync(model.Email);
+                    return View("ForgotPasswordConfirmation", model);
+                }
+                catch (Exception ex)
+                {
+                    Logger.GetLogger().Error("ForgotPassword failed.", ex);
+                    ModelState.AddModelError("", ex);
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public ActionResult ResetPassword(string userId, string code)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var userDO = uow.UserRepository.GetByKey(userId);
+                if (userDO == null)
+                    return HttpNotFound();
+                return View(
+                    new ResetPasswordVM()
+                    {
+                        UserId = userId,
+                        Code = code,
+                        Email = userDO.EmailAddress.Address
+                    });
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<ActionResult> ResetPassword(ResetPasswordVM viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var result = await _account.ResetPasswordAsync(viewModel.UserId, viewModel.Code, viewModel.Password);
+                    if (result.Succeeded)
+                    {
+                        return View("ResetPasswordConfirmation", viewModel);
+                    }
+                    else
+                    {
+                        Array.ForEach(result.Errors.ToArray(), e => ModelState.AddModelError("", e));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.GetLogger().Error("ResetPassword failed.", ex);
+                    ModelState.AddModelError("", ex);
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(viewModel);
         }
     }
 }

@@ -14,13 +14,15 @@
     {
         @Html.AntiForgeryToken()
 		<nav class="navbar-collapse collapse bs-navbar-collapse mmenu">
-			<ul class="nav navbar-nav navbar-right">
-				<li>@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
-			  <!--<li>@Html.ActionLink("Booking Request", "Index", "BookingRequest", routeValues: null, htmlAttributes: new { id = "br" })</li> -->
-                <li>@Html.ActionLink((User.IsInRole("Admin") ? "Dashboard" : "My Account"), "Dashboard", "Admin", routeValues: null, htmlAttributes: new { id = "dashboardLink" }) </li>
-				<!-- <li>@*<a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>*@</li> -->
-				<li>@Html.ActionLink("Log off", "LogOff", "Account", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
-			</ul>
+			 <ul class="nav navbar-nav navbar-right">
+                <li>@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+                <li>@Html.ActionLink("My Account", "MyAccount", "User")</li>
+                @if (User.IsInRole("Admin") || User.IsInRole("Booker")){ 
+                <li>@Html.ActionLink("Dashboard", "Dashboard", "Admin")</li>
+                }
+                
+                <li>@Html.ActionLink("Log off", "LogOff", "Account", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
+            </ul>
 		</nav>
 	}
 }

@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Repositories;
-using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.Controllers.External.DayPilot;
@@ -23,49 +20,6 @@ namespace KwasantWeb.Controllers
     {
 
         #region "Action"
-
-        public ActionResult Index(int id = 0)
-        {
-            if (id <= 0)
-                throw new HttpException(400, "Booking request not found");
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                IBookingRequestDORepository bookingRequestRepository = uow.BookingRequestRepository;
-                var bookingRequestDO = bookingRequestRepository.GetByKey(id);
-
-                if (bookingRequestDO == null)
-                    throw new HttpException(400, "Booking request not found");
-
-                var linkedNegotiationID =
-                    bookingRequestDO.Negotiations.Where(
-                        n =>
-                            n.NegotiationState == NegotiationState.InProcess ||
-                            n.NegotiationState == NegotiationState.AwaitingClient)
-                        .Select(n => (int?) n.Id)
-                        .FirstOrDefault();
-
-                CalendarShowVM calWidget = new CalendarShowVM
-                {
-                    LinkedNegotiationID = linkedNegotiationID,
-                    LinkedCalendarIds = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).ToList(),
-
-                    //In the future, we won't need this - the 'main' calendar will be picked by the booker
-                    ActiveCalendarId = bookingRequestDO.Calendars.Select(calendarDO => calendarDO.Id).FirstOrDefault()
-                };
-                BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
-                {
-                    BookingRequestId = bookingRequestDO.Id,
-                    CurEmailData = uow.EmailRepository.GetByKey(id)
-                };
-
-                return View(new DashboardShowVM
-                {
-                    CalendarVM = calWidget,
-                    BookingRequestVM = bookingInfo
-                });
-            }
-        }
 
         public ActionResult GetSpecificCalendar(int calendarID)
         {
@@ -300,13 +254,13 @@ namespace KwasantWeb.Controllers
         #endregion "DayPilot-Related Methods"
 
         #region "Quick Copy Methods"
-        [HttpGet]
-        public ActionResult ProcessQuickCopy(string copyType,string selectedText)
+        [HttpPost]
+        public ActionResult ProcessQuickCopy(string copyType, string selectedText)
         {
             string value = (new Calendar()).ProcessQuickCopy(copyType, selectedText);
             string status = "valid";
             if (value == "Invalid Selection") { status = "invalid"; }
-            var jsonResult = Json(new { status = status, value = value, copytype = copyType }, JsonRequestBehavior.AllowGet);
+            var jsonResult = Json(new { status = status, value = value, copytype = copyType });
             return jsonResult;
         }
         #endregion "Quick Copy Methods"

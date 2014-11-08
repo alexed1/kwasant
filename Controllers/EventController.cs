@@ -47,12 +47,13 @@ namespace KwasantWeb.Controllers
 
                 //put it in a view model to hand to the view
                 var curEventVM = _mappingEngine.Map<EventDO, EventVM>(createdEvent);
-
+                curEventVM.IsNew = true;
                 //construct a Calendar view model for this Calendar View 
                 return View("~/Views/Event/Edit.cshtml", curEventVM);
             }
         }
 
+        [HttpPost]
         public ActionResult NewTimeSlot(int calendarID, string start, string end, bool mergeEvents = false)
         {
             using (var uow = GetUnitOfWork())
@@ -69,7 +70,7 @@ namespace KwasantWeb.Controllers
 
                 uow.SaveChanges();
 
-                return JavaScript(SimpleJsonSerializer.Serialize(true));
+                return Json(true);
             }
         }
 
@@ -168,21 +169,26 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                return View(_mappingEngine.Map<EventDO, EventVM>(eventDO));
+                var curEventVM = _mappingEngine.Map<EventDO, EventVM>(eventDO);
+                curEventVM.IsNew = false;
+                return View(curEventVM);
             }
         }
 
+        [HttpPost]
         public ActionResult ConfirmDelete(int eventID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
                 if (eventDO != null)
+                {
                     uow.EventRepository.Remove(eventDO);
+                    uow.SaveChanges();
+                    return Json(true);
+                }
 
-                uow.SaveChanges();
-
-                return JavaScript(SimpleJsonSerializer.Serialize(true));
+                return Json(false);
             }
         }
 
@@ -258,7 +264,7 @@ namespace KwasantWeb.Controllers
                     }
                 }
             }
-            return Json(true, JsonRequestBehavior.AllowGet);
+            return Json(true);
         }
 
         public ActionResult DeleteEvent(int eventID, bool requiresConfirmation = true)

@@ -2,6 +2,7 @@
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using Microsoft.AspNet.Identity;
 
 namespace Data.Repositories
@@ -57,15 +58,18 @@ namespace Data.Repositories
 
             if (matchingUser == null)
             {
-                matchingUser = 
+                matchingUser =
                     new UserDO
                     {
                         EmailAddress = emailAddressDO,
                         UserName = emailAddressDO.Address,
                         FirstName = emailAddressDO.Name,
                         SecurityStamp = Guid.NewGuid().ToString(),
+                        State = UserState.Active
                     };
                 UnitOfWork.UserRepository.Add(matchingUser);
+
+                UnitOfWork.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, matchingUser.Id);
             }
             
             return matchingUser;

@@ -9,7 +9,7 @@ namespace Data.Entities
     /// A link between local Kwasant user's calendar and his calendar on a remote calendar provider.
     /// Also it is a tracking record for synchronization progress.
     /// </summary>
-    public class RemoteCalendarLinkDO : IRemoteCalendarLink
+    public class RemoteCalendarLinkDO : BaseDO, IRemoteCalendarLink
     {
         [NotMapped]
         ICalendar IRemoteCalendarLink.LocalCalendar
@@ -28,8 +28,10 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
         
+        public string RemoteCalendarHref { get; set; }
         public string RemoteCalendarName { get; set; }
-        
+        public bool IsDisabled { get; set; }
+
         [Required, ForeignKey("LocalCalendar")]
         public int? LocalCalendarID { get; set; }
         public virtual CalendarDO LocalCalendar { get; set; }

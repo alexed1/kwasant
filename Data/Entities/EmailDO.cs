@@ -9,7 +9,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class EmailDO : IEmail
+    public class EmailDO : BaseDO, IEmail
     {
         public EmailDO()
         {
@@ -28,11 +28,10 @@ namespace Data.Entities
         public String PlainText { get; set; }
         public DateTimeOffset DateReceived { get; set; }
         public DateTimeOffset DateCreated { get; set; }
-        public DateTimeOffset LastUpdated { get; set; }
-
+        
         [ForeignKey("Conversation")]
         public int? ConversationId { get; set; }
-        public BookingRequestDO Conversation { get; set; }
+        public virtual BookingRequestDO Conversation { get; set; }
 
         [ForeignKey("EmailStatusTemplate")]
         public int? EmailStatus { get; set; }
@@ -93,5 +92,6 @@ namespace Data.Entities
             Recipients.Add(newLink);
             emailAddress.Recipients.Add(newLink);
         }
+
     }
 }

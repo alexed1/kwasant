@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Data.Entities
 {
-    public class EnvelopeDO : IEnvelope
+    public class EnvelopeDO : BaseDO, IEnvelope
     {
         class MergeDataDictionary : IDictionary<string, string>
         {
@@ -138,8 +138,7 @@ namespace Data.Entities
         }
 
         public const string SendGridHander = "Gmail";
-        public const string MandrillHander = "Mandrill";
-
+        
         private readonly MergeDataDictionary _mergeData;
 
         public EnvelopeDO()

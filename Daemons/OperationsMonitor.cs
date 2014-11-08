@@ -43,12 +43,12 @@ namespace Daemons
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {  
-                //Process Timing Out BR status "CheckedOut" to "Unprocessed"
+                //Event: A checkedout BR has timed out
+                //Action: change BR status "CheckedOut" to "Unprocessed"
                 double maxBRIdleMinutes = Convert.ToDouble(_configRepository.Get<string>("MaxBRIdle"));
 
                 DateTimeOffset idleTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(maxBRIdleMinutes));
-                List<BookingRequestDO> staleBRList = new List<BookingRequestDO>();
-                staleBRList = uow.BookingRequestRepository.GetAll().Where(x => x.State == BookingRequestState.Booking && x.LastUpdated.DateTime < idleTimeLimit.DateTime).ToList();
+                List<BookingRequestDO> staleBRList =  uow.BookingRequestRepository.GetAll().Where(x => x.State == BookingRequestState.Booking && x.LastUpdated.DateTime < idleTimeLimit.DateTime).ToList();
                 BookingRequest _br = new BookingRequest();
                 foreach (var br in staleBRList)
                 {
@@ -56,16 +56,18 @@ namespace Daemons
                     LogSuccess("Booking request timed out");
                 }
 
-                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+                /////////////////////////////////////////////////////
+                //Event
 
+                BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
                 TrackingStatus<BookingRequestDO> ts = new TrackingStatus<BookingRequestDO>(bookingRequestRepo);
                 List<BookingRequestDO> unprocessedBookingRequests = ts.GetUnprocessedEntities(TrackingType.BookingState).ToList();
                 if (!unprocessedBookingRequests.Any()) 
                     return;
-
                 CommunicationManager cm = ObjectFactory.GetInstance<CommunicationManager>();
                 cm.ProcessBRNotifications(unprocessedBookingRequests);
 
+                //what does this do? alex
                 foreach (var unprocessedBR in unprocessedBookingRequests)
                     ts.SetStatus(TrackingType.BookingState, unprocessedBR, TrackingType.TestState);
                 

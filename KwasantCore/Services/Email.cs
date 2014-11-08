@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using Data.Validations;
 using FluentValidation;
-using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
 using StructureMap;
 using Utilities;
+using Utilities.Logging;
 
 
 namespace KwasantCore.Services
@@ -58,22 +58,6 @@ namespace KwasantCore.Services
             return uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
         }
 
-        public static void InitialiseWebhook(String url)
-        {
-            MandrillPackager.InitialiseWebhook(url);
-        }
-
-        public static void HandleWebhookResponse(String responseStr)
-        {
-            MandrillPackager.HandleWebhookResponse(responseStr);
-        }
-
-        public static void Ping()
-        {
-            string results = MandrillPackager.PostPing();
-            Debug.WriteLine(results);
-        }
-
         public void SendUserSettingsNotification(IUnitOfWork uow, UserDO submittedUserData) 
         {
             EmailDO curEmail = new EmailDO();
@@ -101,18 +85,16 @@ namespace KwasantCore.Services
             {
                 foreach (var av in mailMessage.AlternateViews)
                 {
+                    av.ContentStream.Position = 0;
                     if (av.ContentType.MediaType == "text/html")
                     {
                         body = new StreamReader(av.ContentStream).ReadToEnd();
                         break;
                     }
-                }
-                foreach (var av in mailMessage.AlternateViews)
-                {
+
                     if (av.ContentType.MediaType == "text/plain")
                     {
                         plainBody = new StreamReader(av.ContentStream).ReadToEnd();
-                        break;
                     }
                 }
             }
@@ -145,7 +127,9 @@ namespace KwasantCore.Services
             };
             var uow = emailRepository.UnitOfWork;
 
-            emailDO.From = GenerateEmailAddress(uow, mailMessage.From);
+            var fromAddress = GenerateEmailAddress(uow, mailMessage.From);
+            emailDO.From = fromAddress;
+            
             foreach (var addr in mailMessage.To.Select(a => GenerateEmailAddress(uow, a)))
             {
                 emailDO.AddEmailRecipient(EmailParticipantType.To, addr);    
@@ -160,9 +144,10 @@ namespace KwasantCore.Services
             }
 
             emailDO.Attachments.ForEach(a => a.Email = emailDO);
-            //emailDO.EmailStatus = EmailStatus.QUEUED; we no longer want to set this here. not all Emails are outbound emails. This should only be set in functions like Event#Dispatch
+            
             emailDO.EmailStatus = EmailState.Unstarted; //we'll use this new state so that every email has a valid status.
             emailRepository.Add(emailDO);
+            
             return emailDO;
         }
 
@@ -190,8 +175,9 @@ namespace KwasantCore.Services
 
             AttachmentDO att = new AttachmentDO
             {
-                OriginalName = String.IsNullOrEmpty(av.ContentType.Name)? av.ContentType.MediaType : "File",
+                OriginalName = String.IsNullOrEmpty(av.ContentType.Name) ? "unnamed" : av.ContentType.Name,
                 Type = av.ContentType.MediaType,
+                ContentID = av.ContentId
             };
 
             att.SetData(av.ContentStream);
@@ -212,18 +198,15 @@ namespace KwasantCore.Services
             return curEmail;
         }
 
-        public void SendAlertEmail()
+        public void SendAlertEmail(string subject, string message = null)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                 string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
-                EmailAddressDO curEmailAddress = new EmailAddressDO("ops@kwasant.com");
                 EmailDO curEmail = new EmailDO();
-                string message = "Alert! Kwasant Error Reported: EmailSendFailure";
-                string subject = "Alert! Kwasant Error Reported: EmailSendFailure";
-                curEmail = GenerateBasicMessage(uow, subject, message, fromAddress, "ops@kwasant.com");
+                curEmail = GenerateBasicMessage(uow, subject, message ?? subject, fromAddress, "ops@kwasant.com");
                 uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                 uow.SaveChanges();
             }
@@ -254,9 +237,85 @@ namespace KwasantCore.Services
 
         public EmailDO AddFromAddress(IUnitOfWork uow, EmailDO curEmail, string fromAddress)
         {
-            curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+            var from = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+            curEmail.From = from;
+            curEmail.FromID = from.Id;
             return curEmail;
         }
 
+        public static void ProcessReceivedMessage(IUnitOfWork uow, MailMessage message)
+        {
+            BookingRequestDO existingBookingRequest = Conversation.Match(uow, message.Subject, message.From.Address);
+
+            EmailDO currEmailDO;
+            if (existingBookingRequest != null)
+            {
+                currEmailDO = ConvertMailMessageToEmail(uow.EmailRepository, message);
+                Conversation.AddEmail(uow, existingBookingRequest, currEmailDO);
+
+                FixInlineImages(currEmailDO);
+                uow.SaveChanges();
+            }
+            else
+            {
+                BookingRequestDO bookingRequest = ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
+                
+                var newBookingRequest = new BookingRequest();
+                newBookingRequest.Process(uow, bookingRequest);
+                uow.SaveChanges();
+
+                AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+
+                var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
+                if (preferredUser != null)
+                {
+                    bookingRequest.State = BookingRequestState.Booking;
+                    bookingRequest.BookerID = preferredUser.Id;
+                    bookingRequest.LastUpdated = DateTimeOffset.Now;
+                    uow.SaveChanges();
+
+                    AlertManager.NewBookingRequestForPreferredBooker(preferredUser.Id, bookingRequest.Id);
+                }
+
+                FixInlineImages(bookingRequest);
+                uow.SaveChanges();
+            }
+        }
+
+        private static void FixInlineImages(EmailDO currEmailDO)
+        {
+            //Fix the HTML text
+            var attachmentSubstitutions =
+                currEmailDO.Attachments.Where(a => !String.IsNullOrEmpty(a.ContentID))
+                    .ToDictionary(a => a.ContentID, a => a.Id);
+
+            string fileViewURLStr = Server.ServerUrl + "Api/GetAttachment.ashx?AttachmentID={0}";
+
+            //The following fixes inline images
+            if (attachmentSubstitutions.Any())
+            {
+                var curBody = currEmailDO.HTMLText;
+                foreach (var keyToReplace in attachmentSubstitutions.Keys)
+                {
+                    var keyStr = String.Format("cid:{0}", keyToReplace);
+                    curBody = curBody.Replace(keyStr,
+                        String.Format(fileViewURLStr, attachmentSubstitutions[keyToReplace]));
+                }
+                currEmailDO.HTMLText = curBody;
+            }
+        }
+
+        public void SendLoginCredentials(IUnitOfWork uow, string toRecipient, string newPassword) 
+        {
+            string credentials = "<br/> Email : " + toRecipient + "<br/> Password : " + newPassword;
+            string fromAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
+            EmailDO emailDO = GenerateBasicMessage(uow, "Kwasant Credentials", null, fromAddress, toRecipient);
+            uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "e4da63fd-2459-4caf-8e4f-b4d6f457e95a",
+                    new Dictionary<string, string>
+                    {
+                        {"credentials_string", credentials}
+                    });
+            uow.SaveChanges();
+        }
     }
 }

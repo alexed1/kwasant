@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using FluentValidation;
+using KwasantCore.Services;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
 using StructureMap;
+using System.Linq;
 
 namespace KwasantTest.Services
 {
@@ -45,7 +48,8 @@ namespace KwasantTest.Services
 
                 // SETUP
                 EmailDO _curEmailDO = fixture.TestEmail1();
-                const string templateName = "test_template";
+                //const string templateName = "test_template";
+                const string templateName = "a16da250-a48b-42ad-88e1-bdde24ae1dee";
 
                 // EXECUTE
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(_curEmailDO,
@@ -59,7 +63,7 @@ namespace KwasantTest.Services
                 var envelope = uow.EnvelopeRepository.FindOne(e => e.Email.Id == _curEmailDO.Id);
                 Assert.NotNull(envelope, "Envelope was not created.");
                 Assert.AreEqual(envelope.TemplateName, templateName);
-                Assert.AreEqual(envelope.Handler, EnvelopeDO.MandrillHander, "Envelope handler should be Mandrill");
+                Assert.AreEqual(envelope.Handler, EnvelopeDO.SendGridHander, "Envelope handler should be Mandrill");
             }
         }
 
@@ -102,8 +106,30 @@ namespace KwasantTest.Services
 
                 // VERIFY
                 Assert.Throws<ValidationException>(
-                    () => uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmailDO, "test_template", null),
+                    () => uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmailDO, "a16da250-a48b-42ad-88e1-bdde24ae1dee", null),
                     "Email should fail to be sent as it is invalid.");
+            }
+        }
+
+        [Test]
+        [Category("Email")]
+        public void CanAddConversations()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+
+                //SETUP
+                var mailMessage1 = fixture.TestMessage1();
+                var mailMessage2 = fixture.TestMessage2();
+
+                //EXECUTE
+                var testEmail1 = Email.ConvertMailMessageToEmail(uow.EmailRepository, mailMessage1);
+                Email.ProcessReceivedMessage(uow, mailMessage1);
+                Email.ProcessReceivedMessage(uow, mailMessage2);
+
+                //VERIFY
+                Assert.AreEqual(1, uow.EmailRepository.GetAll().Where(e => e.ConversationId == testEmail1.Id).Count());
             }
         }
     }

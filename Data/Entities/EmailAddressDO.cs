@@ -6,7 +6,7 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class EmailAddressDO : IEmailAddressDO
+    public class EmailAddressDO : BaseDO, IEmailAddressDO
     {
         public EmailAddressDO()
         {
@@ -28,5 +28,13 @@ namespace Data.Entities
 
         [InverseProperty("EmailAddress")]
         public virtual List<RecipientDO> Recipients { get; set; }
+
+        
+        public String ToDisplayName()
+        {
+            if (!String.IsNullOrEmpty(Name))
+                return String.Format("<{0}> {1}", Name, Address);
+            return Address;
+        }
     }
 }

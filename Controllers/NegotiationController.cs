@@ -11,6 +11,7 @@ using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
+using Utilities;
 
 namespace KwasantWeb.Controllers
 {
@@ -20,12 +21,29 @@ namespace KwasantWeb.Controllers
         string _currBooker;
         private readonly IAttendee _attendee;
         private readonly IEmailAddress _emailAddress;
-
+        private readonly IConfigRepository _configRepository;
+        
         public NegotiationController()
         {
             _booker = new Booker();
             _attendee = ObjectFactory.GetInstance<IAttendee>();
             _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+        }
+
+        [HttpPost]
+        public ActionResult CheckOwnership(int negotiationID, int bookingRequestID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
+                return Json(new KwasantPackagedMessage
+                    {
+                        Name = verifyOwnership != "valid" ? "DifferentOwner" : verifyOwnership, 
+                        Message = verifyOwnership
+                    });
+            }
         }
 
         public ActionResult Edit(int negotiationID, int bookingRequestID)
@@ -35,7 +53,7 @@ namespace KwasantWeb.Controllers
                 _currBooker = this.GetUserId();
                 string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
                 if (verifyOwnership != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
+                    throw new ApplicationException("This negotiation is owned by another booker. Please try again to take ownership.");
 
                 //First - we order by start date
                 Func<NegotiationAnswerVM, DateTimeOffset?> firstSort = a => a.EventStartDate;
@@ -81,20 +99,21 @@ namespace KwasantWeb.Controllers
                     BookingRequestID = negotiationDO.BookingRequestID,
                     Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
-                        {
+                    {
                         var answers = q.Answers.Select(a =>
-                                new NegotiationAnswerVM
-                                {
-                                    Id = a.Id,
-                                    Text = a.Text,
-                                    AnswerState = a.AnswerStatus,
-                                    VotedByList = uow.QuestionResponseRepository.GetQuery()
-                                                                                    .Where(qr => qr.AnswerID == a.Id)
-                                                                                    .Select(qr => qr.User.FirstName + " " + qr.User.LastName)
-                                                                                    .ToList(),
-                                    EventID = a.EventID,
-                                    EventStartDate = a.Event == null ? (DateTimeOffset?)null : a.Event.StartDate,
-                                    EventEndDate = a.Event == null ? (DateTimeOffset?)null : a.Event.EndDate,
+                            new NegotiationAnswerVM
+                            {
+                                Id = a.Id,
+                                Text = a.Text,
+                                AnswerState = a.AnswerStatus,
+                                VotedByList = uow.QuestionResponseRepository.GetQuery()
+                                    .Where(qr => qr.AnswerID == a.Id)
+                                    .Select(qr => qr.User.UserName)
+                                    .ToList(),
+                                SuggestedBy = a.UserDO == null ? String.Empty : a.UserDO.UserName,
+                                EventID = a.EventID,
+                                EventStartDate = a.Event == null ? (DateTimeOffset?) null : a.Event.StartDate,
+                                EventEndDate = a.Event == null ? (DateTimeOffset?) null : a.Event.EndDate,
                             });
 
                         answers = orders.Aggregate(answers, (current, t) => current.OrderBy(t));
@@ -106,7 +125,7 @@ namespace KwasantWeb.Controllers
                             CalendarID = q.CalendarID,
                             Text = q.Text,
                             Answers = answers.ToList()
-                };
+                        };
                     }).ToList()
                 };
                 return curVM;
@@ -119,25 +138,27 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
-             
-                var emailAddresses = _emailAddress.GetEmailAddresses(uow, bookingRequestDO.HTMLText, bookingRequestDO.PlainText, bookingRequestDO.Subject);
-                emailAddresses.Add(bookingRequestDO.User.EmailAddress);
 
                 //need to add the addresses of people cc'ed or on the To line of the BookingRequest
-                emailAddresses.AddRange(bookingRequestDO.Recipients.Select(r => r.EmailAddress));
+                var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress.Address).ToList();
+                attendees.Add(bookingRequestDO.User.EmailAddress.Address);
+               
+                var filteredEmailAddresses = FilterUtility.StripReservedEmailAddresses(attendees, _configRepository).Distinct().ToList();
 
-                return View("~/Views/Negotiation/Edit.cshtml", new NegotiationVM
-                {
-                    Name = "Negotiation 1",
-                    BookingRequestID = bookingRequestID,
-                    Attendees = emailAddresses.Select(ea => ea.Address).ToList(),
-                    Questions = new List<NegotiationQuestionVM>
-                    { new NegotiationQuestionVM
-                        {
-                            Type = "Text"
-                        }
-                    }
-                });
+                return View("~/Views/Negotiation/Edit.cshtml",
+                            new NegotiationVM
+                                {
+                                    Name = bookingRequestDO.Subject,
+                                    BookingRequestID = bookingRequestID,
+                                    Attendees = filteredEmailAddresses,
+                                    Questions = new List<NegotiationQuestionVM>
+                                        {
+                                            new NegotiationQuestionVM
+                                                {
+                                                    Type = "Text"
+                                                }
+                                        }
+                                });
             }
         }
 
@@ -226,10 +247,11 @@ namespace KwasantWeb.Controllers
                     subUoW.SaveChanges();
                 }
 
-                return Json(negotiationDO.Id, JsonRequestBehavior.AllowGet);
+                return Json(negotiationDO.Id);
             }
         }
 
+        [HttpPost]
         public ActionResult MarkResolved(int negotiationID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -241,7 +263,7 @@ namespace KwasantWeb.Controllers
                 negotiationDO.NegotiationState = NegotiationState.Resolved;
                 uow.SaveChanges();
             }
-            return Json(true, JsonRequestBehavior.AllowGet);
+            return Json(true);
         }
     }
 }

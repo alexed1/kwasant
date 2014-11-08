@@ -48,25 +48,18 @@
             text-decoration: none;
         }
         input[type="submit"].btn, input[type="button"].btn {
-            border: 1px solid #d85e17;
-            background: #d85e17;
-            background-image: none;
-            text-shadow: none;
-            color: #f2e9df;
-            border-radius: 0;
-            transition: all ease-in-out .3s;
-            box-shadow: none;
-            filter: none;
             padding: 5px 12px;
             font-size: 12px;
             position: absolute;
-            right: 0px;
-            font-weight: bold;
+            right: 0;
+        }
+        .btn.shadow-button:active, .form-actions .btn.shadow-button:active {
+            position: absolute;
+            top: 1px;
         }
 </style>
 <div id="CalendarDiv1">
-    <label>Proposed Timeslot for Negotiation</label>
-    <input type="button" value="OK" class="btn btn-default" style="cursor: pointer;" onclick="Kwasant.IFrame.CloseMe({
+    <input type="button" value="OK" class="btn small-dialog-button btn-default shadow-button" style="cursor: pointer;" onclick="Kwasant.IFrame.CloseMe({
     action: true,
     events: calendar.getEvents()
 })" />
@@ -114,7 +107,7 @@
                 if (Kwasant.IFrame.PopupsActive()) {
                     return;
                 }
-                Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z&mergeEvents=@mergeEvents', calendar.refreshCalendars);
+                Kwasant.IFrame.DispatchUrlRequest('/Event/NewTimeSlot/?calendarID=' + @Model.ActiveCalendarID + '&start=' + start + 'z&end=' + end + 'z&mergeEvents=@mergeEvents', calendar.refreshCalendars, 'POST');
             },
 
             editRequiresConfirmation: @requiresConfirmation,
