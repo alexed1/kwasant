@@ -216,6 +216,7 @@
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulResponse.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulTransmitter.cs" />
     <Compile Include="Managers\CommunicationManager.cs" />
+    <Compile Include="Managers\IncidentReporter.cs" />
     <Compile Include="Managers\KwasantAuthorizeAttribute.cs" />
     <Compile Include="Managers\CalendarSyncManager.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
