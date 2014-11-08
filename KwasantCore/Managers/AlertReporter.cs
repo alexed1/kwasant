@@ -12,6 +12,9 @@ using StructureMap;
 using Utilities;
 using Utilities.Logging;
 
+//NOTES: Do NOT put Incidents here. Put them in IncidentReporter
+
+
 namespace KwasantCore.Managers
 {
     public class AlertReporter
@@ -23,19 +26,17 @@ namespace KwasantCore.Managers
             AlertManager.AlertTrackablePropertyCreated += TrackablePropertyCreated;
             AlertManager.AlertTrackablePropertyDeleted += TrackablePropertyDeleted;
             AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
-            AlertManager.AlertEmailReceived += NewEmailReceived;
-            AlertManager.AlertEventBooked += NewEventBooked;
-            AlertManager.AlertEmailSent += EmailDispatched;
-            AlertManager.AlertBookingRequestCreated += ProcessBookingRequestCreated;
-            AlertManager.AlertBookingRequestStateChange += ProcessBookingRequestStateChange;
-            AlertManager.AlertBookingRequestProcessingTimeout += ProcessTimeout;
-            AlertManager.AlertBookingRequestNeedsProcessing += OnBookingRequestNeedsProcessing;
-            AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerCreated;
-            AlertManager.AlertUserRegistration += UserRegistration;
-            AlertManager.AlertBookingRequestCheckedOut += ProcessBookingRequestCheckedOut;
-            AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChange;
-            AlertManager.AlertError_EmailSendFailure += Error_EmailSendFailure;
-            AlertManager.AlertErrorSyncingCalendar += ErrorSyncingCalendar;
+            AlertManager.AlertEmailReceived += ReportEmailReceived;
+            AlertManager.AlertEventBooked += ReportEventBooked;
+            AlertManager.AlertEmailSent += ReportEmailSent;
+            AlertManager.AlertBookingRequestCreated += ReportBookingRequestCreated;
+            AlertManager.AlertBookingRequestStateChange += ReportBookingRequestStateChanged;
+            AlertManager.AlertExplicitCustomerCreated += ReportCustomerCreated;
+        
+            AlertManager.AlertUserRegistration += ReportUserRegistered;
+            AlertManager.AlertBookingRequestCheckedOut += ReportBookingRequestCheckedOut;
+            AlertManager.AlertBookingRequestOwnershipChange += ReportBookingRequestOwnershipChanged;
+  
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
         }
 
@@ -160,15 +161,15 @@ namespace KwasantCore.Managers
             }
         }
 
-        private void NewExplicitCustomerCreated(string curUserId)
+        private void ReportCustomerCreated(string curUserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 FactDO curAction = new FactDO
                     {
-                        Name = "CustomerCreated",
+                        Name = "",
                         PrimaryCategory = "User",
-                        SecondaryCategory = "Customer",
+                        SecondaryCategory = "",
                         Activity = "Created",
                         CustomerId = curUserId,
                         CreateDate = DateTimeOffset.Now,
@@ -180,7 +181,7 @@ namespace KwasantCore.Managers
             }
         }
 
-        public void NewEmailReceived(int emailId, string customerId)
+        public void ReportEmailReceived(int emailId, string customerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -189,9 +190,9 @@ namespace KwasantCore.Managers
 
                 FactDO curAction = new FactDO()
                     {
-                        Name = "EmailReceived",
+                        Name = "",
                         PrimaryCategory = "Email",
-                        SecondaryCategory = "Intake",
+                        SecondaryCategory = "",
                         Activity = "Received",
                         CustomerId = customerId,
                         CreateDate = DateTimeOffset.Now,
@@ -203,27 +204,27 @@ namespace KwasantCore.Managers
             }
         }
 
-        public void NewEventBooked(int eventId, string customerId)
+        public void ReportEventBooked(int eventId, string customerId)
         {
             FactDO curAction = new FactDO()
                 {
-                    Name = "EventBooked",
+                    Name = "",
                     PrimaryCategory = "Event",
-                    SecondaryCategory = "Booking",
-                    Activity = "Received",
+                    SecondaryCategory = "",
+                    Activity = "Booked",
                     CustomerId = customerId,
                     CreateDate = DateTimeOffset.Now,
                     ObjectId = eventId
                 };
             SaveFact(curAction);
         }
-        public void EmailDispatched(int emailId, string customerId)
+        public void ReportEmailSent(int emailId, string customerId)
         {
             FactDO curAction = new FactDO()
                 {
-                    Name = "EmailSent",
+                    Name = "",
                     PrimaryCategory = "Email",
-                    SecondaryCategory = "Outbound",
+                    SecondaryCategory = "",
                     Activity = "Sent",
                     CustomerId = customerId,
                     CreateDate = DateTimeOffset.Now,
@@ -232,16 +233,16 @@ namespace KwasantCore.Managers
             SaveFact(curAction);
         }
 
-        public void ProcessBookingRequestCreated(int bookingRequestId) 
+        public void ReportBookingRequestCreated(int bookingRequestId) 
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 FactDO curAction = new FactDO()
                     {
-                        Name = "BookingRequest Created",
-                        PrimaryCategory = "Email",
-                        SecondaryCategory = "BookingRequest",
+                        Name = "",
+                        PrimaryCategory = "BookingRequest",
+                        SecondaryCategory = "",
                         Activity = "Created",
                         CustomerId = bookingRequestDO.UserID,
                         CreateDate = DateTimeOffset.Now,
@@ -252,7 +253,7 @@ namespace KwasantCore.Managers
                 uow.SaveChanges();
             }
         }
-        public void ProcessBookingRequestStateChange(int bookingRequestId)
+        public void ReportBookingRequestStateChanged(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -263,7 +264,7 @@ namespace KwasantCore.Managers
                 FactDO curAction = new FactDO()
                     {
                         PrimaryCategory = "BookingRequest",
-                        SecondaryCategory = "None",
+                        SecondaryCategory = "",
                         Activity = "StateChange",
                         CustomerId = bookingRequestDO.User.Id,
                         ObjectId = bookingRequestDO.Id,
@@ -302,34 +303,18 @@ namespace KwasantCore.Managers
                 Logger.GetLogger().Info(curAction.Data);
             uow.FactRepository.Add(curAction);
         }
-        public void ProcessTimeout(BookingRequestDO bookingRequestDO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "BookingRequest";
-                incidentDO.SecondaryCategory = "Processing";
-                incidentDO.CreateTime = DateTime.Now;
-                incidentDO.Activity = "TimeOut";
-                incidentDO.ObjectId = bookingRequestDO.Id;
-                incidentDO.CustomerId = bookingRequestDO.User.Id;
-                incidentDO.BookerId = bookingRequestDO.UserID;
-                uow.IncidentRepository.Add(incidentDO);
-                uow.SaveChanges();
-            }
-        }
 
 
-        public void UserRegistration(UserDO curUser)
+        public void ReportUserRegistered(UserDO curUser)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 FactDO curFactDO = new FactDO
                     {
-                        Name = "UserRegistration Created",
+                        Name = "",
                         PrimaryCategory = "User",
-                        SecondaryCategory = "User",
-                        Activity = "Created",
+                        SecondaryCategory = "",
+                        Activity = "Registered",
                         CustomerId = curUser.Id,
                         CreateDate = DateTimeOffset.Now,
                         ObjectId = 0,
@@ -342,59 +327,9 @@ namespace KwasantCore.Managers
 
         }
 
-        private void Error_EmailSendFailure(int emailId, string message)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Email";
-                incidentDO.SecondaryCategory = "Send";
-                incidentDO.CreateTime = DateTime.Now; ;
-                incidentDO.Activity = "Failure";
-                incidentDO.ObjectId = emailId;
-                incidentDO.Notes = message;
-                uow.IncidentRepository.Add(incidentDO);
-                uow.SaveChanges();
-            }
-            Email _email = ObjectFactory.GetInstance<Email>();
-            _email.SendAlertEmail("Alert! Kwasant Error Reported: EmailSendFailure",
-                                  string.Format(
-                                      "EmailID: {0}\r\n" +
-                                      "Message: {1}",
-                                      emailId, message));
-        }
 
-        private void ErrorSyncingCalendar(RemoteCalendarLinkDO calendarLink)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Calendar";
-                incidentDO.SecondaryCategory = "Sync";
-                incidentDO.CreateTime = DateTime.Now;
-                incidentDO.Activity = "Failure";
-                incidentDO.ObjectId = calendarLink.Id;
-                incidentDO.CustomerId = calendarLink.LocalCalendar.OwnerID;
-                incidentDO.Notes = calendarLink.LastSynchronizationResult;
-                uow.IncidentRepository.Add(incidentDO);
-                uow.SaveChanges();
-            }
 
-            Email email = ObjectFactory.GetInstance<Email>();
-            email.SendAlertEmail("CalendarSync failure",
-                                 string.Format(
-                                     "CalendarSync failure for calendar link #{0} ({1}):\r\n" +
-                                     "Customer id: {2},\r\n" +
-                                     "Local calendar id: {3}\r\n," +
-                                     "Remote calendar url: {4}",
-                                     calendarLink.Id,
-                                     calendarLink.LastSynchronizationResult,
-                                     calendarLink.LocalCalendar.OwnerID,
-                                     calendarLink.LocalCalendarID,
-                                     calendarLink.RemoteCalendarHref));
-        }
-
-        public void ProcessBookingRequestCheckedOut(int bookingRequestId, string bookerId)
+        public void ReportBookingRequestCheckedOut(int bookingRequestId, string bookerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -420,7 +355,8 @@ namespace KwasantCore.Managers
             }
         }
 
-        public void BookingRequestOwnershipChange(int bookingRequestId, string bookerId)
+        //Do we need/use both this and the immediately preceding event? 
+        public void ReportBookingRequestOwnershipChanged(int bookingRequestId, string bookerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -444,29 +380,6 @@ namespace KwasantCore.Managers
                 AddFact(uow, curAction);
                 uow.SaveChanges();
 
-            }
-        }
-
-        private void OnBookingRequestNeedsProcessing(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-                IncidentDO curAction = new IncidentDO()
-                {
-                    PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "State",
-                    Activity = "Change",
-                    CustomerId = bookingRequestDO.User.Id,
-                    ObjectId = bookingRequestDO.Id,
-                    Priority = 0,
-                    CreateTime = DateTimeOffset.Now,
-                };
-
-                uow.IncidentRepository.Add(curAction);
-                uow.SaveChanges();
             }
         }
     }
