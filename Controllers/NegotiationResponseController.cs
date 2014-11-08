@@ -123,10 +123,13 @@ namespace KwasantWeb.Controllers
 
             var userID = this.GetUserId();
 
+            var questionAnswer = new Dictionary<QuestionDO, AnswerDO>();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var negotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
-                if (negotiationDO == null)
+                var currUserDO = uow.UserRepository.GetByKey(userID);
+                var currNegotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
+                if (currNegotiationDO == null)
                     throw new HttpException(404, "Negotiation not found.");
 
                 //Here we add/update questions based on our proposed negotiation
@@ -141,28 +144,29 @@ namespace KwasantWeb.Controllers
                     //Previous answers are read-only, we only allow updating of new answers
                     foreach (var answer in question.Answers)
                     {
-                        AnswerDO answerDO;
-                        if (answer.Id == 0)
-                        {
-                            if (!answer.Selected)
-                                continue;
-
-                            answerDO = new AnswerDO();
-                            uow.AnswerRepository.Add(answerDO);
-
-                            answerDO.Question = questionDO;
-                            if (answerDO.AnswerStatus == 0)
-                                answerDO.AnswerStatus = AnswerState.Proposed;
-
-                            answerDO.Text = answer.Text;
-                            answerDO.EventID = answer.EventID;
-                            answerDO.UserID = userID;
-                        } else
-                        {
-                            answerDO = uow.AnswerRepository.GetByKey(answer.Id);
-                        }
                         if (answer.Selected)
+                        {
+                            AnswerDO answerDO;
+                            if (answer.Id == 0)
+                            {
+                                answerDO = new AnswerDO();
+                                uow.AnswerRepository.Add(answerDO);
+
+                                answerDO.Question = questionDO;
+                                if (answerDO.AnswerStatus == 0)
+                                    answerDO.AnswerStatus = AnswerState.Proposed;
+
+                                answerDO.Text = answer.Text;
+                                answerDO.EventID = answer.EventID;
+                                answerDO.UserID = userID;
+                            }
+                            else
+                            {
+                                answerDO = uow.AnswerRepository.GetByKey(answer.Id);
+                            }
+                            questionAnswer[questionDO] = answerDO;
                             currentSelectedAnswers.Add(answerDO);
+                        }
                     }
 
                     var previousAnswers = uow.QuestionResponseRepository.GetQuery()
@@ -192,10 +196,13 @@ namespace KwasantWeb.Controllers
                     }
                 }
 
-                if (negotiationDO.NegotiationState == NegotiationState.Resolved)
+                if (currNegotiationDO.NegotiationState == NegotiationState.Resolved)
                 {
-                    AlertManager.PostResolutionNegotiationResponseReceived(negotiationDO.Id);
+                    AlertManager.PostResolutionNegotiationResponseReceived(currNegotiationDO.Id);
                 }
+
+                _negotiation = new Negotiation();
+                _negotiation.CreateQuasiEmailForBookingRequest(uow, currNegotiationDO, currUserDO, questionAnswer);
 
                 uow.SaveChanges();
 

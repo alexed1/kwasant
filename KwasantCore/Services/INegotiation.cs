@@ -9,5 +9,6 @@ namespace KwasantCore.Services
     {
         List<Int32> GetAnswerIDs(NegotiationDO curNegotiationDO);
         IList<Int32?> GetAnswerIDsByUser(NegotiationDO curNegotiationDO, UserDO curUserDO, IUnitOfWork uow);
+        void CreateQuasiEmailForBookingRequest(IUnitOfWork uow, NegotiationDO curNegotiationDO, UserDO curUserDO, Dictionary<QuestionDO, AnswerDO> currentAnswers);
     }
 }

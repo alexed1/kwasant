@@ -1179,6 +1179,7 @@ input[type="checkbox"].input-validation-error {
 .email-info-section .email-conversations .email-message {
     border: solid 1px #e7e7e7;
     margin-top: 10px;
+    line-height: 30px;
 }
 
 .email-info-section .email-conversations .email-message:first-child {
