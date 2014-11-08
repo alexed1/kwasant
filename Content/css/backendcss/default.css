@@ -812,7 +812,15 @@ input[type="submit"].btn.gradient-button:hover, input[type="button"].btn.gradien
 }
 
 .login-section .custom-form p.forgot-lnk {
+    margin: 0;
     padding: 0 0 8px;
+}
+
+.login-section .custom-form p.forgot-email {
+    font-size: 14px;
+    line-height: 20px;
+    padding-top: 7px;
+    margin-bottom: 0;
 }
 
 /*Registration section*/
