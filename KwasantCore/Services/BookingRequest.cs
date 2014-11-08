@@ -301,12 +301,21 @@ namespace KwasantCore.Services
         public String GetConversationThread(BookingRequestDO bookingRequestDO)
         {
             const string conversationThreadFormat = @"
-From: {0} {1}<br/><br/>
-{2}
+<div style=""border: solid 1px #e7e7e7;background: #FFFFF;font-family:'Calibri';font-size: 17px;font-weight: 200;margin-bottom: 10px;display:block;line-height: 30px;"">
+
+    <div style=""background: #dbdbdb;width: 100%;height: 30px;padding-top: 5px;padding-bottom: 5px;	overflow: hidden;"">
+	    <span style=""float:left;width:60%;padding-left:15px;font-weight:bold;"">From: {0}</span>
+	    <span style=""float:right;width:30%;padding-right:15px;text-align:right;"">{1}</span>
+    </div>
+
+    <div style=""padding:15px; color:rgb(51,51,51);"">
+    {2}
+    </div>
+</div>
 ";
             var threads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO});
 
-            var result = String.Join("<br/><br/>", threads.OrderBy(b => b.DateReceived).Select(e =>
+            var result = String.Join("", threads.OrderByDescending(b => b.DateReceived).Select(e =>
                 String.Format(conversationThreadFormat, e.From.Name,
                     e.DateReceived.TimeAgo(), e.HTMLText)));
 

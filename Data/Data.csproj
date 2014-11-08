@@ -110,6 +110,7 @@
     <Compile Include="Entities\InvitationDO.cs" />
     <Compile Include="Entities\InvitationResponseDO.cs" />
     <Compile Include="Entities\LogDO.cs" />
+    <Compile Include="Entities\NegotiationAnswerEmailDO.cs" />
     <Compile Include="Entities\ProfileDO.cs" />
     <Compile Include="Entities\ProfileItemDO.cs" />
     <Compile Include="Entities\ProfileNodeDO.cs" />
@@ -374,7 +375,16 @@
     <Compile Include="Migrations\201411071305204_BookerAvailabilityIsNotRequired.Designer.cs">
       <DependentUpon>201411071305204_BookerAvailabilityIsNotRequired.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411081138127_AddNegotiationAnswerEmail.cs" />
+    <Compile Include="Migrations\201411081138127_AddNegotiationAnswerEmail.Designer.cs">
+      <DependentUpon>201411081138127_AddNegotiationAnswerEmail.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411081224212_FixCascadeForAnswerResponse.cs" />
+    <Compile Include="Migrations\201411081224212_FixCascadeForAnswerResponse.Designer.cs">
+      <DependentUpon>201411081224212_FixCascadeForAnswerResponse.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
+    <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
@@ -1241,6 +1251,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411071305204_BookerAvailabilityIsNotRequired.resx">
       <DependentUpon>201411071305204_BookerAvailabilityIsNotRequired.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411081138127_AddNegotiationAnswerEmail.resx">
+      <DependentUpon>201411081138127_AddNegotiationAnswerEmail.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411081224212_FixCascadeForAnswerResponse.resx">
+      <DependentUpon>201411081224212_FixCascadeForAnswerResponse.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

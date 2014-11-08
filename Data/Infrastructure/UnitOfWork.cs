@@ -249,6 +249,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private NegotiationAnswerEmailRepository _negotiationAnswerEmailRepository;
+
+        public NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository
+        {
+            get
+            {
+                return _negotiationAnswerEmailRepository ?? (_negotiationAnswerEmailRepository = new NegotiationAnswerEmailRepository(this));
+            }
+        }
+
         private UserAgentInfoRepository _userAgentInfoRepository;
 
         public UserAgentInfoRepository UserAgentInfoRepository
