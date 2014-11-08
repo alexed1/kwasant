@@ -218,7 +218,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Search(String firstName, String lastName, String emailAddress)
+        public ActionResult Search(String firstName, String lastName, String emailAddress,int[] states)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -229,6 +229,8 @@ namespace KwasantWeb.Controllers
                     users = users.Where(u => u.LastName.Contains(lastName));
                 if (!String.IsNullOrWhiteSpace(emailAddress))
                     users = users.Where(u => u.EmailAddress.Address.Contains(emailAddress));
+
+                users = users.Where(u => states.Contains(u.State.Value));
 
                 return Json(users.ToList().Select(u => new
                     {
@@ -251,8 +253,24 @@ namespace KwasantWeb.Controllers
                 UserName = u.UserName,
                 EmailAddress = u.EmailAddress.Address,
                 Roles = uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Name).ToList(),
-                Calendars = u.Calendars.Select(c => new UserCalendarVM { Id = c.Id, Name = c.Name}).ToList()
+                Calendars = u.Calendars.Select(c => new UserCalendarVM { Id = c.Id, Name = c.Name }).ToList(),
+                Status = u.State.Value
             };
+        }
+
+        //Update User Status from user details view valid states are "Active" and "Deleted"
+        public void UpdateStatus(string userId, int status)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                UserDO curUser = uow.UserRepository.GetQuery().Where(user => user.Id == userId).FirstOrDefault();
+
+                if (curUser != null)
+                {
+                    curUser.State = status;
+                    uow.SaveChanges();
+                }
+            }
         }
 
     }

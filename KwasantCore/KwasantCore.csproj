@@ -216,6 +216,7 @@
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulResponse.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulTransmitter.cs" />
     <Compile Include="Managers\CommunicationManager.cs" />
+    <Compile Include="Managers\IncidentReporter.cs" />
     <Compile Include="Managers\KwasantAuthorizeAttribute.cs" />
     <Compile Include="Managers\CalendarSyncManager.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
@@ -238,8 +239,11 @@
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Email.cs" />
+    <Compile Include="Services\INegotiation.cs" />
     <Compile Include="Services\Invitation.cs" />
     <Compile Include="Services\InvitationResponse.cs" />
+    <Compile Include="Services\Negotiation.cs" />
+    <Compile Include="Services\Question.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\SegmentIO.cs" />
     <Compile Include="Services\User.cs" />

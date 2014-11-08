@@ -9,7 +9,8 @@ using Utilities;
 
 namespace Data.Entities
 {
-    public class QuestionDO : BaseDO, IQuestion, ICreateHook, IModifyHook, IDeleteHook
+
+    public class QuestionDO : BaseDO, IQuestionDO, ICreateHook, IModifyHook, IDeleteHook
     {
         public QuestionDO()
         {

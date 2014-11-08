@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using KwasantWeb.Controllers;
 using KwasantWeb.ViewModels;
 using NUnit.Framework;
@@ -281,6 +282,31 @@ namespace KwasantTest.Controllers
                 //Assign user to role
                 uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
                 uow.SaveChanges();
+            }
+        }
+
+        [Test]
+        public void TestCanDeleteAndChangeUserStatus()
+        {
+            UserDO userDO;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //SETUP
+                //Create a active user
+                userDO = uow.UserRepository.GetOrCreateUser("test.user@gmail.com");
+                userDO.State = UserState.Active;
+                uow.SaveChanges();
+                var controller = new UserController();
+
+                //EXECUTE
+                //Calling controller action
+                controller.UpdateStatus(userDO.Id, UserState.Deleted);
+                
+                //VERIFY
+                Assert.AreEqual(1, uow.UserRepository.GetQuery().Where(e => e.State == UserState.Deleted).Count());
+                
+                controller.UpdateStatus(userDO.Id, UserState.Suspended);
+                Assert.AreEqual(1, uow.UserRepository.GetQuery().Where(e => e.State == UserState.Suspended).Count());
             }
         }
     }

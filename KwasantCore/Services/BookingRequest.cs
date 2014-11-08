@@ -15,8 +15,6 @@ using Utilities.Logging;
 
 namespace KwasantCore.Services
 {
-
-
     public class BookingRequest : IBookingRequest
     {
         private IAttendee _attendee;
@@ -77,7 +75,7 @@ namespace KwasantCore.Services
         {
             return
                 uow.BookingRequestRepository.GetAll()
-                    .Where(e => e.State == BookingRequestState.Unstarted)
+                    .Where(e => (e.State == BookingRequestState.Unstarted) || (e.State == BookingRequestState.NeedsBooking))
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
@@ -293,12 +291,26 @@ namespace KwasantCore.Services
 
                 var preferredBookers =
                     uow.UserRepository.GetQuery()
-                        .Where(u => bookerIDs.Contains(u.Id) && u.Available.Value)
+                        .Where(u => bookerIDs.Contains(u.Id) && u.Available == true)
                         .OrderBy(u => u.BookerBookingRequests.Count(br => br.State == BookingRequestState.Booking)).ToList();
 
-                preferredBookers = preferredBookers.Where(u => u.EmailAddress.Address == "rjrudman@gmail.com").ToList();
                 return preferredBookers.FirstOrDefault();
             }
+        }
+
+        public String GetConversationThread(BookingRequestDO bookingRequestDO)
+        {
+            const string conversationThreadFormat = @"
+From: {0} {1}<br/><br/>
+{2}
+";
+            var threads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO});
+
+            var result = String.Join("<br/><br/>", threads.OrderBy(b => b.DateReceived).Select(e =>
+                String.Format(conversationThreadFormat, e.From.Name,
+                    e.DateReceived.TimeAgo(), e.HTMLText)));
+
+            return result;
         }
     }
 }

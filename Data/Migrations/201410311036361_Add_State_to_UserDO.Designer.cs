@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class SyncRob203112014 : IMigrationMetadata
+    public sealed partial class Add_State_to_UserDO : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(SyncRob203112014));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Add_State_to_UserDO));
         
         string IMigrationMetadata.Id
         {
-            get { return "201411031555378_Sync.Rob2.03.11.2014"; }
+            get { return "201410311036361_Add_State_to_UserDO"; }
         }
         
         string IMigrationMetadata.Source
