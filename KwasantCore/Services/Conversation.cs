@@ -38,7 +38,7 @@ namespace KwasantCore.Services
                 );
         }
 
-        public static void ProcessReceivedEmail(IUnitOfWork uow, MailMessage message, BookingRequestDO existingBookingRequest)
+        public static void AddEmail(IUnitOfWork uow, MailMessage message, BookingRequestDO existingBookingRequest)
         {
             var curEmail = Email.ConvertMailMessageToEmail(uow.EmailRepository, message);
             Email.FixInlineImages(curEmail);

@@ -8,11 +8,11 @@ using Data.Interfaces;
 using KwasantCore.Services;
 using StructureMap;
 
-namespace Daemons.InboundEmailHandlers
+namespace KwasantCore.Managers.InboundEmailHandlers
 {
     class InvitationResponseHandler : IInboundEmailHandler
     {
-        public bool Process(MailMessage message)
+        public bool TryHandle(MailMessage message)
         {
             if (!IsInvitationResponse(message))
                 return false;

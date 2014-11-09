@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Net.Sockets;
-using Daemons.InboundEmailHandlers;
 using Data.Infrastructure;
 using KwasantCore.ExternalServices;
+using KwasantCore.Interfaces;
+using KwasantCore.Managers;
 using S22.Imap;
 using StructureMap;
 using Utilities;
@@ -18,7 +19,6 @@ namespace Daemons
     {
         private IImapClient _client;
         private readonly IConfigRepository _configRepository;
-        private readonly IInboundEmailHandler[] _handlers;
 
         private readonly HashSet<String> _testSubjects = new HashSet<string>(); 
         public void RegisterTestEmailSubject(String subject)
@@ -36,13 +36,7 @@ namespace Daemons
         public InboundEmail()
         {
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-          
-            _handlers = new IInboundEmailHandler[]
-                            {
-                                new InvitationResponseHandler(),
-                                new ConversationHandler(), 
-                                new GeneralEmailHandler()
-                            };
+            _intakeManager = ObjectFactory.GetInstance<IIntakeManager>();
 
             _fromEmailAddress = _configRepository.Get("EmailAddress_GeneralInfo");
             AddTest("OutboundEmailDaemon_Test", "Test");
@@ -85,6 +79,7 @@ namespace Daemons
 
         private bool _alreadyListening;
         private readonly object _alreadyListeningLock = new object();
+        private readonly IIntakeManager _intakeManager;
 
         protected override void Run()
         {
@@ -207,13 +202,7 @@ namespace Daemons
 
             try
             {
-                var handlerIndex = 0;
-                while (handlerIndex < _handlers.Length && !_handlers[handlerIndex].Process(messageInfo))
-                {
-                    handlerIndex++;
-                }
-                if (handlerIndex >= _handlers.Length)
-                    throw new ApplicationException("Message hasn't been processed by any handler.");
+                _intakeManager.AddEmail(messageInfo);
             }
             catch (Exception e)
             {

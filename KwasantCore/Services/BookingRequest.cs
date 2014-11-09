@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Mail;
 using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Infrastructure;
@@ -26,6 +27,31 @@ namespace KwasantCore.Services
             _attendee = ObjectFactory.GetInstance<IAttendee>();
             _email = ObjectFactory.GetInstance<Email>();
             _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+        }
+
+        public static void ProcessNewBR(IUnitOfWork uow, MailMessage message)
+        {
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
+
+            var newBookingRequest = new BookingRequest();
+            newBookingRequest.Process(uow, bookingRequest);
+            uow.SaveChanges();
+
+            AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+
+            var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
+            if (preferredUser != null)
+            {
+                bookingRequest.State = BookingRequestState.Booking;
+                bookingRequest.BookerID = preferredUser.Id;
+                bookingRequest.LastUpdated = DateTimeOffset.Now;
+                uow.SaveChanges();
+
+                AlertManager.NewBookingRequestForPreferredBooker(preferredUser.Id, bookingRequest.Id);
+            }
+
+            Email.FixInlineImages(bookingRequest);
+            uow.SaveChanges();
         }
 
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)

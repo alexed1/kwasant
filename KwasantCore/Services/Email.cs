@@ -243,31 +243,6 @@ namespace KwasantCore.Services
             return curEmail;
         }
 
-        public static void ProcessReceivedMessage(IUnitOfWork uow, MailMessage message)
-        {
-            BookingRequestDO bookingRequest = ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
-
-            var newBookingRequest = new BookingRequest();
-            newBookingRequest.Process(uow, bookingRequest);
-            uow.SaveChanges();
-
-            AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
-
-            var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
-            if (preferredUser != null)
-            {
-                bookingRequest.State = BookingRequestState.Booking;
-                bookingRequest.BookerID = preferredUser.Id;
-                bookingRequest.LastUpdated = DateTimeOffset.Now;
-                uow.SaveChanges();
-
-                AlertManager.NewBookingRequestForPreferredBooker(preferredUser.Id, bookingRequest.Id);
-            }
-
-            FixInlineImages(bookingRequest);
-            uow.SaveChanges();
-        }
-
         internal static void FixInlineImages(EmailDO currEmailDO)
         {
             //Fix the HTML text
