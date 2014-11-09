@@ -320,7 +320,6 @@ namespace KwasantCore.Services
                         .Where(u => bookerIDs.Contains(u.Id) && u.Available == true)
                         .OrderBy(u => u.BookerBookingRequests.Count(br => br.State == BookingRequestState.Booking)).ToList();
 
-                preferredBookers = preferredBookers.Where(u => u.EmailAddress.Address == "rjrudman@gmail.com").ToList();
                 return preferredBookers.FirstOrDefault();
             }
         }
