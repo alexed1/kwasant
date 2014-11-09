@@ -114,7 +114,10 @@
                         if (res) {
                             negotiationMessage += ' and emails have been dispatched';
                         }
-                        Kwasant.IFrame.CloseMe(negotiationMessage);
+                        Kwasant.IFrame.CloseMe({ 
+                            message: negotiationMessage,
+                            negotiationID: result.negotiationID
+                        });
                         
                     }
                 });
