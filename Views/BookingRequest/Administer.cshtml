@@ -298,7 +298,7 @@
                             minWidth: 630,
                             callback: function (result) {
                                 if (result)
-                                    displayNegotiation('Your negotiation was successfully updated');
+                                    displayNegotiation(result);
                             }
                         });
                     }
@@ -316,7 +316,7 @@
                                 $('#liCreateOrEditNegotiation').html('Edit');
                                 linkedNegotiationID = result;
                                 updateCreateResolveButtons();
-                                displayNegotiation('Your negotiation was successfully created');
+                                displayNegotiation(result);
                             }
                         }
                     });

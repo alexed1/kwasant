@@ -102,19 +102,20 @@
                 url: '/Negotiation/ProcessSubmittedForm',
                 data: JSON.stringify(negotiation)
             })
-            .success(function(negotiationID) {
-                Kwasant.IFrame.Display('/Negotiation/DisplaySendEmailForm?negotiationID=' + negotiationID,
+            .success(function(result) {
+                Kwasant.IFrame.Display('/Negotiation/DisplaySendEmailForm?negotiationID=' + result.negotiationID + '&isNew=' + result.isNew,
                 {
                     horizontalAlign: 'middle',
                     height: 815,
                     width: 815,
                     modal: true,
-                    callback: function (result) {
-                        //if (result) {
-                        //    $('#liCreateOrEditNegotiation').html('Edit');
-                            
-                        //}
-                        Kwasant.IFrame.CloseMe(negotiationID);
+                    callback: function (res) {
+                        var negotiationMessage = 'Your negotiation was successfully ' + (result.isNew ? 'created' : 'updated');
+                        if (res) {
+                            negotiationMessage += ' and emails have been dispatched';
+                        }
+                        Kwasant.IFrame.CloseMe(negotiationMessage);
+                        
                     }
                 });
 

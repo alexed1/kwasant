@@ -167,6 +167,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                bool isNew = false;
                 NegotiationDO negotiationDO;
                 if (value.Id == null)
                 {
@@ -175,6 +176,7 @@ namespace KwasantWeb.Controllers
                         DateCreated = DateTime.Now
                     };
                     uow.NegotiationsRepository.Add(negotiationDO);
+                    isNew = true;
                 }
                 else
                     negotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
@@ -247,11 +249,11 @@ namespace KwasantWeb.Controllers
                 //    subUoW.SaveChanges();
                 //}
 
-                return Json(negotiationDO.Id);
+                return Json(new { negotiationID = negotiationDO.Id, isNew = isNew } );
             }
         }
 
-        public ActionResult DisplaySendEmailForm(int negotiationID)
+        public ActionResult DisplaySendEmailForm(int negotiationID, bool isNew)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -267,15 +269,21 @@ namespace KwasantWeb.Controllers
                     AddressBook = emailAddresses.ToList(),
                     Subject = string.Format("Need Your Response on {0}'s event: {1}",
                     negotiationDO.BookingRequest.User.DisplayName, "RE: " + negotiationDO.Name),
-
-                    Body = "Some text..",
-                }, DispatchNegotiationEmails);
+                    HeaderText = isNew ? 
+                        "Your negotiation has been created. Would you like to send the emails now?" :
+                        "Your negotiation has been updated. Would you like to send the emails now?",
+                    BodyPromptText = "Enter some additional text for your recipients",
+                    Body = "",
+                }, (subUow, emailDO) => DispatchNegotiationEmails(subUow, emailDO, negotiationID));
             }
         }
 
-        private ActionResult DispatchNegotiationEmails(IUnitOfWork uow, EmailDO emailDO)
+        private ActionResult DispatchNegotiationEmails(IUnitOfWork uow, EmailDO emailDO, int negotiationID)
         {
-            return new JsonResult {Data = true};
+            var communicationManager = ObjectFactory.GetInstance<CommunicationManager>();
+            communicationManager.DispatchNegotiationRequests(uow, emailDO, negotiationID);
+            uow.SaveChanges();
+            return Json(negotiationID);
         }
 
         [HttpPost]

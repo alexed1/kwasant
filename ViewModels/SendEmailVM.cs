@@ -14,6 +14,9 @@ namespace KwasantWeb.ViewModels
             AddressBook = new List<string>();
             InsertLinks = new List<InsertLink>();
         }
+
+        public String HeaderText { get; set; }
+        public String BodyPromptText { get; set; }
         public IList<String> AddressBook { get; set; }
         public IList<InsertLink> InsertLinks { get; set; }
 

@@ -68,7 +68,7 @@
     }
 
     .iframe-body {
-        padding: 0px;
+        padding: 0;
         height: 100%;
     }
 
@@ -102,7 +102,7 @@
             //IE support
             if (document.selection) {
                 this.focus();
-                sel = document.selection.createRange();
+                var sel = document.selection.createRange();
                 sel.text = myValue;
                 this.focus();
             }
@@ -162,7 +162,6 @@
         var toAddresses = getAddresses('#toAddresses li');
         var ccAddresses = getAddresses('#ccAddresses li');
         var bccAddresses = getAddresses('#bccAddresses li');
-        var insertLinks = [];
         var subject = $('#subj').val();
         var body = $('#bodyText').val();
 
@@ -211,7 +210,10 @@
 
 
 <div class="email-info-section" style="max-height: 1000px; min-height: 800px; height: 800px; width: 800px;">
-    <h4 style="text-align:center; color:#D62C2C">Your negotiation has been created. Would you like to send the emails now?</h4>
+    @if (!String.IsNullOrWhiteSpace(Model.HeaderText))
+    {
+        <h4 style="text-align: center; color: #D62C2C">@Model.HeaderText</h4>
+    }
     <div style="float:left; width:30%">
         <h4 style="width:200px; text-align:center">Address book</h4>
         <ul id="addressBook" class="draggable addressBook">
@@ -253,20 +255,20 @@
                         </td>
                     </tr>
                 </table>
-            @if (Model.InsertLinks.Any())
-            {
-                <div style="margin: 5px; padding: 5px; border: solid 1px">
-                    @foreach (var link in Model.InsertLinks)
-                    {
-                        @:<a id="@link.Id" href="javascript:void(0);">@link.DisplayName</a>
-                    }
-                </div>
-            }
+                @if (Model.InsertLinks.Any())
+                {
+                    <div style="margin: 5px; padding: 5px; border: solid 1px">
+                        @foreach (var link in Model.InsertLinks)
+                        {
+                            @:<a id="@link.Id" href="javascript:void(0);">@link.DisplayName</a>
+                        }
+                    </div>
+                }
             </div>
 
         </div>
         <div class="">
-            <textarea id="bodyText" style="width:100%;height:310px; -moz-resize:none; -ms-resize:none; -o-resize:none; resize:none;" ondrop="drop(event)" ondragover="allowDrop(event)">@Model.Body</textarea>
+            <textarea id="bodyText" style="width:100%;height:310px; -moz-resize:none; -ms-resize:none; -o-resize:none; resize:none;" placeholder="@Model.BodyPromptText">@Model.Body</textarea>
         </div>
         <div class="space form-actions negotiation-form-actions">
             <input id="btnSend" type="button" value="Send" class="btn pull-left small-dialog-button shadow-button" onclick="sendEmail()" />
