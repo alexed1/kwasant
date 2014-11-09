@@ -240,6 +240,12 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
                         leftPos = scrollLeft + sidePadding;
                     }
 
+                    if (options.width)
+                        iframeWidth = options.width;
+                    
+                    if (options.height)
+                        iframeHeight = options.height;
+
                     that.css('top', topPos);
                     that.css('left', leftPos);
 

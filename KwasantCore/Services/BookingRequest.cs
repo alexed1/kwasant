@@ -196,6 +196,28 @@ namespace KwasantCore.Services
             uow.SaveChanges();
         }
 
+        public IEnumerable<String> ExtractEmailAddresses(BookingRequestDO bookingRequestDO)
+        {
+            var emailAddress = new EmailAddress(ObjectFactory.GetInstance<IConfigRepository>());
+
+            var allThreads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO}).ToList();
+            
+            //Get the emails of every recipient in every email
+            var emailThreads = allThreads.SelectMany(b => b.Recipients.Select(r => r.EmailAddress.Address));
+            
+            //Get the emails found within email text
+            var emailsInText = new List<String>();
+            foreach (var thread in allThreads)
+            {
+                emailsInText.AddRange(emailAddress.ExtractFromString(thread.HTMLText, thread.PlainText, thread.Subject));
+            }
+
+            //Get the attendees of all events
+            var eventAttendees = bookingRequestDO.Events.SelectMany(ev => ev.Attendees.Select(a => a.EmailAddress.Address));
+
+            return emailThreads.Union(emailsInText).Union(eventAttendees);
+        }
+
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
             //Add the booking request user

@@ -103,7 +103,22 @@
                 data: JSON.stringify(negotiation)
             })
             .success(function(negotiationID) {
-                Kwasant.IFrame.CloseMe(negotiationID);
+                Kwasant.IFrame.Display('/Negotiation/DisplaySendEmailForm?negotiationID=' + negotiationID,
+                {
+                    horizontalAlign: 'middle',
+                    height: 815,
+                    width: 815,
+                    modal: true,
+                    callback: function (result) {
+                        //if (result) {
+                        //    $('#liCreateOrEditNegotiation').html('Edit');
+                            
+                        //}
+                        Kwasant.IFrame.CloseMe(negotiationID);
+                    }
+                });
+
+                
             })
             .fail(function() {
                 alert('An error occured on the server. Your changes have not been saved.');

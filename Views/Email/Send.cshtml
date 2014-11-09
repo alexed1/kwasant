@@ -1,11 +1,12 @@
-﻿@using Newtonsoft.Json
-@model KwasantWeb.ViewModels.BookingRequestAdminVM
+﻿@using System.Text
+@model KwasantWeb.ViewModels.CreateEmailVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
 @Styles.Render("~/bundles/css/bootstrap30")
 @Styles.Render("~/bundles/css/backendcss")
 @Styles.Render("~/bundles/css/colorbox")
 @Styles.Render("~/bundles/css/temp")
 
+<script src="~/Content/js/Kwasant/Popup.js"></script>
 <script src="~/Content/js/jquery.js"></script>
 <script src="~/Scripts/ContextMenu/jquery.contextMenu.js"></script>
 <link href="~/Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
@@ -32,7 +33,7 @@
 
     .draggable li {
         margin: 0 5px 5px 5px;
-        padding: 5px;
+        padding: 8px;
         padding-left: 7px;
         font-size: 1.2em;
         -ms-border-radius: 15px;
@@ -40,12 +41,21 @@
         border: 1px solid;
         overflow-x: hidden;
         overflow-y: hidden;
+
+        float: left;
+        clear: left;
     }
 
     .addressBook {
         width: 200px;
         max-width: 200px;
-        min-height: 533px;
+        min-height: 540px;
+    }
+
+    .addressBook li {
+        display: block;
+        float: none;
+        font-size: 12px;    
     }
 
     .addressField {
@@ -54,7 +64,24 @@
         height: 100%;
         float: right;
         margin-right: 0;
+        display: inline;
     }
+
+    .iframe-body {
+        padding: 0px;
+        height: 100%;
+    }
+
+    .addAttendeeInput {
+        padding: 5px;
+        width: 175px;
+    }
+    .addAttendeePlus {
+        float: right;
+        padding: 4px;
+        padding-top: 9px;
+    }
+
 </style>
 <script>
     $(function () {
@@ -65,13 +92,10 @@
 </script>
 
 <script type="text/javascript">
-
-    $(document).ready(function () {
-        $('#dragNeg').click(function () {
-            $("#bodyText").insertAtCaret('<negotiationLink key="21C6C81E-5D9E-4A49-8657-963B7FDCB064" />');
-            return false;
-        });
-    });
+    function insertText(textToInsert) {
+        $("#bodyText").insertAtCaret(textToInsert);
+        return false;
+    }
 
     $.fn.insertAtCaret = function (myValue) {
         return this.each(function () {
@@ -98,17 +122,106 @@
             }
         });
     };
+    $(function () {
+        @{
+            var uniqueAddresses = new HashSet<String>(Model.AddressBook.Union(Model.ToAddresses).Union(Model.CCAddresses).Union(Model.BCCAddresses).Select(address => address.ToLower()));
+
+            var appendTo = new Func<String, IList<String>, String>((id, list) =>
+            {
+                var returnString = new StringBuilder();
+                returnString.Append("var " + id + "list = $('#" + id + "');");
+                foreach (var toAddress in list)
+                {
+                    if (uniqueAddresses.Contains(toAddress))
+                    {
+                        uniqueAddresses.Remove(toAddress);
+                        returnString.Append(id + "list.append($('<li>" + toAddress + "</li>'));");
+                    }
+                }
+                return returnString.ToString();
+            });
+        }
+        @Html.Raw(appendTo("toAddresses", Model.ToAddresses))
+        @Html.Raw(appendTo("ccAddresses", Model.CCAddresses))
+        @Html.Raw(appendTo("bccAddresses", Model.BCCAddresses))
+        @Html.Raw(appendTo("addressBook", Model.AddressBook))
+
+        @foreach (var link in Model.InsertLinks)
+        {
+            @:$('#@link.Id').click(function () { insertText('@Html.Raw(link.TextToInsert)') });
+                }
+
+    });
+
+    function sendEmail() {
+        var getAddresses = function (selector) {
+            return $(selector).map(function () { return this.textContent; }).get();
+        };
+
+        var addressBook = getAddresses('#addressBook li');
+        var toAddresses = getAddresses('#toAddresses li');
+        var ccAddresses = getAddresses('#ccAddresses li');
+        var bccAddresses = getAddresses('#bccAddresses li');
+        var insertLinks = [];
+        var subject = $('#subj').val();
+        var body = $('#bodyText').val();
+
+        var data = {
+            AddressBook: addressBook,
+            ToAddresses: toAddresses,
+            CCAddresses: ccAddresses,
+            BCCAddresses: bccAddresses,
+            Subject: subject,
+            CallbackToken: '@Model.CallbackToken',
+            Body: body
+        };
+
+        var spinner = Kwasant.IFrame.DisplaySpinner();
+        $.ajax({
+            type: "POST",
+            dataType: 'json',
+            contentType: 'application/json',
+            url: '/Email/HandleSend',
+            data: JSON.stringify(data)
+        })
+        .success(function (result) {
+            Kwasant.IFrame.CloseMe(result);
+        })
+        .fail(function () {
+            alert('An error occured on the server. Your changes have not been saved.');
+        })
+        .always(function () {
+            if (spinner !== null) {
+                spinner.hide();
+            }
+        });
+
+    }
+
+    $(function() {
+        $('#addAttendee').click(function() {
+            var attendeeText = $('#attendeeText').val();
+            $('#addressBook').append("<li>" + attendeeText + "</li>");
+            $('#attendeeText').val('');
+        });
+    });
+
 </script>
 
-<div class="email-info-section" style="margin-top: 5px; margin-bottom: 5px; max-height:1000px;min-height:600px; height: 100%; width:800px;">
+
+
+<div class="email-info-section" style="max-height: 1000px; min-height: 800px; height: 800px; width: 800px;">
+    <h4 style="text-align:center; color:#D62C2C">Your negotiation has been created. Would you like to send the emails now?</h4>
     <div style="float:left; width:30%">
         <h4 style="width:200px; text-align:center">Address book</h4>
-        <ul id="sortable1" class="draggable addressBook">
-            <li>rjrudman@gmail.com</li>
-            <li>alex@gmail.com</li>
-            <li>max@gmail.com</li>
-            <li>kate@gmail.com</li>
+        <ul id="addressBook" class="draggable addressBook">
         </ul>
+        <div style="width:200px; margin-top:5px;">
+            <a id="addAttendee" href="javascript:void(0);" class="glyphicon glyphicon-plus addAttendeePlus"></a>
+            <input id="attendeeText" class="addAttendeeInput" type="text" placeholder="Enter a new recipient..." />        
+        </div>
+        
+        
     </div>
     <div style="float:right; width:70%; margin-top:10px;">
         <div class="info">
@@ -118,41 +231,47 @@
                     <tr>
                         <td class="">Subject:</td>
                         <td>
-                            <input type="text" class="addressField" placeholder="Enter subject..." />
+                            <input id="subj" type="text" class="addressField" placeholder="Enter subject..." value="@Model.Subject" />
                         </td>
                     </tr>
                     <tr>
                         <td class="">To:</td>
                         <td>
-                            <ul class="addressField draggable"></ul>
+                            <ul id="toAddresses" class="addressField draggable"></ul>
                         </td>
                     </tr>
                     <tr>
                         <td class="">CC:</td>
                         <td>
-                            <ul class="addressField draggable"></ul>
+                            <ul id="ccAddresses" class="addressField draggable"></ul>
                         </td>
                     </tr>
                     <tr>
                         <td class="">BCC:</td>
                         <td>
-                            <ul class="addressField draggable"></ul>
+                            <ul id="bccAddresses" class="addressField draggable"></ul>
                         </td>
                     </tr>
                 </table>
-                <div style="margin:5px;padding:5px;border:solid 1px">
-                    <a id="dragNeg" href="javascript:void(0);" ondrag="startDragNegotiationLink(event)">Insert link to negotiation</a>
+            @if (Model.InsertLinks.Any())
+            {
+                <div style="margin: 5px; padding: 5px; border: solid 1px">
+                    @foreach (var link in Model.InsertLinks)
+                    {
+                        @:<a id="@link.Id" href="javascript:void(0);">@link.DisplayName</a>
+                    }
                 </div>
+            }
             </div>
 
         </div>
         <div class="">
-            <textarea id="bodyText" style="width:100%;height:310px; -moz-resize:none; -ms-resize:none; -o-resize:none; resize:none;" ondrop="drop(event)" ondragover="allowDrop(event)"></textarea>
+            <textarea id="bodyText" style="width:100%;height:310px; -moz-resize:none; -ms-resize:none; -o-resize:none; resize:none;" ondrop="drop(event)" ondragover="allowDrop(event)">@Model.Body</textarea>
         </div>
         <div class="space form-actions negotiation-form-actions">
-            <input id="btnSend" type="button" value="Send" class="btn pull-left small-dialog-button shadow-button" onclick="submitNegotiation()" />
+            <input id="btnSend" type="button" value="Send" class="btn pull-left small-dialog-button shadow-button" onclick="sendEmail()" />
 
-            <a href="javascript:close();" class="btn cancel-btn small-dialog-button shadow-button pull-left" style="margin-left:5px;">Cancel</a>
+            <a href="javascript:Kwasant.IFrame.CloseMe(false);" class="btn cancel-btn small-dialog-button shadow-button pull-left" style="margin-left:5px;">Cancel</a>
         </div>
     </div>
 </div>

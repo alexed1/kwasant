@@ -163,7 +163,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public JsonResult ProcessSubmittedForm(NegotiationVM value)
+        public ActionResult ProcessSubmittedForm(NegotiationVM value)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -240,15 +240,42 @@ namespace KwasantWeb.Controllers
 
                 uow.SaveChanges();
 
-                using (var subUoW = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var communicationManager = ObjectFactory.GetInstance<CommunicationManager>();
-                    communicationManager.DispatchNegotiationRequests(subUoW, negotiationDO.Id);
-                    subUoW.SaveChanges();
-                }
+                //using (var subUoW = ObjectFactory.GetInstance<IUnitOfWork>())
+                //{
+                //    var communicationManager = ObjectFactory.GetInstance<CommunicationManager>();
+                //    communicationManager.DispatchNegotiationRequests(subUoW, negotiationDO.Id);
+                //    subUoW.SaveChanges();
+                //}
 
                 return Json(negotiationDO.Id);
             }
+        }
+
+        public ActionResult DisplaySendEmailForm(int negotiationID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+                var emailController = new EmailController();
+
+                var br = new BookingRequest();
+                var emailAddresses = br.ExtractEmailAddresses(negotiationDO.BookingRequest);
+
+                return emailController.DisplayEmail(Session, new CreateEmailVM
+                {
+                    ToAddresses = negotiationDO.Attendees.Select(a => a.EmailAddress.Address).ToList(),
+                    AddressBook = emailAddresses.ToList(),
+                    Subject = string.Format("Need Your Response on {0}'s event: {1}",
+                    negotiationDO.BookingRequest.User.DisplayName, "RE: " + negotiationDO.Name),
+
+                    Body = "Some text..",
+                }, DispatchNegotiationEmails);
+            }
+        }
+
+        private ActionResult DispatchNegotiationEmails(IUnitOfWork uow, EmailDO emailDO)
+        {
+            return new JsonResult {Data = true};
         }
 
         [HttpPost]
