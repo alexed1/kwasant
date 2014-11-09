@@ -242,10 +242,12 @@
     <Compile Include="Services\Email.cs" />
     <Compile Include="Services\IAnswer.cs" />
     <Compile Include="Services\INegotiation2.cs" />
+    <Compile Include="Services\INegotiationResponse.cs" />
     <Compile Include="Services\Invitation.cs" />
     <Compile Include="Services\InvitationResponse.cs" />
     <Compile Include="Services\IQuestion.cs" />
     <Compile Include="Services\Negotiation.cs" />
+    <Compile Include="Services\NegotiationResponse.cs" />
     <Compile Include="Services\Question.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\SegmentIO.cs" />
