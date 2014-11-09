@@ -28,17 +28,17 @@
                                         @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
                                         @Html.ValidationMessageFor(m => m.Password)
                                     </div>
+                                    
                                 </div>
                                 <div class="form-group login-fields">
                                     <div class="col-md-offset-2 col-md-10">
                                         <div class="pull-left">
+                                            <p class="forgot-lnk">@Html.ActionLink("Forgot Password", "ForgotPassword", "Account")</p>
                                             <div class="checkbox">
                                                 @Html.CheckBoxFor(m => m.RememberMe)
                                                 @Html.LabelFor(m => m.RememberMe)
                                             </div>
-                                            <div>
-                                                @Html.ActionLink("Forgot Password", "ForgotPassword", "Account")
-                                            </div>
+                                            
                                             <!-- <p>@Html.ActionLink("register", "register") if you don't have a local account.</p> -->
                                         </div>
                                         <input type="submit" value="Log in" class="btn btn-default pull-right" />
