@@ -230,6 +230,7 @@
     <Compile Include="Security\KwasantUserStore.cs" />
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\Account.cs" />
+    <Compile Include="Services\Answer.cs" />
     <Compile Include="Services\Attendee.cs" />
     <Compile Include="Services\Booker.cs" />
     <Compile Include="Services\Calendar.cs" />
@@ -239,9 +240,11 @@
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Email.cs" />
-    <Compile Include="Services\INegotiation.cs" />
+    <Compile Include="Services\IAnswer.cs" />
+    <Compile Include="Services\INegotiation2.cs" />
     <Compile Include="Services\Invitation.cs" />
     <Compile Include="Services\InvitationResponse.cs" />
+    <Compile Include="Services\IQuestion.cs" />
     <Compile Include="Services\Negotiation.cs" />
     <Compile Include="Services\Question.cs" />
     <Compile Include="Services\Report.cs" />

@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories;
 using Data.States;
+using Data.States.Templates;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
-using Utilities;
 
 namespace KwasantWeb.Controllers
 {
@@ -21,29 +23,18 @@ namespace KwasantWeb.Controllers
         string _currBooker;
         private readonly IAttendee _attendee;
         private readonly IEmailAddress _emailAddress;
-        private readonly IConfigRepository _configRepository;
-        
+        private readonly INegotiation _negotiation;
+        private readonly IAnswer _answer;
+        private readonly IQuestion _question;
+
         public NegotiationController()
         {
             _booker = new Booker();
             _attendee = ObjectFactory.GetInstance<IAttendee>();
             _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
-            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-        }
-
-        [HttpPost]
-        public ActionResult CheckOwnership(int negotiationID, int bookingRequestID)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                _currBooker = this.GetUserId();
-                string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
-                return Json(new KwasantPackagedMessage
-                    {
-                        Name = verifyOwnership != "valid" ? "DifferentOwner" : verifyOwnership, 
-                        Message = verifyOwnership
-                    });
-            }
+            _negotiation = ObjectFactory.GetInstance<INegotiation>();
+            _question = ObjectFactory.GetInstance<IQuestion>();
+            _answer = ObjectFactory.GetInstance<IAnswer>();
         }
 
         public ActionResult Edit(int negotiationID, int bookingRequestID)
@@ -53,7 +44,7 @@ namespace KwasantWeb.Controllers
                 _currBooker = this.GetUserId();
                 string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
                 if (verifyOwnership != "valid")
-                    throw new ApplicationException("This negotiation is owned by another booker. Please try again to take ownership.");
+                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership }, JsonRequestBehavior.AllowGet);
 
                 //First - we order by start date
                 Func<NegotiationAnswerVM, DateTimeOffset?> firstSort = a => a.EventStartDate;
@@ -108,12 +99,11 @@ namespace KwasantWeb.Controllers
                                 AnswerState = a.AnswerStatus,
                                 VotedByList = uow.QuestionResponseRepository.GetQuery()
                                     .Where(qr => qr.AnswerID == a.Id)
-                                    .Select(qr => qr.User.UserName)
+                                    .Select(qr => qr.User.FirstName + " " + qr.User.LastName)
                                     .ToList(),
-                                SuggestedBy = a.UserDO == null ? String.Empty : a.UserDO.UserName,
                                 EventID = a.EventID,
-                                EventStartDate = a.Event == null ? (DateTimeOffset?) null : a.Event.StartDate,
-                                EventEndDate = a.Event == null ? (DateTimeOffset?) null : a.Event.EndDate,
+                                EventStartDate = a.Event == null ? (DateTimeOffset?)null : a.Event.StartDate,
+                                EventEndDate = a.Event == null ? (DateTimeOffset?)null : a.Event.EndDate,
                             });
 
                         answers = orders.Aggregate(answers, (current, t) => current.OrderBy(t));
@@ -139,104 +129,36 @@ namespace KwasantWeb.Controllers
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
 
-                //need to add the addresses of people cc'ed or on the To line of the BookingRequest
-                var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress.Address).ToList();
-                attendees.Add(bookingRequestDO.User.EmailAddress.Address);
-               
-                var filteredEmailAddresses = FilterUtility.StripReservedEmailAddresses(attendees, _configRepository).Distinct().ToList();
+                var emailAddresses = _emailAddress.GetEmailAddresses(uow, bookingRequestDO.HTMLText, bookingRequestDO.PlainText, bookingRequestDO.Subject);
+                emailAddresses.Add(bookingRequestDO.User.EmailAddress);
 
-                return View("~/Views/Negotiation/Edit.cshtml",
-                            new NegotiationVM
-                                {
-                                    Name = bookingRequestDO.Subject,
-                                    BookingRequestID = bookingRequestID,
-                                    Attendees = filteredEmailAddresses,
-                                    Questions = new List<NegotiationQuestionVM>
-                                        {
-                                            new NegotiationQuestionVM
-                                                {
-                                                    Type = "Text"
-                                                }
-                                        }
-                                });
+                //need to add the addresses of people cc'ed or on the To line of the BookingRequest
+                emailAddresses.AddRange(bookingRequestDO.Recipients.Select(r => r.EmailAddress));
+
+                return View("~/Views/Negotiation/Edit.cshtml", new NegotiationVM
+                {
+                    Name = uow.EmailRepository.GetByKey(bookingRequestID).Subject,
+                    BookingRequestID = bookingRequestID,
+                    Attendees = emailAddresses.Select(ea => ea.Address).ToList(),
+                    Questions = new List<NegotiationQuestionVM>
+                    { new NegotiationQuestionVM
+                        {
+                            Type = "Text"
+                        }
+                    }
+                });
             }
         }
 
         [HttpPost]
-        public JsonResult ProcessSubmittedForm(NegotiationVM value)
+        public JsonResult ProcessSubmittedForm(NegotiationVM curNegotiationVM)
         {
+
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                NegotiationDO negotiationDO;
-                if (value.Id == null)
-                {
-                    negotiationDO = new NegotiationDO
-                    {
-                        DateCreated = DateTime.Now
-                    };
-                    uow.NegotiationsRepository.Add(negotiationDO);
-                }
-                else
-                    negotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
-
-                negotiationDO.Name = value.Name;
-                negotiationDO.BookingRequestID = value.BookingRequestID;
-
-                _attendee.ManageNegotiationAttendeeList(uow, negotiationDO, value.Attendees);
-
-                var proposedQuestionIDs = value.Questions.Select(q => q.Id);
-                //Delete the existing questions which no longer exist in our proposed negotiation
-                var existingQuestions = negotiationDO.Questions.ToList();
-                foreach (var existingQuestion in existingQuestions.Where(q => !proposedQuestionIDs.Contains(q.Id)))
-                {
-                    uow.QuestionsRepository.Remove(existingQuestion);
-                }
-
-                //Here we add/update questions based on our proposed negotiation
-                foreach (var question in value.Questions)
-                {
-                    QuestionDO questionDO;
-                    if (question.Id == 0)
-                    {
-                        questionDO = new QuestionDO();
-                        uow.QuestionsRepository.Add(questionDO);
-                    }
-                    else
-                        questionDO = uow.QuestionsRepository.GetByKey(question.Id);
-
-                    questionDO.Negotiation = negotiationDO;
-                    questionDO.AnswerType = question.Type;
-                    if (questionDO.QuestionStatus == 0)
-                        questionDO.QuestionStatus = QuestionState.Unanswered;
-
-                    questionDO.Text = question.Text;
-                    questionDO.CalendarID = question.CalendarID;
-
-                    var proposedAnswerIDs = question.Answers.Select(a => a.Id);
-                    //Delete the existing answers which no longer exist in our proposed negotiation
-                    var existingAnswers = questionDO.Answers.ToList();
-                    foreach (var existingAnswer in existingAnswers.Where(a => !proposedAnswerIDs.Contains(a.Id)))
-                    {
-                        uow.AnswerRepository.Remove(existingAnswer);
-                    }
-
-                    foreach (var answer in question.Answers)
-                    {
-                        AnswerDO answerDO;
-                        if (answer.Id == 0)
-                        {
-                            answerDO = new AnswerDO();
-                            uow.AnswerRepository.Add(answerDO);
-                        }
-                        else
-                            answerDO = uow.AnswerRepository.GetByKey(answer.Id);
-
-                        answerDO.EventID = answer.EventID;
-                        answerDO.AnswerStatus = answer.AnswerState;
-                        answerDO.Question = questionDO;
-                        answerDO.Text = answer.Text;
-                    }
-                }
+                NegotiationDO negotiationDO = _negotiation.GetOrCreate(curNegotiationVM.Id, uow);
+                _negotiation.Update(uow, curNegotiationVM, negotiationDO);
 
                 uow.SaveChanges();
 
@@ -247,23 +169,15 @@ namespace KwasantWeb.Controllers
                     subUoW.SaveChanges();
                 }
 
-                return Json(negotiationDO.Id);
+                return Json(negotiationDO.Id, JsonRequestBehavior.AllowGet);
             }
         }
 
-        [HttpPost]
         public ActionResult MarkResolved(int negotiationID)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
-                if (negotiationDO == null)
-                    throw new HttpException(400, "Negotiation with id '" + negotiationID + "' not found.");
-
-                negotiationDO.NegotiationState = NegotiationState.Resolved;
-                uow.SaveChanges();
-            }
-            return Json(true);
+            //throws exception if it fails
+            _negotiation.Resolve(negotiationID);
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
     }
 }
