@@ -45,7 +45,7 @@ namespace KwasantCore.Managers
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 var email = ObjectFactory.GetInstance<Email>();
-                string message = "BookingRequest ID : " + bookingRequestDO.Id + " Needs Processing <br/>Subject : " + bookingRequestDO.Subject;
+                string message = "BookingRequest Needs Processing <br/>Subject : " + bookingRequestDO.Subject;
                 string subject = "BookingRequest Needs Processing";
                 string toRecipient = _configRepository.Get("EmailAddress_BrNotify");
                 string fromAddress = _configRepository.Get<string>("EmailAddress_GeneralInfo");
