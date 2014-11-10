@@ -98,7 +98,7 @@ namespace KwasantWeb
                                     {
                                         ClientId = clientID,
                                         ClientSecret = clientSecret,
-                                        Scopes = "https://www.googleapis.com/auth/calendar"
+                                        Scopes = "https://www.googleapis.com/auth/calendar,email"
                                     }),
                             CalDAVEndPoint = "https://apidata.googleusercontent.com/caldav/v2"
                         }

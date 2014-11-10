@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Mvc;
 using Google.Apis.Auth.OAuth2.Web;
@@ -30,7 +31,21 @@ namespace KwasantCore.Managers.APIManagers.Authorizers.Google
         {
             var flow = CreateFlow(userId);
             var tokenResponse = await flow.LoadTokenAsync(userId, cancellationToken);
-            await flow.RevokeTokenAsync(userId, tokenResponse.AccessToken, cancellationToken);
+            try
+            {
+                await flow.RevokeTokenAsync(userId, tokenResponse.AccessToken, cancellationToken);
+            }
+            catch (TokenResponseException ex)
+            {
+                if (string.Equals(ex.Error.Error, "invalid_token", StringComparison.Ordinal))
+                {
+                    // token is invalid likely because it has been revoked from google site
+                }
+                else
+                {
+                    throw;
+                }
+            }
             await flow.DeleteTokenAsync(userId, cancellationToken);
         }
 

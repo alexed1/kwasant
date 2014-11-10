@@ -133,6 +133,7 @@ namespace KwasantCore.Managers
                 catch (Exception ex)
                 {
                     Logger.GetLogger().Error(string.Format("Error occurred on user's (id:{0}) calendars synchronization with '{1}'.", user.Id, authData.Provider.Name), ex);
+                    AlertManager.ErrorSyncingCalendar(authData);
                 }
             }
         }
