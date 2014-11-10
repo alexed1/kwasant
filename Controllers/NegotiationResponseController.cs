@@ -60,8 +60,6 @@ namespace KwasantWeb.Controllers
                     CommunicationMode = user.GetMode(userDO),
                     OriginatingUser = originatingUser,
 
-                    Attendees = curNegotiationDO.Attendees.Select(a => a.Name).ToList(),
-
                     //Building the List of NegotiationQuestionVM's
                     //Starting with all of the Questions in the Negotiation...
                     Questions = curNegotiationDO.Questions.Select(q =>

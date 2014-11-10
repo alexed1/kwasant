@@ -383,6 +383,7 @@
     <Content Include="Content\css\daypilot\scheduler_traditional.css" />
     <Content Include="Content\css\daypilot\scheduler_transparent.css" />
     <Content Include="Content\css\daypilot\scheduler_white.css" />
+    <Content Include="Content\css\EmailSend.css" />
     <Content Include="Content\css\frontcss\main.css" />
     <Content Include="Content\css\jackedup.css" />
     <Content Include="Content\css\jqtree.css" />

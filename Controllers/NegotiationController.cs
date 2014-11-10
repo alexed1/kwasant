@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
@@ -97,7 +98,6 @@ namespace KwasantWeb.Controllers
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
                     BookingRequestID = negotiationDO.BookingRequestID,
-                    Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
                     {
                         var answers = q.Answers.Select(a =>
@@ -150,7 +150,6 @@ namespace KwasantWeb.Controllers
                                 {
                                     Name = bookingRequestDO.Subject,
                                     BookingRequestID = bookingRequestID,
-                                    Attendees = filteredEmailAddresses,
                                     Questions = new List<NegotiationQuestionVM>
                                         {
                                             new NegotiationQuestionVM
@@ -183,8 +182,6 @@ namespace KwasantWeb.Controllers
 
                 negotiationDO.Name = value.Name;
                 negotiationDO.BookingRequestID = value.BookingRequestID;
-
-                _attendee.ManageNegotiationAttendeeList(uow, negotiationDO, value.Attendees);
 
                 var proposedQuestionIDs = value.Questions.Select(q => q.Id);
                 //Delete the existing questions which no longer exist in our proposed negotiation
@@ -242,39 +239,42 @@ namespace KwasantWeb.Controllers
 
                 uow.SaveChanges();
 
-                //using (var subUoW = ObjectFactory.GetInstance<IUnitOfWork>())
-                //{
-                //    var communicationManager = ObjectFactory.GetInstance<CommunicationManager>();
-                //    communicationManager.DispatchNegotiationRequests(subUoW, negotiationDO.Id);
-                //    subUoW.SaveChanges();
-                //}
-
                 return Json(new { negotiationID = negotiationDO.Id, isNew = isNew } );
             }
         }
 
         public ActionResult DisplaySendEmailForm(int negotiationID, bool isNew)
         {
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+
                 var emailController = new EmailController();
 
                 var br = new BookingRequest();
                 var emailAddresses = br.ExtractEmailAddresses(negotiationDO.BookingRequest);
 
-                return emailController.DisplayEmail(Session, new CreateEmailVM
+                var currCreateEmailVM = new CreateEmailVM
                 {
                     ToAddresses = negotiationDO.Attendees.Select(a => a.EmailAddress.Address).ToList(),
                     AddressBook = emailAddresses.ToList(),
-                    Subject = string.Format("Need Your Response on {0}'s event: {1}",
-                    negotiationDO.BookingRequest.User.DisplayName, "RE: " + negotiationDO.Name),
-                    HeaderText = isNew ? 
-                        "Your negotiation has been created. Would you like to send the emails now?" :
-                        "Your negotiation has been updated. Would you like to send the emails now?",
+                    Subject =
+                        string.Format("Need Your Response on {0}'s event: {1}",
+                            negotiationDO.BookingRequest.User.DisplayName, "RE: " + negotiationDO.Name),
+                    HeaderText =
+                        String.Format("Your negotiation has been {0}. Would you like to send the emails now?", isNew
+                            ? "created"
+                            : "updated"),
+
                     BodyPromptText = "Enter some additional text for your recipients",
                     Body = "",
-                }, (subUow, emailDO) => DispatchNegotiationEmails(subUow, emailDO, negotiationID));
+                };
+                return emailController.DisplayEmail(Session, currCreateEmailVM,
+                    (subUow, emailDO) => DispatchNegotiationEmails(subUow, emailDO, negotiationID)
+                    // We can't just pass the method 'DispatchNegotiationEmails', 
+                    // as we need to capture the negotiationID
+                    );
             }
         }
 

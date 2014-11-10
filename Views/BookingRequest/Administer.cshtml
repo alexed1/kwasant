@@ -4,7 +4,7 @@
 <div id="emailInfoBox" class="col-md-7">
     <div class="emailInfoBox">
         <div id="divEmailViewer">
-            @Html.Partial("../Email/Show", Model)
+            <iframe id="email" src="/Email/GetInfo?emailID=@Model.BookingRequestId" style="border:none;width:100%;height:100%;" ></iframe>
         </div>
         <div class="">
             <input type="radio" id="rdnshowOtherBRs" name="group1" value="ShowOtherBRs" />
@@ -32,16 +32,30 @@
 </div>
 <input type="hidden" value="@Model.BookingRequestId" id="hdnrequestid" name="requestid" />
 <script type="text/javascript">
+    $(function () {
+        $('#email').load(function () {
+            var iframeDoc = $(this).contents();
+            var that = $(this);
+            var reposition = function () {
+                var iframeHeight = iframeDoc.get(0).body.offsetHeight;
+
+                that.css('height', iframeHeight + 'px');
+                that.css('minHeight', iframeHeight + 'px');
+            };
+            reposition();
+        });
+    });
+
     //funtion to load booking request info in iframe "emailInfoFrame" on "tbluserrequests" request row click.
     //called by : rows in tbluserrequests on click
     function loadrequest(id, linkedCalendarIDs, ele) {
         $("#tbluserrequests tr").removeClass('current-row');
         if ($('#tbluserrequests tr').length > 2) {
             $(ele).addClass('current-row');
-        }    
+        }
         $("#hdnrequestid").val(id);
         $("#btnProcessed").attr("onclick", "updateStatus('" + "@Url.Action("MarkAsProcessed", "BookingRequest", new { id = "requestid" })".replace("requestid", id) + "')");
-        
+
         $("#divEmailViewer").load('@Url.Action("GetInfo","Email")?emailId=' + id);
 
         if (window.parent.calendar !== undefined) {
@@ -53,7 +67,7 @@
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
         $("#hdnrequestid").val('@Model.BookingRequestId');
-        
+
         showRelatedItems();
         $('#tbluserrequests').hide();
         $('#notificationGroup').hide();
@@ -87,9 +101,9 @@
         $.post(path, function (response) {
             var oldOwner = response.Message;
             var Id = $("#hdnrequestid").val();
-            if (response.Name == "DifferentOwner") 
+            if (response.Name == "DifferentOwner")
                 ShowFailedOwnershipVerification(oldOwner, Id);
-            else 
+            else
                 window.location.href = "@Url.Action("Index", "BookingRequest")";
         }, 'json');
     }
@@ -116,15 +130,15 @@
             });
     }
 
-    
+
     $("#rdnShowRelatedItems").click(function () {
         showRelatedItems();
     });
-  
+
     $("#rdnshowOtherBRs").click(function () {
         showOtherBRs();
     });
-    
+
     var table;
     function showOtherBRs() {
         $('#tbluserrequests').show();
@@ -168,58 +182,58 @@
             ]
         });
 
-            var datenow = new Date();
-            var dp_day = window.parent.storedCalendar[0];
-            dp_day.startDate = datenow;
-            window.parent.calendar.refreshCalendars();
-            dp_navigator.select(new DayPilot.Date(datenow));
-        }
+        var datenow = new Date();
+        var dp_day = window.parent.storedCalendar[0];
+        dp_day.startDate = datenow;
+        window.parent.calendar.refreshCalendars();
+        dp_navigator.select(new DayPilot.Date(datenow));
+    }
 
 
-        var table1;
-        function showRelatedItems() {
+    var table1;
+    function showRelatedItems() {
 
-            $('#tbluserrequests_wrapper').hide();
-            table1 = $('#tblRelatedItems').DataTable({
-                destroy: true,
-                order: [0, 'desc'],
-                searching: false,
-                ordering: false,
-                bLengthChange: false,
-                processing: true,
-                serverSide: true, 
-                ajax:
+        $('#tbluserrequests_wrapper').hide();
+        table1 = $('#tblRelatedItems').DataTable({
+            destroy: true,
+            order: [0, 'desc'],
+            searching: false,
+            ordering: false,
+            bLengthChange: false,
+            processing: true,
+            serverSide: true,
+            ajax:
+            {
+                "url": "@Url.Action("ShowRelatedItems", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestId",
+                "dataSrc": function (json) {
+                    var orgdata = JSON.parse(json.data);
+                    return orgdata;
+                },
+                "type": "POST"
+            },
+
+            createdRow: function (row, data, index) {
+                if (data.id == $("#hdnrequestid").val() && $('#tblRelatedItems tr').length > 2) {
+                    $(row).addClass('current-row');
+                }
+                else {
+                    $(row).removeClass('current-row');
+                }
+
+                // $(row).attr("style", "cursor:pointer;");
+            },
+            columns: [
                 {
-                    "url": "@Url.Action("ShowRelatedItems", "BookingRequest")" + "?bookingRequestId=" + "@Model.BookingRequestId",
-                    "dataSrc": function (json) {
-                        var orgdata = JSON.parse(json.data);
-                        return orgdata;
-                    },
-                    "type": "POST"
-                },
-            
-                createdRow: function (row, data, index) {
-                    if (data.id == $("#hdnrequestid").val() && $('#tblRelatedItems tr').length > 2) {
-                        $(row).addClass('current-row');
+                    data: function (data) {
+                        return ConvertTODateString(data.date);
                     }
-                    else {
-                        $(row).removeClass('current-row');
-                    }
-
-                    // $(row).attr("style", "cursor:pointer;");
                 },
-                columns: [
-                    {
-                        data: function (data) {
-                            return ConvertTODateString(data.date);
-                        }
-                    },
-                    { data: 'type' }
-                ]
-            });
+                { data: 'type' }
+            ]
+        });
 
     }
-   
+
     $('#tblRelatedItems').on('click', 'tr', function () {
         //$("#tblRelatedItems tr").attr("style", "background-color: none;cursor:pointer");
         //$(this).attr("style", "background-color: #aaa;");
@@ -264,17 +278,17 @@
 
     function getNegotiationReview(negotiationID) {
         Kwasant.IFrame.Display('/Negotiation/Review?negotiationID=' + negotiationID,
-                {
-                    horizontalAlign: 'right',
-                    minHeight: 700,
-                    minWidth: 630,
-                    callback: function (result) {
-                        if (result)
-                            displayNegotiation('Your negotiation was successfully updated');
-                    }
-                });
+            {
+                horizontalAlign: 'right',
+                minHeight: 700,
+                minWidth: 630,
+                callback: function (result) {
+                    if (result)
+                        displayNegotiation('Your negotiation was successfully updated');
+                }
+            });
     }
-    
+
 
     function getNegotiationWindow() {
         if (linkedNegotiationID != null) {
@@ -284,78 +298,78 @@
                 url: url,
                 type: 'POST',
                 data: { negotiationID: linkedNegotiationID, bookingRequestID: bookingRequestId },
-                async: false, 
+                async: false,
                 success: function (response) {
                     var oldOwner = response.Message;
                     var Id = $("#hdnrequestid").val();
-                    if (response.Name == "DifferentOwner") 
+                    if (response.Name == "DifferentOwner")
                         ShowFailedOwnershipVerification(oldOwner, Id);
                     else {
                         Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID + '&bookingRequestID=' + bookingRequestId,
-                        {
-                            horizontalAlign: 'right',
-                            minHeight: 700,
-                            minWidth: 630,
-                            callback: function (result) {
-                                if (result)
-                                    displayNegotiation(result.message);
-                            }
-                        });
+                            {
+                                horizontalAlign: 'right',
+                                minHeight: 700,
+                                minWidth: 630,
+                                callback: function (result) {
+                                    if (result)
+                                        displayNegotiation(result.message);
+                                }
+                            });
                     }
                 }
             });
-           
+
         } else {
             Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestId',
-                    {
-                        horizontalAlign: 'right',
-                        minHeight: 700,
-                        minWidth: 300,
-                            callback: function (result) {
-                            if (result) {
-                                $('#liCreateOrEditNegotiation').html('Edit');
-                                linkedNegotiationID = result.negotiationID;
-                                updateCreateResolveButtons();
-                                displayNegotiation(result.message);
-                            }
+                {
+                    horizontalAlign: 'right',
+                    minHeight: 700,
+                    minWidth: 300,
+                    callback: function (result) {
+                        if (result) {
+                            $('#liCreateOrEditNegotiation').html('Edit');
+                            linkedNegotiationID = result.negotiationID;
+                            updateCreateResolveButtons();
+                            displayNegotiation(result.message);
                         }
-                    });
-            }
-        }
-
-        function resolveActiveNegotiation(negotiationID) {
-            if (confirm("Are you sure you want to resolve this negotiation?")) {
-                var url = "/Negotiation/MarkResolved?negotiationID=" + negotiationID;
-                Kwasant.IFrame.DispatchUrlRequest(url, function (data) {
-                    if (!data) {
-                        alert('An error occured on the server. Your changes were not saved.');
-                    } else {
-                        displayNegotiation('Your negotiation was successfully resolved.');
-                        linkedNegotiationID = null;
-                        $('#liCreateOrEditNegotiation').html('Create');
-                        updateCreateResolveButtons();
                     }
-                }, 'POST');
-            }       
+                });
         }
-    
-        function updateCreateResolveButtons() {
-            if (linkedNegotiationID == null) {
-                $('#liReview').hide();
-                $('#liResolveNegotiation').hide();
-            } else {
-                $('#liReview').show();
-                $('#liResolveNegotiation').show();
-            }
-        }
-  
-        $(document).ready(function () {
-            updateCreateResolveButtons();
+    }
 
-            $('.navbar .dropdown').hover(function () {
-                $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
-            }, function () {
-                $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
-            });
+    function resolveActiveNegotiation(negotiationID) {
+        if (confirm("Are you sure you want to resolve this negotiation?")) {
+            var url = "/Negotiation/MarkResolved?negotiationID=" + negotiationID;
+            Kwasant.IFrame.DispatchUrlRequest(url, function (data) {
+                if (!data) {
+                    alert('An error occured on the server. Your changes were not saved.');
+                } else {
+                    displayNegotiation('Your negotiation was successfully resolved.');
+                    linkedNegotiationID = null;
+                    $('#liCreateOrEditNegotiation').html('Create');
+                    updateCreateResolveButtons();
+                }
+            }, 'POST');
+        }
+    }
+
+    function updateCreateResolveButtons() {
+        if (linkedNegotiationID == null) {
+            $('#liReview').hide();
+            $('#liResolveNegotiation').hide();
+        } else {
+            $('#liReview').show();
+            $('#liResolveNegotiation').show();
+        }
+    }
+
+    $(document).ready(function () {
+        updateCreateResolveButtons();
+
+        $('.navbar .dropdown').hover(function () {
+            $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
+        }, function () {
+            $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
         });
+    });
 </script>

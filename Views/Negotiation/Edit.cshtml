@@ -37,10 +37,8 @@
                 Id: @(Model.Id == null? "null" : Model.Id.ToString()),
                 BookingRequestID: @Model.BookingRequestID,
                 Name: '@Model.Name',
-                Attendees: [@Html.Raw(String.Join(",", Model.Attendees.Where(a => !String.IsNullOrEmpty(a)).Select(a => "'" + a + "'")))],
                 Questions: questions
             };
-
 
             widget = $('#negotiation').NegotiationWidget(settings, initialValues);
         });
@@ -56,15 +54,6 @@
                 validationErrors.push('Negotiation should have atleast one question');
             }
             
-            var hasAttendee = false;
-            $.each(negotiation.Attendees, function (index, obj) {
-                if (obj !== '')
-                    hasAttendee = true;
-            });
-            if (!hasAttendee) {
-                validationErrors.push('Negotiation should have atleast one attendee');
-            }
-
             $.each(negotiation.Questions, function(index, obj) {
                 if (obj.Text === undefined ||
                     obj.Text === null ||
