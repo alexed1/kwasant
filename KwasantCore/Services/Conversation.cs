@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Mail;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
@@ -37,15 +38,25 @@ namespace KwasantCore.Services
                 );
         }
 
-        public static void AddEmail(IUnitOfWork uow,BookingRequestDO existingBookingRequest, EmailDO curEmail)
+        public static void AddEmail(IUnitOfWork uow, MailMessage message, BookingRequestDO existingBookingRequest)
         {
+            var curEmail = Email.ConvertMailMessageToEmail(uow.EmailRepository, message);
+            Email.FixInlineImages(curEmail);
             curEmail.ConversationId = existingBookingRequest.Id;
             uow.UserRepository.GetOrCreateUser(curEmail.From);
-            existingBookingRequest.State = BookingRequestState.NeedsBooking;
+            if (existingBookingRequest.State == BookingRequestState.AwaitingClient ||
+                existingBookingRequest.State == BookingRequestState.Resolved)
+            {
+                existingBookingRequest.State = BookingRequestState.NeedsBooking;
+            }
 
-            AlertManager.ConversationMemberAdded(existingBookingRequest.Id);
-            
             uow.SaveChanges();
+            
+            // alerts
+            if (existingBookingRequest.State == BookingRequestState.Booking)
+            {
+                AlertManager.ConversationMemberAdded(existingBookingRequest.Id);
+            }
 
             AlertManager.ConversationMatched(curEmail.Id, curEmail.Subject, existingBookingRequest.Id);
         }

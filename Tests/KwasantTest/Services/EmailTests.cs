@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using FluentValidation;
+using KwasantCore.Interfaces;
 using KwasantCore.Services;
 using KwasantTest.Fixtures;
 using NUnit.Framework;
@@ -124,12 +125,13 @@ namespace KwasantTest.Services
                 var mailMessage2 = fixture.TestMessage2();
 
                 //EXECUTE
-                var testEmail1 = Email.ConvertMailMessageToEmail(uow.EmailRepository, mailMessage1);
-                Email.ProcessReceivedMessage(uow, mailMessage1);
-                Email.ProcessReceivedMessage(uow, mailMessage2);
+                var intakeManager = ObjectFactory.GetInstance<IIntakeManager>();
+                intakeManager.AddEmail(mailMessage1);
+                intakeManager.AddEmail(mailMessage2);
 
                 //VERIFY
-                Assert.AreEqual(1, uow.EmailRepository.GetAll().Where(e => e.ConversationId == testEmail1.Id).Count());
+                Assert.AreEqual(1, uow.EmailRepository.GetAll().Where(e => !e.ConversationId.HasValue).Count());
+                Assert.AreEqual(1, uow.EmailRepository.GetAll().Where(e => e.ConversationId.HasValue).Count());
             }
         }
     }

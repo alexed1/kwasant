@@ -217,6 +217,12 @@
     <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulTransmitter.cs" />
     <Compile Include="Managers\CommunicationManager.cs" />
     <Compile Include="Managers\IncidentReporter.cs" />
+    <Compile Include="Interfaces\IIntakeManager.cs" />
+    <Compile Include="Managers\InboundEmailHandlers\ConversationHandler.cs" />
+    <Compile Include="Managers\InboundEmailHandlers\GeneralEmailHandler.cs" />
+    <Compile Include="Managers\InboundEmailHandlers\IInboundEmailHandler.cs" />
+    <Compile Include="Managers\InboundEmailHandlers\InvitationResponseHandler.cs" />
+    <Compile Include="Managers\IntakeManager.cs" />
     <Compile Include="Managers\KwasantAuthorizeAttribute.cs" />
     <Compile Include="Managers\CalendarSyncManager.cs" />
     <Compile Include="ModelBinders\KwasantDateBinder.cs" />
