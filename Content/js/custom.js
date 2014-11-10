@@ -10,6 +10,10 @@ $(document).ready(function () {
 	    $('#main-container').removeClass('login-page');
     }
 
+    if ($('.registration-section input.text-box.single-line').length > 0) {
+        $('.registration-section input.text-box.single-line').addClass('form-control')
+    }
+
     if ($('#emailInfoBox').length > 0) {
         $("body").removeClass('view-popup-window');
     }

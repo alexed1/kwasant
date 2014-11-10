@@ -147,6 +147,7 @@ namespace KwasantCore.Services
             
             emailDO.EmailStatus = EmailState.Unstarted; //we'll use this new state so that every email has a valid status.
             emailRepository.Add(emailDO);
+            
             return emailDO;
         }
 
@@ -246,39 +247,22 @@ namespace KwasantCore.Services
         {
             BookingRequestDO existingBookingRequest = Conversation.Match(uow, message.Subject, message.From.Address);
 
+            EmailDO currEmailDO;
             if (existingBookingRequest != null)
             {
-                EmailDO email = ConvertMailMessageToEmail(uow.EmailRepository, message);
-                Conversation.AddEmail(uow, existingBookingRequest, email);
+                currEmailDO = ConvertMailMessageToEmail(uow.EmailRepository, message);
+                Conversation.AddEmail(uow, existingBookingRequest, currEmailDO);
+
+                FixInlineImages(currEmailDO);
+                uow.SaveChanges();
             }
             else
             {
                 BookingRequestDO bookingRequest = ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
-
+                
                 var newBookingRequest = new BookingRequest();
                 newBookingRequest.Process(uow, bookingRequest);
                 uow.SaveChanges();
-
-                //Fix the HTML text
-                var attachmentSubstitutions =
-                    bookingRequest.Attachments.Where(a => !String.IsNullOrEmpty(a.ContentID))
-                        .ToDictionary(a => a.ContentID, a => a.Id);
-
-                const string fileViewURLStr = "/Api/GetAttachment.ashx?AttachmentID={0}";
-
-                //The following fixes inline images
-                if (attachmentSubstitutions.Any())
-                {
-                    var curBody = bookingRequest.HTMLText;
-                    foreach (var keyToReplace in attachmentSubstitutions.Keys)
-                    {
-                        var keyStr = String.Format("cid:{0}", keyToReplace);
-                        curBody = curBody.Replace(keyStr,
-                            String.Format(fileViewURLStr, attachmentSubstitutions[keyToReplace]));
-                    }
-                    bookingRequest.HTMLText = curBody;
-                    uow.SaveChanges();
-                }
 
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
 
@@ -292,6 +276,32 @@ namespace KwasantCore.Services
 
                     AlertManager.NewBookingRequestForPreferredBooker(preferredUser.Id, bookingRequest.Id);
                 }
+
+                FixInlineImages(bookingRequest);
+                uow.SaveChanges();
+            }
+        }
+
+        private static void FixInlineImages(EmailDO currEmailDO)
+        {
+            //Fix the HTML text
+            var attachmentSubstitutions =
+                currEmailDO.Attachments.Where(a => !String.IsNullOrEmpty(a.ContentID))
+                    .ToDictionary(a => a.ContentID, a => a.Id);
+
+            string fileViewURLStr = Server.ServerUrl + "Api/GetAttachment.ashx?AttachmentID={0}";
+
+            //The following fixes inline images
+            if (attachmentSubstitutions.Any())
+            {
+                var curBody = currEmailDO.HTMLText;
+                foreach (var keyToReplace in attachmentSubstitutions.Keys)
+                {
+                    var keyStr = String.Format("cid:{0}", keyToReplace);
+                    curBody = curBody.Replace(keyStr,
+                        String.Format(fileViewURLStr, attachmentSubstitutions[keyToReplace]));
+                }
+                currEmailDO.HTMLText = curBody;
             }
         }
 
