@@ -6,6 +6,7 @@ using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Exceptions;
 using KwasantCore.Services;
 using Newtonsoft.Json;
 using StructureMap;
@@ -36,8 +37,63 @@ namespace KwasantCore.Managers
             AlertManager.AlertUserRegistration += ReportUserRegistered;
             AlertManager.AlertBookingRequestCheckedOut += ReportBookingRequestCheckedOut;
             AlertManager.AlertBookingRequestOwnershipChange += ReportBookingRequestOwnershipChanged;
+            AlertManager.AlertBookingRequestReserved += ReportBookingRequestReserved;
+            AlertManager.AlertBookingRequestReservationTimeout += ReportBookingRequestReservationTimeOut;
   
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
+        }
+
+        private void ReportBookingRequestReserved(int bookingRequestId, string bookerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curBookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (curBookingRequest == null)
+                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+                var curBooker = uow.UserRepository.GetByKey(bookerId);
+                if (curBooker == null)
+                    throw new EntityNotFoundException<UserDO>(bookerId);
+
+                if (!curBooker.Available.GetValueOrDefault())
+                {
+                    IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                    string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+
+                    const string subject = "A booking request has been reserved for you";
+                    const string messageTemplate = "A booking request has been reserved for you ({0}). Click {1} to view the booking request.";
+
+                    var bookingRequestURL = String.Format("{0}/BookingRequest/Details/{1}", Server.ServerUrl, curBookingRequest.Id);
+                    var message = String.Format(messageTemplate, curBookingRequest.Subject, "<a href='" + bookingRequestURL + "'>here</a>");
+
+                    var toRecipient = curBooker.EmailAddress;
+
+                    EmailDO curEmail = new EmailDO
+                    {
+                        Subject = subject,
+                        PlainText = message,
+                        HTMLText = message,
+                        From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
+                        Recipients = new List<RecipientDO>()
+                            {
+                                new RecipientDO
+                                    {
+                                        EmailAddress = toRecipient,
+                                        EmailParticipantType = EmailParticipantType.To
+                                    }
+                            }
+                    };
+
+                    uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
+                    uow.SaveChanges();
+                }
+            }
+            Logger.GetLogger().Info(string.Format("Reserved. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
+        }
+
+        private void ReportBookingRequestReservationTimeOut(int bookingRequestId, string bookerId)
+        {
+
+            Logger.GetLogger().Info(string.Format("Reservation Timed out. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
         }
 
         private static void TrackablePropertyUpdated(string name, string contextTable, int id,

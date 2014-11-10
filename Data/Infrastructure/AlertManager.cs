@@ -19,9 +19,6 @@ namespace Data.Infrastructure
 
         public delegate void TrackablePropertyDeletedHandler(string name, string contextTable, int id, int parentId, object status);
         public static event TrackablePropertyDeletedHandler AlertTrackablePropertyDeleted;
-        
-        public delegate void NewBookingRequestForPreferredBookerHandler(String bookerID, int bookingRequestID);
-        public static event NewBookingRequestForPreferredBookerHandler AlertNewBookingRequestForPreferredBooker;
 
         public delegate void ConversationMemberAddedHandler(int bookingRequestID);
         public static event ConversationMemberAddedHandler AlertConversationMemberAdded;
@@ -56,8 +53,14 @@ namespace Data.Infrastructure
         public delegate void BookingRequestStateChangeHandler(int bookingRequestId);
         public static event BookingRequestStateChangeHandler AlertBookingRequestStateChange;
 
-        public delegate void BookingRequestTimeoutStateChangeHandler(BookingRequestDO bookingRequestDO);
+        public delegate void BookingRequestTimeoutStateChangeHandler(int bookingRequestId, string bookerId);
         public static event BookingRequestTimeoutStateChangeHandler AlertBookingRequestProcessingTimeout;
+
+        public delegate void BookingRequestReservedHandler(int bookingRequestId, string bookerId);
+        public static event BookingRequestReservedHandler AlertBookingRequestReserved;
+
+        public delegate void BookingRequestReservationTimeoutHandler(int bookingRequestId, string bookerId);
+        public static event BookingRequestReservationTimeoutHandler AlertBookingRequestReservationTimeout;
 
         public delegate void UserRegistrationHandler(UserDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
@@ -92,12 +95,6 @@ namespace Data.Infrastructure
         {
             if (AlertTrackablePropertyDeleted != null)
                 AlertTrackablePropertyDeleted(name, contextTable, id, parentID, status);
-        }
-
-        public static void NewBookingRequestForPreferredBooker(String bookerID, int bookingRequestID)
-        {
-            if (AlertNewBookingRequestForPreferredBooker != null)
-                AlertNewBookingRequestForPreferredBooker(bookerID, bookingRequestID);
         }
 
         public static void ConversationMemberAdded(int bookingRequestID)
@@ -166,12 +163,23 @@ namespace Data.Infrastructure
             if (AlertBookingRequestStateChange != null)
                 AlertBookingRequestStateChange(bookingRequestId);
         }
-        public static void BookingRequestProcessingTimeout(BookingRequestDO bookingRequestDO)
+        public static void BookingRequestProcessingTimeout(int bookingRequestId, string bookerId)
         {
             if (AlertBookingRequestProcessingTimeout != null)
-                AlertBookingRequestProcessingTimeout(bookingRequestDO);
+                AlertBookingRequestProcessingTimeout(bookingRequestId, bookerId);
         }
 
+        public static void BookingRequestReserved(int bookingRequestId, string bookerId)
+        {
+            BookingRequestReservedHandler handler = AlertBookingRequestReserved;
+            if (handler != null) handler(bookingRequestId, bookerId);
+        }
+
+        public static void BookingRequestReservationTimeout(int bookingRequestId, string bookerId)
+        {
+            BookingRequestReservationTimeoutHandler handler = AlertBookingRequestReservationTimeout;
+            if (handler != null) handler(bookingRequestId, bookerId);
+        }
 
         public static void UserRegistration(UserDO curUser)
         {

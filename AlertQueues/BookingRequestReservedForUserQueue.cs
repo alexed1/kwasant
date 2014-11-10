@@ -7,16 +7,16 @@ using Utilities;
 
 namespace KwasantWeb.AlertQueues
 {
-    public class NewBookingRequestForUserQueue : SharedAlertQueue<NewBookingRequestForUserQueueData>
+    public class BookingRequestReservedForUserQueue : SharedAlertQueue<NewBookingRequestForUserQueueData>
     {
-        public NewBookingRequestForUserQueue() 
+        public BookingRequestReservedForUserQueue() 
         {
-            AlertManager.AlertNewBookingRequestForPreferredBooker +=
-                (bookerID, bookingRequestID) =>
+            AlertManager.AlertBookingRequestReserved +=
+                (bookingRequestID, bookerID) =>
                     AppendUpdate(new NewBookingRequestForUserQueueData
                     {
+                        BookingRequestID = bookingRequestID,
                         UserID = bookerID,
-                        BookingRequestID = bookingRequestID
                     });
         }
 
@@ -36,14 +36,14 @@ namespace KwasantWeb.AlertQueues
 
 
                 const string message = @"Dear {0},<br/>
-A new booking request has been assigned to you.<br/>
+A booking request has been reserved for you.<br/>
 Click <a href='{1}'>here</a> to check it out.";
 
                 var formattedMessage = string.Format(message,
                     userDo.UserName,
                     Server.ServerUrl + "Dashboard/Index?id=" + item.BookingRequestID
                     );
-                var emailDO = em.GenerateBasicMessage(uow, "New booking request was assigned to you", formattedMessage, fromAddress, userDo.EmailAddress.Address);
+                var emailDO = em.GenerateBasicMessage(uow, "Booking request was reserved for you", formattedMessage, fromAddress, userDo.EmailAddress.Address);
                 uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                 uow.SaveChanges();
             }

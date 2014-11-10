@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Exceptions;
 using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
@@ -58,24 +59,19 @@ namespace KwasantWeb.Controllers
         // GET: /BookingRequest/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var currBooker = this.GetUserId();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            try
             {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                if (bookingRequestDO == null)
-                    return HttpNotFound();
-                bookingRequestDO.State = BookingRequestState.Booking;
-                bookingRequestDO.BookerID = currBooker;
-                bookingRequestDO.LastUpdated = DateTimeOffset.Now;
-                uow.SaveChanges();
-                AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
-
+                _br.CheckOut(id.Value, currBooker);
                 return RedirectToAction("Index", "Dashboard", new { id });
+            }
+            catch (EntityNotFoundException)
+            {
+                return HttpNotFound();
             }
         }
 
@@ -217,15 +213,16 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public void ReleaseBooker(int bookingRequestId)
+        public ActionResult ReleaseBooker(int bookingRequestId)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            try
             {
-                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                bookingRequestDO.State = BookingRequestState.Unstarted;
-                bookingRequestDO.BookerID = null;
-                bookingRequestDO.User = bookingRequestDO.User;
-                uow.SaveChanges();
+                _br.ReleaseBooker(bookingRequestId);
+                return Json(true);
+            }
+            catch (EntityNotFoundException)
+            {
+                return HttpNotFound();
             }
         }
 

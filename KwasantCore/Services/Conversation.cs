@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
+using StructureMap;
 
 namespace KwasantCore.Services
 {
@@ -47,7 +48,8 @@ namespace KwasantCore.Services
             if (existingBookingRequest.State == BookingRequestState.AwaitingClient ||
                 existingBookingRequest.State == BookingRequestState.Resolved)
             {
-                existingBookingRequest.State = BookingRequestState.NeedsBooking;
+                var br = ObjectFactory.GetInstance<BookingRequest>();
+                br.Reactivate(uow, existingBookingRequest);
             }
 
             uow.SaveChanges();
