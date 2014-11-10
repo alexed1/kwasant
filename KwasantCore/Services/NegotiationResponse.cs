@@ -32,78 +32,79 @@ namespace KwasantCore.Services
                     throw new HttpException(404, "Negotiation not found.");
                 var questionAnswer = new Dictionary<QuestionDO, AnswerDO>();
 
-                //Here we add/update questions based on our proposed negotiation
-                foreach (var question in curNegotiationVM.Questions)
-                {
-                    var currentSelectedAnswers = ProcessQuestion(uow, question, curUserDO, questionAnswer);
+                UpdateAnswerData(uow, curNegotiationVM, curUserDO,questionAnswer);
 
-
-                    var previousAnswers = uow.QuestionResponseRepository.GetQuery()
-                        .Where(qr =>
-                            qr.Answer.QuestionID == question.Id &&
-                            qr.UserID == curUserDO.Id).ToList();
-
-                    var previousAnswerIds = previousAnswers.Select(a => a.AnswerID).ToList();
-
-                    var currentSelectedAnswerIDs = question.Answers.Where(a => a.Selected).Select(a => a.Id).ToList();
-
-                    //First, remove old answers
-                    foreach (
-                        var previousAnswer in
-                            previousAnswers.Where(
-                                previousAnswer =>
-                                    !previousAnswer.AnswerID.HasValue ||
-                                    !currentSelectedAnswerIDs.Contains(previousAnswer.AnswerID.Value)))
-                    {
-                        uow.QuestionResponseRepository.Remove(previousAnswer);
-                    }
-
-
-
-                    //Add new answers
-                    foreach (
-                        var currentSelectedAnswer in
-                            currentSelectedAnswers.Where(a => !previousAnswerIds.Contains(a.Id)))
-                    {
-                        var newAnswer = new QuestionResponseDO
-                        {
-                            Answer = currentSelectedAnswer,
-                            UserID = curUserDO.Id
-                        };
-                        uow.QuestionResponseRepository.Add(newAnswer);
-                    }
-                }
 
                 if (curNegotiationDO.NegotiationState == NegotiationState.Resolved)
                 {
                     AlertManager.PostResolutionNegotiationResponseReceived(curNegotiationDO.Id);
                 }
-                _negotiation = new Negotiation();
+                
                 _negotiation.CreateQuasiEmailForBookingRequest(uow, curNegotiationDO, curUserDO, questionAnswer);
 
                 uow.SaveChanges();
             }
         }
 
+        public void UpdateAnswerData(IUnitOfWork uow, NegotiationVM curNegotiationVM,  UserDO curUserDO, Dictionary<QuestionDO, AnswerDO> questionAnswer )
+        {
+            //Here we add/update questions based on our proposed negotiation
+            foreach (var submittedQuestion in curNegotiationVM.Questions)
+            {
+                var currentSelectedAnswers = ExtractSelectedAnswers(uow, submittedQuestion, curUserDO, questionAnswer);
+
+                var previousQResponses = uow.QuestionResponseRepository.GetQuery()
+                    .Where(qr =>
+                        qr.Answer.QuestionID == submittedQuestion.Id &&
+                        qr.UserID == curUserDO.Id).ToList();
+
+                var currentSelectedAnswerIDs = submittedQuestion.Answers.Where(a => a.Selected).Select(a => a.Id).ToList();
+
+                //First, remove old answers
+                foreach (
+                    var previousQResponse in
+                        previousQResponses.Where(
+                            previousQResponse =>
+                                !previousQResponse.AnswerID.HasValue ||
+                                !currentSelectedAnswerIDs.Contains(previousQResponse.AnswerID.Value)))
+                {
+                    uow.QuestionResponseRepository.Remove(previousQResponse);
+                }
+
+                var previousAnswerIds = previousQResponses.Select(a => a.AnswerID).ToList();
+
+                //Add new answers
+                foreach (var currentSelectedAnswer in
+                        currentSelectedAnswers.Where(a => !previousAnswerIds.Contains(a.Id)))
+                {
+                    var newAnswer = new QuestionResponseDO
+                    {
+                        Answer = currentSelectedAnswer,
+                        UserID = curUserDO.Id
+                    };
+                    uow.QuestionResponseRepository.Add(newAnswer);
+                }
+            }
+        }
 
 
-        public List<AnswerDO> ProcessQuestion(IUnitOfWork uow, NegotiationQuestionVM question, UserDO curUserDO,
+        public List<AnswerDO> ExtractSelectedAnswers(IUnitOfWork uow, NegotiationQuestionVM submittedQuestionData, UserDO curUserDO,
             Dictionary<QuestionDO, AnswerDO> questionAnswer)
         {
-            if (question.Id == 0)
+            if (submittedQuestionData.Id == 0)
                 throw new HttpException(400, "Invalid parameter: Id of question cannot be 0.");
 
-            var questionDO = uow.QuestionRepository.GetByKey(question.Id);
+            var questionDO = uow.QuestionRepository.GetByKey(submittedQuestionData.Id);
 
             var currentSelectedAnswers = new List<AnswerDO>();
 
             //Previous answers are read-only, we only allow updating of new answers
-            foreach (var answer in question.Answers)
+            foreach (var submittedAnswerData in submittedQuestionData.Answers)
             {
-                if (answer.Selected)
+                if (submittedAnswerData.Selected)
                 {
                     AnswerDO answerDO;
-                    if (answer.Id == 0)
+                    if (submittedAnswerData.Id == 0)
                     {
                         answerDO = new AnswerDO();
                         uow.AnswerRepository.Add(answerDO);
@@ -112,13 +113,13 @@ namespace KwasantCore.Services
                         if (answerDO.AnswerStatus == 0)
                             answerDO.AnswerStatus = AnswerState.Proposed;
 
-                        answerDO.Text = answer.Text;
-                        answerDO.EventID = answer.EventID;
+                        answerDO.Text = submittedAnswerData.Text;
+                        answerDO.EventID = submittedAnswerData.EventID;
                         answerDO.UserID = curUserDO.Id;
                     }
                     else
                     {
-                        answerDO = uow.AnswerRepository.GetByKey(answer.Id);
+                        answerDO = uow.AnswerRepository.GetByKey(submittedAnswerData.Id);
                     }
                     questionAnswer[questionDO] = answerDO;
                     currentSelectedAnswers.Add(answerDO);
