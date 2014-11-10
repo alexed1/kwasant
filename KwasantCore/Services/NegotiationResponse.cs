@@ -24,52 +24,19 @@ namespace KwasantCore.Services
 
         public void Process(NegotiationVM curNegotiationVM, string userID)
         {
-
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curUserDO = uow.UserRepository.GetByKey(userID);
-                var currNegotiationDO = uow.NegotiationsRepository.GetByKey(curNegotiationVM.Id);
-                if (currNegotiationDO == null)
+                var curNegotiationDO = uow.NegotiationsRepository.GetByKey(curNegotiationVM.Id);
+                if (curNegotiationDO == null)
                     throw new HttpException(404, "Negotiation not found.");
                 var questionAnswer = new Dictionary<QuestionDO, AnswerDO>();
 
                 //Here we add/update questions based on our proposed negotiation
                 foreach (var question in curNegotiationVM.Questions)
                 {
-                    if (question.Id == 0)
-                        throw new HttpException(400, "Invalid parameter: Id of question cannot be 0.");
+                    var currentSelectedAnswers = ProcessQuestion(uow, question, curUserDO, questionAnswer);
 
-                    var questionDO = uow.QuestionRepository.GetByKey(question.Id);
-
-                    var currentSelectedAnswers = new List<AnswerDO>();
-                    //Previous answers are read-only, we only allow updating of new answers
-                    foreach (var answer in question.Answers)
-                    {
-                        if (answer.Selected)
-                        {
-                            AnswerDO answerDO;
-                            if (answer.Id == 0)
-                            {
-                                answerDO = new AnswerDO();
-                                uow.AnswerRepository.Add(answerDO);
-
-                                answerDO.Question = questionDO;
-                                if (answerDO.AnswerStatus == 0)
-                                    answerDO.AnswerStatus = AnswerState.Proposed;
-
-                                answerDO.Text = answer.Text;
-                                answerDO.EventID = answer.EventID;
-                                answerDO.UserID = curUserDO.Id;
-                            }
-                            else
-                            {
-                                answerDO = uow.AnswerRepository.GetByKey(answer.Id);
-                            }
-                            questionAnswer[questionDO] = answerDO;
-                            currentSelectedAnswers.Add(answerDO);
-                        }
-                    }
 
                     var previousAnswers = uow.QuestionResponseRepository.GetQuery()
                         .Where(qr =>
@@ -91,6 +58,8 @@ namespace KwasantCore.Services
                         uow.QuestionResponseRepository.Remove(previousAnswer);
                     }
 
+
+
                     //Add new answers
                     foreach (
                         var currentSelectedAnswer in
@@ -105,16 +74,57 @@ namespace KwasantCore.Services
                     }
                 }
 
-                if (currNegotiationDO.NegotiationState == NegotiationState.Resolved)
+                if (curNegotiationDO.NegotiationState == NegotiationState.Resolved)
                 {
-                    AlertManager.PostResolutionNegotiationResponseReceived(currNegotiationDO.Id);
+                    AlertManager.PostResolutionNegotiationResponseReceived(curNegotiationDO.Id);
                 }
                 _negotiation = new Negotiation();
-                _negotiation.CreateQuasiEmailForBookingRequest(uow, currNegotiationDO, curUserDO, questionAnswer);
+                _negotiation.CreateQuasiEmailForBookingRequest(uow, curNegotiationDO, curUserDO, questionAnswer);
 
                 uow.SaveChanges();
-
             }
+        }
+
+
+
+        public List<AnswerDO> ProcessQuestion(IUnitOfWork uow, NegotiationQuestionVM question, UserDO curUserDO,
+            Dictionary<QuestionDO, AnswerDO> questionAnswer)
+        {
+            if (question.Id == 0)
+                throw new HttpException(400, "Invalid parameter: Id of question cannot be 0.");
+
+            var questionDO = uow.QuestionRepository.GetByKey(question.Id);
+
+            var currentSelectedAnswers = new List<AnswerDO>();
+
+            //Previous answers are read-only, we only allow updating of new answers
+            foreach (var answer in question.Answers)
+            {
+                if (answer.Selected)
+                {
+                    AnswerDO answerDO;
+                    if (answer.Id == 0)
+                    {
+                        answerDO = new AnswerDO();
+                        uow.AnswerRepository.Add(answerDO);
+
+                        answerDO.Question = questionDO;
+                        if (answerDO.AnswerStatus == 0)
+                            answerDO.AnswerStatus = AnswerState.Proposed;
+
+                        answerDO.Text = answer.Text;
+                        answerDO.EventID = answer.EventID;
+                        answerDO.UserID = curUserDO.Id;
+                    }
+                    else
+                    {
+                        answerDO = uow.AnswerRepository.GetByKey(answer.Id);
+                    }
+                    questionAnswer[questionDO] = answerDO;
+                    currentSelectedAnswers.Add(answerDO);
+                }
+            }
+            return currentSelectedAnswers;
         }
     }
 }

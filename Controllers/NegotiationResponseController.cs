@@ -19,12 +19,14 @@ namespace KwasantWeb.Controllers
     {
         private const bool EnforceUserInAttendees = true;
         private IAttendee _attendee;
+        private INegotiation _negotiation;
        
         private INegotiationResponse _negotiationResponse;
 
         public NegotiationResponseController()
         {
             _negotiationResponse = ObjectFactory.GetInstance<INegotiationResponse>();
+            _negotiation= ObjectFactory.GetInstance<INegotiation>();
         }
 
         //The main NegotiationResponse view displays Question and Answer data to an attendee

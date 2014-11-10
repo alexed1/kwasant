@@ -3,7 +3,7 @@ using KwasantWeb.ViewModels;
 
 namespace KwasantCore.Services
 {
-    internal interface INegotiationResponse
+    public interface INegotiationResponse
     {
         void Process(NegotiationVM curNegotiationVM, string userID);
     }
