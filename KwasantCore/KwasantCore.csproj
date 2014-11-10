@@ -200,6 +200,7 @@
     <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillTemplatePackage.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookAddRequest.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookResponse.cs" />
+    <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\IAuthorizingHttpChannel.cs" />
@@ -250,7 +251,6 @@
     <Compile Include="Services\NegotiationResponse.cs" />
     <Compile Include="Services\Question.cs" />
     <Compile Include="Services\Report.cs" />
-    <Compile Include="Services\SegmentIO.cs" />
     <Compile Include="Services\User.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
   </ItemGroup>

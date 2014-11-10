@@ -4,11 +4,12 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.Interfaces;
+using KwasantCore.Services;
 using Segment;
 using Segment.Model;
 using StructureMap;
 
-namespace KwasantCore.Services
+namespace KwasantCore.Managers.APIManagers.Packagers.SegmentIO
 {
     public class SegmentIO : ITracker
     {
