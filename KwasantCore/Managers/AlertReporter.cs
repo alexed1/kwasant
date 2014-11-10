@@ -32,6 +32,8 @@ namespace KwasantCore.Managers
             AlertManager.AlertBookingRequestCreated += ReportBookingRequestCreated;
             AlertManager.AlertBookingRequestStateChange += ReportBookingRequestStateChanged;
             AlertManager.AlertExplicitCustomerCreated += ReportCustomerCreated;
+
+            AlertManager.AlertErrorSyncingCalendar += ErrorSyncingCalendar;
         
             AlertManager.AlertUserRegistration += ReportUserRegistered;
             AlertManager.AlertBookingRequestCheckedOut += ReportBookingRequestCheckedOut;
@@ -386,7 +388,7 @@ namespace KwasantCore.Managers
             email.SendAlertEmail("CalendarSync failure", message);
         }
 
-        public void ProcessBookingRequestCheckedOut(int bookingRequestId, string bookerId)
+        public void ReportBookingRequestCheckedOut(int bookingRequestId, string bookerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -395,17 +397,17 @@ namespace KwasantCore.Managers
                     throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
                 string status = bookingRequestDO.BookingRequestStateTemplate.Name;
                 FactDO curAction = new FactDO()
-                    {
-                        PrimaryCategory = "BookingRequest",
-                        SecondaryCategory = "Ownership",
-                        Activity = "Checkout",
-                        CustomerId = bookingRequestDO.User.Id,
-                        ObjectId = bookingRequestDO.Id,
-                        BookerId = bookerId,
-                        Status = status,
-                        CreateDate = DateTimeOffset.Now,
-                    };
-                
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Ownership",
+                    Activity = "Checkout",
+                    CustomerId = bookingRequestDO.User.Id,
+                    ObjectId = bookingRequestDO.Id,
+                    BookerId = bookerId,
+                    Status = status,
+                    CreateDate = DateTimeOffset.Now,
+                };
+
                 curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
                 AddFact(uow, curAction);
                 uow.SaveChanges();
