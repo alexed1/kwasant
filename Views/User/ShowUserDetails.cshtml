@@ -53,7 +53,7 @@
                 <td>Roles
                 </td>
                 <td>@{
-                        using (var uow = ObjectFactory.GetInstance<iunitofwork>())
+                        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                         {
                             var allRows = uow.AspNetRolesRepository.GetAll();
                             foreach (var role in allRows)
