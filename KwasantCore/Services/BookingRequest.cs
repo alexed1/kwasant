@@ -10,6 +10,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using KwasantCore.Exceptions;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
@@ -29,29 +30,27 @@ namespace KwasantCore.Services
             _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
         }
 
-        public static void ProcessNewBR(IUnitOfWork uow, MailMessage message)
+        public static void ProcessNewBR(MailMessage message)
         {
-            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
-
-            var newBookingRequest = new BookingRequest();
-            newBookingRequest.Process(uow, bookingRequest);
-            uow.SaveChanges();
-
-            AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
-
-            var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
-            if (preferredUser != null)
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                bookingRequest.State = BookingRequestState.Booking;
-                bookingRequest.BookerID = preferredUser.Id;
-                bookingRequest.LastUpdated = DateTimeOffset.Now;
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
+
+                var newBookingRequest = new BookingRequest();
+                newBookingRequest.Process(uow, bookingRequest);
+                Email.FixInlineImages(bookingRequest);
                 uow.SaveChanges();
 
-                AlertManager.NewBookingRequestForPreferredBooker(preferredUser.Id, bookingRequest.Id);
-            }
+                AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
 
-            Email.FixInlineImages(bookingRequest);
-            uow.SaveChanges();
+                /*
+                            var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
+                            if (preferredUser != null)
+                            {
+                                newBookingRequest.Reserve(uow, bookingRequest, preferredUser);
+                            }
+                */
+            }
         }
 
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
@@ -197,13 +196,14 @@ namespace KwasantCore.Services
             string bookerId = bookingRequestDO.BookerID;
             bookingRequestDO.State = BookingRequestState.Unstarted;
             bookingRequestDO.BookerID = null;
+            bookingRequestDO.Booker = null;
             bookingRequestDO.User = bookingRequestDO.User;
+            bookingRequestDO.PreferredBookerID = null;
+            bookingRequestDO.PreferredBooker = null;
             uow.SaveChanges();
-            bookingRequestDO.BookerID = bookerId;
 
-            AlertManager.BookingRequestProcessingTimeout(bookingRequestDO);
+            AlertManager.BookingRequestProcessingTimeout(bookingRequestDO.Id, bookerId);
             Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + bookingRequestDO.Id);
-            bookingRequestDO.BookerID = null;
             // Send mail to Booker
             var curbooker = uow.UserRepository.GetByKey(bookerId);
             string message = "BookingRequest ID : " + bookingRequestDO.Id + " Timed Out <br/>Subject : " + bookingRequestDO.Subject;
@@ -346,6 +346,91 @@ namespace KwasantCore.Services
                     e.DateReceived.TimeAgo(), e.HTMLText)));
 
             return result;
+        }
+
+        public void CheckOut(int bookingRequestId, string bookerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+                var bookerDO = uow.UserRepository.GetByKey(bookerId);
+                if (bookerDO == null)
+                    throw new EntityNotFoundException<UserDO>(bookerId);
+                bookingRequestDO.State = BookingRequestState.Booking;
+                bookingRequestDO.BookerID = bookerId;
+                bookingRequestDO.Booker = bookerDO;
+                bookingRequestDO.PreferredBookerID = bookerId;
+                bookingRequestDO.PreferredBooker = bookerDO;
+                bookingRequestDO.LastUpdated = DateTimeOffset.Now;
+                uow.SaveChanges();
+                AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, bookerId);
+            }
+        }
+
+        public void ReleaseBooker(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.BookerID = null;
+                bookingRequestDO.Booker = null;
+                bookingRequestDO.PreferredBookerID = null;
+                bookingRequestDO.PreferredBooker = null;
+                bookingRequestDO.User = bookingRequestDO.User;
+                uow.SaveChanges();
+            }
+        }
+
+        public void Reactivate(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (bookingRequestDO == null)
+                throw new ArgumentNullException("bookingRequestDO");
+            bookingRequestDO.State = BookingRequestState.NeedsBooking;
+            if (bookingRequestDO.PreferredBooker != null)
+            {
+                Reserve(uow, bookingRequestDO, bookingRequestDO.PreferredBooker);
+            }
+        }
+
+        public void Reserve(IUnitOfWork uow, BookingRequestDO bookingRequestDO, UserDO booker)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (bookingRequestDO == null)
+                throw new ArgumentNullException("bookingRequestDO");
+            if (booker == null)
+                throw new ArgumentNullException("booker");
+
+            bookingRequestDO.Availability = BookingRequestAvailability.ReservedPB;
+            uow.SaveChanges();
+
+            AlertManager.BookingRequestReserved(bookingRequestDO.Id, booker.Id);
+        }
+
+        public void ReservationTimeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (bookingRequestDO == null)
+                throw new ArgumentNullException("bookingRequestDO");
+            if (bookingRequestDO.State == BookingRequestState.NeedsBooking)
+            {
+                string bookerId = bookingRequestDO.PreferredBookerID;
+                bookingRequestDO.PreferredBookerID = null;
+                bookingRequestDO.PreferredBooker = null;
+                bookingRequestDO.Availability = BookingRequestAvailability.Available;
+                uow.SaveChanges();
+
+                AlertManager.BookingRequestReservationTimeout(bookingRequestDO.Id, bookerId);
+            }
+
         }
     }
 }

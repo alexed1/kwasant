@@ -37,6 +37,8 @@ namespace KwasantTest.Services
                     {
                         case "MaxBRIdle":
                             return "0.04";
+                        case "MaxBRReservationPeriod":
+                            return "0.04";
                         case "EmailAddress_GeneralInfo":
                             return "info@kwasant.com";
                         default:

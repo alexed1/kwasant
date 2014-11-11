@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
+using StructureMap;
 using Utilities;
 
 namespace KwasantCore.Services
@@ -61,9 +62,16 @@ namespace KwasantCore.Services
             quasiEmail.ConversationId = curNegotiationDO.BookingRequestID;
             quasiEmail.EmailStatus = EmailState.Processed; //This email won't be sent
 
+            if (curNegotiationDO.BookingRequest.State == BookingRequestState.Booking)
+            {
 // ReSharper disable once PossibleInvalidOperationException -- Turn off resharper warning, BookingRequestID is guaranteed to be non-null (enforced by EF attribute)
-            AlertManager.ConversationMemberAdded(curNegotiationDO.BookingRequestID.Value);
-
+                AlertManager.ConversationMemberAdded(curNegotiationDO.BookingRequestID.Value);
+            }
+            else
+            {
+                var br = ObjectFactory.GetInstance<BookingRequest>();
+                br.Reactivate(uow, curNegotiationDO.BookingRequest);
+            }
             uow.EmailRepository.Add(quasiEmail);
             uow.NegotiationAnswerEmailRepository.Add(newLink);
         }

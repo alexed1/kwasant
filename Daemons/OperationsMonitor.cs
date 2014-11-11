@@ -56,6 +56,24 @@ namespace Daemons
                     LogSuccess("Booking request timed out");
                 }
 
+                //Event: A reserved BR has timed out
+                //Action: make BR available to other bookers than preferred one
+                double maxBRReservationPeriodMinutes = Convert.ToDouble(_configRepository.Get<string>("MaxBRReservationPeriod"));
+
+                DateTimeOffset reservationTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(maxBRReservationPeriodMinutes));
+                List<BookingRequestDO> timedOutBRList = uow.BookingRequestRepository.GetAll()
+                    .Where(x => x.State == BookingRequestState.NeedsBooking &&
+                        x.Availability != BookingRequestAvailability.ReservedPB &&
+                        x.BookerID == null &&
+                        x.PreferredBookerID != null &&
+                        x.LastUpdated.DateTime < reservationTimeLimit.DateTime).ToList();
+                foreach (var br in timedOutBRList)
+                {
+                    _br.ReservationTimeout(uow, br);
+                    LogSuccess("Booking request reservation timed out");
+                }
+
+
                 /////////////////////////////////////////////////////
                 //Event
 

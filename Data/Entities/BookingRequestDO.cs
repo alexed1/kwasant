@@ -33,6 +33,14 @@ namespace Data.Entities
         public string BookerID { get; set; }
         public virtual UserDO Booker { get; set; }
 
+        [ForeignKey("PreferredBooker")]
+        public string PreferredBookerID { get; set; }
+        public virtual UserDO PreferredBooker { get; set; }
+
+        [ForeignKey("BookingRequestAvailabilityTemplate")]
+        public int? Availability { get; set; }
+        public virtual _BookingRequestAvailabilityTemplate BookingRequestAvailabilityTemplate { get; set; }
+
         //Do not add InverseProperty - The relationship is handled in KwasantDbContext
         public virtual List<InstructionDO> Instructions { get; set; }
 
