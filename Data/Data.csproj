@@ -387,6 +387,10 @@
     <Compile Include="Migrations\201411101041271_AddBRAvailabilityAndPB.Designer.cs">
       <DependentUpon>201411101041271_AddBRAvailabilityAndPB.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411111114171_RenameBRUserToCustomer.cs" />
+    <Compile Include="Migrations\201411111114171_RenameBRUserToCustomer.Designer.cs">
+      <DependentUpon>201411111114171_RenameBRUserToCustomer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
@@ -1266,6 +1270,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411101041271_AddBRAvailabilityAndPB.resx">
       <DependentUpon>201411101041271_AddBRAvailabilityAndPB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411111114171_RenameBRUserToCustomer.resx">
+      <DependentUpon>201411111114171_RenameBRUserToCustomer.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

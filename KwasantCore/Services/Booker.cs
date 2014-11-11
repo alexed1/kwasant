@@ -29,7 +29,7 @@ namespace KwasantCore.Services
 
         }
 
-        public string ChangeOwner(IUnitOfWork uow, int bookingRequestId, string currBooker)
+        public string ChangeBooker(IUnitOfWork uow, int bookingRequestId, string currBooker)
         {
             string result = "";
             try
@@ -40,7 +40,7 @@ namespace KwasantCore.Services
                     bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                     bookingRequestDO.BookerID = currBooker;
                     uow.SaveChanges();
-                    AlertManager.BookingRequestOwnershipChange(bookingRequestDO.Id, currBooker);
+                    AlertManager.BookingRequestBookerChange(bookingRequestDO.Id, currBooker);
                     result = "Booking request ownership changed successfully!";
                 }
             }

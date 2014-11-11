@@ -49,7 +49,7 @@ namespace KwasantTest.Daemons
                 TrackingStatusRepository trackingStatusRepository = uow.TrackingStatusRepository;
                 var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
                 bookingRequestDO.State = BookingRequestState.Unstarted;
-                bookingRequestDO.User = new FixtureData(uow).TestUser1();
+                bookingRequestDO.Customer = new FixtureData(uow).TestUser1();
                 bookingRequestRepo.Add(bookingRequestDO);
 
                 uow.SaveChanges();

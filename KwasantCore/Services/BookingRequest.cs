@@ -41,7 +41,7 @@ namespace KwasantCore.Services
                 Email.FixInlineImages(bookingRequest);
                 uow.SaveChanges();
 
-                AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
+                AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.Customer.Id);
 
                 /*
                             var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
@@ -57,12 +57,12 @@ namespace KwasantCore.Services
         {
             bookingRequest.State = BookingRequestState.Unstarted;
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest.From);
-            bookingRequest.User = curUser;
-            bookingRequest.UserID = curUser.Id;
+            bookingRequest.Customer = curUser;
+            bookingRequest.CustomerID = curUser.Id;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
 
-            foreach (var calendar in bookingRequest.User.Calendars)
-                //this is smelly. Calendars are associated with a User. Why do we need to manually add them to BookingREquest.Calendars when they're easy to access?
+            foreach (var calendar in bookingRequest.Customer.Calendars)
+                //this is smelly. Calendars are associated with a Customer. Why do we need to manually add them to BookingREquest.Calendars when they're easy to access?
                 bookingRequest.Calendars.Add(calendar);
         }
 
@@ -71,7 +71,7 @@ namespace KwasantCore.Services
         {
             return
                 curBookingRequestRepository.GetAll()
-                    .Where(e => e.User.Id == userid)
+                    .Where(e => e.Customer.Id == userid)
                     .Skip(start)
                     .Take(length)
                     .Select(e =>
@@ -80,20 +80,20 @@ namespace KwasantCore.Services
                             id = e.Id,
                             subject = e.Subject,
                             dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
-                            linkedcalendarids = String.Join(",", e.User.Calendars.Select(c => c.Id))
+                            linkedcalendarids = String.Join(",", e.Customer.Calendars.Select(c => c.Id))
                         }).ToList();
         }
 
         public int GetBookingRequestsCount(IBookingRequestDORepository curBookingRequestRepository, string userid)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Count();
+            return curBookingRequestRepository.GetAll().Where(e => e.Customer.Id == userid).Count();
         }
 
         public string GetUserId(IBookingRequestDORepository curBookingRequestRepository, int bookingRequestId)
         {
             return (from requests in curBookingRequestRepository.GetAll()
                     where requests.Id == bookingRequestId
-                    select requests.User.Id).FirstOrDefault();
+                    select requests.Customer.Id).FirstOrDefault();
         }
 
         public object GetUnprocessed(IUnitOfWork uow)
@@ -197,7 +197,7 @@ namespace KwasantCore.Services
             bookingRequestDO.State = BookingRequestState.Unstarted;
             bookingRequestDO.BookerID = null;
             bookingRequestDO.Booker = null;
-            bookingRequestDO.User = bookingRequestDO.User;
+            bookingRequestDO.Customer = bookingRequestDO.Customer;
             bookingRequestDO.PreferredBookerID = null;
             bookingRequestDO.PreferredBooker = null;
             uow.SaveChanges();
@@ -225,7 +225,7 @@ namespace KwasantCore.Services
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
             //Add the booking request user
-            var curAttendeeDO = _attendee.Create(uow, eventDO.BookingRequest.User.EmailAddress.Address,eventDO, eventDO.BookingRequest.User.FirstName);
+            var curAttendeeDO = _attendee.Create(uow, eventDO.BookingRequest.Customer.EmailAddress.Address,eventDO, eventDO.BookingRequest.Customer.FirstName);
             eventDO.Attendees.Add(curAttendeeDO);
             var emailAddresses = _emailAddress.GetEmailAddresses(uow, eventDO.BookingRequest.HTMLText, eventDO.BookingRequest.PlainText, eventDO.BookingRequest.Subject);
 
@@ -381,7 +381,7 @@ namespace KwasantCore.Services
                 bookingRequestDO.Booker = null;
                 bookingRequestDO.PreferredBookerID = null;
                 bookingRequestDO.PreferredBooker = null;
-                bookingRequestDO.User = bookingRequestDO.User;
+                bookingRequestDO.Customer = bookingRequestDO.Customer;
                 uow.SaveChanges();
             }
         }
