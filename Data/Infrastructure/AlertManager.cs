@@ -193,7 +193,7 @@ namespace Data.Infrastructure
                 AlertBookingRequestCheckedOut(bookingRequestId, bookerId);
         }
 
-        public static void BookingRequestOwnershipChange(int bookingRequestId, string bookerId)
+        public static void BookingRequestBookerChange(int bookingRequestId, string bookerId)
         {
             if (AlertBookingRequestStateChange != null)
                 AlertBookingRequestOwnershipChange(bookingRequestId, bookerId);

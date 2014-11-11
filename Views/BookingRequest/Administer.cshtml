@@ -85,19 +85,19 @@
     //Mark processed function will execute on click to update the Request status to "Processed".
     function updateStatus(path) {
         $.post(path, function (response) {
-            var oldOwner = response.Message;
+            var oldBooker = response.Message;
             var Id = $("#hdnrequestid").val();
-            if (response.Name == "DifferentOwner") 
-                ShowFailedOwnershipVerification(oldOwner, Id);
+            if (response.Name == "DifferentBooker") 
+                ShowFailedBookerVerification(oldBooker, Id);
             else 
                 window.location.href = "@Url.Action("Index", "BookingRequest")";
         }, 'json');
     }
 
-    function ShowFailedOwnershipVerification(bookingRequestOwner, bookingRequestId) {
-        if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestOwner + " \n Take Ownership of This BookingRequest?")) {
+    function ShowFailedBookerVerification(bookingRequestBooker, bookingRequestId) {
+        if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestBooker + " \n Take Ownership of This BookingRequest?")) {
             $.ajax({
-                url: "/BookingRequest/ProcessOwnerChange",
+                url: "/BookingRequest/ProcessBookerChange",
                 type: "GET",
                 data: { bookingRequestId: bookingRequestId },
                 success: function (response) {
@@ -270,17 +270,17 @@
     function getNegotiationWindow() {
         if (linkedNegotiationID != null) {
             var bookingRequestId = $("#hdnrequestid").val();
-            var url = '/Negotiation/CheckOwnership';
+            var url = '/Negotiation/CheckBooker';
             $.ajax({
                 url: url,
                 type: 'POST',
                 data: { negotiationID: linkedNegotiationID, bookingRequestID: bookingRequestId },
                 async: false, 
                 success: function (response) {
-                    var oldOwner = response.Message;
+                    var oldBooker = response.Message;
                     var Id = $("#hdnrequestid").val();
-                    if (response.Name == "DifferentOwner") 
-                        ShowFailedOwnershipVerification(oldOwner, Id);
+                    if (response.Name == "DifferentBooker")
+                        ShowFailedBookerVerification(oldBooker, Id);
                     else {
                         Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID + '&bookingRequestID=' + bookingRequestId,
                         {

@@ -76,12 +76,12 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpGet]
-        public ActionResult ProcessOwnerChange(int bookingRequestId)
+        public ActionResult ProcessBookerChange(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var currBooker = this.GetUserId();
-                string result = _booker.ChangeOwner(uow, bookingRequestId, currBooker);
+                string result = _booker.ChangeBooker(uow, bookingRequestId, currBooker);
                 return Content(result);
             }
         }
@@ -93,9 +93,9 @@ namespace KwasantWeb.Controllers
             {
                 //call to VerifyOwnership 
                 var currBooker = this.GetUserId();
-                string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
-                if (verifyOwnership != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership });
+                string verifyBooker = _booker.IsBookerValid(uow, id, currBooker);
+                if (verifyBooker != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentBooker", Message = verifyBooker });
 
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 bookingRequestDO.State = BookingRequestState.Resolved;
@@ -115,7 +115,7 @@ namespace KwasantWeb.Controllers
                 var currBooker = this.GetUserId();
                 string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
                 if (verifyOwnership != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership });
+                    return Json(new KwasantPackagedMessage { Name = "DifferentBooker", Message = verifyOwnership });
 
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 bookingRequestDO.State = BookingRequestState.Invalid;

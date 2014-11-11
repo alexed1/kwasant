@@ -32,7 +32,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult CheckOwnership(int negotiationID, int bookingRequestID)
+        public ActionResult CheckBooker(int negotiationID, int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -40,7 +40,7 @@ namespace KwasantWeb.Controllers
                 string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
                 return Json(new KwasantPackagedMessage
                     {
-                        Name = verifyOwnership != "valid" ? "DifferentOwner" : verifyOwnership, 
+                        Name = verifyOwnership != "valid" ? "DifferentBooker" : verifyOwnership, 
                         Message = verifyOwnership
                     });
             }
