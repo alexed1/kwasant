@@ -9,6 +9,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using Data.States.Templates;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using KwasantCore.Services;
