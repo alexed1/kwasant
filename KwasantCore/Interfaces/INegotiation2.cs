@@ -1,15 +1,14 @@
-using System;
 using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantWeb.ViewModels;
 
-namespace KwasantCore.Services
+namespace KwasantCore.Interfaces
 {
     public interface INegotiation
     {
-        List<Int32> GetAnswerIDs(NegotiationDO curNegotiationDO);
-        IList<Int32?> GetAnswerIDsByUser(NegotiationDO curNegotiationDO, UserDO curUserDO, IUnitOfWork uow);
+        List<int> GetAnswerIDs(NegotiationDO curNegotiationDO);
+        IList<int?> GetAnswerIDsByUser(NegotiationDO curNegotiationDO, UserDO curUserDO, IUnitOfWork uow);
 
         void CreateQuasiEmailForBookingRequest(IUnitOfWork uow, NegotiationDO curNegotiationDO, UserDO curUserDO,
             Dictionary<QuestionDO, AnswerDO> currentAnswers);

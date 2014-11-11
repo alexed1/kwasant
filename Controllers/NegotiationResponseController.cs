@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;

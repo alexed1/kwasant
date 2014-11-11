@@ -3,6 +3,7 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Interfaces;
 using KwasantWeb.ViewModels;
 using StructureMap;
 

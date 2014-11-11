@@ -166,6 +166,9 @@
   <ItemGroup>
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
+    <Compile Include="Interfaces\IAnswer.cs" />
+    <Compile Include="Interfaces\INegotiation2.cs" />
+    <Compile Include="Interfaces\INegotiationResponse.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
@@ -241,9 +244,6 @@
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Email.cs" />
-    <Compile Include="Services\IAnswer.cs" />
-    <Compile Include="Services\INegotiation2.cs" />
-    <Compile Include="Services\INegotiationResponse.cs" />
     <Compile Include="Services\Invitation.cs" />
     <Compile Include="Services\InvitationResponse.cs" />
     <Compile Include="Services\IQuestion.cs" />

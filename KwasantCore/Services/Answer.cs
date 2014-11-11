@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
+using KwasantCore.Interfaces;
 using KwasantWeb.ViewModels;
 
 namespace KwasantCore.Services

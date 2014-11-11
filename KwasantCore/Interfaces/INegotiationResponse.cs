@@ -1,7 +1,6 @@
-using Data.Entities;
 using KwasantWeb.ViewModels;
 
-namespace KwasantCore.Services
+namespace KwasantCore.Interfaces
 {
     public interface INegotiationResponse
     {
