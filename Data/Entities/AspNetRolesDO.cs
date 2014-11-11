@@ -9,5 +9,6 @@ namespace Data.Entities
     public class AspNetRolesDO : IdentityRole, IAspNetRoles, IBaseDO
     {
         public DateTimeOffset LastUpdated { get; set; }
+        public DateTimeOffset CreateDate { get; set; }
     }
 }

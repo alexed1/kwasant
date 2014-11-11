@@ -391,6 +391,10 @@
     <Compile Include="Migrations\201411111114171_RenameBRUserToCustomer.Designer.cs">
       <DependentUpon>201411111114171_RenameBRUserToCustomer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411112138317_AddCreateDateToBaseDO.cs" />
+    <Compile Include="Migrations\201411112138317_AddCreateDateToBaseDO.Designer.cs">
+      <DependentUpon>201411112138317_AddCreateDateToBaseDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
@@ -1273,6 +1277,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411111114171_RenameBRUserToCustomer.resx">
       <DependentUpon>201411111114171_RenameBRUserToCustomer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411112138317_AddCreateDateToBaseDO.resx">
+      <DependentUpon>201411112138317_AddCreateDateToBaseDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

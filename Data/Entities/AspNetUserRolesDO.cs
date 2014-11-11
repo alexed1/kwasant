@@ -13,5 +13,6 @@ namespace Data.Entities
         public virtual ICollection<AspNetRolesDO> Roles { get; set; }
 
         public DateTimeOffset LastUpdated { get; set; }
+        public DateTimeOffset CreateDate { get; set; }
     }
 }

@@ -90,6 +90,7 @@ namespace Data.Entities
             AlertManager.CustomerCreated(this);
         }
 
+        public DateTimeOffset CreateDate { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
     }
 }
