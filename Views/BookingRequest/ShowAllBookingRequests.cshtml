@@ -25,7 +25,7 @@
             //This configuration supports two buttons (Invalid and Details) and several columns of data
             var table = $('#tblbookingrequest').DataTable({
                 data: JSON.parse(response),
-                order: [2, 'desc'],
+                order: [0, 'desc'],
                 columns: [
                     { data: 'date_received' },
                     { data: 'from_address' },
