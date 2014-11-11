@@ -141,7 +141,7 @@ namespace KwasantWeb.Controllers
 
                 //need to add the addresses of people cc'ed or on the To line of the BookingRequest
                 var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress.Address).ToList();
-                attendees.Add(bookingRequestDO.User.EmailAddress.Address);
+                attendees.Add(bookingRequestDO.Customer.EmailAddress.Address);
                
                 var filteredEmailAddresses = FilterUtility.StripReservedEmailAddresses(attendees, _configRepository).Distinct().ToList();
 

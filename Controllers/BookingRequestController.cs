@@ -165,12 +165,12 @@ namespace KwasantWeb.Controllers
 
                     uow.SaveChanges();
 
-                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.User, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
+                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.Customer, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
 
                     return Json(new
                         {
                             Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", 
-                            UserID = bookingRequest.UserID
+                            UserID = bookingRequest.CustomerID
                         });
                 }
             }
