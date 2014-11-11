@@ -18,6 +18,7 @@ using Moq;
 using NUnit.Framework;
 using StructureMap;
 using Utilities;
+using KwasantWeb.Controllers;
 
 namespace KwasantTest.Services
 {
@@ -65,7 +66,7 @@ namespace KwasantTest.Services
 
         [Test]
         [Category("BRM")]
-        public void NewCustomerCreated()
+        public void CanProcessBRWithUnknownRequestor()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -101,7 +102,7 @@ namespace KwasantTest.Services
 
         [Test]
         [Category("BRM")]
-        public void ExistingCustomerNotCreatedButUsed()
+        public void CanProcessBRWithKnownRequestor()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -358,6 +359,28 @@ namespace KwasantTest.Services
 
                 requestNow = uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
                 Assert.AreEqual(1, requestNow.Count());
+            }
+        }
+
+        [Test]
+        [Category("BRM")]
+        public void GetCheckedOutTest()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
+
+                uow.BookingRequestRepository.Add(bookingRequestDO);
+                uow.AspNetUserRolesRepository.AssignRoleToUser("Booker", bookingRequestDO.User.Id);
+                uow.SaveChanges();
+
+                ObjectFactory.GetInstance<Data.Infrastructure.StructureMap.ISecurityServices>().Login(uow, bookingRequestDO.User);
+
+                BookingRequestController controller = new BookingRequestController();
+                controller.Details(bookingRequestDO.Id);
+
+                IEnumerable<BookingRequestDO> requests = (new BookingRequest()).GetCheckedOut(uow, bookingRequestDO.User.Id);
+                Assert.AreEqual(bookingRequestDO.Id, requests.FirstOrDefault().Id);
             }
         }
     }

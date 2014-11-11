@@ -62,6 +62,13 @@ namespace KwasantWeb.App_Start
                 .ForMember(ri => ri.id, opts => opts.ResolveUsing(e => e.Id))
                 .ForMember(ri => ri.Type, opts => opts.UseValue("Invitation Response"))
                 .ForMember(ri => ri.Date, opts => opts.ResolveUsing(e => e.DateReceived.ToString("M-d-yy hh:mm tt")));
+
+            Mapper.CreateMap<BookingRequestDO, BookingRequestVM>()
+                .ForMember(br => br.Id, opts => opts.ResolveUsing(e => e.Id))
+                .ForMember(br => br.Subject, opts => opts.ResolveUsing(e => e.Subject))
+                .ForMember(br => br.EmailAddress, opts => opts.ResolveUsing(e => e.From.Address))
+                .ForMember(br => br.DateReceived, opts => opts.ResolveUsing(e => e.DateReceived.ToString("M-d-yy hh:mm tt")))
+                .ForMember(br => br.HTMLText, opts => opts.ResolveUsing(e => e.HTMLText));
         }
     }
 }
