@@ -9,10 +9,7 @@ namespace KwasantCore.Managers.InboundEmailHandlers
     {
         public bool TryHandle(MailMessage message)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                BookingRequest.ProcessNewBR(uow, message);
-            }
+            BookingRequest.ProcessNewBR(message);
             return true;
         }
     }
