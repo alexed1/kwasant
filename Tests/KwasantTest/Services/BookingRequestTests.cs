@@ -9,6 +9,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
@@ -47,6 +48,12 @@ namespace KwasantTest.Services
                 });
             var configRepository = configRepositoryMock.Object;
             ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepository));
+
+            var notificationMock = new Mock<INotification>();
+            notificationMock
+                .Setup(n => n.IsInNotificationWindow(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(true);
+            ObjectFactory.Configure(cfg => cfg.For<INotification>().Use(notificationMock.Object));
         }
 
         private void AddTestRequestData()
@@ -346,7 +353,7 @@ namespace KwasantTest.Services
                 IEnumerable<BookingRequestDO> requestNow;
                 do
                 {
-                    var om = new OperationsMonitor();
+                    var om = new FreshnessMonitor();
                     DaemonTests.RunDaemonOnce(om);
                     requestNow =
                         uow.BookingRequestRepository.GetAll()

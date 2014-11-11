@@ -71,10 +71,9 @@
     <Compile Include="EventExposers\SendGridPackagerEventHandler.cs" />
     <Compile Include="EventExposers\ExposedEvent.cs" />
     <Compile Include="InboundEmail.cs" />
-    <Compile Include="OperationsMonitor.cs" />
+    <Compile Include="FreshnessMonitor.cs" />
     <Compile Include="OutboundEmail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ThroughputMonitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

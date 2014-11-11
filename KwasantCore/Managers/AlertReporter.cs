@@ -7,6 +7,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.Exceptions;
+using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Services;
 using Newtonsoft.Json;
 using StructureMap;
@@ -41,8 +42,16 @@ namespace KwasantCore.Managers
             AlertManager.AlertBookingRequestOwnershipChange += ReportBookingRequestOwnershipChanged;
             AlertManager.AlertBookingRequestReserved += ReportBookingRequestReserved;
             AlertManager.AlertBookingRequestReservationTimeout += ReportBookingRequestReservationTimeOut;
+            AlertManager.AlertStaleBookingRequestsDetected += ReportStaleBookingRequestsDetected;
   
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
+        }
+
+        private void ReportStaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
+        {
+            string toNumber = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("TwilioToNumber");
+            var tw = ObjectFactory.GetInstance<ISMSPackager>();
+            tw.SendSMS(toNumber, oldBookingRequests.Length + " Booking requests are over-due by 30 minutes.");
         }
 
         private void ReportBookingRequestReserved(int bookingRequestId, string bookerId)
