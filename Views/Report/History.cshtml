@@ -70,7 +70,7 @@
 		showHistoryReport();
 	});
 	function showHistoryReport() {
-		$.post("/Report/ShowHistoryReport", { primaryCategory: $('#ddlPrimaryCategory').val(), bookingRequestId: $('#txtBookingRequestId').val(), queryPeriod: queryPeriod }, showHistoryReport);
+		$.getJSON("/Report/ShowHistoryReport", { primaryCategory: $('#ddlPrimaryCategory').val(), bookingRequestId: $('#txtBookingRequestId').val(), queryPeriod: queryPeriod }, showHistoryReport);
 		function showHistoryReport(response) {
 			$('#tblHistoryReport').show();
 			$("#tblHistoryReport DataTable").html("");
