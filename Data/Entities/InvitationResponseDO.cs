@@ -3,7 +3,7 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class InvitationResponseDO : EmailDO, IInvitationResponse
+    public class InvitationResponseDO : EmailDO, IInvitationResponseDO
     {
         [ForeignKey("Attendee")]
         public int? AttendeeId { get; set; }

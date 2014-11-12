@@ -48,7 +48,7 @@ namespace Daemons
                 double maxBRIdleMinutes = Convert.ToDouble(_configRepository.Get<string>("MaxBRIdle"));
 
                 DateTimeOffset idleTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(maxBRIdleMinutes));
-                List<BookingRequestDO> staleBRList =  uow.BookingRequestRepository.GetAll().Where(x => x.State == BookingRequestState.Booking && x.LastUpdated.DateTime < idleTimeLimit.DateTime).ToList();
+                List<BookingRequestDO> staleBRList =  uow.BookingRequestRepository.GetQuery().Where(x => x.State == BookingRequestState.Booking && x.LastUpdated < idleTimeLimit).ToList();
                 BookingRequest _br = new BookingRequest();
                 foreach (var br in staleBRList)
                 {
@@ -61,12 +61,12 @@ namespace Daemons
                 double maxBRReservationPeriodMinutes = Convert.ToDouble(_configRepository.Get<string>("MaxBRReservationPeriod"));
 
                 DateTimeOffset reservationTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(maxBRReservationPeriodMinutes));
-                List<BookingRequestDO> timedOutBRList = uow.BookingRequestRepository.GetAll()
+                List<BookingRequestDO> timedOutBRList = uow.BookingRequestRepository.GetQuery()
                     .Where(x => x.State == BookingRequestState.NeedsBooking &&
                         x.Availability != BookingRequestAvailability.ReservedPB &&
                         x.BookerID == null &&
                         x.PreferredBookerID != null &&
-                        x.LastUpdated.DateTime < reservationTimeLimit.DateTime).ToList();
+                        x.LastUpdated < reservationTimeLimit).ToList();
                 foreach (var br in timedOutBRList)
                 {
                     _br.ReservationTimeout(uow, br);

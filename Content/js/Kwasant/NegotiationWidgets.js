@@ -6,8 +6,6 @@
 
     var nodes = {
         Name: null,
-        Attendees: null,
-
         QuestionHolder: null,
 
         Questions: []
@@ -36,26 +34,8 @@
 
         initValues = $.extend({
             Id: null,
-            Name: 'Negotiation 1',
-            Attendees: '',
+            Name: 'Negotiation 1'
         }, initialValues);
-
-        //Sanitize attendees
-        if (initValues.Attendees != null) {
-            var sanitizedAttendees = [];
-            for (var i = 0; i < initValues.Attendees.length; i++) {
-                var obj = initValues.Attendees[i];
-                if (typeof obj === "string") {
-                    sanitizedAttendees.push({
-                        id: obj,
-                        text: obj
-                    });
-                } else {
-                    sanitizedAttendees.push(obj);
-                }
-            }
-            initValues.Attendees = sanitizedAttendees;
-        }
 
         buildBaseWidget();
 
@@ -64,7 +44,6 @@
             returnNeg.Id = initValues.Id,
             returnNeg.BookingRequestID = initValues.BookingRequestID,
             returnNeg.Name = nodes.Name.val();
-            returnNeg.Attendees = nodes.Attendees.val().split(',');
             returnNeg.Questions = [];
 
             for (var q = 0; q < nodes.Questions.length; q++) {
@@ -111,21 +90,10 @@
 
         baseInfoTable.append(nameRow);
 
-        /* Build the attendees input object */
-        var attendeesInput = $('<input type="hidden" id="attendeesSel" />');
-
-        var attendeesRow = $('<tr />');
-        attendeesRow.append($('<td />').append('&nbsp;<label>Attendees:</label>'));
-        attendeesRow.append($('<td />').append(attendeesInput));
-        getValidEmailAddress(attendeesInput);
-        attendeesInput.select2('data', initValues.Attendees);
-        
         if (!settings.AllowModifyNegotiationRequest) {
             nameInput.attr('disabled', 'disabled');
-            attendeesInput.attr('disabled', 'disabled');
         }
 
-        baseInfoTable.append(attendeesRow);
         baseInfoDiv.append(baseInfoTable);
 
         var questionHolder = $('<div></div>');
@@ -152,8 +120,6 @@
         that.append(addQuestionSpan);
 
         nodes.Name = nameInput;
-        nodes.Attendees = attendeesInput;
-
         if (initValues.Questions !== null && initValues.Questions !== undefined) {
             for (var i = 0; i < initValues.Questions.length; i++) {
                 var questionValues = initValues.Questions[i];
@@ -163,7 +129,6 @@
 
         if (settings.DisplayMode == 'reply') {
             nameRow.hide();
-            attendeesRow.hide();
         }
 
     }
