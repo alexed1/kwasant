@@ -251,6 +251,7 @@
     <Compile Include="AlertQueues\AlertQueue.cs" />
     <Compile Include="AlertQueues\BookingRequestUpdatedQueue.cs" />
     <Compile Include="AlertQueues\BookingRequestReservedForUserQueue.cs" />
+    <Compile Include="AlertQueues\NewBookingRequestResponseQueue.cs" />
     <Compile Include="AlertQueues\SharedAlertQueues.cs" />
     <Compile Include="Api\EventResponse.aspx.cs">
       <DependentUpon>EventResponse.aspx</DependentUpon>
@@ -295,7 +296,6 @@
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\KController.cs" />
     <Compile Include="Controllers\MonthController.cs" />
     <Compile Include="Controllers\NegotiationController.cs" />
     <Compile Include="Controllers\ProfileController.cs" />
@@ -305,6 +305,8 @@
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="KwasantHandleErrorAttribute.cs" />
+    <Compile Include="TempServicesHome\INegotiationResponse.cs" />
+    <Compile Include="TempServicesHome\NegotiationResponse.cs" />
     <Compile Include="ViewModels\BookingRequestAdminVM.cs" />
     <Compile Include="ViewModels\CalendarShowVM.cs" />
     <Compile Include="ViewModels\BookingRequestConversationVM.cs" />
@@ -332,6 +334,7 @@
     <Compile Include="ViewModels\RemoteCalendarVM.cs" />
     <Compile Include="ViewModels\ProfileVM.cs" />
     <Compile Include="ViewModels\ResetPasswordVM.cs" />
+    <Compile Include="ViewModels\SendEmailVM.cs" />
     <Compile Include="ViewModels\UserProfilesVM.cs" />
     <Compile Include="ViewModels\UserVM.cs" />
   </ItemGroup>
@@ -383,9 +386,13 @@
     <Content Include="Content\css\daypilot\scheduler_traditional.css" />
     <Content Include="Content\css\daypilot\scheduler_transparent.css" />
     <Content Include="Content\css\daypilot\scheduler_white.css" />
+    <Content Include="Content\css\EmailSend.css" />
     <Content Include="Content\css\frontcss\main.css" />
     <Content Include="Content\css\jackedup.css" />
     <Content Include="Content\css\jqtree.css" />
+    <Content Include="Content\css\jquery-ui.css" />
+    <Content Include="Content\css\jquery-ui.structure.css" />
+    <Content Include="Content\css\jquery-ui.theme.css" />
     <Content Include="Content\css\NegotiationWidgets.css" />
     <Content Include="Content\css\temp\temp.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.css" />
@@ -542,6 +549,7 @@
     <Content Include="Content\js\bootstrap.3.1.1.min.js" />
     <Content Include="Content\js\bootstrap.js" />
     <Content Include="Content\js\humane.js" />
+    <Content Include="Content\js\jquery-ui.js" />
     <Content Include="Content\js\jquery.cookie-1.4.1.min.js" />
     <Content Include="Content\js\KwasantCalendar.js" />
     <Content Include="Content\js\collapse.js" />
@@ -816,6 +824,7 @@
     <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\Email\Send.cshtml" />
     <Content Include="Views\Booker\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
