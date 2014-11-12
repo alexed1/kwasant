@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
@@ -97,7 +98,6 @@ namespace KwasantWeb.Controllers
                     Id = negotiationDO.Id,
                     Name = negotiationDO.Name,
                     BookingRequestID = negotiationDO.BookingRequestID,
-                    Attendees = negotiationDO.Attendees.Select(a => a.Name).ToList(),
                     Questions = negotiationDO.Questions.Select(q =>
                     {
                         var answers = q.Answers.Select(a =>
@@ -138,19 +138,12 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
-
-                //need to add the addresses of people cc'ed or on the To line of the BookingRequest
-                var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress.Address).ToList();
-                attendees.Add(bookingRequestDO.Customer.EmailAddress.Address);
-               
-                var filteredEmailAddresses = FilterUtility.StripReservedEmailAddresses(attendees, _configRepository).Distinct().ToList();
-
+                
                 return View("~/Views/Negotiation/Edit.cshtml",
                             new NegotiationVM
                                 {
                                     Name = bookingRequestDO.Subject,
                                     BookingRequestID = bookingRequestID,
-                                    Attendees = filteredEmailAddresses,
                                     Questions = new List<NegotiationQuestionVM>
                                         {
                                             new NegotiationQuestionVM
@@ -163,10 +156,11 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public JsonResult ProcessSubmittedForm(NegotiationVM value)
+        public ActionResult ProcessSubmittedForm(NegotiationVM value)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                bool isNew = false;
                 NegotiationDO negotiationDO;
                 if (value.Id == null)
                 {
@@ -175,14 +169,13 @@ namespace KwasantWeb.Controllers
                         DateCreated = DateTime.Now
                     };
                     uow.NegotiationsRepository.Add(negotiationDO);
+                    isNew = true;
                 }
                 else
                     negotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
 
                 negotiationDO.Name = value.Name;
                 negotiationDO.BookingRequestID = value.BookingRequestID;
-
-                _attendee.ManageNegotiationAttendeeList(uow, negotiationDO, value.Attendees);
 
                 var proposedQuestionIDs = value.Questions.Select(q => q.Id);
                 //Delete the existing questions which no longer exist in our proposed negotiation
@@ -240,15 +233,50 @@ namespace KwasantWeb.Controllers
 
                 uow.SaveChanges();
 
-                using (var subUoW = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var communicationManager = ObjectFactory.GetInstance<CommunicationManager>();
-                    communicationManager.DispatchNegotiationRequests(subUoW, negotiationDO.Id);
-                    subUoW.SaveChanges();
-                }
-
-                return Json(negotiationDO.Id);
+                return Json(new { negotiationID = negotiationDO.Id, isNew = isNew } );
             }
+        }
+
+        public ActionResult DisplaySendEmailForm(int negotiationID, bool isNew)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+
+                var emailController = new EmailController();
+
+                var br = new BookingRequest();
+                var emailAddresses = br.ExtractEmailAddresses(negotiationDO.BookingRequest);
+
+                var currCreateEmailVM = new CreateEmailVM
+                {
+                    ToAddresses = negotiationDO.Attendees.Select(a => a.EmailAddress.Address).Where(a => !FilterUtility.IsReservedEmailAddress(a)).ToList(),
+                    AddressBook = emailAddresses.ToList(),
+                    Subject = string.Format("Need Your Response on {0}'s event: {1}", negotiationDO.BookingRequest.Customer.DisplayName, "RE: " + negotiationDO.Name),
+                    HeaderText = String.Format("Your negotiation has been {0}. Would you like to send the emails now?", isNew
+                            ? "created"
+                            : "updated"),
+
+                    BodyPromptText = "Enter some additional text for your recipients",
+                    Body = "",
+                    BodyRequired = false,
+                };
+                return emailController.DisplayEmail(Session, currCreateEmailVM,
+                    (subUow, emailDO) => DispatchNegotiationEmails(subUow, emailDO, negotiationID)
+                    );
+            }
+        }
+
+        private ActionResult DispatchNegotiationEmails(IUnitOfWork uow, EmailDO emailDO, int negotiationID)
+        {
+            var communicationManager = ObjectFactory.GetInstance<CommunicationManager>();
+            communicationManager.DispatchNegotiationRequests(uow, emailDO, negotiationID);
+
+            var currBookingRequest = new BookingRequest();
+            currBookingRequest.AddExpectedResponseForNegotiation(uow, emailDO, negotiationID);
+
+            uow.SaveChanges();
+            return Json(negotiationID);
         }
 
         [HttpPost]

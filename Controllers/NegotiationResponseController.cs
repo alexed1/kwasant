@@ -60,8 +60,6 @@ namespace KwasantWeb.Controllers
                     CommunicationMode = user.GetMode(userDO),
                     OriginatingUser = originatingUser,
 
-                    Attendees = curNegotiationDO.Attendees.Select(a => a.Name).ToList(),
-
                     //Building the List of NegotiationQuestionVM's
                     //Starting with all of the Questions in the Negotiation...
                     Questions = curNegotiationDO.Questions.Select(q =>
@@ -146,27 +144,27 @@ namespace KwasantWeb.Controllers
                     {
                         if (answer.Selected)
                         {
-                            AnswerDO answerDO;
-                            if (answer.Id == 0)
-                            {
-                                answerDO = new AnswerDO();
-                                uow.AnswerRepository.Add(answerDO);
+                        AnswerDO answerDO;
+                        if (answer.Id == 0)
+                        {
+                            answerDO = new AnswerDO();
+                            uow.AnswerRepository.Add(answerDO);
 
-                                answerDO.Question = questionDO;
-                                if (answerDO.AnswerStatus == 0)
-                                    answerDO.AnswerStatus = AnswerState.Proposed;
+                            answerDO.Question = questionDO;
+                            if (answerDO.AnswerStatus == 0)
+                                answerDO.AnswerStatus = AnswerState.Proposed;
 
-                                answerDO.Text = answer.Text;
-                                answerDO.EventID = answer.EventID;
-                                answerDO.UserID = userID;
+                            answerDO.Text = answer.Text;
+                            answerDO.EventID = answer.EventID;
+                            answerDO.UserID = userID;
                             }
                             else
-                            {
-                                answerDO = uow.AnswerRepository.GetByKey(answer.Id);
-                            }
+                        {
+                            answerDO = uow.AnswerRepository.GetByKey(answer.Id);
+                        }
                             questionAnswer[questionDO] = answerDO;
                             currentSelectedAnswers.Add(answerDO);
-                        }
+                    }
                     }
 
                     var previousAnswers = uow.QuestionResponseRepository.GetQuery()
@@ -195,6 +193,9 @@ namespace KwasantWeb.Controllers
                         uow.QuestionResponseRepository.Add(newAnswer);
                     }
                 }
+
+                var currBookingRequest = new BookingRequest();
+                currBookingRequest.AcknowledgeResponseToNegotiationRequest(uow, currNegotiationDO.Id, userID);
 
                 if (currNegotiationDO.NegotiationState == NegotiationState.Resolved)
                 {

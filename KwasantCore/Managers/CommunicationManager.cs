@@ -91,38 +91,30 @@ namespace KwasantCore.Managers
             }
         }
 
-        public void DispatchNegotiationRequests(IUnitOfWork uow, int negotiationID)
+        public void DispatchNegotiationRequests(IUnitOfWork uow, EmailDO generatedEmailDO, int negotiationID)
         {
-            DispatchNegotiationRequests(uow, uow.NegotiationsRepository.GetByKey(negotiationID));
+            DispatchNegotiationRequests(uow, generatedEmailDO, uow.NegotiationsRepository.GetByKey(negotiationID));
         }
 
-        public void DispatchNegotiationRequests(IUnitOfWork uow, NegotiationDO negotiationDO)
+        public void DispatchNegotiationRequests(IUnitOfWork uow, EmailDO generatedEmailDO, NegotiationDO negotiationDO)
         {
-            if (negotiationDO.Attendees == null)
+            if (!generatedEmailDO.Recipients.Any())
                 return;
 
             var user = ObjectFactory.GetInstance<User>();
-            foreach (var attendee in negotiationDO.Attendees)
+            foreach (var attendee in generatedEmailDO.Recipients)
             {
                 var emailDO = new EmailDO();
-                var emailAddressDO = _emailAddress.GetFromEmailAddress(uow, attendee.EmailAddress, negotiationDO.BookingRequest.Customer);
-                emailDO.From = emailAddressDO;
-                emailDO.FromID = emailAddressDO.Id;
+                emailDO.FromID = generatedEmailDO.FromID;
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
-                //emailDO.Subject = "Regarding:" + negotiationDO.Name;
-                emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}",
-                    negotiationDO.BookingRequest.Customer.FirstName,
-                    (negotiationDO.BookingRequest.Customer.LastName ?? ""),
-                    "RE: " + negotiationDO.Name);
-
+                emailDO.Subject = generatedEmailDO.Subject;
                 var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", negotiationDO.Id);
 
                 var userDO = uow.UserRepository.GetOrCreateUser(attendee.EmailAddress);
                 var tokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(responseUrl, userDO);
 
                 uow.EmailRepository.Add(emailDO);
-                var actualHtml =
-                    @"
+                const string actualHtml = @"
 {0}. {1}? <br/>
 Proposed Answers: {2}
 ";
@@ -160,11 +152,28 @@ Proposed Answers: {2}
                     new Dictionary<string, string>
                     {
                         {"RESP_URL", tokenURL},
+                        {"bodytext", generatedEmailDO.HTMLText},
                         {"questions", String.Join("<br/>", generated)},
                         {"conversationthread", currBr.GetConversationThread(negotiationDO.BookingRequest)}
                     });
             }
             negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
+
+            //Everyone who gets an email is now an attendee.
+            var currentAttendeeIDs = negotiationDO.Attendees.Select(a => a.EmailAddressID).ToList();
+            foreach (var recipient in generatedEmailDO.Recipients)
+            {
+                if (!currentAttendeeIDs.Contains(recipient.EmailAddressID))
+                {
+                    var newAttendee = new AttendeeDO
+                    {
+                        EmailAddressID = recipient.EmailAddressID,
+                        Name = recipient.EmailAddress.Name,
+                        NegotiationID = negotiationDO.Id
+                    };
+                    uow.AttendeeRepository.Add(newAttendee);
+                }
+            }
         }
 
         private bool EventHasChanged(IUnitOfWork uow, EventDO eventDO)
