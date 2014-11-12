@@ -116,7 +116,24 @@ namespace KwasantCore.Services
             return curNegotiationDO;
         }
 
+        //extract a string representation of the questions and answers for things like email
+        public IEnumerable<string> GetSummaryText(NegotiationDO curNegotiationDO)
+        {
+            var summaryText = new List<string>();
+            var actualHtml =
+                    @"
+{0}. {1}? <br/>
+Proposed Answers: {2}
+";
 
+            for (var i = 0; i < curNegotiationDO.Questions.Count; i++)
+            {
+                var question = curNegotiationDO.Questions[i];
+                var currentQuestion = String.Format(actualHtml, i + 1, question.Text, question.Answers.Any() ? String.Join(", ", question.Answers.Select(a => a.Text)) : "[None proposed]");
+                summaryText.Add(currentQuestion);
+            }
+            return summaryText;
+        }
 
         public void Update(IUnitOfWork uow, NegotiationVM submittedNegotiation, NegotiationDO curNegotiationDO)
         {

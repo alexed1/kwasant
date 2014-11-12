@@ -19,6 +19,9 @@ namespace KwasantCore.Managers
     {
         private readonly IConfigRepository _configRepository;
         private readonly EmailAddress _emailAddress;
+        private readonly User _user;
+        private readonly INegotiation _negotiation;
+        private readonly IBookingRequest _br;
 
         public CommunicationManager(IConfigRepository configRepository, EmailAddress emailAddress)
         {
@@ -28,6 +31,9 @@ namespace KwasantCore.Managers
                 throw new ArgumentNullException("emailAddress");
             _configRepository = configRepository;
             _emailAddress = emailAddress;
+            _user = ObjectFactory.GetInstance<User>(); //can this be mocked? we would want an interface...
+            _negotiation = ObjectFactory.GetInstance<INegotiation>();
+            _br = ObjectFactory.GetInstance<IBookingRequest>(); 
         }
 
         //Register for interesting events
@@ -101,7 +107,7 @@ namespace KwasantCore.Managers
             if (negotiationDO.Attendees == null)
                 return;
 
-            var user = ObjectFactory.GetInstance<User>();
+            
             foreach (var attendee in negotiationDO.Attendees)
             {
                 var emailDO = new EmailDO();
@@ -109,7 +115,8 @@ namespace KwasantCore.Managers
                 emailDO.From = emailAddressDO;
                 emailDO.FromID = emailAddressDO.Id;
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
-                //emailDO.Subject = "Regarding:" + negotiationDO.Name;
+               
+                
                 emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}",
                     negotiationDO.BookingRequest.User.FirstName,
                     (negotiationDO.BookingRequest.User.LastName ?? ""),
@@ -117,56 +124,52 @@ namespace KwasantCore.Managers
 
                 var responseUrl = String.Format("NegotiationResponse/View?negotiationID={0}", negotiationDO.Id);
 
-                var userDO = uow.UserRepository.GetOrCreateUser(attendee.EmailAddress);
-                var tokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(responseUrl, userDO);
+                var curUserDO = uow.UserRepository.GetOrCreateUser(attendee.EmailAddress);
+                var tokenURL = uow.AuthorizationTokenRepository.GetAuthorizationTokenURL(responseUrl, curUserDO);
 
                 uow.EmailRepository.Add(emailDO);
-                var actualHtml =
-                    @"
-{0}. {1}? <br/>
-Proposed Answers: {2}
-";
-                var generated = new List<String>();
-                for (var i = 0; i < negotiationDO.Questions.Count; i++)
-                {
-                    var question = negotiationDO.Questions[i];
-                    var currentQuestion = String.Format(actualHtml, i + 1, question.Text, question.Answers.Any() ? String.Join(", ", question.Answers.Select(a => a.Text)) : "[None proposed]");
-                    generated.Add(currentQuestion);
-                }
+                var summaryQandAText = _negotiation.GetSummaryText(negotiationDO);
+                
+                string templateName = GetCRTemplate(curUserDO);
 
-                string templateName;
-                // Max Kostyrkin: currently User#GetMode returns Direct if user has a booking request or has a password, otherwise Delegate.
-                switch (user.GetMode(userDO))
-                {
-                    case CommunicationMode.Direct:
-                        templateName = _configRepository.Get("CR_template_for_creator");
-
-                        break;
-                    case CommunicationMode.Delegate:
-                        templateName = _configRepository.Get("CR_template_for_existing_user");
-
-                        break;
-                    case CommunicationMode.Precustomer:
-                        templateName = _configRepository.Get("CR_template_for_precustomer");
-
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                var currBr = new BookingRequest();
+                var conversationThread = _br.GetConversationThread(negotiationDO.BookingRequest);
+                
                 
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, templateName,
                     new Dictionary<string, string>
                     {
                         {"RESP_URL", tokenURL},
-                        {"questions", String.Join("<br/>", generated)},
-                        {"conversationthread", currBr.GetConversationThread(negotiationDO.BookingRequest)}
+                        {"questions", String.Join("<br/>", summaryQandAText)},
+                        {"conversationthread", conversationThread}
                     });
             }
             negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
         }
 
+
+        public string GetCRTemplate(UserDO curUserDO)
+        {
+            string templateName;
+            // Max Kostyrkin: currently User#GetMode returns Direct if user has a booking request or has a password, otherwise Delegate.
+            switch (_user.GetMode(curUserDO))
+            {
+                case CommunicationMode.Direct:
+                    templateName = _configRepository.Get("CR_template_for_creator");
+
+                    break;
+                case CommunicationMode.Delegate:
+                    templateName = _configRepository.Get("CR_template_for_existing_user");
+
+                    break;
+                case CommunicationMode.Precustomer:
+                    templateName = _configRepository.Get("CR_template_for_precustomer");
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return templateName;
+        }
         private bool EventHasChanged(IUnitOfWork uow, EventDO eventDO)
         {
             //Stub method for now

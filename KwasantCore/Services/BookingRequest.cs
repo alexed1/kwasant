@@ -15,6 +15,8 @@ using Utilities.Logging;
 
 namespace KwasantCore.Services
 {
+
+
     public class BookingRequest : IBookingRequest
     {
         private IAttendee _attendee;

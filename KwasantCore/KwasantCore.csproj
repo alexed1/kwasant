@@ -167,7 +167,7 @@
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Interfaces\IAnswer.cs" />
-    <Compile Include="Interfaces\INegotiation2.cs" />
+    <Compile Include="Interfaces\INegotiation.cs" />
     <Compile Include="Interfaces\INegotiationResponse.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
