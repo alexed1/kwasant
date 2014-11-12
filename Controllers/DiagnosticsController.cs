@@ -192,6 +192,7 @@ See more: {2}
             };
 
             InboundEmail.TestMessageReceived += testMessageReceived;
+            EmailDO createdEmailDO;
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Email email = ObjectFactory.GetInstance<Email>();
@@ -200,22 +201,23 @@ See more: {2}
 
                 const string message = "This is a test message";
                 string subject = subjKey;
-                var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
-                configureEmail(uow, curEmail);
+                createdEmailDO = email.GenerateBasicMessage(uow, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
+                configureEmail(uow, createdEmailDO);
                 uow.SaveChanges();
 
                 ServiceManager.LogEvent<OutboundEmail>("Queued email to " + inboundEmailDaemon.GetUserName());
             }
 
+            bool success = false;
             var startTime = DateTime.Now;
             var endTime = startTime.Add(TimeSpan.FromMinutes(10));
-            while (DateTime.Now < endTime)
+            while (!success && DateTime.Now < endTime)
             {
                     if (messageReceived)
                 {
                     MarkTestSuccess<OutboundEmail>(testName);
                     MarkTestSuccess<InboundEmail>(testName);
-                    return;
+                    success = true;
                 }
 
                 Thread.Sleep(100);
@@ -224,6 +226,16 @@ See more: {2}
             const string errorMessage = "No email was reported with the correct subject within the given timeframe.";
             MarkTestFail<OutboundEmail>(testName, errorMessage);
             MarkTestFail<InboundEmail>(testName, errorMessage);
+
+            //Now, delete that email
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var savedEmailDO = uow.EmailRepository.GetByKey(createdEmailDO.Id);
+                if (savedEmailDO != null)
+                    uow.EmailRepository.Remove(savedEmailDO);
+
+                uow.SaveChanges();
+            }
         }
     }
 }
