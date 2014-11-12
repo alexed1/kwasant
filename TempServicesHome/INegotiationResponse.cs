@@ -1,6 +1,6 @@
 using KwasantWeb.ViewModels;
 
-namespace KwasantCore.Interfaces
+namespace KwasantWeb.TempServicesHome
 {
     public interface INegotiationResponse
     {

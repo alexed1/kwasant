@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
-using KwasantWeb.ViewModels;
 
 namespace KwasantCore.Interfaces
 {

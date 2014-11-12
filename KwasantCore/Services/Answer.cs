@@ -1,12 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
-using Data.Entities;
+﻿using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Interfaces;
-using KwasantWeb.ViewModels;
 
 namespace KwasantCore.Services
 {

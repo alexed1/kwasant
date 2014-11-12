@@ -1,6 +1,5 @@
 using Data.Entities;
 using Data.Interfaces;
-using KwasantWeb.ViewModels;
 
 namespace KwasantCore.Interfaces
 {

@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Data.Entities;
-using Data.Infrastructure;
 using Data.Interfaces;
-using Data.States;
 using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
+using KwasantWeb.TempServicesHome;
 using KwasantWeb.ViewModels;
 using StructureMap;
 using Utilities;
@@ -20,7 +17,15 @@ namespace KwasantWeb.Controllers
     {
         private const bool EnforceUserInAttendees = true;
         private IAttendee _attendee;
-        private INegotiation _negotiation;
+        private Negotiation _negotiation;
+        private INegotiationResponse _negotiationResponse;
+
+        public NegotiationResponseController()
+        {
+            _negotiationResponse = ObjectFactory.GetInstance<INegotiationResponse>();
+            _negotiation = new Negotiation();
+        }
+
 
         //The main NegotiationResponse view displays Question and Answer data to an attendee
         [KwasantAuthorize(Roles = "Customer")]
@@ -37,9 +42,7 @@ namespace KwasantWeb.Controllers
                 var userDO = uow.UserRepository.GetByKey(userID);
 
                 _attendee = new Attendee(new EmailAddress(new ConfigRepository()));
-                _negotiation = new Negotiation();
-
-
+                
                 var curNegotiationDO = uow.NegotiationsRepository.GetQuery().FirstOrDefault(n => n.Id == negotiationID);
                 if (curNegotiationDO == null)
                     throw new HttpException(404, "Negotiation not found.");
@@ -113,104 +116,19 @@ namespace KwasantWeb.Controllers
 
         [KwasantAuthorize(Roles = "Customer")]
         [HttpPost]
-        public ActionResult ProcessResponse(NegotiationVM value)
+        public ActionResult ProcessResponse(NegotiationVM curNegotiationVM)
         {
-            if (!value.Id.HasValue)
+            if (!curNegotiationVM.Id.HasValue)
                 throw new HttpException(400, "Invalid parameter");
 
-            AuthenticateUser(value.Id.Value);
+            AuthenticateUser(curNegotiationVM.Id.Value);
 
             var userID = this.GetUserId();
+            _negotiationResponse.Process(curNegotiationVM, userID);
 
-            var questionAnswer = new Dictionary<QuestionDO, AnswerDO>();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var currUserDO = uow.UserRepository.GetByKey(userID);
-                var currNegotiationDO = uow.NegotiationsRepository.GetByKey(value.Id);
-                if (currNegotiationDO == null)
-                    throw new HttpException(404, "Negotiation not found.");
-
-                //Here we add/update questions based on our proposed negotiation
-                foreach (var question in value.Questions)
-                {
-                    if (question.Id == 0)
-                        throw new HttpException(400, "Invalid parameter: Id of question cannot be 0.");
-
-                    var questionDO = uow.QuestionRepository.GetByKey(question.Id);
-
-                    var currentSelectedAnswers = new List<AnswerDO>();
-                    //Previous answers are read-only, we only allow updating of new answers
-                    foreach (var answer in question.Answers)
-                    {
-                        if (answer.Selected)
-                        {
-                            AnswerDO answerDO;
-                            if (answer.Id == 0)
-                            {
-                                answerDO = new AnswerDO();
-                                uow.AnswerRepository.Add(answerDO);
-
-                                answerDO.Question = questionDO;
-                                if (answerDO.AnswerStatus == 0)
-                                    answerDO.AnswerStatus = AnswerState.Proposed;
-
-                                answerDO.Text = answer.Text;
-                                answerDO.EventID = answer.EventID;
-                                answerDO.UserID = userID;
-                            }
-                            else
-                            {
-                                answerDO = uow.AnswerRepository.GetByKey(answer.Id);
-                            }
-                            questionAnswer[questionDO] = answerDO;
-                            currentSelectedAnswers.Add(answerDO);
-                        }
-                    }
-
-                    var previousAnswers = uow.QuestionResponseRepository.GetQuery()
-                        .Where(qr =>
-                            qr.Answer.QuestionID == question.Id &&
-                            qr.UserID == userID).ToList();
-
-                    var previousAnswerIds = previousAnswers.Select(a => a.AnswerID).ToList();
-
-                    var currentSelectedAnswerIDs = question.Answers.Where(a => a.Selected).Select(a => a.Id).ToList();
-
-                    //First, remove old answers
-                    foreach (var previousAnswer in previousAnswers.Where(previousAnswer => !previousAnswer.AnswerID.HasValue || !currentSelectedAnswerIDs.Contains(previousAnswer.AnswerID.Value)))
-                    {
-                        uow.QuestionResponseRepository.Remove(previousAnswer);
-                    }
-
-                    //Add new answers
-                    foreach (var currentSelectedAnswer in currentSelectedAnswers.Where(a => !previousAnswerIds.Contains(a.Id)))
-                    {
-                        var newAnswer = new QuestionResponseDO
-                        {
-                            Answer = currentSelectedAnswer,
-                            UserID = userID
-                        };
-                        uow.QuestionResponseRepository.Add(newAnswer);
-                    }
-                }
-
-                var currBookingRequest = new BookingRequest();
-                currBookingRequest.AcknowledgeResponseToNegotiationRequest(uow, currNegotiationDO.Id, userID);
-
-                if (currNegotiationDO.NegotiationState == NegotiationState.Resolved)
-                {
-                    AlertManager.PostResolutionNegotiationResponseReceived(currNegotiationDO.Id);
-                }
-
-                _negotiation = new Negotiation();
-                _negotiation.CreateQuasiEmailForBookingRequest(uow, currNegotiationDO, currUserDO, questionAnswer);
-
-                uow.SaveChanges();
-
-                return View();
-            }
+            return View();
         }
+
 
         public void AuthenticateUser(int negotiationID)
         {

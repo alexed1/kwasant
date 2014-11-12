@@ -172,7 +172,6 @@
     <Compile Include="Interfaces\IEmailAddress.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\INegotiation.cs" />
-    <Compile Include="Interfaces\INegotiationResponse.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
     <Compile Include="ExternalServices\IImapClient.cs" />
     <Compile Include="ExternalServices\ImapClientWrapper.cs" />
@@ -259,7 +258,6 @@
     <Compile Include="Services\InvitationResponse.cs" />
     <Compile Include="Services\IQuestion.cs" />
     <Compile Include="Services\Negotiation.cs" />
-    <Compile Include="Services\NegotiationResponse.cs" />
     <Compile Include="Services\Question.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\User.cs" />
