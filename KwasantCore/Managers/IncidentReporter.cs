@@ -1,9 +1,11 @@
 ﻿using System;
+using Data.Entities;
+using Data.Infrastructure;
+using Data.Interfaces;
 using KwasantCore.Services;
 using StructureMap;
-using Data.Interfaces;
-using Data.Entities;
-namespace Data.Infrastructure
+
+namespace KwasantCore.Managers
 {
     public class IncidentReporter
     {
@@ -11,6 +13,24 @@ namespace Data.Infrastructure
         {
             AlertManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
             AlertManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
+            AlertManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
+        }
+
+        private void AlertManagerOnAlertResponseReceived(int bookingRequestId, string userID, string customerID)
+        {
+            using (var _uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Booking Request";
+                incidentDO.SecondaryCategory = "Response Recieved";
+                incidentDO.CreateTime = DateTime.Now;
+                incidentDO.CustomerId = customerID;
+                incidentDO.BookerId = userID;
+                incidentDO.ObjectId = bookingRequestId;
+                incidentDO.Activity = "Response Recieved";
+                _uow.IncidentRepository.Add(incidentDO);
+                _uow.SaveChanges();
+            }
         }
 
         public void ProcessAlert_EmailProcessingFailure(string dateReceived, string errorMessage)
@@ -36,7 +56,8 @@ namespace Data.Infrastructure
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "EmailFailure";
                 incidentDO.SecondaryCategory = "Email";
-                incidentDO.CreateTime = DateTime.Now; ;
+                incidentDO.CreateTime = DateTime.Now;
+                ;
                 incidentDO.Activity = "SendFailure";
                 incidentDO.ObjectId = emailId;
                 incidentDO.Notes = message;

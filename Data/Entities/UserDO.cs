@@ -90,6 +90,21 @@ namespace Data.Entities
             AlertManager.CustomerCreated(this);
         }
 
+
+        public String DisplayName
+        {
+            get
+            {
+                if (!String.IsNullOrWhiteSpace(FirstName) && !String.IsNullOrWhiteSpace(LastName))
+                    return FirstName + " " + LastName;
+                if (!String.IsNullOrWhiteSpace(FirstName))
+                    return FirstName;
+                if (!String.IsNullOrWhiteSpace(LastName))
+                    return LastName;
+                return UserName;
+            }
+        }
+
         public DateTimeOffset LastUpdated { get; set; }
     }
 }

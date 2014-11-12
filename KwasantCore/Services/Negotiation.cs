@@ -62,12 +62,9 @@ namespace KwasantCore.Services
             quasiEmail.ConversationId = curNegotiationDO.BookingRequestID;
             quasiEmail.EmailStatus = EmailState.Processed; //This email won't be sent
 
-            if (curNegotiationDO.BookingRequest.State == BookingRequestState.Booking)
-            {
-// ReSharper disable once PossibleInvalidOperationException -- Turn off resharper warning, BookingRequestID is guaranteed to be non-null (enforced by EF attribute)
-                AlertManager.ConversationMemberAdded(curNegotiationDO.BookingRequestID.Value);
-            }
-            else
+            AlertManager.ConversationMemberAdded(curNegotiationDO.BookingRequestID.Value);
+
+            if (curNegotiationDO.BookingRequest.State != BookingRequestState.Booking)
             {
                 var br = ObjectFactory.GetInstance<BookingRequest>();
                 br.Reactivate(uow, curNegotiationDO.BookingRequest);
