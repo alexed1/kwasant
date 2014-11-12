@@ -12,7 +12,7 @@ namespace Data.Entities
     {
         [Key]
         public int Id { get; set; }
-        
+
         public string Text { get; set; }
 
         [ForeignKey("Question")]
@@ -30,11 +30,11 @@ namespace Data.Entities
         [ForeignKey("UserDO")]
         public string UserID { get; set; }
         public virtual UserDO UserDO { get; set; }
-        
+
         public void AfterCreate()
         {
             AlertManager.TrackablePropertyCreated("Answer added", "Answer", Id, "Name: " + Text);
-    }
+        }
 
         public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
@@ -44,7 +44,7 @@ namespace Data.Entities
             if (!MiscUtils.AreEqual(originalValues[textPropertyName], currentValues[textPropertyName]))
             {
                 AlertManager.TrackablePropertyUpdated("Answer changed", "Answer", Id, Text);
-}
+            }
         }
 
         public void OnDelete(DbPropertyValues originalValues)
@@ -52,7 +52,7 @@ namespace Data.Entities
             var reflectionHelper = new ReflectionHelper<AnswerDO>();
 
             var questionIDPropertyName = reflectionHelper.GetPropertyName(br => br.QuestionID);
-            AlertManager.TrackablePropertyDeleted("Question deleted", "Question", Id, (int)originalValues[questionIDPropertyName], "Name: " + Text);
+            AlertManager.TrackablePropertyDeleted("Question deleted", "Question", Id, (int) originalValues[questionIDPropertyName], "Name: " + Text);
         }
     }
 }

@@ -29,6 +29,8 @@ namespace KwasantTest.Daemons
                     {
                         case "MaxBRIdle":
                             return "0.04";
+                        case "MaxBRReservationPeriod":
+                            return "0.04";
                         case "EmailAddress_GeneralInfo":
                             return "info@kwasant.com";
                         default:
@@ -47,7 +49,7 @@ namespace KwasantTest.Daemons
                 TrackingStatusRepository trackingStatusRepository = uow.TrackingStatusRepository;
                 var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
                 bookingRequestDO.State = BookingRequestState.Unstarted;
-                bookingRequestDO.User = new FixtureData(uow).TestUser1();
+                bookingRequestDO.Customer = new FixtureData(uow).TestUser1();
                 bookingRequestRepo.Add(bookingRequestDO);
 
                 uow.SaveChanges();

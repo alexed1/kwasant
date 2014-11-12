@@ -52,10 +52,10 @@
                     case "invalid":
                         //setting status of booking request to "INVALID" and removing the row
                         $.post("/BookingRequest/Invalidate?id=" + data.id, function (response) {
-                            var oldOwner = response.Message;
+                            var oldBooker = response.Message;
                             var Id = data.id;
-                            if (response.Name == "DifferentOwner")
-                                ShowFailedOwnershipVerification(oldOwner, Id);
+                            if (response.Name == "DifferentBooker")
+                                ShowFailedBookerVerification(oldBooker, Id);
                             else
                                 $(parentcontrol).parents('tr').remove();
                         }, 'json');
@@ -68,10 +68,10 @@
         }
     });
 
-    function ShowFailedOwnershipVerification(bookingRequestOwner, Id) {
-        if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestOwner + " \n Take Ownership of This BookingRequest?")) {
+    function ShowFailedBookerVerification(bookingRequestBooker, Id) {
+        if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestBooker + " \n Take Ownership of This BookingRequest?")) {
             $.ajax({
-                url: "/BookingRequest/ProcessOwnerChange",
+                url: "/BookingRequest/ProcessBookerChange",
                 type: "GET",
                 data: { bookingRequestId: Id },
                 success: function (response) {

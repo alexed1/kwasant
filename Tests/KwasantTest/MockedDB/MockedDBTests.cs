@@ -22,7 +22,7 @@ namespace KwasantTest.MockedDB
             {
                 var brOne = new FixtureData(uow).TestBookingRequest1();
                 brOne.Id = 1;
-                brOne.User = uow.UserRepository.GetOrCreateUser("tempuser@gmail.com");
+                brOne.Customer = uow.UserRepository.GetOrCreateUser("tempuser@gmail.com");
                 uow.BookingRequestRepository.Add(brOne);
 
                 using (var subUow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -53,13 +53,13 @@ namespace KwasantTest.MockedDB
                 user.State = UserState.Active;
                 var brOne = new FixtureData(uow).TestBookingRequest1();
                 brOne.Id = 1;
-                brOne.UserID = user.Id;
+                brOne.CustomerID = user.Id;
                 uow.BookingRequestRepository.Add(brOne);
                 uow.UserRepository.Add(user);
 
                 uow.SaveChanges();
 
-                Assert.NotNull(brOne.User);
+                Assert.NotNull(brOne.Customer);
             }
         }
 

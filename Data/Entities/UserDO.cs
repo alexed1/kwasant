@@ -48,7 +48,7 @@ namespace Data.Entities
         public int? State { get; set; }
         public virtual _UserStateTemplate UserStateTemplate { get; set; }
         
-        [InverseProperty("User")]
+        [InverseProperty("Customer")]
         public virtual IList<BookingRequestDO> UserBookingRequests { get; set; }
 
         [InverseProperty("Booker")]
@@ -83,7 +83,7 @@ namespace Data.Entities
             //if there exists a booking request with this user as its created by...
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (uow.BookingRequestRepository.FindOne(br => br.User.Id == Id) != null)
+                if (uow.BookingRequestRepository.FindOne(br => br.Customer.Id == Id) != null)
                     AlertManager.ExplicitCustomerCreated(Id);
             }
 

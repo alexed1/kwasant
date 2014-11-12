@@ -2,62 +2,57 @@
 @using StructureMap
 @model KwasantWeb.ViewModels.UserVM
 @{ Layout = "~/Views/Shared/_Blank.cshtml"; }
+
 <div style="padding-right: 40px;">
     <form id="userInfoForm">
         <table>
             <thead>
-            <tr>
+                <tr>
                     <th style="min-width: 150px"></th>
                     <th></th>
                 </tr>
             </thead>
-            <tr>
+            @*<tr>
                 <td colspan="2">
                     <label id="lblSaveError" style="color: red;"></label>
                 </td>
-            </tr>
+            </tr>*@
             <tr>
                 <td>First Name 
                 </td>
-                <td>
-                    @Html.TextBoxFor(curUser => curUser.FirstName, new { id = "firstname" })
+                <td>@Html.TextBoxFor(curUser => curUser.FirstName, new { id = "firstname" })
                 </td>
             </tr>
             <tr>
                 <td>Last Name 
                 </td>
-                <td>
-                    @Html.TextBoxFor(curUser => curUser.LastName, new { id = "lastname" })
+                <td>@Html.TextBoxFor(curUser => curUser.LastName, new { id = "lastname" })
                 </td>
             </tr>
             <tr>
                 <td>Email Address
                 </td>
-                <td>
-                    @Html.TextBoxFor(curUser => curUser.EmailAddress, new { id = "email" })
+                <td>@Html.TextBoxFor(curUser => curUser.EmailAddress, new { id = "email" })
                 </td>
             </tr>
             <tr>
                 <td>Email ID
                 </td>
-                <td>
-                    @Html.TextBoxFor(curUser => curUser.EmailAddressID, new { id = "emailId", disabled = "disabled" })
+                <td>@Html.TextBoxFor(curUser => curUser.EmailAddressID, new { id = "emailId", disabled = "disabled" })
                     @Html.HiddenFor(curUser => curUser.EmailAddressID)
                 </td>
             </tr>
             <tr>
-                <td>
-                    New password
+                <td>New password
                 </td>
                 <td>
-                    <input type="text" id="newPassword"/>
+                    <input type="text" id="newPassword" />
                 </td>
             </tr>
             <tr>
                 <td>Roles
                 </td>
-                <td>
-                    @{
+                <td>@{
                         using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                         {
                             var allRows = uow.AspNetRolesRepository.GetAll();
@@ -66,14 +61,13 @@
                                 <input id="@role.Id" type="checkbox" class="roleCheckbox" value="@role.Name" @Html.Raw(Model.Roles.Contains(role.Name) ? "checked" : String.Empty)/>
                                 <label for="@role.Id">@role.Name</label>
                         <br />
-                            }
+                    }
                         }
                     }
                 </td>
             </tr>
             <tr>
-                <td colspan="2">
-                    @Html.Partial("ShowUserCreationSettings")
+                <td colspan="2">@Html.Partial("ShowUserCreationSettings")
                 </td>
             </tr>
             <tr>
@@ -84,8 +78,8 @@
                 <td colspan="2">
                     <input type="button" id="btnSave" value="Save" />&nbsp;&nbsp;
                     <input type="button" id="btnCancel" value="Cancel" />&nbsp;&nbsp;
-                    <input type="button" id="btnDelete" value="Delete" onclick="updateStatus(@Data.States.UserState.Deleted)"/>
-                    <input type="button" id="btnActivate" value="Activate" onclick="updateStatus(@Data.States.UserState.Active)"/>
+                    <input type="button" id="btnDelete" value="Delete" onclick="updateStatus(@Data.States.UserState.Deleted)" />
+                    <input type="button" id="btnActivate" value="Activate" onclick="updateStatus(@Data.States.UserState.Active)" />
                 </td>
             </tr>
             <tr id="trEditUser" style="display: none;">
@@ -98,6 +92,7 @@
         <br />
         <a style="color: #428bca; text-decoration: underline;" href="/Profile/ProfilesForUser?userID=@Model.Id">View Profiles</a>
     </form>
+
 </div>
 <script>
     //Document ready function, will run after page is ready and all elements are loaded.
@@ -147,7 +142,8 @@
                 contentType: 'application/json',
                 data: dataStr,
                 success: function () {
-                    $("#lblSaveError").html("User updated successfully");
+                    //$("#lblSaveError").html("User updated successfully");
+                    displayNotification("User updated successfully");
                     toggleFields(true);
                 }
             });
@@ -191,6 +187,6 @@
             $("#btnActivate").show();
             $("#btnDelete").hide();
         }
-    }
+    } 
 </script>
 

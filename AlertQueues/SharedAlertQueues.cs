@@ -27,8 +27,8 @@ namespace KwasantWeb.AlertQueues
         //Remember to update GetQueueByName, 
         //As well as the Begin() method (add your queue to 'staticQueues' array) - failing to update Begin will cause memory leaks!
 
-        public const String StrNewBookingRequestForUserQueue = @"NewBookingRequestForUserQueue";
-        public static NewBookingRequestForUserQueue NewBookingRequestForUserQueue = new NewBookingRequestForUserQueue();
+        public const String StrBookingRequestReservedForUserQueue = @"BookingRequestReservedForUserQueue";
+        public static BookingRequestReservedForUserQueue BookingRequestReservedForUserQueue = new BookingRequestReservedForUserQueue();
 
         public const String StrPollBookingRequestResponseQueue = @"PollBookingRequestResponseQueue";
         public static NewBookingRequestResponseQueue BookingRequestUpdatedQueue = new NewBookingRequestResponseQueue();
@@ -38,8 +38,8 @@ namespace KwasantWeb.AlertQueues
         {
             switch (name)
             {
-                case StrNewBookingRequestForUserQueue:
-                    return NewBookingRequestForUserQueue;
+                case StrBookingRequestReservedForUserQueue:
+                    return BookingRequestReservedForUserQueue;
                 case StrPollBookingRequestResponseQueue:
                     return BookingRequestUpdatedQueue;
             }
@@ -50,7 +50,7 @@ namespace KwasantWeb.AlertQueues
         {
             new Thread(() =>
             {
-                var staticQueues = new IStaticQueue[] {NewBookingRequestForUserQueue};
+                var staticQueues = new IStaticQueue[] {BookingRequestReservedForUserQueue};
 
                 while (true)
                 {

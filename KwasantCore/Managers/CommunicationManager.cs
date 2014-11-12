@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
@@ -45,7 +45,7 @@ namespace KwasantCore.Managers
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 var email = ObjectFactory.GetInstance<Email>();
-                string message = "BookingRequest ID : " + bookingRequestDO.Id + " Needs Processing <br/>Subject : " + bookingRequestDO.Subject;
+                string message = "BookingRequest Needs Processing <br/>Subject : " + bookingRequestDO.Subject;
                 string subject = "BookingRequest Needs Processing";
                 string toRecipient = _configRepository.Get("EmailAddress_BrNotify");
                 string fromAddress = _configRepository.Get<string>("EmailAddress_GeneralInfo");
@@ -72,7 +72,7 @@ namespace KwasantCore.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.User, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
+                ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.Customer, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
             }
         }
 
@@ -229,7 +229,7 @@ Proposed Answers: {2}
 
                 var toEmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress);
                 outboundEmail.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
-                outboundEmail.From = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, bookingRequest.User);
+                outboundEmail.From = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, bookingRequest.Customer);
 
                 uow.EnvelopeRepository.ConfigurePlainEmail(outboundEmail);
                 emailRepo.Add(outboundEmail);

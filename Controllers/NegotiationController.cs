@@ -33,7 +33,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult CheckOwnership(int negotiationID, int bookingRequestID)
+        public ActionResult CheckBooker(int negotiationID, int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -41,7 +41,7 @@ namespace KwasantWeb.Controllers
                 string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
                 return Json(new KwasantPackagedMessage
                     {
-                        Name = verifyOwnership != "valid" ? "DifferentOwner" : verifyOwnership, 
+                        Name = verifyOwnership != "valid" ? "DifferentBooker" : verifyOwnership, 
                         Message = verifyOwnership
                     });
             }
@@ -141,7 +141,7 @@ namespace KwasantWeb.Controllers
 
                 //need to add the addresses of people cc'ed or on the To line of the BookingRequest
                 var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress.Address).ToList();
-                attendees.Add(bookingRequestDO.User.EmailAddress.Address);
+                attendees.Add(bookingRequestDO.Customer.EmailAddress.Address);
                
                 var filteredEmailAddresses = FilterUtility.StripReservedEmailAddresses(attendees, _configRepository).Distinct().ToList();
 

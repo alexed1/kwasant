@@ -8,6 +8,7 @@ using Data.Repositories;
 using KwasantCore.Interfaces;
 using KwasantCore.ExternalServices;
 using KwasantCore.ExternalServices.REST;
+using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers;
@@ -73,6 +74,7 @@ namespace KwasantCore.StructureMap
                 For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
                 For<ISecurityServices>().Use<SecurityServices>();
                 For<ITracker>().Use<SegmentIO>();
+                For<IIntakeManager>().Use<IntakeManager>();
 
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
@@ -96,6 +98,7 @@ namespace KwasantCore.StructureMap
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<ITracker>().Use<SegmentIO>();
+                For<IIntakeManager>().Use<IntakeManager>();
 
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 

@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Exceptions;
 using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
@@ -58,34 +59,29 @@ namespace KwasantWeb.Controllers
         // GET: /BookingRequest/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
+            if (!id.HasValue)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             var currBooker = this.GetUserId();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            try
             {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                if (bookingRequestDO == null)
-                    return HttpNotFound();
-                bookingRequestDO.State = BookingRequestState.Booking;
-                bookingRequestDO.BookerID = currBooker;
-                bookingRequestDO.LastUpdated = DateTimeOffset.Now;
-                uow.SaveChanges();
-                AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, currBooker);
-
+                _br.CheckOut(id.Value, currBooker);
                 return RedirectToAction("Index", "Dashboard", new { id });
             }
+            catch (EntityNotFoundException)
+            {
+                return HttpNotFound();
+        }
         }
 
         [HttpGet]
-        public ActionResult ProcessOwnerChange(int bookingRequestId)
+        public ActionResult ProcessBookerChange(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var currBooker = this.GetUserId();
-                string result = _booker.ChangeOwner(uow, bookingRequestId, currBooker);
+                string result = _booker.ChangeBooker(uow, bookingRequestId, currBooker);
                 return Content(result);
             }
         }
@@ -97,9 +93,9 @@ namespace KwasantWeb.Controllers
             {
                 //call to VerifyOwnership 
                 var currBooker = this.GetUserId();
-                string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
-                if (verifyOwnership != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership });
+                string verifyBooker = _booker.IsBookerValid(uow, id, currBooker);
+                if (verifyBooker != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentBooker", Message = verifyBooker });
 
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 bookingRequestDO.State = BookingRequestState.Resolved;
@@ -119,7 +115,7 @@ namespace KwasantWeb.Controllers
                 var currBooker = this.GetUserId();
                 string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
                 if (verifyOwnership != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership });
+                    return Json(new KwasantPackagedMessage { Name = "DifferentBooker", Message = verifyOwnership });
 
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 bookingRequestDO.State = BookingRequestState.Invalid;
@@ -169,12 +165,12 @@ namespace KwasantWeb.Controllers
 
                     uow.SaveChanges();
 
-                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.User, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
+                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.Customer, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
 
                     return Json(new
                         {
                             Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", 
-                            UserID = bookingRequest.UserID
+                            UserID = bookingRequest.CustomerID
                         });
                 }
             }
@@ -217,16 +213,17 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public void ReleaseBooker(int bookingRequestId)
+        public ActionResult ReleaseBooker(int bookingRequestId)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            try
             {
-                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                bookingRequestDO.State = BookingRequestState.Unstarted;
-                bookingRequestDO.BookerID = null;
-                bookingRequestDO.User = bookingRequestDO.User;
-                uow.SaveChanges();
+                _br.ReleaseBooker(bookingRequestId);
+                return Json(true);
             }
+            catch (EntityNotFoundException)
+            {
+                return HttpNotFound();
+        }
         }
 
         public ActionResult ShowBRSOwnedByBooker()

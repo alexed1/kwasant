@@ -56,7 +56,7 @@ namespace KwasantTest.Daemons
                 Assert.AreEqual(testFromEmailAddress, bookingRequest.From.Address);
                 Assert.AreEqual(testSubject, bookingRequest.Subject);
                 Assert.AreEqual(testBody, bookingRequest.HTMLText);
-                Assert.AreEqual(testFromEmailAddress, bookingRequest.User.EmailAddress.Address);
+                Assert.AreEqual(testFromEmailAddress, bookingRequest.Customer.EmailAddress.Address);
                 Assert.AreEqual(1, bookingRequest.To.Count());
                 Assert.AreEqual(testToEmailAddress, bookingRequest.To.First().Address);
             }
@@ -106,7 +106,7 @@ namespace KwasantTest.Daemons
                 Assert.AreEqual(testFromEmailAddress, bookingRequest.From.Address);
                 Assert.AreEqual(testSubject, bookingRequest.Subject);
                 Assert.AreEqual(testBody, bookingRequest.HTMLText);
-                Assert.AreEqual(testFromEmailAddress, bookingRequest.User.EmailAddress.Address);
+                Assert.AreEqual(testFromEmailAddress, bookingRequest.Customer.EmailAddress.Address);
                 Assert.AreEqual(1, bookingRequest.To.Count());
                 Assert.AreEqual(testToEmailAddress, bookingRequest.To.First().Address);
                 Assert.AreEqual(1, bookingRequest.Attachments.Count());

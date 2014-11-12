@@ -40,6 +40,7 @@ namespace Data.Interfaces
         ProfileItemRepository ProfileItemRepository { get; }
         ProfileRepository ProfileRepository { get; }
         UserStatusRepository UserStatusRepository { get; }
+        NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
 
         /// <summary>
