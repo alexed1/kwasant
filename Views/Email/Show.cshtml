@@ -21,9 +21,8 @@
             <table width="100%">
                 <tr>
                     <td class="displayLabel">Booker:</td>
-                    <td id="tdbookerinfo">
-                        @Model.Booker
-                        @(Model.Booker != "none" && !Model.ReadOnly ? Html.Raw("<span style='padding-left:15px;'><a href='javascript:void(0);' onclick='javascript:releaseBooker(" + Model.BookingRequestId + ")'>Release</a></span>") : Html.Raw(""))
+                    <td id="tdbookerinfo">@Model.Booker
+                        @(Model.Booker != "none" && !Model.ReadOnly ? Html.Raw("<span style='padding-left: 15px;'><a href='javascript:void(0);' onclick='javascript:releaseBooker(" + Model.BookingRequestId + ")'>Release</a></span>") : Html.Raw(""))
                     </td>
                 </tr>
                 <tr>
@@ -38,12 +37,11 @@
                     <td class="displayLabel">CC:</td>
                     <td>@Model.EmailCC</td>
                 </tr>
-                <tr>
+                <tr class="emailBCC">
                     <td class="displayLabel">BCC:</td>
                     <td>@Model.EmailBCC</td>
                 </tr>
-
-                <tr>
+                <tr class="emailAttachments">
                     <td class="displayLabel">Attachments:</td>
                     <td>@Html.Raw(Model.EmailAttachments)</td>
                 </tr>
@@ -69,7 +67,14 @@
 
 <script src="~/Content/js/Kwasant/quickcopy.js"></script>
 <script type="text/javascript">
+    $(document).ready(function (){
+        if('@Model.EmailBCC' == "")
+        { $('.emailBCC').css('display','none');}
 
+        if('@Model.EmailAttachments' == "")
+        { $('.emailAttachments').css('display','none');}
+
+    });
     function refreshConversation() {
         $('#conversations').css('opacity', 0.5);
         $.get('/Email/GetConversationMembers?emailID=@Model.BookingRequestId', function(result) {
