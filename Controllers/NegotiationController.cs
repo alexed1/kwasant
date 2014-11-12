@@ -27,7 +27,7 @@ namespace KwasantWeb.Controllers
         private readonly INegotiation _negotiation;
         private readonly IAnswer _answer;
         private readonly IQuestion _question;
-
+        
         public NegotiationController()
         {
             _booker = new Booker();
@@ -36,6 +36,21 @@ namespace KwasantWeb.Controllers
             _negotiation = ObjectFactory.GetInstance<INegotiation>();
             _question = ObjectFactory.GetInstance<IQuestion>();
             _answer = ObjectFactory.GetInstance<IAnswer>();
+        }
+
+        [HttpPost]
+        public ActionResult CheckBooker(int negotiationID, int bookingRequestID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _currBooker = this.GetUserId();
+                string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
+                return Json(new KwasantPackagedMessage
+                    {
+                        Name = verifyOwnership != "valid" ? "DifferentBooker" : verifyOwnership, 
+                        Message = verifyOwnership
+                    });
+            }
         }
 
         public ActionResult Edit(int negotiationID, int bookingRequestID)
@@ -134,20 +149,21 @@ namespace KwasantWeb.Controllers
                 emailAddresses.Add(bookingRequestDO.User.EmailAddress);
 
                 //need to add the addresses of people cc'ed or on the To line of the BookingRequest
-                emailAddresses.AddRange(bookingRequestDO.Recipients.Select(r => r.EmailAddress));
-
+                var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress.Address).ToList();
+                attendees.Add(bookingRequestDO.Customer.EmailAddress.Address);
+               
                 return View("~/Views/Negotiation/Edit.cshtml", new NegotiationVM
-                {
+                                {
                     Name = uow.EmailRepository.GetByKey(bookingRequestID).Subject,
-                    BookingRequestID = bookingRequestID,
+                                    BookingRequestID = bookingRequestID,
                     Attendees = emailAddresses.Select(ea => ea.Address).ToList(),
-                    Questions = new List<NegotiationQuestionVM>
+                                    Questions = new List<NegotiationQuestionVM>
                     { new NegotiationQuestionVM
-                        {
-                            Type = "Text"
-                        }
-                    }
-                });
+                                        {
+                                                    Type = "Text"
+                                                }
+                                        }
+                                });
             }
         }
 
@@ -157,7 +173,7 @@ namespace KwasantWeb.Controllers
 
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+                        {
                 NegotiationDO negotiationDO = _negotiation.GetOrCreate(curNegotiationVM.Id, uow);
                 _negotiation.Update(uow, curNegotiationVM, negotiationDO);
 

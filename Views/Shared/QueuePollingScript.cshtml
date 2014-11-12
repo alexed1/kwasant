@@ -90,7 +90,7 @@
 
     function pollNewBookingRequest() {
         if (NewBookingRequestForUserQueueListenerEnabled) {
-            getUpdateForUser('@SharedAlertQueues.StrNewBookingRequestForUserQueue', function (result) {
+            getUpdateForUser('@SharedAlertQueues.StrBookingRequestReservedForUserQueue', function (result) {
                 $.each(result, function (ind, row) {
                     var message = 'A new booking request has been assigned to you!  <span style="margin-left:5px" class="glyphicon glyphicon-remove"></span></br> Click here to take a look.';
 

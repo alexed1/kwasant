@@ -117,3 +117,13 @@ fmtZero = function (str)
 function autoResizeTextArea(e) {
     $(e).css({ 'height': 'auto', 'overflow-y': 'hidden' }).height(e.scrollHeight);
 }
+
+function displayNotification(message) {
+    var notification = $('#notificationGroup', window.parent.document);
+    $('#notificationMessage', window.parent.document).html(message);
+    notification.fadeIn('slow');
+    setTimeout(function ()
+    { notification.fadeOut('slow'); }
+
+    , 5 * 1000);
+}

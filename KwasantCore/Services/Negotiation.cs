@@ -51,7 +51,7 @@ namespace KwasantCore.Services
             newLink.Email = quasiEmail;
             newLink.User = curUserDO;
             newLink.Negotiation = curNegotiationDO;
-
+            
             //Now we update it..
             const string bodyTextFormat = @"To Question: ""{0}"", answered ""{1}""";
 
@@ -70,7 +70,7 @@ namespace KwasantCore.Services
 
             quasiEmail.FromID = curUserDO.EmailAddressID;
             quasiEmail.DateReceived = DateTimeOffset.Now;
-
+            
             var renderedText = bodyTextFull.ToString();
             quasiEmail.HTMLText = renderedText;
             quasiEmail.PlainText = renderedText.Replace("<br/>", Environment.NewLine);
@@ -78,9 +78,16 @@ namespace KwasantCore.Services
             quasiEmail.ConversationId = curNegotiationDO.BookingRequestID;
             quasiEmail.EmailStatus = EmailState.Processed; //This email won't be sent
 
+            if (curNegotiationDO.BookingRequest.State == BookingRequestState.Booking)
+            {
 // ReSharper disable once PossibleInvalidOperationException -- Turn off resharper warning, BookingRequestID is guaranteed to be non-null (enforced by EF attribute)
             AlertManager.ConversationMemberAdded(curNegotiationDO.BookingRequestID.Value);
-
+            }
+            else
+            {
+                var br = ObjectFactory.GetInstance<BookingRequest>();
+                br.Reactivate(uow, curNegotiationDO.BookingRequest);
+            }
             uow.EmailRepository.Add(quasiEmail);
             uow.NegotiationAnswerEmailRepository.Add(newLink);
         }
@@ -110,7 +117,7 @@ namespace KwasantCore.Services
                     DateCreated = DateTime.Now
                 };
                 uow.NegotiationsRepository.Add(curNegotiationDO);
-            }
+    }
             else
                 curNegotiationDO = uow.NegotiationsRepository.GetByKey(curNegotiationID);
             return curNegotiationDO;

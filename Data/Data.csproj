@@ -383,6 +383,14 @@
     <Compile Include="Migrations\201411081224212_FixCascadeForAnswerResponse.Designer.cs">
       <DependentUpon>201411081224212_FixCascadeForAnswerResponse.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411101041271_AddBRAvailabilityAndPB.cs" />
+    <Compile Include="Migrations\201411101041271_AddBRAvailabilityAndPB.Designer.cs">
+      <DependentUpon>201411101041271_AddBRAvailabilityAndPB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411111114171_RenameBRUserToCustomer.cs" />
+    <Compile Include="Migrations\201411111114171_RenameBRUserToCustomer.Designer.cs">
+      <DependentUpon>201411111114171_RenameBRUserToCustomer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
@@ -447,6 +455,7 @@
     <Compile Include="Repositories\ProfileNodeRepository.cs" />
     <Compile Include="Repositories\QuestionResponseRepository.cs" />
     <Compile Include="Repositories\UserStatusRepository.cs" />
+    <Compile Include="States\BookingRequestAvailability.cs" />
     <Compile Include="States\BookingRequestState.cs" />
     <Compile Include="States\CommunicationMode.cs" />
     <Compile Include="States\ConfirmationStatus.cs" />
@@ -456,6 +465,7 @@
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\Roles.cs" />
+    <Compile Include="States\Templates\_BookingRequestAvailabilityTemplate.cs" />
     <Compile Include="States\Templates\_AnswerStatusTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
@@ -1257,6 +1267,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411081224212_FixCascadeForAnswerResponse.resx">
       <DependentUpon>201411081224212_FixCascadeForAnswerResponse.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411101041271_AddBRAvailabilityAndPB.resx">
+      <DependentUpon>201411101041271_AddBRAvailabilityAndPB.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411111114171_RenameBRUserToCustomer.resx">
+      <DependentUpon>201411111114171_RenameBRUserToCustomer.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

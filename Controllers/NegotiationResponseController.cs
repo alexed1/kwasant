@@ -55,9 +55,9 @@ namespace KwasantWeb.Controllers
                 //get all of the Answers responded to by this user
                 var userAnswerIDs = _negotiation.GetAnswerIDsByUser(curNegotiationDO,userDO,uow);
 
-                var originatingUser = curNegotiationDO.BookingRequest.User.FirstName;
-                if (!String.IsNullOrEmpty(curNegotiationDO.BookingRequest.User.LastName))
-                    originatingUser += " " + curNegotiationDO.BookingRequest.User.LastName;
+                var originatingUser = curNegotiationDO.BookingRequest.Customer.FirstName;
+                if (!String.IsNullOrEmpty(curNegotiationDO.BookingRequest.Customer.LastName))
+                    originatingUser += " " + curNegotiationDO.BookingRequest.Customer.LastName;
 
 
                 var model = new NegotiationResponseVM

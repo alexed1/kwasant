@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Mail;
 using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using KwasantCore.Exceptions;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
@@ -30,16 +32,39 @@ namespace KwasantCore.Services
             _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
         }
 
+        public static void ProcessNewBR(MailMessage message)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(uow.BookingRequestRepository, message);
+
+                var newBookingRequest = new BookingRequest();
+                newBookingRequest.Process(uow, bookingRequest);
+                Email.FixInlineImages(bookingRequest);
+                uow.SaveChanges();
+
+                AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.Customer.Id);
+
+                /*
+                            var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
+                            if (preferredUser != null)
+                            {
+                                newBookingRequest.Reserve(uow, bookingRequest, preferredUser);
+                            }
+                */
+            }
+        }
+
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
             bookingRequest.State = BookingRequestState.Unstarted;
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest.From);
-            bookingRequest.User = curUser;
-            bookingRequest.UserID = curUser.Id;
+            bookingRequest.Customer = curUser;
+            bookingRequest.CustomerID = curUser.Id;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
 
-            foreach (var calendar in bookingRequest.User.Calendars)
-                //this is smelly. Calendars are associated with a User. Why do we need to manually add them to BookingREquest.Calendars when they're easy to access?
+            foreach (var calendar in bookingRequest.Customer.Calendars)
+                //this is smelly. Calendars are associated with a Customer. Why do we need to manually add them to BookingREquest.Calendars when they're easy to access?
                 bookingRequest.Calendars.Add(calendar);
         }
 
@@ -48,7 +73,7 @@ namespace KwasantCore.Services
         {
             return
                 curBookingRequestRepository.GetAll()
-                    .Where(e => e.User.Id == userid)
+                    .Where(e => e.Customer.Id == userid)
                     .Skip(start)
                     .Take(length)
                     .Select(e =>
@@ -57,20 +82,20 @@ namespace KwasantCore.Services
                             id = e.Id,
                             subject = e.Subject,
                             dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
-                            linkedcalendarids = String.Join(",", e.User.Calendars.Select(c => c.Id))
+                            linkedcalendarids = String.Join(",", e.Customer.Calendars.Select(c => c.Id))
                         }).ToList();
         }
 
         public int GetBookingRequestsCount(IBookingRequestDORepository curBookingRequestRepository, string userid)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Count();
+            return curBookingRequestRepository.GetAll().Where(e => e.Customer.Id == userid).Count();
         }
 
         public string GetUserId(IBookingRequestDORepository curBookingRequestRepository, int bookingRequestId)
         {
             return (from requests in curBookingRequestRepository.GetAll()
                     where requests.Id == bookingRequestId
-                    select requests.User.Id).FirstOrDefault();
+                    select requests.Customer.Id).FirstOrDefault();
         }
 
         public object GetUnprocessed(IUnitOfWork uow)
@@ -173,13 +198,14 @@ namespace KwasantCore.Services
             string bookerId = bookingRequestDO.BookerID;
             bookingRequestDO.State = BookingRequestState.Unstarted;
             bookingRequestDO.BookerID = null;
-            bookingRequestDO.User = bookingRequestDO.User;
+            bookingRequestDO.Booker = null;
+            bookingRequestDO.Customer = bookingRequestDO.Customer;
+            bookingRequestDO.PreferredBookerID = null;
+            bookingRequestDO.PreferredBooker = null;
             uow.SaveChanges();
-            bookingRequestDO.BookerID = bookerId;
 
-            AlertManager.BookingRequestProcessingTimeout(bookingRequestDO);
+            AlertManager.BookingRequestProcessingTimeout(bookingRequestDO.Id, bookerId);
             Logger.GetLogger().Info("Process Timed out. BookingRequest ID :" + bookingRequestDO.Id);
-            bookingRequestDO.BookerID = null;
             // Send mail to Booker
             var curbooker = uow.UserRepository.GetByKey(bookerId);
             string message = "BookingRequest ID : " + bookingRequestDO.Id + " Timed Out <br/>Subject : " + bookingRequestDO.Subject;
@@ -201,7 +227,7 @@ namespace KwasantCore.Services
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
             //Add the booking request user
-            var curAttendeeDO = _attendee.Create(uow, eventDO.BookingRequest.User.EmailAddress.Address,eventDO, eventDO.BookingRequest.User.FirstName);
+            var curAttendeeDO = _attendee.Create(uow, eventDO.BookingRequest.Customer.EmailAddress.Address,eventDO, eventDO.BookingRequest.Customer.FirstName);
             eventDO.Attendees.Add(curAttendeeDO);
             var emailAddresses = _emailAddress.GetEmailAddresses(uow, eventDO.BookingRequest.HTMLText, eventDO.BookingRequest.PlainText, eventDO.BookingRequest.Subject);
 
@@ -322,6 +348,91 @@ namespace KwasantCore.Services
                     e.DateReceived.TimeAgo(), e.HTMLText)));
 
             return result;
+        }
+
+        public void CheckOut(int bookingRequestId, string bookerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+                var bookerDO = uow.UserRepository.GetByKey(bookerId);
+                if (bookerDO == null)
+                    throw new EntityNotFoundException<UserDO>(bookerId);
+                bookingRequestDO.State = BookingRequestState.Booking;
+                bookingRequestDO.BookerID = bookerId;
+                bookingRequestDO.Booker = bookerDO;
+                bookingRequestDO.PreferredBookerID = bookerId;
+                bookingRequestDO.PreferredBooker = bookerDO;
+                bookingRequestDO.LastUpdated = DateTimeOffset.Now;
+                uow.SaveChanges();
+                AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, bookerId);
+            }
+        }
+
+        public void ReleaseBooker(int bookingRequestId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.BookerID = null;
+                bookingRequestDO.Booker = null;
+                bookingRequestDO.PreferredBookerID = null;
+                bookingRequestDO.PreferredBooker = null;
+                bookingRequestDO.Customer = bookingRequestDO.Customer;
+                uow.SaveChanges();
+            }
+        }
+
+        public void Reactivate(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (bookingRequestDO == null)
+                throw new ArgumentNullException("bookingRequestDO");
+            bookingRequestDO.State = BookingRequestState.NeedsBooking;
+            if (bookingRequestDO.PreferredBooker != null)
+            {
+                Reserve(uow, bookingRequestDO, bookingRequestDO.PreferredBooker);
+            }
+        }
+
+        public void Reserve(IUnitOfWork uow, BookingRequestDO bookingRequestDO, UserDO booker)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (bookingRequestDO == null)
+                throw new ArgumentNullException("bookingRequestDO");
+            if (booker == null)
+                throw new ArgumentNullException("booker");
+
+            bookingRequestDO.Availability = BookingRequestAvailability.ReservedPB;
+            uow.SaveChanges();
+
+            AlertManager.BookingRequestReserved(bookingRequestDO.Id, booker.Id);
+        }
+
+        public void ReservationTimeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            if (bookingRequestDO == null)
+                throw new ArgumentNullException("bookingRequestDO");
+            if (bookingRequestDO.State == BookingRequestState.NeedsBooking)
+            {
+                string bookerId = bookingRequestDO.PreferredBookerID;
+                bookingRequestDO.PreferredBookerID = null;
+                bookingRequestDO.PreferredBooker = null;
+                bookingRequestDO.Availability = BookingRequestAvailability.Available;
+                uow.SaveChanges();
+
+                AlertManager.BookingRequestReservationTimeout(bookingRequestDO.Id, bookerId);
+            }
+
         }
     }
 }

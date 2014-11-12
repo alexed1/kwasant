@@ -314,11 +314,11 @@ namespace Data.Migrations
                 EmailStatus = EmailState.Unprocessed,
                 DateReceived = DateTimeOffset.UtcNow,
                 State = BookingRequestState.Unstarted,
-                User = userDO
+                Customer = userDO
             };
             userDO.UserBookingRequests.Add(curBookingRequestDO);
 
-            foreach (var calendar in curBookingRequestDO.User.Calendars)
+            foreach (var calendar in curBookingRequestDO.Customer.Calendars)
                 curBookingRequestDO.Calendars.Add(calendar);
             uow.BookingRequestRepository.Add(curBookingRequestDO);
         }

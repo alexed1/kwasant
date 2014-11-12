@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net.Mail;
 
-namespace Daemons.InboundEmailHandlers
+namespace KwasantCore.Managers.InboundEmailHandlers
 {
     interface IInboundEmailHandler
     {
@@ -12,6 +9,6 @@ namespace Daemons.InboundEmailHandlers
         /// </summary>
         /// <param name="message"></param>
         /// <returns>If the message is of a wrong type returns false. Otherwise, if the message handled successfully, returns true.</returns>
-        bool Process(MailMessage message);
+        bool TryHandle(MailMessage message);
     }
 }

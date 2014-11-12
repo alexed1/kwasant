@@ -85,19 +85,19 @@
     //Mark processed function will execute on click to update the Request status to "Processed".
     function updateStatus(path) {
         $.post(path, function (response) {
-            var oldOwner = response.Message;
+            var oldBooker = response.Message;
             var Id = $("#hdnrequestid").val();
-            if (response.Name == "DifferentOwner") 
-                ShowFailedOwnershipVerification(oldOwner, Id);
+            if (response.Name == "DifferentBooker") 
+                ShowFailedBookerVerification(oldBooker, Id);
             else 
                 window.location.href = "@Url.Action("Index", "BookingRequest")";
         }, 'json');
     }
 
-    function ShowFailedOwnershipVerification(bookingRequestOwner, bookingRequestId) {
-        if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestOwner + " \n Take Ownership of This BookingRequest?")) {
+    function ShowFailedBookerVerification(bookingRequestBooker, bookingRequestId) {
+        if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestBooker + " \n Take Ownership of This BookingRequest?")) {
             $.ajax({
-                url: "/BookingRequest/ProcessOwnerChange",
+                url: "/BookingRequest/ProcessBookerChange",
                 type: "GET",
                 data: { bookingRequestId: bookingRequestId },
                 success: function (response) {
@@ -249,15 +249,6 @@
 
     //this function will open the new iframe for negotiation window and close the iframe for Edit Event window.
 
-    function displayNegotiation(message) {
-        var notification = $('#notificationGroup');
-        $('#notificationMessage').html(message);
-        notification.fadeIn('slow');
-        setTimeout(function () {
-            notification.fadeOut('slow');
-        }, 5 * 1000);
-    }
-
     function getCurrentNegotiationReview() {
         getNegotiationReview(linkedNegotiationID);
     }
@@ -270,7 +261,7 @@
                     minWidth: 630,
                     callback: function (result) {
                         if (result)
-                            displayNegotiation('Your negotiation was successfully updated');
+                            displayNotification('Your negotiation was successfully updated');
                     }
                 });
     }
@@ -279,17 +270,17 @@
     function getNegotiationWindow() {
         if (linkedNegotiationID != null) {
             var bookingRequestId = $("#hdnrequestid").val();
-            var url = '/Negotiation/CheckOwnership';
+            var url = '/Negotiation/CheckBooker';
             $.ajax({
                 url: url,
                 type: 'POST',
                 data: { negotiationID: linkedNegotiationID, bookingRequestID: bookingRequestId },
                 async: false, 
                 success: function (response) {
-                    var oldOwner = response.Message;
+                    var oldBooker = response.Message;
                     var Id = $("#hdnrequestid").val();
-                    if (response.Name == "DifferentOwner") 
-                        ShowFailedOwnershipVerification(oldOwner, Id);
+                    if (response.Name == "DifferentBooker")
+                        ShowFailedBookerVerification(oldBooker, Id);
                     else {
                         Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID + '&bookingRequestID=' + bookingRequestId,
                         {
@@ -298,7 +289,7 @@
                             minWidth: 630,
                             callback: function (result) {
                                 if (result)
-                                    displayNegotiation('Your negotiation was successfully updated');
+                                    displayNotification('Your negotiation was successfully updated');
                             }
                         });
                     }
@@ -316,7 +307,7 @@
                                 $('#liCreateOrEditNegotiation').html('Edit');
                                 linkedNegotiationID = result;
                                 updateCreateResolveButtons();
-                                displayNegotiation('Your negotiation was successfully created');
+                                displayNotification('Your negotiation was successfully created');
                             }
                         }
                     });
@@ -330,7 +321,7 @@
                     if (!data) {
                         alert('An error occured on the server. Your changes were not saved.');
                     } else {
-                        displayNegotiation('Your negotiation was successfully resolved.');
+                        displayNotification('Your negotiation was successfully resolved.');
                         linkedNegotiationID = null;
                         $('#liCreateOrEditNegotiation').html('Create');
                         updateCreateResolveButtons();

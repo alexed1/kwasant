@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Net.Sockets;
-using Daemons.InboundEmailHandlers;
 using Data.Infrastructure;
 using KwasantCore.ExternalServices;
+using KwasantCore.Interfaces;
+using KwasantCore.Managers;
 using S22.Imap;
 using StructureMap;
 using Utilities;
@@ -18,7 +19,6 @@ namespace Daemons
     {
         private IImapClient _client;
         private readonly IConfigRepository _configRepository;
-        private readonly IInboundEmailHandler[] _handlers;
         private HashSet<String> _ignoreEmailsFrom;
 
         private readonly HashSet<String> _testSubjects = new HashSet<string>(); 
@@ -37,7 +37,7 @@ namespace Daemons
         public InboundEmail()
         {
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-
+            _intakeManager = ObjectFactory.GetInstance<IIntakeManager>();
             _ignoreEmailsFrom = new HashSet<string>();
             var ignoreEmailsString = _configRepository.Get("IgnoreEmailsFrom", String.Empty);
             if (!String.IsNullOrWhiteSpace(ignoreEmailsString))
@@ -46,11 +46,6 @@ namespace Daemons
                     _ignoreEmailsFrom.Add(emailToIgnore);
             }
 
-            _handlers = new IInboundEmailHandler[]
-                            {
-                                new InvitationResponseHandler(),
-                                new GeneralEmailHandler()
-                            };
 
             _fromEmailAddress = _configRepository.Get("EmailAddress_GeneralInfo");
             AddTest("OutboundEmailDaemon_Test", "Test");
@@ -93,6 +88,7 @@ namespace Daemons
 
         private bool _alreadyListening;
         private readonly object _alreadyListeningLock = new object();
+        private readonly IIntakeManager _intakeManager;
 
         protected override void Run()
         {
@@ -212,13 +208,7 @@ namespace Daemons
 
             try
             {
-                var handlerIndex = 0;
-                while (handlerIndex < _handlers.Length && !_handlers[handlerIndex].Process(messageInfo))
-                {
-                    handlerIndex++;
-                }
-                if (handlerIndex >= _handlers.Length)
-                    throw new ApplicationException("Message hasn't been processed by any handler.");
+                _intakeManager.AddEmail(messageInfo);
             }
             catch (Exception e)
             {
