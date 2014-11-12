@@ -252,11 +252,8 @@ namespace KwasantWeb.Controllers
                 {
                     ToAddresses = negotiationDO.Attendees.Select(a => a.EmailAddress.Address).Where(a => !FilterUtility.IsReservedEmailAddress(a)).ToList(),
                     AddressBook = emailAddresses.ToList(),
-                    Subject =
-                        string.Format("Need Your Response on {0}'s event: {1}",
-                            negotiationDO.BookingRequest.Customer.DisplayName, "RE: " + negotiationDO.Name),
-                    HeaderText =
-                        String.Format("Your negotiation has been {0}. Would you like to send the emails now?", isNew
+                    Subject = string.Format("Need Your Response on {0}'s event: {1}", negotiationDO.BookingRequest.Customer.DisplayName, "RE: " + negotiationDO.Name),
+                    HeaderText = String.Format("Your negotiation has been {0}. Would you like to send the emails now?", isNew
                             ? "created"
                             : "updated"),
 
@@ -266,8 +263,6 @@ namespace KwasantWeb.Controllers
                 };
                 return emailController.DisplayEmail(Session, currCreateEmailVM,
                     (subUow, emailDO) => DispatchNegotiationEmails(subUow, emailDO, negotiationID)
-                    // We can't just pass the method 'DispatchNegotiationEmails', 
-                    // as we need to capture the negotiationID
                     );
             }
         }
@@ -277,19 +272,8 @@ namespace KwasantWeb.Controllers
             var communicationManager = ObjectFactory.GetInstance<CommunicationManager>();
             communicationManager.DispatchNegotiationRequests(uow, emailDO, negotiationID);
 
-
-            //We don't wait for responses from CC or BCC recipients
-            foreach (var recipient in emailDO.To)
-            {
-                var currExpectedResponse = new ExpectedResponseDO
-                {
-                    Status = ExpectedResponseStatus.Active,
-                    User = uow.UserRepository.GetOrCreateUser(recipient.Address),
-                    AssociatedObjectID = negotiationID,
-                    AssociatedObjectType = "Negotiation"
-                };
-                uow.ExpectedResponseRepository.Add(currExpectedResponse);
-            }
+            var currBookingRequest = new BookingRequest();
+            currBookingRequest.AddExpectedResponseForNegotiation(uow, emailDO, negotiationID);
 
             uow.SaveChanges();
             return Json(negotiationID);

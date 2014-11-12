@@ -338,6 +338,38 @@ namespace KwasantCore.Services
             }
         }
 
+        public void AddExpectedResponseForBookingRequest(IUnitOfWork uow, EmailDO emailDO, int bookingRequestID)
+        {
+            //We don't wait for responses from CC or BCC recipients
+            foreach (var recipient in emailDO.To)
+            {
+                var currExpectedResponse = new ExpectedResponseDO
+                {
+                    Status = ExpectedResponseStatus.Active,
+                    User = uow.UserRepository.GetOrCreateUser(recipient.Address),
+                    AssociatedObjectID = bookingRequestID,
+                    AssociatedObjectType = "BookingRequest"
+                };
+                uow.ExpectedResponseRepository.Add(currExpectedResponse);
+            }               
+        }
+
+        public void AddExpectedResponseForNegotiation(IUnitOfWork uow, EmailDO emailDO, int negotiationID)
+        {
+            //We don't wait for responses from CC or BCC recipients
+            foreach (var recipient in emailDO.To)
+            {
+                var currExpectedResponse = new ExpectedResponseDO
+                {
+                    Status = ExpectedResponseStatus.Active,
+                    User = uow.UserRepository.GetOrCreateUser(recipient.Address),
+                    AssociatedObjectID = negotiationID,
+                    AssociatedObjectType = "Negotiation"
+                };
+                uow.ExpectedResponseRepository.Add(currExpectedResponse);
+            }
+        }
+
         public void AcknowledgeResponseToBookingRequest(IUnitOfWork uow, int bookingRequestID, String userID)
         {
             var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
