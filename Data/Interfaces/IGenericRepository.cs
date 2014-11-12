@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace Data.Interfaces
 {
-    public interface IGenericRepository<TEntity> where TEntity : class
+    public interface IGenericRepository<TEntity> where TEntity : class, new()
     {
         TEntity GetByKey(object keyValue);
         IQueryable<TEntity> GetQuery();
@@ -16,5 +16,6 @@ namespace Data.Interfaces
         TEntity FindOne(Expression<Func<TEntity, bool>> criteria);
         IEnumerable<TEntity> FindList(Expression<Func<TEntity, bool>> criteria);
         void Dispose();
+        TEntity GetOrCreateByKey(object keyValue);
     }
 }

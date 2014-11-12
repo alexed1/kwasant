@@ -37,10 +37,8 @@
                 Id: @(Model.Id == null? "null" : Model.Id.ToString()),
                 BookingRequestID: @Model.BookingRequestID,
                 Name: '@Model.Name',
-                Attendees: [@Html.Raw(String.Join(",", Model.Attendees.Where(a => !String.IsNullOrEmpty(a)).Select(a => "'" + a + "'")))],
                 Questions: questions
             };
-
 
             widget = $('#negotiation').NegotiationWidget(settings, initialValues);
         });
@@ -56,15 +54,6 @@
                 validationErrors.push('Negotiation should have atleast one question');
             }
             
-            var hasAttendee = false;
-            $.each(negotiation.Attendees, function (index, obj) {
-                if (obj !== '')
-                    hasAttendee = true;
-            });
-            if (!hasAttendee) {
-                validationErrors.push('Negotiation should have atleast one attendee');
-            }
-
             $.each(negotiation.Questions, function(index, obj) {
                 if (obj.Text === undefined ||
                     obj.Text === null ||
@@ -102,8 +91,27 @@
                 url: '/Negotiation/ProcessSubmittedForm',
                 data: JSON.stringify(negotiation)
             })
-            .success(function(negotiationID) {
-                Kwasant.IFrame.CloseMe(negotiationID);
+            .success(function(result) {
+                Kwasant.IFrame.Display('/Negotiation/DisplaySendEmailForm?negotiationID=' + result.negotiationID + '&isNew=' + result.isNew,
+                {
+                    horizontalAlign: 'middle',
+                    height: 815,
+                    width: 815,
+                    modal: true,
+                    callback: function (res) {
+                        var negotiationMessage = 'Your negotiation was successfully ' + (result.isNew ? 'created' : 'updated');
+                        if (res) {
+                            negotiationMessage += ' and emails have been dispatched';
+                        }
+                        Kwasant.IFrame.CloseMe({ 
+                            message: negotiationMessage,
+                            negotiationID: result.negotiationID
+                        });
+                        
+                    }
+                });
+
+                
             })
             .fail(function() {
                 alert('An error occured on the server. Your changes have not been saved.');
