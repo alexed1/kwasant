@@ -33,7 +33,6 @@ namespace KwasantWeb.AlertQueues
         public const String StrPollBookingRequestResponseQueue = @"PollBookingRequestResponseQueue";
         public static NewBookingRequestResponseQueue BookingRequestUpdatedQueue = new NewBookingRequestResponseQueue();
 
-
         public static ISharedAlertQueue<IUserUpdateData> GetQueueByName(String name)
         {
             switch (name)
@@ -50,7 +49,7 @@ namespace KwasantWeb.AlertQueues
         {
             new Thread(() =>
             {
-                var staticQueues = new IStaticQueue[] {BookingRequestReservedForUserQueue};
+                var staticQueues = new IStaticQueue[] {BookingRequestReservedForUserQueue, BookingRequestUpdatedQueue};
 
                 while (true)
                 {

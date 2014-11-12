@@ -279,7 +279,7 @@
     function getNegotiationWindow() {
         if (linkedNegotiationID != null) {
             var bookingRequestId = $("#hdnrequestid").val();
-            var url = '/Negotiation/CheckOwnership';
+            var url = '/Negotiation/CheckBooker';
             $.ajax({
                 url: url,
                 type: 'POST',

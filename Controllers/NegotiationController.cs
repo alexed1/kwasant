@@ -260,7 +260,7 @@ namespace KwasantWeb.Controllers
                     AddressBook = emailAddresses.ToList(),
                     Subject =
                         string.Format("Need Your Response on {0}'s event: {1}",
-                            negotiationDO.BookingRequest.User.DisplayName, "RE: " + negotiationDO.Name),
+                            negotiationDO.BookingRequest.Customer.DisplayName, "RE: " + negotiationDO.Name),
                     HeaderText =
                         String.Format("Your negotiation has been {0}. Would you like to send the emails now?", isNew
                             ? "created"
