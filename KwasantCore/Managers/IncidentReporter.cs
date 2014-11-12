@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using KwasantCore.Services;
 using StructureMap;
 using Data.Interfaces;
@@ -73,7 +74,7 @@ namespace Data.Infrastructure
                                       emailId, message));
         }
 
-        private void ProcessErrorSyncingCalendar(IBaseDO calendarLink)
+        private void ProcessErrorSyncingCalendar(IRemoteCalendarAuthData authData, IRemoteCalendarLink calendarLink = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -82,25 +83,30 @@ namespace Data.Infrastructure
                 incidentDO.SecondaryCategory = "Calendar";
                 incidentDO.CreateTime = DateTime.Now;
                 incidentDO.Activity = "SyncFailure";
-                incidentDO.ObjectId = calendarLink.Id;
-                incidentDO.CustomerId = calendarLink.LocalCalendar.OwnerID;
-                incidentDO.Notes = calendarLink.LastSynchronizationResult;
+                incidentDO.ObjectId = authData.Id;
+                incidentDO.CustomerId = authData.UserID;
+                if (calendarLink != null)
+                {
+                    incidentDO.Notes = string.Format("Link #{0}: {1}", calendarLink.Id, calendarLink.LastSynchronizationResult);
+                }
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
 
+            var emailBodyBuilder = new StringBuilder();
+            emailBodyBuilder.AppendFormat("CalendarSync failure for calendar auth data #{0} ({1}):\r\n", authData.Id,
+                                          authData.Provider.Name);
+            emailBodyBuilder.AppendFormat("Customer id: {0}\r\n", authData.UserID);
+            if (calendarLink != null)
+            {
+                emailBodyBuilder.AppendFormat("Calendar link id: {0}\r\n", calendarLink.Id);
+                emailBodyBuilder.AppendFormat("Local calendar id: {0}\r\n", calendarLink.LocalCalendarID);
+                emailBodyBuilder.AppendFormat("Remote calendar url: {0}\r\n", calendarLink.RemoteCalendarHref);
+                emailBodyBuilder.AppendFormat("{0}\r\n", calendarLink.LastSynchronizationResult);
+            }
+
             Email email = ObjectFactory.GetInstance<Email>();
-            email.SendAlertEmail("CalendarSync failure",
-                                 string.Format(
-                                     "CalendarSync failure for calendar link #{0} ({1}):\r\n" +
-                                     "Customer id: {2},\r\n" +
-                                     "Local calendar id: {3}\r\n," +
-                                     "Remote calendar url: {4}",
-                                     calendarLink.Id,
-                                     calendarLink.LastSynchronizationResult,
-                                     calendarLink.LocalCalendar.OwnerID,
-                                     calendarLink.LocalCalendarID,
-                                     calendarLink.RemoteCalendarHref));
+            email.SendAlertEmail("CalendarSync failure", emailBodyBuilder.ToString());
         }
 
     }

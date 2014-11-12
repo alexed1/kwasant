@@ -2,6 +2,7 @@
 
 using System;
 using Data.Entities;
+using Data.Interfaces;
 
 namespace Data.Infrastructure
 {
@@ -21,7 +22,7 @@ namespace Data.Infrastructure
         public static event TrackablePropertyDeletedHandler AlertTrackablePropertyDeleted;
 
         public delegate void ConversationMemberAddedHandler(int bookingRequestID);
-        public static event AlertManager.ConversationMemberAddedHandler AlertConversationMemberAdded;
+        public static event ConversationMemberAddedHandler AlertConversationMemberAdded;
         
         public delegate void ConversationmatchedHandler(int emailID, string subject, int bookingRequestID);
         public static event ConversationmatchedHandler AlertConversationMatched;
@@ -74,7 +75,7 @@ namespace Data.Infrastructure
         public delegate void Error_EmailSendFailureHandler(int emailId, string message);
         public static event Error_EmailSendFailureHandler AlertError_EmailSendFailure;
 
-        public delegate void ErrorSyncingCalendarHandler(RemoteCalendarLinkDO calendarLink);
+        public delegate void ErrorSyncingCalendarHandler(IRemoteCalendarAuthData authData, IRemoteCalendarLink calendarLink = null);
         public static event ErrorSyncingCalendarHandler AlertErrorSyncingCalendar;
 
         #region Method
@@ -205,11 +206,11 @@ namespace Data.Infrastructure
                 AlertError_EmailSendFailure(emailId, message);
         }
 
-        public static void ErrorSyncingCalendar(IBaseDO calendarLink)
+        public static void ErrorSyncingCalendar(IRemoteCalendarAuthData authData, IRemoteCalendarLink calendarLink = null)
         {
             var handler = AlertErrorSyncingCalendar;
             if (handler != null)
-                handler(calendarLink);
+                handler(authData, calendarLink);
         }
 
         public static void BookingRequestNeedsProcessing(int bookingRequestId)

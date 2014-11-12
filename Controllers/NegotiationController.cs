@@ -146,7 +146,7 @@ namespace KwasantWeb.Controllers
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
 
                 var emailAddresses = _emailAddress.GetEmailAddresses(uow, bookingRequestDO.HTMLText, bookingRequestDO.PlainText, bookingRequestDO.Subject);
-                emailAddresses.Add(bookingRequestDO.User.EmailAddress);
+                emailAddresses.Add(bookingRequestDO.Customer.EmailAddress);
 
                 //need to add the addresses of people cc'ed or on the To line of the BookingRequest
                 var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress.Address).ToList();

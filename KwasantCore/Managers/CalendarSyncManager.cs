@@ -204,7 +204,7 @@ namespace KwasantCore.Managers
                                           calendarLink.RemoteCalendarHref,
                                           calendarLink.Provider.Name),
                             ex);
-                        AlertManager.ErrorSyncingCalendar(calendarLink);
+                        AlertManager.ErrorSyncingCalendar(authData, calendarLink);
                     }
                 }
             }
