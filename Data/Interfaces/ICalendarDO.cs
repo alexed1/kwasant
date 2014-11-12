@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Data.Interfaces
 {
-    public interface ICalendar
+    public interface ICalendarDO : IBaseDO
     {
         [Key]
         int Id { get; set; }

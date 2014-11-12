@@ -11,6 +11,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using KwasantCore.Exceptions;
+using KwasantCore.Interfaces;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;

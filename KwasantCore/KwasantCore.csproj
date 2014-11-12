@@ -167,6 +167,10 @@
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Interfaces\IAnswer.cs" />
+    <Compile Include="Interfaces\IAttendee.cs" />
+    <Compile Include="Interfaces\IBookingRequest.cs" />
+    <Compile Include="Interfaces\IEmailAddress.cs" />
+    <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\INegotiation.cs" />
     <Compile Include="Interfaces\INegotiationResponse.cs" />
     <Compile Include="Interfaces\ITracker.cs" />
@@ -181,6 +185,7 @@
     <Compile Include="ExternalServices\ServiceManager.cs" />
     <Compile Include="ExternalServices\SmtpClientWrapper.cs" />
     <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
+    <Compile Include="Interfaces\ParsedEmailAddress.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\AlertReporter.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />

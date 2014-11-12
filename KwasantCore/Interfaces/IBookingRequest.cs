@@ -1,19 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Repositories;
 
-namespace Data.Interfaces
+namespace KwasantCore.Interfaces
 {
-    public interface IBookingRequestDO : IEmail
-    {
-        [Required]
-        UserDO User { get; set; }
-
-      
-    }
-
     public interface IBookingRequest 
     {
         void Process(IUnitOfWork uow, BookingRequestDO bookingRequest);

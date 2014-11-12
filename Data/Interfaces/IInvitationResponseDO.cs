@@ -1,6 +1,6 @@
 ﻿namespace Data.Interfaces
 {
-    public interface IInvitationResponse : IEmail
+    public interface IInvitationResponseDO : IEmailDO
     {
         int? AttendeeId { get; set; }
     }

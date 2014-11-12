@@ -2,7 +2,7 @@
 
 namespace Data.Interfaces
 {
-    public interface IAttachment
+    public interface IAttachmentDO : IBaseDO
     {
         [Key]
         int Id { get; set; }

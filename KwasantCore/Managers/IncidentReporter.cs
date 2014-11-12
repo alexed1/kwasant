@@ -74,7 +74,7 @@ namespace Data.Infrastructure
                                       emailId, message));
         }
 
-        private void ProcessErrorSyncingCalendar(IRemoteCalendarAuthData authData, IRemoteCalendarLink calendarLink = null)
+        private void ProcessErrorSyncingCalendar(IRemoteCalendarAuthDataDO authData, IRemoteCalendarLinkDO calendarLink = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

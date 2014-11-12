@@ -2,7 +2,7 @@
 
 namespace Data.Interfaces
 {
-    public interface IQuestionDO
+    public interface IQuestionDO : IBaseDO
     {
         int Id { get; set; }
         int? QuestionStatus { get; set; }

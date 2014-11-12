@@ -2,7 +2,7 @@ using System;
 
 namespace Data.Interfaces
 {
-    public interface IRemoteCalendarLink
+    public interface IRemoteCalendarLinkDO : IBaseDO
     {
         int Id { get; set; }
         string RemoteCalendarHref { get; set; }
@@ -10,10 +10,10 @@ namespace Data.Interfaces
         bool IsDisabled { get; set; }
 
         int? LocalCalendarID { get; set; }
-        ICalendar LocalCalendar { get; set; }
+        ICalendarDO LocalCalendar { get; set; }
 
         int? ProviderID { get; set; }
-        IRemoteCalendarProvider Provider { get; set; }
+        IRemoteCalendarProviderDO Provider { get; set; }
 
         DateTimeOffset DateSynchronizationAttempted { get; set; }
         DateTimeOffset DateSynchronized { get; set; }

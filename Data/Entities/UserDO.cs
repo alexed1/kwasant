@@ -15,10 +15,10 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class UserDO : IdentityUser, IUser, ISaveHook, ICreateHook, IBaseDO
+    public class UserDO : IdentityUser, IUserDO, ISaveHook, ICreateHook, IBaseDO
     {
         [NotMapped]
-        IEmailAddressDO IUser.EmailAddress
+        IEmailAddressDO IUserDO.EmailAddress
         {
             get { return EmailAddress; }
         }

@@ -1,4 +1,4 @@
-﻿namespace Data.Interfaces
+﻿namespace KwasantCore.Interfaces
 {
     public interface IEvent
     {

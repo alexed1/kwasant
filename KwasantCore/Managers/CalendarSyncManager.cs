@@ -113,7 +113,7 @@ namespace KwasantCore.Managers
             }
         }
 
-        public async Task SyncNowAsync(IUnitOfWork uow, IUser user)
+        public async Task SyncNowAsync(IUnitOfWork uow, IUserDO user)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -170,7 +170,7 @@ namespace KwasantCore.Managers
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        private async Task SyncByProviderAsync(IUnitOfWork uow, IRemoteCalendarAuthData authData, DateTimeOffset @from,
+        private async Task SyncByProviderAsync(IUnitOfWork uow, IRemoteCalendarAuthDataDO authData, DateTimeOffset @from,
                                             DateTimeOffset to)
         {
             var client = _clientFactory.Create(authData);
@@ -210,7 +210,7 @@ namespace KwasantCore.Managers
             }
         }
 
-        private async Task SyncCalendarAsync(IUnitOfWork uow, DateTimeOffset @from, DateTimeOffset to, ICalDAVClient client, IRemoteCalendarLink calendarLink)
+        private async Task SyncCalendarAsync(IUnitOfWork uow, DateTimeOffset @from, DateTimeOffset to, ICalDAVClient client, IRemoteCalendarLinkDO calendarLink)
         {
             // just a filter by date/time, added to avoid duplicate code.
             Func<EventDO, bool> eventPredictor = e => e.StartDate <= to && e.EndDate >= @from;
@@ -301,7 +301,7 @@ namespace KwasantCore.Managers
             }
         }
 
-        private async Task PushEventAsync(ICalDAVClient client, IRemoteCalendarLink calendarLink, EventDO eventDO)
+        private async Task PushEventAsync(ICalDAVClient client, IRemoteCalendarLinkDO calendarLink, EventDO eventDO)
         {
             var iCalendarEvent = Event.GenerateICSCalendarStructure(eventDO);
             await client.CreateEventAsync(calendarLink, iCalendarEvent);

@@ -4,6 +4,7 @@ using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Interfaces;
 
 
 namespace KwasantCore.Services

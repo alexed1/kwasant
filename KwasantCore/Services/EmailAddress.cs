@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using System.Net.Mail;
+using KwasantCore.Interfaces;
 using Utilities;
 
 namespace KwasantCore.Services

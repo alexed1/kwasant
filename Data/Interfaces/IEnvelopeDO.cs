@@ -2,12 +2,12 @@
 
 namespace Data.Interfaces
 {
-    public interface IEnvelope
+    public interface IEnvelopeDO : IBaseDO
     {
         int Id { get; set; }
         string Handler { get; set; }
         string TemplateName { get; set; }
         IDictionary<string, string> MergeData { get; }
-        IEmail Email { get; set; }
+        IEmailDO Email { get; set; }
     }
 }

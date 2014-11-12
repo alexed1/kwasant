@@ -9,7 +9,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class EmailDO : BaseDO, IEmail
+    public class EmailDO : BaseDO, IEmailDO
     {
         public EmailDO()
         {

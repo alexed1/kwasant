@@ -5,7 +5,7 @@ using Data.Entities;
 
 namespace Data.Interfaces
 {
-    public interface IEmail
+    public interface IEmailDO : IBaseDO
     {
         [Key]
         int Id { get; set; }

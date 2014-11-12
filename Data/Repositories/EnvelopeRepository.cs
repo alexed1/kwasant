@@ -25,14 +25,14 @@ namespace Data.Repositories
             base.Add(entity);
         }
 
-        public EnvelopeDO ConfigurePlainEmail(IEmail email)
+        public EnvelopeDO ConfigurePlainEmail(IEmailDO email)
         {
             if (email == null)
                 throw new ArgumentNullException("email");
             return ConfigureEnvelope(email, EnvelopeDO.SendGridHander);
         }
 
-        public EnvelopeDO ConfigureTemplatedEmail(IEmail email, string templateName, IDictionary<string, string> mergeData)
+        public EnvelopeDO ConfigureTemplatedEmail(IEmailDO email, string templateName, IDictionary<string, string> mergeData)
         {
             if (email == null)
                 throw new ArgumentNullException("email");
@@ -42,7 +42,7 @@ namespace Data.Repositories
             return ConfigureEnvelope(email, EnvelopeDO.SendGridHander, templateName, mergeData);
         }
 
-        private EnvelopeDO ConfigureEnvelope(IEmail email, string handler, string templateName = null, IDictionary<string, string> mergeData = null)
+        private EnvelopeDO ConfigureEnvelope(IEmailDO email, string handler, string templateName = null, IDictionary<string, string> mergeData = null)
         {
             var envelope = new EnvelopeDO
             {
@@ -69,7 +69,7 @@ namespace Data.Repositories
                 }
             }
             email.EmailStatus = EmailState.Queued;
-            ((IEnvelope)envelope).Email = email;
+            ((IEnvelopeDO)envelope).Email = email;
             envelope.EmailID = email.Id;
             
             UnitOfWork.EnvelopeRepository.Add(envelope);

@@ -1,6 +1,8 @@
-﻿namespace Data.Interfaces
+﻿using Data.Entities;
+
+namespace Data.Interfaces
 {
-    public interface IAspNetUserRoles
+    public interface IAspNetUserRolesDO : IBaseDO
     {
         //String UserId { get; set; }
         //String FirstName { get; set; }
