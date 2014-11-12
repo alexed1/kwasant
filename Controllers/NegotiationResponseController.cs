@@ -190,6 +190,9 @@ namespace KwasantWeb.Controllers
                     }
                 }
 
+                var currBookingRequest = new BookingRequest();
+                currBookingRequest.AcknowledgeResponseToNegotiationRequest(uow, negotiationDO.Id, userID);
+
                 if (negotiationDO.NegotiationState == NegotiationState.Resolved)
                 {
                     AlertManager.PostResolutionNegotiationResponseReceived(negotiationDO.Id);

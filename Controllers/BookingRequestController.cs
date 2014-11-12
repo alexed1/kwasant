@@ -314,6 +314,20 @@ namespace KwasantWeb.Controllers
                     (subUow, emailDO) =>
                     {
                         subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("SimpleEmail_template"));
+
+                        //We don't wait for responses from CC or BCC recipients
+                        foreach (var recipient in emailDO.To)
+                        {
+                            var currExpectedResponse = new ExpectedResponseDO
+                            {
+                                Status = ExpectedResponseStatus.Active,
+                                User = subUow.UserRepository.GetOrCreateUser(recipient.Address),
+                                AssociatedObjectID = bookingRequestID,
+                                AssociatedObjectType = "BookingRequest"
+                            };
+                            subUow.ExpectedResponseRepository.Add(currExpectedResponse);
+                        }
+                        
                         subUow.SaveChanges();
                         return Json(true);
                     });

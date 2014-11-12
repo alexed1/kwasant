@@ -40,6 +40,7 @@ namespace Data.Interfaces
         ProfileItemRepository ProfileItemRepository { get; }
         ProfileRepository ProfileRepository { get; }
         UserStatusRepository UserStatusRepository { get; }
+        ExpectedResponseRepository ExpectedResponseRepository { get; }
 
         /// <summary>
         /// Call this to commit the unit of work

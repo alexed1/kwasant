@@ -282,6 +282,21 @@ namespace KwasantWeb.Controllers
         {
             var communicationManager = ObjectFactory.GetInstance<CommunicationManager>();
             communicationManager.DispatchNegotiationRequests(uow, emailDO, negotiationID);
+
+
+            //We don't wait for responses from CC or BCC recipients
+            foreach (var recipient in emailDO.To)
+            {
+                var currExpectedResponse = new ExpectedResponseDO
+                {
+                    Status = ExpectedResponseStatus.Active,
+                    User = uow.UserRepository.GetOrCreateUser(recipient.Address),
+                    AssociatedObjectID = negotiationID,
+                    AssociatedObjectType = "Negotiation"
+                };
+                uow.ExpectedResponseRepository.Add(currExpectedResponse);
+            }
+
             uow.SaveChanges();
             return Json(negotiationID);
         }

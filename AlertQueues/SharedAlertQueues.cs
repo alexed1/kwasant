@@ -30,6 +30,9 @@ namespace KwasantWeb.AlertQueues
         public const String StrNewBookingRequestForUserQueue = @"NewBookingRequestForUserQueue";
         public static NewBookingRequestForUserQueue NewBookingRequestForUserQueue = new NewBookingRequestForUserQueue();
 
+        public const String StrPollBookingRequestResponseQueue = @"PollBookingRequestResponseQueue";
+        public static NewBookingRequestResponseQueue BookingRequestUpdatedQueue = new NewBookingRequestResponseQueue();
+
 
         public static ISharedAlertQueue<IUserUpdateData> GetQueueByName(String name)
         {
@@ -37,6 +40,8 @@ namespace KwasantWeb.AlertQueues
             {
                 case StrNewBookingRequestForUserQueue:
                     return NewBookingRequestForUserQueue;
+                case StrPollBookingRequestResponseQueue:
+                    return BookingRequestUpdatedQueue;
             }
             return null;
         }

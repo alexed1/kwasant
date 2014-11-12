@@ -107,6 +107,7 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
+    <Compile Include="Entities\ExpectedResponseDO.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
     <Compile Include="Entities\InvitationResponseDO.cs" />
     <Compile Include="Entities\LogDO.cs" />
@@ -378,7 +379,12 @@
     <Compile Include="Migrations\201411081534317_Sync.Rob.08.11.2014.Designer.cs">
       <DependentUpon>201411081534317_Sync.Rob.08.11.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411121214579_AddExpectedResponses.cs" />
+    <Compile Include="Migrations\201411121214579_AddExpectedResponses.Designer.cs">
+      <DependentUpon>201411121214579_AddExpectedResponses.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
+    <Compile Include="Repositories\ExpectedResponseRepository.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
@@ -447,6 +453,7 @@
     <Compile Include="States\EventCreateType.cs" />
     <Compile Include="States\EventState.cs" />
     <Compile Include="States\EventSyncState.cs" />
+    <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\Roles.cs" />
@@ -466,6 +473,7 @@
     <Compile Include="States\Templates\_EmailStatusTemplate.cs" />
     <Compile Include="States\Templates\_EventSyncStatusTemplate.cs" />
     <Compile Include="States\Templates\_EventCreateTypeTemplate.cs" />
+    <Compile Include="States\Templates\_ExpectedResponseStatusTemplate.cs" />
     <Compile Include="States\Templates\_InvitationTypeTemplate.cs" />
     <Compile Include="States\Templates\_NegotiationStateTemplate.cs" />
     <Compile Include="States\Templates\_ParticipationStatusTemplate.cs" />
@@ -1248,6 +1256,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411081534317_Sync.Rob.08.11.2014.resx">
       <DependentUpon>201411081534317_Sync.Rob.08.11.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411121214579_AddExpectedResponses.resx">
+      <DependentUpon>201411121214579_AddExpectedResponses.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

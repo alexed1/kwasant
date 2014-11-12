@@ -320,6 +320,23 @@ namespace KwasantCore.Services
             }
         }
 
+        public void AcknowledgeResponseToNegotiationRequest(IUnitOfWork uow, int negotiationID, String userID)
+        {
+            var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+            //Now we mark expected responses as complete
+            var expectedResponses = uow.ExpectedResponseRepository.GetQuery()
+                .Where(
+                er =>
+                    er.UserID == userID &&
+                    er.AssociatedObjectID == negotiationID &&
+                    er.AssociatedObjectType == "Negotiation");
+
+            foreach (var expectedResonse in expectedResponses)
+                expectedResonse.Status = ExpectedResponseStatus.ResponseReceived;
+
+            AlertManager.ResponseReceived(negotiationDO.BookingRequest.Id, negotiationDO.BookingRequest.BookerID, userID);
+        }
+
         public String GetConversationThread(BookingRequestDO bookingRequestDO)
         {
             const string conversationThreadFormat = @"

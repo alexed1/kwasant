@@ -40,6 +40,7 @@ namespace KwasantCore.Managers
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
         }
 
+
         private static void TrackablePropertyUpdated(string name, string contextTable, int id,
             object status)
         {

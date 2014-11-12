@@ -2,11 +2,16 @@
 <script src="/Content/js/notify.js"></script>
 
 <script type="text/javascript">
-    NewBookingRequestForUserQueueListenerEnabled = true;    
+    PollNewBookingRequestEnabled = true;
+    PollBookingRequestResponseEnabled = true;
+
+    var notify = $.notify;
+    
     var pollTimeInSeconds = 5;
 
     function registerPolling() {
         pollNewBookingRequest();
+        pollBookingRequestResponse();
     }
 
     function getUpdateForPage(eventName, objectID, callback) {
@@ -58,7 +63,7 @@
         if (!removeButtonClassName)
             removeButtonClassName = "glyphicon glyphicon-remove";
 
-        $.notify.addStyle('newbookingrequest', {
+        notify.addStyle('newbookingrequest', {
             html: "<div>" +
                 "<div class='clearfix'>" +
                 "<div class='customNotification alert alert-warning'>" +
@@ -79,7 +84,7 @@
             }
         });
 
-        $.notify('Message', {
+        notify('Message', {
             style: 'newbookingrequest',
             className: 'superblue',
             autoHide: false,
@@ -89,7 +94,7 @@
     }
 
     function pollNewBookingRequest() {
-        if (NewBookingRequestForUserQueueListenerEnabled) {
+        if (PollNewBookingRequestEnabled) {
             getUpdateForUser('@SharedAlertQueues.StrNewBookingRequestForUserQueue', function (result) {
                 $.each(result, function (ind, row) {
                     var message = 'A new booking request has been assigned to you!  <span style="margin-left:5px" class="glyphicon glyphicon-remove"></span></br> Click here to take a look.';
@@ -100,5 +105,19 @@
                 });
             });
         }   
+    }
+    
+    function pollBookingRequestResponse() {
+        if (PollBookingRequestResponseEnabled) {
+            getUpdateForUser('@SharedAlertQueues.StrPollBookingRequestResponseQueue', function (result) {
+                $.each(result, function (ind, row) {
+                    var message = 'A booking request has recieved a new response.  <span style="margin-left:5px" class="glyphicon glyphicon-remove"></span></br> Click here to take a look.';
+
+                    displayBottomRight(message, function () {
+                        location.href = '/Dashboard/Index?id=' + row.BookingRequestID;
+                    });
+                });
+            });
+        }
     }
 </script>
