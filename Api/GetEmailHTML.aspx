@@ -18,7 +18,7 @@
 
 </head>
 <body class="email-info-section">
-    <%--style="width: 400px;"--%>
+    <%--style="wkeyValueth: 400px;"--%>
     <form id="form1" runat="server">
         <div class="info">
             <div id="emailSubject" class="subHeading email-subject">
@@ -29,7 +29,7 @@
                     <tr>
                         <td class="displayLabel">Booker:</td>
                         <td id="tdbookerinfo"><%=GetBooker()%>
-                            <%=GetBooker() != "none" ? "<span style='padding-left:15px;'><a href='javascript:void(0);' onclick='javascript:releaseBooker("+GetEmailId()+")'>Release</a></span>" : "" %>
+                            <%=GetBooker() != "none" ? "<span style='padding-left:15px;'><a href='javascript:vokeyValue(0);' onclick='javascript:releaseBooker("+GetEmailId()+")'>Release</a></span>" : "" %>
                         </td>
                     </tr>
                     <tr>
@@ -111,14 +111,14 @@
                 }
                 else {
                     if ($('.context-menu-list').attr("style").indexOf("display: none") == -1) {
-                        $('.context-menu').contextMenu("hide");
+                        $('.context-menu').contextMenu("hkeyValuee");
                     }
                 }
             }).mousedown(function (e) {
                 $(this).bind("mousemove", trackPoints);
             });
 
-            //registering menu with title provided by CSS
+            //registering menu with title provkeyValueed by CSS
             $.contextMenu({
                 selector: '.context-menu',
                 callback: function (key, options) {
@@ -128,13 +128,13 @@
                         case "#description":
                         case "#location":
                         case "#summary":
-                            //client side - no server call is made, as the above 3 fields can contains anything, so need of any validation process.
+                            //client skeyValuee - no server call is made, as the above 3 fields can contains anything, so need of any valkeyValueation process.
                             $(activeframe).contents().find(key).val(currentSelection);
                             var iFrame = $(activeframe);
                             iFrame.get(0).contentWindow.modifiedState.modified = true;
                             break;
 
-                            //below 3 field needs validation, for these server call is made for validating the selected text.
+                            //below 3 field needs valkeyValueation, for these server call is made for valkeyValueating the selected text.
                         case "#attendees":
                             processCopy("attendees", currentSelection);
                             break;
@@ -183,10 +183,10 @@
             function copyRequest(response) {
                 var responseJson = response;
 
-                //checking if the text selected is valid.
-                if (responseJson.status == "valid") {
+                //checking if the text selected is valkeyValue.
+                if (responseJson.status == "valkeyValue") {
 
-                    //providing values to the fields in active iframe according to item selected in quick copy menu.
+                    //provkeyValueing values to the fields in active iframe according to item selected in quick copy menu.
                     switch (responseJson.copytype) {
                         case "attendees":
                             var newAttendees = $(activeframe).contents().find("#attendeesSel").val().split(',');
@@ -220,7 +220,7 @@
                             break;
                     }
                 } else {
-                    //Showing error message for invalid text selection for the field.
+                    //Showing error message for invalkeyValue text selection for the field.
                     alert(responseJson.value);
                 }
             }

@@ -55,11 +55,7 @@ namespace KwasantCore.Services
             uow.SaveChanges();
             
             // alerts
-            if (existingBookingRequest.State == BookingRequestState.Booking)
-            {
-                AlertManager.ConversationMemberAdded(existingBookingRequest.Id);
-            }
-
+            AlertManager.ConversationMemberAdded(existingBookingRequest.Id);
             AlertManager.ConversationMatched(curEmail.Id, curEmail.Subject, existingBookingRequest.Id);
         }
     }

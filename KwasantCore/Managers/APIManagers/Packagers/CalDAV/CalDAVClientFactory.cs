@@ -8,7 +8,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
 {
     public class CalDAVClientFactory : ICalDAVClientFactory
     {
-        public ICalDAVClient Create(IRemoteCalendarAuthData authData)
+        public ICalDAVClient Create(IRemoteCalendarAuthDataDO authData)
         {
             if (authData == null)
                 throw new ArgumentNullException("authData");

@@ -13,7 +13,7 @@ namespace Data.Repositories
 
         }
 
-        public RemoteCalendarLinkDO GetOrCreate(IRemoteCalendarAuthData authData, string href, CalendarDO localCalendarToCreateLinkOn = null)
+        public RemoteCalendarLinkDO GetOrCreate(IRemoteCalendarAuthDataDO authData, string href, CalendarDO localCalendarToCreateLinkOn = null)
         {
             if (authData == null)
                 throw new ArgumentNullException("authData");
