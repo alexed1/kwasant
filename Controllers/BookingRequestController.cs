@@ -291,6 +291,36 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        public ActionResult DisplayOneOffEmailForm(int bookingRequestID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+
+                var emailController = new EmailController();
+
+                var br = new BookingRequest();
+                var emailAddresses = br.ExtractEmailAddresses(bookingRequestDO);
+
+                var currCreateEmailVM = new CreateEmailVM
+                {
+                    AddressBook = emailAddresses.ToList(),
+                    Subject = String.Empty,
+                    HeaderText = "Send an email",
+                    BodyPromptText = "Enter some text for your recipients",
+                    Body = "",
+                };
+                return emailController.DisplayEmail(Session, currCreateEmailVM,
+                    (subUow, emailDO) =>
+                    {
+                        subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("SimpleEmail_template"));
+                        subUow.SaveChanges();
+                        return Json(true);
+                    });
+            }
+        }
+
+
         // GET: /BookingRequest/
         public ActionResult ShowAllBookingRequests()
         {

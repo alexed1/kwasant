@@ -197,7 +197,8 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
         var iframe = $('<iframe/>', {
             src: url,
             style: 'position: absolute;width: 500px;background-color: #FFFFFF;display: none;z-index: 9999;border: 1px solid #333;-moz-box-shadow:0 0 10px #000;-webkit-box-shadow:0 0 10px #000;box-shadow: #000 0px 0px 10px;padding:' + options.paddingAmount + 'px;',
-            load: function () {                
+            load: function () {
+                var contentWindow = this.contentWindow;
                 var iframeDoc = $(this).contents();
                 var that = $(this);
                 var reposition = function() {
@@ -273,7 +274,6 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
                 }
 
                 $(this).fadeTo("fast", 1, function() {
-                    $(this).focus();
                     //We need to position it twice. The first position allows the browser to calculate the dimensions. The second reposition moves it based on dimensions.
                     reposition();
                     reposition();
@@ -284,6 +284,16 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
                     }
                     if (spinner)
                         spinner.hide();
+
+                    
+                    setTimeout(function () {
+                        contentWindow.focus();
+                        if (options.focusElement)
+                            
+                        var focusElem = iframeDoc.find(options.focusElement).get(0);
+                        if (focusElem)
+                            focusElem.focus();
+                    }, 100);
                 });
 
                 Kwasant.IFrame.RegisterCloseEvent(that, options.callback);

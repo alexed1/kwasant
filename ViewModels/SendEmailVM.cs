@@ -17,9 +17,10 @@ namespace KwasantWeb.ViewModels
 
         public String HeaderText { get; set; }
         public String BodyPromptText { get; set; }
+        
         public IList<String> AddressBook { get; set; }
         public IList<InsertLink> InsertLinks { get; set; }
-
+        
         public class InsertLink
         {
             public String Id { get; set; }
@@ -38,6 +39,7 @@ namespace KwasantWeb.ViewModels
             ToAddresses = new List<string>();
             CCAddresses = new List<string>();
             BCCAddresses = new List<string>();
+            BodyRequired = true;
         }
 
         public String CallbackToken { get; set; }
@@ -48,5 +50,7 @@ namespace KwasantWeb.ViewModels
 
         public String Subject { get; set; }
         public String Body { get; set; }
+
+        public bool BodyRequired { get; set; }
     }
 }

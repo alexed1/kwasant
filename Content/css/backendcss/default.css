@@ -504,6 +504,7 @@ nav.top-toolbar-section ul.navbar-nav {
 nav.top-toolbar-section ul.navbar-nav li {
 	font-size: 16px;
 	font-weight: 300;
+    cursor: pointer;
 }
 
 nav.top-toolbar-section ul.navbar-nav li a {

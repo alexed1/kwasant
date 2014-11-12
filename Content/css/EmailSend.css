@@ -53,12 +53,15 @@
     height: 100%;
 }
 
-.addAttendeeInput {
-    padding: 5px;
-    width: 175px;
-}
-.addAttendeePlus {
-    float: right;
-    padding: 4px;
-    padding-top: 9px;
+label.error {
+    display: block;
+    margin: auto;
+    border: solid 1px #000;
+    background: #fff;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, .7);
+    width: 160px;
+    text-align: center;
+    margin-top: 30px;
+    padding: 2px 5px;
+    color: #C84141;
 }

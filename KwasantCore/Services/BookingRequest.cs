@@ -203,7 +203,7 @@ namespace KwasantCore.Services
             var allThreads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO}).ToList();
             
             //Get the emails of every recipient in every email
-            var emailThreads = allThreads.SelectMany(b => b.Recipients.Select(r => r.EmailAddress.Address));
+            var emailThreads = allThreads.SelectMany(b => b.Recipients.Select(r => r.EmailAddress.Address).Union(new[] {b.From.Address}));
             
             //Get the emails found within email text
             var emailsInText = new List<String>();

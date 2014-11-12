@@ -245,7 +245,6 @@ namespace KwasantWeb.Controllers
 
         public ActionResult DisplaySendEmailForm(int negotiationID, bool isNew)
         {
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
@@ -269,6 +268,7 @@ namespace KwasantWeb.Controllers
 
                     BodyPromptText = "Enter some additional text for your recipients",
                     Body = "",
+                    BodyRequired = false,
                 };
                 return emailController.DisplayEmail(Session, currCreateEmailVM,
                     (subUow, emailDO) => DispatchNegotiationEmails(subUow, emailDO, negotiationID)
