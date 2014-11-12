@@ -27,7 +27,6 @@
                 <li class="dropdown"><a id="btnBookingRequest">Booking Requests</a>
                     <ul class="dropdown-menu">
                         <li>@Html.ActionLink("Show All", "Index", "BookingRequest", null, new { @class = "" })</li>
-                        <li>@Html.ActionLink("Show My CheckedOut", "ShowBRSOwnedByBooker", "BookingRequest", null, new { @class = "" })</li>
                         <li>@Html.ActionLink("Show All CheckedOut", "ShowInProcessBRS", "BookingRequest", null, new { @class = "" })</li>
                     </ul>
                 </li>
@@ -46,11 +45,7 @@
                         <li>@Html.ActionLink("Add", "ShowAddUser", "User")</li>
                     </ul>
                 </li>
-                <li class="dropdown"><a id="btnReports">Admin</a>
-                    <ul class="dropdown-menu">
-                        <li>@Html.ActionLink("Show All Booking Requests", "ShowAllBookingRequests", "BookingRequest", new { type = "alllogs" }, new { @class = "" }) </li>
-                    </ul>
-                </li>
+                <li>@Html.ActionLink("Show My CheckedOut", "ShowBRSOwnedByBooker", "BookingRequest", null, new { @class = "" })</li>
             </ul>
         </div>
     </div>
@@ -71,34 +66,34 @@
 <a href="/">Go to kwasant.com</a>
 <script type="text/javascript">
     $(document).ready(function () {
-        
+
         $('.navbar .dropdown').hover(function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
         }, function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
         });
         $.post("/Report/ShowReport", { queryPeriod: "", type: "fiveRecentIncident" }, showIncident, 'json');
- });
+    });
     // show 5 most Recent Incident on datatable
-     function showIncident(response) {
-         var table = $('#tblIncident').DataTable({
-             order: [0, 'desc'],
-             paging: false,
-             searching: false,
-             bLengthChange: false,
-             data: JSON.parse(response),
-             columns: [
-                 {
+    function showIncident(response) {
+        var table = $('#tblIncident').DataTable({
+            order: [0, 'desc'],
+            paging: false,
+            searching: false,
+            bLengthChange: false,
+            data: JSON.parse(response),
+            columns: [
+                {
                     data: function (data) {
                         return convertToDateString(data.create_time);
                     }
-                 },
-                 { data: 'primary_category' },
-                 { data: 'secondary_category' },
-                 { data: 'activity' },
-                 { data: 'notes' }
-             ],
-         });
-     }
-     
+                },
+                { data: 'primary_category' },
+                { data: 'secondary_category' },
+                { data: 'activity' },
+                { data: 'notes' }
+            ],
+        });
+    }
+
 </script>
