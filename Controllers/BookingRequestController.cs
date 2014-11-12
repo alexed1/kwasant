@@ -302,7 +302,9 @@ namespace KwasantWeb.Controllers
                 var currCreateEmailVM = new CreateEmailVM
                 {
                     AddressBook = emailAddresses.ToList(),
-                    Subject = String.Empty,
+                    Subject = bookingRequestDO.Subject,
+                    SubjectEditable = false,
+
                     HeaderText = "Send an email",
                     BodyPromptText = "Enter some text for your recipients",
                     Body = "",

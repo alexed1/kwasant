@@ -228,7 +228,7 @@
                         <tr>
                             <td class="">Subject:</td>
                             <td>
-                                <input id="subj" name="subj" type="text" class="addressField" placeholder="Enter subject..." value="@Model.Subject" required />
+                                <input id="subj" name="subj" type="text" class="addressField" placeholder="Enter subject..." value="@Model.Subject" required @Html.Raw(!Model.SubjectEditable ? "disabled" : String.Empty) />
                             </td>
                         </tr>
                         <tr>

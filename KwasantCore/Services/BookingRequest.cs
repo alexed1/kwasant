@@ -42,14 +42,6 @@ namespace KwasantCore.Services
                 uow.SaveChanges();
 
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.Customer.Id);
-
-                /*
-                            var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
-                            if (preferredUser != null)
-                            {
-                                newBookingRequest.Reserve(uow, bookingRequest, preferredUser);
-                            }
-                */
             }
         }
 
@@ -346,6 +338,37 @@ namespace KwasantCore.Services
             }
         }
 
+        public void AcknowledgeResponseToBookingRequest(IUnitOfWork uow, int bookingRequestID, String userID)
+        {
+            var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+            //Now we mark expected responses as complete
+
+            var negotiationIDs = bookingRequestDO.Negotiations.Select(n => n.Id);
+
+            var expectedResponses = uow.ExpectedResponseRepository.GetQuery()
+                .Where(
+                er =>
+                    er.UserID == userID &&
+                    er.Status == ExpectedResponseStatus.Active &&
+                    er.AssociatedObjectID == bookingRequestID &&
+                    er.AssociatedObjectType == "BookingRequest")
+                .Union(uow.ExpectedResponseRepository.GetQuery()
+                .Where(
+                er => 
+                    er.UserID == userID &&
+                    er.Status == ExpectedResponseStatus.Active &&
+                    negotiationIDs.Contains(er.AssociatedObjectID) &&
+                    er.AssociatedObjectType == "Negotiation"
+                ));
+            
+
+            foreach (var expectedResponse in expectedResponses)
+                expectedResponse.Status = ExpectedResponseStatus.ResponseReceived;
+
+            if (expectedResponses.Any())
+                AlertManager.ResponseReceived(bookingRequestDO.Id, bookingRequestDO.BookerID, userID);
+        }
+
         public void AcknowledgeResponseToNegotiationRequest(IUnitOfWork uow, int negotiationID, String userID)
         {
             var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
@@ -354,13 +377,15 @@ namespace KwasantCore.Services
                 .Where(
                 er =>
                     er.UserID == userID &&
+                    er.Status == ExpectedResponseStatus.Active &&
                     er.AssociatedObjectID == negotiationID &&
                     er.AssociatedObjectType == "Negotiation");
 
-            foreach (var expectedResonse in expectedResponses)
-                expectedResonse.Status = ExpectedResponseStatus.ResponseReceived;
+            foreach (var expectedResponse in expectedResponses)
+                expectedResponse.Status = ExpectedResponseStatus.ResponseReceived;
 
-            AlertManager.ResponseReceived(negotiationDO.BookingRequest.Id, negotiationDO.BookingRequest.BookerID, userID);
+            if (expectedResponses.Any())
+                AlertManager.ResponseReceived(negotiationDO.BookingRequest.Id, negotiationDO.BookingRequest.BookerID, userID);
         }
 
         public String GetConversationThread(BookingRequestDO bookingRequestDO)

@@ -40,6 +40,7 @@ namespace KwasantWeb.ViewModels
             CCAddresses = new List<string>();
             BCCAddresses = new List<string>();
             BodyRequired = true;
+            SubjectEditable = true;
         }
 
         public String CallbackToken { get; set; }
@@ -52,5 +53,6 @@ namespace KwasantWeb.ViewModels
         public String Body { get; set; }
 
         public bool BodyRequired { get; set; }
+        public bool SubjectEditable { get; set; }
     }
 }
