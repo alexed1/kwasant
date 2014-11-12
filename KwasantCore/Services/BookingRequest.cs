@@ -11,12 +11,15 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using KwasantCore.Exceptions;
+using KwasantCore.Interfaces;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
 
 namespace KwasantCore.Services
 {
+
+
     public class BookingRequest : IBookingRequest
     {
         private IAttendee _attendee;
@@ -41,15 +44,7 @@ namespace KwasantCore.Services
                 Email.FixInlineImages(bookingRequest);
                 uow.SaveChanges();
 
-                AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.User.Id);
-
-                /*
-                            var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
-                            if (preferredUser != null)
-                            {
-                                newBookingRequest.Reserve(uow, bookingRequest, preferredUser);
-                            }
-                */
+                AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.Customer.Id);
             }
         }
 
@@ -57,12 +52,12 @@ namespace KwasantCore.Services
         {
             bookingRequest.State = BookingRequestState.Unstarted;
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest.From);
-            bookingRequest.User = curUser;
-            bookingRequest.UserID = curUser.Id;
+            bookingRequest.Customer = curUser;
+            bookingRequest.CustomerID = curUser.Id;
             bookingRequest.Instructions = ProcessShortHand(uow, bookingRequest.HTMLText);
 
-            foreach (var calendar in bookingRequest.User.Calendars)
-                //this is smelly. Calendars are associated with a User. Why do we need to manually add them to BookingREquest.Calendars when they're easy to access?
+            foreach (var calendar in bookingRequest.Customer.Calendars)
+                //this is smelly. Calendars are associated with a Customer. Why do we need to manually add them to BookingREquest.Calendars when they're easy to access?
                 bookingRequest.Calendars.Add(calendar);
         }
 
@@ -71,7 +66,7 @@ namespace KwasantCore.Services
         {
             return
                 curBookingRequestRepository.GetAll()
-                    .Where(e => e.User.Id == userid)
+                    .Where(e => e.Customer.Id == userid)
                     .Skip(start)
                     .Take(length)
                     .Select(e =>
@@ -80,20 +75,20 @@ namespace KwasantCore.Services
                             id = e.Id,
                             subject = e.Subject,
                             dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
-                            linkedcalendarids = String.Join(",", e.User.Calendars.Select(c => c.Id))
+                            linkedcalendarids = String.Join(",", e.Customer.Calendars.Select(c => c.Id))
                         }).ToList();
         }
 
         public int GetBookingRequestsCount(IBookingRequestDORepository curBookingRequestRepository, string userid)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.User.Id == userid).Count();
+            return curBookingRequestRepository.GetAll().Where(e => e.Customer.Id == userid).Count();
         }
 
         public string GetUserId(IBookingRequestDORepository curBookingRequestRepository, int bookingRequestId)
         {
             return (from requests in curBookingRequestRepository.GetAll()
                     where requests.Id == bookingRequestId
-                    select requests.User.Id).FirstOrDefault();
+                    select requests.Customer.Id).FirstOrDefault();
         }
 
         public object GetUnprocessed(IUnitOfWork uow)
@@ -197,7 +192,7 @@ namespace KwasantCore.Services
             bookingRequestDO.State = BookingRequestState.Unstarted;
             bookingRequestDO.BookerID = null;
             bookingRequestDO.Booker = null;
-            bookingRequestDO.User = bookingRequestDO.User;
+            bookingRequestDO.Customer = bookingRequestDO.Customer;
             bookingRequestDO.PreferredBookerID = null;
             bookingRequestDO.PreferredBooker = null;
             uow.SaveChanges();
@@ -222,10 +217,32 @@ namespace KwasantCore.Services
             uow.SaveChanges();
         }
 
+        public IEnumerable<String> ExtractEmailAddresses(BookingRequestDO bookingRequestDO)
+        {
+            var emailAddress = new EmailAddress(ObjectFactory.GetInstance<IConfigRepository>());
+
+            var allThreads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO}).ToList();
+            
+            //Get the emails of every recipient in every email
+            var emailThreads = allThreads.SelectMany(b => b.Recipients.Select(r => r.EmailAddress.Address).Union(new[] {b.From.Address}));
+            
+            //Get the emails found within email text
+            var emailsInText = new List<String>();
+            foreach (var thread in allThreads)
+            {
+                emailsInText.AddRange(emailAddress.ExtractFromString(thread.HTMLText, thread.PlainText, thread.Subject));
+            }
+
+            //Get the attendees of all events
+            var eventAttendees = bookingRequestDO.Events.SelectMany(ev => ev.Attendees.Select(a => a.EmailAddress.Address));
+
+            return emailThreads.Union(emailsInText).Union(eventAttendees).Where(e => !FilterUtility.IsReservedEmailAddress(e));
+        }
+
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
             //Add the booking request user
-            var curAttendeeDO = _attendee.Create(uow, eventDO.BookingRequest.User.EmailAddress.Address,eventDO, eventDO.BookingRequest.User.FirstName);
+            var curAttendeeDO = _attendee.Create(uow, eventDO.BookingRequest.Customer.EmailAddress.Address,eventDO, eventDO.BookingRequest.Customer.FirstName);
             eventDO.Attendees.Add(curAttendeeDO);
             var emailAddresses = _emailAddress.GetEmailAddresses(uow, eventDO.BookingRequest.HTMLText, eventDO.BookingRequest.PlainText, eventDO.BookingRequest.Subject);
 
@@ -234,7 +251,7 @@ namespace KwasantCore.Services
 
             foreach (var email in emailAddresses)
             {
-                if (!FilterUtility.IsTestAttendee(email.Address))
+                if (!FilterUtility.IsReservedEmailAddress(email.Address))
                 {
                     var curAttendee = _attendee.Create(uow, email.Address, eventDO, email.Name);
                     eventDO.Attendees.Add(curAttendee);
@@ -324,6 +341,88 @@ namespace KwasantCore.Services
             }
         }
 
+        public void AddExpectedResponseForBookingRequest(IUnitOfWork uow, EmailDO emailDO, int bookingRequestID)
+        {
+            //We don't wait for responses from CC or BCC recipients
+            foreach (var recipient in emailDO.To)
+            {
+                var currExpectedResponse = new ExpectedResponseDO
+                {
+                    Status = ExpectedResponseStatus.Active,
+                    User = uow.UserRepository.GetOrCreateUser(recipient.Address),
+                    AssociatedObjectID = bookingRequestID,
+                    AssociatedObjectType = "BookingRequest"
+                };
+                uow.ExpectedResponseRepository.Add(currExpectedResponse);
+            }               
+        }
+
+        public void AddExpectedResponseForNegotiation(IUnitOfWork uow, EmailDO emailDO, int negotiationID)
+        {
+            //We don't wait for responses from CC or BCC recipients
+            foreach (var recipient in emailDO.To)
+            {
+                var currExpectedResponse = new ExpectedResponseDO
+                {
+                    Status = ExpectedResponseStatus.Active,
+                    User = uow.UserRepository.GetOrCreateUser(recipient.Address),
+                    AssociatedObjectID = negotiationID,
+                    AssociatedObjectType = "Negotiation"
+                };
+                uow.ExpectedResponseRepository.Add(currExpectedResponse);
+            }
+        }
+
+        public void AcknowledgeResponseToBookingRequest(IUnitOfWork uow, int bookingRequestID, String userID)
+        {
+            var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+            //Now we mark expected responses as complete
+
+            var negotiationIDs = bookingRequestDO.Negotiations.Select(n => n.Id);
+
+            var expectedResponses = uow.ExpectedResponseRepository.GetQuery()
+                .Where(
+                er =>
+                    er.UserID == userID &&
+                    er.Status == ExpectedResponseStatus.Active &&
+                    er.AssociatedObjectID == bookingRequestID &&
+                    er.AssociatedObjectType == "BookingRequest")
+                .Union(uow.ExpectedResponseRepository.GetQuery()
+                .Where(
+                er => 
+                    er.UserID == userID &&
+                    er.Status == ExpectedResponseStatus.Active &&
+                    negotiationIDs.Contains(er.AssociatedObjectID) &&
+                    er.AssociatedObjectType == "Negotiation"
+                ));
+            
+
+            foreach (var expectedResponse in expectedResponses)
+                expectedResponse.Status = ExpectedResponseStatus.ResponseReceived;
+
+            if (expectedResponses.Any())
+                AlertManager.ResponseReceived(bookingRequestDO.Id, bookingRequestDO.BookerID, userID);
+        }
+
+        public void AcknowledgeResponseToNegotiationRequest(IUnitOfWork uow, int negotiationID, String userID)
+        {
+            var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+            //Now we mark expected responses as complete
+            var expectedResponses = uow.ExpectedResponseRepository.GetQuery()
+                .Where(
+                er =>
+                    er.UserID == userID &&
+                    er.Status == ExpectedResponseStatus.Active &&
+                    er.AssociatedObjectID == negotiationID &&
+                    er.AssociatedObjectType == "Negotiation");
+
+            foreach (var expectedResponse in expectedResponses)
+                expectedResponse.Status = ExpectedResponseStatus.ResponseReceived;
+
+            if (expectedResponses.Any())
+                AlertManager.ResponseReceived(negotiationDO.BookingRequest.Id, negotiationDO.BookingRequest.BookerID, userID);
+        }
+
         public String GetConversationThread(BookingRequestDO bookingRequestDO)
         {
             const string conversationThreadFormat = @"
@@ -381,7 +480,7 @@ namespace KwasantCore.Services
                 bookingRequestDO.Booker = null;
                 bookingRequestDO.PreferredBookerID = null;
                 bookingRequestDO.PreferredBooker = null;
-                bookingRequestDO.User = bookingRequestDO.User;
+                bookingRequestDO.Customer = bookingRequestDO.Customer;
                 uow.SaveChanges();
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
@@ -21,9 +22,9 @@ namespace Data.Entities
             ConversationMembers = new List<EmailDO>();
         }
 
-        [Required, ForeignKey("User")]
-        public string UserID { get; set; }        
-        public virtual UserDO User { get; set; }
+        [Required, ForeignKey("Customer")]
+        public string CustomerID { get; set; }        
+        public virtual UserDO Customer { get; set; }
 
         [Required, ForeignKey("BookingRequestStateTemplate")]
         public int? State { get; set; }
@@ -62,14 +63,14 @@ namespace Data.Entities
         {
             var reflectionHelper = new ReflectionHelper<BookingRequestDO>();
             
-            var userIDPropertyName = reflectionHelper.GetPropertyName(br => br.UserID);
+            var userIDPropertyName = reflectionHelper.GetPropertyName(br => br.CustomerID);
             if (!MiscUtils.AreEqual(originalValues[userIDPropertyName], currentValues[userIDPropertyName]))
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var newUser = uow.UserRepository.GetByKey(UserID);
+                    var newUser = uow.UserRepository.GetByKey(CustomerID);
                     var newUserName = newUser.UserName;
-                    AlertManager.TrackablePropertyUpdated("User changed", "BookingRequest", Id, newUserName);    
+                    AlertManager.TrackablePropertyUpdated("Customer changed", "BookingRequest", Id, newUserName);    
                 }
             }
 

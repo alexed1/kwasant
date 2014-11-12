@@ -52,10 +52,10 @@
                     case "invalid":
                         //setting status of booking request to "INVALID" and removing the row
                         $.post("/BookingRequest/Invalidate?id=" + data.id, function (response) {
-                            var oldOwner = response.Message;
+                            var oldBooker = response.Message;
                             var Id = data.id;
-                            if (response.Name == "DifferentOwner")
-                                ShowFailedOwnershipVerification(oldOwner, Id);
+                            if (response.Name == "DifferentBooker")
+                                ShowFailedBookerVerification(oldBooker, Id);
                             else
                                 $(parentcontrol).parents('tr').remove();
                         }, 'json');

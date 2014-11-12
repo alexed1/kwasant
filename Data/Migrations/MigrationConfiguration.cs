@@ -142,7 +142,7 @@ namespace Data.Migrations
         // ReSharper disable UnusedMember.Local
         private static void SeedConstants<TConstantsType, TConstantDO>(IUnitOfWork uow, Func<int, string, TConstantDO> creatorFunc)
             // ReSharper restore UnusedMember.Local
-            where TConstantDO : class, IStateTemplate<TConstantsType>
+            where TConstantDO : class, IStateTemplate<TConstantsType>, new()
         {
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
             var instructionsToAdd = (from constant in constants
@@ -314,11 +314,11 @@ namespace Data.Migrations
                 EmailStatus = EmailState.Unprocessed,
                 DateReceived = DateTimeOffset.UtcNow,
                 State = BookingRequestState.Unstarted,
-                User = userDO
+                Customer = userDO
             };
             userDO.UserBookingRequests.Add(curBookingRequestDO);
 
-            foreach (var calendar in curBookingRequestDO.User.Calendars)
+            foreach (var calendar in curBookingRequestDO.Customer.Calendars)
                 curBookingRequestDO.Calendars.Add(calendar);
             uow.BookingRequestRepository.Add(curBookingRequestDO);
         }

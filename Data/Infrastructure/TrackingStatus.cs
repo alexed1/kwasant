@@ -48,7 +48,7 @@ namespace Data.Infrastructure
     /// </summary>
     /// <typeparam name="TForeignEntity">The type of the linked entity (<see cref="EmailDO"></see>, for example)</typeparam>
     public class TrackingStatus<TForeignEntity> : GenericCustomField<TrackingStatusDO, TForeignEntity> 
-        where TForeignEntity : class
+        where TForeignEntity : class, new()
     {
         public TrackingStatus(IGenericRepository<TForeignEntity> foreignRepo) 
             : base(foreignRepo.UnitOfWork.TrackingStatusRepository, foreignRepo)

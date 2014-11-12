@@ -19,7 +19,7 @@ namespace KwasantTest.Fixtures
                                               EmailStatus = EmailState.Unprocessed,
                                               DateReceived = DateTimeOffset.UtcNow,
                                               State = BookingRequestState.AwaitingClient,
-                                              User = TestUser1()
+                                              Customer = TestUser1()
                                           };
             return curBookingRequestDO;
         }
