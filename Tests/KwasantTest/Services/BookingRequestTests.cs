@@ -315,7 +315,7 @@ namespace KwasantTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 AddTestRequestData();
-                List<Object> requests = (new BookingRequest()).GetAllByUserId(uow.BookingRequestRepository, 0, 10, uow.BookingRequestRepository.GetAll().FirstOrDefault().User.Id);
+                List<Object> requests = (new BookingRequest()).GetAllByUserId(uow.BookingRequestRepository, 0, 10, uow.BookingRequestRepository.GetAll().FirstOrDefault().Customer.Id);
                 Assert.AreEqual(1, requests.Count);
             }
         }
@@ -337,7 +337,7 @@ namespace KwasantTest.Services
                 (new BookingRequest()).Process(uow, bookingRequest);
 
                 bookingRequest.State = BookingRequestState.Booking;
-                bookingRequest.BookerID = bookingRequest.User.Id;
+                bookingRequest.BookerID = bookingRequest.Customer.Id;
                 bookingRequest.LastUpdated = DateTimeOffset.Now;
                 
                 uow.SaveChanges();

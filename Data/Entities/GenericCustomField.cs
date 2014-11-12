@@ -17,7 +17,7 @@ namespace Data.Entities
     /// <typeparam name="TCustomFieldType">The type of the custom field (<see cref="TrackingState"></see> for example</typeparam>
     public class GenericCustomField<TCustomFieldType, TForeignEntity>
         where TCustomFieldType : class, ICustomField, new()
-        where TForeignEntity : class
+        where TForeignEntity : class, new()
     {
         private readonly IGenericRepository<TCustomFieldType> _trackingStatusRepo;
         private readonly IGenericRepository<TForeignEntity> _foreignRepo;

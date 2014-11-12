@@ -15,10 +15,10 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class UserDO : IdentityUser, IUser, ISaveHook, ICreateHook, IBaseDO
+    public class UserDO : IdentityUser, IUserDO, ISaveHook, ICreateHook, IBaseDO
     {
         [NotMapped]
-        IEmailAddressDO IUser.EmailAddress
+        IEmailAddressDO IUserDO.EmailAddress
         {
             get { return EmailAddress; }
         }
@@ -48,7 +48,7 @@ namespace Data.Entities
         public int? State { get; set; }
         public virtual _UserStateTemplate UserStateTemplate { get; set; }
         
-        [InverseProperty("User")]
+        [InverseProperty("Customer")]
         public virtual IList<BookingRequestDO> UserBookingRequests { get; set; }
 
         [InverseProperty("Booker")]
@@ -83,11 +83,26 @@ namespace Data.Entities
             //if there exists a booking request with this user as its created by...
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (uow.BookingRequestRepository.FindOne(br => br.User.Id == Id) != null)
+                if (uow.BookingRequestRepository.FindOne(br => br.Customer.Id == Id) != null)
                     AlertManager.ExplicitCustomerCreated(Id);
             }
 
             AlertManager.CustomerCreated(this);
+        }
+
+
+        public String DisplayName
+        {
+            get
+            {
+                if (!String.IsNullOrWhiteSpace(FirstName) && !String.IsNullOrWhiteSpace(LastName))
+                    return FirstName + " " + LastName;
+                if (!String.IsNullOrWhiteSpace(FirstName))
+                    return FirstName;
+                if (!String.IsNullOrWhiteSpace(LastName))
+                    return LastName;
+                return UserName;
+            }
         }
 
         public DateTimeOffset LastUpdated { get; set; }

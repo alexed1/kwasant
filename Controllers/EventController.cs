@@ -7,20 +7,17 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using DayPilot.Web.Mvc.Json;
 using KwasantCore.Exceptions;
 using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
-using Segment;
 using StructureMap;
-
 
 namespace KwasantWeb.Controllers
 {
     [KwasantAuthorize(Roles = "Booker")]
-    public class EventController : KController
+    public class EventController : Controller
     {
         public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss\z";
 
@@ -28,7 +25,7 @@ namespace KwasantWeb.Controllers
         private readonly Attendee _attendee;
         private readonly IMappingEngine _mappingEngine;
 
-        public EventController()
+        public EventController() 
         {
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>(); // TODO: inject dependency via a constructor parameter
             _event = ObjectFactory.GetInstance<Event>();
@@ -37,7 +34,7 @@ namespace KwasantWeb.Controllers
 
         public ActionResult New(int bookingRequestID, int calendarID, string start, string end)
         {
-            using (var uow = GetUnitOfWork())
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var createdEvent = CreateNewEvent(bookingRequestID, calendarID, start, end);
                 _event.Create(createdEvent, uow);
@@ -56,7 +53,7 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult NewTimeSlot(int calendarID, string start, string end, bool mergeEvents = false)
         {
-            using (var uow = GetUnitOfWork())
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var createdEvent = CreateNewEvent(null, calendarID, start, end);
 
@@ -255,7 +252,7 @@ namespace KwasantWeb.Controllers
                     var userDO = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress);
                     if (user.GetMode(userDO) == CommunicationMode.Delegate)
                     {
-                        ObjectFactory.GetInstance<ITracker>().Track(userDO, "User", "InvitedAsPreCustomerAttendee",
+                        ObjectFactory.GetInstance<ITracker>().Track(userDO, "Customer", "InvitedAsPreCustomerAttendee",
                             new Dictionary<string, object>
                             {
                                 {"BookingRequestId", curEventDO.BookingRequestID},

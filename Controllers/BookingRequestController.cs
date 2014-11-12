@@ -80,12 +80,12 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpGet]
-        public ActionResult ProcessOwnerChange(int bookingRequestId)
+        public ActionResult ProcessBookerChange(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var currBooker = this.GetUserId();
-                string result = _booker.ChangeOwner(uow, bookingRequestId, currBooker);
+                string result = _booker.ChangeBooker(uow, bookingRequestId, currBooker);
                 return Content(result);
             }
         }
@@ -97,9 +97,9 @@ namespace KwasantWeb.Controllers
             {
                 //call to VerifyOwnership 
                 var currBooker = this.GetUserId();
-                string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
-                if (verifyOwnership != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership });
+                string verifyBooker = _booker.IsBookerValid(uow, id, currBooker);
+                if (verifyBooker != "valid")
+                    return Json(new KwasantPackagedMessage { Name = "DifferentBooker", Message = verifyBooker });
 
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 bookingRequestDO.State = BookingRequestState.Resolved;
@@ -119,7 +119,7 @@ namespace KwasantWeb.Controllers
                 var currBooker = this.GetUserId();
                 string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
                 if (verifyOwnership != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentOwner", Message = verifyOwnership });
+                    return Json(new KwasantPackagedMessage { Name = "DifferentBooker", Message = verifyOwnership });
 
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
                 bookingRequestDO.State = BookingRequestState.Invalid;
@@ -169,12 +169,12 @@ namespace KwasantWeb.Controllers
 
                     uow.SaveChanges();
 
-                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.User, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
+                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.Customer, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
 
                     return Json(new
                         {
                             Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be",
-                            UserID = bookingRequest.UserID
+                            UserID = bookingRequest.CustomerID
                         });
                 }
             }
@@ -282,6 +282,41 @@ namespace KwasantWeb.Controllers
                 return View(bookingRequestConversation);
             }
         }
+
+        public ActionResult DisplayOneOffEmailForm(int bookingRequestID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+
+                var emailController = new EmailController();
+
+                var br = new BookingRequest();
+                var emailAddresses = br.ExtractEmailAddresses(bookingRequestDO);
+
+                var currCreateEmailVM = new CreateEmailVM
+                {
+                    AddressBook = emailAddresses.ToList(),
+                    Subject = bookingRequestDO.Subject,
+                    SubjectEditable = false,
+
+                    HeaderText = "Send an email",
+                    BodyPromptText = "Enter some text for your recipients",
+                    Body = "",
+                };
+                return emailController.DisplayEmail(Session, currCreateEmailVM,
+                    (subUow, emailDO) =>
+                    {
+                        subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("SimpleEmail_template"));
+
+                        var currBookingRequest = new BookingRequest();
+                        currBookingRequest.AddExpectedResponseForBookingRequest(subUow, emailDO, bookingRequestID);
+                        subUow.SaveChanges();
+                        return Json(true);
+                    });
+            }
+        }
+
 
         // GET: /BookingRequest/
         public ActionResult ShowAllBookingRequests()

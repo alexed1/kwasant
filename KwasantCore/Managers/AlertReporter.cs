@@ -33,8 +33,6 @@ namespace KwasantCore.Managers
             AlertManager.AlertBookingRequestCreated += ReportBookingRequestCreated;
             AlertManager.AlertBookingRequestStateChange += ReportBookingRequestStateChanged;
             AlertManager.AlertExplicitCustomerCreated += ReportCustomerCreated;
-
-            AlertManager.AlertErrorSyncingCalendar += ErrorSyncingCalendar;
         
             AlertManager.AlertUserRegistration += ReportUserRegistered;
             AlertManager.AlertBookingRequestCheckedOut += ReportBookingRequestCheckedOut;
@@ -302,7 +300,7 @@ namespace KwasantCore.Managers
                         PrimaryCategory = "BookingRequest",
                         SecondaryCategory = "",
                         Activity = "Created",
-                        CustomerId = bookingRequestDO.UserID,
+                        CustomerId = bookingRequestDO.CustomerID,
                         CreateDate = DateTimeOffset.Now,
                         ObjectId = bookingRequestId
                     };
@@ -324,7 +322,7 @@ namespace KwasantCore.Managers
                         PrimaryCategory = "BookingRequest",
                         SecondaryCategory = "",
                         Activity = "StateChange",
-                        CustomerId = bookingRequestDO.User.Id,
+                        CustomerId = bookingRequestDO.Customer.Id,
                         ObjectId = bookingRequestDO.Id,
                         Status = status,
                         CreateDate = DateTimeOffset.Now,
@@ -385,65 +383,6 @@ namespace KwasantCore.Managers
 
         }
 
-
-        private void ErrorSyncingCalendar(IBaseDO data)
-        {
-            var calendarLink = data as RemoteCalendarLinkDO;
-            var authData = data as RemoteCalendarAuthDataDO;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Calendar";
-                incidentDO.SecondaryCategory = "Sync";
-                incidentDO.CreateTime = DateTime.Now;
-                incidentDO.Activity = "Failure";
-                if (calendarLink != null)
-                {
-                    incidentDO.ObjectId = calendarLink.Id;
-                    incidentDO.CustomerId = calendarLink.LocalCalendar.OwnerID;
-                    incidentDO.Notes = calendarLink.LastSynchronizationResult;
-                }
-                else if (authData != null)
-                {
-                    incidentDO.ObjectId = authData.Id;
-                    incidentDO.CustomerId = authData.UserID;
-                    incidentDO.Notes = "Calendar set synchronization failure.";
-                }
-                else
-                {
-                    throw new ArgumentOutOfRangeException("data");
-                }
-                uow.IncidentRepository.Add(incidentDO);
-                uow.SaveChanges();
-            }
-
-            Email email = ObjectFactory.GetInstance<Email>();
-            string message;
-            if (calendarLink != null)
-            {
-                message = string.Format(
-                    "CalendarSync failure for calendar link #{0} ({1}):\r\n" +
-                    "Customer id: {2},\r\n" +
-                    "Local calendar id: {3}\r\n," +
-                    "Remote calendar url: {4}",
-                    calendarLink.Id,
-                    calendarLink.LastSynchronizationResult,
-                    calendarLink.LocalCalendar.OwnerID,
-                    calendarLink.LocalCalendarID,
-                    calendarLink.RemoteCalendarHref);
-            }
-            else
-            {
-                message = string.Format(
-                    "CalendarSync failure for calendar auth data #{0} ({1}):\r\n" +
-                    "Customer id: {2}",
-                    authData.Id,
-                    authData.Provider.Name,
-                    authData.UserID);
-            }
-            email.SendAlertEmail("CalendarSync failure", message);
-        }
-
         public void ReportBookingRequestCheckedOut(int bookingRequestId, string bookerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -453,17 +392,17 @@ namespace KwasantCore.Managers
                     throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
                 string status = bookingRequestDO.BookingRequestStateTemplate.Name;
                 FactDO curAction = new FactDO()
-                {
-                    PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "Ownership",
-                    Activity = "Checkout",
-                    CustomerId = bookingRequestDO.User.Id,
-                    ObjectId = bookingRequestDO.Id,
-                    BookerId = bookerId,
-                    Status = status,
-                    CreateDate = DateTimeOffset.Now,
-                };
-
+                    {
+                        PrimaryCategory = "BookingRequest",
+                        SecondaryCategory = "Ownership",
+                        Activity = "Checkout",
+                    CustomerId = bookingRequestDO.Customer.Id,
+                        ObjectId = bookingRequestDO.Id,
+                        BookerId = bookerId,
+                        Status = status,
+                        CreateDate = DateTimeOffset.Now,
+                    };
+                
                 curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
                 AddFact(uow, curAction);
                 uow.SaveChanges();
@@ -484,7 +423,7 @@ namespace KwasantCore.Managers
                         PrimaryCategory = "BookingRequest",
                         SecondaryCategory = "Ownership",
                         Activity = "Change",
-                        CustomerId = bookingRequestDO.User.Id,
+                        CustomerId = bookingRequestDO.Customer.Id,
                         ObjectId = bookingRequestDO.Id,
                         BookerId = bookerId,
                         Status = status,

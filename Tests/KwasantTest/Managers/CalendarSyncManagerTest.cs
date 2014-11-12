@@ -33,24 +33,24 @@ namespace KwasantTest.Managers
             var clientMock = new Mock<ICalDAVClient>();
             clientMock.Setup(c =>
                              c.GetEventsAsync(
-                                 It.IsAny<IRemoteCalendarLink>(),
+                                 It.IsAny<IRemoteCalendarLinkDO>(),
                                  It.IsAny<DateTimeOffset>(),
                                  It.IsAny<DateTimeOffset>()))
                 .ReturnsAsync(_remoteCalendarEvents);
             clientMock.Setup(c =>
-                             c.GetCalendarsAsync(It.IsAny<IRemoteCalendarAuthData>()))
+                             c.GetCalendarsAsync(It.IsAny<IRemoteCalendarAuthDataDO>()))
                 .ReturnsAsync(new Dictionary<string, string>() { { "url", "name" } });
             clientMock.Setup(c =>
-                              c.CreateEventAsync(It.IsAny<IRemoteCalendarLink>(),
+                              c.CreateEventAsync(It.IsAny<IRemoteCalendarLinkDO>(),
                                                  It.IsAny<iCalendar>()))
-                .Returns<IRemoteCalendarLink, iCalendar>((calendarLink, iCalEvent) =>
+                .Returns<IRemoteCalendarLinkDO, iCalendar>((calendarLink, iCalEvent) =>
                              {
                                  _remoteCalendarEvents.Add(iCalEvent); 
                                  return Task.Delay(0);
                              });
 
             var clientFactoryMock = new Mock<ICalDAVClientFactory>();
-            clientFactoryMock.Setup(f => f.Create(It.IsAny<IRemoteCalendarAuthData>())).Returns(clientMock.Object);
+            clientFactoryMock.Setup(f => f.Create(It.IsAny<IRemoteCalendarAuthDataDO>())).Returns(clientMock.Object);
             ObjectFactory.Configure(expression => expression.For<ICalDAVClientFactory>().Use(clientFactoryMock.Object));
 
             _calendarSyncManager = ObjectFactory.GetInstance<CalendarSyncManager>();
