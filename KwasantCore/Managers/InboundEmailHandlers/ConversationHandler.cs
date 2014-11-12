@@ -16,6 +16,12 @@ namespace KwasantCore.Managers.InboundEmailHandlers
                 if (existingBookingRequest != null)
                 {
                     Conversation.AddEmail(uow, message, existingBookingRequest);
+
+                    var br = new BookingRequest();
+                    var fromUser = uow.UserRepository.GetOrCreateUser(message.From.Address);
+                    br.AcknowledgeResponseToBookingRequest(uow, existingBookingRequest.Id, fromUser.Id);
+
+                    uow.SaveChanges();
                     return true;
                 }
             }

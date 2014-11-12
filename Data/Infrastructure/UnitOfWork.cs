@@ -400,6 +400,15 @@ namespace Data.Infrastructure
             }
         }
 
+        private ExpectedResponseRepository _expectedResponseRepository;
+        public ExpectedResponseRepository ExpectedResponseRepository
+        {
+            get
+            {
+                return _expectedResponseRepository ?? (_expectedResponseRepository = new ExpectedResponseRepository(this));
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();
