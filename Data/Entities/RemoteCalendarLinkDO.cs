@@ -9,17 +9,17 @@ namespace Data.Entities
     /// A link between local Kwasant user's calendar and his calendar on a remote calendar provider.
     /// Also it is a tracking record for synchronization progress.
     /// </summary>
-    public class RemoteCalendarLinkDO : BaseDO, IRemoteCalendarLink
+    public class RemoteCalendarLinkDO : BaseDO, IRemoteCalendarLinkDO
     {
         [NotMapped]
-        ICalendar IRemoteCalendarLink.LocalCalendar
+        ICalendarDO IRemoteCalendarLinkDO.LocalCalendar
         {
             get { return LocalCalendar; }
             set { LocalCalendar = (CalendarDO)value; }
         }
 
         [NotMapped]
-        IRemoteCalendarProvider IRemoteCalendarLink.Provider
+        IRemoteCalendarProviderDO IRemoteCalendarLinkDO.Provider
         {
             get { return Provider; }
             set { Provider = (RemoteCalendarProviderDO)value; }

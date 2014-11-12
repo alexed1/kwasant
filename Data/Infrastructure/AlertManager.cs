@@ -2,12 +2,16 @@
 
 using System;
 using Data.Entities;
+using Data.Interfaces;
 
 namespace Data.Infrastructure
 {
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
     {
+        public delegate void ResponseRecievedHandler(int bookingRequestId, String bookerID, String customerID);
+        public static event ResponseRecievedHandler AlertResponseReceived;
+
         public delegate void BookingRequestNeedsProcessingHandler(int bookingRequestId);
         public static event BookingRequestNeedsProcessingHandler AlertBookingRequestNeedsProcessing;
 
@@ -74,10 +78,16 @@ namespace Data.Infrastructure
         public delegate void Error_EmailSendFailureHandler(int emailId, string message);
         public static event Error_EmailSendFailureHandler AlertError_EmailSendFailure;
 
-        public delegate void ErrorSyncingCalendarHandler(IBaseDO calendarLink);
+        public delegate void ErrorSyncingCalendarHandler(IRemoteCalendarAuthDataDO authData, IRemoteCalendarLinkDO calendarLink = null);
         public static event ErrorSyncingCalendarHandler AlertErrorSyncingCalendar;
 
         #region Method
+
+        public static void ResponseReceived(int bookingRequestId, String bookerID, String customerID)
+        {
+            if (AlertResponseReceived != null)
+                AlertResponseReceived(bookingRequestId, bookerID, customerID);
+        }
 
         public static void TrackablePropertyUpdated(string name, string contextTable, int id, object status)
         {
@@ -205,11 +215,11 @@ namespace Data.Infrastructure
                 AlertError_EmailSendFailure(emailId, message);
         }
 
-        public static void ErrorSyncingCalendar(IBaseDO calendarLink)
+        public static void ErrorSyncingCalendar(IRemoteCalendarAuthDataDO authData, IRemoteCalendarLinkDO calendarLink = null)
         {
             var handler = AlertErrorSyncingCalendar;
             if (handler != null)
-                handler(calendarLink);
+                handler(authData, calendarLink);
         }
 
         public static void BookingRequestNeedsProcessing(int bookingRequestId)

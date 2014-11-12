@@ -142,7 +142,7 @@ namespace Data.Migrations
         // ReSharper disable UnusedMember.Local
         private static void SeedConstants<TConstantsType, TConstantDO>(IUnitOfWork uow, Func<int, string, TConstantDO> creatorFunc)
             // ReSharper restore UnusedMember.Local
-            where TConstantDO : class, IStateTemplate<TConstantsType>
+            where TConstantDO : class, IStateTemplate<TConstantsType>, new()
         {
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
             var instructionsToAdd = (from constant in constants

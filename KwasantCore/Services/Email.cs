@@ -47,7 +47,7 @@ namespace KwasantCore.Services
         /// This implementation of Send uses the Mandrill API
         /// </summary>
         [ObsoleteAttribute("Use directly uow.EnvelopeRepository.ConfigureTemplatedEmail method.")]
-        public EnvelopeDO SendTemplate(IUnitOfWork uow, string templateName, IEmail message, Dictionary<string, string> mergeFields)
+        public EnvelopeDO SendTemplate(IUnitOfWork uow, string templateName, IEmailDO message, Dictionary<string, string> mergeFields)
         {
             return uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
         }

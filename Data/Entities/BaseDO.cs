@@ -1,4 +1,5 @@
 ﻿using System;
+using Data.Interfaces;
 
 namespace Data.Entities
 {
@@ -13,10 +14,5 @@ namespace Data.Entities
         public DateTimeOffset LastUpdated { get; set; }
         public DateTimeOffset CreateDate { get; set; }
     }
-
-    public interface IBaseDO
-    {
-        DateTimeOffset LastUpdated { get; set; }
         DateTimeOffset CreateDate { get; set; }
     }
-}

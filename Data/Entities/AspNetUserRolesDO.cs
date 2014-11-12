@@ -8,7 +8,7 @@ namespace Data.Entities
 {
 
     [Table("AspNetUserRoles")]
-    public class AspNetUserRolesDO : IdentityUserRole, IAspNetUserRoles, IBaseDO
+    public class AspNetUserRolesDO : IdentityUserRole, IAspNetUserRolesDO, IBaseDO
     {
         public virtual ICollection<AspNetRolesDO> Roles { get; set; }
 

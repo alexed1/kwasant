@@ -203,8 +203,11 @@ namespace Daemons
                 }
             }
 
-            if (_ignoreEmailsFrom.Contains(messageInfo.From.Address) || String.Equals(messageInfo.From.Address, _fromEmailAddress, StringComparison.OrdinalIgnoreCase))
+            if (FilterUtility.IsReservedEmailAddress(messageInfo.From.Address))
+            {
                 LogEvent("Email ignored from " + messageInfo.From.Address);
+                return;
+            }
 
             try
             {
