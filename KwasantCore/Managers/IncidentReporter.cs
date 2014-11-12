@@ -10,9 +10,7 @@ namespace Data.Infrastructure
         public void SubscribeToAlerts()
         {
             AlertManager.AlertEmailProcessingFailure += ProcessAlert_EmailProcessingFailure;
-            AlertManager.AlertBookingRequestProcessingTimeout += ProcessTimeout;
             AlertManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
-            AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
         }
 
         public void ProcessAlert_EmailProcessingFailure(string dateReceived, string errorMessage)
@@ -30,25 +28,7 @@ namespace Data.Infrastructure
                 _uow.SaveChanges();
             }
         }
-
-        public void ProcessTimeout(BookingRequestDO bookingRequestDO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "Timeout";
-                incidentDO.SecondaryCategory = "BookingRequest";
-                incidentDO.CreateTime = DateTime.Now;
-                incidentDO.Activity = "";
-                incidentDO.ObjectId = bookingRequestDO.Id;
-                incidentDO.CustomerId = bookingRequestDO.User.Id;
-                incidentDO.BookerId = bookingRequestDO.UserID;
-                uow.IncidentRepository.Add(incidentDO);
-                uow.SaveChanges();
-            }
-        }
-
-
+        
         private void ProcessEmailSendFailure(int emailId, string message)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -70,36 +50,5 @@ namespace Data.Infrastructure
                                       "Message: {1}",
                                       emailId, message));
         }
-
-        private void ProcessErrorSyncingCalendar(RemoteCalendarLinkDO calendarLink)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                IncidentDO incidentDO = new IncidentDO();
-                incidentDO.PrimaryCategory = "SyncFailure";
-                incidentDO.SecondaryCategory = "Calendar";
-                incidentDO.CreateTime = DateTime.Now;
-                incidentDO.Activity = "SyncFailure";
-                incidentDO.ObjectId = calendarLink.Id;
-                incidentDO.CustomerId = calendarLink.LocalCalendar.OwnerID;
-                incidentDO.Notes = calendarLink.LastSynchronizationResult;
-                uow.IncidentRepository.Add(incidentDO);
-                uow.SaveChanges();
-            }
-
-            Email email = ObjectFactory.GetInstance<Email>();
-            email.SendAlertEmail("CalendarSync failure",
-                                 string.Format(
-                                     "CalendarSync failure for calendar link #{0} ({1}):\r\n" +
-                                     "Customer id: {2},\r\n" +
-                                     "Local calendar id: {3}\r\n," +
-                                     "Remote calendar url: {4}",
-                                     calendarLink.Id,
-                                     calendarLink.LastSynchronizationResult,
-                                     calendarLink.LocalCalendar.OwnerID,
-                                     calendarLink.LocalCalendarID,
-                                     calendarLink.RemoteCalendarHref));
-        }
-
     }
 }
