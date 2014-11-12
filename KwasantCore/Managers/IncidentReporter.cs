@@ -31,18 +31,20 @@ namespace Data.Infrastructure
             }
         }
 
-        public void ProcessTimeout(BookingRequestDO bookingRequestDO)
+        public void ProcessTimeout(int bookingRequestId, string bookerId )
         {
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "Timeout";
                 incidentDO.SecondaryCategory = "BookingRequest";
                 incidentDO.CreateTime = DateTime.Now;
                 incidentDO.Activity = "";
                 incidentDO.ObjectId = bookingRequestDO.Id;
-                incidentDO.CustomerId = bookingRequestDO.User.Id;
-                incidentDO.BookerId = bookingRequestDO.UserID;
+                incidentDO.CustomerId = bookingRequestDO.CustomerID;
+                incidentDO.BookerId = bookingRequestDO.BookerID;
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();
             }
@@ -71,7 +73,7 @@ namespace Data.Infrastructure
                                       emailId, message));
         }
 
-        private void ProcessErrorSyncingCalendar(RemoteCalendarLinkDO calendarLink)
+        private void ProcessErrorSyncingCalendar(IBaseDO calendarLink)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
