@@ -817,6 +817,8 @@
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Booker\Index.cshtml" />
+    <Content Include="Views\Report\_History.cshtml" />
+    <Content Include="Views\Report\History.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
