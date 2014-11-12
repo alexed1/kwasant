@@ -138,13 +138,7 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
-
-                //need to add the addresses of people cc'ed or on the To line of the BookingRequest
-                var attendees = bookingRequestDO.Recipients.Select(r => r.EmailAddress.Address).ToList();
-                attendees.Add(bookingRequestDO.Customer.EmailAddress.Address);
-               
-                var filteredEmailAddresses = FilterUtility.StripReservedEmailAddresses(attendees, _configRepository).Distinct().ToList();
-
+                
                 return View("~/Views/Negotiation/Edit.cshtml",
                             new NegotiationVM
                                 {
@@ -256,7 +250,7 @@ namespace KwasantWeb.Controllers
 
                 var currCreateEmailVM = new CreateEmailVM
                 {
-                    ToAddresses = negotiationDO.Attendees.Select(a => a.EmailAddress.Address).ToList(),
+                    ToAddresses = negotiationDO.Attendees.Select(a => a.EmailAddress.Address).Where(a => !FilterUtility.IsReservedEmailAddress(a)).ToList(),
                     AddressBook = emailAddresses.ToList(),
                     Subject =
                         string.Format("Need Your Response on {0}'s event: {1}",

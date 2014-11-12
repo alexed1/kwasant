@@ -233,7 +233,7 @@ namespace KwasantCore.Services
             //Get the attendees of all events
             var eventAttendees = bookingRequestDO.Events.SelectMany(ev => ev.Attendees.Select(a => a.EmailAddress.Address));
 
-            return emailThreads.Union(emailsInText).Union(eventAttendees);
+            return emailThreads.Union(emailsInText).Union(eventAttendees).Where(e => !FilterUtility.IsReservedEmailAddress(e));
         }
 
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
@@ -248,7 +248,7 @@ namespace KwasantCore.Services
 
             foreach (var email in emailAddresses)
             {
-                if (!FilterUtility.IsTestAttendee(email.Address))
+                if (!FilterUtility.IsReservedEmailAddress(email.Address))
                 {
                     var curAttendee = _attendee.Create(uow, email.Address, eventDO, email.Name);
                     eventDO.Attendees.Add(curAttendee);
