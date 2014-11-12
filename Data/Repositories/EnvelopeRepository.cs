@@ -32,8 +32,10 @@ namespace Data.Repositories
             return ConfigureEnvelope(email, EnvelopeDO.SendGridHander);
         }
 
-        public EnvelopeDO ConfigureTemplatedEmail(IEmailDO email, string templateName, IDictionary<string, string> mergeData)
+        public EnvelopeDO ConfigureTemplatedEmail(IEmailDO email, string templateName, IDictionary<string, string> mergeData = null)
         {
+            if (mergeData == null)
+                mergeData = new Dictionary<string, string>();
             if (email == null)
                 throw new ArgumentNullException("email");
             if (string.IsNullOrEmpty(templateName))

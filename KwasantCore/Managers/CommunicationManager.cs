@@ -97,23 +97,21 @@ namespace KwasantCore.Managers
             }
         }
 
-        public void DispatchNegotiationRequests(IUnitOfWork uow, int negotiationID)
+        public void DispatchNegotiationRequests(IUnitOfWork uow, EmailDO generatedEmailDO, int negotiationID)
         {
-            DispatchNegotiationRequests(uow, uow.NegotiationsRepository.GetByKey(negotiationID));
+            DispatchNegotiationRequests(uow, generatedEmailDO, uow.NegotiationsRepository.GetByKey(negotiationID));
         }
 
-        public void DispatchNegotiationRequests(IUnitOfWork uow, NegotiationDO negotiationDO)
+        public void DispatchNegotiationRequests(IUnitOfWork uow, EmailDO generatedEmailDO, NegotiationDO negotiationDO)
         {
-            if (negotiationDO.Attendees == null)
+            if (!generatedEmailDO.Recipients.Any())
                 return;
 
             
-            foreach (var attendee in negotiationDO.Attendees)
+            foreach (var attendee in generatedEmailDO.Recipients)
             {
                 var emailDO = new EmailDO();
-                var emailAddressDO = _emailAddress.GetFromEmailAddress(uow, attendee.EmailAddress, negotiationDO.BookingRequest.Customer);
-                emailDO.From = emailAddressDO;
-                emailDO.FromID = emailAddressDO.Id;
+                emailDO.FromID = generatedEmailDO.FromID;
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
                
                 

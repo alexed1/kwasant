@@ -13,9 +13,8 @@ namespace KwasantCore.Interfaces
         void CreateQuasiEmailForBookingRequest(IUnitOfWork uow, NegotiationDO curNegotiationDO, UserDO curUserDO,
             Dictionary<QuestionDO, AnswerDO> currentAnswers);
 
-        void Resolve(int curNegotiationId);
-        NegotiationDO GetOrCreate(int? curNegotiationID, IUnitOfWork uow);
-        void Update(IUnitOfWork uow, NegotiationVM submittedNegotiation, NegotiationDO curNegotiationDO);
         IEnumerable<string> GetSummaryText(NegotiationDO curNegotiationDO);
+        void Resolve(int curNegotiationId);
+        NegotiationDO Update(IUnitOfWork uow, NegotiationDO submittedNegotiationDO);
     }
 }

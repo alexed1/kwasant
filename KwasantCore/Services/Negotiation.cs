@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using AutoMapper;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Exceptions;
 using KwasantCore.Interfaces;
-using KwasantWeb.ViewModels;
 using StructureMap;
 using Utilities;
 
@@ -16,13 +15,11 @@ namespace KwasantCore.Services
 {
     public class Negotiation : INegotiation
     {
-        private IQuestion _question;
-        private IAttendee _attendee;
+        private readonly IQuestion _question;
 
         public Negotiation()
         {
             _question = ObjectFactory.GetInstance<IQuestion>();
-            _attendee = ObjectFactory.GetInstance<IAttendee>();
         }
 
         //get all answers
@@ -39,19 +36,16 @@ namespace KwasantCore.Services
             return _attendee.GetRespondedAnswers(uow, answerIDs, curUserDO.Id);
         }
 
-        public void CreateQuasiEmailForBookingRequest(IUnitOfWork uow, NegotiationDO curNegotiationDO, UserDO curUserDO,
-            Dictionary<QuestionDO, AnswerDO> currentAnswers)
+        public void CreateQuasiEmailForBookingRequest(IUnitOfWork uow, NegotiationDO curNegotiationDO, UserDO curUserDO, Dictionary<QuestionDO, AnswerDO> currentAnswers)
         {
-            var isUpdateToAnswer =
-                uow.NegotiationAnswerEmailRepository.GetQuery()
-                    .Any(nae => nae.NegotiationID == curNegotiationDO.Id && nae.UserID == curUserDO.Id);
+            var isUpdateToAnswer = uow.NegotiationAnswerEmailRepository.GetQuery().Any(nae => nae.NegotiationID == curNegotiationDO.Id && nae.UserID == curUserDO.Id);
 
             var newLink = new NegotiationAnswerEmailDO();
             EmailDO quasiEmail = new EmailDO();
             newLink.Email = quasiEmail;
             newLink.User = curUserDO;
             newLink.Negotiation = curNegotiationDO;
-            
+
             //Now we update it..
             const string bodyTextFormat = @"To Question: ""{0}"", answered ""{1}""";
 
@@ -65,12 +59,11 @@ namespace KwasantCore.Services
              * To Question: "Where should we meet", answered "Hard Rock Cafe"
              */
 
-            bodyTextFull.Append(String.Join("<br/>",
-                currentAnswers.Select(kvp => String.Format(bodyTextFormat, kvp.Key.Text, kvp.Value.Text))));
+            bodyTextFull.Append(String.Join("<br/>", currentAnswers.Select(kvp => String.Format(bodyTextFormat, kvp.Key.Text, kvp.Value.Text))));
 
             quasiEmail.FromID = curUserDO.EmailAddressID;
             quasiEmail.DateReceived = DateTimeOffset.Now;
-            
+
             var renderedText = bodyTextFull.ToString();
             quasiEmail.HTMLText = renderedText;
             quasiEmail.PlainText = renderedText.Replace("<br/>", Environment.NewLine);
@@ -78,12 +71,9 @@ namespace KwasantCore.Services
             quasiEmail.ConversationId = curNegotiationDO.BookingRequestID;
             quasiEmail.EmailStatus = EmailState.Processed; //This email won't be sent
 
-            if (curNegotiationDO.BookingRequest.State == BookingRequestState.Booking)
-            {
-// ReSharper disable once PossibleInvalidOperationException -- Turn off resharper warning, BookingRequestID is guaranteed to be non-null (enforced by EF attribute)
             AlertManager.ConversationMemberAdded(curNegotiationDO.BookingRequestID.Value);
-            }
-            else
+
+            if (curNegotiationDO.BookingRequest.State != BookingRequestState.Booking)
             {
                 var br = ObjectFactory.GetInstance<BookingRequest>();
                 br.Reactivate(uow, curNegotiationDO.BookingRequest);
@@ -98,28 +88,33 @@ namespace KwasantCore.Services
             {
                 var negotiationDO = uow.NegotiationsRepository.GetByKey(curNegotiationId);
                 if (negotiationDO == null)
-                    throw new ApplicationException("Negotiation with id " + curNegotiationId + " not found.");
+                    throw new EntityNotFoundException<NegotiationDO>(curNegotiationId);
 
                 negotiationDO.NegotiationState = NegotiationState.Resolved;
                 uow.SaveChanges();
             }
-
-
         }
 
-        public NegotiationDO GetOrCreate(int? curNegotiationID, IUnitOfWork uow)
+        public NegotiationDO Update(IUnitOfWork uow, NegotiationDO submittedNegotiationDO)
         {
-            NegotiationDO curNegotiationDO;
-            if (curNegotiationID == null)
+            NegotiationDO curNegotiationDO = uow.NegotiationsRepository.GetOrCreateByKey(submittedNegotiationDO.Id);
+            curNegotiationDO.Name = submittedNegotiationDO.Name;
+            curNegotiationDO.BookingRequestID = submittedNegotiationDO.BookingRequestID;
+
+            var proposedQuestionIDs = submittedNegotiationDO.Questions.Select(q => q.Id);
+            //Delete the existing questions which no longer exist in our proposed negotiation
+            var existingQuestions = curNegotiationDO.Questions.ToList();
+            foreach (var existingQuestion in existingQuestions.Where(q => !proposedQuestionIDs.Contains(q.Id)))
             {
-                curNegotiationDO = new NegotiationDO
-                {
-                    DateCreated = DateTime.Now
-                };
-                uow.NegotiationsRepository.Add(curNegotiationDO);
-    }
-            else
-                curNegotiationDO = uow.NegotiationsRepository.GetByKey(curNegotiationID);
+                uow.QuestionsRepository.Remove(existingQuestion);
+            }
+
+            //Here we add/update questions based on our proposed negotiation
+            foreach (var submittedQuestionDO in submittedNegotiationDO.Questions)
+            {
+                var updatedQuestionDO = _question.Update(uow, submittedQuestionDO);
+                updatedQuestionDO.Negotiation = curNegotiationDO;
+            }
             return curNegotiationDO;
         }
 
@@ -142,32 +137,5 @@ Proposed Answers: {2}
             return summaryText;
         }
 
-        public void Update(IUnitOfWork uow, NegotiationVM submittedNegotiation, NegotiationDO curNegotiationDO)
-        {
-            Mapper.Map<NegotiationVM, NegotiationDO>(submittedNegotiation);
-            //VERIFY: these are properly automapped
-            //curNegotiationDO.Name = submittedNegotiation.Name;
-            //curNegotiationDO.BookingRequestID = submittedNegotiation.BookingRequestID;
-
-            _attendee.ManageNegotiationAttendeeList(uow, curNegotiationDO, submittedNegotiation.Attendees);
-
-            var proposedQuestionIDs = submittedNegotiation.Questions.Select(q => q.Id);
-            //Delete the existing questions which no longer exist in our proposed negotiation
-            var existingQuestions = curNegotiationDO.Questions.ToList();
-            foreach (var existingQuestion in existingQuestions.Where(q => !proposedQuestionIDs.Contains(q.Id)))
-            {
-                uow.QuestionsRepository.Remove(existingQuestion);
-            }
-            //Here we add/update questions based on our proposed negotiation
-            foreach (var submittedQuestion in submittedNegotiation.Questions)
-            {
-                _question.Update(uow, submittedQuestion, curNegotiationDO);
-
-            }
-        }
-
-
     }
-
-
 }

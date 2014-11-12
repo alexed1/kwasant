@@ -6,8 +6,6 @@ namespace KwasantCore.Services
 {
     public interface IQuestion
     {
-        QuestionDO GetOrCreate(IUnitOfWork uow, int? curQuestionID);
-        void Update(IUnitOfWork uow, NegotiationQuestionVM submittedQuestion, NegotiationDO curNegotiationDO);
-        void RemoveDeletedAnswers(IUnitOfWork uow, QuestionDO curQuestionDO, NegotiationQuestionVM submittedQuestion);
+        QuestionDO Update(IUnitOfWork uow, QuestionDO submittedQuestionDO);
     }
 }

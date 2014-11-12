@@ -9,8 +9,6 @@ using KwasantCore.Interfaces;
 
 namespace KwasantCore.Services
 {
-   
-
     public class Attendee : IAttendee
     {
         private readonly EmailAddress _emailAddress;

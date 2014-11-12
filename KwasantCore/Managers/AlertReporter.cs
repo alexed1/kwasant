@@ -392,17 +392,17 @@ namespace KwasantCore.Managers
                     throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
                 string status = bookingRequestDO.BookingRequestStateTemplate.Name;
                 FactDO curAction = new FactDO()
-                {
-                    PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "Ownership",
-                    Activity = "Checkout",
+                    {
+                        PrimaryCategory = "BookingRequest",
+                        SecondaryCategory = "Ownership",
+                        Activity = "Checkout",
                     CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestDO.Id,
-                    BookerId = bookerId,
-                    Status = status,
-                    CreateDate = DateTimeOffset.Now,
-                };
-
+                        ObjectId = bookingRequestDO.Id,
+                        BookerId = bookerId,
+                        Status = status,
+                        CreateDate = DateTimeOffset.Now,
+                    };
+                
                 curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
                 AddFact(uow, curAction);
                 uow.SaveChanges();

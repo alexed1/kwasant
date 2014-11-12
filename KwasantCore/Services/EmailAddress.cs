@@ -27,6 +27,16 @@ namespace KwasantCore.Services
            return uow.EmailAddressRepository.GetOrCreateEmailAddress(address.Address, address.DisplayName);
        }
 
+        public List<String> ExtractFromString(params String[] textsToSearch)
+        {
+            var returnList = new List<String>();
+            foreach (var textToSearch in textsToSearch)
+            {
+                returnList.AddRange(ExtractFromString(textToSearch).Select(pea => pea.Email));
+            }
+            return returnList;
+        }
+
        public List<ParsedEmailAddress> ExtractFromString(String textToSearch)
        {
            if (String.IsNullOrEmpty(textToSearch))

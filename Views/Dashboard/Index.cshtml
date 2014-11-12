@@ -39,6 +39,25 @@
             });
         }
         );
+        
+        function sendAnEmail() {
+            Kwasant.IFrame.Display('/BookingRequest/DisplayOneOffEmailForm?bookingRequestID=@Model.BookingRequestVM.BookingRequestId',
+                {
+                    horizontalAlign: 'middle',
+                    height: 815,
+                    width: 815,
+                    focusElement: '#subj',
+                    modal: true,
+                    callback: function(res) {
+                        var negotiationMessage = res 
+                            ? 'Emails have been dispatched.'
+                            : 'No emails were sent.';
+                        
+                        Kwasant.IFrame.CloseMe();
+                        displayMessage(negotiationMessage);
+                    }
+                });
+        }
     </script>
 }
 <script type="text/javascript">
@@ -78,6 +97,7 @@
                         <li class="dropdown">
                             <a id="btnNegotiation">Negotiation</a>
                             <ul class="dropdown-menu">
+                                <li><a id="liEmail" onclick="sendAnEmail(); " href="#">Send an email</a></li>
                                 <li><a id="liReview" onclick="getCurrentNegotiationReview(); " href="#">Review</a></li>
                                 <li><a id="liCreateOrEditNegotiation" onclick="getNegotiationWindow();" data-value='@(Model.CalendarVM.LinkedNegotiationID == null ? "Create" : "Edit")' href="#">@(Model.CalendarVM.LinkedNegotiationID == null ? "Create" : "Edit")</a></li>
                                 <li id="liResolveNegotiation"><a onclick="resolveActiveNegotiation(linkedNegotiationID);" href="#">Mark Resolved</a></li>
