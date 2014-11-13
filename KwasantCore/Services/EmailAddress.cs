@@ -27,14 +27,14 @@ namespace KwasantCore.Services
            return uow.EmailAddressRepository.GetOrCreateEmailAddress(address.Address, address.DisplayName);
        }
 
-        public List<String> ExtractFromString(params String[] textsToSearch)
+        public List<ParsedEmailAddress> ExtractParsedFromString(params String[] textsToSearch)
         {
-            var returnList = new List<String>();
+            var returnList = new List<ParsedEmailAddress>();
             foreach (var textToSearch in textsToSearch)
             {
-                returnList.AddRange(ExtractFromString(textToSearch).Select(pea => pea.Email));
+                returnList.AddRange(ExtractFromString(textToSearch).Select(pea => pea));
             }
-            return returnList;
+            return returnList.GroupBy(pea => pea.Email).Select(g => g.First()).ToList(); //Distinct
         }
 
        public List<ParsedEmailAddress> ExtractFromString(String textToSearch)
@@ -49,7 +49,7 @@ namespace KwasantCore.Services
 
            //We assume for now, that emails can only contain letters and numbers. This can be updated in the future (parsing emails is actually incredibly difficult).
            //See http://tools.ietf.org/html/rfc2822#section-3.4.1 in the future if we ever update this.
-           const string emailUserNameRegex = @"[a-zA-Z0-9]*";
+           const string emailUserNameRegex = @"[a-zA-Z0-9]+";
 
            //Domains can only contain letters or numbers.
            const string domainRegex = @"[a-zA-Z0-9]+";
@@ -72,35 +72,21 @@ namespace KwasantCore.Services
                var parse = new ParsedEmailAddress
                {
                    Name = match.Groups["name"].Value,
-                   Email = match.Groups["email"].Value
+                   Email = match.Groups["email"].Value.ToLower()
                };
-               result.Add(parse);
+               if (!FilterUtility.IsReservedEmailAddress(parse.Email))
+                result.Add(parse);
            }
            return result;
        }
 
         public List<EmailAddressDO> GetEmailAddresses(IUnitOfWork uow, params string[] textToSearch)
         {
-            var emailAddresses = textToSearch.SelectMany(ExtractFromString);
+            var emailAddresses = ExtractParsedFromString(textToSearch);
             
-            var uniqueEmails = emailAddresses.GroupBy(ea => ea.Email.ToLower()).Select(g =>
-            {
-                var potentialFirst = g.FirstOrDefault(e => !String.IsNullOrEmpty(e.Name)) ?? g.First();
-                return potentialFirst;
-            });
-
-            var addressList =
-                FilterOutDomains(uniqueEmails, "sant.com")
-                    .Select(parsedEmailAddress =>
-                        uow.EmailAddressRepository.GetOrCreateEmailAddress(parsedEmailAddress.Email, parsedEmailAddress.Name)
-                    );
+            var addressList = emailAddresses.Select(parsedEmailAddress => uow.EmailAddressRepository.GetOrCreateEmailAddress(parsedEmailAddress.Email, parsedEmailAddress.Name));
             
             return addressList.ToList();
-        }
-
-        public IEnumerable<ParsedEmailAddress> FilterOutDomains(IEnumerable<ParsedEmailAddress> addressList, params string[] domains)
-        {
-            return addressList.Where(a => domains.All(domain => !a.Email.EndsWith(domain)));
         }
 
         public EmailAddressDO ConvertFromString(string emailString, IUnitOfWork uow)
