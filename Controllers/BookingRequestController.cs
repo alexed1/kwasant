@@ -24,14 +24,14 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize(Roles = "Booker")]
     public class BookingRequestController : Controller
     {
-        // private DataTablesPackager _datatables;
+       // private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
         Booker _booker;
         private JsonPackager _jsonPackager;
         public BookingRequestController()
         {
-            // _datatables = new DataTablesPackager();
+           // _datatables = new DataTablesPackager();
             _br = new BookingRequest();
             _booker = new Booker();
             _jsonPackager = new JsonPackager();
@@ -48,7 +48,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
+               // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
                 var unprocessedBRs = _br.GetUnprocessed(uow);
                 var jsonResult = Json(_jsonPackager.Pack(unprocessedBRs));
                 jsonResult.MaxJsonLength = int.MaxValue;
@@ -188,7 +188,7 @@ namespace KwasantWeb.Controllers
 
                     return Json(new
                         {
-                            Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be",
+                            Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", 
                             UserID = bookingRequest.CustomerID
                         });
                 }
@@ -251,10 +251,10 @@ namespace KwasantWeb.Controllers
         }
 
 
-        //Get  BR's that are currently checked out
+       //Get  BR's that are currently checked out
         [HttpPost]
         public ActionResult GetInProcessBRS()
-        {
+        {    
             string curBooker = "";
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -266,25 +266,40 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        // GET: /Conversation Members
-        [HttpGet]
-        public ActionResult ShowConversation(int bookingRequestId, int? curEmailId)
+        public ActionResult DisplayOneOffEmailForm(int bookingRequestID)
         {
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                BookingRequestConversationVM bookingRequestConversation = new BookingRequestConversationVM
-                {
-                    FromAddress = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.From.Address).ToList(),
-                    DateReceived = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).ToList().Select(e => e.DateReceived.ToString("MMM dd") + _br.getCountDaysAgo(e.DateReceived)).ToList(),
-                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
-                    HTMLText = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.HTMLText).ToList(),
-                    CurEmailId = curEmailId
-                };
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
 
-                return View(bookingRequestConversation);
+                var emailController = new EmailController();
+
+                var br = new BookingRequest();
+                var emailAddresses = br.ExtractEmailAddresses(bookingRequestDO);
+
+                var currCreateEmailVM = new CreateEmailVM
+                {
+                    AddressBook = emailAddresses.ToList(),
+                    Subject = bookingRequestDO.Subject,
+                    SubjectEditable = false,
+
+                    HeaderText = "Send an email",
+                    BodyPromptText = "Enter some text for your recipients",
+                    Body = "",
+                };
+                return emailController.DisplayEmail(Session, currCreateEmailVM,
+                    (subUow, emailDO) =>
+                    {
+                        subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("SimpleEmail_template"));
+
+                        var currBookingRequest = new BookingRequest();
+                        currBookingRequest.AddExpectedResponseForBookingRequest(subUow, emailDO, bookingRequestID);
+                        subUow.SaveChanges();
+                        return Json(true);
+                    });
             }
         }
+
 
         // GET: /BookingRequest/
         public ActionResult ShowAllBookingRequests()

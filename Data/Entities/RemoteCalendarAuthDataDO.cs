@@ -8,17 +8,17 @@ namespace Data.Entities
     /// This entity contains information about access to remote calendar providers granted by customer.
     /// The key field is AuthData that is JSON-string field with authorization data such as OAuth access and refresh token.
     /// </summary>
-    public class RemoteCalendarAuthDataDO : BaseDO, IRemoteCalendarAuthData
+    public class RemoteCalendarAuthDataDO : BaseDO, IRemoteCalendarAuthDataDO
     {
         [NotMapped]
-        IRemoteCalendarProvider IRemoteCalendarAuthData.Provider
+        IRemoteCalendarProviderDO IRemoteCalendarAuthDataDO.Provider
         {
             get { return Provider; }
             set { Provider = (RemoteCalendarProviderDO)value; }
         }
 
         [NotMapped]
-        IUser IRemoteCalendarAuthData.User
+        IUserDO IRemoteCalendarAuthDataDO.User
         {
             get { return User; }
             set { User = (UserDO)value; }
