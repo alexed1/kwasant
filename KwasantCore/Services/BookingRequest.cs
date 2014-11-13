@@ -41,6 +41,8 @@ namespace KwasantCore.Services
 
                 var newBookingRequest = new BookingRequest();
                 newBookingRequest.Process(uow, bookingRequest);
+                uow.SaveChanges();
+
                 Email.FixInlineImages(bookingRequest);
                 uow.SaveChanges();
 
