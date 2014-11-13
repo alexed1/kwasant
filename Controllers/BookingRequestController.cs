@@ -267,27 +267,7 @@ namespace KwasantWeb.Controllers
                 return jsonResult;
             }
         }
-
-        // GET: /Conversation Members
-        [HttpGet]
-        public ActionResult ShowConversation(int bookingRequestId, int? curEmailId)
-        {
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                BookingRequestConversationVM bookingRequestConversation = new BookingRequestConversationVM
-                {
-                    FromAddress = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.From.Address).ToList(),
-                    DateReceived = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).ToList().Select(e => e.DateReceived.ToString("MMM dd") + _br.getCountDaysAgo(e.DateReceived)).ToList(),
-                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
-                    HTMLText = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.HTMLText).ToList(),
-                    CurEmailId = curEmailId
-                };
-
-                return View(bookingRequestConversation);
-            }
-        }
-
+        
         public ActionResult DisplayOneOffEmailForm(int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -335,6 +315,35 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var jsonResult = Json(_jsonPackager.Pack(_br.GetAllBookingRequests(uow)));
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+
+        // GET: /BookingRequest/ShowAwaitingResponse
+        public ActionResult ShowAwaitingResponse()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult GetAwaitingResponse()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                string currBooker = this.GetUserId();
+                var jsonResult = Json(_jsonPackager.Pack(_br.GetAwaitingResponse(uow, currBooker).Select(e => new
+                {
+                    id = e.Id,
+                    subject = e.Subject,
+                    fromAddress = e.From.Address,
+                    dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                    body =
+                        e.HTMLText.Trim().Length > 400
+                            ? e.HTMLText.Trim().Substring(0, 400)
+                            : e.HTMLText.Trim()
+                })
+                    ));
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
