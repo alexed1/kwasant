@@ -267,27 +267,7 @@ namespace KwasantWeb.Controllers
                 return jsonResult;
             }
         }
-
-        // GET: /Conversation Members
-        [HttpGet]
-        public ActionResult ShowConversation(int bookingRequestId, int? curEmailId)
-        {
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                BookingRequestConversationVM bookingRequestConversation = new BookingRequestConversationVM
-                {
-                    FromAddress = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.From.Address).ToList(),
-                    DateReceived = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).ToList().Select(e => e.DateReceived.ToString("MMM dd") + _br.getCountDaysAgo(e.DateReceived)).ToList(),
-                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
-                    HTMLText = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.HTMLText).ToList(),
-                    CurEmailId = curEmailId
-                };
-
-                return View(bookingRequestConversation);
-            }
-        }
-
+        
         public ActionResult DisplayOneOffEmailForm(int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
