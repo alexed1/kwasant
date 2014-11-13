@@ -3,8 +3,6 @@ using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Interfaces;
-using KwasantCore.Services;
-using KwasantCore.StructureMap;
 using NUnit.Framework;
 using StructureMap;
 
@@ -112,7 +110,7 @@ namespace KwasantTest.Services
 
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(String.Empty, result[0].Name);
-            Assert.AreEqual("rjrudman@gmail.XN--CLCHC0EA0B2G2A9GCD", result[0].Email);
+            Assert.AreEqual("rjrudman@gmail.xn--clchc0ea0b2g2a9gcd", result[0].Email);
         }
 
         [Test]
