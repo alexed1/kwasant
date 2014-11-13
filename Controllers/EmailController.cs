@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web;
 using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.States;
 using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using KwasantWeb.ViewModels;
@@ -123,5 +125,60 @@ namespace KwasantWeb.Controllers
             return new JsonResult { Data = model.Conversations, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
+        private void SetCachedCallback(HttpSessionStateBase session, string token, Func<IUnitOfWork, EmailDO, ActionResult> callback)
+        {
+            session[token] = callback;
+        }
+
+        private Func<IUnitOfWork, EmailDO, ActionResult> GetCachedCallback(string token)
+        {
+            return Session[token] as Func<IUnitOfWork, EmailDO, ActionResult>;
+        }
+
+        public ViewResult DisplayEmail(HttpSessionStateBase session, CreateEmailVM emailVM, Func<IUnitOfWork, EmailDO, ActionResult> callback)
+        {
+            var token = Guid.NewGuid().ToString();
+            emailVM.CallbackToken = token;
+            SetCachedCallback(session, token, callback);
+            return View("~/Views/Email/Send.cshtml", emailVM);
+        }
+
+        public ActionResult HandleSend(SendEmailVM vm)
+        {
+            var cachedCallback = GetCachedCallback(vm.CallbackToken);
+            if (cachedCallback != null)
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var emailDO = new EmailDO();
+
+                    var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                    string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+                    
+                    emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+                    foreach (var to in vm.ToAddresses)
+                        emailDO.AddEmailRecipient(EmailParticipantType.To, uow.EmailAddressRepository.GetOrCreateEmailAddress(to));
+                    foreach (var cc in vm.CCAddresses)
+                        emailDO.AddEmailRecipient(EmailParticipantType.Cc, uow.EmailAddressRepository.GetOrCreateEmailAddress(cc));
+                    foreach (var bcc in vm.BCCAddresses)
+                        emailDO.AddEmailRecipient(EmailParticipantType.Bcc, uow.EmailAddressRepository.GetOrCreateEmailAddress(bcc));
+
+                    emailDO.HTMLText = vm.Body;
+                    emailDO.PlainText = vm.Body;
+                    emailDO.Subject = vm.Subject;
+
+                    uow.EmailRepository.Add(emailDO);
+                    return cachedCallback(uow, emailDO);
+                }
+            }
+
+            return new JsonResult {Data = false};
+        }
+        
+        [HttpPost]
+        public ActionResult Send(IUnitOfWork uow, EmailDO emailDO)
+        {
+            return new JsonResult { Data = true };
+        }
     }
 }

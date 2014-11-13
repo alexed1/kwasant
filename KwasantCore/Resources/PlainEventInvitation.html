@@ -18,5 +18,6 @@ var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
 foreach(var attendee in @Model.Attendees)
 {
 @(attendee.Name + " - " + attendee.EmailAddress)
+@("")
 }
 }

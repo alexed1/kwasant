@@ -6,7 +6,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 namespace Data.Entities
 {
     [Table("AspNetRoles")]
-    public class AspNetRolesDO : IdentityRole, IAspNetRoles, IBaseDO
+    public class AspNetRolesDO : IdentityRole, IAspNetRolesDO, IBaseDO
     {
         public DateTimeOffset LastUpdated { get; set; }
     }

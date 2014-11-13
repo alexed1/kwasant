@@ -6,13 +6,24 @@
 @Styles.Render("~/bundles/css/colorbox")
 @Styles.Render("~/bundles/css/temp")
 
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 <script src="~/Content/js/jquery.js"></script>
 <script src="~/Scripts/ContextMenu/jquery.contextMenu.js"></script>
 <link href="~/Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
 <link href="~/Content/css/backendcss/default.css" rel="stylesheet" />
 
-<div class="email-info-section">
-    <!--style="width: 400px;"-->
+<style>
+    .view-popup-window {
+        padding: 0px;
+    }
+    td {
+        font-weight: 200;
+        line-height: 31.4285736083984px;
+        height: 34px;
+    }
+</style>
+
+<div class="email-info-section">    
     <div class="info">
         <div id="emailSubject" class="subHeading email-subject">
             <h4 class="with-border">@Model.Subject</h4>
@@ -156,10 +167,5 @@
     $(function () {
         var conversationMembers = @Html.Raw(JsonConvert.SerializeObject(Model.Conversations, Formatting.Indented));
         displayConversation(conversationMembers);
-
-        $('#emailContent').hide();
-        $('#blah').click(function() {
-            $('#emailContent').slideDown();
-        });
     });
 </script>

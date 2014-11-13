@@ -11,12 +11,15 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using KwasantCore.Exceptions;
+using KwasantCore.Interfaces;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
 
 namespace KwasantCore.Services
 {
+
+
     public class BookingRequest : IBookingRequest
     {
         private IAttendee _attendee;
@@ -38,18 +41,12 @@ namespace KwasantCore.Services
 
                 var newBookingRequest = new BookingRequest();
                 newBookingRequest.Process(uow, bookingRequest);
+                uow.SaveChanges();
+
                 Email.FixInlineImages(bookingRequest);
                 uow.SaveChanges();
 
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.Customer.Id);
-
-                /*
-                            var preferredUser = newBookingRequest.GetPreferredBooker(bookingRequest);
-                            if (preferredUser != null)
-                            {
-                                newBookingRequest.Reserve(uow, bookingRequest, preferredUser);
-                            }
-                */
             }
         }
 
@@ -222,23 +219,39 @@ namespace KwasantCore.Services
             uow.SaveChanges();
         }
 
+        public IEnumerable<ParsedEmailAddress> ExtractParsedEmailAddresses(BookingRequestDO bookingRequestDO)
+        {
+            var emailAddress = new EmailAddress(ObjectFactory.GetInstance<IConfigRepository>());
+
+            var allThreads = bookingRequestDO.ConversationMembers.Union(new[] { bookingRequestDO }).ToList();
+
+            //Get the emails of every recipient in every email
+            var emailThreads = emailAddress.ExtractParsedFromString(allThreads.SelectMany(b => b.Recipients.Select(r => r.EmailAddress.Address).Union(new[] { b.From.Address })).ToArray());
+
+            //Get the emails found within email text
+            var emailsInText = new List<ParsedEmailAddress>();
+            foreach (var thread in allThreads)
+            {
+                emailsInText.AddRange(emailAddress.ExtractParsedFromString(thread.HTMLText, thread.PlainText, thread.Subject));
+            }
+
+            //Get the attendees of all events
+            var eventAttendees = emailAddress.ExtractParsedFromString(bookingRequestDO.Events.SelectMany(ev => ev.Attendees.Select(a => a.EmailAddress.Address)).ToArray());
+            return emailThreads.Union(emailsInText).Union(eventAttendees).GroupBy(pea => pea.Email).Select(g => g.First()); //Distinct on 'Email'
+        }
+
+        public IEnumerable<String> ExtractEmailAddresses(BookingRequestDO bookingRequestDO)
+        {
+            return ExtractParsedEmailAddresses(bookingRequestDO).Select(pea => pea.Email);
+        }
+
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
-            //Add the booking request user
-            var curAttendeeDO = _attendee.Create(uow, eventDO.BookingRequest.Customer.EmailAddress.Address,eventDO, eventDO.BookingRequest.Customer.FirstName);
-            eventDO.Attendees.Add(curAttendeeDO);
-            var emailAddresses = _emailAddress.GetEmailAddresses(uow, eventDO.BookingRequest.HTMLText, eventDO.BookingRequest.PlainText, eventDO.BookingRequest.Subject);
-
-            //need to add the addresses of people cc'ed or on the To line of the BookingRequest
-            emailAddresses.AddRange(eventDO.BookingRequest.Recipients.Select(r => r.EmailAddress));
-
-            foreach (var email in emailAddresses)
+            var emailAddresses = ExtractParsedEmailAddresses(eventDO.BookingRequest);
+            foreach (var attendee in emailAddresses)
             {
-                if (!FilterUtility.IsTestAttendee(email.Address))
-                {
-                    var curAttendee = _attendee.Create(uow, email.Address, eventDO, email.Name);
-                    eventDO.Attendees.Add(curAttendee);
-                }
+                var currAttendee = _attendee.Create(uow, attendee.Email, eventDO, attendee.Name);
+                eventDO.Attendees.Add(currAttendee);
             }
         }
 
@@ -266,21 +279,7 @@ namespace KwasantCore.Services
                         })
                     .ToList();
         }
-
-        public string getCountDaysAgo(DateTimeOffset dateReceived)
-        {
-            string daysAgo = string.Empty;
-            int countDays = (System.DateTime.Today - dateReceived).Days;
-            if (countDays > 0)
-                daysAgo = " (" + countDays + " days ago)";
-            else
-            {
-                daysAgo = " (" + dateReceived.ToLocalTime().ToString("T") + ")";
-            }
-
-            return daysAgo;
-        }
-
+        
         public object GetAllBookingRequests(IUnitOfWork uow)
         {
             return
@@ -304,6 +303,14 @@ namespace KwasantCore.Services
                     .ToList();
         }
 
+        public List<BookingRequestDO> GetAwaitingResponse(IUnitOfWork uow, string currBooker)
+        {
+            return
+                uow.BookingRequestRepository.GetAll()
+                    .Where(e => (e.State == BookingRequestState.AwaitingClient) && currBooker == GetPreferredBooker(e).Id)
+                    .OrderByDescending(e => e.DateReceived).ToList();
+        }
+
         public UserDO GetPreferredBooker(BookingRequestDO bookingRequestDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -322,6 +329,88 @@ namespace KwasantCore.Services
 
                 return preferredBookers.FirstOrDefault();
             }
+        }
+
+        public void AddExpectedResponseForBookingRequest(IUnitOfWork uow, EmailDO emailDO, int bookingRequestID)
+        {
+            //We don't wait for responses from CC or BCC recipients
+            foreach (var recipient in emailDO.To)
+            {
+                var currExpectedResponse = new ExpectedResponseDO
+                {
+                    Status = ExpectedResponseStatus.Active,
+                    User = uow.UserRepository.GetOrCreateUser(recipient.Address),
+                    AssociatedObjectID = bookingRequestID,
+                    AssociatedObjectType = "BookingRequest"
+                };
+                uow.ExpectedResponseRepository.Add(currExpectedResponse);
+            }               
+        }
+
+        public void AddExpectedResponseForNegotiation(IUnitOfWork uow, EmailDO emailDO, int negotiationID)
+        {
+            //We don't wait for responses from CC or BCC recipients
+            foreach (var recipient in emailDO.To)
+            {
+                var currExpectedResponse = new ExpectedResponseDO
+                {
+                    Status = ExpectedResponseStatus.Active,
+                    User = uow.UserRepository.GetOrCreateUser(recipient.Address),
+                    AssociatedObjectID = negotiationID,
+                    AssociatedObjectType = "Negotiation"
+                };
+                uow.ExpectedResponseRepository.Add(currExpectedResponse);
+            }
+        }
+
+        public void AcknowledgeResponseToBookingRequest(IUnitOfWork uow, int bookingRequestID, String userID)
+        {
+            var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+            //Now we mark expected responses as complete
+
+            var negotiationIDs = bookingRequestDO.Negotiations.Select(n => n.Id);
+
+            var expectedResponses = uow.ExpectedResponseRepository.GetQuery()
+                .Where(
+                er =>
+                    er.UserID == userID &&
+                    er.Status == ExpectedResponseStatus.Active &&
+                    er.AssociatedObjectID == bookingRequestID &&
+                    er.AssociatedObjectType == "BookingRequest")
+                .Union(uow.ExpectedResponseRepository.GetQuery()
+                .Where(
+                er => 
+                    er.UserID == userID &&
+                    er.Status == ExpectedResponseStatus.Active &&
+                    negotiationIDs.Contains(er.AssociatedObjectID) &&
+                    er.AssociatedObjectType == "Negotiation"
+                ));
+            
+
+            foreach (var expectedResponse in expectedResponses)
+                expectedResponse.Status = ExpectedResponseStatus.ResponseReceived;
+
+            if (expectedResponses.Any())
+                AlertManager.ResponseReceived(bookingRequestDO.Id, bookingRequestDO.BookerID, userID);
+        }
+
+        public void AcknowledgeResponseToNegotiationRequest(IUnitOfWork uow, int negotiationID, String userID)
+        {
+            var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationID);
+            //Now we mark expected responses as complete
+            var expectedResponses = uow.ExpectedResponseRepository.GetQuery()
+                .Where(
+                er =>
+                    er.UserID == userID &&
+                    er.Status == ExpectedResponseStatus.Active &&
+                    er.AssociatedObjectID == negotiationID &&
+                    er.AssociatedObjectType == "Negotiation");
+
+            foreach (var expectedResponse in expectedResponses)
+                expectedResponse.Status = ExpectedResponseStatus.ResponseReceived;
+
+            if (expectedResponses.Any())
+                AlertManager.ResponseReceived(negotiationDO.BookingRequest.Id, negotiationDO.BookingRequest.BookerID, userID);
         }
 
         public String GetConversationThread(BookingRequestDO bookingRequestDO)
