@@ -826,6 +826,7 @@
     <Content Include="Views\Email\Send.cshtml" />
     <Content Include="Views\Report\History.cshtml" />
     <Content Include="Views\Report\_History.cshtml" />
+    <Content Include="Views\BookingRequest\ShowManualCreationForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

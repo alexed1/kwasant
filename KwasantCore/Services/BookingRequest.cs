@@ -511,5 +511,22 @@ namespace KwasantCore.Services
             }
 
         }
+
+        public string Generate(IUnitOfWork uow, string emailAddress, string meetingInfo, string submitsVia, string subject)
+        {
+            MailMessage message = new MailMessage();
+            message.From = new MailAddress(emailAddress);
+            BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            bookingRequest.DateReceived = DateTime.Now;
+            bookingRequest.PlainText = meetingInfo;
+            bookingRequest.Subject = subject;
+            Process(uow, bookingRequest);
+            uow.SaveChanges();
+
+            ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.Customer, "SiteActivity", submitsVia, new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
+
+            return bookingRequest.CustomerID;
+        }
     }
 }

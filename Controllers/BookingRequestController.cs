@@ -18,20 +18,23 @@ using Data.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
 using Utilities;
+using Data.Validations;
+using FluentValidation;
+using Utilities.Logging;
 
 namespace KwasantWeb.Controllers
 {
     [KwasantAuthorize(Roles = "Booker")]
     public class BookingRequestController : Controller
     {
-       // private DataTablesPackager _datatables;
+        // private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
         Booker _booker;
         private JsonPackager _jsonPackager;
         public BookingRequestController()
         {
-           // _datatables = new DataTablesPackager();
+            // _datatables = new DataTablesPackager();
             _br = new BookingRequest();
             _booker = new Booker();
             _jsonPackager = new JsonPackager();
@@ -48,7 +51,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-               // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
+                // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
                 var unprocessedBRs = _br.GetUnprocessed(uow);
                 var jsonResult = Json(_jsonPackager.Pack(unprocessedBRs));
                 jsonResult.MaxJsonLength = int.MaxValue;
@@ -72,7 +75,7 @@ namespace KwasantWeb.Controllers
             catch (EntityNotFoundException)
             {
                 return HttpNotFound();
-        }
+            }
         }
 
         [HttpGet]
@@ -145,40 +148,57 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        public ActionResult ShowManualCreationForm()
+        {
+            return View();
+        }
 
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult Generate(string emailAddress, string meetingInfo)
+        public ActionResult CreateViaBooker(string emailAddress, string meetingInfo, string subject)
         {
-            string result = "";
+            try
+            {
+                var emailAddressDO = new EmailAddressDO(emailAddress);
+
+                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+                emailAddressValidator.ValidateAndThrow(emailAddressDO);
+
+                if (meetingInfo.Trim().Length < 30)
+                    return Json(new { Message = "Meeting information must have at least 30 characters" });
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaCreateManuallyBooker", subject);
+                    return new JsonResult() { Data = new { Message = "A new booking requested created!", Result = "Success"}, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+                }
+            }
+            catch (ValidationException ex)
+            {
+                return new JsonResult() { Data = new { Message = "You need to provide a valid Email Address.", Result = "Failure" }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error("Error processing a home page try it out form schedule me", ex);
+                return new JsonResult() { Data = new { Message = "Something went wrong. Sorry about that", Result = "Failure" }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            }
+        }
+
+        [AllowAnonymous]
+        public ActionResult CreateViaHomePage(string emailAddress, string meetingInfo)
+        {
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    MailMessage message = new MailMessage();
-                    message.From = new MailAddress(emailAddress);
-                    BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
-                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-                    bookingRequest.DateReceived = DateTime.Now;
-                    bookingRequest.PlainText = meetingInfo;
-                    _br.Process(uow, bookingRequest);
-
-                    uow.SaveChanges();
-
-                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.Customer, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
-
-                    return Json(new
-                        {
-                            Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", 
-                            UserID = bookingRequest.CustomerID
-                        });
+                    string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaTryItOut", "");
+                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = userId }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
                 }
             }
             catch (Exception e)
             {
-                return Json(new { Message = "Sorry! Something went wrong. Alpha software..." });
+                return new JsonResult() { Data = new { Message = "Sorry! Something went wrong. Alpha software..." }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
-
         }
 
         // GET: /RelatedItems 
@@ -223,7 +243,7 @@ namespace KwasantWeb.Controllers
             catch (EntityNotFoundException)
             {
                 return HttpNotFound();
-        }
+            }
         }
 
         public ActionResult ShowBRSOwnedByBooker()
@@ -232,7 +252,7 @@ namespace KwasantWeb.Controllers
         }
 
 
-       //Get all checkout BR's owned by the logged
+        //Get all checkout BR's owned by the logged
         [HttpPost]
         public ActionResult GetBRSOwnedByBooker()
         {
@@ -253,11 +273,11 @@ namespace KwasantWeb.Controllers
         }
 
 
-       //Get  BR's that are currently checked out
+        //Get  BR's that are currently checked out
         [HttpPost]
         public ActionResult GetInProcessBRS()
-        {    
-            string curBooker="";
+        {
+            string curBooker = "";
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
@@ -267,7 +287,7 @@ namespace KwasantWeb.Controllers
                 return jsonResult;
             }
         }
-        
+
         public ActionResult DisplayOneOffEmailForm(int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
