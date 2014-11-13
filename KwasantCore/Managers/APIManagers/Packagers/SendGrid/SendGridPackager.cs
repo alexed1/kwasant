@@ -103,7 +103,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
                     {
                         foreach (var pair in envelope.MergeData)
                         {
-                            mailMessage.AddSubstitution(pair.Key, new List<string>() { pair.Value });
+                            mailMessage.AddSubstitution(pair.Key, new List<string>() { pair.Value ?? String.Empty });
                         }
                     }
                 }

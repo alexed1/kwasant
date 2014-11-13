@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Data.Entities
 {
-    public class EnvelopeDO : BaseDO, IEnvelope
+    public class EnvelopeDO : BaseDO, IEnvelopeDO
     {
         class MergeDataDictionary : IDictionary<string, string>
         {
@@ -149,7 +149,7 @@ namespace Data.Entities
         [NotMapped]
         public IDictionary<string, string> MergeData { get { return _mergeData; } }
         [NotMapped]
-        IEmail IEnvelope.Email
+        IEmailDO IEnvelopeDO.Email
         {
             get { return Email; }
             set { Email = (EmailDO)value; }

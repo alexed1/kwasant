@@ -9,14 +9,12 @@ namespace KwasantWeb.ViewModels
         public NegotiationVM()
         {
             Questions = new List<NegotiationQuestionVM>();
-            Attendees = new List<string>();
         }
 
         public int? Id { get; set; }
         public int? BookingRequestID { get; set; }
         public string Name { get; set; }
         public List<NegotiationQuestionVM> Questions { get; set; }
-        public List<String> Attendees { get; set; }
     }
 
     public class NegotiationQuestionVM

@@ -4,12 +4,11 @@ using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using KwasantCore.Interfaces;
 
 
 namespace KwasantCore.Services
 {
-   
-
     public class Attendee : IAttendee
     {
         private readonly EmailAddress _emailAddress;
