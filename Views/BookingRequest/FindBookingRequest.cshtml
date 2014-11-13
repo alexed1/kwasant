@@ -1,6 +1,16 @@
 ﻿<h2>Find Booking Request</h2>
 <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+<style>
+    .rowClass
+    {
+        background-color: transparent !important;
+    }
+        .rowClass td
+        {
+            border-bottom: 1px solid #ddd;
+        }
+</style>
 
 <div style="padding-right: 40px;">
     <form>
@@ -93,6 +103,7 @@
         //Binding retrived data to show using DataTable widget
         function showRequests(response) {
             table = $('#tblbookingrequest').DataTable({
+                stripeClasses: ['rowClass'],
                 destroy: true,
                 data: JSON.parse(response),
                 order: [0, 'desc'],
@@ -103,7 +114,7 @@
                     { data: 'body' },
                     {
                         data: null,
-                        defaultContent: "<button value='detail' onclick='getDetails(this)' class='custom-btn glyphicon glyphicon-folder-open'>Details</button>"
+                        defaultContent: "<a value='detail' href='#' onclick='getDetails(this)'>Details</a>"
                     }
                 ],
             });
