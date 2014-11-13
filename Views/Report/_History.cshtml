@@ -33,7 +33,7 @@ Layout = "~/Views/Shared/_Blank.cshtml";
 
 <div class="light-bg history-view-event">
 	<h3 class="with-border popup-title">History</h3>
-	<a class="popup-close glyphicon glyphicon-remove" onclick="closethis(this);"></a>
+	<a class="popup-close glyphicon glyphicon-remove" onclick="Kwasant.IFrame.CloseMe(false);"></a>
 	<table id="tblHistoryReport" class="table data-table">
 		<thead>
 			<tr>
@@ -68,16 +68,5 @@ Layout = "~/Views/Shared/_Blank.cshtml";
 			}
 		}
 
-		function closethis(e){
-			$(window.parent.document).find("body > iframe").each(function () {
-				//if ($(this).css('z-index')) {
-					if ($(this).attr("style").indexOf("z-index") > 0) {
-					//if ($(this).is(':visible')) {
-						if ($(this).attr("style").indexOf("display: none") < 0) {
-						$(this).hide();
-					}
-				}
-			});
-		}
 
 	</script>

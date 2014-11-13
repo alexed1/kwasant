@@ -147,5 +147,16 @@ namespace KwasantTest.Services
                 Assert.AreEqual(1, uow.EmailAddressRepository.GetQuery().Count());
             }
         }
+
+        [Test]
+        public void TestCorruptEmailNotParsed()
+        {
+            var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+            var result = emailAddress.ExtractFromString("hq@kwasant.comalex@edelstein.org");
+
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual(String.Empty, result[0].Name);
+            Assert.AreEqual("hq@kwasant.comalex", result[0].Email); //Technically a valid email. What we're really testing for, though, is that '@edelstein.org' is not parsed as a seperate email
+        }
     }
 }
