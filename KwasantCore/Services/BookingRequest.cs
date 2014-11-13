@@ -225,7 +225,7 @@ namespace KwasantCore.Services
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
             //Add the booking request user
-            var curAttendeeDO = _attendee.Create(uow, eventDO.BookingRequest.Customer.EmailAddress.Address,eventDO, eventDO.BookingRequest.Customer.FirstName);
+            var curAttendeeDO = _attendee.Create(uow, eventDO.BookingRequest.Customer.EmailAddress.Address, eventDO, eventDO.BookingRequest.Customer.FirstName);
             eventDO.Attendees.Add(curAttendeeDO);
             var emailAddresses = _emailAddress.GetEmailAddresses(uow, eventDO.BookingRequest.HTMLText, eventDO.BookingRequest.PlainText, eventDO.BookingRequest.Subject);
 
@@ -339,7 +339,7 @@ namespace KwasantCore.Services
     </div>
 </div>
 ";
-            var threads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO});
+            var threads = bookingRequestDO.ConversationMembers.Union(new[] { bookingRequestDO });
 
             var result = String.Join("", threads.OrderByDescending(b => b.DateReceived).Select(e =>
                 String.Format(conversationThreadFormat, e.From.Name,
@@ -431,6 +431,26 @@ namespace KwasantCore.Services
                 AlertManager.BookingRequestReservationTimeout(bookingRequestDO.Id, bookerId);
             }
 
+        }
+
+        public List<BookingRequestDO> Search(IUnitOfWork uow, string queryPeriod, bool includeInvalid, int Id)
+        {
+            if (Id != 0)
+            {
+                return new List<BookingRequestDO> { uow.BookingRequestRepository.GetByKey(Id) };
+            }
+            else 
+            {
+                var requestList = uow.BookingRequestRepository.GetQuery();
+                if (queryPeriod != "all")
+                {
+                    DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
+                    requestList = requestList.Where(e => e.DateCreated > dateRange.StartTime && e.DateCreated < dateRange.EndTime);
+                }
+                if (!includeInvalid)
+                    requestList = requestList.Where(e => e.State != BookingRequestState.Invalid);
+                return requestList.OrderByDescending(e => e.DateReceived).ToList();
+            }
         }
     }
 }

@@ -18,7 +18,7 @@
    
     $(document).ready(function () {
         //Ajax call to get  check out  booking request  by  the logged(curBookerId) from server.
-        $.post("/BookingRequest/GetBRSOwnedByBooker", {}, showRequests, 'json');
+        $.post("/BookingRequest/ShowByBooker", {}, showRequests, 'json');
         function showRequests(response) {
             var table = $('#tblmybookingrequest').DataTable({
                 data: JSON.parse(response),

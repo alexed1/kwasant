@@ -24,14 +24,14 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize(Roles = "Booker")]
     public class BookingRequestController : Controller
     {
-       // private DataTablesPackager _datatables;
+        // private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
         Booker _booker;
         private JsonPackager _jsonPackager;
         public BookingRequestController()
         {
-           // _datatables = new DataTablesPackager();
+            // _datatables = new DataTablesPackager();
             _br = new BookingRequest();
             _booker = new Booker();
             _jsonPackager = new JsonPackager();
@@ -48,7 +48,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-               // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
+                // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
                 var unprocessedBRs = _br.GetUnprocessed(uow);
                 var jsonResult = Json(_jsonPackager.Pack(unprocessedBRs));
                 jsonResult.MaxJsonLength = int.MaxValue;
@@ -126,7 +126,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetBookingRequests(int? bookingRequestId, int draw, int start, int length)
+        public ActionResult ShowByUser(int? bookingRequestId, int draw, int start, int length)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -145,6 +145,25 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        //Get all checkout BR's owned by the logged
+        [HttpPost]
+        public ActionResult ShowByBooker()
+        {
+            var curBooker = this.GetUserId();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
+                var bookerOwnedRequests = _br.GetCheckOutBookingRequest(uow, curBooker);
+                var jsonResult = Json(_jsonPackager.Pack(bookerOwnedRequests));
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+
+        public ActionResult ShowBRSOwnedByBooker()
+        {
+            return View("ShowMyBRs");
+        }
 
         [AllowAnonymous]
         [HttpPost]
@@ -169,7 +188,7 @@ namespace KwasantWeb.Controllers
 
                     return Json(new
                         {
-                            Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", 
+                            Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be",
                             UserID = bookingRequest.CustomerID
                         });
                 }
@@ -226,38 +245,17 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        public ActionResult ShowBRSOwnedByBooker()
-        {
-            return View("ShowMyBRs");
-        }
-
-
-       //Get all checkout BR's owned by the logged
-        [HttpPost]
-        public ActionResult GetBRSOwnedByBooker()
-        {
-            var curBooker = this.GetUserId();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
-                var bookerOwnedRequests = _br.GetCheckOutBookingRequest(uow, curBooker);
-                var jsonResult = Json(_jsonPackager.Pack(bookerOwnedRequests));
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
-            }
-        }
-
         public ActionResult ShowInProcessBRS()
         {
             return View("ShowInProcessBRs");
         }
 
 
-       //Get  BR's that are currently checked out
+        //Get  BR's that are currently checked out
         [HttpPost]
         public ActionResult GetInProcessBRS()
-        {    
-            string curBooker="";
+        {
+            string curBooker = "";
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
@@ -305,5 +303,32 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        // GET: /BookingRequest/FindBookingRequest
+        public ActionResult FindBookingRequest()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Search(string queryPeriod, bool includeInvalid, int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var jsonResult = Json(_jsonPackager.Pack(_br.Search(uow, queryPeriod, includeInvalid, id).Select(e => new
+                {
+                    id = e.Id,
+                    subject = e.Subject,
+                    fromAddress = e.From.Address,
+                    dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                    body =
+                        e.HTMLText.Trim().Length > 400
+                            ? e.HTMLText.Trim().Substring(0, 400)
+                            : e.HTMLText.Trim()
+                })
+                ));
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
     }
 }
