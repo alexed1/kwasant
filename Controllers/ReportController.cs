@@ -16,7 +16,6 @@ namespace KwasantWeb.Controllers
 
         public ReportController()
         {
-           // _datatables = new DataTablesPackager();
             _report = new Report();
             _jsonPackager = new JsonPackager();
         }
@@ -44,7 +43,6 @@ namespace KwasantWeb.Controllers
             DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //var jsonResult = Json(_datatables.Pack(_report.Generate(uow, dateRange, type)), JsonRequestBehavior.AllowGet);
                 var report = _report.Generate(uow, dateRange, type);
                 var jsonResult = Json(_jsonPackager.Pack(report));
                 jsonResult.MaxJsonLength = int.MaxValue;
@@ -63,7 +61,6 @@ namespace KwasantWeb.Controllers
             DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //var jsonResult = Json(_datatables.Pack(_report.GenerateHistoryReport(uow, dateRange, primaryCategory, bookingRequestId)), JsonRequestBehavior.AllowGet);
                 var historyReport = _report.GenerateHistoryReport(uow, dateRange, primaryCategory, bookingRequestId);
                 var jsonResult = Json(_jsonPackager.Pack(historyReport));
                 jsonResult.MaxJsonLength = int.MaxValue;
@@ -78,14 +75,12 @@ namespace KwasantWeb.Controllers
             return View("_History");
         }
 
-        [HttpPost]
         public ActionResult ShowHistoryByBookingRequestId(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-               // var jsonResult = Json(_datatables.Pack(_report.GenerateHistoryByBookingRequestId(uow, bookingRequestId)), JsonRequestBehavior.AllowGet);
                 var historyByBRId = _report.GenerateHistoryByBookingRequestId(uow, bookingRequestId);
-                var jsonResult = Json(_jsonPackager.Pack(historyByBRId));
+                var jsonResult = Json(_jsonPackager.Pack(historyByBRId), JsonRequestBehavior.AllowGet);
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
              }
