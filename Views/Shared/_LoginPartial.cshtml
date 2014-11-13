@@ -13,9 +13,14 @@
     using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
     {
         @Html.AntiForgeryToken()
+  <ul class="pull-right welcomemsg smalltext">
+         <li data-section="2">@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+  </ul>			 
+
 		<nav class="navbar-collapse collapse bs-navbar-collapse mmenu">
-			 <ul class="nav navbar-nav navbar-right">
-                <li>@Html.ActionLink("Hello " + User.Identity.GetUserName() + "!", "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" })</li>
+   
+
+             <ul class="nav navbar-nav navbar-right">
                 <li>@Html.ActionLink("My Account", "MyAccount", "User")</li>
                 @if (User.IsInRole("Admin") || User.IsInRole("Booker")){ 
                 <li>@Html.ActionLink("Dashboard", "Dashboard", "Admin")</li>
