@@ -71,6 +71,7 @@
 </table>
 
 <script type="text/javascript">
+    var table;
     $(document).ready(function () {
         $("#tblbookingrequest").hide();
         //Binding click event on "Find" button
@@ -91,7 +92,7 @@
 
         //Binding retrived data to show using DataTable widget
         function showRequests(response) {
-            var table = $('#tblbookingrequest').DataTable({
+            table = $('#tblbookingrequest').DataTable({
                 destroy: true,
                 data: JSON.parse(response),
                 order: [0, 'desc'],
@@ -102,26 +103,17 @@
                     { data: 'body' },
                     {
                         data: null,
-                        defaultContent: "<button value='detail' class='custom-btn glyphicon glyphicon-folder-open'>Details</button>"
+                        defaultContent: "<button value='detail' onclick='getDetails(this)' class='custom-btn glyphicon glyphicon-folder-open'>Details</button>"
                     }
                 ],
-            });
-
-            //This function will bind a click function on every button in table "tblbookingrequest"
-            $('#tblbookingrequest tbody').on('click', 'button', function () {
-                var data = table.row($(this).parents('tr')).data();
-                //checking clicked button value for appropriate action this will be "detail" 
-                switch ($(this).val()) {
-                    case "detail":
-                        //redirecting to main Dashboard view for details
-                        window.location.href = '@Url.Action("Details")' + "/" + data.id;
-                        break;
-                    default:
-                        alert("Not a valid action!");
-                }
             });
         }
     });
 
-
+    //Function triggered on "Details" button click in table "tblbookingrequest"
+    function getDetails(curElmt) {
+        var data = table.row($(curElmt).parents('tr')).data();
+        //redirecting to main Dashboard view for details
+        window.location.href = '@Url.Action("Details")' + "/" + data.id;
+    }
 </script>
