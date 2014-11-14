@@ -227,7 +227,8 @@ namespace KwasantCore.Services
                                               new RecipientDO()
                                                  {
                                                    EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(toRecipient),
-                                                   EmailParticipantType = EmailParticipantType.To
+                                                   EmailParticipantType = EmailParticipantType.To,
+                                                   Email = curEmail
                                                  }
                                          };
             return curEmail;
