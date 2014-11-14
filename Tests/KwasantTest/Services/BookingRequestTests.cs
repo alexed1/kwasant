@@ -373,15 +373,15 @@ namespace KwasantTest.Services
                 var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
 
                 uow.BookingRequestRepository.Add(bookingRequestDO);
-                uow.AspNetUserRolesRepository.AssignRoleToUser("Booker", bookingRequestDO.User.Id);
+                uow.AspNetUserRolesRepository.AssignRoleToUser("Booker", bookingRequestDO.Customer.Id);
                 uow.SaveChanges();
 
-                ObjectFactory.GetInstance<Data.Infrastructure.StructureMap.ISecurityServices>().Login(uow, bookingRequestDO.User);
+                ObjectFactory.GetInstance<Data.Infrastructure.StructureMap.ISecurityServices>().Login(uow, bookingRequestDO.Customer);
 
                 BookingRequestController controller = new BookingRequestController();
                 controller.Details(bookingRequestDO.Id);
 
-                IEnumerable<BookingRequestDO> requests = (new BookingRequest()).GetCheckedOut(uow, bookingRequestDO.User.Id);
+                IEnumerable<BookingRequestDO> requests = (new BookingRequest()).GetCheckedOut(uow, bookingRequestDO.Customer.Id);
                 Assert.AreEqual(bookingRequestDO.Id, requests.FirstOrDefault().Id);
             }
         }

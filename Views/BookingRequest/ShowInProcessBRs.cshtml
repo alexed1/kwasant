@@ -22,12 +22,16 @@
         showRequests();
 
         function showRequests() {
+            //'DateReceived'
             var response = @Html.Raw(JsonConvert.SerializeObject(Model.BookingRequests, Formatting.Indented));
             var table = $('#tblinprocessbookingrequest').DataTable({
                 data: response,
                 order: [2, 'desc'],
                 columns: [
-                    { data: 'DateReceived' },
+                    { data: 
+                          function(data){
+                              return convertToDateString(data.DateReceived)
+                          }                     },
                     { data: 'EmailAddress' },
                     { data: 'Subject' },
                     { data: 'HTMLText' },

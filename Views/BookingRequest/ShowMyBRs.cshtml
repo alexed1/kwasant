@@ -27,7 +27,9 @@
                 data: response,
                 order: [2, 'desc'],
                 columns: [
-                    { data: 'DateReceived' },
+                    { data: function(data){
+                        return convertToDateString(data.DateReceived)
+                    }                 },
                     { data: 'EmailAddress' },
                     { data: 'Subject' },
                     { data: 'HTMLText' },
