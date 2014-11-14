@@ -2,6 +2,7 @@
 using System.IO;
 using Data.Entities;
 using Microsoft.WindowsAzure;
+using Utilities;
 
 namespace Data.Infrastructure
 {
@@ -12,8 +13,9 @@ namespace Data.Infrastructure
             string directory = CloudConfigurationManager.GetSetting("LocalFileStorageDirectory");
             if (String.IsNullOrEmpty(directory))
                 directory = Path.GetTempPath();
+            if (!Path.IsPathRooted(directory))
+                directory = Path.Combine(Server.ServerPhysicalPath, directory);
 
-            directory = Path.GetFullPath(directory);
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
             return Path.Combine(directory, relativePath);

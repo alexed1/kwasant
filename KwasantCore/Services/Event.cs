@@ -52,6 +52,8 @@ namespace KwasantCore.Services
             curEventDO.CreatedByID = bookingRequestDO.Customer.Id;
             curEventDO.DateCreated = DateTimeOffset.UtcNow.ToOffset(bookingRequestDO.DateCreated.Offset);
             
+            bookingRequestDO.Events.Add(curEventDO);
+
             var curCalendar = bookingRequestDO.Customer.Calendars.FirstOrDefault();
             if (curCalendar == null)
                 throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");

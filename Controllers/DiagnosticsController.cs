@@ -160,7 +160,7 @@ See more: {2}
 ", DateTime.Now, results, Utilities.Server.ServerUrl);
                     string subject = String.Format("Alert! Service test failed. Service: {0} Test: {1}", typeof (T).Name,
                         testName);
-                    var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, "techops@kwasant.com");
+                    var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, "ops@kwasant.com");
                     uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
                     uow.SaveChanges();
                 }

@@ -156,7 +156,7 @@ namespace KwasantCore.Managers
 
                     break;
                 case CommunicationMode.Delegate:
-                    templateName = _configRepository.Get("CR_template_for_existing_user");
+                    templateName = _configRepository.Get("CR_template_for_precustomer");
 
                     break;
                 case CommunicationMode.Precustomer:

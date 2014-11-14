@@ -1,4 +1,6 @@
-﻿<h2>My Booking Request</h2>
+﻿@using Newtonsoft.Json
+@model KwasantWeb.ViewModels.BookingRequestsVM
+<h2>My Booking Request</h2>
 <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 
@@ -17,17 +19,20 @@
 <script type="text/javascript">
    
     $(document).ready(function () {
-        //Ajax call to get  check out  booking request  by  the logged(curBookerId) from server.
-        $.post("/BookingRequest/GetBRSOwnedByBooker", {}, showRequests, 'json');
-        function showRequests(response) {
+        showRequests();
+        
+        function showRequests() {
+            var response = @Html.Raw(JsonConvert.SerializeObject(Model.BookingRequests, Formatting.Indented));
             var table = $('#tblmybookingrequest').DataTable({
-                data: JSON.parse(response),
+                data: response,
                 order: [2, 'desc'],
                 columns: [
-                    { data: 'date_received' },
-                    { data: 'from_address' },
-                    { data: 'subject' },
-                    { data: 'body' },
+                    { data: function(data){
+                        return convertToDateString(data.DateReceived)
+                    }                 },
+                    { data: 'EmailAddress' },
+                    { data: 'Subject' },
+                    { data: 'HTMLText' },
                     {
                         data: null,
                         defaultContent: "<button value='detail' class='custom-btn glyphicon glyphicon-folder-open'>Details</button><button value='Release' class='custom-btn glyphicon glyphicon-folder-open'>Release</button>"
@@ -44,10 +49,10 @@
                 switch ($(this).val()) {
                     case "detail":
                         //redirecting to main calendar view for details
-                        window.location.href = '@Url.Action("Details")' + "/" + data.id;
+                        window.location.href = '@Url.Action("Details")' + "/" + data.Id;
                         break;
                     case "Release":
-                        $.post("/BookingRequest/ReleaseBooker?bookingRequestId=" + data.id, function (response) {
+                        $.post("/BookingRequest/ReleaseBooker?bookingRequestId=" + data.Id, function (response) {
                             $(parentcontrol).parents('tr').remove();
                         });
                         break;
