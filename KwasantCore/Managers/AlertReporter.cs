@@ -7,6 +7,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.Exceptions;
+using KwasantCore.Interfaces;
 using KwasantCore.Services;
 using Newtonsoft.Json;
 using StructureMap;
@@ -294,6 +295,10 @@ namespace KwasantCore.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+
+                
+                ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.Customer, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
+
                 FactDO curAction = new FactDO()
                     {
                         Name = "",
