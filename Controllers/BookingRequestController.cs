@@ -340,5 +340,34 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        // GET: /BookingRequest/ShowAwaitingResponse
+        public ActionResult ShowAwaitingResponse()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult GetAwaitingResponse()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                string currBooker = this.GetUserId();
+                var jsonResult = Json(_jsonPackager.Pack(_br.GetAwaitingResponse(uow, currBooker).Select(e => new
+                {
+                    id = e.Id,
+                    subject = e.Subject,
+                    fromAddress = e.From.Address,
+                    dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                    body =
+                        e.HTMLText.Trim().Length > 400
+                            ? e.HTMLText.Trim().Substring(0, 400)
+                            : e.HTMLText.Trim()
+                })
+                    ));
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+
     }
 }

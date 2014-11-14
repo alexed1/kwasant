@@ -823,6 +823,7 @@
     <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\BookingRequest\ShowAwaitingResponse.cshtml" />
     <Content Include="Views\Email\Send.cshtml" />
     <Content Include="Views\Report\History.cshtml" />
     <Content Include="Views\Report\_History.cshtml" />
