@@ -419,6 +419,10 @@
     <Compile Include="Migrations\201411122129066_ChangeNegotiationDateCreatedType.Designer.cs">
       <DependentUpon>201411122129066_ChangeNegotiationDateCreatedType.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411141701007_CascadeRecipientsOnEmail.cs" />
+    <Compile Include="Migrations\201411141701007_CascadeRecipientsOnEmail.Designer.cs">
+      <DependentUpon>201411141701007_CascadeRecipientsOnEmail.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
@@ -1319,6 +1323,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411122129066_ChangeNegotiationDateCreatedType.resx">
       <DependentUpon>201411122129066_ChangeNegotiationDateCreatedType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411141701007_CascadeRecipientsOnEmail.resx">
+      <DependentUpon>201411141701007_CascadeRecipientsOnEmail.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
