@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201411141701007_CascadeRecipientsOnEmail"; }
+            get { return "201411141726083_CascadeRecipientsOnEmail"; }
         }
         
         string IMigrationMetadata.Source

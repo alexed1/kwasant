@@ -13,7 +13,7 @@ namespace Data.Entities
         public int? EmailID { get; set; }
         public virtual EmailDO Email { get; set; }
 
-        [ForeignKey("EmailAddress")]
+        [ForeignKey("EmailAddress"), Required]
         public int? EmailAddressID { get; set; }
         public virtual EmailAddressDO EmailAddress { get; set; }
 
