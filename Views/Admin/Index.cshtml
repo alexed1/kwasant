@@ -91,13 +91,13 @@
              columns: [
                  {
                     data: function (data) {
-                        return convertToDateString(data.create_time);
+                        return convertToDateString(data.create_date);
                     }
                  },
                  { data: 'primary_category' },
                  { data: 'secondary_category' },
                  { data: 'activity' },
-                 { data: 'notes' }
+                 { data: 'data' }
              ],
          });
      }
