@@ -197,92 +197,114 @@ if (typeof (Kwasant.IFrame) === 'undefined') {
         var iframe = $('<iframe/>', {
             src: url,
             style: 'position: absolute;width: 500px;background-color: #FFFFFF;display: none;z-index: 9999;border: 1px solid #333;-moz-box-shadow:0 0 10px #000;-webkit-box-shadow:0 0 10px #000;box-shadow: #000 0px 0px 10px;padding:' + options.paddingAmount + 'px;',
-            load: function () {                
-                var iframeDoc = $(this).contents();
-                var that = $(this);
-                var reposition = function() {
-                    var winH = $(top).height();
-                    var winW = $(top).width();
+            load: function () {
+                try {
+                    var contentWindow = this.contentWindow;
+                    var iframeDoc = $(this).contents();
+                    var that = $(this);
+                    var reposition = function() {
+                        var winH = $(top).height();
+                        var winW = $(top).width();
 
-                    var scrollTop = $(top).scrollTop();
-                    var scrollLeft = $(top).scrollLeft();
+                        var scrollTop = $(top).scrollTop();
+                        var scrollLeft = $(top).scrollLeft();
                     
-                    var iframeWidth = iframeDoc.get(0).body.offsetWidth + (options.paddingAmount * 2);
-                    var iframeHeight = iframeDoc.get(0).body.offsetHeight + (options.paddingAmount * 2);
+                        var iframeWidth = iframeDoc.get(0).body.offsetWidth + (options.paddingAmount * 2);
+                        var iframeHeight = iframeDoc.get(0).body.offsetHeight + (options.paddingAmount * 2);
 
-                    if (options.minWidth !== null && options.minWidth !== undefined && iframeWidth < options.minWidth)
-                        iframeWidth = options.minWidth;
+                        if (options.minWidth !== null && options.minWidth !== undefined && iframeWidth < options.minWidth)
+                            iframeWidth = options.minWidth;
                     
-                    if (options.minHeight !== null && options.minHeight !== undefined && iframeHeight < options.minHeight)
-                        iframeHeight = options.minHeight;
+                        if (options.minHeight !== null && options.minHeight !== undefined && iframeHeight < options.minHeight)
+                            iframeHeight = options.minHeight;
 
-                    var sidePadding = 2;
-                    var topPos;
-                    iframeDoc.find('body').addClass('iframe-body');
+                        var sidePadding = 2;
+                        var topPos;
+                        iframeDoc.find('body').addClass('iframe-body');
 
-                    if (options.verticalAlign === 'top') {
-                        topPos = scrollTop + sidePadding;
-                    } else if (options.verticalAlign === 'centre') {
-                        topPos = scrollTop + (winH - that.height()) / 2;
-                    } else {
-                        topPos = scrollTop + (winH - that.height()) - getScrollbarWidth() - sidePadding;
+                        if (options.verticalAlign === 'top') {
+                            topPos = scrollTop + sidePadding;
+                        } else if (options.verticalAlign === 'centre') {
+                            topPos = scrollTop + (winH - that.height()) / 2;
+                        } else {
+                            topPos = scrollTop + (winH - that.height()) - getScrollbarWidth() - sidePadding;
+                        }
+
+                        if (topPos < 10)
+                            topPos = 10;
+
+                        var leftPos;
+                        if (options.horizontalAlign === 'right') {
+                            leftPos = scrollLeft + (winW - that.width()) - getScrollbarWidth() - sidePadding;
+                        } else if (options.horizontalAlign === 'middle') {
+                            leftPos = scrollLeft + (winW - that.width()) / 2;
+                        } else {
+                            leftPos = scrollLeft + sidePadding;
+                        }
+
+                        if (options.width)
+                            iframeWidth = options.width;
+                    
+                        if (options.height)
+                            iframeHeight = options.height;
+
+                        that.css('top', topPos);
+                        that.css('left', leftPos);
+
+                        that.css('width', iframeWidth + 'px');
+                        that.css('minWidth', iframeWidth + 'px');
+                    
+                        that.css('height', iframeHeight + 'px');
+                        that.css('minHeight', iframeHeight + 'px');
+                    };
+
+                    if (options.pinned) {
+                        $(top).resize(reposition);
+                        $(top).scroll(reposition);
                     }
 
-                    if (topPos < 10)
-                        topPos = 10;
+                    if (options.modal) {
+                        that.mask = $('<div></div>');
+                        that.mask.css({ 'position': 'absolute', 'z-index': 9999, 'background-color': '#FFF', 'display': 'none' });
+                        iframe.before(that.mask);
 
-                    var leftPos;
-                    if (options.horizontalAlign === 'right') {
-                        leftPos = scrollLeft + (winW - that.width()) - getScrollbarWidth() - sidePadding;
-                    } else if (options.horizontalAlign === 'middle') {
-                        leftPos = scrollLeft + (winW - that.width()) / 2;
-                    } else {
-                        leftPos = scrollLeft + sidePadding;
+                        var maskHeight = $(top.document).height();
+                        var maskWidth = $(top.document).width();
+                        that.mask.css({ 'left': 0, 'top': 0, 'width': maskWidth, 'height': maskHeight });
+                        that.mask.fadeTo("fast", 0.8);
                     }
 
-                    that.css('top', topPos);
-                    that.css('left', leftPos);
+                    $(this).fadeTo("fast", 1, function() {
+                        //We need to position it twice. The first position allows the browser to calculate the dimensions. The second reposition moves it based on dimensions.
+                        reposition();
+                        reposition();
 
-                    that.css('width', iframeWidth + 'px');
-                    that.css('minWidth', iframeWidth + 'px');
+                        //We need a third time if we're sticking to the bottom. This is because the reposition has the potential to mess with the scroll bars - so we need to re-calculate it with that in mind.
+                        if (options.verticalAlign === 'bottom') {
+                            setTimeout(reposition, 100);
+                        }
+                        if (spinner)
+                            spinner.hide();
+
                     
-                    that.css('height', iframeHeight + 'px');
-                    that.css('minHeight', iframeHeight + 'px');
-                };
+                        setTimeout(function () {
+                            contentWindow.focus();
+                            if (options.focusElement)
+                            
+                            var focusElem = iframeDoc.find(options.focusElement).get(0);
+                            if (focusElem)
+                                focusElem.focus();
+                        }, 100);
+                    });
 
-                if (options.pinned) {
-                    $(top).resize(reposition);
-                    $(top).scroll(reposition);
-                }
-
-                if (options.modal) {
-                    that.mask = $('<div></div>');
-                    that.mask.css({ 'position': 'absolute', 'z-index': 9999, 'background-color': '#FFF', 'display': 'none' });
-                    iframe.before(that.mask);
-
-                    var maskHeight = $(top.document).height();
-                    var maskWidth = $(top.document).width();
-                    that.mask.css({ 'left': 0, 'top': 0, 'width': maskWidth, 'height': maskHeight });
-                    that.mask.fadeTo("fast", 0.8);
-                }
-
-                $(this).fadeTo("fast", 1, function() {
-                    $(this).focus();
-                    //We need to position it twice. The first position allows the browser to calculate the dimensions. The second reposition moves it based on dimensions.
-                    reposition();
-                    reposition();
-
-                    //We need a third time if we're sticking to the bottom. This is because the reposition has the potential to mess with the scroll bars - so we need to re-calculate it with that in mind.
-                    if (options.verticalAlign === 'bottom') {
-                        setTimeout(reposition, 100);
-                    }
+                    Kwasant.IFrame.RegisterCloseEvent(that, options.callback);
+                    Kwasant.IFrame.RegisterStateChangeEvent(that, options.statechange);
+                } catch (e) {
                     if (spinner)
                         spinner.hide();
-                });
 
-                Kwasant.IFrame.RegisterCloseEvent(that, options.callback);
-                Kwasant.IFrame.RegisterStateChangeEvent(that, options.statechange);
-
+                    alert('Problem connecting to the server. Please try again later.');
+                }
             }
         });
 

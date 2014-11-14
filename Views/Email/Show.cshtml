@@ -6,13 +6,24 @@
 @Styles.Render("~/bundles/css/colorbox")
 @Styles.Render("~/bundles/css/temp")
 
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,800,700,300,600,400italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
 <script src="~/Content/js/jquery.js"></script>
 <script src="~/Scripts/ContextMenu/jquery.contextMenu.js"></script>
 <link href="~/Content/ContextMenu/jquery.contextMenu.css" rel="stylesheet" />
 <link href="~/Content/css/backendcss/default.css" rel="stylesheet" />
 
-<div class="email-info-section">
-    <!--style="width: 400px;"-->
+<style>
+    .view-popup-window {
+        padding: 0px;
+    }
+    td {
+        font-weight: 200;
+        line-height: 31.4285736083984px;
+        height: 34px;
+    }
+</style>
+
+<div class="email-info-section">    
     <div class="info">
         <div id="emailSubject" class="subHeading email-subject">
             <h4 class="with-border">@Model.Subject</h4>
@@ -21,9 +32,8 @@
             <table width="100%">
                 <tr>
                     <td class="displayLabel">Booker:</td>
-                    <td id="tdbookerinfo">
-                        @Model.Booker
-                        @(Model.Booker != "none" && !Model.ReadOnly ? Html.Raw("<span style='padding-left:15px;'><a href='javascript:void(0);' onclick='javascript:releaseBooker(" + Model.BookingRequestId + ")'>Release</a></span>") : Html.Raw(""))
+                    <td id="tdbookerinfo">@Model.Booker
+                        @(Model.Booker != "none" && !Model.ReadOnly ? Html.Raw("<span style='padding-left: 15px;'><a href='javascript:void(0);' onclick='javascript:releaseBooker(" + Model.BookingRequestId + ")'>Release</a></span>") : Html.Raw(""))
                     </td>
                 </tr>
                 <tr>
@@ -38,12 +48,11 @@
                     <td class="displayLabel">CC:</td>
                     <td>@Model.EmailCC</td>
                 </tr>
-                <tr>
+                <tr class="emailBCC">
                     <td class="displayLabel">BCC:</td>
                     <td>@Model.EmailBCC</td>
                 </tr>
-
-                <tr>
+                <tr class="emailAttachments">
                     <td class="displayLabel">Attachments:</td>
                     <td>@Html.Raw(Model.EmailAttachments)</td>
                 </tr>
@@ -69,7 +78,14 @@
 
 <script src="~/Content/js/Kwasant/quickcopy.js"></script>
 <script type="text/javascript">
+    $(document).ready(function (){
+        if('@Model.EmailBCC' == "")
+        { $('.emailBCC').css('display','none');}
 
+        if('@Model.EmailAttachments' == "")
+        { $('.emailAttachments').css('display','none');}
+
+    });
     function refreshConversation() {
         $('#conversations').css('opacity', 0.5);
         $.get('/Email/GetConversationMembers?emailID=@Model.BookingRequestId', function(result) {
@@ -151,10 +167,5 @@
     $(function () {
         var conversationMembers = @Html.Raw(JsonConvert.SerializeObject(Model.Conversations, Formatting.Indented));
         displayConversation(conversationMembers);
-
-        $('#emailContent').hide();
-        $('#blah').click(function() {
-            $('#emailContent').slideDown();
-        });
     });
 </script>

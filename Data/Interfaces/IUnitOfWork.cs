@@ -41,6 +41,7 @@ namespace Data.Interfaces
         ProfileRepository ProfileRepository { get; }
         UserStatusRepository UserStatusRepository { get; }
         NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
+        ExpectedResponseRepository ExpectedResponseRepository { get; }
 
         /// <summary>
         /// Call this to commit the unit of work

@@ -39,19 +39,47 @@ namespace KwasantCore.Services
                 }).ToList();
         }
 
-        private List<FactDO> GenerateUsageReport(IUnitOfWork uow, DateRange dateRange)
+        private object GenerateUsageReport(IUnitOfWork uow, DateRange dateRange)
         {
-            return uow.FactRepository.GetAll().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime).ToList();
+            return
+                uow.FactRepository.GetAll()
+                    .Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime)
+                    .Select(
+                        f => new
+                        {
+                            PrimaryCategory = f.PrimaryCategory,
+                            SecondaryCategory = f.SecondaryCategory,
+                            Activity = f.Activity,
+                            Status = f.Status,
+                            Data = f.Data,
+                            CreateDate = f.CreateDate.ToString("M-d-yy hh:mm tt")
+                        }).ToList();
         }
 
-        private List<IncidentDO> ShowAllIncidents(IUnitOfWork uow, DateRange dateRange)
+        private object ShowAllIncidents(IUnitOfWork uow, DateRange dateRange)
         {
-            return uow.IncidentRepository.GetAll().Where(e => e.CreateTime > dateRange.StartTime && e.CreateTime < dateRange.EndTime).ToList();
+            return uow.IncidentRepository.GetAll().Where(e => e.CreateTime > dateRange.StartTime && e.CreateTime < dateRange.EndTime).Select(
+                        f => new
+                        {
+                            PrimaryCategory = f.PrimaryCategory,
+                            SecondaryCategory = f.SecondaryCategory,
+                            Activity = f.Activity,
+                            Data = f.Notes,
+                            CreateDate = f.CreateTime.ToString("M-d-yy hh:mm tt")
+                        }).ToList();
         }
 
-        private List<IncidentDO> ShowMostRecent5Incidents(IUnitOfWork uow, DateRange dateRange)
+        private object ShowMostRecent5Incidents(IUnitOfWork uow, DateRange dateRange)
         {
-            return uow.IncidentRepository.GetAll().OrderByDescending(x => x.CreateTime).Take(5).ToList();
+            return uow.IncidentRepository.GetAll().OrderByDescending(x => x.CreateTime).Take(5).Select(
+                        f => new
+                        {
+                            PrimaryCategory = f.PrimaryCategory,
+                            SecondaryCategory = f.SecondaryCategory,
+                            Activity = f.Activity,
+                            Data = f.Notes,
+                            CreateDate = f.CreateTime.ToString("M-d-yy hh:mm tt")
+                        }).ToList();
         }
         
         public object GenerateHistoryReport(IUnitOfWork uow, DateRange dateRange, string primaryCategory, string bookingRequestId)

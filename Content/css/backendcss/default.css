@@ -504,6 +504,7 @@ nav.top-toolbar-section ul.navbar-nav {
 nav.top-toolbar-section ul.navbar-nav li {
 	font-size: 16px;
 	font-weight: 300;
+    cursor: pointer;
 }
 
 nav.top-toolbar-section ul.navbar-nav li a {
@@ -1191,6 +1192,7 @@ input[type="checkbox"].input-validation-error {
     width: 100%;
     padding: 5px 0;
     overflow: hidden;
+    line-height: 2.1428571435;
 }
 
 .email-info-section .email-conversations .message-header .glyphicon {

@@ -14,7 +14,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
         {
         }
 
-        protected override async Task<string> GetCalIdAsync(IRemoteCalendarAuthData authData)
+        protected override async Task<string> GetCalIdAsync(IRemoteCalendarAuthDataDO authData)
         {
             Func<HttpRequestMessage> requestFactoryMethod = () =>
                 {
