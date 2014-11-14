@@ -25,7 +25,7 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize(Roles = "Booker")]
     public class BookingRequestController : Controller
     {
-        // private DataTablesPackager _datatables;
+       // private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
         Booker _booker;
@@ -35,7 +35,7 @@ namespace KwasantWeb.Controllers
         public BookingRequestController()
         {
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
-            // _datatables = new DataTablesPackager();
+           // _datatables = new DataTablesPackager();
             _br = new BookingRequest();
             _booker = new Booker();
             _jsonPackager = new JsonPackager();
@@ -52,7 +52,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
+               // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
                 var unprocessedBRs = _br.GetUnprocessed(uow);
                 var jsonResult = Json(_jsonPackager.Pack(unprocessedBRs));
                 jsonResult.MaxJsonLength = int.MaxValue;
@@ -76,7 +76,7 @@ namespace KwasantWeb.Controllers
             catch (EntityNotFoundException)
             {
                 return HttpNotFound();
-            }
+        }
         }
 
         [HttpGet]
@@ -173,7 +173,7 @@ namespace KwasantWeb.Controllers
 
                     return Json(new
                         {
-                            Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be",
+                            Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", 
                             UserID = bookingRequest.CustomerID
                         });
                 }
@@ -227,7 +227,7 @@ namespace KwasantWeb.Controllers
             catch (EntityNotFoundException)
             {
                 return HttpNotFound();
-            }
+        }
         }
 
         public ActionResult ShowBRSOwnedByBooker()
@@ -261,7 +261,6 @@ namespace KwasantWeb.Controllers
                 return View("ShowInProcessBRs", curBookingRequestsVM);
             }
         }
-
 
         // GET: /Conversation Members
         [HttpGet]
@@ -330,6 +329,35 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var jsonResult = Json(_jsonPackager.Pack(_br.GetAllBookingRequests(uow)));
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+
+        // GET: /BookingRequest/ShowAwaitingResponse
+        public ActionResult ShowAwaitingResponse()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult GetAwaitingResponse()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                string currBooker = this.GetUserId();
+                var jsonResult = Json(_jsonPackager.Pack(_br.GetAwaitingResponse(uow, currBooker).Select(e => new
+                {
+                    id = e.Id,
+                    subject = e.Subject,
+                    fromAddress = e.From.Address,
+                    dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                    body =
+                        e.HTMLText.Trim().Length > 400
+                            ? e.HTMLText.Trim().Substring(0, 400)
+                            : e.HTMLText.Trim()
+                })
+                    ));
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }

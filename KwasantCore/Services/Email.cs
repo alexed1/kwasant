@@ -122,8 +122,7 @@ namespace KwasantCore.Services
                 PlainText = plainBody,
                 DateReceived = dateReceived,
                 DateCreated = dateCreated,
-                Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList(),
-                Events = null
+                Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList()
             };
             var uow = emailRepository.UnitOfWork;
 
