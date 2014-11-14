@@ -41,6 +41,8 @@ namespace KwasantCore.Services
 
                 var newBookingRequest = new BookingRequest();
                 newBookingRequest.Process(uow, bookingRequest);
+                uow.SaveChanges();
+
                 Email.FixInlineImages(bookingRequest);
                 uow.SaveChanges();
 
@@ -299,6 +301,14 @@ namespace KwasantCore.Services
                             };
                         })
                     .ToList();
+        }
+
+        public List<BookingRequestDO> GetAwaitingResponse(IUnitOfWork uow, string currBooker)
+        {
+            return
+                uow.BookingRequestRepository.GetAll()
+                    .Where(e => (e.State == BookingRequestState.AwaitingClient) && currBooker == GetPreferredBooker(e).Id)
+                    .OrderByDescending(e => e.DateReceived).ToList();
         }
 
         public UserDO GetPreferredBooker(BookingRequestDO bookingRequestDO)

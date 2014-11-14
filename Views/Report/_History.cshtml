@@ -51,7 +51,7 @@ Layout = "~/Views/Shared/_Blank.cshtml";
 		function showHistory()
 		{
 			var bookingRequestId=@ViewBag.bookingRequestID;
-			$.getJSON("/Report/ShowHistoryByBookingRequestId", { bookingRequestId: bookingRequestId }, showHistoryReport);
+			$.post("/Report/ShowHistoryByBookingRequestId", { bookingRequestId: bookingRequestId }, showHistoryReport);
 			function showHistoryReport(response) {
 				$('#tblHistoryReport').DataTable({
 					destroy: true,
