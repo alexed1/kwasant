@@ -18,6 +18,7 @@ using Data.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
 using Utilities;
+using AutoMapper;
 using Data.Validations;
 using FluentValidation;
 using Utilities.Logging;
@@ -27,14 +28,17 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize(Roles = "Booker")]
     public class BookingRequestController : Controller
     {
-        // private DataTablesPackager _datatables;
+       // private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
         Booker _booker;
         private JsonPackager _jsonPackager;
+        private readonly IMappingEngine _mappingEngine;
+
         public BookingRequestController()
         {
-            // _datatables = new DataTablesPackager();
+            _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
+           // _datatables = new DataTablesPackager();
             _br = new BookingRequest();
             _booker = new Booker();
             _jsonPackager = new JsonPackager();
@@ -51,7 +55,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
+               // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
                 var unprocessedBRs = _br.GetUnprocessed(uow);
                 var jsonResult = Json(_jsonPackager.Pack(unprocessedBRs));
                 jsonResult.MaxJsonLength = int.MaxValue;
@@ -75,7 +79,7 @@ namespace KwasantWeb.Controllers
             catch (EntityNotFoundException)
             {
                 return HttpNotFound();
-            }
+        }
         }
 
         [HttpGet]
@@ -190,7 +194,7 @@ namespace KwasantWeb.Controllers
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
+                        {
                     string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaTryItOut", "");
                     return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = userId }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
                 }
@@ -243,51 +247,41 @@ namespace KwasantWeb.Controllers
             catch (EntityNotFoundException)
             {
                 return HttpNotFound();
-            }
+        }
         }
 
         public ActionResult ShowBRSOwnedByBooker()
         {
-            return View("ShowMyBRs");
-        }
-
-
-        //Get all checkout BR's owned by the logged
-        [HttpPost]
-        public ActionResult GetBRSOwnedByBooker()
-        {
             var curBooker = this.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
-                var bookerOwnedRequests = _br.GetCheckOutBookingRequest(uow, curBooker);
-                var jsonResult = Json(_jsonPackager.Pack(bookerOwnedRequests));
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
+                IEnumerable<BookingRequestDO> bookingRequestDO = _br.GetCheckedOut(uow, curBooker);
+                BookingRequestsVM curBookingRequestsVM = new BookingRequestsVM
+                {
+                    BookingRequests =
+                        bookingRequestDO.Select(e => _mappingEngine.Map<BookingRequestDO, BookingRequestVM>(e)).ToList()
+                };
+
+                return View("ShowMyBRs", curBookingRequestsVM);
             }
         }
 
         public ActionResult ShowInProcessBRS()
         {
-            return View("ShowInProcessBRs");
-        }
-
-
-        //Get  BR's that are currently checked out
-        [HttpPost]
-        public ActionResult GetInProcessBRS()
-        {
-            string curBooker = "";
+            var curBooker = this.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
-                var inProcessBRs = _br.GetCheckOutBookingRequest(uow, curBooker);
-                var jsonResult = Json(_jsonPackager.Pack(inProcessBRs));
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
+                IEnumerable<BookingRequestDO> bookingRequestDO = _br.GetCheckedOut(uow, curBooker);
+                BookingRequestsVM curBookingRequestsVM = new BookingRequestsVM
+                {
+                    BookingRequests =
+                        bookingRequestDO.Select(e => _mappingEngine.Map<BookingRequestDO, BookingRequestVM>(e)).ToList()
+                };
+
+                return View("ShowInProcessBRs", curBookingRequestsVM);
             }
         }
-
+        
         public ActionResult DisplayOneOffEmailForm(int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

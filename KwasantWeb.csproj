@@ -307,6 +307,7 @@
     <Compile Include="TempServicesHome\INegotiationResponse.cs" />
     <Compile Include="TempServicesHome\NegotiationResponse.cs" />
     <Compile Include="ViewModels\BookingRequestAdminVM.cs" />
+    <Compile Include="ViewModels\BookingRequestVM.cs" />
     <Compile Include="ViewModels\CalendarShowVM.cs" />
     <Compile Include="ViewModels\BookingRequestConversationVM.cs" />
     <Compile Include="ViewModels\DashboardShowVM.cs" />
