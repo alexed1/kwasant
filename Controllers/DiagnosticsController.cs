@@ -10,8 +10,10 @@ using KwasantCore.ExternalServices;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
+using Segment;
 using StructureMap;
 using Utilities;
+using Logger = Utilities.Logging.Logger;
 
 namespace KwasantWeb.Controllers
 {
@@ -120,8 +122,16 @@ namespace KwasantWeb.Controllers
 
         private JsonResult RunAsync(ThreadStart action)
         {
-            new Thread(action).Start();
-            return Json(true);
+            try
+            {
+                new Thread(action).Start();
+                return Json(true);
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error("Failed to run test", ex);
+                return Json(false);
+            }
         }
 
         private static void MarkRunningTest<T>(String testName)
@@ -223,9 +233,12 @@ See more: {2}
                 Thread.Sleep(100);
             }
 
-            const string errorMessage = "No email was reported with the correct subject within the given timeframe.";
-            MarkTestFail<OutboundEmail>(testName, errorMessage);
-            MarkTestFail<InboundEmail>(testName, errorMessage);
+            if (!success)
+            {
+                const string errorMessage = "No email was reported with the correct subject within the given timeframe.";
+                MarkTestFail<OutboundEmail>(testName, errorMessage);
+                MarkTestFail<InboundEmail>(testName, errorMessage);
+            }
 
             //Now, delete that email
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -235,9 +248,10 @@ See more: {2}
                 {
                     var recipients = savedEmailDO.Recipients.ToList();
                     foreach (var recipient in recipients)
-                    {
                         uow.RecipientRepository.Remove(recipient);
-                    }
+                    var envelopes = uow.EnvelopeRepository.GetQuery().Where(env => env.EmailID == savedEmailDO.Id).ToList();
+                    foreach(var envelope in envelopes)
+                        uow.EnvelopeRepository.Remove(envelope);
                     uow.EmailRepository.Remove(savedEmailDO);
                 }
 
