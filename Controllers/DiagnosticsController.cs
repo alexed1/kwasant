@@ -12,7 +12,6 @@ using KwasantCore.Services;
 using KwasantWeb.ViewModels;
 using StructureMap;
 using Utilities;
-using Utilities.Logging;
 
 namespace KwasantWeb.Controllers
 {
@@ -170,79 +169,79 @@ See more: {2}
 
         public void SendTestEmail(String testName, Action<IUnitOfWork, EmailDO> configureEmail)
         {
-            try
+            MarkRunningTest<OutboundEmail>(testName);
+            MarkRunningTest<InboundEmail>(testName);
+            
+            var inboundEmailDaemon = ServiceManager.GetInformationForService<InboundEmail>().Instance as InboundEmail;
+            if (inboundEmailDaemon == null)
             {
-                MarkRunningTest<OutboundEmail>(testName);
-                MarkRunningTest<InboundEmail>(testName);
+                MarkTestFail<OutboundEmail>(testName, "No InboundEmail daemon found.");
+                MarkTestFail<InboundEmail>(testName, "No InboundEmail daemon found.");
+                return;
+            }               
 
-                var inboundEmailDaemon = ServiceManager.GetInformationForService<InboundEmail>().Instance as InboundEmail;
-                if (inboundEmailDaemon == null)
-                {
-                    MarkTestFail<OutboundEmail>(testName, "No InboundEmail daemon found.");
-                    MarkTestFail<InboundEmail>(testName, "No InboundEmail daemon found.");
-                    return;
-                }
+            var subjKey = Guid.NewGuid().ToString();
 
-                var subjKey = Guid.NewGuid().ToString();
+            inboundEmailDaemon.RegisterTestEmailSubject(subjKey);
+            bool messageReceived = false;
 
-                inboundEmailDaemon.RegisterTestEmailSubject(subjKey);
-                bool messageReceived = false;
+            InboundEmail.ExplicitCustomerCreatedHandler testMessageReceived = subject =>
+            {
+                if (subjKey == subject)
+                    messageReceived = true;
+            };
 
-                InboundEmail.ExplicitCustomerCreatedHandler testMessageReceived = subject =>
-                {
-                    if (subjKey == subject)
-                        messageReceived = true;
-                };
+            InboundEmail.TestMessageReceived += testMessageReceived;
+            EmailDO createdEmailDO;
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Email email = ObjectFactory.GetInstance<Email>();
+                IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
-                InboundEmail.TestMessageReceived += testMessageReceived;
-                EmailDO createdEmailDO;
-                using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    Email email = ObjectFactory.GetInstance<Email>();
-                    IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                    string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+                const string message = "This is a test message";
+                string subject = subjKey;
+                createdEmailDO = email.GenerateBasicMessage(uow, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
+                configureEmail(uow, createdEmailDO);
+                uow.SaveChanges();
 
-                    const string message = "This is a test message";
-                    string subject = subjKey;
-                    createdEmailDO = email.GenerateBasicMessage(uow, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
-                    configureEmail(uow, createdEmailDO);
-                    uow.SaveChanges();
-
-                    ServiceManager.LogEvent<OutboundEmail>("Queued email to " + inboundEmailDaemon.GetUserName());
-                }
-
-                bool success = false;
-                var startTime = DateTime.Now;
-                var endTime = startTime.Add(TimeSpan.FromMinutes(10));
-                while (!success && DateTime.Now < endTime)
-                {
-                    if (messageReceived)
-                    {
-                        MarkTestSuccess<OutboundEmail>(testName);
-                        MarkTestSuccess<InboundEmail>(testName);
-                        success = true;
-                    }
-
-                    Thread.Sleep(100);
-                }
-
-                const string errorMessage = "No email was reported with the correct subject within the given timeframe.";
-                MarkTestFail<OutboundEmail>(testName, errorMessage);
-                MarkTestFail<InboundEmail>(testName, errorMessage);
-
-                //Now, delete that email
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var savedEmailDO = uow.EmailRepository.GetByKey(createdEmailDO.Id);
-                    if (savedEmailDO != null)
-                        uow.EmailRepository.Remove(savedEmailDO);
-
-                    uow.SaveChanges();
-                }
+                ServiceManager.LogEvent<OutboundEmail>("Queued email to " + inboundEmailDaemon.GetUserName());
             }
-            catch (Exception ex)
+
+            bool success = false;
+            var startTime = DateTime.Now;
+            var endTime = startTime.Add(TimeSpan.FromMinutes(10));
+            while (!success && DateTime.Now < endTime)
             {
-                Logger.GetLogger().Error("Test failed.", ex);
+                    if (messageReceived)
+                {
+                    MarkTestSuccess<OutboundEmail>(testName);
+                    MarkTestSuccess<InboundEmail>(testName);
+                    success = true;
+                }
+
+                Thread.Sleep(100);
+            }
+
+            const string errorMessage = "No email was reported with the correct subject within the given timeframe.";
+            MarkTestFail<OutboundEmail>(testName, errorMessage);
+            MarkTestFail<InboundEmail>(testName, errorMessage);
+
+            //Now, delete that email
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var savedEmailDO = uow.EmailRepository.GetByKey(createdEmailDO.Id);
+                if (savedEmailDO != null)
+                {
+                    var recipients = savedEmailDO.Recipients.ToList();
+                    foreach (var recipient in recipients)
+                    {
+                        uow.RecipientRepository.Remove(recipient);
+                    }
+                    uow.EmailRepository.Remove(savedEmailDO);
+                }
+
+                uow.SaveChanges();
             }
         }
     }
