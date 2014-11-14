@@ -93,8 +93,8 @@ namespace KwasantWeb.Controllers
 
                 if (meetingInfo.Trim().Length < 30)
                     return Json(new { Message = "Meeting information must have at least 30 characters" });
-               
-                return RedirectToAction("Generate", "BookingRequest", new { emailAddress = emailAddress, meetingInfo = meetingInfo });
+
+                return RedirectToAction("CreateViaHomePage", "BookingRequest", new { emailAddress = emailAddress, meetingInfo = meetingInfo });
             }
             catch (ValidationException ex)
             {

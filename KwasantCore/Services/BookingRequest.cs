@@ -41,12 +41,14 @@ namespace KwasantCore.Services
 
                 var newBookingRequest = new BookingRequest();
                 newBookingRequest.Process(uow, bookingRequest);
+                uow.SaveChanges();
+
                 Email.FixInlineImages(bookingRequest);
                 uow.SaveChanges();
 
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.Customer.Id);
+                            }
             }
-        }
 
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
@@ -217,87 +219,51 @@ namespace KwasantCore.Services
             uow.SaveChanges();
         }
 
-        public IEnumerable<String> ExtractEmailAddresses(BookingRequestDO bookingRequestDO)
+        public IEnumerable<ParsedEmailAddress> ExtractParsedEmailAddresses(BookingRequestDO bookingRequestDO)
         {
             var emailAddress = new EmailAddress(ObjectFactory.GetInstance<IConfigRepository>());
 
-            var allThreads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO}).ToList();
-            
+            var allThreads = bookingRequestDO.ConversationMembers.Union(new[] { bookingRequestDO }).ToList();
+
             //Get the emails of every recipient in every email
-            var emailThreads = allThreads.SelectMany(b => b.Recipients.Select(r => r.EmailAddress.Address).Union(new[] {b.From.Address}));
-            
+            var emailThreads = emailAddress.ExtractParsedFromString(allThreads.SelectMany(b => b.Recipients.Select(r => r.EmailAddress.Address).Union(new[] { b.From.Address })).ToArray());
+
             //Get the emails found within email text
-            var emailsInText = new List<String>();
+            var emailsInText = new List<ParsedEmailAddress>();
             foreach (var thread in allThreads)
             {
-                emailsInText.AddRange(emailAddress.ExtractFromString(thread.HTMLText, thread.PlainText, thread.Subject));
+                emailsInText.AddRange(emailAddress.ExtractParsedFromString(thread.HTMLText, thread.PlainText, thread.Subject));
             }
 
             //Get the attendees of all events
-            var eventAttendees = bookingRequestDO.Events.SelectMany(ev => ev.Attendees.Select(a => a.EmailAddress.Address));
+            var eventAttendees = emailAddress.ExtractParsedFromString(bookingRequestDO.Events.SelectMany(ev => ev.Attendees.Select(a => a.EmailAddress.Address)).ToArray());
+            return emailThreads.Union(emailsInText).Union(eventAttendees).GroupBy(pea => pea.Email).Select(g => g.First()); //Distinct on 'Email'
+        }
 
-            return emailThreads.Union(emailsInText).Union(eventAttendees).Where(e => !FilterUtility.IsReservedEmailAddress(e));
+        public IEnumerable<String> ExtractEmailAddresses(BookingRequestDO bookingRequestDO)
+        {
+            return ExtractParsedEmailAddresses(bookingRequestDO).Select(pea => pea.Email);
         }
 
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
-            //Add the booking request user
-            var curAttendeeDO = _attendee.Create(uow, eventDO.BookingRequest.Customer.EmailAddress.Address,eventDO, eventDO.BookingRequest.Customer.FirstName);
-            eventDO.Attendees.Add(curAttendeeDO);
-            var emailAddresses = _emailAddress.GetEmailAddresses(uow, eventDO.BookingRequest.HTMLText, eventDO.BookingRequest.PlainText, eventDO.BookingRequest.Subject);
-
-            //need to add the addresses of people cc'ed or on the To line of the BookingRequest
-            emailAddresses.AddRange(eventDO.BookingRequest.Recipients.Select(r => r.EmailAddress));
-
-            foreach (var email in emailAddresses)
+            var emailAddresses = ExtractParsedEmailAddresses(eventDO.BookingRequest);
+            foreach (var attendee in emailAddresses)
             {
-                if (!FilterUtility.IsReservedEmailAddress(email.Address))
-                {
-                    var curAttendee = _attendee.Create(uow, email.Address, eventDO, email.Name);
-                    eventDO.Attendees.Add(curAttendee);
-                }
+                var currAttendee = _attendee.Create(uow, attendee.Email, eventDO, attendee.Name);
+                eventDO.Attendees.Add(currAttendee);
             }
         }
 
         //if curBooker is null, will return all BR's of state "Booking"
-        public object GetCheckOutBookingRequest(IUnitOfWork uow, string curBooker)
+        public IEnumerable<BookingRequestDO> GetCheckedOut(IUnitOfWork uow, string curBooker)
         {
             return
-                uow.BookingRequestRepository.GetAll()
-                .Where(e => e.State == BookingRequestState.Booking && ((!String.IsNullOrEmpty(curBooker)) ? e.BookerID == curBooker : true))
-                    .OrderByDescending(e => e.DateReceived)
-                    .Select(
-                        e =>
-                        {
-                            return new
-                            {
-                                id = e.Id,
-                                subject = e.Subject,
-                                fromAddress = e.From.Address,
-                                dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
-                                body =
-                                    e.HTMLText.Trim().Length > 400
-                                        ? e.HTMLText.Trim().Substring(0, 400)
-                                        : e.HTMLText.Trim()
-                            };
-                        })
-                    .ToList();
+               uow.BookingRequestRepository.GetAll()
+                 .Where(e => e.State == BookingRequestState.Booking && ((!String.IsNullOrEmpty(curBooker)) ? e.BookerID == curBooker : true))
+                 .OrderByDescending(e => e.DateReceived).ToList();
         }
-
-        public string getCountDaysAgo(DateTimeOffset dateReceived)
-        {
-            string daysAgo = string.Empty;
-            int countDays = (System.DateTime.Today - dateReceived).Days;
-            if (countDays > 0)
-                daysAgo = " (" + countDays + " days ago)";
-            else
-            {
-                daysAgo = " (" + dateReceived.ToLocalTime().ToString("T") + ")";
-            }
-
-            return daysAgo;
-        }
-
+        
         public object GetAllBookingRequests(IUnitOfWork uow)
         {
             return
@@ -319,6 +285,14 @@ namespace KwasantCore.Services
                             };
                         })
                     .ToList();
+        }
+
+        public List<BookingRequestDO> GetAwaitingResponse(IUnitOfWork uow, string currBooker)
+        {
+            return
+                uow.BookingRequestRepository.GetAll()
+                    .Where(e => (e.State == BookingRequestState.AwaitingClient) && currBooker == GetPreferredBooker(e).Id)
+                    .OrderByDescending(e => e.DateReceived).ToList();
         }
 
         public UserDO GetPreferredBooker(BookingRequestDO bookingRequestDO)
@@ -438,7 +412,7 @@ namespace KwasantCore.Services
     </div>
 </div>
 ";
-            var threads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO});
+            var threads = bookingRequestDO.ConversationMembers.Union(new[] { bookingRequestDO });
 
             var result = String.Join("", threads.OrderByDescending(b => b.DateReceived).Select(e =>
                 String.Format(conversationThreadFormat, e.From.Name,
@@ -530,6 +504,23 @@ namespace KwasantCore.Services
                 AlertManager.BookingRequestReservationTimeout(bookingRequestDO.Id, bookerId);
             }
 
+        }
+
+        public string Generate(IUnitOfWork uow, string emailAddress, string meetingInfo, string submitsVia, string subject)
+        {
+            MailMessage message = new MailMessage();
+            message.From = new MailAddress(emailAddress);
+            BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            bookingRequest.DateReceived = DateTime.Now;
+            bookingRequest.PlainText = meetingInfo;
+            bookingRequest.Subject = subject;
+            Process(uow, bookingRequest);
+            uow.SaveChanges();
+
+            ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.Customer, "SiteActivity", submitsVia, new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
+
+            return bookingRequest.CustomerID;
         }
     }
 }

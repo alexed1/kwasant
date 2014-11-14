@@ -1,4 +1,4 @@
-﻿<h2>Booking Request</h2>
+﻿<h2>My Awaiting Response</h2>
 <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 
@@ -13,12 +13,11 @@
         </tr>
     </thead>
 </table>
-
 <script type="text/javascript">
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
-        //Ajax call to get all unprocessed booking request from server.
-        $.post("/BookingRequest/GetAllBookingRequests", {}, showRequests, 'json');
+        //Ajax call to get all awaiting client response booking request from server.
+        $.post("/BookingRequest/GetAwaitingResponse", {}, showRequests, 'json');
 
         //Inserts retrieved booking request json into DataTable Widget
         function showRequests(response) {
