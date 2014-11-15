@@ -42,7 +42,6 @@ namespace KwasantCore.Services
         public static void AddEmail(IUnitOfWork uow, MailMessage message, BookingRequestDO existingBookingRequest)
         {
             var curEmail = Email.ConvertMailMessageToEmail(uow.EmailRepository, message);
-            Email.FixInlineImages(curEmail);
             curEmail.ConversationId = existingBookingRequest.Id;
             uow.UserRepository.GetOrCreateUser(curEmail.From);
             if (existingBookingRequest.State == BookingRequestState.AwaitingClient ||
@@ -53,13 +52,12 @@ namespace KwasantCore.Services
             }
 
             uow.SaveChanges();
+
+            Email.FixInlineImages(curEmail);
+            uow.SaveChanges();
             
             // alerts
-            if (existingBookingRequest.State == BookingRequestState.Booking)
-            {
-                AlertManager.ConversationMemberAdded(existingBookingRequest.Id);
-            }
-
+            AlertManager.ConversationMemberAdded(existingBookingRequest.Id);
             AlertManager.ConversationMatched(curEmail.Id, curEmail.Subject, existingBookingRequest.Id);
         }
     }

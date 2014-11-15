@@ -70,7 +70,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<iCalendar>> GetEventsAsync(IRemoteCalendarLink calendarLink, DateTimeOffset @from, DateTimeOffset to)
+        public async Task<IEnumerable<iCalendar>> GetEventsAsync(IRemoteCalendarLinkDO calendarLink, DateTimeOffset @from, DateTimeOffset to)
         {
             if (calendarLink == null)
                 throw new ArgumentNullException("calendarLink");
@@ -116,7 +116,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
                 : new iCalendar[0];
         }
 
-        public async Task CreateEventAsync(IRemoteCalendarLink calendarLink, iCalendar calendarEvent)
+        public async Task CreateEventAsync(IRemoteCalendarLinkDO calendarLink, iCalendar calendarEvent)
         {
             if (calendarLink == null)
                 throw new ArgumentNullException("calendarLink");
@@ -147,12 +147,12 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
             }
         }
 
-        protected virtual async Task<string> GetCalIdAsync(IRemoteCalendarAuthData authData)
+        protected virtual async Task<string> GetCalIdAsync(IRemoteCalendarAuthDataDO authData)
         {
             return authData.User.EmailAddress.Address;
         }
 
-        public async Task<IDictionary<string, string>> GetCalendarsAsync(IRemoteCalendarAuthData authData)
+        public async Task<IDictionary<string, string>> GetCalendarsAsync(IRemoteCalendarAuthDataDO authData)
         {
             if (authData == null)
                 throw new ArgumentNullException("authData");

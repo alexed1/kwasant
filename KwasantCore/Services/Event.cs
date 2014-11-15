@@ -5,19 +5,20 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.Exceptions;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.DataTypes;
 using Segment;
 using Utilities;
 using StructureMap;
-using IEvent = Data.Interfaces.IEvent;
+using IEvent = KwasantCore.Interfaces.IEvent;
 using AutoMapper;
 using ParticipationStatus = KwasantICS.DDay.iCal.ParticipationStatus;
 
 namespace KwasantCore.Services
 {
-    public class Event : IEvent
+    public class Event : Interfaces.IEvent
     {
         private readonly IMappingEngine _mappingEngine;
         private readonly Invitation _invitation;
@@ -51,6 +52,8 @@ namespace KwasantCore.Services
             curEventDO.CreatedByID = bookingRequestDO.Customer.Id;
             curEventDO.DateCreated = DateTimeOffset.UtcNow.ToOffset(bookingRequestDO.DateCreated.Offset);
             
+            bookingRequestDO.Events.Add(curEventDO);
+
             var curCalendar = bookingRequestDO.Customer.Calendars.FirstOrDefault();
             if (curCalendar == null)
                 throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");

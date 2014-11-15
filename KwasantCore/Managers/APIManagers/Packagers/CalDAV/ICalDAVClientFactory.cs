@@ -4,6 +4,6 @@ namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
 {
     public interface ICalDAVClientFactory
     {
-        ICalDAVClient Create(IRemoteCalendarAuthData authData);
+        ICalDAVClient Create(IRemoteCalendarAuthDataDO authData);
     }
 }

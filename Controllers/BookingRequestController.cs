@@ -18,6 +18,10 @@ using Data.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
 using Utilities;
+using AutoMapper;
+using Data.Validations;
+using FluentValidation;
+using Utilities.Logging;
 
 namespace KwasantWeb.Controllers
 {
@@ -29,8 +33,11 @@ namespace KwasantWeb.Controllers
         private int recordcount;
         Booker _booker;
         private JsonPackager _jsonPackager;
+        private readonly IMappingEngine _mappingEngine;
+
         public BookingRequestController()
         {
+            _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
            // _datatables = new DataTablesPackager();
             _br = new BookingRequest();
             _booker = new Booker();
@@ -72,7 +79,7 @@ namespace KwasantWeb.Controllers
             catch (EntityNotFoundException)
             {
                 return HttpNotFound();
-            }
+        }
         }
 
         [HttpGet]
@@ -145,40 +152,57 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        public ActionResult ShowManualCreationForm()
+        {
+            return View();
+        }
 
         [AllowAnonymous]
         [HttpPost]
-        public ActionResult Generate(string emailAddress, string meetingInfo)
+        public ActionResult CreateViaBooker(string emailAddress, string meetingInfo, string subject)
         {
-            string result = "";
+            try
+            {
+                var emailAddressDO = new EmailAddressDO(emailAddress);
+
+                EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
+                emailAddressValidator.ValidateAndThrow(emailAddressDO);
+
+                if (meetingInfo.Trim().Length < 30)
+                    return Json(new { Message = "Meeting information must have at least 30 characters" });
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaCreateManuallyBooker", subject);
+                    return new JsonResult() { Data = new { Message = "A new booking requested created!", Result = "Success"}, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+                }
+            }
+            catch (ValidationException ex)
+            {
+                return new JsonResult() { Data = new { Message = "You need to provide a valid Email Address.", Result = "Failure" }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error("Error processing a home page try it out form schedule me", ex);
+                return new JsonResult() { Data = new { Message = "Something went wrong. Sorry about that", Result = "Failure" }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            }
+        }
+
+        [AllowAnonymous]
+        public ActionResult CreateViaHomePage(string emailAddress, string meetingInfo)
+        {
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    MailMessage message = new MailMessage();
-                    message.From = new MailAddress(emailAddress);
-                    BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
-                    BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
-                    bookingRequest.DateReceived = DateTime.Now;
-                    bookingRequest.PlainText = meetingInfo;
-                    _br.Process(uow, bookingRequest);
-
-                    uow.SaveChanges();
-
-                    ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.Customer, "SiteActivity", "SubmitsViaTryItOut", new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
-
-                    return Json(new
                         {
-                            Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", 
-                            UserID = bookingRequest.CustomerID
-                        });
+                    string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaTryItOut", "");
+                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = userId }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
                 }
             }
             catch (Exception e)
             {
-                return Json(new { Message = "Sorry! Something went wrong. Alpha software..." });
+                return new JsonResult() { Data = new { Message = "Sorry! Something went wrong. Alpha software..." }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
             }
-
         }
 
         // GET: /RelatedItems 
@@ -223,70 +247,75 @@ namespace KwasantWeb.Controllers
             catch (EntityNotFoundException)
             {
                 return HttpNotFound();
-            }
+        }
         }
 
         public ActionResult ShowBRSOwnedByBooker()
         {
-            return View("ShowMyBRs");
-        }
-
-
-       //Get all checkout BR's owned by the logged
-        [HttpPost]
-        public ActionResult GetBRSOwnedByBooker()
-        {
             var curBooker = this.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
-                var bookerOwnedRequests = _br.GetCheckOutBookingRequest(uow, curBooker);
-                var jsonResult = Json(_jsonPackager.Pack(bookerOwnedRequests));
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
+                IEnumerable<BookingRequestDO> bookingRequestDO = _br.GetCheckedOut(uow, curBooker);
+                BookingRequestsVM curBookingRequestsVM = new BookingRequestsVM
+                {
+                    BookingRequests =
+                        bookingRequestDO.Select(e => _mappingEngine.Map<BookingRequestDO, BookingRequestVM>(e)).ToList()
+                };
+
+                return View("ShowMyBRs", curBookingRequestsVM);
             }
         }
 
         public ActionResult ShowInProcessBRS()
         {
-            return View("ShowInProcessBRs");
-        }
-
-
-       //Get  BR's that are currently checked out
-        [HttpPost]
-        public ActionResult GetInProcessBRS()
-        {    
-            string curBooker="";
+            var curBooker = this.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
-                var inProcessBRs = _br.GetCheckOutBookingRequest(uow, curBooker);
-                var jsonResult = Json(_jsonPackager.Pack(inProcessBRs));
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
-            }
-        }
-
-        // GET: /Conversation Members
-        [HttpGet]
-        public ActionResult ShowConversation(int bookingRequestId, int? curEmailId)
-        {
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                BookingRequestConversationVM bookingRequestConversation = new BookingRequestConversationVM
+                IEnumerable<BookingRequestDO> bookingRequestDO = _br.GetCheckedOut(uow, curBooker);
+                BookingRequestsVM curBookingRequestsVM = new BookingRequestsVM
                 {
-                    FromAddress = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.From.Address).ToList(),
-                    DateReceived = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).ToList().Select(e => e.DateReceived.ToString("MMM dd") + _br.getCountDaysAgo(e.DateReceived)).ToList(),
-                    ConversationMembers = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.Id).ToList(),
-                    HTMLText = uow.EmailRepository.GetQuery().Where(e => e.ConversationId == bookingRequestId).Select(e => e.HTMLText).ToList(),
-                    CurEmailId = curEmailId
+                    BookingRequests =
+                        bookingRequestDO.Select(e => _mappingEngine.Map<BookingRequestDO, BookingRequestVM>(e)).ToList()
                 };
 
-                return View(bookingRequestConversation);
+                return View("ShowInProcessBRs", curBookingRequestsVM);
             }
         }
+        
+        public ActionResult DisplayOneOffEmailForm(int bookingRequestID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+
+                var emailController = new EmailController();
+
+                var br = new BookingRequest();
+                var emailAddresses = br.ExtractEmailAddresses(bookingRequestDO);
+
+                var currCreateEmailVM = new CreateEmailVM
+                {
+                    AddressBook = emailAddresses.ToList(),
+                    Subject = bookingRequestDO.Subject,
+                    SubjectEditable = false,
+
+                    HeaderText = "Send an email",
+                    BodyPromptText = "Enter some text for your recipients",
+                    Body = "",
+                };
+                return emailController.DisplayEmail(Session, currCreateEmailVM,
+                    (subUow, emailDO) =>
+                    {
+                        subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("SimpleEmail_template"));
+
+                        var currBookingRequest = new BookingRequest();
+                        currBookingRequest.AddExpectedResponseForBookingRequest(subUow, emailDO, bookingRequestID);
+                        subUow.SaveChanges();
+                        return Json(true);
+                    });
+            }
+        }
+
 
         // GET: /BookingRequest/
         public ActionResult ShowAllBookingRequests()
@@ -300,6 +329,35 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var jsonResult = Json(_jsonPackager.Pack(_br.GetAllBookingRequests(uow)));
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+
+        // GET: /BookingRequest/ShowAwaitingResponse
+        public ActionResult ShowAwaitingResponse()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult GetAwaitingResponse()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                string currBooker = this.GetUserId();
+                var jsonResult = Json(_jsonPackager.Pack(_br.GetAwaitingResponse(uow, currBooker).Select(e => new
+                {
+                    id = e.Id,
+                    subject = e.Subject,
+                    fromAddress = e.From.Address,
+                    dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                    body =
+                        e.HTMLText.Trim().Length > 400
+                            ? e.HTMLText.Trim().Substring(0, 400)
+                            : e.HTMLText.Trim()
+                })
+                    ));
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }

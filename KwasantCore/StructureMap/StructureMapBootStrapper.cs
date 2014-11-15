@@ -14,6 +14,7 @@ using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
 using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
+using KwasantCore.Managers.APIManagers.Packagers.SegmentIO;
 using KwasantCore.Managers.APIManagers.Packagers.SendGrid;
 using KwasantCore.Managers.APIManagers.Packagers.Twilio;
 using KwasantCore.Security;
@@ -70,6 +71,9 @@ namespace KwasantCore.StructureMap
                 For<IEmailPackager>().Use<SendGridPackager>().Singleton().Named(EnvelopeDO.SendGridHander);
                 For<IBookingRequest>().Use<BookingRequest>();
                 For<IAttendee>().Use<Attendee>();
+                For<INegotiation>().Use<Negotiation>();
+                For<IQuestion>().Use<Question>();
+                For<IAnswer>().Use<Answer>();
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Notification>();
 
@@ -100,6 +104,9 @@ namespace KwasantCore.StructureMap
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Notification>();
+                For<INegotiation>().Use<Negotiation>();
+                For<IQuestion>().Use<Question>();
+                For<IAnswer>().Use<Answer>();
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 

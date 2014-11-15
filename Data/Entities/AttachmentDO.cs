@@ -5,7 +5,7 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class AttachmentDO : StoredFileDO, IAttachment
+    public class AttachmentDO : StoredFileDO, IAttachmentDO
     {
         public String Type { get; set; }
         public String ContentID { get; set; }
