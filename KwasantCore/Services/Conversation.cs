@@ -42,7 +42,6 @@ namespace KwasantCore.Services
         public static void AddEmail(IUnitOfWork uow, MailMessage message, BookingRequestDO existingBookingRequest)
         {
             var curEmail = Email.ConvertMailMessageToEmail(uow.EmailRepository, message);
-            Email.FixInlineImages(curEmail);
             curEmail.ConversationId = existingBookingRequest.Id;
             uow.UserRepository.GetOrCreateUser(curEmail.From);
             if (existingBookingRequest.State == BookingRequestState.AwaitingClient ||
@@ -52,6 +51,9 @@ namespace KwasantCore.Services
                 br.Reactivate(uow, existingBookingRequest);
             }
 
+            uow.SaveChanges();
+
+            Email.FixInlineImages(curEmail);
             uow.SaveChanges();
             
             // alerts

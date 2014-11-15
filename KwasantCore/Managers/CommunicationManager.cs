@@ -41,7 +41,6 @@ namespace KwasantCore.Managers
         {
             AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerWorkflow;
             AlertManager.AlertCustomerCreated += NewCustomerWorkflow;
-            AlertManager.AlertBookingRequestCreated += BookingRequestCreated;
             AlertManager.AlertBookingRequestNeedsProcessing += BookingRequestNeedsProcessing;
         }
 
@@ -71,15 +70,6 @@ namespace KwasantCore.Managers
         public void NewCustomerWorkflow(UserDO userDO)
         {
             ObjectFactory.GetInstance<ITracker>().Identify(userDO);
-        }
-
-        public void BookingRequestCreated(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.Customer, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
-            }
         }
 
         public void GenerateWelcomeEmail(string curUserId)
@@ -156,7 +146,7 @@ namespace KwasantCore.Managers
 
                     break;
                 case CommunicationMode.Delegate:
-                    templateName = _configRepository.Get("CR_template_for_existing_user");
+                    templateName = _configRepository.Get("CR_template_for_precustomer");
 
                     break;
                 case CommunicationMode.Precustomer:
