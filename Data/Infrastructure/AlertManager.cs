@@ -9,6 +9,9 @@ namespace Data.Infrastructure
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
     {
+        public delegate void AttendeeUnresponsivenessThresholdReachedHandler(int expectedResponseId);
+        public static event AttendeeUnresponsivenessThresholdReachedHandler AlertAttendeeUnresponsivenessThresholdReached;
+
         public delegate void ResponseRecievedHandler(int bookingRequestId, String bookerID, String customerID);
         public static event ResponseRecievedHandler AlertResponseReceived;
 
@@ -85,6 +88,12 @@ namespace Data.Infrastructure
         public static event ErrorSyncingCalendarHandler AlertErrorSyncingCalendar;
 
         #region Method
+
+        public static void AttendeeUnresponsivenessThresholdReached(int expectedResponseId)
+        {
+            AttendeeUnresponsivenessThresholdReachedHandler handler = AlertAttendeeUnresponsivenessThresholdReached;
+            if (handler != null) handler(expectedResponseId);
+        }
 
         public static void ResponseReceived(int bookingRequestId, String bookerID, String customerID)
         {

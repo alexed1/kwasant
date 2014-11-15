@@ -166,6 +166,7 @@
   <ItemGroup>
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
+    <Compile Include="Interfaces\IExpectedResponse.cs" />
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IAnswer.cs" />
     <Compile Include="Interfaces\IAttendee.cs" />
@@ -255,6 +256,7 @@
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Email.cs" />
+    <Compile Include="Services\ExpectedResponse.cs" />
     <Compile Include="Services\Invitation.cs" />
     <Compile Include="Services\InvitationResponse.cs" />
     <Compile Include="Services\IQuestion.cs" />

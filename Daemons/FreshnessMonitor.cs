@@ -21,7 +21,8 @@ namespace Daemons
     public class FreshnessMonitor : Daemon<FreshnessMonitor>
     {
         private readonly IConfigRepository _configRepository;
-        private readonly BookingRequest _br;
+        private readonly IBookingRequest _br;
+        private readonly IExpectedResponse _er;
 
         public FreshnessMonitor()
             : this(ObjectFactory.GetInstance<IConfigRepository>())
@@ -33,7 +34,8 @@ namespace Daemons
             if (configRepository == null)
                 throw new ArgumentNullException("configRepository");
             _configRepository = configRepository;
-            _br = ObjectFactory.GetInstance<BookingRequest>();
+            _br = ObjectFactory.GetInstance<IBookingRequest>();
+            _er = ObjectFactory.GetInstance<IExpectedResponse>();
         }
 
         public override int WaitTimeBetweenExecution
@@ -51,6 +53,8 @@ namespace Daemons
 
                 MonitorStaleBRs(uow);
 
+                DetectStaleExpectedResponses(uow);
+
                 uow.SaveChanges();
             }
         }
@@ -67,7 +71,7 @@ namespace Daemons
                     x.Availability != BookingRequestAvailability.ReservedPB &&
                     x.BookerID == null &&
                     x.PreferredBookerID != null &&
-                    x.LastUpdated.DateTime < reservationTimeLimit.DateTime).ToList();
+                    x.LastUpdated < reservationTimeLimit).ToList();
             foreach (var br in timedOutBRList)
             {
                 _br.ReservationTimeout(uow, br);
@@ -119,6 +123,20 @@ namespace Daemons
                     AlertManager.StaleBookingRequestsDetected(oldBookingRequests);
                     LogSuccess(oldBookingRequests.Length + " Booking requests are over-due by 30 minutes.");
                 }
+            }
+        }
+
+        private void DetectStaleExpectedResponses(IUnitOfWork uow)
+        {
+            double expectedResponseActiveDurationMinutes = Convert.ToDouble(_configRepository.Get<string>("ExpectedResponseActiveDuration"));
+
+            DateTimeOffset responseTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(expectedResponseActiveDurationMinutes));
+            List<ExpectedResponseDO> staleResponseList = uow.ExpectedResponseRepository.GetAll()
+                .Where(x => x.Status == ExpectedResponseStatus.Active && x.LastUpdated < responseTimeLimit).ToList();
+            foreach (var er in staleResponseList)
+            {
+                _er.MarkAsStale(uow, er);
+                LogSuccess("Expected response is stale");
             }
         }
 

@@ -3,6 +3,7 @@ using System.Text;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using KwasantCore.Exceptions;
 using KwasantCore.Services;
 using StructureMap;
 
@@ -17,6 +18,25 @@ namespace KwasantCore.Managers
             AlertManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
             AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
             AlertManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
+            AlertManager.AlertAttendeeUnresponsivenessThresholdReached += ProcessAttendeeUnresponsivenessThresholdReached;
+        }
+
+        private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var expectedResponseDO = uow.ExpectedResponseRepository.GetByKey(expectedResponseId);
+                if (expectedResponseDO == null)
+                    throw new EntityNotFoundException<ExpectedResponseDO>(expectedResponseId);
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Negotiation";
+                incidentDO.SecondaryCategory = "ClarificationRequest";
+                incidentDO.CustomerId = expectedResponseDO.UserID;
+                incidentDO.ObjectId = expectedResponseId;
+                incidentDO.Activity = "UnresponsiveAttendee";
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+            }
         }
 
         private void AlertManagerOnAlertResponseReceived(int bookingRequestId, string userID, string customerID)
