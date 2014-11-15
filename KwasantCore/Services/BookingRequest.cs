@@ -436,7 +436,6 @@ namespace KwasantCore.Services
                 bookingRequestDO.Booker = bookerDO;
                 bookingRequestDO.PreferredBookerID = bookerId;
                 bookingRequestDO.PreferredBooker = bookerDO;
-                bookingRequestDO.LastUpdated = DateTimeOffset.Now;
                 uow.SaveChanges();
                 AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, bookerId);
             }
