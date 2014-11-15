@@ -22,6 +22,7 @@ namespace Data.Interfaces
 
     public interface ICreateHook
     {
+        void BeforeCreate();
         void AfterCreate();
     }
 }

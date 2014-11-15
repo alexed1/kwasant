@@ -3,16 +3,18 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class BaseDO : IBaseDO
+    public class BaseDO : IBaseDO, ICreateHook
     {
-        public BaseDO()
+        public DateTimeOffset LastUpdated { get; set; }
+        public DateTimeOffset CreateDate { get; set; }
+
+        public virtual void BeforeCreate()
         {
-            // will be moved to UnitOfWork.SaveChanges together with LastUpdated assignment
             CreateDate = DateTimeOffset.Now;
         }
 
-        public DateTimeOffset LastUpdated { get; set; }
-        public DateTimeOffset CreateDate { get; set; }
+        public virtual void AfterCreate()
+        {
+        }
     }
-        DateTimeOffset CreateDate { get; set; }
-    }
+}

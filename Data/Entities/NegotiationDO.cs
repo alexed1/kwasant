@@ -59,9 +59,10 @@ namespace Data.Entities
         }
 
 
-        public void AfterCreate()
+        public override void AfterCreate()
         {
             AlertManager.TrackablePropertyCreated("Negotiation Request created", "NegotiationRequest", Id, "Name: " + Name);
+            base.AfterCreate();
         }
     }
 }
