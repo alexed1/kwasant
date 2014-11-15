@@ -132,7 +132,6 @@ namespace KwasantCore.Services
             IncidentDO incidentDO = new IncidentDO();
             incidentDO.PrimaryCategory = "Error";
             incidentDO.SecondaryCategory = "Processing";
-            incidentDO.CreateTime = DateTime.Now;
             incidentDO.Activity = "Registration";
             incidentDO.Notes = ex.Message;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

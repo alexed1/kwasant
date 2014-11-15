@@ -87,7 +87,6 @@ namespace KwasantWeb
                     incidentDO.SecondaryCategory = "ValidationException";
                 else
                     incidentDO.SecondaryCategory = "ApplicationException";
-                incidentDO.CreateTime = DateTime.Now; ;
                 incidentDO.Notes = filterContext.Exception.Message;
                 _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
