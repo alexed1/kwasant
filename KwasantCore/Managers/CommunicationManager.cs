@@ -101,10 +101,26 @@ namespace KwasantCore.Managers
             foreach (var attendee in generatedEmailDO.Recipients)
             {
                 var emailDO = new EmailDO();
-                emailDO.FromID = generatedEmailDO.FromID;
+                
+                var customer = negotiationDO.BookingRequest.Customer;
+                var mode = _user.GetMode(customer);
+                if (mode == CommunicationMode.Direct)
+                {
+                    var directEmailAddress = _configRepository.Get("EmailFromAddress_DirectMode");
+                    var directEmailName = _configRepository.Get("EmailFromName_DirectMode");
+                    emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(directEmailAddress);
+                    emailDO.FromName = directEmailName;
+                }
+                else
+                {
+                    var delegateEmailAddress = _configRepository.Get("EmailFromAddress_DelegateMode");
+                    var delegateEmailName = _configRepository.Get("EmailFromName_DelegateMode");
+                    emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(delegateEmailAddress);
+                    emailDO.FromName = String.Format(delegateEmailName, customer.DisplayName);
+                }
+
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
                
-                
                 emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}",
                     negotiationDO.BookingRequest.Customer.FirstName,
                     (negotiationDO.BookingRequest.Customer.LastName ?? ""),
@@ -127,6 +143,7 @@ namespace KwasantCore.Managers
                     new Dictionary<string, string>
                     {
                         {"RESP_URL", tokenURL},
+                        {"bodytext", generatedEmailDO.HTMLText},
                         {"questions", String.Join("<br/>", summaryQandAText)},
                         {"conversationthread", conversationThread}
                     });
