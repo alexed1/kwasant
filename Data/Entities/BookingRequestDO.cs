@@ -57,6 +57,7 @@ namespace Data.Entities
         public override void AfterCreate()
         {
             AlertManager.BookingRequestCreated(Id);
+            base.AfterCreate();
         }
 
         public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)

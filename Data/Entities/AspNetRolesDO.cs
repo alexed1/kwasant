@@ -6,7 +6,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 namespace Data.Entities
 {
     [Table("AspNetRoles")]
-    public class AspNetRolesDO : IdentityRole, IAspNetRolesDO, IBaseDO, ICreateHook
+    public class AspNetRolesDO : IdentityRole, IAspNetRolesDO, IBaseDO, ICreateHook, ISaveHook
     {
         public DateTimeOffset LastUpdated { get; set; }
         public DateTimeOffset CreateDate { get; set; }
@@ -18,6 +18,11 @@ namespace Data.Entities
 
         void ICreateHook.AfterCreate()
         {
+        }
+
+        void ISaveHook.BeforeSave()
+        {
+            LastUpdated = DateTimeOffset.Now;
         }
     }
 }

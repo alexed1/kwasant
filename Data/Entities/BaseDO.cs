@@ -3,7 +3,7 @@ using Data.Interfaces;
 
 namespace Data.Entities
 {
-    public class BaseDO : IBaseDO, ICreateHook
+    public class BaseDO : IBaseDO, ICreateHook, ISaveHook
     {
         public DateTimeOffset LastUpdated { get; set; }
         public DateTimeOffset CreateDate { get; set; }
@@ -15,6 +15,11 @@ namespace Data.Entities
 
         public virtual void AfterCreate()
         {
+        }
+
+        public virtual void BeforeSave()
+        {
+            LastUpdated = DateTimeOffset.Now;
         }
     }
 }
