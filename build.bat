@@ -49,12 +49,12 @@ set APPDATA=%USERPROFILE%\AppData\
 :: ----------
 
 :: 1. Clean workspace
-:: echo Cleaning workspace..
-:: call :ExecuteCmd "git" clean -fdx
+echo Cleaning workspace..
+call :ExecuteCmd "git" clean -fdx
 
 :: 2. NuGet Restore
-:: echo Restoring nuget packages..
-:: call :ExecuteCmd "%NUGET_EXE%" restore Kwasant.sln
+echo Restoring nuget packages..
+call :ExecuteCmd "%NUGET_EXE%" restore Kwasant.sln
 
 :: 3. Build to the temporary path
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (

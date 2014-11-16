@@ -19,6 +19,7 @@ using KwasantCore.Managers.APIManagers.Packagers.SendGrid;
 using KwasantCore.Managers.APIManagers.Packagers.Twilio;
 using KwasantCore.Security;
 using KwasantCore.Services;
+using KwasantWeb.TempServicesHome;
 using Microsoft.AspNet.Identity;
 using Moq;
 using SendGrid;
@@ -82,6 +83,7 @@ namespace KwasantCore.StructureMap
 
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
+                For<INegotiationResponse>().Use<NegotiationResponse>();
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
                 For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));

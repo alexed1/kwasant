@@ -168,7 +168,7 @@ namespace KwasantWeb
 
                         if (!String.IsNullOrWhiteSpace(domainName) && !String.IsNullOrWhiteSpace(serverProtocol) && domainPort.HasValue)
                         {
-                            Utilities.Server.ServerUrl = String.Format("{0}{1}{2}", serverProtocol, domainName,
+                            Utilities.Server.ServerUrl = String.Format("{0}{1}{2}/", serverProtocol, domainName,
                                 domainPort.Value == 80 ? String.Empty : (":" + domainPort.Value));
 
                             Utilities.Server.ServerHostName = domainName;
