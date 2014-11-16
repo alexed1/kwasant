@@ -35,6 +35,5 @@ namespace Data.Entities
         public virtual UserDO CreatedBy { get; set; }
 
         public string Status { get; set; }
-        public DateTimeOffset CreateDate { get; set; }
     }
 }

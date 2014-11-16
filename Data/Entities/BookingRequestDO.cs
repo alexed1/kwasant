@@ -54,9 +54,10 @@ namespace Data.Entities
         [InverseProperty("Conversation")]
         public virtual List<EmailDO> ConversationMembers { get; set; }
         
-        public void AfterCreate()
+        public override void AfterCreate()
         {
             AlertManager.BookingRequestCreated(Id);
+            base.AfterCreate();
         }
 
         public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)

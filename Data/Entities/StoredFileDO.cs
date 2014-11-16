@@ -67,6 +67,7 @@ namespace Data.Entities
         void ISaveHook.BeforeSave()
         {
             FileManager.SaveFile(this);
+            base.BeforeSave();
         }
 
 

@@ -31,9 +31,10 @@ namespace Data.Entities
         public string UserID { get; set; }
         public virtual UserDO UserDO { get; set; }
 
-        public void AfterCreate()
+        public override void AfterCreate()
         {
             AlertManager.TrackablePropertyCreated("Answer added", "Answer", Id, "Name: " + Text);
+            base.AfterCreate();
         }
 
         public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)

@@ -10,8 +10,10 @@ using KwasantCore.ExternalServices;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
+using Segment;
 using StructureMap;
 using Utilities;
+using Logger = Utilities.Logging.Logger;
 
 namespace KwasantWeb.Controllers
 {
@@ -120,8 +122,16 @@ namespace KwasantWeb.Controllers
 
         private JsonResult RunAsync(ThreadStart action)
         {
+            try
+            {
             new Thread(action).Start();
             return Json(true);
+        }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error("Failed to run test", ex);
+                return Json(false);
+            }
         }
 
         private static void MarkRunningTest<T>(String testName)
@@ -192,6 +202,7 @@ See more: {2}
             };
 
             InboundEmail.TestMessageReceived += testMessageReceived;
+            EmailDO createdEmailDO;
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Email email = ObjectFactory.GetInstance<Email>();
@@ -200,30 +211,52 @@ See more: {2}
 
                 const string message = "This is a test message";
                 string subject = subjKey;
-                var curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
-                configureEmail(uow, curEmail);
+                createdEmailDO = email.GenerateBasicMessage(uow, subject, message, fromAddress, inboundEmailDaemon.GetUserName());
+                configureEmail(uow, createdEmailDO);
                 uow.SaveChanges();
 
                 ServiceManager.LogEvent<OutboundEmail>("Queued email to " + inboundEmailDaemon.GetUserName());
             }
 
+            bool success = false;
             var startTime = DateTime.Now;
             var endTime = startTime.Add(TimeSpan.FromMinutes(10));
-            while (DateTime.Now < endTime)
+            while (!success && DateTime.Now < endTime)
             {
                     if (messageReceived)
                 {
                     MarkTestSuccess<OutboundEmail>(testName);
                     MarkTestSuccess<InboundEmail>(testName);
-                    return;
+                    success = true;
                 }
 
                 Thread.Sleep(100);
             }
 
+            if (!success)
+            {
             const string errorMessage = "No email was reported with the correct subject within the given timeframe.";
             MarkTestFail<OutboundEmail>(testName, errorMessage);
             MarkTestFail<InboundEmail>(testName, errorMessage);
+        }
+
+            //Now, delete that email
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var savedEmailDO = uow.EmailRepository.GetByKey(createdEmailDO.Id);
+                if (savedEmailDO != null)
+                {
+                    var recipients = savedEmailDO.Recipients.ToList();
+                    foreach (var recipient in recipients)
+                        uow.RecipientRepository.Remove(recipient);
+                    var envelopes = uow.EnvelopeRepository.GetQuery().Where(env => env.EmailID == savedEmailDO.Id).ToList();
+                    foreach(var envelope in envelopes)
+                        uow.EnvelopeRepository.Remove(envelope);
+                    uow.EmailRepository.Remove(savedEmailDO);
+    }
+
+                uow.SaveChanges();
+            }
         }
     }
 }
