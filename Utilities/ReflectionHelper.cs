@@ -17,6 +17,15 @@ namespace Utilities
 
             throw new Exception("Cannot contain complex expressions. An example of a supported expression is 'ev => ev.Id'");
         }
+
+        public PropertyInfo GetProperty<TReturnType>(Expression<Func<TOnType, TReturnType>> expression)
+        {
+            if (expression.Body is MemberExpression)
+                if ((expression.Body as MemberExpression).Member is PropertyInfo)
+                    return (expression.Body as MemberExpression).Member as PropertyInfo;
+
+            throw new Exception("Not a property");
+        }
     }
 
     public class ReflectionHelper

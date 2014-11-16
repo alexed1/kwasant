@@ -89,7 +89,7 @@ namespace Data.Repositories
                 f => f.PrimaryCategory == contextName &&
 
                      f.SecondaryCategory == "Journaling" &&
-                     objectIDs.Contains(f.ObjectId)
+                     objectIDs.Select(id => id.ToString()).Contains(f.ObjectId)
                 );
 
             if (parentIDs.Any())

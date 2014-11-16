@@ -12,7 +12,7 @@ using Utilities;
 
 namespace Data.Entities
 {
-    public class BookingRequestDO : EmailDO, ICreateHook, IModifyHook
+    public class BookingRequestDO : EmailDO, ICreateHook
     {
         public BookingRequestDO()
         {
@@ -59,28 +59,17 @@ namespace Data.Entities
             AlertManager.BookingRequestCreated(Id);
         }
 
-        public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             var reflectionHelper = new ReflectionHelper<BookingRequestDO>();
-            
-            var userIDPropertyName = reflectionHelper.GetPropertyName(br => br.CustomerID);
-            if (!MiscUtils.AreEqual(originalValues[userIDPropertyName], currentValues[userIDPropertyName]))
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var newUser = uow.UserRepository.GetByKey(CustomerID);
-                    var newUserName = newUser.UserName;
-                    AlertManager.TrackablePropertyUpdated("Customer changed", "BookingRequest", Id, newUserName);    
-                }
-            }
+            var customerProperty = reflectionHelper.GetProperty(br => br.Customer);
+            var bookerProperty = reflectionHelper.GetProperty(br => br.Booker);
+            this.DetectUpdates(originalValues, currentValues, new[] { customerProperty, bookerProperty },
+                valueFunc: o => o != null ? ((UserDO)o).UserName : "<Noone>");
 
             var statePropertyName = reflectionHelper.GetPropertyName(br => br.State);
             if (!MiscUtils.AreEqual(originalValues[statePropertyName], currentValues[statePropertyName]))
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    AlertManager.TrackablePropertyUpdated("State changed", "BookingRequest", Id, uow.BookingRequestStatusRepository.GetByKey(State).Name);
-                }
                 var state = (int) currentValues[statePropertyName];
                 if (state == BookingRequestState.Unstarted || 
                     state == BookingRequestState.NeedsBooking)
@@ -89,16 +78,7 @@ namespace Data.Entities
                 }
             }
 
-            var bookerPropertyName = reflectionHelper.GetPropertyName(br => br.BookerID);
-            if (!MiscUtils.AreEqual(originalValues[bookerPropertyName], currentValues[bookerPropertyName]))
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var newBooker = uow.UserRepository.GetByKey(BookerID);
-                    var bookerName = newBooker == null ? "No-one" : newBooker.UserName;
-                    AlertManager.TrackablePropertyUpdated("Booker changed", "BookingRequest", Id, bookerName);
-                }
-            }
+            base.OnModify(currentValues, originalValues);
         }
 
        
