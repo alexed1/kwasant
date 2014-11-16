@@ -44,9 +44,10 @@ namespace Data.Entities
         [InverseProperty("Negotiation")]
         public virtual IList<QuestionDO> Questions { get; set; }
 
-        public void AfterCreate()
+        public override void AfterCreate()
         {
             AlertManager.TrackablePropertyCreated("Negotiation Request created", "NegotiationRequest", Id, "Name: " + Name);
+            base.AfterCreate();
         }
     }
 }

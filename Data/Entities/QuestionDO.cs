@@ -41,10 +41,11 @@ namespace Data.Entities
         [InverseProperty("Question")]
         public virtual List<AnswerDO> Answers { get; set; }
 
-        public void AfterCreate()
+        public override void AfterCreate()
         {
             AlertManager.TrackablePropertyCreated("Question added", "Question", Id, "Name: " + Text);
-    }
+            base.AfterCreate();
+        }
 
         public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {

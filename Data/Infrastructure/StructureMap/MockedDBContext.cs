@@ -76,6 +76,11 @@ namespace Data.Infrastructure.StructureMap
             var adds = GetAdds().ToList();
             var createdEntityList = adds.OfType<ICreateHook>().ToList();
 
+            foreach (var createdEntity in createdEntityList)
+            {
+                createdEntity.BeforeCreate();
+            }
+
             SaveSets();
 
             DetectChanges();
