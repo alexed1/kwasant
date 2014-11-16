@@ -16,6 +16,7 @@
     .view-popup-window {
         padding: 0px;
     }
+
     td {
         font-weight: 200;
         line-height: 31.4285736083984px;
@@ -23,19 +24,13 @@
     }
 </style>
 
-<div class="email-info-section">    
+<div class="email-info-section">
     <div class="info">
         <div id="emailSubject" class="subHeading email-subject">
             <h4 class="with-border">@Model.Subject</h4>
         </div>
         <div class="email-details with-border">
             <table width="100%">
-                <tr>
-                    <td class="displayLabel">Booker:</td>
-                    <td id="tdbookerinfo">@Model.Booker
-                        @(Model.Booker != "none" && !Model.ReadOnly ? Html.Raw("<span style='padding-left: 15px;'><a href='javascript:void(0);' onclick='javascript:releaseBooker(" + Model.BookingRequestId + ")'>Release</a></span>") : Html.Raw(""))
-                    </td>
-                </tr>
                 <tr>
                     <td class="displayLabel">From:</td>
                     <td>@Model.FromName</td>
@@ -55,6 +50,12 @@
                 <tr class="emailAttachments">
                     <td class="displayLabel">Attachments:</td>
                     <td>@Html.Raw(Model.EmailAttachments)</td>
+                </tr>
+                <tr>
+                    <td class="displayLabel">Booker:</td>
+                    <td id="tdbookerinfo">@Model.Booker
+                        @(Model.Booker != "none" && !Model.ReadOnly ? Html.Raw("<span style='padding-left: 15px;'><a href='javascript:void(0);' onclick='javascript:releaseBooker(" + Model.BookingRequestId + ")'>Release</a></span>") : Html.Raw(""))
+                    </td>
                 </tr>
             </table>
         </div>

@@ -19,7 +19,6 @@ namespace KwasantCore.Interfaces
         IEnumerable<object> GetRelatedItems(IUnitOfWork uow, int bookingRequestId);
         void Timeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO);
         void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO);
-        object GetCheckOutBookingRequest(IUnitOfWork uow, string curBooker);        
         object GetAllBookingRequests(IUnitOfWork uow);
         UserDO GetPreferredBooker(BookingRequestDO bookingRequestDO);
         String GetConversationThread(BookingRequestDO bookingRequestDO);

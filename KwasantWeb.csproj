@@ -279,6 +279,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\AlertingController.cs" />
     <Compile Include="Controllers\AnswerController.cs" />
+    <Compile Include="Controllers\BookerController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\DataController.cs" />
     <Compile Include="Controllers\DiagnosticsController.cs" />
@@ -304,9 +305,9 @@
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="KwasantHandleErrorAttribute.cs" />
-    <Compile Include="TempServicesHome\INegotiationResponse.cs" />
     <Compile Include="TempServicesHome\NegotiationResponse.cs" />
     <Compile Include="ViewModels\BookingRequestAdminVM.cs" />
+    <Compile Include="ViewModels\BookingRequestVM.cs" />
     <Compile Include="ViewModels\CalendarShowVM.cs" />
     <Compile Include="ViewModels\BookingRequestConversationVM.cs" />
     <Compile Include="ViewModels\DashboardShowVM.cs" />
@@ -827,6 +828,8 @@
     <Content Include="Views\Email\Send.cshtml" />
     <Content Include="Views\Report\History.cshtml" />
     <Content Include="Views\Report\_History.cshtml" />
+    <Content Include="Views\BookingRequest\ShowManualCreationForm.cshtml" />
+    <Content Include="Views\Booker\Index.cshtml" />
     <Content Include="Views\BookingRequest\FindBookingRequest.cshtml" />
     <Content Include="Views\Report\TimeSpanNavigator.cshtml" />
   </ItemGroup>
