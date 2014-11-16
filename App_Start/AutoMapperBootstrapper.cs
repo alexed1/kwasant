@@ -73,7 +73,7 @@ namespace KwasantWeb.App_Start
                 .ForMember(br => br.Id, opts => opts.ResolveUsing(e => e.Id))
                 .ForMember(br => br.Subject, opts => opts.ResolveUsing(e => e.Subject))
                 .ForMember(br => br.EmailAddress, opts => opts.ResolveUsing(e => e.From.Address))
-                .ForMember(br => br.DateReceived, opts => opts.ResolveUsing(e => e.DateReceived.ToString("M-d-yy hh:mm tt")))
+                .ForMember(br => br.DateReceived, opts => opts.ResolveUsing(e => e.DateReceived))
                 .ForMember(br => br.HTMLText, opts => opts.ResolveUsing(e => e.HTMLText));
         }
     }
