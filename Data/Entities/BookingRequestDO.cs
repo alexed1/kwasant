@@ -63,10 +63,9 @@ namespace Data.Entities
         public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             var reflectionHelper = new ReflectionHelper<BookingRequestDO>();
-            var customerProperty = reflectionHelper.GetProperty(br => br.Customer);
-            var bookerProperty = reflectionHelper.GetProperty(br => br.Booker);
-            this.DetectUpdates(originalValues, currentValues, new[] { customerProperty, bookerProperty },
-                valueFunc: o => o != null ? ((UserDO)o).UserName : "<Noone>");
+            var customerProperty = reflectionHelper.GetProperty(br => br.CustomerID);
+            var bookerProperty = reflectionHelper.GetProperty(br => br.BookerID);
+            this.DetectUpdates(originalValues, currentValues, new[] { customerProperty, bookerProperty });
 
             var statePropertyName = reflectionHelper.GetPropertyName(br => br.State);
             if (!MiscUtils.AreEqual(originalValues[statePropertyName], currentValues[statePropertyName]))
