@@ -11,7 +11,7 @@ using StructureMap;
 
 namespace KwasantWeb.TempServicesHome
 {
-    public class NegotiationResponse : INegotiationResponse
+    public class NegotiationResponse
     {
         private INegotiation _negotiation;
 

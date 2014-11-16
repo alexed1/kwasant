@@ -40,6 +40,11 @@ namespace Data.Entities
         [ForeignKey("From"), Required]
         public int? FromID { get; set; }
         public virtual EmailAddressDO From { get; set; }
+
+        /// <summary>
+        /// Overrides the name of the sender (instead of taking it from From.Name).
+        /// </summary>
+        public String FromName { get; set; }
         
         [ForeignKey("ReplyTo")]
         public int? ReplyToID { get; set; }

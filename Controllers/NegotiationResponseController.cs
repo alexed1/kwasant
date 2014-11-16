@@ -18,11 +18,11 @@ namespace KwasantWeb.Controllers
         private const bool EnforceUserInAttendees = true;
         private IAttendee _attendee;
         private Negotiation _negotiation;
-        private INegotiationResponse _negotiationResponse;
-
+        private NegotiationResponse _negotiationResponse;
+        
         public NegotiationResponseController()
         {
-            _negotiationResponse = ObjectFactory.GetInstance<INegotiationResponse>();
+            _negotiationResponse = new NegotiationResponse();
             _negotiation = new Negotiation();
         }
 
