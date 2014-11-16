@@ -163,8 +163,7 @@ namespace KwasantWeb.Controllers
             var curBooker = this.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                //var jsonResult = Json(_datatables.Pack(_br.GetCheckOutBookingRequest(uow, curBooker)), JsonRequestBehavior.AllowGet);
-                var bookerOwnedRequests = _br.GetCheckOutBookingRequest(uow, curBooker);
+                var bookerOwnedRequests = _br.GetCheckedOut(uow, curBooker);
                 var jsonResult = Json(_jsonPackager.Pack(bookerOwnedRequests));
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
