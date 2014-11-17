@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using Data.Infrastructure;
 using Data.States;
@@ -15,7 +16,7 @@ using Data.States.Templates;
 
 namespace Data.Entities
 {
-    public class UserDO : IdentityUser, IUserDO, ICreateHook, IBaseDO, ISaveHook
+    public class UserDO : IdentityUser, IUserDO, ICreateHook, IBaseDO, ISaveHook, IModifyHook
     {
         [NotMapped]
         IEmailAddressDO IUserDO.EmailAddress
@@ -93,6 +94,11 @@ namespace Data.Entities
         void ISaveHook.BeforeSave()
         {
             LastUpdated = DateTimeOffset.Now;
+        }
+
+        void IModifyHook.OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        {
+            this.DetectStateUpdates(originalValues, currentValues);
         }
 
         public String DisplayName

@@ -4,11 +4,7 @@
     {
         public static bool AreEqual(object firstValue, object secondValue)
         {
-            if (firstValue == null && secondValue == null)
-                return true;
-            if (firstValue == null || secondValue == null)
-                return false;
-            return firstValue.Equals(secondValue);
+            return object.Equals(firstValue, secondValue);
         }
     }
 }
