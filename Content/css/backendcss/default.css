@@ -1615,3 +1615,32 @@ today-calendar-tbl .first-col {
     {
         border-bottom: 1px solid #ddd;
     }
+
+    @media screen and (min-width: 1200px) {
+    .welcomemsg {
+        margin: -20px 18px !important;
+    }
+}
+
+.welcomemsg {
+    margin: -5px 0px;
+}
+
+    .welcomemsg a {
+        color: #262628;
+    }
+
+.smalltext {
+    margin: 4px 32px !important;
+}
+
+    .smalltext li {
+        list-style: none;
+    }
+
+    .smalltext a {
+        font-weight: normal !important;
+        left: 16px;
+        position: relative;
+        top: 0px;
+    }
