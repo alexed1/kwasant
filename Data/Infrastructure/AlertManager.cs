@@ -15,7 +15,7 @@ namespace Data.Infrastructure
         public delegate void BookingRequestNeedsProcessingHandler(int bookingRequestId);
         public static event BookingRequestNeedsProcessingHandler AlertBookingRequestNeedsProcessing;
 
-        public delegate void TrackablePropertyUpdatedHandler(string name, string contextTable, int id, object status);
+        public delegate void TrackablePropertyUpdatedHandler(string name, string contextTable, object id, object status);
         public static event TrackablePropertyUpdatedHandler AlertTrackablePropertyUpdated;
 
         public delegate void TrackablePropertyCreatedHandler(string name, string contextTable, int id, object status);
@@ -89,10 +89,10 @@ namespace Data.Infrastructure
                 AlertResponseReceived(bookingRequestId, bookerID, customerID);
         }
 
-        public static void TrackablePropertyUpdated(string name, string contextTable, int id, object status)
+        public static void TrackablePropertyUpdated(string entityName, string propertyName, object id, object value)
         {
             if (AlertTrackablePropertyUpdated != null)
-                AlertTrackablePropertyUpdated(name, contextTable, id, status);
+                AlertTrackablePropertyUpdated(entityName, propertyName, id, value);
         }
 
         public static void TrackablePropertyCreated(string name, string contextTable, int id, object status)
