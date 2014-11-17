@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -17,6 +18,15 @@ namespace Utilities
 
             throw new Exception("Cannot contain complex expressions. An example of a supported expression is 'ev => ev.Id'");
         }
+
+        public PropertyInfo GetProperty<TReturnType>(Expression<Func<TOnType, TReturnType>> expression)
+        {
+            if (expression.Body is MemberExpression)
+                if ((expression.Body as MemberExpression).Member is PropertyInfo)
+                    return (expression.Body as MemberExpression).Member as PropertyInfo;
+
+            throw new Exception("Not a property");
+        }
     }
 
     public class ReflectionHelper
@@ -30,6 +40,15 @@ namespace Utilities
                 entityType = entity.GetType();
 
             return entityType.GetProperties().FirstOrDefault(p => p.GetCustomAttribute<KeyAttribute>(true) != null);
+        }
+
+        public static PropertyInfo ForeignKeyNavitationProperty(object entity, PropertyInfo foreignKeyProperty)
+        {
+            var foreignKeyAttribute = foreignKeyProperty.GetCustomAttribute<ForeignKeyAttribute>();
+            if (foreignKeyAttribute == null)
+                return null;
+            var navigationProperty = entity.GetType().GetProperty(foreignKeyAttribute.Name);
+            return navigationProperty;
         }
     }
 }

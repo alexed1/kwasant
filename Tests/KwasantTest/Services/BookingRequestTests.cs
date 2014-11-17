@@ -97,7 +97,7 @@ namespace KwasantTest.Services
                 Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
                 //test analytics system
 
-                FactDO curAction = uow.FactRepository.FindOne(k => k.ObjectId == bookingRequest.Id);
+                FactDO curAction = uow.FactRepository.FindOne(k => k.ObjectId == bookingRequest.Id.ToString());
                 Assert.NotNull(curAction);
             }
         }

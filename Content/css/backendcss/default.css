@@ -1607,3 +1607,11 @@ today-calendar-tbl .first-col {
 .dropdown-menu {
     text-align:left;
 }
+.rowClass
+{
+    background-color: transparent !important;
+}
+    .rowClass td
+    {
+        border-bottom: 1px solid #ddd;
+    }

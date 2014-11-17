@@ -84,11 +84,8 @@ namespace KwasantCore.Services
         
         public object GenerateHistoryReport(IUnitOfWork uow, DateRange dateRange, string primaryCategory, string bookingRequestId)
         {
-            int objectId = 0;
-            if (bookingRequestId != "")
-                objectId = Convert.ToInt32(bookingRequestId);
             return uow.FactRepository.GetAll()
-                .Where(e => e.PrimaryCategory == primaryCategory && (objectId > 0 ? e.ObjectId == objectId : e.ObjectId != 0) && e.CreateDate >= dateRange.StartTime && e.CreateDate <= dateRange.EndTime).OrderByDescending(e => e.CreateDate)
+                .Where(e => e.PrimaryCategory == primaryCategory && (e.ObjectId == bookingRequestId) && e.CreateDate >= dateRange.StartTime && e.CreateDate <= dateRange.EndTime).OrderByDescending(e => e.CreateDate)
                .Select(
                         e =>
                             new
@@ -105,7 +102,7 @@ namespace KwasantCore.Services
 
         public object GenerateHistoryByBookingRequestId(IUnitOfWork uow, int bookingRequestId)
         {
-            return uow.FactRepository.GetAll().Where(e => e.ObjectId == bookingRequestId)
+            return uow.FactRepository.GetAll().Where(e => e.ObjectId == bookingRequestId.ToString())
                     .OrderByDescending(e => e.CreateDate)
                     .Select(
                         e =>

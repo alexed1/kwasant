@@ -241,9 +241,9 @@ namespace KwasantCore.Services
         }
 
         public IEnumerable<String> ExtractEmailAddresses(BookingRequestDO bookingRequestDO)
-        {
+                {
             return ExtractParsedEmailAddresses(bookingRequestDO).Select(pea => pea.Email);
-        }
+                }
 
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
@@ -259,11 +259,11 @@ namespace KwasantCore.Services
         public IEnumerable<BookingRequestDO> GetCheckedOut(IUnitOfWork uow, string curBooker)
         {
             return
-               uow.BookingRequestRepository.GetAll()
-                 .Where(e => e.State == BookingRequestState.Booking && ((!String.IsNullOrEmpty(curBooker)) ? e.BookerID == curBooker : true))
+                uow.BookingRequestRepository.GetAll()
+                .Where(e => e.State == BookingRequestState.Booking && ((!String.IsNullOrEmpty(curBooker)) ? e.BookerID == curBooker : true))
                  .OrderByDescending(e => e.DateReceived).ToList();
         }
-        
+
         public object GetAllBookingRequests(IUnitOfWork uow)
         {
             return
@@ -520,6 +520,25 @@ namespace KwasantCore.Services
             ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.Customer, "SiteActivity", submitsVia, new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
 
             return bookingRequest.CustomerID;
+        }
+        public List<BookingRequestDO> Search(IUnitOfWork uow, string queryPeriod, bool includeInvalid, int Id)
+        {
+            if (Id != 0)
+            {
+                return new List<BookingRequestDO> { uow.BookingRequestRepository.GetByKey(Id) };
+            }
+            else 
+            {
+                var requestList = uow.BookingRequestRepository.GetQuery();
+                if (queryPeriod != "all")
+                {
+                    DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
+                    requestList = requestList.Where(e => e.DateCreated > dateRange.StartTime && e.DateCreated < dateRange.EndTime);
+                }
+                if (!includeInvalid)
+                    requestList = requestList.Where(e => e.State != BookingRequestState.Invalid);
+                return requestList.OrderByDescending(e => e.DateReceived).ToList();
+            }
         }
     }
 }
