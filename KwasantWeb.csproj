@@ -830,6 +830,8 @@
     <Content Include="Views\Report\_History.cshtml" />
     <Content Include="Views\BookingRequest\ShowManualCreationForm.cshtml" />
     <Content Include="Views\Booker\Index.cshtml" />
+    <Content Include="Views\BookingRequest\FindBookingRequest.cshtml" />
+    <Content Include="Views\Report\TimeSpanNavigator.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

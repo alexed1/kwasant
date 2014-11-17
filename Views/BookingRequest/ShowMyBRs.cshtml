@@ -20,9 +20,9 @@
    
     $(document).ready(function () {
         showRequests();
-        
-        function showRequests() {
-            var response = @Html.Raw(JsonConvert.SerializeObject(Model.BookingRequests, Formatting.Indented));
+        //Ajax call to get  check out  booking request  by  the logged(curBookerId) from server.
+        $.post("/BookingRequest/ShowByBooker", {}, showRequests, 'json');
+        function showRequests(response) {
             var table = $('#tblmybookingrequest').DataTable({
                 data: response,
                 order: [2, 'desc'],
