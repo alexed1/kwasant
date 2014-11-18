@@ -30,6 +30,12 @@ namespace Data.Infrastructure
             }
         }
 
+        /// <summary>
+        /// Detects any updates on specified entity state properties.
+        /// </summary>
+        /// <param name="entity">entity</param>
+        /// <param name="originalValues">original properties values</param>
+        /// <param name="currentValues">current properties values</param>
         public static void DetectStateUpdates(this IBaseDO entity,
             DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
@@ -44,6 +50,19 @@ namespace Data.Infrastructure
             }
         }
 
+        /// <summary>
+        /// Detects any updates on specified entity and tracks them via AlertManager.TrackablePropertyUpdated alert.
+        /// </summary>
+        /// <param name="entity">entity</param>
+        /// <param name="originalValues">original properties values</param>
+        /// <param name="currentValues">current properties values</param>
+        /// <param name="properties">properties to track</param>
+        /// <param name="propertyNameFunc">optional function to manage property name for tracking. If null it takes PropertyInfo.Name value</param>
+        /// <param name="valueFunc">optional function to manage property value for tracking. If null it takes currentValues[propertyName] value</param>
+        /// <remarks>
+        /// This method would likely be called from <see cref="IModifyHook.OnModify">OnModify</see> implementation to track properties. 
+        /// For tracking enum typed (state) properties see <see cref="DetectStateUpdates">DetectStateUpdates</see> method.
+        /// </remarks>
         public static void DetectUpdates(this IBaseDO entity, 
             DbPropertyValues originalValues, DbPropertyValues currentValues, PropertyInfo[] properties,
             Func<PropertyInfo, string> propertyNameFunc = null, Func<PropertyInfo, object, object> valueFunc = null)
