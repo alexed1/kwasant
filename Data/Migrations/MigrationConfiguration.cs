@@ -238,7 +238,7 @@ namespace Data.Migrations
         {
             CreateAdmin("alex@kwasant.com", "alex@1234", unitOfWork);
             CreateAdmin("rjrudman@gmail.com", "robert1234", unitOfWork);
-            CreateAdmin("eschebenyuk@gmail.com ", "kate235", unitOfWork);
+            CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
         }
 
