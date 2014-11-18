@@ -305,7 +305,6 @@
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="KwasantHandleErrorAttribute.cs" />
-    <Compile Include="TempServicesHome\INegotiationResponse.cs" />
     <Compile Include="TempServicesHome\NegotiationResponse.cs" />
     <Compile Include="ViewModels\BookingRequestAdminVM.cs" />
     <Compile Include="ViewModels\BookingRequestVM.cs" />
@@ -395,7 +394,6 @@
     <Content Include="Content\css\jquery-ui.structure.css" />
     <Content Include="Content\css\jquery-ui.theme.css" />
     <Content Include="Content\css\NegotiationWidgets.css" />
-    <Content Include="Content\css\temp\temp.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.min.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\images\filler.png" />
@@ -829,8 +827,11 @@
     <Content Include="Views\Email\Send.cshtml" />
     <Content Include="Views\Report\History.cshtml" />
     <Content Include="Views\Report\_History.cshtml" />
+    <Content Include="Views\Shared\_HomeNav.cshtml" />
     <Content Include="Views\BookingRequest\ShowManualCreationForm.cshtml" />
     <Content Include="Views\Booker\Index.cshtml" />
+    <Content Include="Views\BookingRequest\FindBookingRequest.cshtml" />
+    <Content Include="Views\Report\TimeSpanNavigator.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

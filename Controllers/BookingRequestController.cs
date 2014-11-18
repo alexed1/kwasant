@@ -133,7 +133,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult GetBookingRequests(int? bookingRequestId, int draw, int start, int length)
+        public ActionResult ShowByUser(int? bookingRequestId, int draw, int start, int length)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -156,6 +156,24 @@ namespace KwasantWeb.Controllers
         {
             return View();
         }
+        //Get all checkout BR's owned by the logged
+        [HttpPost]
+        public ActionResult ShowByBooker()
+        {
+            var curBooker = this.GetUserId();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookerOwnedRequests = _br.GetCheckedOut(uow, curBooker);
+                var jsonResult = Json(_jsonPackager.Pack(bookerOwnedRequests));
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+
+        public ActionResult ShowBRSOwnedByBooker()
+        {
+            return View("ShowMyBRs");
+        }
 
         [AllowAnonymous]
         [HttpPost]
@@ -172,7 +190,7 @@ namespace KwasantWeb.Controllers
                     return Json(new { Message = "Meeting information must have at least 30 characters" });
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
+                        {
                     string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaCreateManuallyBooker", subject);
                     return new JsonResult() { Data = new { Message = "A new booking requested created!", Result = "Success"}, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
                 }
@@ -197,7 +215,7 @@ namespace KwasantWeb.Controllers
                         {
                     string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaTryItOut", "");
                     return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = userId }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-                }
+        }
             }
             catch (Exception e)
             {
@@ -250,22 +268,6 @@ namespace KwasantWeb.Controllers
         }
         }
 
-        public ActionResult ShowBRSOwnedByBooker()
-        {
-            var curBooker = this.GetUserId();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                IEnumerable<BookingRequestDO> bookingRequestDO = _br.GetCheckedOut(uow, curBooker);
-                BookingRequestsVM curBookingRequestsVM = new BookingRequestsVM
-                {
-                    BookingRequests =
-                        bookingRequestDO.Select(e => _mappingEngine.Map<BookingRequestDO, BookingRequestVM>(e)).ToList()
-                };
-
-                return View("ShowMyBRs", curBookingRequestsVM);
-            }
-        }
-
         public ActionResult ShowInProcessBRS()
         {
             var curBooker = this.GetUserId();
@@ -292,6 +294,7 @@ namespace KwasantWeb.Controllers
 
                 var br = new BookingRequest();
                 var emailAddresses = br.ExtractEmailAddresses(bookingRequestDO);
+                var userID = this.GetUserId();
 
                 var currCreateEmailVM = new CreateEmailVM
                 {
@@ -306,10 +309,14 @@ namespace KwasantWeb.Controllers
                 return emailController.DisplayEmail(Session, currCreateEmailVM,
                     (subUow, emailDO) =>
                     {
+                        var sendingUser = subUow.UserRepository.GetByKey(userID);
                         subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("SimpleEmail_template"));
 
                         var currBookingRequest = new BookingRequest();
                         currBookingRequest.AddExpectedResponseForBookingRequest(subUow, emailDO, bookingRequestID);
+
+                        emailDO.FromID = sendingUser.EmailAddressID;
+                        emailDO.FromName = sendingUser.DisplayName + " via Kwasant";
                         subUow.SaveChanges();
                         return Json(true);
                     });
@@ -363,5 +370,32 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        // GET: /BookingRequest/FindBookingRequest
+        public ActionResult FindBookingRequest()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult Search(string queryPeriod, bool includeInvalid, int id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var jsonResult = Json(_jsonPackager.Pack(_br.Search(uow, queryPeriod, includeInvalid, id).Select(e => new
+                {
+                    id = e.Id,
+                    subject = e.Subject,
+                    fromAddress = e.From.Address,
+                    dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                    body =
+                        e.HTMLText.Trim().Length > 400
+                            ? e.HTMLText.Trim().Substring(0, 400)
+                            : e.HTMLText.Trim()
+                })
+                ));
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
     }
 }

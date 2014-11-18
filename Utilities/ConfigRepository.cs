@@ -70,6 +70,13 @@ namespace Utilities
                 if (int.TryParse(stringValue, out value))
                     return (T)(object)value;
             }
+            else if (returnType == typeof(int?))
+            {
+                int value;
+                if (int.TryParse(stringValue, out value))
+                    return (T) (object) value;
+                return default(T);
+            }
 
             throw new ConfigurationException("Invalid value for '" + key + "'");
         }

@@ -107,6 +107,7 @@
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
     <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
+    <Compile Include="Infrastructure\EntityExtensions.cs" />
     <Compile Include="Interfaces\IBaseDO.cs" />
     <Compile Include="Entities\ExpectedResponseDO.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
@@ -418,6 +419,22 @@
     <Compile Include="Migrations\201411122129066_ChangeNegotiationDateCreatedType.cs" />
     <Compile Include="Migrations\201411122129066_ChangeNegotiationDateCreatedType.Designer.cs">
       <DependentUpon>201411122129066_ChangeNegotiationDateCreatedType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411112138317_AddCreateDateToBaseDO.cs" />
+    <Compile Include="Migrations\201411112138317_AddCreateDateToBaseDO.Designer.cs">
+      <DependentUpon>201411112138317_AddCreateDateToBaseDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411152128185_GeneralizeCreateDateField.cs" />
+    <Compile Include="Migrations\201411152128185_GeneralizeCreateDateField.Designer.cs">
+      <DependentUpon>201411152128185_GeneralizeCreateDateField.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411160609359_AddFromName.cs" />
+    <Compile Include="Migrations\201411160609359_AddFromName.Designer.cs">
+      <DependentUpon>201411160609359_AddFromName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411162040143_ChangeFactObjectIdType.cs" />
+    <Compile Include="Migrations\201411162040143_ChangeFactObjectIdType.Designer.cs">
+      <DependentUpon>201411162040143_ChangeFactObjectIdType.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
@@ -1319,6 +1336,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411122129066_ChangeNegotiationDateCreatedType.resx">
       <DependentUpon>201411122129066_ChangeNegotiationDateCreatedType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411112138317_AddCreateDateToBaseDO.resx">
+      <DependentUpon>201411112138317_AddCreateDateToBaseDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411152128185_GeneralizeCreateDateField.resx">
+      <DependentUpon>201411152128185_GeneralizeCreateDateField.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411160609359_AddFromName.resx">
+      <DependentUpon>201411160609359_AddFromName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411162040143_ChangeFactObjectIdType.resx">
+      <DependentUpon>201411162040143_ChangeFactObjectIdType.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

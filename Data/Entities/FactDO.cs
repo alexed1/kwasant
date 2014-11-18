@@ -20,7 +20,7 @@ namespace Data.Entities
         public string SecondaryCategory { get; set; }
         public string Activity { get; set; }
         //the ID of the object that is the subject of this Kact
-        public int ObjectId { get; set; }
+        public string ObjectId { get; set; }
         //intended to be used to group related Kacts
         public int TaskId  { get; set; }
 
@@ -35,6 +35,5 @@ namespace Data.Entities
         public virtual UserDO CreatedBy { get; set; }
 
         public string Status { get; set; }
-        public DateTimeOffset CreateDate { get; set; }
     }
 }

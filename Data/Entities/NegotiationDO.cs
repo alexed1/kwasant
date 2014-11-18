@@ -12,7 +12,7 @@ using Utilities;
 
 namespace Data.Entities
 {
-    public class NegotiationDO : BaseDO, IModifyHook, ICreateHook
+    public class NegotiationDO : BaseDO, ICreateHook
     {
         public NegotiationDO()
         {
@@ -44,24 +44,10 @@ namespace Data.Entities
         [InverseProperty("Negotiation")]
         public virtual IList<QuestionDO> Questions { get; set; }
 
-        public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
-        {
-            var reflectionHelper = new ReflectionHelper<NegotiationDO>();
-
-            var statePropertyName = reflectionHelper.GetPropertyName(br => br.NegotiationState);
-            if (!MiscUtils.AreEqual(originalValues[statePropertyName], currentValues[statePropertyName]))
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    AlertManager.TrackablePropertyUpdated("State changed", "NegotiationRequest", Id, new GenericRepository<_NegotiationStateTemplate>(uow).GetByKey(NegotiationState).Name);
-                }
-            }
-        }
-
-
-        public void AfterCreate()
+        public override void AfterCreate()
         {
             AlertManager.TrackablePropertyCreated("Negotiation Request created", "NegotiationRequest", Id, "Name: " + Name);
+            base.AfterCreate();
         }
     }
 }
