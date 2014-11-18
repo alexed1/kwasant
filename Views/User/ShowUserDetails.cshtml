@@ -12,11 +12,6 @@
                     <th></th>
                 </tr>
             </thead>
-            @*<tr>
-                <td colspan="2">
-                    <label id="lblSaveError" style="color: red;"></label>
-                </td>
-            </tr>*@
             <tr>
                 <td>First Name 
                 </td>
@@ -35,7 +30,7 @@
                 <td>@Html.TextBoxFor(curUser => curUser.EmailAddress, new { id = "email" })
                 </td>
             </tr>
-            <tr>
+            <tr id="trEmailIdField">
                 <td>Email ID
                 </td>
                 <td>@Html.TextBoxFor(curUser => curUser.EmailAddressID, new { id = "emailId", disabled = "disabled" })
@@ -52,18 +47,8 @@
             <tr>
                 <td>Roles
                 </td>
-                <td>@{
-                        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                        {
-                            var allRows = uow.AspNetRolesRepository.GetAll();
-                            foreach (var role in allRows)
-                            {
-                                <input id="@role.Id" type="checkbox" class="roleCheckbox" value="@role.Name" @Html.Raw(Model.Roles.Contains(role.Name) ? "checked" : String.Empty)/>
-                                <label for="@role.Id">@role.Name</label>
-                        <br />
-                    }
-                        }
-                    }
+                <td>
+                    @Html.Partial("UserRoles")
                 </td>
             </tr>
             <tr>
@@ -126,12 +111,13 @@
             dataObj.LastName = $("#lastname").val();
             dataObj.EmailAddress = $("#email").val();
             dataObj.NewPassword = $("#newPassword").val();
-            dataObj.Roles = [];
+            dataObj.Roles = "";
             dataObj.SendMail = $("#chkSendEmail").prop("checked");
-            $.each($('.roleCheckbox'), function(i, o) {
+
+            $.each($('.roleOptions'), function(i, o) {
                 var wrappedObj = $(o);
-                if (wrappedObj.is(':checked'))
-                    dataObj.Roles.push(wrappedObj.val());
+                if (wrappedObj.is(':selected'))
+                    dataObj.Roles = wrappedObj.val();
             });
 
             var dataStr = JSON.stringify(dataObj);
@@ -141,10 +127,21 @@
                 type: 'POST',
                 contentType: 'application/json',
                 data: dataStr,
-                success: function () {
-                    //$("#lblSaveError").html("User updated successfully");
-                    displayNotification("User updated successfully");
-                    toggleFields(true);
+                success: function (response) {
+                    var resp = JSON.parse(response);
+                    if(resp.data == "User already exists.")
+                    {
+                        displayNotification("User already exists");
+                        existingUserAlert(resp.user_id);
+                    }
+                    else if(dataObj.Id == ''){
+                        displayNotification("User created successfully");
+                        resetFields();
+                    }
+                    else{
+                        displayNotification("User updated successfully");
+                        toggleFields(true);
+                    }
                 }
             });
         });
@@ -155,7 +152,6 @@
         $("#firstname").prop("disabled", state);
         $("#lastname").prop("disabled", state);
         $("#email").prop("disabled", state);
-        $("#role").prop("disabled", state);
         $("#trNewUser").toggle();
         $("#trEditUser").toggle();
     }
@@ -187,6 +183,32 @@
             $("#btnActivate").show();
             $("#btnDelete").hide();
         }
+        if("@Model.Id" == "")
+        {
+            $("#trEmailIdField").hide();
+        }
     } 
+
+    //function to clear all fields in the form
+    function resetFields()
+    {
+        $("#firstname").val("");
+        $("#lastname").val("");
+        $("#email").val("");
+        $("#newPassword").val("");
+    }
+
+    //popup to display when user already exists.
+    function existingUserAlert(userId)
+    {
+        Kwasant.IFrame.Display('ExistingUserAlert?UserId='+userId,
+	            {
+	                modal: true,
+	                callback: function (result) {
+	                    if (result)
+	                        close();
+	                }
+	            });
+    }
 </script>
 

@@ -7,7 +7,7 @@ namespace KwasantWeb.ViewModels
     {
         public UserVM()
         {
-            Roles = new List<String>();
+            //Roles = new List<String>();
             Calendars = new List<UserCalendarVM>();
         }
 
@@ -21,7 +21,7 @@ namespace KwasantWeb.ViewModels
         public int EmailAddressID { get; set; }
         public bool SendMail { get; set; }
 
-        public List<String> Roles { get; set; } 
+        public String Roles { get; set; } 
         public List<UserCalendarVM> Calendars { get; set; }
     }
 

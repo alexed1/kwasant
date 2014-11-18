@@ -23,10 +23,11 @@ namespace KwasantWeb.Controllers
     public class UserController : Controller
     {
         private readonly JsonPackager _jsonPackager;
-
+        private readonly User _user;
         public UserController()
         {
             _jsonPackager = new JsonPackager();
+            _user = new User();
         }
 
         [KwasantAuthorize(Roles = "Admin")]
@@ -162,39 +163,23 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                UserDO existingUser;
-                if (!String.IsNullOrWhiteSpace(curCreateUserVM.Id))
-                    existingUser = uow.UserRepository.GetByKey(curCreateUserVM.Id);
-                else
+                bool isAlreadyExists;
+                UserDO existingUser = _user.GetUserToAddOrUpdate(uow, curCreateUserVM.Id, curCreateUserVM.EmailAddress, curCreateUserVM.FirstName, out isAlreadyExists);
+                if (isAlreadyExists)
                 {
-                    existingUser = uow.UserRepository.GetOrCreateUser(curCreateUserVM.EmailAddress);
+                    var jsonSuccessResult = Json(_jsonPackager.Pack(new { Data = "User already exists.", UserId = existingUser.Id }));
+                    return jsonSuccessResult;
                 }
 
-                existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress);
                 if (!String.IsNullOrEmpty(curCreateUserVM.NewPassword))
                 {
-                    uow.UserRepository.UpdateUserCredentials(existingUser, password: curCreateUserVM.NewPassword);
+                    _user.UpdatePassword(uow, existingUser, curCreateUserVM.NewPassword);
                 }
 
-                var existingRoles = uow.AspNetUserRolesRepository.GetRoles(existingUser.Id).ToList();
-
-                //Remove old roles
-                foreach (var existingRole in existingRoles)
-                {
-                    if (!curCreateUserVM.Roles.Select(newRole => newRole).Contains(existingRole.Name))
-                        uow.AspNetUserRolesRepository.RevokeRoleFromUser(existingRole.Name, existingUser.Id);
-                }
-
-                //Add new roles
-                foreach (var role in curCreateUserVM.Roles)
-                {
-                    if (!existingRoles.Select(newRole => newRole.Name).Contains(role))
-                        uow.AspNetUserRolesRepository.AssignRoleToUser(role, existingUser.Id);    
-                }
+                _user.SetRoles(uow, existingUser.Id, curCreateUserVM.Roles);
 
                 existingUser.FirstName = curCreateUserVM.FirstName;
                 existingUser.LastName = curCreateUserVM.LastName;
-                existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(curCreateUserVM.EmailAddress, curCreateUserVM.FirstName);
                 uow.SaveChanges();
 
                 //Checking if user is new user
@@ -207,9 +192,8 @@ namespace KwasantWeb.Controllers
                 {
                     new Email().SendLoginCredentials(uow, curCreateUserVM.EmailAddress, curCreateUserVM.NewPassword);
                 }
+                return Json(_jsonPackager.Pack("User updated successfully."));
             }
-            var jsonSuccessResult = Json(_jsonPackager.Pack("User updated successfully."));
-            return jsonSuccessResult;
         }
 
         public ActionResult FindUser()
@@ -243,7 +227,7 @@ namespace KwasantWeb.Controllers
             }
         }
 
-        private static UserVM CreateUserVM(UserDO u, IUnitOfWork uow)
+        private UserVM CreateUserVM(UserDO u, IUnitOfWork uow)
         {
             return new UserVM
             {
@@ -252,8 +236,9 @@ namespace KwasantWeb.Controllers
                 LastName = u.LastName,
                 UserName = u.UserName,
                 EmailAddress = u.EmailAddress.Address,
-                Roles = uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Name).ToList(),
+                Roles = _user.GetSelectedRole(uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Name).ToArray()),
                 Calendars = u.Calendars.Select(c => new UserCalendarVM { Id = c.Id, Name = c.Name }).ToList(),
+                EmailAddressID = u.EmailAddressID.Value,
                 Status = u.State.Value
             };
         }
@@ -271,6 +256,12 @@ namespace KwasantWeb.Controllers
                     uow.SaveChanges();
                 }
             }
+        }
+
+        public ActionResult ExistingUserAlert(string UserId)
+        {
+            ViewBag.UserId = UserId;
+            return View();
         }
 
     }
