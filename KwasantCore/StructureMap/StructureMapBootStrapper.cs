@@ -69,6 +69,9 @@ namespace KwasantCore.StructureMap
                 For<IQuestion>().Use<Question>();
                 For<IAnswer>().Use<Answer>();
                 For<IEmailAddress>().Use<EmailAddress>();
+                For<INotification>().Use<Notification>();
+                For<IExpectedResponse>().Use<ExpectedResponse>();
+
                 For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
                 For<ISecurityServices>().Use<SecurityServices>();
                 For<ITracker>().Use<SegmentIO>();
@@ -95,6 +98,8 @@ namespace KwasantCore.StructureMap
                 For<IBookingRequest>().Use<BookingRequest>();
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
+                For<INotification>().Use<Notification>();
+                For<IExpectedResponse>().Use<ExpectedResponse>();
                 For<INegotiation>().Use<Negotiation>();
                 For<IQuestion>().Use<Question>();
                 For<IAnswer>().Use<Answer>();

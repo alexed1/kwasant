@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using KwasantTest.Fixtures;
@@ -69,6 +70,11 @@ namespace KwasantTest.MockedDB
             //Force a seed -- helps with debug
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var userDO = uow.UserRepository.GetOrCreateUser("testemail@gmail.com");
+                uow.UserRepository.Add(userDO);
+
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, userDO);
+
                 var negDO = new FixtureData(uow).TestNegotiation1();
                 negDO.Id = 1;
                 uow.NegotiationsRepository.Add(negDO);
