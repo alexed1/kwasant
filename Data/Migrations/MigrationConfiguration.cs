@@ -267,7 +267,7 @@ namespace Data.Migrations
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
 
-            user.TestAccount = true;
+            user.TestAccount = false;
         }
 
         /// <summary>
