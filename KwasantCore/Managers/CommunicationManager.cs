@@ -133,7 +133,9 @@ namespace KwasantCore.Managers
 
                 uow.EmailRepository.Add(emailDO);
                 var summaryQandAText = _negotiation.GetSummaryText(negotiationDO);
-                
+
+                string currBookerAddress = negotiationDO.BookingRequest.Booker.EmailAddress.Address;
+
                 string templateName = GetCRTemplate(curUserDO);
 
                 var conversationThread = _br.GetConversationThread(negotiationDO.BookingRequest);
@@ -145,7 +147,8 @@ namespace KwasantCore.Managers
                         {"RESP_URL", tokenURL},
                         {"bodytext", generatedEmailDO.HTMLText},
                         {"questions", String.Join("<br/>", summaryQandAText)},
-                        {"conversationthread", conversationThread}
+                        {"conversationthread", conversationThread},
+                        {"bookername", currBookerAddress.Replace("@kwasant.com","")}
                     });
             }
             negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
