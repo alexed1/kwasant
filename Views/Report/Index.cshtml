@@ -2,17 +2,17 @@
 <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
 <link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
 <nav class="navbar navbar-default top-toolbar-section" role="navigation">
-	<div class="container-fluid">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-		</div>
-		@Html.Partial("TimeSpanNavigator")
-	</div>
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        @Html.Partial("TimeSpanNavigator")
+    </div>
 </nav>
 
 <table id="tblreport" class="data-table">
@@ -23,6 +23,19 @@
             <th style="width: 15%">Secondary Category</th>
             <th style="width: 10%">Activity</th>
             <th style="width: 45%">Notes</th>
+        </tr>
+    </thead>
+</table>
+
+<table id="tblincidentreport" class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 10%">Date</th>
+            <th style="width: 10%">Primary Category</th>
+            <th style="width: 15%">Secondary Category</th>
+            <th style="width: 10%">Activity</th>
+            <th style="width: 45%">Notes</th>
+            <th style="width: 10%">ObjectID</th>
         </tr>
     </thead>
 </table>
@@ -43,10 +56,11 @@
     $(document).ready(function () {
         $('#tblAllLogs').hide();
         $('#tblreport').hide();
-        
+        $('#tblincidentreport').hide();
+
         updateTables();
     });
-    
+
     function updateTables() {
 
         var queryPeriod = "all";
@@ -65,7 +79,8 @@
                     { data: 'primary_category' },
                     { data: 'secondary_category' },
                     { data: 'activity' },
-                    { data: 'data' }
+                    { data: 'data' },
+                    { data: 'object_id' }
                 ];
                 break;
             case "usage":
@@ -104,9 +119,18 @@
             if ("@ViewBag.type" == "alllogs") {
                 tableToWrite = $('#tblAllLogs');
                 tableToHide = $('#tblreport');
-            } else {
+                tableToHide = $('#tblincidentreport');
+            }
+            else if ("@ViewBag.type" == "incident")
+            {
+                tableToWrite = $('#tblincidentreport');
+                tableToHide = $('#tblreport');
+                tableToHide = $('#tblAllLogs');
+            }
+            else {
                 tableToWrite = $('#tblreport');
                 tableToHide = $('#tblAllLogs');
+                tableToHide = $('#tblincidentreport');
             }
 
             table = tableToWrite.DataTable({
@@ -136,6 +160,6 @@
         });
     }
 
-    
+
 
 </script>
