@@ -5,6 +5,7 @@ using Data.Interfaces;
 using KwasantCore.Interfaces;
 using NUnit.Framework;
 using StructureMap;
+using Utilities;
 
 namespace KwasantTest.Services
 {
@@ -166,6 +167,34 @@ namespace KwasantTest.Services
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(String.Empty, result[0].Name);
             Assert.AreEqual("dgerrard@gerrard-cox.com", result[0].Email); 
+        }
+
+        [Test]
+        public void TestIllegalSurroundingCharactersInvalid()
+        {
+            var ru = new RegexUtilities();
+            Assert.False(ru.IsValidEmailAddress("'rjrudman@gmail.com'"));
+        }
+
+        [Test]
+        public void TestEmailNameWithPeriod()
+        {
+            var ru = new RegexUtilities();
+            Assert.True(ru.IsValidEmailAddress("rj.rudman@gmail.com"));
+        }
+
+        [Test]
+        public void TestEmailNameWithDash()
+        {
+            var ru = new RegexUtilities();
+            Assert.True(ru.IsValidEmailAddress("rj-rudman@gmail.com"));
+        }
+
+        [Test]
+        public void TestEmailDomainWithPeriod()
+        {
+            var ru = new RegexUtilities();
+            Assert.True(ru.IsValidEmailAddress("rjrudman@gmail.net.au"));
         }
     }
 }

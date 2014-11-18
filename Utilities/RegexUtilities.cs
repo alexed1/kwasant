@@ -1,64 +1,61 @@
 ﻿using System;
-using System.Globalization;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Utilities
 {
-
-    //Taken from http://msdn.microsoft.com/en-us/library/01escwtf(v=vs.110).aspx
     public class RegexUtilities
     {
-        bool m_Invalid;
-
-        public bool IsValidEmail(string strIn)
+        public bool IsValidEmailAddress(String emailAddress)
         {
-            m_Invalid = false;
-            if (String.IsNullOrEmpty(strIn))
-                return false;
-
-            // Use IdnMapping class to convert Unicode domain names. 
-            try
-            {
-                strIn = Regex.Replace(strIn, @"(@)(.+)$", DomainMapper,
-                    RegexOptions.None, TimeSpan.FromMilliseconds(200));
-            }
-            catch (RegexMatchTimeoutException)
-            {
-                return false;
-            }
-
-            if (m_Invalid)
-                return false;
-
-            // Return true if strIn is in valid e-mail format. 
-            try
-            {
-                return Regex.IsMatch(strIn,
-                    @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
-                    @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
-                    RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
-            }
-            catch (RegexMatchTimeoutException)
-            {
-                return false;
-            }
+            return ExtractFromString(emailAddress, true, true).Count == 1;
         }
 
-        private string DomainMapper(Match match)
+        public List<ParsedEmailAddress> ExtractFromString(String textToSearch, bool includeReserved = false, bool strict = false)
         {
-            // IdnMapping class with default property values.
-            IdnMapping idn = new IdnMapping();
+            if (String.IsNullOrEmpty(textToSearch))
+                return new List<ParsedEmailAddress>();
+            //This is the email regex.
+            //It searches for emails in the format of <Some Person>somePerson@someDomain.someExtension
 
-            string domainName = match.Groups[2].Value;
-            try
+            //We assume that names can only contain letters, numbers, and spaces. We also allow for a blank name, in the form of <>
+            const string nameRegex = @"[ a-zA-Z0-9]*";
+
+            //We assume for now, that emails can only contain letters, numbers, dashes, dots, +. This can be updated in the future (parsing emails is actually incredibly difficult).
+            //See http://tools.ietf.org/html/rfc2822#section-3.4.1 in the future if we ever update this.
+            const string emailUserNameRegex = @"[a-zA-Z0-9\-\.\+]+";
+
+            //Domains can only contain letters, numbers, or dashes.
+            const string domainRegex = @"[a-zA-Z0-9\-]+";
+
+            //Top level domain must be at least two characters long. Only allows letters, numbers, dashes or dots.
+            const string tldRegex = @"[a-zA-Z0-9\-\.]{2,}";
+
+            //The name part is optional; we can find emails like 'rjrudman@gmail.com', or '<Robert Rudman>rjrudman@gmail.com'.
+            //The regex uses named groups; 'name' and 'email'.
+            //Name will contain the name, without <>. Email will contain the full email address (without the name).
+
+            //Typically, you won't need to modify the below code, only the four variables defined above.
+            var fullRegexExpression = String.Format(@"(<(?<name>{0})>)?(?<email>{1}@{2}\.{3})", nameRegex,emailUserNameRegex, domainRegex, tldRegex);
+
+            if (strict)
+                fullRegexExpression = String.Format("^{0}$", fullRegexExpression);
+
+            var regex = new Regex(fullRegexExpression);
+
+            var result = new List<ParsedEmailAddress>();
+            foreach (Match match in regex.Matches(textToSearch))
             {
-                domainName = idn.GetAscii(domainName);
+                var parse = new ParsedEmailAddress
+                {
+                    Name = match.Groups["name"].Value,
+                    Email = match.Groups["email"].Value.ToLower()
+                };
+
+                if (includeReserved || !FilterUtility.IsReservedEmailAddress(parse.Email))
+                    result.Add(parse);
             }
-            catch (ArgumentException)
-            {
-                m_Invalid = true;
-            }
-            return match.Groups[1].Value + domainName;
+            return result;
         }
     }
 }

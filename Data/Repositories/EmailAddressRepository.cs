@@ -20,7 +20,7 @@ namespace Data.Repositories
         {
             //Validate email here!
             var regexUtil = new RegexUtilities();
-            if (!regexUtil.IsValidEmail(email))
+            if (!regexUtil.IsValidEmailAddress(email))
                 throw new ArgumentException(@"Invalid email format");
 
             var matchingEmailAddress = DBSet.Local.FirstOrDefault(e => e.Address == email);
