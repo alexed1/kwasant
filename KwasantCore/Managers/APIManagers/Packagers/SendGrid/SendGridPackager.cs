@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
@@ -82,16 +83,28 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
                 {
                     throw new ArgumentException("Trying to send an email that doesn't have both an HTML and plain text body");
                 }
-                else if (email.PlainText == null || email.HTMLText == null)
+
+                if (email.PlainText == null || email.HTMLText == null)
                 {
                     mailMessage.Html = "<html></html>";
                     mailMessage.Text = "";
                 }
                 else
                 {
-                mailMessage.Html = email.HTMLText;
-                mailMessage.Text = email.PlainText;
+                    mailMessage.Html = email.HTMLText;
+                    mailMessage.Text = email.PlainText;
                 }
+
+                const string messageIDFormat = "<{0}@sant.com>";
+
+                var headers = new Dictionary<String, String>();
+                if (!String.IsNullOrEmpty(email.MessageID))
+                    headers.Add("Message-ID", String.Format(messageIDFormat, email.MessageID));
+                if (!String.IsNullOrEmpty(email.References))
+                    headers.Add("References", String.Format(messageIDFormat, email.References));
+
+                if (headers.Any())
+                    mailMessage.AddHeaders(headers);
 
                 foreach (var attachment in email.Attachments)
                 {

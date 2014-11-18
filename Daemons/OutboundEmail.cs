@@ -96,9 +96,7 @@ namespace Daemons
                             IEmailPackager packager = ObjectFactory.GetNamedInstance<IEmailPackager>(envelope.Handler);
                             if (configRepository.Get<bool>("ArchiveOutboundEmail"))
                             {
-                                EmailAddressDO outboundemailaddress =
-                                    subUow.EmailAddressRepository.GetOrCreateEmailAddress(
-                                        configRepository.Get("ArchiveEmailAddress"), "Outbound Archive");
+                                EmailAddressDO outboundemailaddress = subUow.EmailAddressRepository.GetOrCreateEmailAddress(configRepository.Get("ArchiveEmailAddress"), "Outbound Archive");
                                 envelope.Email.AddEmailRecipient(EmailParticipantType.Bcc, outboundemailaddress);
                             }
 
@@ -112,6 +110,9 @@ namespace Daemons
                                     Logger.GetLogger().Info(message);
                                     LogEvent(message);
                                 }
+
+                                //If we're working on dev, send from our recieving email (so we can test replies).
+                                envelope.Email.From = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(configRepository.Get("INBOUND_EMAIL_USERNAME"));
                             }
 
                             packager.Send(envelope);

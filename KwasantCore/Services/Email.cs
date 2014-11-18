@@ -124,6 +124,11 @@ namespace KwasantCore.Services
                 DateCreated = dateCreated,
                 Attachments = mailMessage.Attachments.Select(CreateNewAttachment).Union(mailMessage.AlternateViews.Select(CreateNewAttachment)).Where(a => a != null).ToList()
             };
+
+
+            emailDO.MessageID = mailMessage.Headers["Message-ID"];
+            emailDO.References = mailMessage.Headers["References"];
+
             var uow = emailRepository.UnitOfWork;
 
             var fromAddress = GenerateEmailAddress(uow, mailMessage.From);

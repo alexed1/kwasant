@@ -307,6 +307,8 @@ namespace KwasantWeb.Controllers
                 return emailController.DisplayEmail(Session, currCreateEmailVM,
                     (subUow, emailDO) =>
                     {
+                        emailDO.AddReference(bookingRequestDO.MessageID);
+                        
                         var sendingUser = subUow.UserRepository.GetByKey(userID);
                         subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("SimpleEmail_template"));
 

@@ -18,11 +18,50 @@ namespace Data.Entities
             Events = new List<EventDO>();
             DateCreated = DateTimeOffset.UtcNow;
             DateReceived = DateTimeOffset.UtcNow;
+
+            //By default, the MessageID is a random GUID. This is so we can match our sent emails to replies
+            SetMessageID(Guid.NewGuid().ToString());
+        }
+
+        public void SetMessageID(String messageID)
+        {
+            const string messageFormat = @"<{0}@sant.com>";
+            MessageID = String.Format(messageFormat, messageFormat);
+        }
+
+        public void AddReference(String messageID)
+        {
+            const string messageFormat = @"<{0}@sant.com>";
+            var message = String.Format(messageFormat, messageFormat);
+            if (String.IsNullOrEmpty(References))
+                References = message;
+            else
+                References = "\t" + message;
         }
 
         [Key]
         public int Id { get; set; }
-        
+
+        /// <summary>
+        /// This is taken from the header in emails.
+        /// We use it to group messages from clients into conversation threads
+        /// We also use it to identify negotiation response emails
+        /// *** Use 'SetMessageID' unless you know what you're doing! ***
+        /// </summary>
+        public String MessageID { get; set; }
+
+        /// <summary>
+        /// This is used at the moment for outbound emails.
+        /// We don't store this for incoming emails - however, we do check the header of the same name
+        /// It allows us to specify what thread the email belongs to.
+        /// For example, an email about negotiation requests references the original booking
+        /// In this situation, 
+        /// MessageID = Guid.NewGuid().ToString();
+        /// References = negotiationRequestDO.BookingRequest.MessageID;
+        /// *** Use 'AddReference' unless you know what you're doing! ***
+        /// </summary>
+        public String References { get; set; }
+
         public String Subject { get; set; }
         public String HTMLText { get; set; }
         public String PlainText { get; set; }
@@ -45,7 +84,7 @@ namespace Data.Entities
         /// Overrides the name of the sender (instead of taking it from From.Name).
         /// </summary>
         public String FromName { get; set; }
-        
+
         [ForeignKey("ReplyTo")]
         public int? ReplyToID { get; set; }
         public virtual EmailAddressDO ReplyTo { get; set; }

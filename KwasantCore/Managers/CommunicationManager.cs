@@ -97,10 +97,11 @@ namespace KwasantCore.Managers
             if (!generatedEmailDO.Recipients.Any())
                 return;
 
-            
             foreach (var attendee in generatedEmailDO.Recipients)
             {
                 var emailDO = new EmailDO();
+                //This means, when the customer replies, their client will include the bookingrequest id
+                emailDO.AddReference(negotiationDO.BookingRequest.MessageID);
                 
                 var customer = negotiationDO.BookingRequest.Customer;
                 var mode = _user.GetMode(customer);
@@ -137,12 +138,18 @@ namespace KwasantCore.Managers
                 string templateName = GetCRTemplate(curUserDO);
 
                 var conversationThread = _br.GetConversationThread(negotiationDO.BookingRequest);
-                
-                
+
+                string bookerName;
+                if (negotiationDO.BookingRequest.Booker != null)
+                    bookerName = negotiationDO.BookingRequest.Booker.DisplayName;
+                else
+                    bookerName = "Kwasant";
+
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, templateName,
                     new Dictionary<string, string>
                     {
                         {"RESP_URL", tokenURL},
+                        {"bookername", bookerName},
                         {"bodytext", generatedEmailDO.HTMLText},
                         {"questions", String.Join("<br/>", summaryQandAText)},
                         {"conversationthread", conversationThread}
