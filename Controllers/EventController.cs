@@ -219,49 +219,69 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult ProcessChangedEvent(EventVM curEventVM, int confStatus = ConfirmationStatus.Unconfirmed, bool mergeEvents = false)
         {
-            if (confStatus == ConfirmationStatus.Unconfirmed)
+            try
             {
-                return ConfirmChanges(curEventVM);
-            }
-
-            EventDO updatedEventInfo = _mappingEngine.Map<EventDO>(curEventVM);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (updatedEventInfo.Id == 0)
-                    throw new ApplicationException("event should have been created and saved in #new, so Id should not be zero");
-                var curEventDO = uow.EventRepository.GetByKey(updatedEventInfo.Id);
-                if (curEventDO == null)
-                    throw new EntityNotFoundException<EventDO>();
-                updatedEventInfo.Attendees = _attendee.ConvertFromString(uow, curEventVM.Attendees);
-                
-                if (updatedEventInfo.Summary == null)
-                    updatedEventInfo.Summary = String.Empty;
-
-                curEventDO.EventStatus = updatedEventInfo.Summary.Contains("DRAFT") ? EventState.Draft : EventState.Booking;
-
-                _event.Process(uow, curEventDO, updatedEventInfo);
-
-                if (mergeEvents)
-                    MergeTimeSlots(uow, curEventDO);
-
-                uow.SaveChanges();
-
-                foreach (var attendeeDO in updatedEventInfo.Attendees)
+                if (confStatus == ConfirmationStatus.Unconfirmed)
                 {
-                    var user = new User();
-                    var userDO = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress);
-                    if (user.GetMode(userDO) == CommunicationMode.Delegate)
+                    return ConfirmChanges(curEventVM);
+                }
+
+                EventDO updatedEventInfo = _mappingEngine.Map<EventDO>(curEventVM);
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    if (updatedEventInfo.Id == 0)
+                        throw new ApplicationException(
+                            "event should have been created and saved in #new, so Id should not be zero");
+                    var curEventDO = uow.EventRepository.GetByKey(updatedEventInfo.Id);
+                    if (curEventDO == null)
+                        throw new EntityNotFoundException<EventDO>();
+                    updatedEventInfo.Attendees = _attendee.ConvertFromString(uow, curEventVM.Attendees);
+
+                    if (updatedEventInfo.Summary == null)
+                        updatedEventInfo.Summary = String.Empty;
+
+                    curEventDO.EventStatus = updatedEventInfo.Summary.Contains("DRAFT")
+                        ? EventState.Draft
+                        : EventState.Booking;
+
+                    _event.Process(uow, curEventDO, updatedEventInfo);
+
+                    if (mergeEvents)
+                        MergeTimeSlots(uow, curEventDO);
+
+                    uow.SaveChanges();
+
+                    foreach (var attendeeDO in updatedEventInfo.Attendees)
                     {
-                        ObjectFactory.GetInstance<ITracker>().Track(userDO, "Customer", "InvitedAsPreCustomerAttendee",
-                            new Dictionary<string, object>
-                            {
-                                {"BookingRequestId", curEventDO.BookingRequestID},
-                                {"EventID", curEventDO.Id}
-                            });
+                        var user = new User();
+                        var userDO = uow.UserRepository.GetOrCreateUser(attendeeDO.EmailAddress);
+                        if (user.GetMode(userDO) == CommunicationMode.Delegate)
+                        {
+                            ObjectFactory.GetInstance<ITracker>()
+                                .Track(userDO, "Customer", "InvitedAsPreCustomerAttendee",
+                                    new Dictionary<string, object>
+                                    {
+                                        {"BookingRequestId", curEventDO.BookingRequestID},
+                                        {"EventID", curEventDO.Id}
+                                    });
+                        }
                     }
                 }
+                return Json(new
+                {
+                    Success = true,
+                    Message = String.Empty
+                });
             }
-            return Json(true);
+            catch (Exception e)
+            {
+                return Json(new
+                {
+                    Success = false,
+                    Message = e.Message
+                });
+            }
+            
         }
 
         public ActionResult DeleteEvent(int eventID, bool requiresConfirmation = true)
