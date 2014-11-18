@@ -9,6 +9,9 @@ namespace Data.Infrastructure
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
     {
+        public delegate void AttendeeUnresponsivenessThresholdReachedHandler(int expectedResponseId);
+        public static event AttendeeUnresponsivenessThresholdReachedHandler AlertAttendeeUnresponsivenessThresholdReached;
+
         public delegate void ResponseRecievedHandler(int bookingRequestId, String bookerID, String customerID);
         public static event ResponseRecievedHandler AlertResponseReceived;
 
@@ -66,6 +69,9 @@ namespace Data.Infrastructure
         public delegate void BookingRequestReservationTimeoutHandler(int bookingRequestId, string bookerId);
         public static event BookingRequestReservationTimeoutHandler AlertBookingRequestReservationTimeout;
 
+        public delegate void StaleBookingRequestsDetectedHandler(BookingRequestDO[] oldBookingRequests);
+        public static event StaleBookingRequestsDetectedHandler AlertStaleBookingRequestsDetected;
+
         public delegate void UserRegistrationHandler(UserDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
@@ -82,6 +88,12 @@ namespace Data.Infrastructure
         public static event ErrorSyncingCalendarHandler AlertErrorSyncingCalendar;
 
         #region Method
+
+        public static void AttendeeUnresponsivenessThresholdReached(int expectedResponseId)
+        {
+            AttendeeUnresponsivenessThresholdReachedHandler handler = AlertAttendeeUnresponsivenessThresholdReached;
+            if (handler != null) handler(expectedResponseId);
+        }
 
         public static void ResponseReceived(int bookingRequestId, String bookerID, String customerID)
         {
@@ -189,6 +201,12 @@ namespace Data.Infrastructure
         {
             BookingRequestReservationTimeoutHandler handler = AlertBookingRequestReservationTimeout;
             if (handler != null) handler(bookingRequestId, bookerId);
+        }
+
+        public static void StaleBookingRequestsDetected(BookingRequestDO[] oldbookingrequests)
+        {
+            StaleBookingRequestsDetectedHandler handler = AlertStaleBookingRequestsDetected;
+            if (handler != null) handler(oldbookingrequests);
         }
 
         public static void UserRegistration(UserDO curUser)

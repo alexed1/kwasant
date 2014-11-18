@@ -124,9 +124,9 @@ namespace KwasantWeb.Controllers
         {
             try
             {
-                new Thread(action).Start();
-                return Json(true);
-            }
+            new Thread(action).Start();
+            return Json(true);
+        }
             catch (Exception ex)
             {
                 Logger.GetLogger().Error("Failed to run test", ex);
@@ -235,10 +235,10 @@ See more: {2}
 
             if (!success)
             {
-                const string errorMessage = "No email was reported with the correct subject within the given timeframe.";
-                MarkTestFail<OutboundEmail>(testName, errorMessage);
-                MarkTestFail<InboundEmail>(testName, errorMessage);
-            }
+            const string errorMessage = "No email was reported with the correct subject within the given timeframe.";
+            MarkTestFail<OutboundEmail>(testName, errorMessage);
+            MarkTestFail<InboundEmail>(testName, errorMessage);
+        }
 
             //Now, delete that email
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -253,7 +253,7 @@ See more: {2}
                     foreach(var envelope in envelopes)
                         uow.EnvelopeRepository.Remove(envelope);
                     uow.EmailRepository.Remove(savedEmailDO);
-                }
+    }
 
                 uow.SaveChanges();
             }
