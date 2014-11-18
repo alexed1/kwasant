@@ -237,9 +237,8 @@ namespace Data.Migrations
         private static void AddAdmins(IUnitOfWork unitOfWork)
         {
             CreateAdmin("alex@kwasant.com", "alex@1234", unitOfWork);
-            CreateAdmin("pabitra@hotmail.com", "pabi1234", unitOfWork);
             CreateAdmin("rjrudman@gmail.com", "robert1234", unitOfWork);
-            CreateAdmin("quader.mamun@gmail.com", "abdul1234", unitOfWork);
+            CreateAdmin("eschebenyuk@gmail.com ", "kate235", unitOfWork);
             CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
         }
 
