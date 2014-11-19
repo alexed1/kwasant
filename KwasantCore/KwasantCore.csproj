@@ -166,6 +166,8 @@
   <ItemGroup>
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
+    <Compile Include="Interfaces\IExpectedResponse.cs" />
+    <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IAnswer.cs" />
     <Compile Include="Interfaces\IAttendee.cs" />
     <Compile Include="Interfaces\IBookingRequest.cs" />
@@ -184,7 +186,6 @@
     <Compile Include="ExternalServices\ServiceManager.cs" />
     <Compile Include="ExternalServices\SmtpClientWrapper.cs" />
     <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
-    <Compile Include="Interfaces\ParsedEmailAddress.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\AlertReporter.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
@@ -254,10 +255,12 @@
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\BookingRequest.cs" />
     <Compile Include="Services\Email.cs" />
+    <Compile Include="Services\ExpectedResponse.cs" />
     <Compile Include="Services\Invitation.cs" />
     <Compile Include="Services\InvitationResponse.cs" />
     <Compile Include="Services\IQuestion.cs" />
     <Compile Include="Services\Negotiation.cs" />
+    <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\Question.cs" />
     <Compile Include="Services\Report.cs" />
     <Compile Include="Services\User.cs" />

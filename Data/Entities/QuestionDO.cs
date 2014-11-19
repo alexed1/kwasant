@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
+using System.Reflection;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States.Templates;
@@ -10,7 +11,7 @@ using Utilities;
 namespace Data.Entities
 {
 
-    public class QuestionDO : BaseDO, IQuestionDO, ICreateHook, IModifyHook, IDeleteHook
+    public class QuestionDO : BaseDO, IQuestionDO, ICreateHook, IDeleteHook
     {
         public QuestionDO()
         {
@@ -40,20 +41,19 @@ namespace Data.Entities
         [InverseProperty("Question")]
         public virtual List<AnswerDO> Answers { get; set; }
 
-        public void AfterCreate()
+        public override void AfterCreate()
         {
             AlertManager.TrackablePropertyCreated("Question added", "Question", Id, "Name: " + Text);
-    }
+            base.AfterCreate();
+        }
 
-        public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             var reflectionHelper = new ReflectionHelper<QuestionDO>();
+            var textProperty = reflectionHelper.GetProperty(br => br.Text);
+            this.DetectUpdates(originalValues, currentValues, new[] {textProperty});
 
-            var textPropertyName = reflectionHelper.GetPropertyName(br => br.Text);
-            if (!MiscUtils.AreEqual(originalValues[textPropertyName], currentValues[textPropertyName]))
-            {
-                AlertManager.TrackablePropertyUpdated("Question changed", "Question", Id, Text);
-}
+            base.OnModify(originalValues, currentValues);
         }
 
         public void OnDelete(DbPropertyValues originalValues)

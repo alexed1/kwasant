@@ -47,8 +47,8 @@ namespace KwasantCore.Services
                 uow.SaveChanges();
 
                 AlertManager.EmailReceived(bookingRequest.Id, bookingRequest.Customer.Id);
+                            }
             }
-        }
 
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
@@ -241,9 +241,9 @@ namespace KwasantCore.Services
         }
 
         public IEnumerable<String> ExtractEmailAddresses(BookingRequestDO bookingRequestDO)
-        {
+                {
             return ExtractParsedEmailAddresses(bookingRequestDO).Select(pea => pea.Email);
-        }
+                }
 
         public void ExtractEmailAddresses(IUnitOfWork uow, EventDO eventDO)
         {
@@ -256,30 +256,14 @@ namespace KwasantCore.Services
         }
 
         //if curBooker is null, will return all BR's of state "Booking"
-        public object GetCheckOutBookingRequest(IUnitOfWork uow, string curBooker)
+        public IEnumerable<BookingRequestDO> GetCheckedOut(IUnitOfWork uow, string curBooker)
         {
             return
                 uow.BookingRequestRepository.GetAll()
                 .Where(e => e.State == BookingRequestState.Booking && ((!String.IsNullOrEmpty(curBooker)) ? e.BookerID == curBooker : true))
-                    .OrderByDescending(e => e.DateReceived)
-                    .Select(
-                        e =>
-                        {
-                            return new
-                            {
-                                id = e.Id,
-                                subject = e.Subject,
-                                fromAddress = e.From.Address,
-                                dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
-                                body =
-                                    e.HTMLText.Trim().Length > 400
-                                        ? e.HTMLText.Trim().Substring(0, 400)
-                                        : e.HTMLText.Trim()
-                            };
-                        })
-                    .ToList();
+                 .OrderByDescending(e => e.DateReceived).ToList();
         }
-        
+
         public object GetAllBookingRequests(IUnitOfWork uow)
         {
             return
@@ -428,7 +412,7 @@ namespace KwasantCore.Services
     </div>
 </div>
 ";
-            var threads = bookingRequestDO.ConversationMembers.Union(new[] {bookingRequestDO});
+            var threads = bookingRequestDO.ConversationMembers.Union(new[] { bookingRequestDO });
 
             var result = String.Join("", threads.OrderByDescending(b => b.DateReceived).Select(e =>
                 String.Format(conversationThreadFormat, e.From.Name,
@@ -452,7 +436,6 @@ namespace KwasantCore.Services
                 bookingRequestDO.Booker = bookerDO;
                 bookingRequestDO.PreferredBookerID = bookerId;
                 bookingRequestDO.PreferredBooker = bookerDO;
-                bookingRequestDO.LastUpdated = DateTimeOffset.Now;
                 uow.SaveChanges();
                 AlertManager.BookingRequestCheckedOut(bookingRequestDO.Id, bookerId);
             }
@@ -520,6 +503,42 @@ namespace KwasantCore.Services
                 AlertManager.BookingRequestReservationTimeout(bookingRequestDO.Id, bookerId);
             }
 
+        }
+
+        public string Generate(IUnitOfWork uow, string emailAddress, string meetingInfo, string submitsVia, string subject)
+        {
+            MailMessage message = new MailMessage();
+            message.From = new MailAddress(emailAddress);
+            BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
+            BookingRequestDO bookingRequest = Email.ConvertMailMessageToEmail(bookingRequestRepo, message);
+            bookingRequest.DateReceived = DateTime.Now;
+            bookingRequest.PlainText = meetingInfo;
+            bookingRequest.Subject = subject;
+            Process(uow, bookingRequest);
+            uow.SaveChanges();
+
+            ObjectFactory.GetInstance<ITracker>().Track(bookingRequest.Customer, "SiteActivity", submitsVia, new Dictionary<string, object> { { "BookingRequestID", bookingRequest.Id } });
+
+            return bookingRequest.CustomerID;
+        }
+        public List<BookingRequestDO> Search(IUnitOfWork uow, string queryPeriod, bool includeInvalid, int Id)
+        {
+            if (Id != 0)
+            {
+                return new List<BookingRequestDO> { uow.BookingRequestRepository.GetByKey(Id) };
+            }
+            else 
+            {
+                var requestList = uow.BookingRequestRepository.GetQuery();
+                if (queryPeriod != "all")
+                {
+                    DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
+                    requestList = requestList.Where(e => e.DateCreated > dateRange.StartTime && e.DateCreated < dateRange.EndTime);
+                }
+                if (!includeInvalid)
+                    requestList = requestList.Where(e => e.State != BookingRequestState.Invalid);
+                return requestList.OrderByDescending(e => e.DateReceived).ToList();
+            }
         }
     }
 }

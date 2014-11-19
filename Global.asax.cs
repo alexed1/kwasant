@@ -56,6 +56,7 @@ namespace KwasantWeb
             Logger.GetLogger().Info("Kwasant web starting...");
 
             Utilities.Server.IsProduction = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsProduction");
+            Utilities.Server.IsDevMode = ObjectFactory.GetInstance<IConfigRepository>().Get<bool>("IsDev", true);
 
             CommunicationManager curCommManager = ObjectFactory.GetInstance<CommunicationManager>();
             curCommManager.SubscribeToAlerts();
@@ -69,7 +70,6 @@ namespace KwasantWeb
             IncidentReporter incidentReporter = new IncidentReporter();
             incidentReporter.SubscribeToAlerts();
 
-//            ModelBinders.Binders.Add(typeof(EventViewModel), new KwasantDateBinder());
             ModelBinders.Binders.Add(typeof (DateTimeOffset), new KwasantDateBinder());
 
             SharedAlertQueues.Begin();
@@ -79,6 +79,8 @@ namespace KwasantWeb
                 CreateRemoteCalendarProviders(uow);
                 uow.SaveChanges();
             }
+
+            SetServerUrl();
         }
 
 
@@ -139,46 +141,66 @@ namespace KwasantWeb
 
         private readonly object _initLocker = new object();
 
+        //Optimization. Even if running in DEBUG mode, this will only execute once.
+        //But on production, there is no need for this call
+#if DEBUG
         protected void Application_BeginRequest(object sender, EventArgs e)
         {
-            if (Utilities.Server.IsDevMode || !_IsInitialised)
+            SetServerUrl(HttpContext.Current);
+        }
+#endif
+
+        private void SetServerUrl(HttpContext context = null)
+        {
+            if (!_IsInitialised)
             {
                 lock (_initLocker)
                 {
-                    // Not redundant checking - we to a quick check outside of our lock to improve performance.
-                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-                    if (Utilities.Server.IsDevMode || !_IsInitialised)
+                    //Not redunant - this check is more efficient for a 1-time set.
+                    //If it's set, we exit without locking. We want to avoid locking as much as possible, so only do it once (at startup)
+                    if (!_IsInitialised)
                     {
-                        SetServerUrl(HttpContext.Current);
-                        Utilities.Server.IsDevMode = Utilities.Server.ServerHostName.Contains("localhost");
-                        Logger.GetLogger().Info("Starting server on " + Utilities.Server.ServerHostName);
+                        //First, try to read from the config
+                        var config = ObjectFactory.GetInstance<IConfigRepository>();
+                        var serverProtocol = config.Get("ServerProtocol", String.Empty);
+                        var domainName = config.Get("ServerDomainName", String.Empty);
+                        var domainPort = config.Get<int?>("ServerPort", null);
+
+                        if (!String.IsNullOrWhiteSpace(domainName) && !String.IsNullOrWhiteSpace(serverProtocol) && domainPort.HasValue)
+                        {
+                            Utilities.Server.ServerUrl = String.Format("{0}{1}{2}/", serverProtocol, domainName,
+                                domainPort.Value == 80 ? String.Empty : (":" + domainPort.Value));
+
+                            Utilities.Server.ServerHostName = domainName;
+                        }
+                        else
+                        {
+                            if (context == null)
+                                return;
+
+                            //If the config is not set, then we setup our server URL based on the first request
+                            string port = context.Request.ServerVariables["SERVER_PORT"];
+                            if (port == null || port == "80" || port == "443")
+                                port = "";
+                            else
+                                port = ":" + port;
+
+                            string protocol = context.Request.ServerVariables["SERVER_PORT_SECURE"];
+                            if (protocol == null || protocol == "0")
+                                protocol = "http://";
+                            else
+                                protocol = "https://";
+
+                            // *** Figure out the base Url which points at the application's root
+                            Utilities.Server.ServerHostName = context.Request.ServerVariables["SERVER_NAME"];
+                            string url = protocol + context.Request.ServerVariables["SERVER_NAME"] + port + context.Request.ApplicationPath;
+                            Utilities.Server.ServerUrl = url;
+                        }
                         _IsInitialised = true;
                     }
                 }
             }
         }
-
-        private static void SetServerUrl(HttpContext context)
-        {
-            string port = context.Request.ServerVariables["SERVER_PORT"];
-            if (port == null || port == "80" || port == "443")
-                port = "";
-            else
-                port = ":" + port;
-
-            string protocol = context.Request.ServerVariables["SERVER_PORT_SECURE"];
-            if (protocol == null || protocol == "0")
-                protocol = "http://";
-            else
-                protocol = "https://";
-
-            // *** Figure out the base Url which points at the application's root
-            Utilities.Server.ServerHostName = context.Request.ServerVariables["SERVER_NAME"];
-            string url = protocol + context.Request.ServerVariables["SERVER_NAME"] + port +
-                         context.Request.ApplicationPath;
-            Utilities.Server.ServerUrl = url;
-        }
-
 
         public void Application_End()
         {

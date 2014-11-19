@@ -18,10 +18,11 @@ namespace Data.Repositories
 
         public EmailAddressDO GetOrCreateEmailAddress(String email, String name = null)
         {
+            email = email.Trim();
             //Validate email here!
             var regexUtil = new RegexUtilities();
-            if (!regexUtil.IsValidEmail(email))
-                throw new ArgumentException(@"Invalid email format");
+            if (!regexUtil.IsValidEmailAddress(email))
+                throw new ArgumentException(@"Invalid email format: '" + email + "'");
 
             var matchingEmailAddress = DBSet.Local.FirstOrDefault(e => e.Address == email);
             if (matchingEmailAddress == null)

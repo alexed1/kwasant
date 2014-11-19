@@ -63,7 +63,9 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
 
             try
             {
-                var mailMessage = new SendGridMessage() { From = new MailAddress(email.From.Address, email.From.Name) };
+                var fromName = !String.IsNullOrWhiteSpace(email.FromName) ? email.FromName : email.From.Name;
+
+                var mailMessage = new SendGridMessage { From = new MailAddress(email.From.Address, fromName) };
 
                 if (email.ReplyTo != null)
                 {

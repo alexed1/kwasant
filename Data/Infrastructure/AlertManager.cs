@@ -9,13 +9,16 @@ namespace Data.Infrastructure
     //this class serves as both a registry of all of the defined alerts as well as a utility class.
     public static class AlertManager
     {
+        public delegate void AttendeeUnresponsivenessThresholdReachedHandler(int expectedResponseId);
+        public static event AttendeeUnresponsivenessThresholdReachedHandler AlertAttendeeUnresponsivenessThresholdReached;
+
         public delegate void ResponseRecievedHandler(int bookingRequestId, String bookerID, String customerID);
         public static event ResponseRecievedHandler AlertResponseReceived;
 
         public delegate void BookingRequestNeedsProcessingHandler(int bookingRequestId);
         public static event BookingRequestNeedsProcessingHandler AlertBookingRequestNeedsProcessing;
 
-        public delegate void TrackablePropertyUpdatedHandler(string name, string contextTable, int id, object status);
+        public delegate void TrackablePropertyUpdatedHandler(string name, string contextTable, object id, object status);
         public static event TrackablePropertyUpdatedHandler AlertTrackablePropertyUpdated;
 
         public delegate void TrackablePropertyCreatedHandler(string name, string contextTable, int id, object status);
@@ -66,6 +69,9 @@ namespace Data.Infrastructure
         public delegate void BookingRequestReservationTimeoutHandler(int bookingRequestId, string bookerId);
         public static event BookingRequestReservationTimeoutHandler AlertBookingRequestReservationTimeout;
 
+        public delegate void StaleBookingRequestsDetectedHandler(BookingRequestDO[] oldBookingRequests);
+        public static event StaleBookingRequestsDetectedHandler AlertStaleBookingRequestsDetected;
+
         public delegate void UserRegistrationHandler(UserDO curUser);
         public static event UserRegistrationHandler AlertUserRegistration;
 
@@ -83,16 +89,22 @@ namespace Data.Infrastructure
 
         #region Method
 
+        public static void AttendeeUnresponsivenessThresholdReached(int expectedResponseId)
+        {
+            AttendeeUnresponsivenessThresholdReachedHandler handler = AlertAttendeeUnresponsivenessThresholdReached;
+            if (handler != null) handler(expectedResponseId);
+        }
+
         public static void ResponseReceived(int bookingRequestId, String bookerID, String customerID)
         {
             if (AlertResponseReceived != null)
                 AlertResponseReceived(bookingRequestId, bookerID, customerID);
         }
 
-        public static void TrackablePropertyUpdated(string name, string contextTable, int id, object status)
+        public static void TrackablePropertyUpdated(string entityName, string propertyName, object id, object value)
         {
             if (AlertTrackablePropertyUpdated != null)
-                AlertTrackablePropertyUpdated(name, contextTable, id, status);
+                AlertTrackablePropertyUpdated(entityName, propertyName, id, value);
         }
 
         public static void TrackablePropertyCreated(string name, string contextTable, int id, object status)
@@ -189,6 +201,12 @@ namespace Data.Infrastructure
         {
             BookingRequestReservationTimeoutHandler handler = AlertBookingRequestReservationTimeout;
             if (handler != null) handler(bookingRequestId, bookerId);
+        }
+
+        public static void StaleBookingRequestsDetected(BookingRequestDO[] oldbookingrequests)
+        {
+            StaleBookingRequestsDetectedHandler handler = AlertStaleBookingRequestsDetected;
+            if (handler != null) handler(oldbookingrequests);
         }
 
         public static void UserRegistration(UserDO curUser)

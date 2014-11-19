@@ -48,7 +48,7 @@ namespace KwasantWeb.Controllers
             var result = await authorizer.AuthorizeAsync(
                 this.GetUserId(),
                 this.GetUserName(),
-                String.Format("{0}AuthCallback/IndexAsync", Utilities.Server.ServerUrl),
+                String.Format("{0}AuthCallback/IndexAsync", Utilities.Server.ServerUrl.Replace("www.", "")),
                 Request.RawUrl,
                 CancellationToken.None);
 

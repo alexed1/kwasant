@@ -1,9 +1,5 @@
-using System.Data.Entity;
-using System.Net;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
-using Data.Interfaces;
 using Data.Repositories;
 using KwasantCore.Interfaces;
 using KwasantCore.ExternalServices;
@@ -13,13 +9,11 @@ using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
-using KwasantCore.Managers.APIManagers.Packagers.Mandrill;
 using KwasantCore.Managers.APIManagers.Packagers.SegmentIO;
 using KwasantCore.Managers.APIManagers.Packagers.SendGrid;
 using KwasantCore.Managers.APIManagers.Packagers.Twilio;
 using KwasantCore.Security;
 using KwasantCore.Services;
-using Microsoft.AspNet.Identity;
 using Moq;
 using SendGrid;
 using StructureMap;
@@ -75,6 +69,9 @@ namespace KwasantCore.StructureMap
                 For<IQuestion>().Use<Question>();
                 For<IAnswer>().Use<Answer>();
                 For<IEmailAddress>().Use<EmailAddress>();
+                For<INotification>().Use<Notification>();
+                For<IExpectedResponse>().Use<ExpectedResponse>();
+
                 For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
                 For<ISecurityServices>().Use<SecurityServices>();
                 For<ITracker>().Use<SegmentIO>();
@@ -101,6 +98,8 @@ namespace KwasantCore.StructureMap
                 For<IBookingRequest>().Use<BookingRequest>();
                 For<IAttendee>().Use<Attendee>();
                 For<IEmailAddress>().Use<EmailAddress>();
+                For<INotification>().Use<Notification>();
+                For<IExpectedResponse>().Use<ExpectedResponse>();
                 For<INegotiation>().Use<Negotiation>();
                 For<IQuestion>().Use<Question>();
                 For<IAnswer>().Use<Answer>();

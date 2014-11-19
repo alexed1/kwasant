@@ -1,0 +1,119 @@
+﻿<h2>Find Booking Request</h2>
+<script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
+<link href="~/Content/DataTables-1.10.0/media/css/jquery.dataTables.css" rel="stylesheet" />
+<div style="padding-right: 40px;">
+    <form>
+        <table>
+            <thead>
+                <tr>
+                    <th style="min-width: 150px"></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tr>
+                <td>Booking Request ID
+                </td>
+                <td>
+                    <input id="txtBrId" type="text" />
+                </td>
+            </tr>
+            <tr>
+                <td>Time Span :
+                </td>
+                <td>
+                    <ul id="ulQueryPeriod" style="list-style-type: none;padding:0; margin:0;">
+                        <li>
+                            <input type="radio" id="last5minutes" name="timespan" />Last 5 minutes</li>
+                        <li>
+                            <input type="radio" id="lasthour" name="timespan" />Last Hour</li>
+                        <li>
+                            <input type="radio" id="lastday" name="timespan" />Last Day</li>
+                        <li>
+                            <input type="radio" id="lastweek" name="timespan" />Last Week</li>
+                        <li>
+                            <input type="radio" id="all" name="timespan" checked="checked"/>All</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr><td>
+                Include Invalid Booking Requests
+                </td>
+                <td>
+                    <input type="checkbox" id="chkIncludeInvalid" />
+                </td>
+            </tr>
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr><td>&nbsp;</td>
+                <td>
+                    <input type="button" id="btnFind" value="Find" />
+                </td>
+            </tr>
+        </table>
+        <br />
+    </form>
+
+</div>
+
+<table id="tblbookingrequest" class="data-table table-with-action">
+    <thead>
+        <tr>
+            <th width="15%">Date Received</th>
+            <th>From</th>
+            <th>Subject</th>
+            <th>Body</th>
+            <th class="action-cell">Action</th>
+        </tr>
+    </thead>
+</table>
+
+<script type="text/javascript">
+    var table;
+    $(document).ready(function () {
+        $("#tblbookingrequest").hide();
+        //Binding click event on "Find" button
+        $("#btnFind").click(function () {
+            $("#tblbookingrequest").show();
+            var queryPeriod;
+            var includeInvalid = $("#chkIncludeInvalid").prop("checked");
+            var id = $("#txtBrId").val() == "" ? 0 : $("#txtBrId").val();
+            $("#ulQueryPeriod input").each(function () {
+                if ($(this).prop("checked"))
+                {
+                    queryPeriod = this.id;
+                }
+            });
+            //Ajax call to get filtered booking request from server.
+            $.post("/BookingRequest/Search", { queryPeriod: queryPeriod, includeInvalid: includeInvalid, id: id }, showRequests, 'json');
+        });
+
+        //Binding retrived data to show using DataTable widget
+        function showRequests(response) {
+            table = $('#tblbookingrequest').DataTable({
+                stripeClasses: ['rowClass'],
+                destroy: true,
+                data: JSON.parse(response),
+                order: [0, 'desc'],
+                columns: [
+                    { data: 'date_received' },
+                    { data: 'from_address' },
+                    { data: 'subject' },
+                    { data: 'body' },
+                    {
+                        data: null,
+                        defaultContent: "<a value='detail' href='#' onclick='getDetails(this)'>Details</a>"
+                    }
+                ],
+            });
+        }
+    });
+
+    //Function triggered on "Details" button click in table "tblbookingrequest"
+    function getDetails(curElmt) {
+        var data = table.row($(curElmt).parents('tr')).data();
+        //redirecting to main Dashboard view for details
+        window.location.href = '@Url.Action("Details")' + "/" + data.id;
+    }
+</script>

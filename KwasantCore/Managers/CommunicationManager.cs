@@ -41,7 +41,6 @@ namespace KwasantCore.Managers
         {
             AlertManager.AlertExplicitCustomerCreated += NewExplicitCustomerWorkflow;
             AlertManager.AlertCustomerCreated += NewCustomerWorkflow;
-            AlertManager.AlertBookingRequestCreated += BookingRequestCreated;
             AlertManager.AlertBookingRequestNeedsProcessing += BookingRequestNeedsProcessing;
         }
 
@@ -73,15 +72,6 @@ namespace KwasantCore.Managers
             ObjectFactory.GetInstance<ITracker>().Identify(userDO);
         }
 
-        public void BookingRequestCreated(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.Customer, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
-            }
-        }
-
         public void GenerateWelcomeEmail(string curUserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -111,10 +101,26 @@ namespace KwasantCore.Managers
             foreach (var attendee in generatedEmailDO.Recipients)
             {
                 var emailDO = new EmailDO();
-                emailDO.FromID = generatedEmailDO.FromID;
+                
+                var customer = negotiationDO.BookingRequest.Customer;
+                var mode = _user.GetMode(customer);
+                if (mode == CommunicationMode.Direct)
+                {
+                    var directEmailAddress = _configRepository.Get("EmailFromAddress_DirectMode");
+                    var directEmailName = _configRepository.Get("EmailFromName_DirectMode");
+                    emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(directEmailAddress);
+                    emailDO.FromName = directEmailName;
+                }
+                else
+                {
+                    var delegateEmailAddress = _configRepository.Get("EmailFromAddress_DelegateMode");
+                    var delegateEmailName = _configRepository.Get("EmailFromName_DelegateMode");
+                    emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(delegateEmailAddress);
+                    emailDO.FromName = String.Format(delegateEmailName, customer.DisplayName);
+                }
+
                 emailDO.AddEmailRecipient(EmailParticipantType.To, attendee.EmailAddress);
                
-                
                 emailDO.Subject = string.Format("Need Your Response on {0} {1} event: {2}",
                     negotiationDO.BookingRequest.Customer.FirstName,
                     (negotiationDO.BookingRequest.Customer.LastName ?? ""),
@@ -127,7 +133,9 @@ namespace KwasantCore.Managers
 
                 uow.EmailRepository.Add(emailDO);
                 var summaryQandAText = _negotiation.GetSummaryText(negotiationDO);
-                
+
+                string currBookerAddress = negotiationDO.BookingRequest.Booker.EmailAddress.Address;
+
                 string templateName = GetCRTemplate(curUserDO);
 
                 var conversationThread = _br.GetConversationThread(negotiationDO.BookingRequest);
@@ -137,8 +145,10 @@ namespace KwasantCore.Managers
                     new Dictionary<string, string>
                     {
                         {"RESP_URL", tokenURL},
+                        {"bodytext", generatedEmailDO.HTMLText},
                         {"questions", String.Join("<br/>", summaryQandAText)},
-                        {"conversationthread", conversationThread}
+                        {"conversationthread", conversationThread},
+                        {"bookername", currBookerAddress.Replace("@kwasant.com","")}
                     });
             }
             negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
@@ -156,7 +166,7 @@ namespace KwasantCore.Managers
 
                     break;
                 case CommunicationMode.Delegate:
-                    templateName = _configRepository.Get("CR_template_for_existing_user");
+                    templateName = _configRepository.Get("CR_template_for_precustomer");
 
                     break;
                 case CommunicationMode.Precustomer:

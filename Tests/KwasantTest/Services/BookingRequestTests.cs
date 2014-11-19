@@ -9,6 +9,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
@@ -18,6 +19,7 @@ using Moq;
 using NUnit.Framework;
 using StructureMap;
 using Utilities;
+using KwasantWeb.Controllers;
 
 namespace KwasantTest.Services
 {
@@ -39,6 +41,8 @@ namespace KwasantTest.Services
                             return "0.04";
                         case "MaxBRReservationPeriod":
                             return "0.04";
+                        case "ExpectedResponseActiveDuration":
+                            return "0.04";
                         case "EmailAddress_GeneralInfo":
                             return "info@kwasant.com";
                         default:
@@ -47,6 +51,12 @@ namespace KwasantTest.Services
                 });
             var configRepository = configRepositoryMock.Object;
             ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepository));
+
+            var notificationMock = new Mock<INotification>();
+            notificationMock
+                .Setup(n => n.IsInNotificationWindow(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(true);
+            ObjectFactory.Configure(cfg => cfg.For<INotification>().Use(notificationMock.Object));
         }
 
         private void AddTestRequestData()
@@ -67,7 +77,7 @@ namespace KwasantTest.Services
 
         [Test]
         [Category("BRM")]
-        public void NewCustomerCreated()
+        public void CanProcessBRWithUnknownRequestor()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -96,14 +106,14 @@ namespace KwasantTest.Services
                 Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
                 //test analytics system
 
-                FactDO curAction = uow.FactRepository.FindOne(k => k.ObjectId == bookingRequest.Id);
+                FactDO curAction = uow.FactRepository.FindOne(k => k.ObjectId == bookingRequest.Id.ToString());
                 Assert.NotNull(curAction);
             }
         }
 
         [Test]
         [Category("BRM")]
-        public void ExistingCustomerNotCreatedButUsed()
+        public void CanProcessBRWithKnownRequestor()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -346,7 +356,7 @@ namespace KwasantTest.Services
                 IEnumerable<BookingRequestDO> requestNow;
                 do
                 {
-                    var om = new OperationsMonitor();
+                    var om = new FreshnessMonitor();
                     DaemonTests.RunDaemonOnce(om);
                     requestNow =
                         uow.BookingRequestRepository.GetAll()
@@ -360,6 +370,28 @@ namespace KwasantTest.Services
 
                 requestNow = uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
                 Assert.AreEqual(1, requestNow.Count());
+            }
+        }
+
+        [Test]
+        [Category("BRM")]
+        public void GetCheckedOutTest()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
+
+                uow.BookingRequestRepository.Add(bookingRequestDO);
+                uow.AspNetUserRolesRepository.AssignRoleToUser("Booker", bookingRequestDO.Customer.Id);
+                uow.SaveChanges();
+
+                ObjectFactory.GetInstance<Data.Infrastructure.StructureMap.ISecurityServices>().Login(uow, bookingRequestDO.Customer);
+
+                BookingRequestController controller = new BookingRequestController();
+                controller.Details(bookingRequestDO.Id);
+
+                IEnumerable<BookingRequestDO> requests = (new BookingRequest()).GetCheckedOut(uow, bookingRequestDO.Customer.Id);
+                Assert.AreEqual(bookingRequestDO.Id, requests.FirstOrDefault().Id);
             }
         }
     }

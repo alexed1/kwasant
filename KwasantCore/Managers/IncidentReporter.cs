@@ -3,6 +3,7 @@ using System.Text;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using KwasantCore.Exceptions;
 using KwasantCore.Services;
 using StructureMap;
 
@@ -17,6 +18,25 @@ namespace KwasantCore.Managers
             AlertManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
             AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
             AlertManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
+            AlertManager.AlertAttendeeUnresponsivenessThresholdReached += ProcessAttendeeUnresponsivenessThresholdReached;
+        }
+
+        private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var expectedResponseDO = uow.ExpectedResponseRepository.GetByKey(expectedResponseId);
+                if (expectedResponseDO == null)
+                    throw new EntityNotFoundException<ExpectedResponseDO>(expectedResponseId);
+                IncidentDO incidentDO = new IncidentDO();
+                incidentDO.PrimaryCategory = "Negotiation";
+                incidentDO.SecondaryCategory = "ClarificationRequest";
+                incidentDO.CustomerId = expectedResponseDO.UserID;
+                incidentDO.ObjectId = expectedResponseId;
+                incidentDO.Activity = "UnresponsiveAttendee";
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+            }
         }
 
         private void AlertManagerOnAlertResponseReceived(int bookingRequestId, string userID, string customerID)
@@ -26,7 +46,6 @@ namespace KwasantCore.Managers
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "Booking Request";
                 incidentDO.SecondaryCategory = "Response Recieved";
-                incidentDO.CreateTime = DateTime.Now;
                 incidentDO.CustomerId = customerID;
                 incidentDO.BookerId = userID;
                 incidentDO.ObjectId = bookingRequestId;
@@ -43,7 +62,6 @@ namespace KwasantCore.Managers
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "EmailFailure";
                 incidentDO.SecondaryCategory = "Email";
-                incidentDO.CreateTime = Convert.ToDateTime(dateReceived);
                 incidentDO.Priority = 5;
                 incidentDO.Activity = "IntakeFailure";
                 incidentDO.Notes = errorMessage;
@@ -61,7 +79,6 @@ namespace KwasantCore.Managers
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "Timeout";
                 incidentDO.SecondaryCategory = "BookingRequest";
-                incidentDO.CreateTime = DateTime.Now;
                 incidentDO.Activity = "";
                 incidentDO.ObjectId = bookingRequestDO.Id;
                 incidentDO.CustomerId = bookingRequestDO.CustomerID;
@@ -79,7 +96,6 @@ namespace KwasantCore.Managers
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "EmailFailure";
                 incidentDO.SecondaryCategory = "Email";
-                incidentDO.CreateTime = DateTime.Now; ;
                 incidentDO.Activity = "SendFailure";
                 incidentDO.ObjectId = emailId;
                 incidentDO.Notes = message;
@@ -100,7 +116,6 @@ namespace KwasantCore.Managers
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "SyncFailure";
                 incidentDO.SecondaryCategory = "Calendar";
-                incidentDO.CreateTime = DateTime.Now;
                 incidentDO.Activity = "SyncFailure";
                 incidentDO.ObjectId = authData.Id;
                 incidentDO.CustomerId = authData.UserID;
