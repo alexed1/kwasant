@@ -49,6 +49,19 @@ namespace KwasantTest.Services
                             return new MockedConfigRepository().Get<string>(key);
                     }
                 });
+            configRepositoryMock
+                .Setup(c => c.Get<int>(It.IsAny<string>()))
+                .Returns<string>(key =>
+                {
+                    switch (key)
+                    {
+                        case "MonitorStaleBRPeriod":
+                            return 5;
+                        // to send sms regardless of time it should be equal or less than FreshnessMonitor#WaitTimeBetweenExecution
+                        default:
+                            return new MockedConfigRepository().Get<int>(key);
+                    }
+                });
             var configRepository = configRepositoryMock.Object;
             ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepository));
 
