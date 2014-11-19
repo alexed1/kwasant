@@ -66,21 +66,7 @@ namespace KwasantCore.Services
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
-            var curEmail = new EmailDO
-                {
-                    Subject = subject,
-                    PlainText = message,
-                    HTMLText = message,
-                    From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
-                    Recipients = new List<RecipientDO>()
-                        {
-                            new RecipientDO
-                                {
-                                    EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress),
-                                    EmailParticipantType = EmailParticipantType.To
-                                }
-                        }
-                };
+            var curEmail = GenerateBasicMessage(uow, subject, message, fromAddress, toAddress);
             Send(uow, curEmail);
         }
 
