@@ -46,6 +46,29 @@ namespace KwasantCore.Managers
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
         }
 
+        public void UnsubscribeFromAlerts()
+        {
+            AlertManager.AlertTrackablePropertyUpdated -= TrackablePropertyUpdated;
+            AlertManager.AlertTrackablePropertyCreated -= TrackablePropertyCreated;
+            AlertManager.AlertTrackablePropertyDeleted -= TrackablePropertyDeleted;
+            AlertManager.AlertConversationMatched -= AlertManagerOnAlertConversationMatched;
+            AlertManager.AlertEmailReceived -= ReportEmailReceived;
+            AlertManager.AlertEventBooked -= ReportEventBooked;
+            AlertManager.AlertEmailSent -= ReportEmailSent;
+            AlertManager.AlertBookingRequestCreated -= ReportBookingRequestCreated;
+            AlertManager.AlertBookingRequestStateChange -= ReportBookingRequestStateChanged;
+            AlertManager.AlertExplicitCustomerCreated -= ReportCustomerCreated;
+
+            AlertManager.AlertUserRegistration -= ReportUserRegistered;
+            AlertManager.AlertBookingRequestCheckedOut -= ReportBookingRequestCheckedOut;
+            AlertManager.AlertBookingRequestOwnershipChange -= ReportBookingRequestOwnershipChanged;
+            AlertManager.AlertBookingRequestReserved -= ReportBookingRequestReserved;
+            AlertManager.AlertBookingRequestReservationTimeout -= ReportBookingRequestReservationTimeOut;
+            AlertManager.AlertStaleBookingRequestsDetected -= ReportStaleBookingRequestsDetected;
+
+            AlertManager.AlertPostResolutionNegotiationResponseReceived -= OnPostResolutionNegotiationResponseReceived;
+        }
+
         private void ReportStaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
         {
             string toNumber = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("TwilioToNumber");
