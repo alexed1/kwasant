@@ -67,9 +67,9 @@ namespace KwasantCore.Services
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
                             Data = f.Notes,
-                            CreateDate = f.CreateDate.ToString("M-d-yy hh:mm tt"),
-                            ObjectId = f.ObjectId
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
+                            ObjectId = f.ObjectId
+                            
                         }).ToList();
         }
 
