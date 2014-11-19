@@ -46,46 +46,42 @@ namespace KwasantCore.Services
         /// <summary>
         /// This implementation of Send uses the SendGrid API
         /// </summary>
-        public void SendTemplate(string templateName, IEmailDO message, Dictionary<string, string> mergeFields)
+        public void SendTemplate(IUnitOfWork uow, string templateName, IEmailDO message, Dictionary<string, string> mergeFields)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
-                uow.SaveChanges();
-            }
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
+            uow.SaveChanges();
         }
 
-        public void Send(IEmailDO emailDO)
+        public void Send(IUnitOfWork uow, IEmailDO emailDO)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
-                uow.SaveChanges();
-            }
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
+            uow.SaveChanges();
         }
 
-        public void Send(string subject, string message, string fromAddress, string toAddress)
+        public void Send(IUnitOfWork uow, string subject, string message, string fromAddress, string toAddress)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curEmail = new EmailDO
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            var curEmail = new EmailDO
                 {
                     Subject = subject,
                     PlainText = message,
                     HTMLText = message,
                     From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
                     Recipients = new List<RecipientDO>()
-                            {
-                                new RecipientDO
-                                    {
-                                        EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress),
-                                        EmailParticipantType = EmailParticipantType.To
-                                    }
-                            }
+                        {
+                            new RecipientDO
+                                {
+                                    EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(toAddress),
+                                    EmailParticipantType = EmailParticipantType.To
+                                }
+                        }
                 };
-                uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
-                uow.SaveChanges();
-            }
+            Send(uow, curEmail);
         }
 
         public void SendUserSettingsNotification(IUnitOfWork uow, UserDO submittedUserData) 
