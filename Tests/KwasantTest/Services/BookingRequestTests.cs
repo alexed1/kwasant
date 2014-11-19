@@ -108,6 +108,8 @@ namespace KwasantTest.Services
 
                 FactDO curAction = uow.FactRepository.FindOne(k => k.ObjectId == bookingRequest.Id.ToString());
                 Assert.NotNull(curAction);
+
+                curAnalyticsManager.UnsubscribeFromAlerts();
             }
         }
 
