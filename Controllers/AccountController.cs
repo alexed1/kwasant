@@ -52,12 +52,21 @@ namespace KwasantWeb.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult InterceptLogin(string returnUrl)
+        public ActionResult InterceptLogin(string returnUrl, string urlReferrer)
         {
             ViewBag.ReturnUrl = returnUrl;
+            TempData["urlReferrer"] = urlReferrer;
             if (this.UserIsAuthenticated())
-                throw new HttpException(403, "You do not have access to view this page.");
+                throw new HttpException(403, "We're sorry, but you don't have permission to access this page.");
             return View("Index");
+        }
+
+        [AllowAnonymous]
+        public ActionResult AccessDenied(string errorMessage)
+        {
+            ViewBag.ErrorMessage = errorMessage;
+            ViewBag.UrlReferrer = TempData["urlReferrer"];
+            return View();
         }
 
         [AllowAnonymous]
