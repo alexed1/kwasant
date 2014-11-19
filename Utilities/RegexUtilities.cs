@@ -23,7 +23,7 @@ namespace Utilities
 
             //We assume for now, that emails can only contain letters, numbers, dashes, dots, +. This can be updated in the future (parsing emails is actually incredibly difficult).
             //See http://tools.ietf.org/html/rfc2822#section-3.4.1 in the future if we ever update this.
-            const string emailUserNameRegex = @"[a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\^_\`\{\|\}\~]+";
+            const string emailUserNameRegex = @"[a-zA-Z0-9\!\#\$\%\&\'\*\+\.\-\/\=\?\^_\`\{\|\}\~]+";
 
             //Domains can only contain letters, numbers, or dashes.
             const string domainRegex = @"[a-zA-Z0-9\-]+";

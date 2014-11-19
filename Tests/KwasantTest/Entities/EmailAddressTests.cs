@@ -181,6 +181,34 @@ namespace KwasantTest.Entities
         }
 
         [Test]
+        public void TestIllegalSurroundingCharactersInvalid()
+        {
+            var ru = new RegexUtilities();
+            Assert.False(ru.IsValidEmailAddress("'rjrudman@gmail.com'"));
+        }
+
+        [Test]
+        public void TestEmailNameWithPeriod()
+        {
+            var ru = new RegexUtilities();
+            Assert.True(ru.IsValidEmailAddress("rj.rudman@gmail.com"));
+        }
+
+        [Test]
+        public void TestEmailNameWithDash()
+        {
+            var ru = new RegexUtilities();
+            Assert.True(ru.IsValidEmailAddress("rj-rudman@gmail.com"));
+        }
+
+        [Test]
+        public void TestEmailDomainWithPeriod()
+        {
+            var ru = new RegexUtilities();
+            Assert.True(ru.IsValidEmailAddress("rjrudman@gmail.net.au"));
+        }
+
+        [Test]
         public void TestEmailWithTrailingSpace()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
