@@ -61,7 +61,7 @@ namespace KwasantTest.Daemons
             ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepositoryMock.Object));
         }
 
-        [Test]
+        [Test, Ignore]
         public void TestFreshnessMonitorExpired()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

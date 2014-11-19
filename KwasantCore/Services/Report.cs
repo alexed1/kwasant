@@ -9,6 +9,8 @@ namespace KwasantCore.Services
 {
     public class Report
     {
+        public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff"; //This allows javascript to parse the date properly
+
         public object Generate(IUnitOfWork uow, DateRange dateRange, string type)
         {
             switch (type)
@@ -32,7 +34,7 @@ namespace KwasantCore.Services
                 .OrderByDescending(e => e.Date)
                 .Select(l => (object)new
                 {
-                    Date = l.Date.ToString("yyyy MMMM dd HH:mm:ss"),
+                    Date = l.Date.ToString(DateStandardFormat),
                     l.Name,
                     l.Level,
                     l.Message
@@ -52,7 +54,7 @@ namespace KwasantCore.Services
                             Activity = f.Activity,
                             Status = f.Status,
                             Data = f.Data,
-                            CreateDate = f.CreateDate.ToString("M-d-yy hh:mm tt")
+                            CreateDate = f.CreateDate.ToString(DateStandardFormat),
                         }).ToList();
         }
 
@@ -67,6 +69,7 @@ namespace KwasantCore.Services
                             Data = f.Notes,
                             CreateDate = f.CreateDate.ToString("M-d-yy hh:mm tt"),
                             ObjectId = f.ObjectId
+                            CreateDate = f.CreateDate.ToString(DateStandardFormat),
                         }).ToList();
         }
 
@@ -79,7 +82,7 @@ namespace KwasantCore.Services
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
                             Data = f.Notes,
-                            CreateDate = f.CreateDate.ToString("M-d-yy hh:mm tt")
+                            CreateDate = f.CreateDate.ToString(DateStandardFormat),
                         }).ToList();
         }
         
@@ -96,7 +99,7 @@ namespace KwasantCore.Services
                                 Activity = e.Activity,
                                 Status = e.Status,
                                 Data = e.Data,
-                                CreateDate = e.CreateDate.ToString("M-d-yy hh:mm tt")
+                                CreateDate = e.CreateDate.ToString(DateStandardFormat),
                             })
                     .ToList();
         }
@@ -113,7 +116,7 @@ namespace KwasantCore.Services
                                 Activity = e.Activity,
                                 Status=e.Status,
                                 Data=e.Data,
-                                CreateDate = e.CreateDate.ToString("M-d-yy hh:mm tt")
+                                CreateDate = e.CreateDate.ToString(DateStandardFormat),
                             })
                     .ToList();
         }

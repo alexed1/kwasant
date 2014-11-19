@@ -40,7 +40,7 @@ namespace Daemons
 
         public override int WaitTimeBetweenExecution
         {
-            get { return 10000; }
+            get { return (int)TimeSpan.FromMinutes(5).TotalMilliseconds; }
         }
 
         protected override void Run()
@@ -51,7 +51,7 @@ namespace Daemons
 
                 TimeOutStaleReserved(uow);
 
-                MonitorStaleBRs(uow);
+                //MonitorStaleBRs(uow);
 
                 DetectStaleExpectedResponses(uow);
 

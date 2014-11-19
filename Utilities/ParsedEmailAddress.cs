@@ -1,6 +1,6 @@
 using System;
 
-namespace KwasantCore.Interfaces
+namespace Utilities
 {
     public class ParsedEmailAddress
     {
