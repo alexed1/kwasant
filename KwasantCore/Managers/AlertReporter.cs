@@ -35,14 +35,14 @@ namespace KwasantCore.Managers
             AlertManager.AlertBookingRequestCreated += ReportBookingRequestCreated;
             AlertManager.AlertBookingRequestStateChange += ReportBookingRequestStateChanged;
             AlertManager.AlertExplicitCustomerCreated += ReportCustomerCreated;
-        
+
             AlertManager.AlertUserRegistration += ReportUserRegistered;
             AlertManager.AlertBookingRequestCheckedOut += ReportBookingRequestCheckedOut;
             AlertManager.AlertBookingRequestOwnershipChange += ReportBookingRequestOwnershipChanged;
             AlertManager.AlertBookingRequestReserved += ReportBookingRequestReserved;
             AlertManager.AlertBookingRequestReservationTimeout += ReportBookingRequestReservationTimeOut;
             AlertManager.AlertStaleBookingRequestsDetected += ReportStaleBookingRequestsDetected;
-  
+
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
         }
 
@@ -190,7 +190,7 @@ namespace KwasantCore.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationId);
-                
+
                 IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                 string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
@@ -291,13 +291,13 @@ namespace KwasantCore.Managers
             SaveFact(curAction);
         }
 
-        public void ReportBookingRequestCreated(int bookingRequestId) 
+        public void ReportBookingRequestCreated(int bookingRequestId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
 
-                
+
                 ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.Customer, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
 
                 FactDO curAction = new FactDO()
@@ -334,7 +334,7 @@ namespace KwasantCore.Managers
                 curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
                 AddFact(uow, curAction);
                 uow.SaveChanges();
-                
+
             }
         }
         private void SaveFact(FactDO curAction)
@@ -350,15 +350,9 @@ namespace KwasantCore.Managers
             Debug.Assert(uow != null);
             Debug.Assert(curAction != null);
             var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
-            if (string.IsNullOrEmpty(curAction.Data))
-            {
-                curAction.Data = string.Format("{0} {1} {2}:" + " ObjectId: {3} EmailAddress: {4}",
-                                               curAction.PrimaryCategory,
-                                               curAction.SecondaryCategory,
-                                               curAction.Activity,
-                                               curAction.ObjectId,
-                                               uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
-            }
+            
+            curAction.Data += string.Format(" ObjectId: {0} EmailAddress: {1} ", curAction.ObjectId, uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
+
             if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
                 Logger.GetLogger().Info(curAction.Data);
             uow.FactRepository.Add(curAction);
@@ -399,12 +393,12 @@ namespace KwasantCore.Managers
                         PrimaryCategory = "BookingRequest",
                         SecondaryCategory = "Ownership",
                         Activity = "Checkout",
-                    CustomerId = bookingRequestDO.Customer.Id,
+                        CustomerId = bookingRequestDO.Customer.Id,
                         ObjectId = bookingRequestDO.Id.ToString(),
                         BookerId = bookerId,
                         Status = status,
                     };
-                
+
                 curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
                 AddFact(uow, curAction);
                 uow.SaveChanges();
@@ -430,7 +424,7 @@ namespace KwasantCore.Managers
                         BookerId = bookerId,
                         Status = status,
                     };
-                
+
                 curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
                 AddFact(uow, curAction);
                 uow.SaveChanges();
