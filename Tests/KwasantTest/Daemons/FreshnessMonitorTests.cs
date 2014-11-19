@@ -24,12 +24,13 @@ namespace KwasantTest.Daemons
 
         private Mock<ISMSPackager> _smsPackagerMock;
 
+        private AlertReporter alertReporter;
         [SetUp]
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
 
-            AlertReporter alertReporter = new AlertReporter();
+            alertReporter = new AlertReporter();
             alertReporter.SubscribeToAlerts();
 
             _smsPackagerMock = new Mock<ISMSPackager>();
@@ -59,6 +60,12 @@ namespace KwasantTest.Daemons
                     }
                 });
             ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepositoryMock.Object));
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            alertReporter.UnsubscribeFromAlerts();
         }
 
         [Test, Ignore]
