@@ -191,5 +191,23 @@ namespace KwasantCore.Services
                 return result;
             }
         }
+
+        public string GetUserRole(string userName)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var user = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == userName);
+                var getRoles = uow.AspNetUserRolesRepository.GetRoles(user.Id).ToList();
+
+                string userRole = "";
+                if (getRoles.Select(e => e.Name).Contains("Admin"))
+                    userRole = "Admin";
+                else if (getRoles.Select(e => e.Name).Contains("Booker"))
+                    userRole = "Booker";
+                else if (getRoles.Select(e => e.Name).Contains("Customer"))
+                    userRole = "Customer";
+                return userRole;
+            }
+        }
     }
 }
