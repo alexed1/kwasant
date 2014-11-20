@@ -300,7 +300,7 @@ namespace KwasantWeb.Controllers
                 {
                     AddressBook = emailAddresses.ToList(),
                     Subject = bookingRequestDO.Subject,
-                    SubjectEditable = false,
+                    SubjectEditable = true,
 
                     HeaderText = "Send an email",
                     BodyPromptText = "Enter some text for your recipients",
