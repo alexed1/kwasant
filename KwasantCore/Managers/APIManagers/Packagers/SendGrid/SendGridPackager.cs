@@ -68,7 +68,7 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
 
                 var mailMessage = new SendGridMessage { From = new MailAddress(email.From.Address, fromName) };
 
-                if (email.ReplyToAddress != null)
+                if (!String.IsNullOrWhiteSpace(email.ReplyToAddress))
                 {
                     mailMessage.ReplyTo = new[] { new MailAddress(email.ReplyToAddress, email.ReplyToName) };
                 }
