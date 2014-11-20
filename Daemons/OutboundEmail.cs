@@ -115,7 +115,7 @@ namespace Daemons
                             if (String.IsNullOrEmpty(envelope.Email.ReplyToAddress))
                                 envelope.Email.ReplyToAddress = configRepository.Get("replyToEmail", String.Empty);
                             if (String.IsNullOrEmpty(envelope.Email.ReplyToName))
-                                envelope.Email.ReplyToAddress = configRepository.Get("replyToName", String.Empty);
+                                envelope.Email.ReplyToName = configRepository.Get("replyToName", String.Empty);
                             
                             packager.Send(envelope);
                             numSent++;

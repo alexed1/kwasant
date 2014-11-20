@@ -140,6 +140,9 @@ namespace KwasantCore.Managers
                 string templateName = GetCRTemplate(curUserDO);
 
                 var conversationThread = _br.GetConversationThread(negotiationDO.BookingRequest);
+                
+                // Fix an issue when coverting to UTF-8
+                conversationThread = conversationThread.Replace((char) 160, (char) 32);
 
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, templateName,
                     new Dictionary<string, string>
