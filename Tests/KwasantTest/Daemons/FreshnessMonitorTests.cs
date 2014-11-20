@@ -59,6 +59,19 @@ namespace KwasantTest.Daemons
                             return new MockedConfigRepository().Get<string>(key);
                     }
                 });
+            configRepositoryMock
+                .Setup(c => c.Get<int>(It.IsAny<string>()))
+                .Returns<string>(key =>
+                    {
+                        switch (key)
+                        {
+                            case "MonitorStaleBRPeriod":
+                                return 5;
+                                    // to send sms regardless of time it should be equal or less than FreshnessMonitor#WaitTimeBetweenExecution
+                            default:
+                                return new MockedConfigRepository().Get<int>(key);
+                        }
+                    });
             ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepositoryMock.Object));
         }
 
@@ -68,7 +81,7 @@ namespace KwasantTest.Daemons
             alertReporter.UnsubscribeFromAlerts();
         }
 
-        [Test, Ignore]
+        [Test]
         public void TestFreshnessMonitorExpired()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
