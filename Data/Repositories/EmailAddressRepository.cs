@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Validations;
 using Utilities;
 
 namespace Data.Repositories
@@ -20,9 +21,7 @@ namespace Data.Repositories
         {
             email = email.Trim();
             //Validate email here!
-            var regexUtil = new RegexUtilities();
-            if (!regexUtil.IsValidEmailAddress(email))
-                throw new ArgumentException(@"Invalid email format: '" + email + "'");
+            email.ValidateEmailAddress();
 
             var matchingEmailAddress = DBSet.Local.FirstOrDefault(e => e.Address == email);
             if (matchingEmailAddress == null)
