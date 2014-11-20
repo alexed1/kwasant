@@ -9,6 +9,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantCore.StructureMap;
@@ -40,14 +41,34 @@ namespace KwasantTest.Services
                             return "0.04";
                         case "MaxBRReservationPeriod":
                             return "0.04";
+                        case "ExpectedResponseActiveDuration":
+                            return "0.04";
                         case "EmailAddress_GeneralInfo":
                             return "info@kwasant.com";
                         default:
                             return new MockedConfigRepository().Get<string>(key);
                     }
                 });
+            configRepositoryMock
+                .Setup(c => c.Get<int>(It.IsAny<string>(), It.IsAny<int>()))
+                .Returns<string, int>((key, def) =>
+                {
+                    switch (key)
+                    {
+                        case "MonitorStaleBRPeriod":
+                            return 1;
+                    }
+                    return def;
+                });
+
             var configRepository = configRepositoryMock.Object;
             ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepository));
+
+            var notificationMock = new Mock<INotification>();
+            notificationMock
+                .Setup(n => n.IsInNotificationWindow(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(true);
+            ObjectFactory.Configure(cfg => cfg.For<INotification>().Use(notificationMock.Object));
         }
 
         private void AddTestRequestData()
@@ -97,8 +118,10 @@ namespace KwasantTest.Services
                 Assert.AreEqual("Mister Customer", customersNow.First().FirstName);
                 //test analytics system
 
-                FactDO curAction = uow.FactRepository.FindOne(k => k.ObjectId == bookingRequest.Id);
+                FactDO curAction = uow.FactRepository.FindOne(k => k.ObjectId == bookingRequest.Id.ToString());
                 Assert.NotNull(curAction);
+
+                curAnalyticsManager.UnsubscribeFromAlerts();
             }
         }
 
@@ -347,7 +370,7 @@ namespace KwasantTest.Services
                 IEnumerable<BookingRequestDO> requestNow;
                 do
                 {
-                    var om = new OperationsMonitor();
+                    var om = new FreshnessMonitor();
                     DaemonTests.RunDaemonOnce(om);
                     requestNow =
                         uow.BookingRequestRepository.GetAll()

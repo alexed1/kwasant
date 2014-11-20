@@ -19,7 +19,7 @@ namespace KwasantWeb.Controllers
         private IAttendee _attendee;
         private Negotiation _negotiation;
         private NegotiationResponse _negotiationResponse;
-        
+
         public NegotiationResponseController()
         {
             _negotiationResponse = new NegotiationResponse();

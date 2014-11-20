@@ -10,7 +10,6 @@
     <%=System.Web.Optimization.Styles.Render("~/bundles/css/bootstrap30")%>
     <%=System.Web.Optimization.Styles.Render("~/bundles/css/backendcss")%>
     <%=System.Web.Optimization.Styles.Render("~/bundles/css/colorbox")%>
-    <%=System.Web.Optimization.Styles.Render("~/bundles/css/temp")%>
     <%=System.Web.Optimization.Scripts.Render("~/bundles/js/jquery")%>
     <%=System.Web.Optimization.Scripts.Render("~/bundles/js/select2")%>
     <script src="../Scripts/ContextMenu/jquery.contextMenu.js"></script>

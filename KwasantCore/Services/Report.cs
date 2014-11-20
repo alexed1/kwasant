@@ -9,6 +9,8 @@ namespace KwasantCore.Services
 {
     public class Report
     {
+        public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff"; //This allows javascript to parse the date properly
+
         public object Generate(IUnitOfWork uow, DateRange dateRange, string type)
         {
             switch (type)
@@ -32,7 +34,7 @@ namespace KwasantCore.Services
                 .OrderByDescending(e => e.Date)
                 .Select(l => (object)new
                 {
-                    Date = l.Date.ToString("yyyy MMMM dd HH:mm:ss"),
+                    Date = l.Date.ToString(DateStandardFormat),
                     l.Name,
                     l.Level,
                     l.Message
@@ -52,7 +54,7 @@ namespace KwasantCore.Services
                             Activity = f.Activity,
                             Status = f.Status,
                             Data = f.Data,
-                            CreateDate = f.CreateDate.ToString("M-d-yy hh:mm tt")
+                            CreateDate = f.CreateDate.ToString(DateStandardFormat),
                         }).ToList();
         }
 
@@ -65,7 +67,9 @@ namespace KwasantCore.Services
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
                             Data = f.Notes,
-                            CreateDate = f.CreateDate.ToString("M-d-yy hh:mm tt")
+                            CreateDate = f.CreateDate.ToString(DateStandardFormat),
+                            ObjectId = f.ObjectId
+                            
                         }).ToList();
         }
 
@@ -78,17 +82,14 @@ namespace KwasantCore.Services
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
                             Data = f.Notes,
-                            CreateDate = f.CreateDate.ToString("M-d-yy hh:mm tt")
+                            CreateDate = f.CreateDate.ToString(DateStandardFormat),
                         }).ToList();
         }
         
         public object GenerateHistoryReport(IUnitOfWork uow, DateRange dateRange, string primaryCategory, string bookingRequestId)
         {
-            int objectId = 0;
-            if (bookingRequestId != "")
-                objectId = Convert.ToInt32(bookingRequestId);
             return uow.FactRepository.GetAll()
-                .Where(e => e.PrimaryCategory == primaryCategory && (objectId > 0 ? e.ObjectId == objectId : e.ObjectId != 0) && e.CreateDate >= dateRange.StartTime && e.CreateDate <= dateRange.EndTime).OrderByDescending(e => e.CreateDate)
+                .Where(e => e.PrimaryCategory == primaryCategory && (e.ObjectId == bookingRequestId) && e.CreateDate >= dateRange.StartTime && e.CreateDate <= dateRange.EndTime).OrderByDescending(e => e.CreateDate)
                .Select(
                         e =>
                             new
@@ -98,14 +99,14 @@ namespace KwasantCore.Services
                                 Activity = e.Activity,
                                 Status = e.Status,
                                 Data = e.Data,
-                                CreateDate = e.CreateDate.ToString("M-d-yy hh:mm tt")
+                                CreateDate = e.CreateDate.ToString(DateStandardFormat),
                             })
                     .ToList();
         }
 
         public object GenerateHistoryByBookingRequestId(IUnitOfWork uow, int bookingRequestId)
         {
-            return uow.FactRepository.GetAll().Where(e => e.ObjectId == bookingRequestId)
+            return uow.FactRepository.GetAll().Where(e => e.ObjectId == bookingRequestId.ToString())
                     .OrderByDescending(e => e.CreateDate)
                     .Select(
                         e =>
@@ -115,7 +116,7 @@ namespace KwasantCore.Services
                                 Activity = e.Activity,
                                 Status=e.Status,
                                 Data=e.Data,
-                                CreateDate = e.CreateDate.ToString("M-d-yy hh:mm tt")
+                                CreateDate = e.CreateDate.ToString(DateStandardFormat),
                             })
                     .ToList();
         }

@@ -36,9 +36,13 @@ namespace KwasantTest.Entities
                 ev.InviteAttendees(uow, eventDO, eventDO.Attendees, new List<AttendeeDO>());
                 uow.SaveChanges();
 
+                string endtime = eventDO.EndDate.ToString("hh:mm tt");
+                var timezone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
+                string subjectDate = eventDO.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " +" + timezone.ToString();
+
                 //Verify emails created in memory
                 EmailDO resultEmail = eventDO.Emails[0];
-                string expectedSubject = string.Format("Invitation from " + invitation.GetOriginatorName(eventDO) + " -- " + eventDO.Summary + " - " + eventDO.StartDate.ToUniversalTime().ToString("ddd MMM dd, yyyy hh:mmtt - ") + eventDO.EndDate.ToUniversalTime().ToString("hh:mmtt") + " +00:00");
+                string expectedSubject = string.Format("Invitation from " + invitation.GetOriginatorName(eventDO) + " -- " + eventDO.Summary + " - " + subjectDate);
                 Assert.AreEqual(expectedSubject, resultEmail.Subject);
 
                 //Verify emails stored to disk properly

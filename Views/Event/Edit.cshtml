@@ -58,7 +58,7 @@
     @Styles.Render("~/bundles/css/backendcss")
     @Styles.Render("~/bundles/css/select2")
     @Styles.Render("~/bundles/css/bootstrap-datetimepicker")
-	@Styles.Render("~/bundles/css/temp")
+	
 	<link href="@Url.Content("~/Content/css/additionalcss/font-awesome/css/font-awesome.css")" rel="stylesheet" type="text/css" />
 }
 <div class="light-bg">
@@ -128,7 +128,7 @@
 	            @if (Model.IsNew)
 	            {
 	                @:var spinner = Kwasant.IFrame.DisplaySpinner();
-                    @:$.post('/Event/ConfirmDelete?eventID=' + @Model.Id, function (response) {
+                    @:$.get('/Event/ConfirmDelete?eventID=' + @Model.Id, function (response) {
                         @:Kwasant.IFrame.CloseMe(false);
                         @:spinner.hide();
                     @:}, 'json');

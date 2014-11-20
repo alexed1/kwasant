@@ -135,8 +135,7 @@
     <Compile Include="Conversations\ConversationTests.cs" />
     <Compile Include="Daemons\DaemonTests.cs" />
     <Compile Include="Daemons\InboundEmailTests.cs" />
-    <Compile Include="Daemons\ThroughputMonitorTests.cs" />
-    <Compile Include="Daemons\OperationsMonitorTests.cs" />
+    <Compile Include="Daemons\FreshnessMonitorTests.cs" />
     <Compile Include="Daemons\OutboundEmailTests.cs" />
     <Compile Include="Entities\EmailAddressTests.cs" />
     <Compile Include="Entities\UserTests.cs" />
@@ -155,7 +154,6 @@
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="Security\AuthorizationTokenTests.cs" />
-    <Compile Include="Services\AttendeeTests.cs" />
     <Compile Include="Managers\CalendarSyncManagerTest.cs" />
     <Compile Include="Services\BookingRequestTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />

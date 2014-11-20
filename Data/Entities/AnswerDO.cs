@@ -8,7 +8,7 @@ using Utilities;
 
 namespace Data.Entities
 {
-    public class AnswerDO : BaseDO, ICreateHook, IModifyHook, IDeleteHook
+    public class AnswerDO : BaseDO, ICreateHook, IDeleteHook
     {
         [Key]
         public int Id { get; set; }
@@ -37,15 +37,13 @@ namespace Data.Entities
             base.AfterCreate();
         }
 
-        public void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             var reflectionHelper = new ReflectionHelper<AnswerDO>();
+            var textProperty = reflectionHelper.GetProperty(br => br.Text);
+            this.DetectUpdates(originalValues, currentValues, new[] { textProperty });
 
-            var textPropertyName = reflectionHelper.GetPropertyName(br => br.Text);
-            if (!MiscUtils.AreEqual(originalValues[textPropertyName], currentValues[textPropertyName]))
-            {
-                AlertManager.TrackablePropertyUpdated("Answer changed", "Answer", Id, Text);
-            }
+            base.OnModify(originalValues, currentValues);
         }
 
         public void OnDelete(DbPropertyValues originalValues)
