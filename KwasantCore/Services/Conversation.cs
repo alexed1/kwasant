@@ -51,9 +51,6 @@ namespace KwasantCore.Services
             return null;
         }
 
-        /// <summary>
-        /// Not in use yet - we don't forward xxx+abc@domain.com to xxx@domain.com yet
-        /// </summary>
         private static BookingRequestDO MatchByToAddress(IUnitOfWork uow, IEnumerable<MailAddress> toAddresses)
         {
             if (toAddresses == null)
