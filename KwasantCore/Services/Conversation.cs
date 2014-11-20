@@ -27,6 +27,9 @@ namespace KwasantCore.Services
         private static BookingRequestDO MatchByHeaders(IUnitOfWork uow, Dictionary<String, String> headers)
         {
             const string referencesKey = "References";
+            if (headers == null)
+                return null;
+
             if (headers.ContainsKey(referencesKey))
             {
                 var referencesValue = headers[referencesKey];
@@ -53,6 +56,8 @@ namespace KwasantCore.Services
         /// </summary>
         private static BookingRequestDO MatchByToAddress(IUnitOfWork uow, IEnumerable<MailAddress> toAddresses)
         {
+            if (toAddresses == null)
+                return null;
             const string regexStr = @"(.*)\+(?<messageid>[a-z0-9]+)@(.*)";
             var regex = new Regex(regexStr);
             var matches = toAddresses.Select(a => regex.Match(a.Address).Groups["messageid"].Value)
