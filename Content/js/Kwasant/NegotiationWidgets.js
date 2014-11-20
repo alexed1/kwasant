@@ -200,6 +200,11 @@
             .attr('name', groupID)
             .attr('QuestionType', 'Timeslot');
 
+        if (questionInitValues.AnswerType == 'Timeslot')
+            questionTypeCalendar.get(0).checked = true;
+        else
+            questionTypeText.get(0).checked = true;        
+
         questionObject.OpenEventWindowSelection = function () {
             var _that = this;
 

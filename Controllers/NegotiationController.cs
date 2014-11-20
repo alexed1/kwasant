@@ -126,7 +126,7 @@ namespace KwasantWeb.Controllers
 
                         return new NegotiationQuestionVM
                         {
-                            Type = q.AnswerType,
+                            AnswerType = q.AnswerType,
                             Id = q.Id,
                             CalendarID = q.CalendarID,
                             Text = q.Text,
@@ -154,7 +154,7 @@ namespace KwasantWeb.Controllers
                                         {
                                             new NegotiationQuestionVM
                                                 {
-                                                    Type = "Text"
+                                                    AnswerType = "Text"
                                                 }
                                         }
                             });

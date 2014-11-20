@@ -65,7 +65,7 @@ namespace KwasantWeb.App_Start
 
             Mapper.CreateMap<NegotiationVM, NegotiationDO>();
             Mapper.CreateMap<NegotiationQuestionVM, QuestionDO>()
-                .ForMember(n => n.AnswerType, opts => opts.ResolveUsing((NegotiationQuestionVM n) => n.Type));
+                .ForMember(n => n.AnswerType, opts => opts.ResolveUsing(n => n.AnswerType));
             Mapper.CreateMap<NegotiationAnswerVM, AnswerDO>()
                 .ForMember(n => n.AnswerStatus, opts => opts.ResolveUsing(a => a.AnswerState));
 

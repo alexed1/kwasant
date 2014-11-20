@@ -63,7 +63,8 @@ namespace KwasantCore.Services
             curInvitation.From = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, curEvent.CreatedBy);
 
             var replyToAddress = emailAddressRepository.GetOrCreateEmailAddress(replyToEmail);
-            curInvitation.ReplyTo = replyToAddress;
+            curInvitation.ReplyToAddress = replyToAddress.Address;
+            curInvitation.ReplyToName = replyToAddress.Name;
 
             var userID = uow.UserRepository.GetOrCreateUser(curAttendee.EmailAddress).Id;
 
