@@ -101,7 +101,7 @@ namespace KwasantCore.Managers
             {
                 var emailDO = new EmailDO();
                 //This means, when the customer replies, their client will include the bookingrequest id
-                emailDO.AddReference(negotiationDO.BookingRequest.MessageID);
+                emailDO.TagEmailToBookingRequest(negotiationDO.BookingRequest);
                 
                 var customer = negotiationDO.BookingRequest.Customer;
                 var mode = _user.GetMode(customer);

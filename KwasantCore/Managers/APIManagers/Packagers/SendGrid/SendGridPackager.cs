@@ -68,9 +68,9 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
 
                 var mailMessage = new SendGridMessage { From = new MailAddress(email.From.Address, fromName) };
 
-                if (email.ReplyTo != null)
+                if (email.ReplyToAddress != null)
                 {
-                    mailMessage.ReplyTo = new[] { new MailAddress(email.ReplyTo.Address, email.ReplyTo.Name) };
+                    mailMessage.ReplyTo = new[] { new MailAddress(email.ReplyToAddress, email.ReplyToName) };
                 }
 
                 mailMessage.To = email.To.Select(toEmail => new MailAddress(toEmail.Address, toEmail.Name)).ToArray();
@@ -95,13 +95,11 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
                     mailMessage.Text = email.PlainText;
                 }
 
-                const string messageIDFormat = "<{0}@sant.com>";
-
                 var headers = new Dictionary<String, String>();
                 if (!String.IsNullOrEmpty(email.MessageID))
-                    headers.Add("Message-ID", String.Format(messageIDFormat, email.MessageID));
+                    headers.Add("Message-ID", email.MessageID);
                 if (!String.IsNullOrEmpty(email.References))
-                    headers.Add("References", String.Format(messageIDFormat, email.References));
+                    headers.Add("References", email.References);
 
                 if (headers.Any())
                     mailMessage.AddHeaders(headers);
@@ -137,7 +135,6 @@ namespace KwasantCore.Managers.APIManagers.Packagers.SendGrid
             catch (Exception ex)
             {
                 OnEmailCriticalError(-1, "Unhandled exception.", ex.Message, email.Id);
-                throw;
             }
         }
     }

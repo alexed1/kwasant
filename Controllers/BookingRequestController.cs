@@ -309,16 +309,20 @@ namespace KwasantWeb.Controllers
                 return emailController.DisplayEmail(Session, currCreateEmailVM,
                     (subUow, emailDO) =>
                     {
-                        emailDO.AddReference(bookingRequestDO.MessageID);
-                        
+                        emailDO.TagEmailToBookingRequest(bookingRequestDO);
+
+                        var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                         var sendingUser = subUow.UserRepository.GetByKey(userID);
-                        subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("SimpleEmail_template"));
+                        subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("SimpleEmail_template"));
 
                         var currBookingRequest = new BookingRequest();
                         currBookingRequest.AddExpectedResponseForBookingRequest(subUow, emailDO, bookingRequestID);
 
-                        emailDO.FromID = sendingUser.EmailAddressID;
-                        emailDO.FromName = sendingUser.DisplayName + " via Kwasant";
+                        var emailAddress = new EmailAddress(configRepository);
+                        var fromEmailAddress = emailAddress.GetFromEmailAddress(subUow, emailDO.To.First(), sendingUser);
+                        emailDO.FromName = fromEmailAddress.Name;
+                        emailDO.From = fromEmailAddress;
+                        
                         subUow.SaveChanges();
                         return Json(true);
                     });

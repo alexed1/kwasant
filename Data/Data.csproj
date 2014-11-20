@@ -440,6 +440,10 @@
     <Compile Include="Migrations\201411181301448_StartTrackingThreadInformationOnEmails.Designer.cs">
       <DependentUpon>201411181301448_StartTrackingThreadInformationOnEmails.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411200956181_UpdateReplyTo.cs" />
+    <Compile Include="Migrations\201411200956181_UpdateReplyTo.Designer.cs">
+      <DependentUpon>201411200956181_UpdateReplyTo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
@@ -1356,6 +1360,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411181301448_StartTrackingThreadInformationOnEmails.resx">
       <DependentUpon>201411181301448_StartTrackingThreadInformationOnEmails.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411200956181_UpdateReplyTo.resx">
+      <DependentUpon>201411200956181_UpdateReplyTo.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net.Mail;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.Services;
@@ -136,6 +137,25 @@ namespace KwasantTest.Conversations
                 uow.SaveChanges();
 
                 var matchedBookingRequest = Conversation.Match(uow, new Dictionary<string, string> { { "References", emailDO.MessageID }}, null, "DIFFERENT SUBJECT", emailDO.From.Address + ".DIFFERENTEMAIL");
+                Assert.AreEqual(bookingRequestDO, matchedBookingRequest);
+            }
+        }
+
+        [Test]
+        public void TestMatchingByReplyTo()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var bookingRequestDO = fixture.TestBookingRequest1();
+                uow.BookingRequestRepository.Add(bookingRequestDO);
+
+                var emailDO = fixture.TestEmail3();
+                emailDO.Conversation = bookingRequestDO;
+
+                uow.SaveChanges();
+
+                var matchedBookingRequest = Conversation.Match(uow, null, new[] { new MailAddress("test+" + bookingRequestDO.Id + "@sant.com"), }, "DIFFERENT SUBJECT", emailDO.From.Address + ".DIFFERENTEMAIL");
                 Assert.AreEqual(bookingRequestDO, matchedBookingRequest);
             }
         }

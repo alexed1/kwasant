@@ -227,9 +227,7 @@ namespace KwasantCore.Services
                 uow.SaveChanges();
             }
         }
-
-
-
+        
         public void ValidateEmailAddress(EmailAddressDO curEmailAddress)
         {
             EmailAddressValidator emailAddressValidator = new EmailAddressValidator();

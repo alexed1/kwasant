@@ -6,6 +6,8 @@ using System.Linq;
 using Data.Interfaces;
 using Data.States;
 using Data.States.Templates;
+using StructureMap;
+using Utilities;
 
 namespace Data.Entities
 {
@@ -23,20 +25,35 @@ namespace Data.Entities
             SetMessageID(Guid.NewGuid().ToString());
         }
 
-        public void SetMessageID(String messageID)
+
+        public void TagEmailToBookingRequest(BookingRequestDO bookingRequestDO)
         {
-            const string messageFormat = @"<{0}@sant.com>";
-            MessageID = String.Format(messageFormat, messageFormat);
+            SetReplyTo(bookingRequestDO.Id);
+            AddReference(bookingRequestDO.MessageID);
         }
 
-        public void AddReference(String messageID)
+        private void SetReplyTo(int bookingRequestID)
+        {
+            string replyToEmail = ObjectFactory.GetInstance<IConfigRepository>().Get("replyToEmail");
+            var originalAddress = replyToEmail;
+            var splitPoint = originalAddress.Split('@');
+            var replyToAddress = String.Format("{0}+{1}@{2}", splitPoint[0], bookingRequestID, splitPoint[1]);
+            ReplyToAddress = replyToAddress;
+            ReplyToName = ObjectFactory.GetInstance<IConfigRepository>().Get("replyToName");
+        }
+
+        private void SetMessageID(String messageID)
         {
             const string messageFormat = @"<{0}@sant.com>";
-            var message = String.Format(messageFormat, messageFormat);
+            MessageID = String.Format(messageFormat, messageID);
+        }
+
+        private void AddReference(String messageID)
+        {  
             if (String.IsNullOrEmpty(References))
-                References = message;
+                References = messageID;
             else
-                References = "\t" + message;
+                References = "\t" + messageID;
         }
 
         [Key]
@@ -85,9 +102,12 @@ namespace Data.Entities
         /// </summary>
         public String FromName { get; set; }
 
-        [ForeignKey("ReplyTo")]
-        public int? ReplyToID { get; set; }
-        public virtual EmailAddressDO ReplyTo { get; set; }
+        /// <summary>
+        /// We do not link to email address rows - as we will be dynamically creating reply-tos based on entities
+        /// No need to flood the email table
+        /// </summary>
+        public String ReplyToName { get; set; }
+        public String ReplyToAddress { get; set; }
 
         [InverseProperty("Email")]
         public virtual List<RecipientDO> Recipients { get; set; }

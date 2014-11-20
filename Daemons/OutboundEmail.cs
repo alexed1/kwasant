@@ -110,16 +110,17 @@ namespace Daemons
                                     Logger.GetLogger().Info(message);
                                     LogEvent(message);
                                 }
-
-                                //If we're working on dev, send from our recieving email (so we can test replies).
-                                envelope.Email.From = unitOfWork.EmailAddressRepository.GetOrCreateEmailAddress(configRepository.Get("INBOUND_EMAIL_USERNAME"));
                             }
 
+                            if (String.IsNullOrEmpty(envelope.Email.ReplyToAddress))
+                                envelope.Email.ReplyToAddress = configRepository.Get("replyToEmail");
+                            if (String.IsNullOrEmpty(envelope.Email.ReplyToName))
+                                envelope.Email.ReplyToAddress = configRepository.Get("replyToName");
+                            
                             packager.Send(envelope);
                             numSent++;
 
                             var email = envelope.Email;
-                                // subUow.EmailRepository.GetQuery().First(e => e.Id == envelope.Email.Id);
                             email.EmailStatus = EmailState.Dispatched;
                             subUow.SaveChanges();
 
@@ -161,7 +162,8 @@ namespace Daemons
             foreach (RecipientDO recipient in recipientList)
             {
                 UserDO user = uow.UserRepository.FindOne(e => e.EmailAddress.Address == recipient.EmailAddress.Address);
-                if (user != null && !user.TestAccount)
+
+                if (user != null && !uow.AspNetUserRolesRepository.UserHasRole(Roles.Admin, user.Id) && !user.TestAccount)
                 {
                     recipientsRemoved.Add(recipient.EmailAddress.Address);
                     uow.RecipientRepository.Remove(recipient);
