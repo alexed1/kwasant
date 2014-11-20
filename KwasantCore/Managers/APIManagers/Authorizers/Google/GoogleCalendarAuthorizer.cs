@@ -10,6 +10,26 @@ namespace KwasantCore.Managers.APIManagers.Authorizers.Google
 {
     public class GoogleCalendarAuthorizer : IOAuthAuthorizer
     {
+        class AuthResultAdapter : IOAuthAuthorizationResult
+        {
+            private readonly AuthorizationCodeWebApp.AuthResult _result;
+
+            public AuthResultAdapter(AuthorizationCodeWebApp.AuthResult result)
+            {
+                _result = result;
+            }
+
+            public bool IsAuthorized
+            {
+                get { return _result.Credential != null; }
+            }
+
+            public string RedirectUri
+            {
+                get { return _result.RedirectUri; }
+            }
+        }
+
         public FlowMetadata CreateFlowMetadata(string userId, string email = null, string callbackUrl = null)
         {
             return new AppFlowMetadata(userId, email, callbackUrl);
@@ -20,11 +40,12 @@ namespace KwasantCore.Managers.APIManagers.Authorizers.Google
             return CreateFlowMetadata(userId).Flow;
         }
 
-        public async Task<AuthorizationCodeWebApp.AuthResult> AuthorizeAsync(string userId, string email, string callbackUrl, string currentUrl, CancellationToken cancellationToken)
+        public async Task<IOAuthAuthorizationResult> AuthorizeAsync(string userId, string email, string callbackUrl, string currentUrl, CancellationToken cancellationToken)
         {
             var flowMetadata = CreateFlowMetadata(userId, email, callbackUrl);
-            return await new AuthorizationCodeWebApp(flowMetadata.Flow, flowMetadata.AuthCallback, currentUrl)
-                             .AuthorizeAsync(userId, CancellationToken.None);
+            var result = await new AuthorizationCodeWebApp(flowMetadata.Flow, flowMetadata.AuthCallback, currentUrl)
+                                   .AuthorizeAsync(userId, CancellationToken.None);
+            return new AuthResultAdapter(result);
         }
 
         public async Task RevokeAccessTokenAsync(string userId, CancellationToken cancellationToken)
