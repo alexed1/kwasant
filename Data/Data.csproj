@@ -436,6 +436,10 @@
     <Compile Include="Migrations\201411162040143_ChangeFactObjectIdType.Designer.cs">
       <DependentUpon>201411162040143_ChangeFactObjectIdType.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411201337452_RemoveOldDateCreatedFields.cs" />
+    <Compile Include="Migrations\201411201337452_RemoveOldDateCreatedFields.Designer.cs">
+      <DependentUpon>201411201337452_RemoveOldDateCreatedFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
@@ -1349,6 +1353,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411162040143_ChangeFactObjectIdType.resx">
       <DependentUpon>201411162040143_ChangeFactObjectIdType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411201337452_RemoveOldDateCreatedFields.resx">
+      <DependentUpon>201411201337452_RemoveOldDateCreatedFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
