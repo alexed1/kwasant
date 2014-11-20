@@ -74,52 +74,16 @@ namespace KwasantWeb
 
             SharedAlertQueues.Begin();
 
+            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                CreateRemoteCalendarProviders(uow);
+                uow.RemoteCalendarProviderRepository.CreateRemoteCalendarProviders(configRepository);
                 uow.SaveChanges();
             }
 
             SetServerUrl();
         }
 
-
-        private void CreateRemoteCalendarProviders(IUnitOfWork uow)
-        {
-            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            var clientID = configRepository.Get("GoogleCalendarClientId");
-            var clientSecret = configRepository.Get("GoogleCalendarClientSecret");
-            var providers = new[]
-                {
-                    new RemoteCalendarProviderDO
-                        {
-                            Name = "Google",
-                            AuthType = ServiceAuthorizationType.OAuth2,
-                            AppCreds = JsonConvert.SerializeObject(
-                                new
-                                    {
-                                        ClientId = clientID,
-                                        ClientSecret = clientSecret,
-                                        Scopes = "https://www.googleapis.com/auth/calendar,email"
-                                    }),
-                            CalDAVEndPoint = "https://apidata.googleusercontent.com/caldav/v2"
-                        }
-                };
-            foreach (var provider in providers)
-            {
-                var existingRow = uow.RemoteCalendarProviderRepository.GetByName(provider.Name);
-                if (existingRow == null)
-                {
-                    uow.RemoteCalendarProviderRepository.Add(provider);
-                }
-                else
-                {
-                    existingRow.AuthType = provider.AuthType;
-                    existingRow.AppCreds = provider.AppCreds;
-                    existingRow.CalDAVEndPoint = provider.CalDAVEndPoint;
-                }
-            }
-        }
 
         protected void Application_Error(Object sender, EventArgs e)
         {
