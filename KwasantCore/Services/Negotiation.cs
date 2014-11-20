@@ -106,9 +106,8 @@ namespace KwasantCore.Services
             var existingQuestions = curNegotiationDO.Questions.ToList();
             foreach (var existingQuestion in existingQuestions.Where(q => !proposedQuestionIDs.Contains(q.Id)))
             {
-                uow.QuestionsRepository.Remove(existingQuestion);
-            }
-
+                uow.QuestionsRepository.Remove(existingQuestion);               
+            }           
             //Here we add/update questions based on our proposed negotiation
             foreach (var submittedQuestionDO in submittedNegotiationDO.Questions)
             {

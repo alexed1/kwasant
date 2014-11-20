@@ -165,13 +165,21 @@ Please register first.");
                                 {
                                     var user = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == username);
                                     var getRoles = uow.AspNetUserRolesRepository.GetRoles(user.Id).ToList();
-                                    foreach (var role in getRoles)
-                                    {
-                                        if (role.Name == "Admin")
-                                        { return RedirectToAction("Index", "Admin"); }
-                                        else if (role.Name == "Booker")
-                                        { return RedirectToAction("Index", "Booker"); }
+                                    //foreach (var role in getRoles)
+                                    //{
+                                    //    if (role.Name == "admin")
+                                    //    { return RedirectToAction("index", "admin"); }
+                                    //    else if (role.Name == "booker")
+                                    //    { return RedirectToAction("index", "booker"); }
 
+                                    //}
+                                    if (getRoles.Select(e => e.Name).Contains("Admin"))
+                                    {
+                                        return RedirectToAction("Index", "Admin");
+                                    }
+                                    else if (getRoles.Select(e => e.Name).Contains("Booker"))
+                                    {
+                                        return RedirectToAction("Index", "Booker");
                                     }
                                 }
 

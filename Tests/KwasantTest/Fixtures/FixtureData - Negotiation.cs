@@ -1,7 +1,7 @@
 ﻿using Data.Entities;
 using Data.States;
-
-namespace KwasantTest.Fixtures
+using StructureMap;
+using Data.Interfaces;namespace KwasantTest.Fixtures
 {
     public partial class FixtureData
     {
@@ -21,5 +21,27 @@ namespace KwasantTest.Fixtures
             curNegotiationDO.Questions.Add(question);
             return curNegotiationDO;
         }
+
+        public NegotiationDO TestNegotiation2()
+        {
+            var curBookingRequestDO = TestBookingRequest2();
+            var curNegotiationDO = new NegotiationDO
+            {
+                Id = 1,
+                BookingRequest = curBookingRequestDO,
+                BookingRequestID = curBookingRequestDO.Id,
+                NegotiationState = NegotiationState.InProcess,
+                Name = "Negotiation 2"
+            };
+            var question = TestQuestion1();
+            question.Negotiation = curNegotiationDO;
+            curNegotiationDO.Questions.Add(question);
+            return curNegotiationDO;
+
+        }
+
+        
+
+       
     }
 }
