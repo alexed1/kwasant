@@ -99,7 +99,7 @@ namespace Daemons
             //Event: BR's are Not getting Processed
             //Action: Alert specified targets via SMS
             var currentTime = DateTimeOffset.Now;
-            var smsIntervalMin = _configRepository.Get<int>("MonitorStaleBRPeriod", 60);
+            var smsIntervalMin = _configRepository.Get("MonitorStaleBRPeriod", 60);
             if ((int)currentTime.TimeOfDay.TotalMinutes % smsIntervalMin < TimeSpan.FromMilliseconds(WaitTimeBetweenExecution).TotalMinutes)
             {
                 var notification = ObjectFactory.GetInstance<INotification>();

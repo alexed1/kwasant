@@ -60,6 +60,18 @@ namespace KwasantTest.Daemons
                     }
                 });
             configRepositoryMock
+                .Setup(c => c.Get<int>(It.IsAny<string>(), It.IsAny<int>()))
+                .Returns<string, int>((key, def) =>
+                {
+                    switch (key)
+                    {
+                        case "MonitorStaleBRPeriod":
+                            return 1;
+                    }
+                    return def;
+                });
+                
+            configRepositoryMock
                 .Setup(c => c.Get<int>(It.IsAny<string>()))
                 .Returns<string>(key =>
                     {
