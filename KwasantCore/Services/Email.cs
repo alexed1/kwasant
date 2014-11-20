@@ -44,18 +44,30 @@ namespace KwasantCore.Services
         #region Method
 
         /// <summary>
-        /// This implementation of Send uses the Mandrill API
+        /// This implementation of Send uses the SendGrid API
         /// </summary>
-        [ObsoleteAttribute("Use directly uow.EnvelopeRepository.ConfigureTemplatedEmail method.")]
-        public EnvelopeDO SendTemplate(IUnitOfWork uow, string templateName, IEmailDO message, Dictionary<string, string> mergeFields)
+        public void SendTemplate(IUnitOfWork uow, string templateName, IEmailDO message, Dictionary<string, string> mergeFields)
         {
-            return uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
+            uow.SaveChanges();
         }
 
-        [ObsoleteAttribute("Use directly uow.EnvelopeRepository.ConfigurePlainEmail method.")]
-        public EnvelopeDO Send(IUnitOfWork uow, EmailDO emailDO)
+        public void Send(IUnitOfWork uow, IEmailDO emailDO)
         {
-            return uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
+            uow.SaveChanges();
+        }
+
+        public void Send(IUnitOfWork uow, string subject, string message, string fromAddress, string toAddress)
+        {
+            if (uow == null)
+                throw new ArgumentNullException("uow");
+            var curEmail = GenerateBasicMessage(uow, subject, message, fromAddress, toAddress);
+            Send(uow, curEmail);
         }
 
         public void SendUserSettingsNotification(IUnitOfWork uow, UserDO submittedUserData) 
