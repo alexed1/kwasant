@@ -141,12 +141,6 @@ namespace KwasantCore.Managers
 
                 var conversationThread = _br.GetConversationThread(negotiationDO.BookingRequest);
 
-                string bookerName;
-                if (negotiationDO.BookingRequest.Booker != null)
-                    bookerName = negotiationDO.BookingRequest.Booker.DisplayName;
-                else
-                    bookerName = "Kwasant";
-
                 uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, templateName,
                     new Dictionary<string, string>
                     {
