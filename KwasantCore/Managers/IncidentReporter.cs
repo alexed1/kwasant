@@ -65,6 +65,7 @@ namespace KwasantCore.Managers
                 incidentDO.Priority = 5;
                 incidentDO.Activity = "IntakeFailure";
                 incidentDO.Notes = errorMessage;
+                incidentDO.ObjectId = 0;
                 _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
             }

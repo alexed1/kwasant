@@ -24,12 +24,13 @@ namespace KwasantTest.Daemons
 
         private Mock<ISMSPackager> _smsPackagerMock;
 
+        private AlertReporter alertReporter;
         [SetUp]
         public void Setup()
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
 
-            AlertReporter alertReporter = new AlertReporter();
+            alertReporter = new AlertReporter();
             alertReporter.SubscribeToAlerts();
 
             _smsPackagerMock = new Mock<ISMSPackager>();
@@ -58,10 +59,41 @@ namespace KwasantTest.Daemons
                             return new MockedConfigRepository().Get<string>(key);
                     }
                 });
+            configRepositoryMock
+                .Setup(c => c.Get<int>(It.IsAny<string>(), It.IsAny<int>()))
+                .Returns<string, int>((key, def) =>
+                {
+                    switch (key)
+                    {
+                        case "MonitorStaleBRPeriod":
+                            return 1;
+                    }
+                    return def;
+                });
+                
+            configRepositoryMock
+                .Setup(c => c.Get<int>(It.IsAny<string>()))
+                .Returns<string>(key =>
+                    {
+                        switch (key)
+                        {
+                            case "MonitorStaleBRPeriod":
+                                return 5;
+                                    // to send sms regardless of time it should be equal or less than FreshnessMonitor#WaitTimeBetweenExecution
+                            default:
+                                return new MockedConfigRepository().Get<int>(key);
+                        }
+                    });
             ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepositoryMock.Object));
         }
 
-        [Test, Ignore]
+        [TearDown]
+        public void TearDown()
+        {
+            alertReporter.UnsubscribeFromAlerts();
+        }
+
+        [Test]
         public void TestFreshnessMonitorExpired()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

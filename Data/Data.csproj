@@ -872,6 +872,7 @@
     <Compile Include="Validations\BookingRequestValidator.cs" />
     <Compile Include="Validations\EnvelopeValidator.cs" />
     <Compile Include="Validations\EventValidator.cs" />
+    <Compile Include="Validations\IncidentValidator.cs" />
     <Compile Include="Validations\OutboundEmailValidatorBase.cs" />
     <Compile Include="Validations\OutboundHtmlEmailValidator.cs" />
     <Compile Include="Validations\OutboundTemplatedEmailValidator.cs" />

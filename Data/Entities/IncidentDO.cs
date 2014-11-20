@@ -4,6 +4,11 @@ namespace Data.Entities
 {
     public class IncidentDO : BaseDO
     {
+        public IncidentDO()
+        {
+            Priority = 1;
+        }
+
         [Key]
         public int Id { get; set; }
         public String PrimaryCategory { get; set; }
