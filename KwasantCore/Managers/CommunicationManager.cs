@@ -151,7 +151,6 @@ namespace KwasantCore.Managers
                     new Dictionary<string, string>
                     {
                         {"RESP_URL", tokenURL},
-                        {"bookername", bookerName},
                         {"bodytext", generatedEmailDO.HTMLText},
                         {"questions", String.Join("<br/>", summaryQandAText)},
                         {"conversationthread", conversationThread},
