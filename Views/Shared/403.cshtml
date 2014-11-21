@@ -69,7 +69,7 @@
         <script>
             var message = "@Html.Raw(HttpUtility.JavaScriptStringEncode(Model.Exception.Message))";
             $(function () {
-                Kwasant.IFrame.Display('AccessDenied?errorMessage=' + message,
+                Kwasant.IFrame.Display('/Account/AccessDenied?errorMessage=' + message,
 	            {
 	                modal: true,
 	                callback: function (result) {

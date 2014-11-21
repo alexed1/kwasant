@@ -59,6 +59,31 @@ namespace KwasantTest.Daemons
                             return new MockedConfigRepository().Get<string>(key);
                     }
                 });
+            configRepositoryMock
+                .Setup(c => c.Get<int>(It.IsAny<string>(), It.IsAny<int>()))
+                .Returns<string, int>((key, def) =>
+                {
+                    switch (key)
+                    {
+                        case "MonitorStaleBRPeriod":
+                            return 1;
+                    }
+                    return def;
+                });
+                
+            configRepositoryMock
+                .Setup(c => c.Get<int>(It.IsAny<string>()))
+                .Returns<string>(key =>
+                    {
+                        switch (key)
+                        {
+                            case "MonitorStaleBRPeriod":
+                                return 5;
+                                    // to send sms regardless of time it should be equal or less than FreshnessMonitor#WaitTimeBetweenExecution
+                            default:
+                                return new MockedConfigRepository().Get<int>(key);
+                        }
+                    });
             ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepositoryMock.Object));
         }
 
@@ -68,7 +93,7 @@ namespace KwasantTest.Daemons
             alertReporter.UnsubscribeFromAlerts();
         }
 
-        [Test, Ignore]
+        [Test]
         public void TestFreshnessMonitorExpired()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -78,7 +103,7 @@ namespace KwasantTest.Daemons
                 var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
                 bookingRequestDO.State = BookingRequestState.Unstarted;
                 bookingRequestDO.Customer = new FixtureData(uow).TestUser1();
-                bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 1, 0, 0));
+                bookingRequestDO.CreateDate = DateTime.Now.Subtract(new TimeSpan(0, 1, 0, 0));
                 bookingRequestRepo.Add(bookingRequestDO);
 
                 uow.SaveChanges();
@@ -102,7 +127,7 @@ namespace KwasantTest.Daemons
                 var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
                 bookingRequestDO.State = BookingRequestState.Unstarted;
                 bookingRequestDO.Customer = new FixtureData(uow).TestUser1();
-                bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
+                bookingRequestDO.CreateDate = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
                 bookingRequestRepo.Add(bookingRequestDO);
 
                 uow.SaveChanges();
@@ -128,7 +153,7 @@ namespace KwasantTest.Daemons
                 var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
                 bookingRequestDO.State = BookingRequestState.Unstarted;
                 bookingRequestDO.Customer = new FixtureData(uow).TestUser1();
-                bookingRequestDO.DateCreated = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
+                bookingRequestDO.CreateDate = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
                 bookingRequestRepo.Add(bookingRequestDO);
 
                 uow.SaveChanges();

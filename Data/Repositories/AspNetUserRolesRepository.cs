@@ -37,8 +37,9 @@ namespace Data.Repositories
             return UnitOfWork.AspNetRolesRepository.GetQuery().Where(r => roleIDs.Contains(r.Id));
         }
 
-        public bool UserHasRole(string roleID, string userID)
+        public bool UserHasRole(string roleName, string userID)
         {
+            var roleID = GetRoleID(roleName);
             return GetQuery().Any(ur => ur.RoleId == roleID && ur.UserId == userID);
         }
 

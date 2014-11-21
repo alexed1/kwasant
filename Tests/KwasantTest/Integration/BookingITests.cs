@@ -50,7 +50,9 @@ namespace KwasantTest.Integration
 
             var mockedSendGridTransport = new Mock<ITransport>();
             //When we are asked to send an email, store it in unreadSentEmails
-            mockedSendGridTransport.Setup(m => m.DeliverAsync(It.IsAny<ISendGrid>())).Callback<ISendGrid>(sgm => unreadSentMails.Add(sgm.CreateMimeMessage()));
+            mockedSendGridTransport.Setup(m => m.DeliverAsync(It.IsAny<ISendGrid>())).Callback<ISendGrid>(sgm => 
+                unreadSentMails.Add(sgm.CreateMimeMessage())
+                );
 
             ObjectFactory.Configure(o => o.For<IImapClient>().Use(mockedImapClient.Object));
             ObjectFactory.Configure(o => o.For<ITransport>().Use(mockedSendGridTransport.Object));

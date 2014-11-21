@@ -28,7 +28,7 @@ namespace KwasantWeb.ViewModels
         public int? CalendarID { get; set; }
         public string Text { get; set; }
         public List<NegotiationAnswerVM> Answers { get; set; }
-        public string Type { get; set; }  
+        public string AnswerType { get; set; }  
     }
 
     public class NegotiationAnswerVM
