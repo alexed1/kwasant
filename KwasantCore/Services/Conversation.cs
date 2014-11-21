@@ -123,6 +123,8 @@ namespace KwasantCore.Services
             // alerts
             AlertManager.ConversationMemberAdded(existingBookingRequest.Id);
             AlertManager.ConversationMatched(curEmail.Id, curEmail.Subject, existingBookingRequest.Id);
+
+            return curEmail;
         }
     }
 }
