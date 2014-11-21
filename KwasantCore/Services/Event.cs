@@ -84,7 +84,7 @@ namespace KwasantCore.Services
                 {
                     var oldStatus = eventDO.EventStatus;
                     eventDO.EventStatus = EventState.Deleted;
-                    if (oldStatus != EventState.Draft || oldStatus != EventState.Deleted)
+                    if (oldStatus != EventState.Draft && oldStatus != EventState.Deleted)
                     {
                         InviteAttendees(uow, eventDO, null, eventDO.Attendees);
                     }
