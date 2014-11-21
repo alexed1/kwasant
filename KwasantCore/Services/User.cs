@@ -5,6 +5,7 @@ using Data.Validations;
 using Data.Entities;
 using Data.States;
 using StructureMap;
+using Data.Infrastructure;
 
 namespace KwasantCore.Services
 {
@@ -93,76 +94,61 @@ namespace KwasantCore.Services
             return curEmailAddress.Address.Split(new[] {'@'})[0];
         }
 
-        public String[] GetAuthRolesList(string selectedRole) 
+        public void Create(IUnitOfWork uow, UserDO submittedUserData, string userPassword, string[] selectedRoles) 
         {
-            String[] userRoles = { };
-            switch (selectedRole)
+            submittedUserData.State = UserState.Active;
+            submittedUserData.Id = Guid.NewGuid().ToString();
+            submittedUserData.UserName = submittedUserData.FirstName;
+            submittedUserData.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(submittedUserData.EmailAddress.Address);
+            uow.UserRepository.Add(submittedUserData);
+            foreach (string role in selectedRoles) 
             {
-                case "Admin":
-                    userRoles = new[] { "Admin", "Booker", "Customer" };
-                    break;
-                case "Booker":
-                    userRoles = new[] { "Booker", "Customer" };
-                    break;
-                case "Customer":
-                    userRoles = new[] { "Customer" };
-                    break;
+                uow.AspNetUserRolesRepository.AssignRoleToUser(role, submittedUserData.Id);
             }
-            return userRoles;
+            uow.SaveChanges();
+            if (!String.IsNullOrEmpty(userPassword))
+            {
+                UpdatePassword(uow, submittedUserData, userPassword);
+            }
+            AlertManager.ExplicitCustomerCreated(submittedUserData.Id);
         }
 
-        public String GetSelectedRole(String[] userRoles)
+        public UserDO CheckIfAlreadyExists(IUnitOfWork uow, string emailAddress, out bool isAlreadyExists)
         {
-            string slectedRoles = "";
-            if (userRoles.Contains("Admin"))
-                slectedRoles = "Admin";
-            else if (userRoles.Contains("Booker"))
-                slectedRoles = "Booker";
-            else if (userRoles.Contains("Customer"))
-                slectedRoles = "Customer";
-            return slectedRoles;
+            UserDO existingUser = uow.UserRepository.GetQuery().Where(e => e.EmailAddress.Address == emailAddress).FirstOrDefault();
+            isAlreadyExists = false;
+            if (existingUser != null)
+                isAlreadyExists = true;
+            return existingUser;
         }
 
-        public void SetRoles(IUnitOfWork uow, string userId, string selectedRole)
+        public void Update(IUnitOfWork uow, UserDO submittedUserData,string userNewPassword, string[] selectedRoles) 
         {
-            var existingRoles = uow.AspNetUserRolesRepository.GetRoles(userId).ToList();
-            var seletedRoles = GetAuthRolesList(selectedRole);
+            UserDO existingUser = uow.UserRepository.GetByKey(submittedUserData.Id);
+            existingUser.FirstName = submittedUserData.FirstName;
+            existingUser.LastName = submittedUserData.LastName;
+
+            var existingRoles = uow.AspNetUserRolesRepository.GetRoles(existingUser.Id).ToList();
 
             //Remove old roles
             foreach (var existingRole in existingRoles)
             {
-                if (!seletedRoles.Select(newRole => newRole).Contains(existingRole.Name))
-                    uow.AspNetUserRolesRepository.RevokeRoleFromUser(existingRole.Name, userId);
+                if (!selectedRoles.Select(newRole => newRole).Contains(existingRole.Name))
+                    uow.AspNetUserRolesRepository.RevokeRoleFromUser(existingRole.Name, existingUser.Id);
             }
 
             //Add new roles
-            foreach (var role in seletedRoles)
+            foreach (var role in selectedRoles)
             {
                 if (!existingRoles.Select(newRole => newRole.Name).Contains(role))
-                    uow.AspNetUserRolesRepository.AssignRoleToUser(role, userId);
+                    uow.AspNetUserRolesRepository.AssignRoleToUser(role, existingUser.Id);
             }
-        }
 
-        public UserDO GetUserToAddOrUpdate(IUnitOfWork uow, string userId, string emailAddress, string firstName, out bool isAlreadyExists)
-        {
-            UserDO existingUser;
-            isAlreadyExists = false;
-            if (!String.IsNullOrWhiteSpace(userId))
-                existingUser = uow.UserRepository.GetByKey(userId);
-            else
+            if (!String.IsNullOrEmpty(userNewPassword))
             {
-                existingUser = uow.UserRepository.GetQuery().Where(e => e.EmailAddress.Address == emailAddress).FirstOrDefault();
-                if (existingUser == null)
-                {
-                    existingUser = uow.UserRepository.GetOrCreateUser(emailAddress);
-                }
-                else
-                {
-                    isAlreadyExists = true;
-                }
+                UpdatePassword(uow, existingUser, userNewPassword);
             }
-            existingUser.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(emailAddress, firstName);
-            return existingUser;
+            uow.SaveChanges();
         }
     }
 }

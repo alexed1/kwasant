@@ -77,7 +77,6 @@
         <br />
         <a style="color: #428bca; text-decoration: underline;" href="/Profile/ProfilesForUser?userID=@Model.Id">View Profiles</a>
     </form>
-
 </div>
 <script>
     //Document ready function, will run after page is ready and all elements are loaded.
@@ -111,41 +110,57 @@
             dataObj.LastName = $("#lastname").val();
             dataObj.EmailAddress = $("#email").val();
             dataObj.NewPassword = $("#newPassword").val();
-            dataObj.Roles = "";
+            dataObj.Role = "";
             dataObj.SendMail = $("#chkSendEmail").prop("checked");
 
             $.each($('.roleOptions'), function(i, o) {
                 var wrappedObj = $(o);
                 if (wrappedObj.is(':selected'))
-                    dataObj.Roles = wrappedObj.val();
+                    dataObj.Role = wrappedObj.val();
             });
 
-            var dataStr = JSON.stringify(dataObj);
-
-            $.ajax({
-                url: '@Url.Action("Update", "User")',
-                type: 'POST',
-                contentType: 'application/json',
-                data: dataStr,
-                success: function (response) {
-                    var resp = JSON.parse(response);
-                    if(resp.data == "User already exists.")
-                    {
-                        displayNotification("User already exists");
-                        existingUserAlert(resp.user_id);
-                    }
-                    else if(dataObj.Id == ''){
-                        displayNotification("User created successfully");
-                        resetFields();
-                    }
-                    else{
-                        displayNotification("User updated successfully");
-                        toggleFields(true);
-                    }
-                }
-            });
+            if(dataObj.Id == '')
+                addUser(dataObj);
+            else
+                updateUser(dataObj);
+            
         });
     });
+
+    //Function to add new users
+    function addUser(dataObj)
+    {
+        $.ajax({
+            url: '@Url.Action("ProcessAddUser", "User")',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(dataObj),
+            success: function (response) {
+                var resp = JSON.parse(response);
+                displayNotification(resp.data);
+                if(resp.data == "User already exists.")
+                    existingUserAlert(resp.user_id);
+                else
+                    resetFields($("input:text"));
+            }
+        });
+    }
+
+    //Function to update existing users
+    function updateUser(dataObj)
+    {
+        $.ajax({
+            url: '@Url.Action("Update", "User")',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(dataObj),
+            success: function (response) {
+                var resp = JSON.parse(response);
+                displayNotification(resp.data);
+                toggleFields(true);   
+            }
+        });
+    }
 
     //toggle fields state, enabling/disabling the user text fields to switch user form Mode
     function toggleFields(state) {
@@ -188,15 +203,6 @@
             $("#trEmailIdField").hide();
             $("#btnActivate").hide();
         }
-    } 
-
-    //function to clear all fields in the form
-    function resetFields()
-    {
-        $("#firstname").val("");
-        $("#lastname").val("");
-        $("#email").val("");
-        $("#newPassword").val("");
     }
 
     //popup to display when user already exists.

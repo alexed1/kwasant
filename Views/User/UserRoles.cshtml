@@ -6,7 +6,7 @@
     <select>
         @foreach (var role in allRows)
         {
-            <option id="@role.Id" class="roleOptions" value="@role.Name" @Html.Raw(Model.Roles == role.Name ? "selected" : String.Empty)>@role.Name</option>
+            <option id="@role.Id" class="roleOptions" value="@role.Name" @Html.Raw(Model.Role == role.Name ? "selected" : String.Empty)>@role.Name</option>
             <br />
         }
     </select>

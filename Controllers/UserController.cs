@@ -14,8 +14,8 @@ using StructureMap;
 using Data.Validations;
 using System.Linq;
 using Utilities;
-using Data.Infrastructure;
 using KwasantCore.Services;
+using AutoMapper;
 
 namespace KwasantWeb.Controllers
 {
@@ -24,8 +24,11 @@ namespace KwasantWeb.Controllers
     {
         private readonly JsonPackager _jsonPackager;
         private readonly User _user;
+        private readonly IMappingEngine _mappingEngine;
+
         public UserController()
         {
+            _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
             _jsonPackager = new JsonPackager();
             _user = new User();
         }
@@ -159,40 +162,80 @@ namespace KwasantWeb.Controllers
 
         [HttpPost]
         [KwasantAuthorize(Roles = Roles.Admin)]
-        public ActionResult Update(UserVM curCreateUserVM)
+        public ActionResult ProcessAddUser(UserVM curCreateUserVM)
         {
+            UserDO submittedUserData = _mappingEngine.Map<UserDO>(curCreateUserVM);
+            string userPassword = curCreateUserVM.NewPassword;
+            bool sendMail = curCreateUserVM.SendMail;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 bool isAlreadyExists;
-                UserDO existingUser = _user.GetUserToAddOrUpdate(uow, curCreateUserVM.Id, curCreateUserVM.EmailAddress, curCreateUserVM.FirstName, out isAlreadyExists);
+                UserDO existingUser = _user.CheckIfAlreadyExists(uow, submittedUserData.EmailAddress.Address, out isAlreadyExists);
                 if (isAlreadyExists)
                 {
                     var jsonSuccessResult = Json(_jsonPackager.Pack(new { Data = "User already exists.", UserId = existingUser.Id }));
                     return jsonSuccessResult;
                 }
 
-                if (!String.IsNullOrEmpty(curCreateUserVM.NewPassword))
+                _user.Create(uow, submittedUserData, userPassword, ConvertRoleStringToRoles(curCreateUserVM.Role));
+
+                if (sendMail && !String.IsNullOrEmpty(userPassword))
                 {
-                    _user.UpdatePassword(uow, existingUser, curCreateUserVM.NewPassword);
+                    new Email().SendLoginCredentials(uow, submittedUserData.EmailAddress.Address, userPassword);
                 }
+            }
+            return Json(_jsonPackager.Pack(new { Data = "User created successfully." }));
+        }
 
-                _user.SetRoles(uow, existingUser.Id, curCreateUserVM.Roles);
+        public String[] ConvertRoleStringToRoles(string selectedRole)
+        {
+            string[] userRoles = { };
+            switch (selectedRole)
+            {
+                case Roles.Admin:
+                    userRoles = new[] { Roles.Admin, Roles.Booker, Roles.Customer };
+                    break;
+                case Roles.Booker:
+                    userRoles = new[] { Roles.Booker, Roles.Customer };
+                    break;
+                case Roles.Customer:
+                    userRoles = new[] { Roles.Customer };
+                    break;
+            }
+            return userRoles;
+        }
 
-                existingUser.FirstName = curCreateUserVM.FirstName;
-                existingUser.LastName = curCreateUserVM.LastName;
-                uow.SaveChanges();
+        private string ConvertRolesToRoleString(String[] userRoles) 
+        {
+            if (userRoles.Contains(Roles.Admin))
+                return Roles.Admin;
+            else if (userRoles.Contains(Roles.Booker))
+                return Roles.Booker;
+            else if (userRoles.Contains(Roles.Customer))
+                return Roles.Customer;
+            else
+                return "";
+        }
 
-                //Checking if user is new user
-                if (String.IsNullOrWhiteSpace(curCreateUserVM.Id))
-                {
-                    AlertManager.ExplicitCustomerCreated(existingUser.Id);
-                }
+        [HttpPost]
+        [KwasantAuthorize(Roles = Roles.Admin)]
+        public ActionResult Update(UserVM curCreateUserVM)
+        {
+            UserDO submittedUserData = _mappingEngine.Map<UserDO>(curCreateUserVM);
+            string userNewPassword = curCreateUserVM.NewPassword;
+            bool sendMail = curCreateUserVM.SendMail;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                _user.Update(uow, submittedUserData, userNewPassword, ConvertRoleStringToRoles(curCreateUserVM.Role));
+                
                 //Sending a mail to user with newly created credentials if send email is checked
-                if (curCreateUserVM.SendMail && !String.IsNullOrEmpty(curCreateUserVM.NewPassword))
+                if (sendMail && !String.IsNullOrEmpty(userNewPassword))
                 {
-                    new Email().SendLoginCredentials(uow, curCreateUserVM.EmailAddress, curCreateUserVM.NewPassword);
+                    new Email().SendLoginCredentials(uow, curCreateUserVM.EmailAddress, userNewPassword);
                 }
-                return Json(_jsonPackager.Pack("User updated successfully."));
+                return Json(_jsonPackager.Pack(new { Data = "User updated successfully." }));
             }
         }
 
@@ -202,7 +245,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Search(String firstName, String lastName, String emailAddress,int[] states)
+        public ActionResult Search(String firstName, String lastName, String emailAddress, int[] states)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -236,7 +279,7 @@ namespace KwasantWeb.Controllers
                 LastName = u.LastName,
                 UserName = u.UserName,
                 EmailAddress = u.EmailAddress.Address,
-                Roles = _user.GetSelectedRole(uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Name).ToArray()),
+                Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Name).ToArray()),
                 Calendars = u.Calendars.Select(c => new UserCalendarVM { Id = c.Id, Name = c.Name }).ToList(),
                 EmailAddressID = u.EmailAddressID.Value,
                 Status = u.State.Value
