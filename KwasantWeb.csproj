@@ -834,6 +834,7 @@
     <Content Include="Views\Report\TimeSpanNavigator.cshtml" />
     <Content Include="Views\User\ExistingUserAlert.cshtml" />
     <Content Include="Views\User\UserRoles.cshtml" />
+    <Content Include="Views\Shared\AccessDenied.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

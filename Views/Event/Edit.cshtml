@@ -128,7 +128,7 @@
 	            @if (Model.IsNew)
 	            {
 	                @:var spinner = Kwasant.IFrame.DisplaySpinner();
-                    @:$.post('/Event/ConfirmDelete?eventID=' + @Model.Id, function (response) {
+                    @:$.get('/Event/ConfirmDelete?eventID=' + @Model.Id, function (response) {
                         @:Kwasant.IFrame.CloseMe(false);
                         @:spinner.hide();
                     @:}, 'json');

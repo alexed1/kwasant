@@ -186,7 +186,6 @@
     <Compile Include="ExternalServices\ServiceManager.cs" />
     <Compile Include="ExternalServices\SmtpClientWrapper.cs" />
     <Compile Include="ExternalServices\TwilioRestClientWrapper.cs" />
-    <Compile Include="Interfaces\ParsedEmailAddress.cs" />
     <Compile Include="KwasantLogAppender.cs" />
     <Compile Include="Managers\AlertReporter.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
@@ -199,16 +198,6 @@
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\GoogleCalDAVClient.cs" />
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClient.cs" />
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClientFactory.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\ActiveMandrillWebhook.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillBasePackage.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillDeleteWebhook.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillDynamicContentChunk.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillListWebhooks.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillMergeRecipient.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillResponse.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillTemplatePackage.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookAddRequest.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookResponse.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />

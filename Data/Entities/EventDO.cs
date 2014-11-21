@@ -40,7 +40,6 @@ namespace Data.Entities
         public string Category { get; set; }
         public bool IsAllDay { get; set; }
         public string ExternalGUID { get; set; }
-        public DateTimeOffset DateCreated { get; set; }
 
         [ForeignKey("EventStatusTemplate")]
         public int? EventStatus { get; set; }

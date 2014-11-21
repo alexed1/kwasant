@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
+using Utilities;
 
 namespace KwasantCore.Interfaces
 {

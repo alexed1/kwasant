@@ -59,11 +59,21 @@
 			$("#f").submit(function () {
 				var f = $("#f");
 
+				var spinner = Kwasant.IFrame.DisplaySpinner();
 				var data = @Html.Raw(JsonConvert.SerializeObject(Model));
 				$.post(f.prop('action'), data, function (result) {
-				    if(result)
-				    { var startDate= new Date('@Model.StartDate'); displayNotification('Event Created Starting ' + (startDate.getMonth() + 1) + "/" + startDate.getDate()); } 
-					close(eval(result));
+				    if (result.Success) {
+				        var startDate= new Date('@Model.StartDate'); 
+				        displayNotification('Event Created Starting ' + (startDate.getMonth() + 1) + "/" + startDate.getDate());
+				        close(true);
+				    }  else
+				    {
+				        alert(result.Message);    
+				    }
+				}).always(function() {
+				    spinner.hide();
+				}).fail(function(result) {
+				    alert(result);
 				});
 				return false;
 			});

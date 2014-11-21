@@ -40,7 +40,7 @@ namespace Daemons
 
         public override int WaitTimeBetweenExecution
         {
-            get { return 10000; }
+            get { return (int)TimeSpan.FromMinutes(5).TotalMilliseconds; }
         }
 
         protected override void Run()
@@ -98,30 +98,33 @@ namespace Daemons
         {
             //Event: BR's are Not getting Processed
             //Action: Alert specified targets via SMS
-
-            var notification = ObjectFactory.GetInstance<INotification>();
             var currentTime = DateTimeOffset.Now;
-            if (notification.IsInNotificationWindow("ThroughputCheckingStartTime", "ThroughputCheckingEndTime"))
+            var smsIntervalMin = _configRepository.Get("MonitorStaleBRPeriod", 60);
+            if ((int)currentTime.TimeOfDay.TotalMinutes % smsIntervalMin < TimeSpan.FromMilliseconds(WaitTimeBetweenExecution).TotalMinutes)
             {
-                //The current time is in the specified time range (currently daytime, PST)....
-                //We have to compare with a datetime - EF doesn't support operations like subtracts of datetimes, checking by ticks, etc.
-                //The below creates a datetime which represents thirty minutes ago. Anything 'less' than this time is older than 30 minutes.
-                var thirtyMinutesAgo = currentTime.Subtract(new TimeSpan(0, 0, 30, 0));
-                
-                //Per Wiki: https://maginot.atlassian.net/wiki/display/SH/Processing+Delay+Alerts
-                //Once every hour, the monitor should query for BookingRequests that have status Unprocessed or CheckOut and are at least 30 minutes old, as measured by comparing the current time to the DateCreated time.
-                var oldBookingRequests =
-                    uow.BookingRequestRepository.GetQuery()
-                        .Where(
-                            br =>
-                            (br.State == BookingRequestState.Unstarted || br.State == BookingRequestState.Booking) &&
-                            br.DateCreated <= thirtyMinutesAgo)
-                        .ToArray();
-
-                if (oldBookingRequests.Any())
+                var notification = ObjectFactory.GetInstance<INotification>();
+                if (notification.IsInNotificationWindow("ThroughputCheckingStartTime", "ThroughputCheckingEndTime"))
                 {
-                    AlertManager.StaleBookingRequestsDetected(oldBookingRequests);
-                    LogSuccess(oldBookingRequests.Length + " Booking requests are over-due by 30 minutes.");
+                    //The current time is in the specified time range (currently daytime, PST)....
+                    //We have to compare with a datetime - EF doesn't support operations like subtracts of datetimes, checking by ticks, etc.
+                    //The below creates a datetime which represents thirty minutes ago. Anything 'less' than this time is older than 30 minutes.
+                    var thirtyMinutesAgo = currentTime.Subtract(new TimeSpan(0, 0, 30, 0));
+
+                    //Per Wiki: https://maginot.atlassian.net/wiki/display/SH/Processing+Delay+Alerts
+                    //Once every hour, the monitor should query for BookingRequests that have status Unprocessed or CheckOut and are at least 30 minutes old, as measured by comparing the current time to the DateCreated time.
+                    var oldBookingRequests =
+                        uow.BookingRequestRepository.GetQuery()
+                            .Where(
+                                br =>
+                                (br.State == BookingRequestState.Unstarted || br.State == BookingRequestState.Booking) &&
+                                br.CreateDate <= thirtyMinutesAgo)
+                            .ToArray();
+
+                    if (oldBookingRequests.Any())
+                    {
+                        AlertManager.StaleBookingRequestsDetected(oldBookingRequests);
+                        LogSuccess(oldBookingRequests.Length + " Booking requests are over-due by 30 minutes.");
+                    }
                 }
             }
         }

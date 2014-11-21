@@ -52,12 +52,21 @@ namespace KwasantWeb.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult InterceptLogin(string returnUrl)
+        public ActionResult InterceptLogin(string returnUrl, string urlReferrer)
         {
             ViewBag.ReturnUrl = returnUrl;
+            TempData["urlReferrer"] = urlReferrer;
             if (this.UserIsAuthenticated())
-                throw new HttpException(403, "You do not have access to view this page.");
+                throw new HttpException(403, "We're sorry, but you don't have permission to access this page.");
             return View("Index");
+        }
+
+        [AllowAnonymous]
+        public ActionResult AccessDenied(string errorMessage)
+        {
+            ViewBag.ErrorMessage = errorMessage;
+            ViewBag.UrlReferrer = TempData["urlReferrer"];
+            return View();
         }
 
         [AllowAnonymous]
@@ -161,19 +170,12 @@ Please register first.");
                                 if (!String.IsNullOrEmpty(returnUrl))
                                     return Redirect(returnUrl);
 
-                                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                                {
-                                    var user = uow.UserRepository.GetQuery().FirstOrDefault(u => u.UserName == username);
-                                    var getRoles = uow.AspNetUserRolesRepository.GetRoles(user.Id).ToList();
-                                    foreach (var role in getRoles)
-                                    {
-                                        if (role.Name == "Admin")
-                                        { return RedirectToAction("Index", "Admin"); }
-                                        else if (role.Name == "Booker")
-                                        { return RedirectToAction("Index", "Booker"); }
+                                string getRole = _account.GetUserRole(username);
 
-                                    }
-                                }
+                                if (getRole == "Admin")
+                                    return RedirectToAction("Index", "Admin");
+                                else if (getRole == "Booker")
+                                    return RedirectToAction("Index", "Booker");
 
                                 return RedirectToAction("MyAccount", "User");
                             }

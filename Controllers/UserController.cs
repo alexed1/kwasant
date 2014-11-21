@@ -46,17 +46,24 @@ namespace KwasantWeb.Controllers
             }
         }
         
+        public static string GetCallbackUrl(string providerName, string serverUrl = null)
+        {
+            if (String.IsNullOrEmpty(serverUrl))
+                serverUrl = Utilities.Server.ServerUrl;
+            return String.Format("{0}AuthCallback/IndexAsync", serverUrl.Replace("www.", ""));
+        }
+
         public async Task<ActionResult> GrantRemoteCalendarAccess(string providerName)
         {
             var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
             var result = await authorizer.AuthorizeAsync(
                 this.GetUserId(),
                 this.GetUserName(),
-                String.Format("{0}AuthCallback/IndexAsync", Utilities.Server.ServerUrl),
+                GetCallbackUrl(providerName),
                 Request.RawUrl,
                 CancellationToken.None);
 
-            if (result.Credential != null)
+            if (result.IsAuthorized)
             {
                 // don't wait for this, run it async and return response to the user.
                 return RedirectToAction("MyAccount", new {remoteCalendarAccessGranted = providerName});
