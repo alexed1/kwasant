@@ -8,7 +8,7 @@ using KwasantCore.Managers;
 using KwasantCore.Managers.APIManagers.Authorizers;
 using KwasantCore.Managers.APIManagers.Authorizers.Google;
 using KwasantCore.Managers.APIManagers.Packagers;
-using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
+using KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar;
 using KwasantCore.Managers.APIManagers.Packagers.SegmentIO;
 using KwasantCore.Managers.APIManagers.Packagers.SendGrid;
 using KwasantCore.Managers.APIManagers.Packagers.Twilio;
@@ -72,11 +72,12 @@ namespace KwasantCore.StructureMap
                 For<INotification>().Use<Notification>();
                 For<IExpectedResponse>().Use<ExpectedResponse>();
 
-                For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
+                For<IRemoteCalendarServiceClientFactory>().Use<RemoteCalendarServiceClientFactory>();
                 For<ISecurityServices>().Use<SecurityServices>();
                 For<ITracker>().Use<SegmentIO>();
                 For<IIntakeManager>().Use<IntakeManager>();
 
+                For<IRemoteCalendarServiceAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
@@ -108,6 +109,7 @@ namespace KwasantCore.StructureMap
 
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
+                For<IRemoteCalendarServiceAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
                 For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
 
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();

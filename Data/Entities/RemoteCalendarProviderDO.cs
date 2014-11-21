@@ -21,9 +21,13 @@ namespace Data.Entities
         public string AppCreds { get; set; }
 
         /// <summary>
-        /// Base url for accessing CalDAV API.
+        /// Base url for accessing calendar service API.
         /// </summary>
-        public string CalDAVEndPoint { get; set; }
+        public string EndPoint { get; set; }
+
+        [ForeignKey("InterfaceTemplate"), Required]
+        public int? Interface { get; set; }
+        public virtual _RemoteCalendarServiceInterfaceTemplate InterfaceTemplate { get; set; }
 
         [ForeignKey("AuthTypeTemplate"), Required]
         public int? AuthType { get; set; }

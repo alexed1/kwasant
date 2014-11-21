@@ -452,6 +452,10 @@
     <Compile Include="Migrations\201411210850397_Sync.21.11.2014.Designer.cs">
       <DependentUpon>201411210850397_Sync.21.11.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411211342113_GeneralizeRemoteCalendarFunctionality.cs" />
+    <Compile Include="Migrations\201411211342113_GeneralizeRemoteCalendarFunctionality.Designer.cs">
+      <DependentUpon>201411211342113_GeneralizeRemoteCalendarFunctionality.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
@@ -527,7 +531,9 @@
     <Compile Include="States\ExpectedResponseStatus.cs" />
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
+    <Compile Include="States\RemoteCalendarServiceInterface.cs" />
     <Compile Include="States\Roles.cs" />
+    <Compile Include="States\Templates\_RemoteCalendarServiceInterfaceTemplate.cs" />
     <Compile Include="States\Templates\_BookingRequestAvailabilityTemplate.cs" />
     <Compile Include="States\Templates\_AnswerStatusTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
@@ -1377,6 +1383,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411210850397_Sync.21.11.2014.resx">
       <DependentUpon>201411210850397_Sync.21.11.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411211342113_GeneralizeRemoteCalendarFunctionality.resx">
+      <DependentUpon>201411211342113_GeneralizeRemoteCalendarFunctionality.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

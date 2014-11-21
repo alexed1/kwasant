@@ -7,18 +7,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Serialization;
-using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Managers.APIManagers.Transmitters.Http;
 using KwasantICS.DDay.iCal;
 using KwasantICS.DDay.iCal.Serialization.iCalendar.Serializers;
 
-namespace KwasantCore.Managers.APIManagers.Packagers.CalDAV
+namespace KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar.CalDAV
 {
     /// <summary>
     /// CalDAV requests packager
     /// </summary>
-    class CalDAVClient : ICalDAVClient
+    class CalDAVClient : IRemoteCalendarServiceClient
     {
         protected readonly IAuthorizingHttpChannel Channel;
 

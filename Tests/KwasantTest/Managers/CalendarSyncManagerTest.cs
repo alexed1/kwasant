@@ -6,7 +6,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using KwasantCore.Managers;
-using KwasantCore.Managers.APIManagers.Packagers.CalDAV;
+using KwasantCore.Managers.APIManagers.Packagers.RemoteCalendar;
 using KwasantCore.Services;
 using KwasantICS.DDay.iCal;
 using KwasantTest.Fixtures;
@@ -30,7 +30,7 @@ namespace KwasantTest.Managers
             _remoteCalendarEvents = new List<iCalendar>();
             CalendarSyncManager.DisableAutoSynchronization = true;
             
-            var clientMock = new Mock<ICalDAVClient>();
+            var clientMock = new Mock<IRemoteCalendarServiceClient>();
             clientMock.Setup(c =>
                              c.GetEventsAsync(
                                  It.IsAny<IRemoteCalendarLinkDO>(),
@@ -49,9 +49,9 @@ namespace KwasantTest.Managers
                                  return Task.Delay(0);
                              });
 
-            var clientFactoryMock = new Mock<ICalDAVClientFactory>();
+            var clientFactoryMock = new Mock<IRemoteCalendarServiceClientFactory>();
             clientFactoryMock.Setup(f => f.Create(It.IsAny<IRemoteCalendarAuthDataDO>())).Returns(clientMock.Object);
-            ObjectFactory.Configure(expression => expression.For<ICalDAVClientFactory>().Use(clientFactoryMock.Object));
+            ObjectFactory.Configure(expression => expression.For<IRemoteCalendarServiceClientFactory>().Use(clientFactoryMock.Object));
 
             _calendarSyncManager = ObjectFactory.GetInstance<CalendarSyncManager>();
         }

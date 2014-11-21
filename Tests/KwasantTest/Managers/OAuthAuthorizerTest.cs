@@ -57,7 +57,7 @@ namespace KwasantTest.Managers
                 foreach (var provider in oauthProviders)
                 {
                     var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(provider.Name);
-                    var result = authorizer.AuthorizeAsync(
+                    var result = authorizer.GrantAccessAsync(
                         user.Id,
                         user.EmailAddress.Address,
                         UserController.GetCallbackUrl(provider.Name, "https://www.kwasant.com/"),
