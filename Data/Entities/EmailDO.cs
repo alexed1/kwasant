@@ -18,7 +18,6 @@ namespace Data.Entities
             Recipients = new List<RecipientDO>();
             Attachments = new List<AttachmentDO>();
             Events = new List<EventDO>();
-            DateCreated = DateTimeOffset.UtcNow;
             DateReceived = DateTimeOffset.UtcNow;
 
             //By default, the MessageID is a random GUID. This is so we can match our sent emails to replies
@@ -86,7 +85,6 @@ namespace Data.Entities
         public String HTMLText { get; set; }
         public String PlainText { get; set; }
         public DateTimeOffset DateReceived { get; set; }
-        public DateTimeOffset DateCreated { get; set; }
         
         [ForeignKey("Conversation")]
         public int? ConversationId { get; set; }

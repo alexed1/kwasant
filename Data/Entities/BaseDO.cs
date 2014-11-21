@@ -12,7 +12,8 @@ namespace Data.Entities
 
         public virtual void BeforeCreate()
         {
-            CreateDate = DateTimeOffset.Now;
+            if (CreateDate == default(DateTimeOffset))
+                CreateDate = DateTimeOffset.Now;
         }
 
         public virtual void AfterCreate()

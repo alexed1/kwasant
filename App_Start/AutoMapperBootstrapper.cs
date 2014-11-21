@@ -16,7 +16,7 @@ namespace KwasantWeb.App_Start
             Mapper.CreateMap<EventDO, EventVM>()
                 .ForMember(ev => ev.Attendees, opts => opts.ResolveUsing(ev => String.Join(",", ev.Attendees.Select(eea => eea.EmailAddress.Address).Distinct())))
                 .ForMember(ev => ev.CreatedByAddress, opts => opts.ResolveUsing(evdo => evdo.CreatedBy.EmailAddress.Address))
-                .ForMember(ev => ev.BookingRequestTimezoneOffsetInMinutes, opts => opts.ResolveUsing(evdo => evdo.DateCreated.Offset.TotalMinutes * - 1));
+                .ForMember(ev => ev.BookingRequestTimezoneOffsetInMinutes, opts => opts.ResolveUsing(evdo => evdo.CreateDate.Offset.TotalMinutes * - 1));
 
             Mapper.CreateMap<EventVM, EventDO>()
                 .ForMember(eventDO => eventDO.Attendees, opts => opts.Ignore())
@@ -36,7 +36,7 @@ namespace KwasantWeb.App_Start
                 .ForMember(eventDO => eventDO.CreateTypeTemplate, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.CreatedBy, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.CreatedByID, opts => opts.Ignore())
-                .ForMember(eventDO => eventDO.DateCreated, opts => opts.Ignore())
+                .ForMember(eventDO => eventDO.CreateDate, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.Emails, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.EventStatus, opts => opts.Ignore())
                 .ForMember(eventDO => eventDO.EventStatusTemplate, opts => opts.Ignore())
