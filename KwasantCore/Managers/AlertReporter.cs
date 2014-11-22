@@ -37,7 +37,7 @@ namespace KwasantCore.Managers
             AlertManager.AlertExplicitCustomerCreated += ReportCustomerCreated;
 
             AlertManager.AlertUserRegistration += ReportUserRegistered;
-            AlertManager.AlertBookingRequestCheckedOut += ReportBookingRequestCheckedOut;
+
             AlertManager.AlertBookingRequestOwnershipChange += ReportBookingRequestOwnershipChanged;
             AlertManager.AlertBookingRequestReserved += ReportBookingRequestReserved;
             AlertManager.AlertBookingRequestReservationTimeout += ReportBookingRequestReservationTimeOut;
@@ -60,7 +60,7 @@ namespace KwasantCore.Managers
             AlertManager.AlertExplicitCustomerCreated -= ReportCustomerCreated;
 
             AlertManager.AlertUserRegistration -= ReportUserRegistered;
-            AlertManager.AlertBookingRequestCheckedOut -= ReportBookingRequestCheckedOut;
+
             AlertManager.AlertBookingRequestOwnershipChange -= ReportBookingRequestOwnershipChanged;
             AlertManager.AlertBookingRequestReserved -= ReportBookingRequestReserved;
             AlertManager.AlertBookingRequestReservationTimeout -= ReportBookingRequestReservationTimeOut;
@@ -356,6 +356,10 @@ namespace KwasantCore.Managers
                     };
                 curAction.Data = "BookingRequest ID= " + bookingRequestDO.Id;
                 AddFact(uow, curAction);
+
+                if (status == "Resolved")
+                    AlertManager.BookingRequestMarkedProcessed(bookingRequestDO.Id, bookingRequestDO.BookerID);
+
                 uow.SaveChanges();
 
             }
@@ -373,7 +377,7 @@ namespace KwasantCore.Managers
             Debug.Assert(uow != null);
             Debug.Assert(curAction != null);
             var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
-            
+
             curAction.Data += string.Format(" ObjectId: {0} EmailAddress: {1} ", curAction.ObjectId, uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
 
             if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
@@ -401,31 +405,6 @@ namespace KwasantCore.Managers
                 uow.SaveChanges();
             }
 
-        }
-
-        public void ReportBookingRequestCheckedOut(int bookingRequestId, string bookerId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
-                FactDO curAction = new FactDO()
-                    {
-                        PrimaryCategory = "BookingRequest",
-                        SecondaryCategory = "Ownership",
-                        Activity = "Checkout",
-                        CustomerId = bookingRequestDO.Customer.Id,
-                        ObjectId = bookingRequestDO.Id.ToString(),
-                        BookerId = bookerId,
-                        Status = status,
-                    };
-
-                curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address);
-                AddFact(uow, curAction);
-                uow.SaveChanges();
-            }
         }
 
         //Do we need/use both this and the immediately preceding event? 

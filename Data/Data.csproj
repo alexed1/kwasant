@@ -444,6 +444,10 @@
     <Compile Include="Migrations\201411200956181_UpdateReplyTo.Designer.cs">
       <DependentUpon>201411200956181_UpdateReplyTo.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411210750329_Add_Data_To_IncidentDO.cs" />
+    <Compile Include="Migrations\201411210750329_Add_Data_To_IncidentDO.Designer.cs">
+      <DependentUpon>201411210750329_Add_Data_To_IncidentDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
@@ -1363,6 +1367,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411200956181_UpdateReplyTo.resx">
       <DependentUpon>201411200956181_UpdateReplyTo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411210750329_Add_Data_To_IncidentDO.resx">
+      <DependentUpon>201411210750329_Add_Data_To_IncidentDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

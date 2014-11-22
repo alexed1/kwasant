@@ -540,5 +540,22 @@ namespace KwasantCore.Services
                 return requestList.OrderByDescending(e => e.DateReceived).ToList();
             }
         }
+
+        public int GetTimeInQueue(IUnitOfWork uow, string objectId)
+        {
+            DateTimeOffset currTime = DateTimeOffset.Now;
+
+            var factDO = uow.FactRepository.GetAll()
+                .Where(x => x.ObjectId == objectId &&
+                    (x.Activity == "StateChange") &&
+                    (x.Status == "Unstarted" ||
+                    x.Status == "NeedsBooking")).OrderByDescending(c => c.CreateDate).FirstOrDefault();
+
+            DateTimeOffset lastStateChangeTime = factDO.LastUpdated;
+
+            TimeSpan getTimeinQueue = currTime.Subtract(lastStateChangeTime);
+            int getMinutinQueue = (int)getTimeinQueue.TotalMinutes;
+            return getMinutinQueue;
+        }
     }
 }

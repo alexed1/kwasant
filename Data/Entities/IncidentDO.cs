@@ -18,7 +18,7 @@ namespace Data.Entities
         public string Notes { get; set; }
         public int ObjectId { get; set; }
         public string CustomerId { get; set; }
-        public string BookerId { get; set; } 
-
+        public string BookerId { get; set; }
+        public string Data { get; set; }
     }
 }

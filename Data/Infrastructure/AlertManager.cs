@@ -78,6 +78,9 @@ namespace Data.Infrastructure
         public delegate void BookingRequestCheckedOutHandler(int bookingRequestId, string bookerId);
         public static event BookingRequestCheckedOutHandler AlertBookingRequestCheckedOut;
 
+        public delegate void BookingRequestMarkedProcessedHandler(int bookingRequestId, string bookerId);
+        public static event BookingRequestMarkedProcessedHandler AlertBookingRequestMarkedProcessed;
+
         public delegate void BookingRequestOwnershipChangeHandler(int bookingRequestId, string bookerId);
         public static event BookingRequestOwnershipChangeHandler AlertBookingRequestOwnershipChange;
 
@@ -219,6 +222,12 @@ namespace Data.Infrastructure
         {
             if (AlertBookingRequestStateChange != null)
                 AlertBookingRequestCheckedOut(bookingRequestId, bookerId);
+        }
+
+        public static void BookingRequestMarkedProcessed(int bookingRequestId, string bookerId)
+        {
+            if (AlertBookingRequestStateChange != null)
+                AlertBookingRequestMarkedProcessed(bookingRequestId, bookerId);
         }
 
         public static void BookingRequestBookerChange(int bookingRequestId, string bookerId)

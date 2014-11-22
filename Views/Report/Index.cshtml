@@ -51,13 +51,24 @@
     </thead>
 </table>
 
+<table id="tblshowBookerThroughput" class="data-table">
+    <thead>
+        <tr>
+            <th style="width: 10%">Booking Activity Reports</th>
+        </tr>
+    </thead>
+</table>
+
+
+
 <script type="text/javascript">
     //Document ready function, will run after page is ready and all elements are loaded.
     $(document).ready(function () {
         $('#tblAllLogs').hide();
         $('#tblreport').hide();
         $('#tblincidentreport').hide();
-
+        $('#tblshowBookerThroughput').hide();
+       
         updateTables();
     });
 
@@ -108,56 +119,89 @@
                     { data: 'message' },
                 ];
                 break;
+            case "showbookerthroughput":
+                columns = [
+                    { data: 'brname_and_count' }
+                ];
+                break;
+           
         }
 
-        loadReport();
+        //loadReport();
+        showRequests();
 
         //Inserts retrieved json records into DataTable Widget
-        function showRequests(response) {
+        function showRequests() {
             var tableToWrite;// = $('#tblreport');
             var tableToHide;
             if ("@ViewBag.type" == "alllogs") {
                 tableToWrite = $('#tblAllLogs');
                 tableToHide = $('#tblreport');
                 tableToHide = $('#tblincidentreport');
+                tableToHide = $('#tblshowBookerThroughput');
             }
-            else if ("@ViewBag.type" == "incident")
-            {
+            else if ("@ViewBag.type" == "incident") {
                 tableToWrite = $('#tblincidentreport');
                 tableToHide = $('#tblreport');
                 tableToHide = $('#tblAllLogs');
+                tableToHide = $('#tblshowBookerThroughput');
+            }
+            else if ("@ViewBag.type" == "showbookerthroughput") {
+                tableToWrite = $('#tblshowBookerThroughput');
+                tableToHide = $('#tblreport');
+                tableToHide = $('#tblAllLogs');
+                tableToHide = $('#tblincidentreport');
+            }
+            else if ("@ViewBag.type" == "showbrresponsiveness") {
+                tableToHide = $('#tblshowBookerThroughput');
+                tableToHide = $('#tblreport');
+                tableToHide = $('#tblAllLogs');
+                tableToHide = $('#tblincidentreport');
             }
             else {
                 tableToWrite = $('#tblreport');
                 tableToHide = $('#tblAllLogs');
                 tableToHide = $('#tblincidentreport');
+                tableToHide = $('#tblshowBookerThroughput');
             }
 
             table = tableToWrite.DataTable({
-                data: JSON.parse(response),
+                destroy: true,
+                searching: false,
+                ordering: false,
+                bLengthChange: false,
+                processing: true,
+                serverSide: true, //Enabling server side processing
+                //data: JSON.parse(response),
                 order: [0, 'desc'],
                 columns: columns,
+                ajax:
+                     {
+                         url: "@Url.Action("ShowReport", "Report")" + "?queryPeriod=" + queryPeriod + "&type="+"@ViewBag.type",
+                dataSrc: function (json) {
+                    var orgdata = JSON.parse(json.data);
+                    return orgdata;
+                },
+                type: "POST"
+            }
             });
-            tableToHide.hide();
-            tableToWrite.show();
-        }
 
-        function loadReport() {
-            //Ajax call to get report records from server.
-            $.post("/Report/ShowReport", { queryPeriod: queryPeriod, type: "@ViewBag.type" }, showRequests, 'json');
-        }
+        tableToHide.hide();
+        tableToWrite.show();
+    }
 
-        //Initializing click for all filter buttons.
-        $('.top-toolbar-section a').click(function () {
-            $('.top-toolbar-section a').each(function () {
-                $(this).removeClass('current');
-            });
-            $(this).addClass('current');
-            queryPeriod = $(this).attr("id");
-            table.destroy();
-            loadReport();
-            return false;
+    //Initializing click for all filter buttons.
+    $('.top-toolbar-section a').click(function () {
+        $('.top-toolbar-section a').each(function () {
+            $(this).removeClass('current');
         });
+        $(this).addClass('current');
+        queryPeriod = $(this).attr("id");
+        table.destroy();
+        //loadReport();
+        showRequests();
+        return false;
+    });
     }
 
 
