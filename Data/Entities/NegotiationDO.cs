@@ -25,7 +25,6 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
-        public DateTimeOffset DateCreated { get; set; }
 
         [ForeignKey("NegotiationStateTemplate")]
         public int? NegotiationState { get; set; }

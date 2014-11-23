@@ -114,7 +114,6 @@ namespace KwasantTest.Managers
                 
                 // SETUP
                 var curEvent = fixture.TestEvent2();
-                curEvent.DateCreated = DateTimeOffset.UtcNow;
                 curEvent.SyncStatus = EventSyncState.SyncWithExternal;
                 var curCalendarLink = fixture.TestRemoteCalendarLink(curProvider, curUser);
                 curCalendarLink.LocalCalendar.Events.Add(curEvent);
@@ -151,7 +150,7 @@ namespace KwasantTest.Managers
                 
                 // SETUP
                 var curEvent = fixture.TestEvent2();
-                curEvent.DateCreated = DateTimeOffset.UtcNow - TimeSpan.FromDays(1);
+                curEvent.CreateDate = DateTimeOffset.UtcNow - TimeSpan.FromDays(1);
                 curEvent.SyncStatus = EventSyncState.SyncWithExternal;
                 uow.EventRepository.Add(curEvent);
                 var curCalendarLink = fixture.TestRemoteCalendarLink(curProvider, curUser);
@@ -190,7 +189,6 @@ namespace KwasantTest.Managers
                 
                 // SETUP
                 var curLocalEvent = fixture.TestEvent2();
-                curLocalEvent.DateCreated = DateTimeOffset.UtcNow;
                 curLocalEvent.SyncStatus = EventSyncState.SyncWithExternal;
                 uow.EventRepository.Add(curLocalEvent);
                 var curCalendarLink = fixture.TestRemoteCalendarLink(curProvider, curUser);
@@ -199,7 +197,7 @@ namespace KwasantTest.Managers
                 uow.SaveChanges();
 
                 var curRemoteEvent = fixture.TestEvent2();
-                curRemoteEvent.DateCreated = curLocalEvent.DateCreated;
+                curRemoteEvent.CreateDate = curLocalEvent.CreateDate;
                 curRemoteEvent.StartDate = curLocalEvent.StartDate;
                 curRemoteEvent.EndDate = curLocalEvent.EndDate;
                 curRemoteEvent.Location = "changed location";

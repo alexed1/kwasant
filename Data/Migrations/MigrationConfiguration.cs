@@ -305,7 +305,6 @@ namespace Data.Migrations
 
             var curBookingRequestDO = new BookingRequestDO
             {
-                DateCreated = DateTimeOffset.UtcNow,
                 From = fromUser,
                 FromID = fromUser.Id,
                 Subject = subject,
@@ -384,7 +383,6 @@ namespace Data.Migrations
                 createdEvent.IsAllDay = false;
                 createdEvent.CreatedBy = curUser;
                 createdEvent.CreatedByID = curUser.Id;
-                createdEvent.DateCreated = DateTimeOffset.UtcNow;
                 createdEvent.EventStatus = EventState.Booking;
                 uow.EventRepository.Add(createdEvent);
             }
