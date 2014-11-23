@@ -94,14 +94,22 @@ namespace KwasantWeb.Controllers
                 
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
                 {
-                    Conversations = conversationEmails.OrderBy(c => c.DateReceived).Select(e => new ConversationVM
+                    Conversations = conversationEmails.OrderBy(c => c.DateReceived).Select(e =>
                     {
-                        FromEmailAddress = String.Format("From: {0}", e.From.Address),
-                        DateRecieved = String.Format("{0}", e.DateReceived.TimeAgo()),
-                        Body = e.HTMLText
+                        var bodyText = e.HTMLText;
+                        if (String.IsNullOrEmpty(bodyText))
+                            bodyText = e.PlainText;
+                        if (String.IsNullOrEmpty(bodyText))
+                            bodyText = "[No Body]";
+                        return new ConversationVM
+                        {
+                            FromEmailAddress = String.Format("From: {0}", e.From.Address),
+                            DateRecieved = String.Format("{0}", e.DateReceived.TimeAgo()),
+                            Body = bodyText
+                        };
                     }).ToList(),
                     FromName = curEmail.From.ToDisplayName(),
-                    Subject = curEmail.Subject,
+                    Subject = String.IsNullOrEmpty(curEmail.Subject) ? "[No Subject]" : curEmail.Subject,
                     BookingRequestId = emailId,
                     EmailTo = String.Join(", ", curEmail.To.Select(a => a.Address)),
                     EmailCC = String.Join(", ", curEmail.CC.Select(a => a.Address)),

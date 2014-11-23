@@ -212,14 +212,28 @@ namespace KwasantWeb.Controllers
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                        {
-                    string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaTryItOut", "");
-                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = userId }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-        }
+                {
+                    string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaTryItOut", "I'm trying out Kwasant");
+                    return new JsonResult()
+                    {
+                        Data =
+                            new
+                            {
+                                Message =
+                                    "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be",
+                                UserID = userId
+                            },
+                        JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                    };
+                }
             }
             catch (Exception e)
             {
-                return new JsonResult() { Data = new { Message = "Sorry! Something went wrong. Alpha software..." }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+                return new JsonResult()
+                {
+                    Data = new {Message = "Sorry! Something went wrong. Alpha software..."},
+                    JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                };
             }
         }
 

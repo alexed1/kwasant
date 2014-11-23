@@ -1,14 +1,23 @@
 
 var CONTROLLER_NAME = 'Calendar';
 
+var squelchErrors = [];
+
 $(document).ajaxError(function (event, request, settings) {
+    if (squelchErrors.indexOf(request) != -1)
+        return;
+    
     var text = "Error requesting page: " + settings.url;
     if (settings.data != undefined && settings.data != '')
         text += "?" + settings.data;
     text += ". Status: " + request.status + " " + request.statusText;
+
+    $('#ajaxErrors').show();
     $("#ajaxErrors").append("<li>" + text + "</li>");
-    //alert(text);
 });
+$(function() {
+    $('#ajaxErrors').hide();
+})
 
 function getConfiguration() {
 

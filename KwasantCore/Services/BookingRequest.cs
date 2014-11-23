@@ -112,10 +112,10 @@ namespace KwasantCore.Services
                             return new
                             {
                                 id = e.Id,
-                                subject = e.Subject,
+                                subject = String.IsNullOrEmpty(e.Subject) ? "[No Subject]" : e.Subject,
                                 fromAddress = e.From.Address,
                                 dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
-                                body = text
+                                body = String.IsNullOrEmpty(text) ? "[No Body]" : text
                             };
                         })
                     .ToList();
