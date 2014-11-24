@@ -107,7 +107,7 @@ namespace KwasantCore.Services
                                 text = String.Empty;
                             text = text.Trim();
                             if (text.Length > 400)
-                                text = text.Substring(400);
+                                text = text.Substring(0,400);
 
                             return new
                             {
