@@ -74,6 +74,7 @@ namespace KwasantWeb.Controllers
             return RedirectToAction("MyAccount", new {remoteCalendarAccessForbidden = providerName});
         }
 
+        [HttpPost]
         public async Task<ActionResult> SyncCalendarsNow()
         {
             try

@@ -123,14 +123,15 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        [HttpPost]
         public JsonResult GetConversationMembers(int emailID)
         {
             var view = GetInfo(emailID);
             var model = view.Model as BookingRequestAdminVM;
             if (model == null)
-                return new JsonResult { Data = null, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+                return Json(null);
 
-            return new JsonResult { Data = model.Conversations, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return Json(model.Conversations);
         }
 
         private void SetCachedCallback(HttpSessionStateBase session, string token, Func<IUnitOfWork, EmailDO, ActionResult> callback)
@@ -151,6 +152,7 @@ namespace KwasantWeb.Controllers
             return View("~/Views/Email/Send.cshtml", emailVM);
         }
 
+        [HttpPost]
         public ActionResult HandleSend(SendEmailVM vm)
         {
             var cachedCallback = GetCachedCallback(vm.CallbackToken);
@@ -180,13 +182,13 @@ namespace KwasantWeb.Controllers
                 }
             }
 
-            return new JsonResult {Data = false};
+            return Json(false);
         }
         
         [HttpPost]
         public ActionResult Send(IUnitOfWork uow, EmailDO emailDO)
         {
-            return new JsonResult { Data = true };
+            return Json(true);
         }
     }
 }
