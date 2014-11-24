@@ -26,7 +26,17 @@
 <div class="light-bg">
     <h3 class="with-border">Thank You</h3>
     <div>@ViewBag.Message</div>
+    <div class="space form-actions negotiation-form-actions" style="display: inline-block; width: 100%;">
+        <input id="btnOk" type="button" value="OK" class="btn small-dialog-button shadow-button pull-left" onclick="Kwasant.IFrame.CloseMe(false);" />
+    </div>
 </div>
 <script>
     setTimeout(function () { Kwasant.IFrame.CloseMe(); }, 5000);
+    //Binding keyup event on parent document and current document to close model popup using "esc"
+    $(parent.document).keyup(function (e) {
+        if (e.keyCode == 27) { Kwasant.IFrame.CloseMe(); }
+    });
+    $(document).keyup(function (e) {
+        if (e.keyCode == 27) { Kwasant.IFrame.CloseMe(); }
+    });
 </script>
