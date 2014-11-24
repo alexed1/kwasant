@@ -1,6 +1,14 @@
 
 var CONTROLLER_NAME = 'Calendar';
 
+$(document).ajaxError(function (event, request, settings) {
+    var text = "Error requesting page: " + settings.url;
+    if (settings.data != undefined && settings.data != '')
+        text += "?" + settings.data;
+    text += ". Status: " + request.status + " " + request.statusText;
+    $("#ajaxErrors").append("<li>" + text + "</li>");
+    //alert(text);
+});
 
 function getConfiguration() {
 

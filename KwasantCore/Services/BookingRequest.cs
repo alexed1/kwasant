@@ -533,7 +533,7 @@ namespace KwasantCore.Services
                 if (queryPeriod != "all")
                 {
                     DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
-                    requestList = requestList.Where(e => e.DateCreated > dateRange.StartTime && e.DateCreated < dateRange.EndTime);
+                    requestList = requestList.Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime);
                 }
                 if (!includeInvalid)
                     requestList = requestList.Where(e => e.State != BookingRequestState.Invalid);

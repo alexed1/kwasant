@@ -18,7 +18,6 @@ namespace Data.Interfaces
         IEnumerable<EmailAddressDO> To { get; }
        
         List<EventDO> Events { get; set; }
-        DateTimeOffset DateCreated { get; set; }
         int? EmailStatus { get; set; }
     }
 }

@@ -117,7 +117,7 @@ namespace Daemons
                             .Where(
                                 br =>
                                 (br.State == BookingRequestState.Unstarted || br.State == BookingRequestState.Booking) &&
-                                br.DateCreated <= thirtyMinutesAgo)
+                                br.CreateDate <= thirtyMinutesAgo)
                             .ToArray();
 
                     if (oldBookingRequests.Any())

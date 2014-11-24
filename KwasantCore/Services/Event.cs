@@ -50,7 +50,6 @@ namespace KwasantCore.Services
             curEventDO.BookingRequest = bookingRequestDO;            
             curEventDO.CreatedBy = bookingRequestDO.Customer;
             curEventDO.CreatedByID = bookingRequestDO.Customer.Id;
-            curEventDO.DateCreated = DateTimeOffset.UtcNow.ToOffset(bookingRequestDO.DateCreated.Offset);
             
             bookingRequestDO.Events.Add(curEventDO);
 
@@ -251,7 +250,7 @@ namespace KwasantCore.Services
                 Sequence = icsEvent.Sequence,
                 Summary = icsEvent.Summary,
                 Transparency = icsEvent.Transparency.ToString(),
-                DateCreated = icsEvent.Created != null ? icsEvent.Created.UTC : DateTimeOffset.UtcNow,
+                CreateDate = icsEvent.Created != null ? icsEvent.Created.UTC : default(DateTimeOffset),
                 Attendees = icsEvent.Attendees
                     .Where(a => a.Value != null)
                     .Select(a => new AttendeeDO()
