@@ -121,7 +121,7 @@ namespace KwasantWeb.AlertQueues
         IEnumerable<T> GetUpdates(String guid, Func<T, bool> predicate);
     }
     public class SharedAlertQueue<T> : ISharedAlertQueue<T>, IStaticQueue
-        where T : class, IUserUpdateData
+        where T : class//, IUserUpdateData
     {
         private readonly TimeSpan _expireInterestedPartiesAfter = TimeSpan.FromMinutes(15);
         private readonly ConcurrentDictionary<Object, DateTime> _objectExpirations = new ConcurrentDictionary<object, DateTime>();
@@ -283,5 +283,10 @@ namespace KwasantWeb.AlertQueues
     public interface IUserUpdateData
     {
         String UserID { get; set; }
+    }
+
+    public interface IRoleUpdateData
+    {
+        String[] RoleNames { get; }
     }
 }
