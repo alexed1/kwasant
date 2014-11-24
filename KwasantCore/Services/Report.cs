@@ -68,6 +68,8 @@ namespace KwasantCore.Services
                             Activity = f.Activity,
                             Data = f.Notes,
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
+                            ObjectId = f.ObjectId
+                            
                         }).ToList();
         }
 

@@ -108,6 +108,8 @@ namespace KwasantCore.StructureMap
 
                 For<ISecurityServices>().Use(new MockedSecurityServices());
 
+                For<IOAuthAuthorizer>().Use<GoogleCalendarAuthorizer>().Named("Google");
+
                 For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);

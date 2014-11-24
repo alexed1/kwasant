@@ -100,7 +100,7 @@ namespace KwasantWeb.Controllers
                         //Pack the list of NegotiationAnswerVMs into a NegotiationQuestionVM
                         return (NegotiationQuestionVM)new NegotiationResponseQuestionVM
                         {
-                            Type = q.AnswerType,
+                            AnswerType = q.AnswerType,
                             Id = q.Id,
                             Text = q.Text,
                             CalendarID = q.CalendarID,

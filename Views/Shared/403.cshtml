@@ -15,7 +15,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
-
+    @Scripts.Render("~/bundles/js/jquery")
     @Html.Raw(Styles.Render("~/bundles/css/bootstrap23").ToHtmlString())
     @Html.Raw(Styles.Render("~/bundles/css/bootstrap-responsive").ToHtmlString())
     @Html.Raw(Styles.Render("~/bundles/css/colorbox").ToHtmlString())
@@ -43,12 +43,12 @@
                     <br />
                     <div class="nav-collapse">
                         <ul class="nav pull-right">
-                            <li data-section="2"><a href="/#how_to_works" title="How it Works">How it Works</a></li>
+                            @*<li data-section="2"><a href="/#how_to_works" title="How it Works">How it Works</a></li>
                             <li data-section="3"><a href="/#faq" title="FAQ">FAQ</a></li>
                             <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
                             <li><a href="/Account/Index" title="SignUp/Login">SignUp/Login</a></li>
                             <!-- 	<li data-section="3"><a href="#">About Us</a></li> -->
-                            <li data-section="4"><a href="/#contacts" title="Contact">Contact</a></li>
+                            <li data-section="4"><a href="/#contacts" title="Contact">Contact</a></li>*@
                         </ul>
                     </div>
                 </div>
@@ -57,13 +57,28 @@
 
         <div id="welcome" class="parallax top-banner home-welcome" style="cursor:default;" data-section="1" style="background-position: 50% 0px;">
             <div class="landing-welcome-area" style="margin-top: 0px; opacity: 1; display: block; top:250px; bottom:50px; overflow:auto;">
-                <div class="landing-welcome-inner">
+                @*<div class="landing-welcome-inner">
                     <div id="logotext" class="text" style="margin:auto; float:none; cursor:default; width:100%;">
                         <h1>Access denied.</h1>
                         <p>@Model.Exception.Message</p>
                     </div>
-                </div>
+                </div>*@
             </div>
         </div>
+        <script src="/Content/js/Kwasant/Popup.js"></script>
+        <script>
+            var message = "@Html.Raw(HttpUtility.JavaScriptStringEncode(Model.Exception.Message))";
+            $(function () {
+                Kwasant.IFrame.Display('/Account/AccessDenied?errorMessage=' + message,
+	            {
+	                modal: true,
+	                callback: function (result) {
+	                    if (result)
+	                        close();
+	                },
+	                height: 140
+	            });
+        }());
+    </script>
     </body>
 </html>

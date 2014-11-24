@@ -287,13 +287,13 @@ namespace KwasantCore.Managers
                 }
             }
 
-            var createdByKwasant = existingEvents.Where(e => e.DateCreated >= calendarLink.DateSynchronized).ToList();
+            var createdByKwasant = existingEvents.Where(e => e.CreateDate >= calendarLink.DateSynchronized).ToList();
             foreach (var created in createdByKwasant)
             {
                 await PushEventAsync(client, calendarLink, created);
             }
 
-            var deletedByRemote = existingEvents.Where(e => e.DateCreated < calendarLink.DateSynchronized).ToList();
+            var deletedByRemote = existingEvents.Where(e => e.CreateDate < calendarLink.DateSynchronized).ToList();
             foreach (var deleted in deletedByRemote)
             {
                 deleted.EventStatus = EventState.Deleted;

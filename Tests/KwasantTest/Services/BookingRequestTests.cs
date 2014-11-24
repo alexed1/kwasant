@@ -49,6 +49,18 @@ namespace KwasantTest.Services
                             return new MockedConfigRepository().Get<string>(key);
                     }
                 });
+            configRepositoryMock
+                .Setup(c => c.Get<int>(It.IsAny<string>(), It.IsAny<int>()))
+                .Returns<string, int>((key, def) =>
+                {
+                    switch (key)
+                    {
+                        case "MonitorStaleBRPeriod":
+                            return 1;
+                    }
+                    return def;
+                });
+
             var configRepository = configRepositoryMock.Object;
             ObjectFactory.Configure(cfg => cfg.For<IConfigRepository>().Use(configRepository));
 
@@ -108,6 +120,8 @@ namespace KwasantTest.Services
 
                 FactDO curAction = uow.FactRepository.FindOne(k => k.ObjectId == bookingRequest.Id.ToString());
                 Assert.NotNull(curAction);
+
+                curAnalyticsManager.UnsubscribeFromAlerts();
             }
         }
 
