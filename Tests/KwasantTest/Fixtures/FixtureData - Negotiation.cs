@@ -40,6 +40,47 @@ using Data.Interfaces;namespace KwasantTest.Fixtures
 
         }
 
+        public NegotiationDO TestNegotiation3()
+        {
+            var curBookingRequestDO = TestBookingRequest1();
+            var curNegotiationDO = new NegotiationDO
+            {
+                Id = 1,
+                BookingRequest = curBookingRequestDO,
+                BookingRequestID = curBookingRequestDO.Id,
+                NegotiationState = NegotiationState.InProcess,
+                Name = "Negotiation 1"
+            };
+            var question1 = TestQuestion1();
+            var question2 = TestQuestion2();
+            question1.Negotiation = curNegotiationDO;
+            question2.Negotiation = curNegotiationDO;
+            curNegotiationDO.Questions.Add(question1);
+            curNegotiationDO.Questions.Add(question2);
+
+            return curNegotiationDO;
+        }
+
+        public NegotiationDO TestNegotiation4()
+        {
+            var curBookingRequestDO = TestBookingRequest1();
+            var curNegotiationDO = new NegotiationDO
+            {
+                Id = 1,
+                BookingRequest = curBookingRequestDO,
+                BookingRequestID = curBookingRequestDO.Id,
+                NegotiationState = NegotiationState.InProcess,
+                Name = "Negotiation 1"
+            };
+            var question1 = TestQuestion1();
+            var question2 = TestQuestion3();
+            question1.Negotiation = curNegotiationDO;
+            question2.Negotiation = curNegotiationDO;
+            curNegotiationDO.Questions.Add(question1);
+            curNegotiationDO.Questions.Add(question2);
+
+            return curNegotiationDO;
+        }
         
 
        

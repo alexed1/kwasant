@@ -26,19 +26,74 @@ namespace KwasantTest.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var fixture = new FixtureData(uow);
-                var objNegotiation = new Negotiation();
+                var _negotiation = new Negotiation();
                 var curNegotiationDO = fixture.TestNegotiation1();
-                var subNegotiationDO = fixture.TestNegotiation2();
+                var submittedNegData = fixture.TestNegotiation2();
                 uow.NegotiationsRepository.Add(curNegotiationDO);
                 uow.SaveChanges();
-                objNegotiation.Update(uow, subNegotiationDO);
+                _negotiation.Update(uow, submittedNegData);
                 uow.SaveChanges();
-                var updatedNegotiationDO =uow.NegotiationsRepository.GetByKey(subNegotiationDO.Id);
-                Assert.AreEqual(subNegotiationDO.Name, updatedNegotiationDO.Name);
-                Assert.AreEqual(subNegotiationDO.BookingRequestID, updatedNegotiationDO.BookingRequestID);
+                var retrievedNegotiationDO = uow.NegotiationsRepository.GetByKey(submittedNegData.Id);
+                Assert.AreEqual(submittedNegData.Name, retrievedNegotiationDO.Name);
+                Assert.AreEqual(submittedNegData.BookingRequestID, retrievedNegotiationDO.BookingRequestID);
 
             }
         }
+
+        [Test]
+        public void Negotiation_Update_ErrorNullInputHandledProperly()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var _negotiation = new Negotiation();
+                var curNegotiationDO = fixture.TestNegotiation1();
+                uow.NegotiationsRepository.Add(curNegotiationDO);
+                uow.SaveChanges();
+                Assert.Throws<NullReferenceException>(() =>
+                {
+                    _negotiation.Update(uow, null);
+                });
+
+            }
+
+        }
+
+        [Test]
+        public void Negotiation_Update_CanAddQuestion()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var _negotiation = new Negotiation();
+                var curNegotiationDO = fixture.TestNegotiation1();
+                uow.NegotiationsRepository.Add(curNegotiationDO);
+                uow.SaveChanges();
+                var submittedNegData = fixture.TestNegotiation3();
+                var retrievedNegotiationDO = _negotiation.Update(uow, submittedNegData);
+                uow.SaveChanges();
+                Assert.AreEqual(submittedNegData.Questions.Count, retrievedNegotiationDO.Questions.Count);
+            }
+        }
+
+        [Test]
+        public void Negotiation_Update_CanRemoveQuestion()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var _negotiation = new Negotiation();
+                var curNegotiationDO = fixture.TestNegotiation4();
+                uow.NegotiationsRepository.Add(curNegotiationDO);
+                uow.SaveChanges();
+                var submittedNegData = fixture.TestNegotiation1();
+                _negotiation.Update(uow, submittedNegData);
+                uow.SaveChanges();
+                Assert.AreEqual(submittedNegData.Questions.Count, uow.QuestionRepository.GetQuery().Count());                
+               
+            }
+        }
+
 
        
     }
