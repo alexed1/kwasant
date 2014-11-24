@@ -8,7 +8,15 @@ namespace KwasantCore.Services
     {
         public AnswerDO Update(IUnitOfWork uow, AnswerDO submittedAnswerDO)
         {
-            AnswerDO answerDO = uow.AnswerRepository.GetOrCreateByKey(submittedAnswerDO.Id);
+            AnswerDO answerDO;
+            if (submittedAnswerDO.Id == 0)
+            {
+                answerDO = new AnswerDO();
+                uow.AnswerRepository.Add(answerDO);
+            }
+            else
+                answerDO = uow.AnswerRepository.GetByKey(submittedAnswerDO.Id);
+
             answerDO.EventID = submittedAnswerDO.EventID;
             answerDO.AnswerStatus = submittedAnswerDO.AnswerStatus;
             answerDO.Text = submittedAnswerDO.Text;

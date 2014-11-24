@@ -63,7 +63,8 @@ namespace KwasantCore.Services
             curInvitation.From = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, curEvent.CreatedBy);
 
             var replyToAddress = emailAddressRepository.GetOrCreateEmailAddress(replyToEmail);
-            curInvitation.ReplyTo = replyToAddress;
+            curInvitation.ReplyToAddress = replyToAddress.Address;
+            curInvitation.ReplyToName = replyToAddress.Name;
 
             var userID = uow.UserRepository.GetOrCreateUser(curAttendee.EmailAddress).Id;
 
@@ -101,8 +102,12 @@ namespace KwasantCore.Services
 
         private InvitationDO GenerateInitialInvite(IUnitOfWork uow, InvitationDO curInvitation, EventDO curEvent, string userID)
         {
-            string endtime = curEvent.EndDate.ToUniversalTime().ToString("hh:mmtt");
-            string subjectDate = curEvent.StartDate.ToUniversalTime().ToString("ddd MMM dd, yyyy hh:mmtt - ") + endtime + " +00:00";
+            //string endtime = curEvent.EndDate.ToUniversalTime().ToString("hh:mmtt");
+            //string subjectDate = curEvent.StartDate.ToUniversalTime().ToString("ddd MMM dd, yyyy hh:mmtt - ") + endtime + " +00:00";
+            string endtime = curEvent.EndDate.ToString("hh:mm tt");
+            var timezone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
+            string subjectDate = curEvent.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " +" + timezone.ToString();
+
 
             curInvitation.InvitationType = InvitationType.InitialInvite;
             curInvitation.Subject = String.Format(_configRepository.Get("emailSubject"), GetOriginatorName(curEvent), curEvent.Summary, subjectDate);
@@ -113,8 +118,9 @@ namespace KwasantCore.Services
 
         private InvitationDO GenerateChangeNotification(IUnitOfWork uow, InvitationDO curInvitation, EventDO curEvent, string userID)
         {
-            string endtime = curEvent.EndDate.ToUniversalTime().ToString("hh:mmtt");
-            string subjectDate = curEvent.StartDate.ToUniversalTime().ToString("ddd MMM dd, yyyy hh:mmtt - ") + endtime + " +00:00";
+            string endtime = curEvent.EndDate.ToString("hh:mm tt");
+            var timezone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
+            string subjectDate = curEvent.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " +" + timezone.ToString();
 
             curInvitation.InvitationType = InvitationType.ChangeNotification;
             curInvitation.Subject = String.Format(_configRepository.Get("emailSubjectUpdated"), GetOriginatorName(curEvent), curEvent.Summary, subjectDate);

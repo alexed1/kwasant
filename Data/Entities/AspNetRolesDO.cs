@@ -13,7 +13,8 @@ namespace Data.Entities
 
         void ICreateHook.BeforeCreate()
         {
-            CreateDate = DateTimeOffset.Now;
+            if (CreateDate == default(DateTimeOffset))
+                CreateDate = DateTimeOffset.Now;
         }
 
         void ICreateHook.AfterCreate()
