@@ -192,20 +192,21 @@ namespace KwasantWeb.Controllers
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                         {
                     string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaCreateManuallyBooker", subject);
-                    return new JsonResult() { Data = new { Message = "A new booking requested created!", Result = "Success"}, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+                    return Json(new { Message = "A new booking requested created!", Result = "Success"});
                 }
             }
             catch (ValidationException ex)
             {
-                return new JsonResult() { Data = new { Message = "You need to provide a valid Email Address.", Result = "Failure" }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+                return Json(new { Message = "You need to provide a valid Email Address.", Result = "Failure" });
             }
             catch (Exception ex)
             {
                 Logger.GetLogger().Error("Error processing a home page try it out form schedule me", ex);
-                return new JsonResult() { Data = new { Message = "Something went wrong. Sorry about that", Result = "Failure" }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+                return Json(new { Message = "Something went wrong. Sorry about that", Result = "Failure" });
             }
         }
 
+        [HttpPost]
         [AllowAnonymous]
         public ActionResult CreateViaHomePage(string emailAddress, string meetingInfo)
         {
@@ -214,26 +215,17 @@ namespace KwasantWeb.Controllers
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaTryItOut", "I'm trying out Kwasant");
-                    return new JsonResult()
-                    {
-                        Data =
-                            new
-                            {
-                                Message =
+                    return Json(new
+                        {
+                            Message =
                                     "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be",
-                                UserID = userId
-                            },
-                        JsonRequestBehavior = JsonRequestBehavior.AllowGet
-                    };
+                            UserID = userId
+                        });
                 }
             }
             catch (Exception e)
             {
-                return new JsonResult()
-                {
-                    Data = new {Message = "Sorry! Something went wrong. Alpha software..."},
-                    JsonRequestBehavior = JsonRequestBehavior.AllowGet
-                };
+                return Json(new {Message = "Sorry! Something went wrong. Alpha software..."});
             }
         }
 

@@ -9,6 +9,7 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize]
     public class AlertingController : Controller
     {
+        [HttpPost]
         public ActionResult RegisterInterestInPageUpdates(string eventName, int objectID)
         {
             if (String.IsNullOrEmpty(eventName))
@@ -24,9 +25,10 @@ namespace KwasantWeb.Controllers
                 Session[guid] = queue;
             } 
             
-            return new JsonResult { Data = guid };
+            return Json(guid);
         }
 
+        [HttpPost]
         public ActionResult RequestUpdate(string guid)
         {
             if (String.IsNullOrEmpty(guid))
@@ -37,9 +39,10 @@ namespace KwasantWeb.Controllers
             if (queue == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            return new JsonResult { Data = queue.GetUpdates() };
+            return Json(queue.GetUpdates());
         }
 
+        [HttpPost]
         public ActionResult RegisterInterestInUserUpdates(string eventName)
         {
             if (String.IsNullOrEmpty(eventName))
@@ -50,9 +53,10 @@ namespace KwasantWeb.Controllers
             queue.RegisterInterest(guid);
             Session[guid] = queue;
 
-            return new JsonResult { Data = guid };
+            return Json(guid);
         }
 
+        [HttpPost]
         public ActionResult RequestUpdateForUser(string guid)
         {
             if (String.IsNullOrEmpty(guid))
@@ -63,7 +67,7 @@ namespace KwasantWeb.Controllers
             if (queue == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            return new JsonResult { Data = queue.GetUpdates(guid, i => i.UserID == this.GetUserId()) };
+            return Json(queue.GetUpdates(guid, i => i.UserID == this.GetUserId()));
         }
     }
 }
