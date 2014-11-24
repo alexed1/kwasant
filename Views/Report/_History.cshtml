@@ -57,9 +57,14 @@ Layout = "~/Views/Shared/_Blank.cshtml";
 					destroy: true,
 					"scrollY": "250px",
 					"scrollCollapse": true,
+					order: [0],
 					data: JSON.parse(response),
 					columns: [
-						{ data: 'create_date'},
+						{
+						    data: function (data) {
+						        return convertToDateString(data.create_date);
+						    }
+						},
 						{ data: 'primary_category' },
 						{ data: 'activity' },
 						{ data: 'status' }
