@@ -55,7 +55,7 @@ namespace Data.Entities
             if (String.IsNullOrEmpty(References))
                 References = messageID;
             else
-                References = "\t" + messageID;
+                References = string.Concat(References, "\t", messageID);
         }
 
         [Key]
