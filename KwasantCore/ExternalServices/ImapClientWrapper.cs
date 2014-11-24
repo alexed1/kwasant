@@ -94,6 +94,11 @@ namespace KwasantCore.ExternalServices
             }
         }
 
+        public void DeleteMessages(IEnumerable<uint> uids)
+        {
+            _internalClient.DeleteMessages(uids);
+        }
+
         private void InternalClientOnIdleError(object sender, IdleErrorEventArgs idleMessageEventArgs)
         {
             if (IdleErrorInternal != null)
