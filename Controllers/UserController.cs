@@ -16,6 +16,7 @@ using System.Linq;
 using Utilities;
 using KwasantCore.Services;
 using AutoMapper;
+using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace KwasantWeb.Controllers
 {
@@ -25,12 +26,14 @@ namespace KwasantWeb.Controllers
         private readonly JsonPackager _jsonPackager;
         private readonly User _user;
         private readonly IMappingEngine _mappingEngine;
+        private readonly Email _email;
 
         public UserController()
         {
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
             _jsonPackager = new JsonPackager();
             _user = new User();
+            _email = new Email();
         }
 
         [KwasantAuthorize(Roles = "Admin")]
@@ -39,13 +42,13 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 List<UserDO> userList = uow.UserRepository.GetAll().ToList();
-                
+
                 var userVMList = userList.Select(u => CreateUserVM(u, uow)).ToList();
 
                 return View(userVMList);
             }
         }
-        
+
         public static string GetCallbackUrl(string providerName, string serverUrl = null)
         {
             if (String.IsNullOrEmpty(serverUrl))
@@ -66,7 +69,7 @@ namespace KwasantWeb.Controllers
             if (result.IsAuthorized)
             {
                 // don't wait for this, run it async and return response to the user.
-                return RedirectToAction("MyAccount", new {remoteCalendarAccessGranted = providerName});
+                return RedirectToAction("MyAccount", new { remoteCalendarAccessGranted = providerName });
             }
             return new RedirectResult(result.RedirectUri);
         }
@@ -75,7 +78,7 @@ namespace KwasantWeb.Controllers
         {
             var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
             await authorizer.RevokeAccessTokenAsync(this.GetUserId(), CancellationToken.None);
-            return RedirectToAction("MyAccount", new {remoteCalendarAccessForbidden = providerName});
+            return RedirectToAction("MyAccount", new { remoteCalendarAccessForbidden = providerName });
         }
 
         public async Task<ActionResult> SyncCalendarsNow()
@@ -83,11 +86,11 @@ namespace KwasantWeb.Controllers
             try
             {
                 await ObjectFactory.GetInstance<CalendarSyncManager>().SyncNowAsync(this.GetUserId());
-                return Json(new {success = true});
+                return Json(new { success = true });
             }
             catch (Exception ex)
             {
-                return Json(new {success = false, error = ex.Message});
+                return Json(new { success = false, error = ex.Message });
             }
         }
 
@@ -136,7 +139,7 @@ namespace KwasantWeb.Controllers
             if (string.IsNullOrEmpty(queryParams.EmailAddress) && string.IsNullOrEmpty(queryParams.FirstName) &&
                 string.IsNullOrEmpty(queryParams.LastName))
             {
-                var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Atleast one field is required"}));
+                var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "Atleast one field is required" }));
                 return jsonErrorResult;
             }
             if (queryParams.EmailAddress != null)
@@ -144,7 +147,7 @@ namespace KwasantWeb.Controllers
                 EmailAddressValidator emailAddressValidator = new EmailAddressValidator();
                 if (!(emailAddressValidator.Validate(new EmailAddressDO(queryParams.EmailAddress)).IsValid))
                 {
-                    var jsonErrorResult = Json(_jsonPackager.Pack(new {Error = "Please provide valid email address"}));
+                    var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "Please provide valid email address" }));
                     return jsonErrorResult;
                 }
             }
@@ -173,30 +176,44 @@ namespace KwasantWeb.Controllers
         {
             UserDO submittedUserData = _mappingEngine.Map<UserDO>(curCreateUserVM);
             string userPassword = curCreateUserVM.NewPassword;
-            bool sendMail = curCreateUserVM.SendMail;
+            bool sendConfirmation = curCreateUserVM.SendMail;
+            string displayMessage;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                bool isAlreadyExists;
-                UserDO existingUser = _user.CheckIfAlreadyExists(uow, submittedUserData.EmailAddress.Address, out isAlreadyExists);
-                if (isAlreadyExists)
+                UserDO existingUser = _user.GetExisting(uow, submittedUserData.EmailAddress.Address);
+
+                if (existingUser != null && String.IsNullOrEmpty(submittedUserData.Id))
                 {
                     var jsonSuccessResult = Json(_jsonPackager.Pack(new { Data = "User already exists.", UserId = existingUser.Id }));
                     return jsonSuccessResult;
                 }
-
-                _user.Create(uow, submittedUserData, userPassword, ConvertRoleStringToRoles(curCreateUserVM.Role));
-
-                if (sendMail && !String.IsNullOrEmpty(userPassword))
+                ConvertRoleStringToRoles(curCreateUserVM.Role).Each(e => submittedUserData.Roles.Add(e));
+                if (existingUser != null)
                 {
-                    new Email().SendLoginCredentials(uow, submittedUserData.EmailAddress.Address, userPassword);
+                    _user.Update(uow, submittedUserData, existingUser);
+                    displayMessage = "User updated successfully.";
+                }
+                else
+                {
+                    _user.Create(uow, submittedUserData);
+                    displayMessage = "User created successfully.";
+                }
+                if (!String.IsNullOrEmpty(userPassword))
+                {
+                    _user.UpdatePassword(uow, submittedUserData, userPassword);
+                }
+                if (sendConfirmation && !String.IsNullOrEmpty(userPassword))
+                {
+                    _email.SendLoginCredentials(uow, submittedUserData.EmailAddress.Address, userPassword);
                 }
             }
-            return Json(_jsonPackager.Pack(new { Data = "User created successfully." }));
+            return Json(_jsonPackager.Pack(new { Data = displayMessage }));
         }
 
-        public String[] ConvertRoleStringToRoles(string selectedRole)
+        public ICollection<IdentityUserRole> ConvertRoleStringToRoles(string selectedRole)
         {
+            List<IdentityUserRole> userNewRoles = new List<IdentityUserRole>();
             string[] userRoles = { };
             switch (selectedRole)
             {
@@ -210,10 +227,18 @@ namespace KwasantWeb.Controllers
                     userRoles = new[] { Roles.Customer };
                     break;
             }
-            return userRoles;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.AspNetRolesRepository.GetQuery().Where(e => userRoles.Contains(e.Name))
+                    .Each(e => userNewRoles.Add(new IdentityUserRole()
+                {
+                    RoleId = e.Id
+                }));
+            }
+            return userNewRoles;
         }
 
-        private string ConvertRolesToRoleString(String[] userRoles) 
+        private string ConvertRolesToRoleString(String[] userRoles)
         {
             if (userRoles.Contains(Roles.Admin))
                 return Roles.Admin;
@@ -223,27 +248,6 @@ namespace KwasantWeb.Controllers
                 return Roles.Customer;
             else
                 return "";
-        }
-
-        [HttpPost]
-        [KwasantAuthorize(Roles = Roles.Admin)]
-        public ActionResult Update(UserVM curCreateUserVM)
-        {
-            UserDO submittedUserData = _mappingEngine.Map<UserDO>(curCreateUserVM);
-            string userNewPassword = curCreateUserVM.NewPassword;
-            bool sendMail = curCreateUserVM.SendMail;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                _user.Update(uow, submittedUserData, userNewPassword, ConvertRoleStringToRoles(curCreateUserVM.Role));
-                
-                //Sending a mail to user with newly created credentials if send email is checked
-                if (sendMail && !String.IsNullOrEmpty(userNewPassword))
-                {
-                    new Email().SendLoginCredentials(uow, curCreateUserVM.EmailAddress, userNewPassword);
-                }
-                return Json(_jsonPackager.Pack(new { Data = "User updated successfully." }));
-            }
         }
 
         public ActionResult FindUser()

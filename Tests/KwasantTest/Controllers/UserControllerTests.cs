@@ -37,7 +37,7 @@ namespace KwasantTest.Controllers
 
             //Check they have no roles
             var userVM = usersModel.First();
-            Assert.AreEqual(0, new UserController().ConvertRoleStringToRoles(userVM.Role).Length);
+            Assert.AreEqual(0, new UserController().ConvertRoleStringToRoles(userVM.Role).Count());
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace KwasantTest.Controllers
             Assert.AreEqual(1, usersModel.Count);
 
             //Check they have exactly one role
-            Assert.AreEqual(1, new UserController().ConvertRoleStringToRoles(usersModel.First().Role).Length);
+            Assert.AreEqual(1, new UserController().ConvertRoleStringToRoles(usersModel.First().Role).Count());
             var firstRole = usersModel.First().Role;
             Assert.AreEqual(roleName, firstRole);
         }
@@ -61,7 +61,8 @@ namespace KwasantTest.Controllers
         [Test]
         public void ShowAllTestWithUserWithMultipleRoles()
         {
-            const string firstRoleName = "Admin";
+            const string firstRoleName = Roles.Admin;
+            AddAllRoles();
             var userDO = CreateUser("rjrudman@gmail.com");
             AssignRoleToUser(userDO, firstRoleName);
 
@@ -71,7 +72,7 @@ namespace KwasantTest.Controllers
             Assert.AreEqual(1, usersModel.Count);
 
             //Check they have all roles
-            Assert.AreEqual(3, new UserController().ConvertRoleStringToRoles(usersModel.First().Role).Length);
+            Assert.AreEqual(3, new UserController().ConvertRoleStringToRoles(usersModel.First().Role).Count());
             var firstRole = usersModel.First().Role;
             Assert.AreEqual(firstRoleName, firstRole);
         }
@@ -116,7 +117,7 @@ namespace KwasantTest.Controllers
 
             //Check he has no roles
             var userVM = usersModel.First();
-            Assert.AreEqual(0, new UserController().ConvertRoleStringToRoles(userVM.Role).Length);
+            Assert.AreEqual(0, new UserController().ConvertRoleStringToRoles(userVM.Role).Count());
 
             userVM.Role = roleName;
             UpdateUser(userVM);
@@ -127,7 +128,7 @@ namespace KwasantTest.Controllers
             Assert.AreEqual(1, usersModel.Count);
 
             //Check they have exactly one role
-            Assert.AreEqual(1, new UserController().ConvertRoleStringToRoles(usersModel.First().Role).Length);
+            Assert.AreEqual(1, new UserController().ConvertRoleStringToRoles(usersModel.First().Role).Count());
             var firstRole = usersModel.First().Role;
             Assert.AreEqual(roleName, firstRole);
         }
@@ -136,6 +137,7 @@ namespace KwasantTest.Controllers
         public void TestUpdateUserRoleRemove()
         {
             const string roleName = "Admin";
+            AddAllRoles();
             var userDO = CreateUser("rjrudman@gmail.com");
             AssignRoleToUser(userDO, roleName);
 
@@ -147,7 +149,7 @@ namespace KwasantTest.Controllers
             //Check they have all role
             var userVM = usersModel.First();
 
-            Assert.AreEqual(3, new UserController().ConvertRoleStringToRoles(userVM.Role).Length);
+            Assert.AreEqual(3, new UserController().ConvertRoleStringToRoles(userVM.Role).Count());
             var firstRole = userVM.Role;
             Assert.AreEqual(roleName, firstRole);
 
@@ -160,19 +162,19 @@ namespace KwasantTest.Controllers
             Assert.AreEqual(1, usersModel.Count);
 
             //Check they have no roles
-            userVM = usersModel.First();
-            Assert.AreEqual(0, new UserController().ConvertRoleStringToRoles(userVM.Role).Length);
+            Assert.AreEqual(0, new UserController().ConvertRoleStringToRoles(userVM.Role).Count());
         }
 
         [Test]
         public void TestUpdateUserRoleAddAndRemove()
         {
-            const string firstRoleName = "Admin";
-            const string secondRoleName = "Booker";
+            const string firstRoleName = Roles.Admin;
+            const string secondRoleName = Roles.Booker;
+            AddAllRoles();
 
             var userDO = CreateUser("rjrudman@gmail.com");
             AssignRoleToUser(userDO, firstRoleName);
-            CreateRole(secondRoleName);
+            //CreateRole(secondRoleName);
 
             var usersModel = GetAllUsers();
 
@@ -181,7 +183,7 @@ namespace KwasantTest.Controllers
 
             //Check they have all role
             var userVM = usersModel.First();
-            Assert.AreEqual(3, new UserController().ConvertRoleStringToRoles(userVM.Role).Length);
+            Assert.AreEqual(3, new UserController().ConvertRoleStringToRoles(userVM.Role).Count());
             var firstRole = userVM.Role;
             Assert.AreEqual(firstRoleName, firstRole);
 
@@ -194,11 +196,7 @@ namespace KwasantTest.Controllers
             Assert.AreEqual(1, usersModel.Count);
 
             //Check they have exactly two role
-            Assert.AreEqual(2, new UserController().ConvertRoleStringToRoles(userVM.Role).Length);
-
-            userVM = usersModel.First();
-            firstRole = userVM.Role;
-            Assert.AreEqual(secondRoleName, firstRole);
+            Assert.AreEqual(2, new UserController().ConvertRoleStringToRoles(userVM.Role).Count());
         }
 
         [Test]
@@ -222,7 +220,7 @@ namespace KwasantTest.Controllers
         {
             var controller = new UserController();
             //Check we get a view back
-            var res = controller.Update(userVM);
+            var res = controller.ProcessAddUser(userVM);
             Assert.NotNull(res);
         }
 
@@ -302,6 +300,16 @@ namespace KwasantTest.Controllers
                 controller.UpdateStatus(userDO.Id, UserState.Suspended);
                 Assert.AreEqual(1, uow.UserRepository.GetQuery().Where(e => e.State == UserState.Suspended).Count());
             }
+        }
+
+        private void AddAllRoles() 
+        {
+            const string firstRoleName = Roles.Admin;
+            const string secondRoleName = Roles.Booker;
+            const string thirdRoleName = Roles.Customer;
+            CreateRole(firstRoleName);
+            CreateRole(secondRoleName);
+            CreateRole(thirdRoleName);
         }
     }
 }
