@@ -292,5 +292,13 @@ namespace KwasantCore.Services
                     });
             uow.SaveChanges();
         }
+
+        public string FindEmailParentage(string emailId) 
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return Convert.ToString(uow.EmailRepository.GetByKey(emailId).ConversationId);
+            }
+        }
     }
 }

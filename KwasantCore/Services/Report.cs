@@ -53,7 +53,7 @@ namespace KwasantCore.Services
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
                             Status = f.Status,
-                            Data = f.Data,
+                            Data = FilterUtility.AddClickability(f.Data),
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
                         }).ToList();
         }
