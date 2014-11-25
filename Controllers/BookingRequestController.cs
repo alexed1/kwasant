@@ -276,7 +276,7 @@ namespace KwasantWeb.Controllers
 
         public ActionResult ShowInProcessBRS()
         {
-            var curBooker = this.GetUserId();
+            string curBooker = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IEnumerable<BookingRequestDO> bookingRequestDO = _br.GetCheckedOut(uow, curBooker);
