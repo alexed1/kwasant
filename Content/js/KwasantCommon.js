@@ -141,3 +141,10 @@ function displayNotification(message) {
 
     , 5 * 1000);
 }
+
+//This function clear all text input fields, need to provide collection of elements need to be cleared, calling example : resetFields($("input:text"));
+function resetFields(fieldsToClear) {
+    $(fieldsToClear).each(function () {
+        $(this).val("");
+    });
+}

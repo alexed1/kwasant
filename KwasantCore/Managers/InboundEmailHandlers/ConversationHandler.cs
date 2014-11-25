@@ -19,11 +19,11 @@ namespace KwasantCore.Managers.InboundEmailHandlers
                 var existingBookingRequest = Conversation.Match(uow, headers, message.To, message.Subject, message.From.Address);
                 if (existingBookingRequest != null)
                 {
-                    Conversation.AddEmail(uow, message, existingBookingRequest);
+                    var createdEmailDO = Conversation.AddEmail(uow, message, existingBookingRequest);
 
                     var br = new BookingRequest();
-                    var fromUser = uow.UserRepository.GetOrCreateUser(message.From.Address);
-                    br.AcknowledgeResponseToBookingRequest(uow, existingBookingRequest.Id, fromUser.Id);
+                    var fromUser = uow.UserRepository.GetOrCreateUser(createdEmailDO.From);
+                    br.AcknowledgeResponseToBookingRequest(uow, existingBookingRequest, createdEmailDO, fromUser.Id);
 
                     uow.SaveChanges();
                     return true;

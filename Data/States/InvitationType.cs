@@ -5,5 +5,6 @@ namespace Data.States
     {
         public const int InitialInvite = 1;
         public const int ChangeNotification = 2;
+        public const int CancelNotification = 3;
     }
 }

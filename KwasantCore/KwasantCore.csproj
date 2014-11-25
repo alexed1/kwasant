@@ -167,6 +167,7 @@
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
+    <Compile Include="Interfaces\INegotiationResponse.cs" />
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IAnswer.cs" />
     <Compile Include="Interfaces\IAttendee.cs" />
@@ -250,6 +251,7 @@
     <Compile Include="Services\InvitationResponse.cs" />
     <Compile Include="Services\IQuestion.cs" />
     <Compile Include="Services\Negotiation.cs" />
+    <Compile Include="Services\NegotiationResponse.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\Question.cs" />
     <Compile Include="Services\Report.cs" />

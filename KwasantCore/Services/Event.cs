@@ -76,8 +76,24 @@ namespace KwasantCore.Services
             return curEventDO;
         }
 
-        public List<InvitationDO> GenerateInvitations(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, String extraBodyMessage)
+        public void Delete(int eventID)
         {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
+                if (eventDO != null)
+                {
+                    var oldStatus = eventDO.EventStatus;
+                    eventDO.EventStatus = EventState.Deleted;
+                    if (oldStatus != EventState.Draft && oldStatus != EventState.Deleted)
+                    {
+                        InviteAttendees(uow, eventDO, null, eventDO.Attendees);
+                    }
+                    uow.SaveChanges();
+                }
+            }
+        }
+		public List<InvitationDO> GenerateInvitations(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, String extraBodyMessage)        {
             var existingAttendees = eventDO.Attendees.Where(a => !newAttendees.Select(na => na.EmailAddress.Address).Contains(a.EmailAddress.Address));
             var invitations = new List<InvitationDO>();
             if (newAttendees != null)
@@ -158,8 +174,23 @@ namespace KwasantCore.Services
 
             //final assembly of event
             dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
+            if (eventDO.EventStatus == EventState.Deleted)
+            {
+                dDayEvent.Status = EventStatus.Cancelled;
+            }
+            else
+            {
+                dDayEvent.Status = EventStatus.Confirmed;
+            }
             ddayCalendar.Events.Add(dDayEvent);
+            if (eventDO.EventStatus == EventState.Deleted)
+            {
+                ddayCalendar.Method = CalendarMethods.Cancel;
+            }
+            else
+            {
             ddayCalendar.Method = CalendarMethods.Request;
+            }
 
             return ddayCalendar;
         }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace KwasantWeb.AlertQueues
@@ -24,23 +26,24 @@ namespace KwasantWeb.AlertQueues
     public static class SharedAlertQueues
     {
         //Define new queues with a string constant, and a static instance of your queue.
-        //Remember to update GetQueueByName, 
-        //As well as the Begin() method (add your queue to 'staticQueues' array) - failing to update Begin will cause memory leaks!
 
         public const String StrBookingRequestReservedForUserQueue = @"BookingRequestReservedForUserQueue";
-        public static BookingRequestReservedForUserQueue BookingRequestReservedForUserQueue = new BookingRequestReservedForUserQueue();
-
         public const String StrPollBookingRequestResponseQueue = @"PollBookingRequestResponseQueue";
-        public static NewBookingRequestResponseQueue BookingRequestUpdatedQueue = new NewBookingRequestResponseQueue();
+        public const String StrHighPriorityIncidentsQueue = @"HighPriorityIncidentsQueue";
 
-        public static ISharedAlertQueue<IUserUpdateData> GetQueueByName(String name)
-        {
-            switch (name)
+        private static readonly Dictionary<string, IStaticQueue> Queues = new Dictionary<string, IStaticQueue>
             {
-                case StrBookingRequestReservedForUserQueue:
-                    return BookingRequestReservedForUserQueue;
-                case StrPollBookingRequestResponseQueue:
-                    return BookingRequestUpdatedQueue;
+                { StrBookingRequestReservedForUserQueue, new BookingRequestReservedForUserQueue() },
+                { StrPollBookingRequestResponseQueue, new NewBookingRequestResponseQueue() },
+                { StrHighPriorityIncidentsQueue, new HighPriorityIncidentsQueue() }
+            };
+
+        public static IStaticQueue GetQueueByName(String name)
+        {
+            IStaticQueue queue;
+            if (Queues.TryGetValue(name, out queue))
+            {
+                return queue;
             }
             return null;
         }
@@ -49,7 +52,7 @@ namespace KwasantWeb.AlertQueues
         {
             new Thread(() =>
             {
-                var staticQueues = new IStaticQueue[] {BookingRequestReservedForUserQueue, BookingRequestUpdatedQueue};
+                var staticQueues = Queues.Values.ToArray();
 
                 while (true)
                 {

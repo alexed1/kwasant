@@ -133,4 +133,10 @@
   <data name="PlainEventInvitation_Update" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\plaineventinvitation_update.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="HTMLEventInvitation_Cancel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\HTMLEventInvitation_Cancel.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="PlainEventInvitation_Cancel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PlainEventInvitation_Cancel.html;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>

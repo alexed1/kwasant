@@ -22,15 +22,17 @@ namespace KwasantCore.Services
 
     public class BookingRequest : IBookingRequest
     {
-        private IAttendee _attendee;
-        private IEmailAddress _emailAddress;
+        private readonly IAttendee _attendee;
+        private readonly IEmailAddress _emailAddress;
         private readonly Email _email;
+        private readonly INegotiationResponse _negotiationResponse;
 
         public BookingRequest()
         {
             _attendee = ObjectFactory.GetInstance<IAttendee>();
             _email = ObjectFactory.GetInstance<Email>();
             _emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
+            _negotiationResponse = ObjectFactory.GetInstance<INegotiationResponse>();
         }
 
         public static void ProcessNewBR(MailMessage message)
@@ -107,7 +109,7 @@ namespace KwasantCore.Services
                                 text = String.Empty;
                             text = text.Trim();
                             if (text.Length > 400)
-                                text = text.Substring(400);
+                                text = text.Substring(0,400);
 
                             return new
                             {
@@ -347,19 +349,26 @@ namespace KwasantCore.Services
             }
         }
 
-        public void AcknowledgeResponseToBookingRequest(IUnitOfWork uow, int bookingRequestID, String userID)
+        public void AcknowledgeResponseToBookingRequest(IUnitOfWork uow, BookingRequestDO bookingRequestDO, EmailDO emailDO, String userID)
         {
-            var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestID);
-            //Now we mark expected responses as complete
+            var negotiations = bookingRequestDO.Negotiations
+                .Where(n => n.NegotiationState == NegotiationState.AwaitingClient)
+                .ToArray();
 
-            var negotiationIDs = bookingRequestDO.Negotiations.Select(n => n.Id);
+            foreach (var negotiationDO in negotiations)
+            {
+                _negotiationResponse.ProcessEmailedResponse(uow, emailDO, negotiationDO, userID);
+            }
+
+            //Now we mark expected responses as complete
+            var negotiationIDs = negotiations.Select(n => n.Id);
 
             var expectedResponses = uow.ExpectedResponseRepository.GetQuery()
                 .Where(
                 er =>
                     er.UserID == userID &&
                     er.Status == ExpectedResponseStatus.Active &&
-                    er.AssociatedObjectID == bookingRequestID &&
+                    er.AssociatedObjectID == bookingRequestDO.Id &&
                     er.AssociatedObjectType == "BookingRequest")
                 .Union(uow.ExpectedResponseRepository.GetQuery()
                 .Where(
@@ -370,7 +379,6 @@ namespace KwasantCore.Services
                     er.AssociatedObjectType == "Negotiation"
                 ));
             
-
             foreach (var expectedResponse in expectedResponses)
                 expectedResponse.Status = ExpectedResponseStatus.ResponseReceived;
 

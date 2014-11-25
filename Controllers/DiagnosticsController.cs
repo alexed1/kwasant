@@ -195,10 +195,13 @@ See more: {2}
             inboundEmailDaemon.RegisterTestEmailSubject(subjKey);
             bool messageReceived = false;
 
-            InboundEmail.ExplicitCustomerCreatedHandler testMessageReceived = subject =>
+            EventHandler<TestMessageReceivedEventArgs> testMessageReceived = (sender, args) =>
             {
-                if (subjKey == subject)
+                if (subjKey == args.Subject)
+                {
                     messageReceived = true;
+                    args.DeleteFromInbox = true;
+                }
             };
 
             InboundEmail.TestMessageReceived += testMessageReceived;

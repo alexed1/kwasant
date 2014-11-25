@@ -179,18 +179,8 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult ConfirmDelete(int eventID)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                if (eventDO != null)
-                {
-                    uow.EventRepository.Remove(eventDO);
-                    uow.SaveChanges();
-                    return Json(true);
-                }
-
-                return Json(false);
-            }
+            _event.Delete(eventID);
+            return Json(true);
         }
 
         public ActionResult MoveEvent(int eventID, String newStart, String newEnd, bool requiresConfirmation = true, bool mergeEvents = false)
