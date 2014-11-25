@@ -182,6 +182,32 @@ namespace KwasantWeb.Controllers
 
             return new JsonResult {Data = false};
         }
+
+        [HttpGet]
+        public ActionResult Send()
+        {
+            return DisplayEmail(Session, new CreateEmailVM
+            {
+                ToAddresses = new List<string> { "rjrudman@gmail.com", "temp@gmail.com" },
+                CCAddresses = new List<string> { "alex@gmail.com" },
+                BCCAddresses = new List<string> { "max@gmail.com" },
+                AddressBook = new List<string> { "kate@gmail.com", "temp@gmail.com" },
+                RecipientsEditable = false,
+                BCCHidden = true,
+                CCHidden = true,
+                InsertLinks = new List<CreateEmailVM.InsertLink>
+                {
+                    new CreateEmailVM.InsertLink
+                    {
+                        Id = "negLink",
+                        DisplayName = "Insert Negotiation",
+                        TextToInsert = "<negotiationLink />"
+                    }
+                },
+                Subject = "New negotiation",
+                Body = "Some text..",
+            }, Send);
+        }
         
         [HttpPost]
         public ActionResult Send(IUnitOfWork uow, EmailDO emailDO)

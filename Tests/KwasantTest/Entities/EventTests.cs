@@ -33,7 +33,6 @@ namespace KwasantTest.Entities
            
                 eventRepo.Add(eventDO);
 
-                ev.InviteAttendees(uow, eventDO, eventDO.Attendees, new List<AttendeeDO>());
                 uow.SaveChanges();
 
                 string endtime = eventDO.EndDate.ToString("hh:mm tt");

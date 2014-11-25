@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Web.Mvc;
 using AutoMapper;
 using Data.Entities;
@@ -12,7 +13,10 @@ using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
+using Segment;
 using StructureMap;
+using Utilities;
+using Logger = Utilities.Logging.Logger;
 
 namespace KwasantWeb.Controllers
 {
@@ -216,8 +220,17 @@ namespace KwasantWeb.Controllers
             return View("~/Views/Event/ConfirmChanges.cshtml", eventVM);
         }
 
-        [HttpPost]
-        public ActionResult ProcessChangedEvent(EventVM curEventVM, int confStatus = ConfirmationStatus.Unconfirmed, bool mergeEvents = false)
+        [HttpGet]
+        public ActionResult ProcessChangedEvent(EventVM curEventVM)
+        {
+            //Fix up serialization problem
+            curEventVM.StartDate = DateTime.Parse(Request.Params["StartDate"], CultureInfo.InvariantCulture, 0).ToUniversalTime();
+            curEventVM.EndDate = DateTime.Parse(Request.Params["EndDate"], CultureInfo.InvariantCulture, 0).ToUniversalTime();
+
+            return ProcessChangedEvent(curEventVM, ConfirmationStatus.Confirmed, false);
+        }
+
+        public ActionResult ProcessChangedEvent(EventVM curEventVM, int confStatus, bool mergeEvents)
         {
             try
             {
@@ -230,8 +243,7 @@ namespace KwasantWeb.Controllers
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     if (updatedEventInfo.Id == 0)
-                        throw new ApplicationException(
-                            "event should have been created and saved in #new, so Id should not be zero");
+                        throw new ApplicationException("event should have been created and saved in #new, so Id should not be zero");
                     var curEventDO = uow.EventRepository.GetByKey(updatedEventInfo.Id);
                     if (curEventDO == null)
                         throw new EntityNotFoundException<EventDO>();
@@ -244,7 +256,7 @@ namespace KwasantWeb.Controllers
                         ? EventState.Draft
                         : EventState.Booking;
 
-                    _event.Process(uow, curEventDO, updatedEventInfo);
+                    var newAttendees = _event.Update(uow, curEventDO, updatedEventInfo);
 
                     if (mergeEvents)
                         MergeTimeSlots(uow, curEventDO);
@@ -266,20 +278,39 @@ namespace KwasantWeb.Controllers
                                     });
                         }
                     }
-                }
-                return Json(new
-                {
-                    Success = true,
-                    Message = String.Empty
-                });
+                    
+                    var emailController = new EmailController();
+
+                    var currCreateEmailVM = new CreateEmailVM
+                    {
+                        ToAddresses = updatedEventInfo.Attendees.Select(a => a.EmailAddress.Address).ToList(),
+                        Subject = "*** Automatically Generated ***",
+                        RecipientsEditable = false,
+                        BCCHidden = true,
+                        CCHidden = true,
+                        SubjectEditable = false,
+                        HeaderText = String.Format("Your event has been created. Would you like to send the emails now?"),
+                        BodyPromptText = "Enter some additional text for your recipients",
+                        Body = "",
+                        BodyRequired = false,
+                    };
+
+                    return emailController.DisplayEmail(Session, currCreateEmailVM,
+                        (subUow, emailDO) =>
+                        {
+                            var subEventDO = subUow.EventRepository.GetByKey(curEventDO.Id);
+                            _event.GenerateInvitations(subUow, subEventDO, newAttendees, emailDO.HTMLText);
+                            subEventDO.EventStatus = EventState.DispatchCompleted;
+                            subUow.SaveChanges();
+                            return Json(true);
+                        }
+                    );
+                }   
             }
             catch (Exception e)
             {
-                return Json(new
-                {
-                    Success = false,
-                    Message = e.Message
-                });
+                Logger.GetLogger().Error("Error saving event", e);
+                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
             }
             
         }

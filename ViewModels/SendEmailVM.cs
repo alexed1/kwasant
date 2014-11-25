@@ -13,6 +13,7 @@ namespace KwasantWeb.ViewModels
         {
             AddressBook = new List<string>();
             InsertLinks = new List<InsertLink>();
+            RecipientsEditable = true;
         }
 
         public String HeaderText { get; set; }
@@ -20,6 +21,10 @@ namespace KwasantWeb.ViewModels
         
         public IList<String> AddressBook { get; set; }
         public IList<InsertLink> InsertLinks { get; set; }
+
+        public bool RecipientsEditable { get; set; }
+        public bool CCHidden { get; set; }
+        public bool BCCHidden { get; set; }
         
         public class InsertLink
         {
