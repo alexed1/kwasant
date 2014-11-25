@@ -23,9 +23,24 @@
             getNavigatorBackendURL: function() {
                 return '@Url.Content("~/Calendar/Navigator?calendarIDs=" + calendarString)';
             },  
-            getEditURL: function(id) { return '/Event/Edit/?eventID=' + id; },
             getMoveURL: function(id, newStart, newEnd) { return '/Event/MoveEvent/?eventID=' + id + '&newStart=' + newStart + 'z&newEnd=' + newEnd + 'z'; },
-            getDeleteURL: function(id) { return '/Event/DeleteEvent/?eventID=' + id; },
+            getDeleteURL: function (id) { return '/Event/DeleteEvent/?eventID=' + id; },
+            onEventClick: function (id) {
+                if (Kwasant.IFrame.PopupsActive()) {
+                    return;
+                }
+                
+                Kwasant.IFrame.Display('/Event/Edit/?eventID=' + id,
+                {
+                    horizontalAlign: 'right',
+                    callback: function(result) {
+                        if (result.saved) {
+                            calendar.refreshCalendars();
+                            displayMessage(result.message);
+                        }
+                    }
+                });
+            },
             onEventNew: function(start, end) {
                 if (Kwasant.IFrame.PopupsActive()) {
                     return;
@@ -34,9 +49,11 @@
                 Kwasant.IFrame.Display('/Event/New/?bookingRequestID=' + id + '&calendarID=' + @Model.ActiveCalendarId + '&start=' + start + 'z&end=' + end + 'z',
                     {
                         horizontalAlign: 'right',
-                        callback: function(requiresRefresh) {
-                            if (requiresRefresh)
+                        callback: function(result) {
+                            if (result.saved) {
                                 calendar.refreshCalendars();
+                                displayMessage(result.message);
+                            }
                         }
                     });
             },
