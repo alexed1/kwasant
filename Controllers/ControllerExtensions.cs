@@ -15,6 +15,10 @@ namespace KwasantWeb.Controllers
         {
             return ObjectFactory.GetInstance<ISecurityServices>().GetUserName();
         }
+        public static string[] GetRoleNames(this Controller controller)
+        {
+            return ObjectFactory.GetInstance<ISecurityServices>().GetRoleNames();
+        }
         public static bool UserIsAuthenticated(this Controller controller)
         {
             return ObjectFactory.GetInstance<ISecurityServices>().IsAuthenticated();
