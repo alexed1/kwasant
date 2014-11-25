@@ -29,6 +29,47 @@ namespace KwasantTest.Fixtures
             };
             return curAnswerDO;
         }
+
+        public AnswerDO TestAnswer3()
+        {
+            var curAnswerDO = new AnswerDO
+
+            {
+                Id = 2,
+                AnswerStatus = 2,
+                QuestionID = 1,
+                Text = "Starbucks on Valencia 2",
+            };
+            return curAnswerDO;
+        }
+
+        public AnswerDO TestAnswer4()
+        {
+            var curAnswerDO = new AnswerDO
+
+            {
+                Id = 1,
+                AnswerStatus = 2,
+                QuestionID = 1,
+                Question=TestQuestion7(),
+                Text = "Starbucks on Valencia",
+            };
+            return curAnswerDO;
+        }
+
+        public AnswerDO TestAnswer5()
+        {
+            var curAnswerDO = new AnswerDO
+
+            {
+                Id = 1,
+                AnswerStatus = 2,
+                QuestionID = 1,
+                Question = TestQuestion7(),
+                Text = "Starbucks on Valencia 2",
+            };
+            return curAnswerDO;
+        }
                 
     }
 }
