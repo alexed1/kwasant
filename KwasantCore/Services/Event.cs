@@ -58,9 +58,6 @@ namespace KwasantCore.Services
             if (curCalendar == null)
                 throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");
 			
-			//var attendee = new Attendee();
-            //attendee.DetectEmailsFromBookingRequest(uow, curEventDO);
-
             _bookingRequest.ExtractEmailAddresses(uow, curEventDO);
 
             curEventDO.EventStatus = EventState.Booking;
@@ -87,21 +84,33 @@ namespace KwasantCore.Services
                     eventDO.EventStatus = EventState.Deleted;
                     if (oldStatus != EventState.Draft && oldStatus != EventState.Deleted)
                     {
-                        InviteAttendees(uow, eventDO, null, eventDO.Attendees);
+                        GenerateInvitations(uow, eventDO);
                     }
                     uow.SaveChanges();
                 }
             }
         }
-		public List<InvitationDO> GenerateInvitations(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, String extraBodyMessage)        {
+
+        public List<InvitationDO> GenerateInvitations(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees = null, String extraBodyMessage = null)
+        {
+            if (newAttendees == null)
+                newAttendees = new List<AttendeeDO>();
             var existingAttendees = eventDO.Attendees.Where(a => !newAttendees.Select(na => na.EmailAddress.Address).Contains(a.EmailAddress.Address));
+
             var invitations = new List<InvitationDO>();
-            if (newAttendees != null)
+            
+            if (eventDO.EventStatus == EventState.Deleted)
+            {
+                invitations.AddRange(existingAttendees
+                    .Select(newAttendee => _invitation.Generate(uow, InvitationType.CancelNotification, newAttendee, eventDO, extraBodyMessage))
+                    .Where(i => i != null));
+            }
+            else
             {
                 invitations.AddRange(newAttendees.Select(newAttendee => _invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO, extraBodyMessage)).Where(i => i != null));
+                invitations.AddRange(existingAttendees.Select(existingAttendee => _invitation.Generate(uow, InvitationType.ChangeNotification, existingAttendee, eventDO, extraBodyMessage)).Where(i => i != null));
             }
-            invitations.AddRange(existingAttendees.Select(existingAttendee => _invitation.Generate(uow, InvitationType.ChangeNotification, existingAttendee, eventDO, extraBodyMessage)).Where(i => i != null));
-
+            
             return invitations;
         }
 
@@ -189,7 +198,7 @@ namespace KwasantCore.Services
             }
             else
             {
-            ddayCalendar.Method = CalendarMethods.Request;
+                ddayCalendar.Method = CalendarMethods.Request;
             }
 
             return ddayCalendar;
