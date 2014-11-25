@@ -209,6 +209,13 @@ namespace KwasantTest.Entities
         }
 
         [Test]
+        public void TestEmailUnderscore()
+        {
+            var ru = new RegexUtilities();
+            Assert.True(ru.IsValidEmailAddress("br_notify@kwasant.com"));
+        }
+
+        [Test]
         public void TestEmailWithTrailingSpace()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Data.Interfaces;
+using Data.States;
 using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
@@ -126,6 +127,13 @@ namespace KwasantWeb.Controllers
             var userID = this.GetUserId();
             _negotiationResponse.Process(curNegotiationVM, userID);
 
+            return View();
+        }
+
+        [KwasantAuthorize(Roles = Roles.Customer)]
+        public ActionResult ThankYouView()
+        {
+            ViewBag.Message = "Thank you for clarifying that. We'll get you your meeting request shortly.";
             return View();
         }
 

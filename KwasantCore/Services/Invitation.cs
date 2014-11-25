@@ -68,13 +68,17 @@ namespace KwasantCore.Services
 
             var userID = uow.UserRepository.GetOrCreateUser(curAttendee.EmailAddress).Id;
 
-            if (curType == InvitationType.ChangeNotification)
+            switch (curType)
             {
-                curInvitation = GenerateChangeNotification(uow, curInvitation, curEvent, userID);
-            }
-            else
-            {
-                curInvitation = GenerateInitialInvite(uow, curInvitation, curEvent, userID);
+                case InvitationType.ChangeNotification:
+                    curInvitation = GenerateChangeNotification(uow, curInvitation, curEvent, userID);
+                    break;
+                case InvitationType.CancelNotification:
+                    curInvitation = GenerateCancelNotification(uow, curInvitation, curEvent, userID);
+                    break;
+                default:
+                    curInvitation = GenerateInitialInvite(uow, curInvitation, curEvent, userID);
+                    break;
             }
 
             //prepare the outbound email
@@ -100,17 +104,18 @@ namespace KwasantCore.Services
                 });
         }
 
-        private InvitationDO GenerateInitialInvite(IUnitOfWork uow, InvitationDO curInvitation, EventDO curEvent, string userID)
+        private string GetSubjectDate(EventDO curEvent)
         {
-            //string endtime = curEvent.EndDate.ToUniversalTime().ToString("hh:mmtt");
-            //string subjectDate = curEvent.StartDate.ToUniversalTime().ToString("ddd MMM dd, yyyy hh:mmtt - ") + endtime + " +00:00";
             string endtime = curEvent.EndDate.ToString("hh:mm tt");
             var timezone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
             string subjectDate = curEvent.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " +" + timezone.ToString();
+            return subjectDate;
+        }
 
-
+        private InvitationDO GenerateInitialInvite(IUnitOfWork uow, InvitationDO curInvitation, EventDO curEvent, string userID)
+        {
             curInvitation.InvitationType = InvitationType.InitialInvite;
-            curInvitation.Subject = String.Format(_configRepository.Get("emailSubject"), GetOriginatorName(curEvent), curEvent.Summary, subjectDate);
+            curInvitation.Subject = String.Format(_configRepository.Get("emailSubject"), GetOriginatorName(curEvent), curEvent.Summary, GetSubjectDate(curEvent));
             curInvitation.HTMLText = GetEmailHTMLTextForNew(uow, curEvent, userID);
             curInvitation.PlainText = GetEmailPlainTextForNew(uow, curEvent, userID);
             return curInvitation;
@@ -118,14 +123,19 @@ namespace KwasantCore.Services
 
         private InvitationDO GenerateChangeNotification(IUnitOfWork uow, InvitationDO curInvitation, EventDO curEvent, string userID)
         {
-            string endtime = curEvent.EndDate.ToString("hh:mm tt");
-            var timezone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
-            string subjectDate = curEvent.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " +" + timezone.ToString();
-
             curInvitation.InvitationType = InvitationType.ChangeNotification;
-            curInvitation.Subject = String.Format(_configRepository.Get("emailSubjectUpdated"), GetOriginatorName(curEvent), curEvent.Summary, subjectDate);
+            curInvitation.Subject = String.Format(_configRepository.Get("emailSubjectUpdated"), GetOriginatorName(curEvent), curEvent.Summary, GetSubjectDate(curEvent));
             curInvitation.HTMLText = GetEmailHTMLTextForUpdate(uow, curEvent, userID);
             curInvitation.PlainText = GetEmailPlainTextForUpdate(uow, curEvent, userID);
+            return curInvitation;
+        }
+
+        private InvitationDO GenerateCancelNotification(IUnitOfWork uow, InvitationDO curInvitation, EventDO curEvent, string userID)
+        {
+            curInvitation.InvitationType = InvitationType.CancelNotification;
+            curInvitation.Subject = String.Format(_configRepository.Get("emailSubjectCancelled"), GetOriginatorName(curEvent), curEvent.Summary, GetSubjectDate(curEvent));
+            curInvitation.HTMLText = GetEmailHTMLTextForCancel(uow, curEvent, userID);
+            curInvitation.PlainText = GetEmailPlainTextForCancel(uow, curEvent, userID);
             return curInvitation;
         }
 
@@ -168,6 +178,16 @@ namespace KwasantCore.Services
         private String GetEmailPlainTextForUpdate(IUnitOfWork uow, EventDO eventDO, String userID)
         {
             return Razor.Parse(Properties.Resources.PlainEventInvitation_Update, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
+        }
+
+        private String GetEmailHTMLTextForCancel(IUnitOfWork uow, EventDO eventDO, String userID)
+        {
+            return Razor.Parse(Properties.Resources.HTMLEventInvitation_Cancel, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
+        }
+
+        private String GetEmailPlainTextForCancel(IUnitOfWork uow, EventDO eventDO, String userID)
+        {
+            return Razor.Parse(Properties.Resources.PlainEventInvitation_Cancel, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
         }
 
         private String GetEmailHTMLTextForNew(IUnitOfWork uow, EventDO eventDO, String userID)

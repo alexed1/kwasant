@@ -23,7 +23,7 @@
             },
             function (guid) {
 
-                setInterval(function () {
+                var interval = setInterval(function () {
                     $.post(
                         '/Alerting/RequestUpdate',
                         { guid: guid },
@@ -31,7 +31,13 @@
                             if (callback)
                                 callback(result);
                         }
-                    );
+                    ).fail(function (a) {
+                        //If our guid is rejected, stop polling
+                        if (a.status === 400) {
+                            clearInterval(interval);
+                        }
+                        squelchErrors.push(a); //Don't show this error, the query is not critical
+                    });
                 }, pollTimeInSeconds * 1000);
             }
         );
@@ -44,8 +50,7 @@
                 eventName: eventName,
             },
             function (guid) {
-
-                setInterval(function () {
+                var interval = setInterval(function () {
                     $.post(
                         '/Alerting/RequestUpdateForUser',
                         { guid: guid },
@@ -53,7 +58,13 @@
                             if (callback)
                                 callback(result);
                         }
-                    );
+                    ).fail(function (a) {
+                        //If our guid is rejected, stop polling
+                        if (a.status === 400) {
+                            clearInterval(interval);
+                        }
+                        squelchErrors.push(a); //Don't show this error, the query is not critical
+                    });
                 }, pollTimeInSeconds * 1000);
             }
         );

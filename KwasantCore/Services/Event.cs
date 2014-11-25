@@ -75,6 +75,24 @@ namespace KwasantCore.Services
             return curEventDO;
         }
 
+        public void Delete(int eventID)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
+                if (eventDO != null)
+                {
+                    var oldStatus = eventDO.EventStatus;
+                    eventDO.EventStatus = EventState.Deleted;
+                    if (oldStatus != EventState.Draft && oldStatus != EventState.Deleted)
+                    {
+                        InviteAttendees(uow, eventDO, null, eventDO.Attendees);
+                    }
+                    uow.SaveChanges();
+                }
+            }
+        }
+
         public void InviteAttendees(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, List<AttendeeDO> existingAttendees)
         {
             if (uow == null)
@@ -89,7 +107,6 @@ namespace KwasantCore.Services
             {
                 _invitation.Dispatch(uow, invitationDO);
             }
-            eventDO.EventStatus = EventState.DispatchCompleted;
         }
 
         //takes submitted form data and updates as necessary
@@ -110,7 +127,10 @@ namespace KwasantCore.Services
             if (eventDO != null)
             {
                 if (eventDO.EventStatus != EventState.Draft)
+                {
                     InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
+                    eventDO.EventStatus = EventState.DispatchCompleted;
+                }
             }
         }
      
@@ -128,6 +148,12 @@ namespace KwasantCore.Services
                 invitations.AddRange(existingAttendees
                     .Union(newAttendees ?? Enumerable.Empty<AttendeeDO>())
                     .Select(newAttendee => _invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO))
+                    .Where(i => i != null));
+            }
+            else if (eventDO.EventStatus == EventState.Deleted)
+            {
+                invitations.AddRange(existingAttendees
+                    .Select(newAttendee => _invitation.Generate(uow, InvitationType.CancelNotification, newAttendee, eventDO))
                     .Where(i => i != null));
             }
             else
@@ -227,8 +253,23 @@ namespace KwasantCore.Services
 
             //final assembly of event
             dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
+            if (eventDO.EventStatus == EventState.Deleted)
+            {
+                dDayEvent.Status = EventStatus.Cancelled;
+            }
+            else
+            {
+                dDayEvent.Status = EventStatus.Confirmed;
+            }
             ddayCalendar.Events.Add(dDayEvent);
-            ddayCalendar.Method = CalendarMethods.Request;
+            if (eventDO.EventStatus == EventState.Deleted)
+            {
+                ddayCalendar.Method = CalendarMethods.Cancel;
+            }
+            else
+            {
+                ddayCalendar.Method = CalendarMethods.Request;
+            }
 
             return ddayCalendar;
         }
