@@ -86,6 +86,7 @@ namespace KwasantTest.Integration
                 uow.SaveChanges();
                 
                 //Dispatch invites for the event
+                e.GenerateInvitations(uow, eventDO, eventDO.Attendees);
                 uow.SaveChanges();
 
                 //Run our outbound email daemon so we can check if emails are created

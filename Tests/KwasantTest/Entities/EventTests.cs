@@ -33,10 +33,11 @@ namespace KwasantTest.Entities
            
                 eventRepo.Add(eventDO);
 
+                ev.GenerateInvitations(uow, eventDO, eventDO.Attendees);
                 uow.SaveChanges();
 
                 string endtime = eventDO.EndDate.ToString("hh:mm tt");
-                var timezone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
+                var timezone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
                 string subjectDate = eventDO.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " +" + timezone.ToString();
 
                 //Verify emails created in memory
