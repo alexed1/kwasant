@@ -98,7 +98,7 @@ namespace KwasantCore.Services
             var existingAttendees = eventDO.Attendees.Where(a => !newAttendees.Select(na => na.EmailAddress.Address).Contains(a.EmailAddress.Address));
 
             var invitations = new List<InvitationDO>();
-            
+
             if (eventDO.EventStatus == EventState.Deleted)
             {
                 invitations.AddRange(existingAttendees
@@ -136,6 +136,10 @@ namespace KwasantCore.Services
                 eventDO.Attendees.Add(attendee);
                 newAttendees.Add(attendee);
             }
+
+            if (eventDO.EventStatus == EventState.Booking)
+                newAttendees = eventDO.Attendees;
+
             return newAttendees;
         }
 

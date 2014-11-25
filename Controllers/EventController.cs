@@ -158,7 +158,6 @@ namespace KwasantWeb.Controllers
             createdEvent.CalendarID = calendarID;            
             createdEvent.StartDate = DateTime.ParseExact(start, DateStandardFormat, CultureInfo.InvariantCulture);
             createdEvent.EndDate = DateTime.ParseExact(end, DateStandardFormat, CultureInfo.InvariantCulture);
-            createdEvent.CreatedByID = "Rob";
 
             createdEvent.IsAllDay = createdEvent.StartDate.Equals(createdEvent.StartDate.Date) && createdEvent.StartDate.AddDays(1).Equals(createdEvent.EndDate);
 
@@ -242,11 +241,11 @@ namespace KwasantWeb.Controllers
                     if (updatedEventInfo.Summary == null)
                         updatedEventInfo.Summary = String.Empty;
 
+                    var newAttendees = _event.Update(uow, curEventDO, updatedEventInfo);
+
                     curEventDO.EventStatus = updatedEventInfo.Summary.Contains("DRAFT")
                         ? EventState.Draft
-                        : EventState.Booking;
-
-                    var newAttendees = _event.Update(uow, curEventDO, updatedEventInfo);
+                        : EventState.ReadyForDispatch;
 
                     if (mergeEvents)
                         MergeTimeSlots(uow, curEventDO);
