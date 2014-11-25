@@ -76,7 +76,7 @@
                 type: "POST",
                 dataType: 'json',
                 contentType: 'application/json',
-                url: '/Negotiation/ProcessSubmittedForm',
+                url: '@Url.Action("ProcessSubmittedForm", "Negotiation")',
                 data: JSON.stringify(negotiation)
             })
             .success(function(negotiationID) {

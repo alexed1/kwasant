@@ -116,7 +116,7 @@ namespace KwasantTest.Integration
                 newUser.UserName = "testuser";
 
                 //Calling controller method to Add user
-                new UserController().Update(newUser);
+                new UserController().ProcessAddUser(newUser);
                 uow.SaveChanges();
 
                 //Getting the envelop in queue

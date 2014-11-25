@@ -832,6 +832,8 @@
     <Content Include="Views\Booker\Index.cshtml" />
     <Content Include="Views\BookingRequest\FindBookingRequest.cshtml" />
     <Content Include="Views\Report\TimeSpanNavigator.cshtml" />
+    <Content Include="Views\User\ExistingUserAlert.cshtml" />
+    <Content Include="Views\User\UserRoles.cshtml" />
     <Content Include="Views\Shared\AccessDenied.cshtml" />
     <Content Include="Views\NegotiationResponse\ThankYouView.cshtml" />
   </ItemGroup>

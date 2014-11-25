@@ -75,6 +75,15 @@ namespace KwasantWeb.App_Start
                 .ForMember(br => br.EmailAddress, opts => opts.ResolveUsing(e => e.From.Address))
                 .ForMember(br => br.DateReceived, opts => opts.ResolveUsing(e => e.DateReceived))
                 .ForMember(br => br.HTMLText, opts => opts.ResolveUsing(e => e.HTMLText));
+
+            Mapper.CreateMap<UserVM, UserDO>()
+                .ForMember(userDO => userDO.Id, opts => opts.ResolveUsing(e => e.Id))
+                .ForMember(userDO => userDO.FirstName, opts => opts.ResolveUsing(e => e.FirstName))
+                .ForMember(userDO => userDO.LastName, opts => opts.ResolveUsing(e => e.LastName))
+                .ForMember(userDO => userDO.UserName, opts => opts.ResolveUsing(e => e.UserName))
+                .ForMember(userDO => userDO.EmailAddress, opts => opts.ResolveUsing(e => new EmailAddressDO { Address = e.EmailAddress }))
+                .ForMember(userDO => userDO.Roles, opts => opts.Ignore())
+                .ForMember(userDO => userDO.Calendars, opts => opts.Ignore());
         }
     }
 }
