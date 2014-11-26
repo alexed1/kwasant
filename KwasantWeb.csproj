@@ -308,6 +308,7 @@
     <Compile Include="KwasantHandleErrorAttribute.cs" />
     <Compile Include="TempServicesHome\NegotiationResponse.cs" />
     <Compile Include="ViewModels\BookingRequestAdminVM.cs" />
+    <Compile Include="ViewModels\BookingRequestNoteVM.cs" />
     <Compile Include="ViewModels\BookingRequestVM.cs" />
     <Compile Include="ViewModels\CalendarShowVM.cs" />
     <Compile Include="ViewModels\BookingRequestConversationVM.cs" />
@@ -837,6 +838,7 @@
     <Content Include="Views\User\UserRoles.cshtml" />
     <Content Include="Views\Shared\AccessDenied.cshtml" />
     <Content Include="Views\NegotiationResponse\ThankYouView.cshtml" />
+    <Content Include="Views\BookingRequest\AddNote.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

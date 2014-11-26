@@ -144,5 +144,25 @@ namespace KwasantCore.Managers
             email.SendAlertEmail("CalendarSync failure", emailBodyBuilder.ToString());
         }
 
+        public void ProcessSubmittedNote(int bookingRequestId, string note)
+        {
+            if (String.IsNullOrEmpty(note))
+                throw new ArgumentException("Empty note.", "note");
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curBookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (curBookingRequest == null)
+                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+                var incidentDO = new IncidentDO
+                    {
+                        PrimaryCategory = "BookingRequest",
+                        SecondaryCategory = "Note",
+                        Activity = "Created",
+                        Notes = note
+                    };
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+            }
+        }
     }
 }

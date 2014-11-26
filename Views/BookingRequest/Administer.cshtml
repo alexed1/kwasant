@@ -359,4 +359,13 @@
                 $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
             });
         });
+        
+        function getAddNoteWindow() {
+            Kwasant.IFrame.Display('@Url.Action("AddNote", "BookingRequest", new { bookingRequestID = Model.BookingRequestId })',
+                {
+                    horizontalAlign: 'right',
+                    minHeight: 200,
+                    minWidth: 200
+                });
+        }
 </script>

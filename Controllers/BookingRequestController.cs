@@ -409,5 +409,18 @@ namespace KwasantWeb.Controllers
                 return jsonResult;
             }
         }
+
+        public ActionResult AddNote(int bookingRequestId)
+        {
+            return View(new BookingRequestNoteVM() { BookingRequestId = bookingRequestId });
+        }
+
+        [HttpPost]
+        public ActionResult SubmitNote(BookingRequestNoteVM noteVm)
+        {
+            var communticationManager = ObjectFactory.GetInstance<CommunicationManager>();
+            communticationManager.ProcessSubmittedNote(noteVm.BookingRequestId, noteVm.Note);
+            return Json(true);
+        }
     }
 }
