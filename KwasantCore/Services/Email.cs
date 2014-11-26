@@ -293,7 +293,7 @@ namespace KwasantCore.Services
             uow.SaveChanges();
         }
 
-        public string FindEmailParentage(string emailId) 
+        public string FindEmailParentage(int emailId) 
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
