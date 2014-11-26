@@ -49,7 +49,7 @@ namespace KwasantCore.Managers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                string toRecipient = _configRepository.Get("EmailAddress_BrNotify");
+                string toRecipient = _configRepository.Get("EmailAddress_BrNotify", null);
                 if (string.IsNullOrEmpty(toRecipient))
                     return;
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);

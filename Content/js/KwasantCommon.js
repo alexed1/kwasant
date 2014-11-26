@@ -15,9 +15,6 @@ $(document).ajaxError(function (event, request, settings) {
     $('#ajaxErrors').show();
     $("#ajaxErrors").append("<li>" + text + "</li>");
 });
-$(function() {
-    $('#ajaxErrors').hide();
-})
 
 function getConfiguration() {
 
