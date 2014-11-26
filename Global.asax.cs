@@ -183,7 +183,7 @@ namespace KwasantWeb
             {
                 var claims = principal.Claims;
                 GenericPrincipal userPrincipal =
-                    new GenericPrincipal(new GenericIdentity(principal.Identity.Name),
+                    new GenericPrincipal(principal.Identity,
                                          claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray());
                 Context.User = userPrincipal;
             }

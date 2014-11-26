@@ -28,7 +28,7 @@
 	
 }
 <div class="light-bg">
-	<form id="f" class="edit-event-form form" method="post" style="margin:10px" action="@Url.Action("ProcessChangedEvent", "Event", new { confStatus = ConfirmationStatus.Confirmed })">
+	<form id="f" class="edit-event-form form" method="post" style="margin:10px">
 		<h3 class="with-border">Confirm Changes</h3>
 		<div>You are <b>@Html.Raw(Model.Id == 0 ? "creating a new" : "editing an existing")</b> event.</div>
 		<div style="@Html.Raw(Model.IsAllDay ? String.Empty : "display:none;")">
@@ -52,30 +52,30 @@
 		function close(saved) {
 			if (saved === undefined || saved == null)
 				saved = false;
-			Kwasant.IFrame.CloseMe(saved);
+			Kwasant.IFrame.CloseMe({ saved: saved });
 		}
 
 		$(function () {
 			$("#f").submit(function () {
-				var f = $("#f");
-
-				var spinner = Kwasant.IFrame.DisplaySpinner();
-				var data = @Html.Raw(JsonConvert.SerializeObject(Model));
-				$.post(f.prop('action'), data, function (result) {
-				    if (result.Success) {
-				        var startDate= new Date('@Model.StartDate'); 
-				        displayNotification('Event Created Starting ' + (startDate.getMonth() + 1) + "/" + startDate.getDate());
-				        close(true);
-				    }  else
-				    {
-				        alert(result.Message);    
-				    }
-				}).always(function() {
-				    spinner.hide();
-				}).fail(function(result) {
-				    alert(result);
-				});
-				return false;
+			    var url = '@Html.Raw(Url.Action("ProcessChangedEvent", "Event", Model))';
+			    Kwasant.IFrame.Display(url,
+                {
+                    horizontalAlign: 'middle',
+                    height: 815,
+                    width: 815,
+                    modal: true,
+                    callback: function (res) {
+                        var eventMessage = 'Your event was successfully updated';
+                        if (res) {
+                            eventMessage += ' and emails have been dispatched';
+                        }
+                        Kwasant.IFrame.CloseMe({
+                            saved: true,
+                            message: eventMessage
+                        });
+                    }
+                });
+			    return false;
 			});
 		});
 	</script>

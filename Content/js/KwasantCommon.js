@@ -1,13 +1,19 @@
 
 var CONTROLLER_NAME = 'Calendar';
 
+var squelchErrors = [];
+
 $(document).ajaxError(function (event, request, settings) {
+    if (squelchErrors.indexOf(request) != -1)
+        return;
+    
     var text = "Error requesting page: " + settings.url;
     if (settings.data != undefined && settings.data != '')
         text += "?" + settings.data;
     text += ". Status: " + request.status + " " + request.statusText;
+
+    $('#ajaxErrors').show();
     $("#ajaxErrors").append("<li>" + text + "</li>");
-    //alert(text);
 });
 
 function getConfiguration() {
@@ -134,4 +140,11 @@ function displayNotification(message) {
     { notification.fadeOut('slow'); }
 
     , 5 * 1000);
+}
+
+//This function clear all text input fields, need to provide collection of elements need to be cleared, calling example : resetFields($("input:text"));
+function resetFields(fieldsToClear) {
+    $(fieldsToClear).each(function () {
+        $(this).val("");
+    });
 }

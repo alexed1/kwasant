@@ -48,11 +48,13 @@ namespace KwasantCore.Managers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                string toRecipient = _configRepository.Get("EmailAddress_BrNotify", null);
+                if (string.IsNullOrEmpty(toRecipient))
+                    return;
                 var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 var email = ObjectFactory.GetInstance<Email>();
                 string message = "BookingRequest Needs Processing <br/>Subject : " + bookingRequestDO.Subject;
                 string subject = "BookingRequest Needs Processing";
-                string toRecipient = _configRepository.Get("EmailAddress_BrNotify");
                 string fromAddress = _configRepository.Get<string>("EmailAddress_GeneralInfo");
                 EmailDO curEmail = email.GenerateBasicMessage(uow, subject, message, fromAddress, toRecipient);
                 uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);

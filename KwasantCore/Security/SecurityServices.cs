@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Security.Claims;
@@ -36,6 +37,14 @@ namespace KwasantCore.Security
         public String GetUserName()
         {
             return Thread.CurrentPrincipal.Identity.GetUserName();
+        }
+
+        public String[] GetRoleNames()
+        {
+            var claimsIdentity = Thread.CurrentPrincipal.Identity as ClaimsIdentity;
+            if (claimsIdentity == null)
+                return new string[0];
+            return claimsIdentity.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToArray();
         }
 
         public bool IsAuthenticated()

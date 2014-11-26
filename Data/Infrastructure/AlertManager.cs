@@ -90,6 +90,9 @@ namespace Data.Infrastructure
         public delegate void ErrorSyncingCalendarHandler(IRemoteCalendarAuthDataDO authData, IRemoteCalendarLinkDO calendarLink = null);
         public static event ErrorSyncingCalendarHandler AlertErrorSyncingCalendar;
 
+        public delegate void HighPriorityIncidentCreatedHandler(int incidentId);
+        public static event HighPriorityIncidentCreatedHandler AlertHighPriorityIncidentCreated;
+
         #region Method
 
         public static void AttendeeUnresponsivenessThresholdReached(int expectedResponseId)
@@ -254,6 +257,12 @@ namespace Data.Infrastructure
             var handler = AlertBookingRequestNeedsProcessing;
             if (handler != null)
                 handler(bookingRequestId);
+        }
+
+        public static void HighPriorityIncidentCreated(int incidentId)
+        {
+            HighPriorityIncidentCreatedHandler handler = AlertHighPriorityIncidentCreated;
+            if (handler != null) handler(incidentId);
         }
 
         #endregion

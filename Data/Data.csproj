@@ -1379,6 +1379,12 @@
     <EmbeddedResource Include="Migrations\201411200956181_UpdateReplyTo.resx">
       <DependentUpon>201411200956181_UpdateReplyTo.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411210750329_Add_Data_To_IncidentDO.resx">
+      <DependentUpon>201411210750329_Add_Data_To_IncidentDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411210850397_Sync.21.11.2014.resx">
+      <DependentUpon>201411210850397_Sync.21.11.2014.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Authentication\" />

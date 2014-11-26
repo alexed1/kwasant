@@ -103,7 +103,7 @@ namespace KwasantCore.Services
                 );
         }
 
-        public static void AddEmail(IUnitOfWork uow, MailMessage message, BookingRequestDO existingBookingRequest)
+        public static EmailDO AddEmail(IUnitOfWork uow, MailMessage message, BookingRequestDO existingBookingRequest)
         {
             var curEmail = Email.ConvertMailMessageToEmail(uow.EmailRepository, message);
             curEmail.ConversationId = existingBookingRequest.Id;
@@ -123,6 +123,8 @@ namespace KwasantCore.Services
             // alerts
             AlertManager.ConversationMemberAdded(existingBookingRequest.Id);
             AlertManager.ConversationMatched(curEmail.Id, curEmail.Subject, existingBookingRequest.Id);
+
+            return curEmail;
         }
     }
 }

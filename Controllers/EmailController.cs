@@ -94,14 +94,22 @@ namespace KwasantWeb.Controllers
                 
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
                 {
-                    Conversations = conversationEmails.OrderBy(c => c.DateReceived).Select(e => new ConversationVM
+                    Conversations = conversationEmails.OrderBy(c => c.DateReceived).Select(e =>
                     {
-                        FromEmailAddress = String.Format("From: {0}", e.From.Address),
-                        DateRecieved = String.Format("{0}", e.DateReceived.TimeAgo()),
-                        Body = e.HTMLText
+                        var bodyText = e.HTMLText;
+                        if (String.IsNullOrEmpty(bodyText))
+                            bodyText = e.PlainText;
+                        if (String.IsNullOrEmpty(bodyText))
+                            bodyText = "[No Body]";
+                        return new ConversationVM
+                        {
+                            FromEmailAddress = String.Format("From: {0}", e.From.Address),
+                            DateRecieved = String.Format("{0}", e.DateReceived.TimeAgo()),
+                            Body = bodyText
+                        };
                     }).ToList(),
                     FromName = curEmail.From.ToDisplayName(),
-                    Subject = curEmail.Subject,
+                    Subject = String.IsNullOrEmpty(curEmail.Subject) ? "[No Subject]" : curEmail.Subject,
                     BookingRequestId = emailId,
                     EmailTo = String.Join(", ", curEmail.To.Select(a => a.Address)),
                     EmailCC = String.Join(", ", curEmail.CC.Select(a => a.Address)),
@@ -115,14 +123,15 @@ namespace KwasantWeb.Controllers
             }
         }
 
+        [HttpPost]
         public JsonResult GetConversationMembers(int emailID)
         {
             var view = GetInfo(emailID);
             var model = view.Model as BookingRequestAdminVM;
             if (model == null)
-                return new JsonResult { Data = null, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+                return Json(null);
 
-            return new JsonResult { Data = model.Conversations, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+            return Json(model.Conversations);
         }
 
         private void SetCachedCallback(HttpSessionStateBase session, string token, Func<IUnitOfWork, EmailDO, ActionResult> callback)
@@ -143,6 +152,7 @@ namespace KwasantWeb.Controllers
             return View("~/Views/Email/Send.cshtml", emailVM);
         }
 
+        [HttpPost]
         public ActionResult HandleSend(SendEmailVM vm)
         {
             var cachedCallback = GetCachedCallback(vm.CallbackToken);
@@ -172,13 +182,39 @@ namespace KwasantWeb.Controllers
                 }
             }
 
-            return new JsonResult {Data = false};
+            return Json(false);
+        }
+
+        [HttpGet]
+        public ActionResult Send()
+        {
+            return DisplayEmail(Session, new CreateEmailVM
+            {
+                ToAddresses = new List<string> { "rjrudman@gmail.com", "temp@gmail.com" },
+                CCAddresses = new List<string> { "alex@gmail.com" },
+                BCCAddresses = new List<string> { "max@gmail.com" },
+                AddressBook = new List<string> { "kate@gmail.com", "temp@gmail.com" },
+                RecipientsEditable = false,
+                BCCHidden = true,
+                CCHidden = true,
+                InsertLinks = new List<CreateEmailVM.InsertLink>
+                {
+                    new CreateEmailVM.InsertLink
+                    {
+                        Id = "negLink",
+                        DisplayName = "Insert Negotiation",
+                        TextToInsert = "<negotiationLink />"
+                    }
+                },
+                Subject = "New negotiation",
+                Body = "Some text..",
+            }, Send);
         }
         
         [HttpPost]
         public ActionResult Send(IUnitOfWork uow, EmailDO emailDO)
         {
-            return new JsonResult { Data = true };
+            return Json(true);
         }
     }
 }

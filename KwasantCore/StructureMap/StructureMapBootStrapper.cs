@@ -71,6 +71,7 @@ namespace KwasantCore.StructureMap
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Notification>();
                 For<IExpectedResponse>().Use<ExpectedResponse>();
+                For<INegotiationResponse>().Use<NegotiationResponse>();
 
                 For<ICalDAVClientFactory>().Use<CalDAVClientFactory>();
                 For<ISecurityServices>().Use<SecurityServices>();
@@ -100,6 +101,7 @@ namespace KwasantCore.StructureMap
                 For<IEmailAddress>().Use<EmailAddress>();
                 For<INotification>().Use<Notification>();
                 For<IExpectedResponse>().Use<ExpectedResponse>();
+                For<INegotiationResponse>().Use<NegotiationResponse>();
                 For<INegotiation>().Use<Negotiation>();
                 For<IQuestion>().Use<Question>();
                 For<IAnswer>().Use<Answer>();

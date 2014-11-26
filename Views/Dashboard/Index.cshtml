@@ -41,7 +41,7 @@
         );
         
         function sendAnEmail() {
-            Kwasant.IFrame.Display('/BookingRequest/DisplayOneOffEmailForm?bookingRequestID=@Model.BookingRequestVM.BookingRequestId',
+            Kwasant.IFrame.Display('@Url.Action("DisplayOneOffEmailForm", "BookingRequest", new { bookingRequestID = Model.BookingRequestVM.BookingRequestId })',
                 {
                     horizontalAlign: 'middle',
                     height: 815,
