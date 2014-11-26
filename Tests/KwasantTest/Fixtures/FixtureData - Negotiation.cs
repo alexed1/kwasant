@@ -97,6 +97,21 @@ using Data.Interfaces;namespace KwasantTest.Fixtures
             return curNegotiationDO;
         }
 
+        public NegotiationDO TestNegotiation6()
+        {
+            var curBookingRequestDO = TestBookingRequest1();
+            var curNegotiationDO = new NegotiationDO
+            {
+                BookingRequest = curBookingRequestDO,
+                BookingRequestID = curBookingRequestDO.Id,
+                NegotiationState = NegotiationState.InProcess,
+                Name = "Negotiation 1"
+            };
+            var question = TestQuestion3();
+            question.Negotiation = curNegotiationDO;
+            curNegotiationDO.Questions.Add(question);
+            return curNegotiationDO;
+        }
        
     }
 }

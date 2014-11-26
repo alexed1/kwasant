@@ -164,6 +164,7 @@
     <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="Security\AuthorizationTokenTests.cs" />
     <Compile Include="Managers\CalendarSyncManagerTest.cs" />
+    <Compile Include="Services\AnswerTests.cs" />
     <Compile Include="Services\BookingRequestTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Entities\CustomerTests.cs" />
@@ -173,6 +174,7 @@
     <Compile Include="Services\EmailTests.cs" />
     <Compile Include="Services\EventServiceTests.cs" />
     <Compile Include="Services\NegotiationTests.cs" />
+    <Compile Include="Services\QuestionTests.cs" />
     <Compile Include="Services\SMSTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Timeslots\TimeslotMergeTests.cs" />
