@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
@@ -50,7 +51,6 @@ namespace KwasantCore.Services
             curEventDO.BookingRequest = bookingRequestDO;            
             curEventDO.CreatedBy = bookingRequestDO.Customer;
             curEventDO.CreatedByID = bookingRequestDO.Customer.Id;
-            curEventDO.DateCreated = DateTimeOffset.UtcNow.ToOffset(bookingRequestDO.DateCreated.Offset);
             
             bookingRequestDO.Events.Add(curEventDO);
 
@@ -58,9 +58,6 @@ namespace KwasantCore.Services
             if (curCalendar == null)
                 throw new EntityNotFoundException<CalendarDO>("No calendars found for this user.");
 			
-			//var attendee = new Attendee();
-            //attendee.DetectEmailsFromBookingRequest(uow, curEventDO);
-
             _bookingRequest.ExtractEmailAddresses(uow, curEventDO);
 
             curEventDO.EventStatus = EventState.Booking;
@@ -76,93 +73,51 @@ namespace KwasantCore.Services
             return curEventDO;
         }
 
-        public void InviteAttendees(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, List<AttendeeDO> existingAttendees)
+        public void Delete(int eventID)
         {
-            if (uow == null)
-                throw new ArgumentNullException("uow");
-            if (eventDO == null)
-                throw new ArgumentNullException("eventDO");
-            if (existingAttendees == null)
-                throw new ArgumentNullException("existingAttendees");
-
-            var invitations = GenerateInvitations(uow, eventDO, newAttendees, existingAttendees);
-            foreach (var invitationDO in invitations)
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _invitation.Dispatch(uow, invitationDO);
-            }
-            eventDO.EventStatus = EventState.DispatchCompleted;
-        }
-
-        //takes submitted form data and updates as necessary
-        //in general, the new event data will simply overwrite the old data. 
-        //in some cases, additional work is necessary to handle the changes
-        public void Process(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo)
-        {
-            if (uow == null)
-                throw new ArgumentNullException("uow");
-            if (eventDO == null)
-                throw new ArgumentNullException("eventDO");
-            if (updatedEventInfo == null)
-                throw new ArgumentNullException("updatedEventInfo");
-
-            List<AttendeeDO> newAttendees; 
-            List<AttendeeDO> existingAttendees;
-            eventDO = Update(uow, eventDO, updatedEventInfo, out newAttendees, out existingAttendees);
-            if (eventDO != null)
-            {
-                if (eventDO.EventStatus != EventState.Draft)
-                    InviteAttendees(uow, eventDO, newAttendees, existingAttendees);
+                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
+                if (eventDO != null)
+                {
+                    var oldStatus = eventDO.EventStatus;
+                    eventDO.EventStatus = EventState.Deleted;
+                    if (oldStatus != EventState.Draft && oldStatus != EventState.Deleted)
+                    {
+                        GenerateInvitations(uow, eventDO);
+                    }
+                    uow.SaveChanges();
+                }
             }
         }
-     
-        public List<InvitationDO> GenerateInvitations(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees, List<AttendeeDO> existingAttendees)
+
+        public List<InvitationDO> GenerateInvitations(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> newAttendees = null, String extraBodyMessage = null)
         {
-            //This line is so that the Server object is compiled. Without this, Razor fails; since it's executed at runtime and the object has been optimized out when running tests.
-            //var createdDate = eventDO.BookingRequest.DateCreated;
-            //eventDO.StartDate = eventDO.StartDate.ToOffset(createdDate.Offset);
-            //eventDO.EndDate = eventDO.EndDate.ToOffset(createdDate.Offset);
-            if (existingAttendees == null)
-                throw new ArgumentNullException("existingAttendees");
+            if (newAttendees == null)
+                newAttendees = new List<AttendeeDO>();
+            var existingAttendees = eventDO.Attendees.Where(a => !newAttendees.Select(na => na.EmailAddress.Address).Contains(a.EmailAddress.Address));
+
             var invitations = new List<InvitationDO>();
-            if (eventDO.EventStatus == EventState.Booking)
+
+            if (eventDO.EventStatus == EventState.Deleted)
             {
                 invitations.AddRange(existingAttendees
-                    .Union(newAttendees ?? Enumerable.Empty<AttendeeDO>())
-                    .Select(newAttendee => _invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO))
+                    .Select(newAttendee => _invitation.Generate(uow, InvitationType.CancelNotification, newAttendee, eventDO, extraBodyMessage))
                     .Where(i => i != null));
             }
             else
             {
-                if (newAttendees != null)
-                {
-                    invitations.AddRange(newAttendees.Select(newAttendee => _invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO)).Where(i => i != null));
-                }
-                invitations.AddRange(existingAttendees.Select(existingAttendee => _invitation.Generate(uow, InvitationType.ChangeNotification, existingAttendee, eventDO)).Where(i => i != null));
+                invitations.AddRange(newAttendees.Select(newAttendee => _invitation.Generate(uow, InvitationType.InitialInvite, newAttendee, eventDO, extraBodyMessage)).Where(i => i != null));
+                invitations.AddRange(existingAttendees.Select(existingAttendee => _invitation.Generate(uow, InvitationType.ChangeNotification, existingAttendee, eventDO, extraBodyMessage)).Where(i => i != null));
             }
-
+            
             return invitations;
         }
 
-        private EventDO Update(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo, out List<AttendeeDO> newAttendees, out List<AttendeeDO> existingAttendees)
+        public List<AttendeeDO> Update(IUnitOfWork uow, EventDO eventDO, EventDO updatedEventInfo)
         {
-            newAttendees = UpdateAttendees(uow, eventDO, updatedEventInfo.Attendees);
-            if (newAttendees != null)
-            {
-                existingAttendees = updatedEventInfo.Attendees.Except(newAttendees).ToList();
-            }
-            else
-            {
-                existingAttendees = updatedEventInfo.Attendees.ToList();
-            }
-            eventDO = _mappingEngine.Map(updatedEventInfo, eventDO);
-            if (newAttendees != null || uow.IsEntityModified(eventDO))
-            {
-                return eventDO;
-            }
-            else
-            {
-                return null;
-            }
+            _mappingEngine.Map(updatedEventInfo, eventDO);
+            return UpdateAttendees(uow, eventDO, updatedEventInfo.Attendees);
         }
 
         public List<AttendeeDO> UpdateAttendees(IUnitOfWork uow, EventDO eventDO, List<AttendeeDO> updatedAttendeeList)
@@ -181,7 +136,11 @@ namespace KwasantCore.Services
                 eventDO.Attendees.Add(attendee);
                 newAttendees.Add(attendee);
             }
-            return newAttendees.Any() ? newAttendees : null;
+
+            if (eventDO.EventStatus == EventState.Booking)
+                newAttendees = eventDO.Attendees;
+
+            return newAttendees;
         }
 
         public static iCalendar GenerateICSCalendarStructure(EventDO eventDO)
@@ -228,8 +187,23 @@ namespace KwasantCore.Services
 
             //final assembly of event
             dDayEvent.Organizer = new Organizer(fromEmail) { CommonName = fromName };
+            if (eventDO.EventStatus == EventState.Deleted)
+            {
+                dDayEvent.Status = EventStatus.Cancelled;
+            }
+            else
+            {
+                dDayEvent.Status = EventStatus.Confirmed;
+            }
             ddayCalendar.Events.Add(dDayEvent);
-            ddayCalendar.Method = CalendarMethods.Request;
+            if (eventDO.EventStatus == EventState.Deleted)
+            {
+                ddayCalendar.Method = CalendarMethods.Cancel;
+            }
+            else
+            {
+                ddayCalendar.Method = CalendarMethods.Request;
+            }
 
             return ddayCalendar;
         }
@@ -251,7 +225,7 @@ namespace KwasantCore.Services
                 Sequence = icsEvent.Sequence,
                 Summary = icsEvent.Summary,
                 Transparency = icsEvent.Transparency.ToString(),
-                DateCreated = icsEvent.Created != null ? icsEvent.Created.UTC : DateTimeOffset.UtcNow,
+                CreateDate = icsEvent.Created != null ? icsEvent.Created.UTC : default(DateTimeOffset),
                 Attendees = icsEvent.Attendees
                     .Where(a => a.Value != null)
                     .Select(a => new AttendeeDO()

@@ -192,34 +192,40 @@ namespace KwasantWeb.Controllers
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                         {
                     string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaCreateManuallyBooker", subject);
-                    return new JsonResult() { Data = new { Message = "A new booking requested created!", Result = "Success"}, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+                    return Json(new { Message = "A new booking requested created!", Result = "Success"});
                 }
             }
             catch (ValidationException ex)
             {
-                return new JsonResult() { Data = new { Message = "You need to provide a valid Email Address.", Result = "Failure" }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+                return Json(new { Message = "You need to provide a valid Email Address.", Result = "Failure" });
             }
             catch (Exception ex)
             {
                 Logger.GetLogger().Error("Error processing a home page try it out form schedule me", ex);
-                return new JsonResult() { Data = new { Message = "Something went wrong. Sorry about that", Result = "Failure" }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+                return Json(new { Message = "Something went wrong. Sorry about that", Result = "Failure" });
             }
         }
 
+        [HttpPost]
         [AllowAnonymous]
         public ActionResult CreateViaHomePage(string emailAddress, string meetingInfo)
         {
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaTryItOut", "I'm trying out Kwasant");
+                    return Json(new
                         {
-                    string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaTryItOut", "");
-                    return new JsonResult() { Data = new { Message = "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be", UserID = userId }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-        }
+                            Message =
+                                    "Thanks! We'll be emailing you a meeting request that demonstrates how convenient Kwasant can be",
+                            UserID = userId
+                        });
+                }
             }
             catch (Exception e)
             {
-                return new JsonResult() { Data = new { Message = "Sorry! Something went wrong. Alpha software..." }, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+                return Json(new {Message = "Sorry! Something went wrong. Alpha software..."});
             }
         }
 
@@ -270,7 +276,7 @@ namespace KwasantWeb.Controllers
 
         public ActionResult ShowInProcessBRS()
         {
-            var curBooker = this.GetUserId();
+            string curBooker = null;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 IEnumerable<BookingRequestDO> bookingRequestDO = _br.GetCheckedOut(uow, curBooker);
@@ -300,7 +306,7 @@ namespace KwasantWeb.Controllers
                 {
                     AddressBook = emailAddresses.ToList(),
                     Subject = bookingRequestDO.Subject,
-                    SubjectEditable = false,
+                    SubjectEditable = true,
 
                     HeaderText = "Send an email",
                     BodyPromptText = "Enter some text for your recipients",
@@ -309,14 +315,20 @@ namespace KwasantWeb.Controllers
                 return emailController.DisplayEmail(Session, currCreateEmailVM,
                     (subUow, emailDO) =>
                     {
+                        emailDO.TagEmailToBookingRequest(bookingRequestDO);
+
+                        var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
                         var sendingUser = subUow.UserRepository.GetByKey(userID);
-                        subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("SimpleEmail_template"));
+                        subUow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, configRepository.Get("SimpleEmail_template"));
 
                         var currBookingRequest = new BookingRequest();
                         currBookingRequest.AddExpectedResponseForBookingRequest(subUow, emailDO, bookingRequestID);
 
-                        emailDO.FromID = sendingUser.EmailAddressID;
-                        emailDO.FromName = sendingUser.DisplayName + " via Kwasant";
+                        var emailAddress = new EmailAddress(configRepository);
+                        var fromEmailAddress = emailAddress.GetFromEmailAddress(subUow, emailDO.To.First(), sendingUser);
+                        emailDO.FromName = fromEmailAddress.Name;
+                        emailDO.From = fromEmailAddress;
+                        
                         subUow.SaveChanges();
                         return Json(true);
                     });

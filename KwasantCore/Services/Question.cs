@@ -18,7 +18,14 @@ namespace KwasantCore.Services
 
         public QuestionDO Update(IUnitOfWork uow, QuestionDO submittedQuestionDO)
         {
-            var curQuestionDO = uow.QuestionRepository.GetOrCreateByKey(submittedQuestionDO.Id);
+            QuestionDO curQuestionDO;
+            if (submittedQuestionDO.Id == 0)
+            {
+                curQuestionDO = new QuestionDO();
+                uow.QuestionsRepository.Add(curQuestionDO);
+            }
+            else
+                curQuestionDO = uow.QuestionsRepository.GetByKey(submittedQuestionDO.Id);
 
             curQuestionDO.AnswerType = submittedQuestionDO.AnswerType;
             if (curQuestionDO.QuestionStatus == 0)

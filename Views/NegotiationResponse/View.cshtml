@@ -67,9 +67,17 @@
                     if (result === undefined || result === null || result.responseText === undefined || result.responseText === null) {
                         alert('An error occured on the server. Your changes have not been saved.');
                     } else {
-                        var newDoc = document.open("text/html", "replace");
-                        newDoc.write(result.responseText);
-                        newDoc.close();
+                        $(function () {
+                            Kwasant.IFrame.Display('ThankYouView',
+                            {
+                                modal: true,
+                                callback: function (result) {
+                                    if (result)
+                                        close();
+                                },
+                                height: 160
+                            });
+                        }());
                     }
                 });
         }

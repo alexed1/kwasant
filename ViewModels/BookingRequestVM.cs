@@ -18,6 +18,7 @@ namespace KwasantWeb.ViewModels
     public class BookingRequestVM
     {
         public int Id { get; set; }
+        public String BookerName { get; set; } 
         public String Subject { get; set; }
         public String EmailAddress { get; set; }
         public DateTimeOffset DateReceived { get; set; }

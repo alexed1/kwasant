@@ -1,4 +1,6 @@
-﻿using Data.Interfaces;
+﻿using System.Collections.Generic;
+using System.Net.Mail;
+using Data.Interfaces;
 using Data.States;
 using KwasantCore.Services;
 using KwasantTest.Fixtures;
@@ -19,7 +21,7 @@ namespace KwasantTest.Conversations
                 uow.BookingRequestRepository.Add(bookingRequestDO);
                 uow.SaveChanges();
 
-                var matchedBookingRequest = Conversation.Match(uow, bookingRequestDO.Subject, bookingRequestDO.From.Address);
+                var matchedBookingRequest = Conversation.Match(uow, null, null, bookingRequestDO.Subject, bookingRequestDO.From.Address);
                 Assert.AreEqual(bookingRequestDO, matchedBookingRequest);
             }
         }
@@ -34,7 +36,7 @@ namespace KwasantTest.Conversations
                 uow.BookingRequestRepository.Add(bookingRequestDO);
                 uow.SaveChanges();
 
-                var matchedBookingRequest = Conversation.Match(uow, "RE: " + bookingRequestDO.Subject, bookingRequestDO.From.Address);
+                var matchedBookingRequest = Conversation.Match(uow, null, null, "RE: " + bookingRequestDO.Subject, bookingRequestDO.From.Address);
                 Assert.AreEqual(bookingRequestDO, matchedBookingRequest);
             }
         }
@@ -49,7 +51,7 @@ namespace KwasantTest.Conversations
                 uow.BookingRequestRepository.Add(bookingRequestDO);
                 uow.SaveChanges();
 
-                var matchedBookingRequest = Conversation.Match(uow, bookingRequestDO.Subject + "THIS IS A DIFFERENT SUBJECT", bookingRequestDO.From.Address);
+                var matchedBookingRequest = Conversation.Match(uow, null, null, bookingRequestDO.Subject + "THIS IS A DIFFERENT SUBJECT", bookingRequestDO.From.Address);
                 Assert.Null(matchedBookingRequest);
             }
         }
@@ -65,7 +67,7 @@ namespace KwasantTest.Conversations
                 uow.BookingRequestRepository.Add(bookingRequestDO);
                 uow.SaveChanges();
 
-                var matchedBookingRequest = Conversation.Match(uow, bookingRequestDO.Subject, bookingRequestDO.From.Address);
+                var matchedBookingRequest = Conversation.Match(uow, null, null, bookingRequestDO.Subject, bookingRequestDO.From.Address);
                 Assert.Null(matchedBookingRequest);
             }
         }
@@ -81,7 +83,7 @@ namespace KwasantTest.Conversations
                 uow.BookingRequestRepository.Add(bookingRequestDO);
                 uow.SaveChanges();
 
-                var matchedBookingRequest = Conversation.Match(uow, bookingRequestDO.Subject, bookingRequestDO.From.Address);
+                var matchedBookingRequest = Conversation.Match(uow, null, null, bookingRequestDO.Subject, bookingRequestDO.From.Address);
                 Assert.Null(matchedBookingRequest);
             }
         }
@@ -96,7 +98,7 @@ namespace KwasantTest.Conversations
                 uow.BookingRequestRepository.Add(bookingRequestDO);
                 uow.SaveChanges();
 
-                var matchedBookingRequest = Conversation.Match(uow, bookingRequestDO.Subject, bookingRequestDO.From.Address + ".xyz");
+                var matchedBookingRequest = Conversation.Match(uow, null, null, bookingRequestDO.Subject, bookingRequestDO.From.Address + ".xyz");
                 Assert.Null(matchedBookingRequest);
             }
         }
@@ -115,7 +117,45 @@ namespace KwasantTest.Conversations
 
                 uow.SaveChanges();
 
-                var matchedBookingRequest = Conversation.Match(uow, bookingRequestDO.Subject, emailDO.From.Address);
+                var matchedBookingRequest = Conversation.Match(uow, null, null, bookingRequestDO.Subject, emailDO.From.Address);
+                Assert.AreEqual(bookingRequestDO, matchedBookingRequest);
+            }
+        }
+
+        [Test]
+        public void TestMatchingByMessageID()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var bookingRequestDO = fixture.TestBookingRequest1();
+                uow.BookingRequestRepository.Add(bookingRequestDO);
+
+                var emailDO = fixture.TestEmail3();
+                emailDO.Conversation = bookingRequestDO;
+
+                uow.SaveChanges();
+
+                var matchedBookingRequest = Conversation.Match(uow, new Dictionary<string, string> { { "References", emailDO.MessageID }}, null, "DIFFERENT SUBJECT", emailDO.From.Address + ".DIFFERENTEMAIL");
+                Assert.AreEqual(bookingRequestDO, matchedBookingRequest);
+            }
+        }
+
+        [Test]
+        public void TestMatchingByReplyTo()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var bookingRequestDO = fixture.TestBookingRequest1();
+                uow.BookingRequestRepository.Add(bookingRequestDO);
+
+                var emailDO = fixture.TestEmail3();
+                emailDO.Conversation = bookingRequestDO;
+
+                uow.SaveChanges();
+
+                var matchedBookingRequest = Conversation.Match(uow, null, new[] { new MailAddress("test+" + bookingRequestDO.Id + "@sant.com"), }, "DIFFERENT SUBJECT", emailDO.From.Address + ".DIFFERENTEMAIL");
                 Assert.AreEqual(bookingRequestDO, matchedBookingRequest);
             }
         }

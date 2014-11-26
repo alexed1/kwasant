@@ -200,6 +200,11 @@
             .attr('name', groupID)
             .attr('QuestionType', 'Timeslot');
 
+        if (questionInitValues.AnswerType == 'Timeslot')
+            questionTypeCalendar.get(0).checked = true;
+        else
+            questionTypeText.get(0).checked = true;        
+
         questionObject.OpenEventWindowSelection = function () {
             var _that = this;
 
@@ -686,7 +691,10 @@
             deleteButton.hide();
         
         if (answerInitValues.CanDelete || !canEditAnswer) {
-            suggestedBy.show();
+            if (suggestedByText == 'Suggested by undefined')
+                suggestedBy.hide();
+            else
+                suggestedBy.show();
         }
 
 

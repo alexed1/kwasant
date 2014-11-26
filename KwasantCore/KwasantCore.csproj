@@ -167,6 +167,7 @@
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
+    <Compile Include="Interfaces\INegotiationResponse.cs" />
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IAnswer.cs" />
     <Compile Include="Interfaces\IAttendee.cs" />
@@ -198,16 +199,6 @@
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\GoogleCalDAVClient.cs" />
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClient.cs" />
     <Compile Include="Managers\APIManagers\Packagers\CalDAV\ICalDAVClientFactory.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\ActiveMandrillWebhook.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillBasePackage.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillDeleteWebhook.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillDynamicContentChunk.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillListWebhooks.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillMergeRecipient.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillResponse.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillTemplatePackage.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookAddRequest.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\Mandrill\APIStructures\MandrillWebhookResponse.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />
@@ -260,6 +251,7 @@
     <Compile Include="Services\InvitationResponse.cs" />
     <Compile Include="Services\IQuestion.cs" />
     <Compile Include="Services\Negotiation.cs" />
+    <Compile Include="Services\NegotiationResponse.cs" />
     <Compile Include="Services\Notification.cs" />
     <Compile Include="Services\Question.cs" />
     <Compile Include="Services\Report.cs" />
@@ -291,11 +283,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\HTMLEventInvitation_Update.html" />
-    <Content Include="Resources\HTMLEventInvitation.html" />
     <Content Include="Resources\perfect-krawsant.png" />
-    <Content Include="Resources\PlainEventInvitation_Update.html" />
-    <Content Include="Resources\PlainEventInvitation.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Diagnostics\" />

@@ -1,4 +1,7 @@
-﻿using System.Net.Mail;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mail;
 using Data.Entities;
 using Data.Interfaces;
 using KwasantCore.Services;
@@ -12,14 +15,15 @@ namespace KwasantCore.Managers.InboundEmailHandlers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var existingBookingRequest = Conversation.Match(uow, message.Subject, message.From.Address);
+                var headers = message.Headers.AllKeys.ToDictionary(header => header, header => message.Headers[header]);
+                var existingBookingRequest = Conversation.Match(uow, headers, message.To, message.Subject, message.From.Address);
                 if (existingBookingRequest != null)
                 {
-                    Conversation.AddEmail(uow, message, existingBookingRequest);
+                    var createdEmailDO = Conversation.AddEmail(uow, message, existingBookingRequest);
 
                     var br = new BookingRequest();
-                    var fromUser = uow.UserRepository.GetOrCreateUser(message.From.Address);
-                    br.AcknowledgeResponseToBookingRequest(uow, existingBookingRequest.Id, fromUser.Id);
+                    var fromUser = uow.UserRepository.GetOrCreateUser(createdEmailDO.From);
+                    br.AcknowledgeResponseToBookingRequest(uow, existingBookingRequest, createdEmailDO, fromUser.Id);
 
                     uow.SaveChanges();
                     return true;

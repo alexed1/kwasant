@@ -14,6 +14,7 @@ namespace KwasantCore.ExternalServices
         void Dispose();
         event EventHandler<IdleMessageEventArgsWrapper> NewMessage;
         event EventHandler<IdleErrorEventArgsWrapper> IdleError;
+        void DeleteMessages(IEnumerable<uint> uid);
     }
 
     public class IdleMessageEventArgsWrapper

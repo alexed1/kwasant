@@ -28,8 +28,7 @@ namespace Daemons
                 _testSubjects.Add(subject);
         }
 
-        public delegate void ExplicitCustomerCreatedHandler(string subject);
-        public static event ExplicitCustomerCreatedHandler TestMessageReceived;
+        public static event EventHandler<TestMessageReceivedEventArgs> TestMessageReceived;
 
         private string _fromEmailAddress;
 
@@ -163,7 +162,21 @@ namespace Daemons
                 LogSuccess(messages.Count + " messages received.");
 
                 foreach (var message in messages)
-                    ProcessMessageInfo(message);
+                {
+                    bool deleteMessage;
+                    ProcessMessageInfo(message, out deleteMessage);
+                    if (deleteMessage)
+                    {
+                        try
+                        {
+                            client.DeleteMessages(client.Search(SearchCondition.Header("Message-ID", message.Headers["Message-ID"])));
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.GetLogger().Warn("Unable to delete a test message", e);
+                        }
+                    }
+                }
             }
             catch (SocketException ex) //we were getting strange socket errors after time, and it looks like a reset solves things
             {
@@ -178,8 +191,9 @@ namespace Daemons
             }
         }
 
-        private void ProcessMessageInfo(MailMessage messageInfo)
+        private void ProcessMessageInfo(MailMessage messageInfo, out bool deleteMessage)
         {
+            deleteMessage = false;
             var logString = "Processing message with subject '" + messageInfo.Subject + "'";
             Logger.GetLogger().Info(logString);
             LogEvent(logString);
@@ -193,7 +207,12 @@ namespace Daemons
 
                     if (TestMessageReceived != null)
                     {
-                        TestMessageReceived(messageInfo.Subject);
+                        var args = new TestMessageReceivedEventArgs(messageInfo.Subject);
+                        TestMessageReceived(this, args);
+                        if (args.DeleteFromInbox)
+                        {
+                            deleteMessage = true;
+                        }
                         LogSuccess();
                     }
                     else
@@ -234,4 +253,16 @@ namespace Daemons
             _alreadyListening = false;
         }
     }
+
+    public class TestMessageReceivedEventArgs : EventArgs
+    {
+        public string Subject { get; private set; }
+        public bool DeleteFromInbox { get; set; }
+
+        public TestMessageReceivedEventArgs(string subject)
+        {
+            Subject = subject;
+        }
+    }
+
 }

@@ -9,6 +9,9 @@
 //------------------------------------------------------------------------------
 
 namespace KwasantCore.Properties {
+    using System;
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -58,118 +61,12 @@ namespace KwasantCore.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to @{
-        ///
-        ///var serverURL = Utilities.Server.ServerUrl;
-        ///
-        ///var linkTo = serverURL;
-        ///var imageURL = serverURL + &quot;Content/img/EmailLogo.png&quot;;
-        ///if(Utilities.Server.IsDevMode)
-        ///{
-        ///imageURL = &quot;kwasant.com/Content/img/EmailLogo.png&quot;;
-        ///}
-        ///
-        ///var customerID = Model.UserID;
-        ///
-        ///var time = Model.IsAllDay
-        ///? &quot;All day - &quot; + Model.StartDate.ToString(&quot;ddd d MMM&quot;)
-        ///: Model.StartDate.ToString(&quot;ddd MMM d, yyyy hh:mm tt&quot;) + &quot; - &quot; + Model.EndDate.ToString(&quot;hh:mm tt&quot;);
-        ///
-        ///var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(Dat [rest of string was truncated]&quot;;.
-        /// </summary>
-        public static string HTMLEventInvitation {
-            get {
-                return ResourceManager.GetString("HTMLEventInvitation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to @{
-        ///
-        ///var serverURL = Utilities.Server.ServerUrl;
-        ///
-        ///var linkTo = serverURL;
-        ///var imageURL = serverURL + &quot;Content/img/EmailLogo.png&quot;;
-        ///if(Utilities.Server.IsDevMode)
-        ///{
-        ///imageURL = &quot;kwasant.com/Content/img/EmailLogo.png&quot;;
-        ///}
-        ///
-        ///var customerID = Model.UserID;
-        ///
-        ///var time = Model.IsAllDay
-        ///? &quot;All day - &quot; + Model.StartDate.ToString(&quot;ddd d MMM&quot;)
-        ///: Model.StartDate.ToString(&quot;ddd MMM d, yyyy hh:mm tt&quot;) + &quot; - &quot; + Model.EndDate.ToString(&quot;hh:mm tt&quot;);
-        ///
-        ///var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(Dat [rest of string was truncated]&quot;;.
-        /// </summary>
-        public static string HTMLEventInvitation_Update {
-            get {
-                return ResourceManager.GetString("HTMLEventInvitation_Update", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap perfect_krawsant {
             get {
                 object obj = ResourceManager.GetObject("perfect_krawsant", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to @{
-        ///var basicText = Utilities.ConfigRepository.Get(&quot;emailBasicText&quot;);
-        ///var time = Model.IsAllDay
-        ///                        ? &quot;All day - &quot; + Model.StartDate.ToString(&quot;ddd d MMM&quot;)
-        ///                        : Model.StartDate.ToString(&quot;ddd MMM d, yyyy hh:mm tt&quot;) + &quot; - &quot; + Model.EndDate.ToString(&quot;hh:mm tt&quot;);
-        ///
-        ///var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
-        ///}
-        ///
-        ///@basicText
-        ///@Model.Summary
-        ///@Model.Description
-        ///*When*
-        ///@time UTC+@timeZone
-        ///*Where*
-        ///@Model.Location
-        ///*Who*
-        ///@{
-        ///foreach(var [rest of string was truncated]&quot;;.
-        /// </summary>
-        public static string PlainEventInvitation {
-            get {
-                return ResourceManager.GetString("PlainEventInvitation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to @{
-        ///var basicText = Utilities.ConfigRepository.Get(&quot;emailBasicText&quot;);
-        ///var time = Model.IsAllDay
-        ///                        ? &quot;All day - &quot; + Model.StartDate.ToString(&quot;ddd d MMM&quot;)
-        ///                        : Model.StartDate.ToString(&quot;ddd MMM d, yyyy hh:mm tt&quot;) + &quot; - &quot; + Model.EndDate.ToString(&quot;hh:mm tt&quot;);
-        ///
-        ///var timeZone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
-        ///}
-        ///
-        ///@basicText
-        ///@Model.Summary
-        ///@Model.Description
-        ///*When*
-        ///@time UTC+@timeZone
-        ///*Where*
-        ///@Model.Location
-        ///*Who*
-        ///@{
-        ///foreach(var [rest of string was truncated]&quot;;.
-        /// </summary>
-        public static string PlainEventInvitation_Update {
-            get {
-                return ResourceManager.GetString("PlainEventInvitation_Update", resourceCulture);
             }
         }
     }

@@ -123,7 +123,7 @@ namespace KwasantCore.Services
             var summaryText = new List<string>();
             var actualHtml =
                     @"
-{0}. {1}? <br/>
+{0}. {1} <br/>
 Proposed Answers: {2}
 ";
 

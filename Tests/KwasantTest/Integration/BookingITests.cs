@@ -50,7 +50,9 @@ namespace KwasantTest.Integration
 
             var mockedSendGridTransport = new Mock<ITransport>();
             //When we are asked to send an email, store it in unreadSentEmails
-            mockedSendGridTransport.Setup(m => m.DeliverAsync(It.IsAny<ISendGrid>())).Callback<ISendGrid>(sgm => unreadSentMails.Add(sgm.CreateMimeMessage()));
+            mockedSendGridTransport.Setup(m => m.DeliverAsync(It.IsAny<ISendGrid>())).Callback<ISendGrid>(sgm => 
+                unreadSentMails.Add(sgm.CreateMimeMessage())
+                );
 
             ObjectFactory.Configure(o => o.For<IImapClient>().Use(mockedImapClient.Object));
             ObjectFactory.Configure(o => o.For<ITransport>().Use(mockedSendGridTransport.Object));
@@ -84,7 +86,7 @@ namespace KwasantTest.Integration
                 uow.SaveChanges();
                 
                 //Dispatch invites for the event
-                e.InviteAttendees(uow, eventDO, eventDO.Attendees, new List<AttendeeDO>());
+                e.GenerateInvitations(uow, eventDO, eventDO.Attendees);
                 uow.SaveChanges();
 
                 //Run our outbound email daemon so we can check if emails are created
@@ -114,7 +116,7 @@ namespace KwasantTest.Integration
                 newUser.UserName = "testuser";
 
                 //Calling controller method to Add user
-                new UserController().Update(newUser);
+                new UserController().ProcessAddUser(newUser);
                 uow.SaveChanges();
 
                 //Getting the envelop in queue
