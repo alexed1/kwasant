@@ -251,6 +251,7 @@
     <Compile Include="AlertQueues\AlertQueue.cs" />
     <Compile Include="AlertQueues\BookingRequestUpdatedQueue.cs" />
     <Compile Include="AlertQueues\BookingRequestReservedForUserQueue.cs" />
+    <Compile Include="AlertQueues\HighPriorityIncidentsQueue.cs" />
     <Compile Include="AlertQueues\NewBookingRequestResponseQueue.cs" />
     <Compile Include="AlertQueues\SharedAlertQueues.cs" />
     <Compile Include="Api\EventResponse.aspx.cs">

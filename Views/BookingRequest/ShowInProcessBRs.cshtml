@@ -7,10 +7,11 @@
 <table id="tblinprocessbookingrequest" class="data-table table-with-action">
     <thead>
         <tr>
+            <th width="10%">Booker Name</th>
             <th width="10%">Date Received</th>
             <th width="15%">From</th>
             <th width="15%">Subject</th>
-            <th width="45%">Body</th>
+            <th width="35%">Body</th>
             <th class="action-cell">Action</th>
         </tr>
     </thead>
@@ -28,6 +29,7 @@
                 data: response,
                 order: [2, 'desc'],
                 columns: [
+                    { data: 'BookerName' },
                     { data: 
                           function(data){
                               return convertToDateString(data.DateReceived)

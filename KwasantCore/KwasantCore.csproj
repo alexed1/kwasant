@@ -283,13 +283,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\HTMLEventInvitation_Cancel.html" />
-    <Content Include="Resources\PlainEventInvitation_Cancel.html" />
-    <Content Include="Resources\HTMLEventInvitation_Update.html" />
-    <Content Include="Resources\HTMLEventInvitation.html" />
     <Content Include="Resources\perfect-krawsant.png" />
-    <Content Include="Resources\PlainEventInvitation_Update.html" />
-    <Content Include="Resources\PlainEventInvitation.html" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Diagnostics\" />

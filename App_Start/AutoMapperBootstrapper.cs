@@ -71,6 +71,7 @@ namespace KwasantWeb.App_Start
 
             Mapper.CreateMap<BookingRequestDO, BookingRequestVM>()
                 .ForMember(br => br.Id, opts => opts.ResolveUsing(e => e.Id))
+                .ForMember(br => br.BookerName, opts => opts.ResolveUsing(e => e.Booker != null ? e.Booker.EmailAddress.Address : ""))
                 .ForMember(br => br.Subject, opts => opts.ResolveUsing(e => e.Subject))
                 .ForMember(br => br.EmailAddress, opts => opts.ResolveUsing(e => e.From.Address))
                 .ForMember(br => br.DateReceived, opts => opts.ResolveUsing(e => e.DateReceived))
