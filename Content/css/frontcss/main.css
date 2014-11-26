@@ -851,32 +851,38 @@ blockquote h2 i {
 #welcome {
 	min-height: 250px;
 }
+ 
 
 #welcome:hover {
 	cursor: pointer;
 }
 
+#welcome .inner-bg {
+    background: url('/Content/img/backgrounds/cup-and-coffe-bg.png') right bottom no-repeat;
+    background-size: 85%;
+    height: 100%;
+    width: 85%;
+    margin: 0 auto;
+}
+
 .landing-welcome-area {
 	width: 100%;
 	position: fixed;	
-	top: 35%;
-}
+	top: 20%;
+} 
 
 .landing-welcome-area .landing-welcome-inner {
-	width: 95%;
-	margin: 0 auto;
-	overflow: hidden;	
+    width: 100%;
 }
 
 #logotext.text {
 	width: 24em;	
-	margin-top: 63px;
 	font-size: 1em;
 	float: right;
 	text-align: center;
 	border: .2em solid #fff;
 	margin-left: -12em;
-	padding: 2em 0;
+	padding: 1.4em 0;
 	opacity: 1;
 	text-shadow: 0px 1px 2px rgba(0,0,0,0.5);
 	box-shadow: 0px 1px 2px rgba(0,0,0,0.7);
@@ -884,11 +890,35 @@ blockquote h2 i {
 }
 
 .landing-welcome-area .landing-video {
-	background: url('/Content/img/backgrounds/ie-black-bg.png');
-	padding: 10px;
-	float: left;	
+    float: left;	
+}
+
+.landing-welcome-area .landing-video .try-kwasant {
+    padding-top: 70px;
+}
+
+.landing-welcome-area .landing-video .try-kwasant a.try-kwasant-lnk {
+    background: url('/Content/img/forms/try-kwasant-btn.png') no-repeat;
+    display: block; 
+    height: 63px;
+    width: 210px;
+    margin: 0 auto;
+    text-indent: -10000px;    
+}
+
+.landing-video-wrap {
+    background: url('/Content/img/backgrounds/ie-black-bg.png');
+	padding: 10px; 		
 	border: 4px solid #fff;
 	box-shadow: 0px 1px 2px rgba(0,0,0,0.7);
+    position: relative;
+}
+
+.landing-welcome-area .landing-video img.watch-video-label {
+    position: absolute;
+    left: -38px;
+    top: -21px;
+    z-index: 5;    
 }
 
 .landing-welcome-area .landing-video .video-inner {
@@ -906,6 +936,17 @@ blockquote h2 i {
 	position: relative;
 	z-index: 2;	
     visibility: hidden;
+}
+
+#welcome #about {
+    opacity: 0.95;
+    background: #f2e9df;
+    margin-top: -80px;
+}
+
+#welcome #about h2 {
+    font-size: 26px;
+    line-height: 60px;
 }
 
 .lt-ie9 #logotext.text {
@@ -1778,7 +1819,7 @@ address {
 }
 
 .top-banner {
-	background-image: url('/Content/img/backgrounds/background_coffee.jpg');
+	background-image: url('/Content/img/backgrounds/background_wood.jpg');
 }
 
 .try-it-out-form p.hint-message {
@@ -1830,8 +1871,14 @@ address {
 
 @media only screen and (min-width: 1368px) {
 	.landing-welcome-area .landing-welcome-inner {
-		width: 85%;
+	    /*	width: 85%; */
 	}
+
+    #welcome .inner-bg {
+        height: 100%;
+        width: 85%;
+        margin: 0 auto;
+    }
 }
 
 @media only screen and (max-width: 1465px) {
