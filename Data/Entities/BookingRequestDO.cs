@@ -65,7 +65,9 @@ namespace Data.Entities
             var reflectionHelper = new ReflectionHelper<BookingRequestDO>();
             var customerProperty = reflectionHelper.GetProperty(br => br.CustomerID);
             var bookerProperty = reflectionHelper.GetProperty(br => br.BookerID);
-            this.DetectUpdates(originalValues, currentValues, new[] { customerProperty, bookerProperty });
+            var stateProperty = reflectionHelper.GetProperty(br => br.State);
+
+            this.DetectUpdates(originalValues, currentValues, new[] { customerProperty, bookerProperty, stateProperty });
 
             var statePropertyName = reflectionHelper.GetPropertyName(br => br.State);
             if (!MiscUtils.AreEqual(originalValues[statePropertyName], currentValues[statePropertyName]))
