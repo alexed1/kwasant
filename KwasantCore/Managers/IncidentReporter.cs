@@ -158,6 +158,8 @@ namespace KwasantCore.Managers
                         PrimaryCategory = "BookingRequest",
                         SecondaryCategory = "Note",
                         Activity = "Created",
+                        BookerId = curBookingRequest.BookerID,
+                        ObjectId = bookingRequestId,
                         Notes = note
                     };
                 uow.IncidentRepository.Add(incidentDO);
