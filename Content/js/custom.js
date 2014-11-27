@@ -1,7 +1,7 @@
 $(document).ready(function () {          
     var containerHeight, loginFormTop 
     getLogiTop();
-    landingWelcomeWidth()
+    landingWelcomeWidth();
 
     $(window).resize(function () {
         landingWelcomeWidth()
@@ -23,7 +23,6 @@ $(document).ready(function () {
     if ($('#emailInfoBox').length > 0) {
         $("body").removeClass('view-popup-window');
     }
-	
 });
 
 function getLogiTop() {

@@ -467,11 +467,13 @@
     <Content Include="Content\img\Management\alexhead.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
+    <Content Include="Content\img\site\alex-photo.png" />
     <Content Include="Content\img\site\browser-header.jpg" />
     <Content Include="Content\img\site\email-header.png" />
     <Content Include="Content\img\site\example_using_kwasant_email.png" />
     <Content Include="Content\img\site\from_this_to_this.png" />
     <Content Include="Content\img\site\How_it_works_diagram.png" />
+    <Content Include="Content\img\site\kwasant-video-screen-logo.png" />
     <Content Include="Content\img\site\kwasant-video-screen.png" />
     <Content Include="Content\img\site\logo.png" />
     <Content Include="Content\img\site\perfect-krawsant.jpg" />
