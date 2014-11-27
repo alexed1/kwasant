@@ -35,7 +35,7 @@ namespace KwasantCore.Services
                 var referencesValue = headers[referencesKey];
                 var eachReference = referencesValue.Split(' ', '\t');
 
-                var potentialMatch = uow.EmailRepository.GetQuery().FirstOrDefault(e => eachReference.Contains(e.MessageID));
+                var potentialMatch = uow.BookingRequestRepository.GetQuery().FirstOrDefault(e => eachReference.Contains(e.MessageID));
 
                 if (potentialMatch == null)
                     return null;

@@ -21,12 +21,14 @@
    
 
             <ul class="nav navbar-nav navbar-right">
-                <li>@Html.ActionLink("My Account", "MyAccount", "User")</li>
+                <li>@*@Html.ActionLink("My Account", "MyAccount", "User", new {id="btnMyAccount"})*@
+                  @Html.ActionLink("My Account", "MyAccount", new { controller = "User"},new {id = "btnMyAccount" })
+                </li>
                 @if (User.IsInRole("Admin")){ 
-                <li>@Html.ActionLink("Dashboard", "Dashboard", "Admin")</li>
+                <li>@Html.ActionLink("Dashboard", "Dashboard", new { controller = "Admin" }, new {id="btnDashBoard"})</li>
                 }
                else if (User.IsInRole("Booker")){ 
-                <li>@Html.ActionLink("Dashboard", "Dashboard", "Booker")</li>
+                <li>@Html.ActionLink("Dashboard", "Dashboard", new { controller = "Booker"},new {id="btnDashBoard"})</li>
                 }
                 <li>@Html.ActionLink("Log off", "LogOff", "Account", routeValues: null, htmlAttributes: new { id = "logoffLink" })</li>
             </ul>
