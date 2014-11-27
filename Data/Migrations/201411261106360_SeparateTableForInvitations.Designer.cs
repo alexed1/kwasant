@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class StartTrackingThreadInformationOnEmails : IMigrationMetadata
+    public sealed partial class SeparateTableForInvitations : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(StartTrackingThreadInformationOnEmails));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(SeparateTableForInvitations));
         
         string IMigrationMetadata.Id
         {
-            get { return "201411181301448_StartTrackingThreadInformationOnEmails"; }
+            get { return "201411261106360_SeparateTableForInvitations"; }
         }
         
         string IMigrationMetadata.Source
