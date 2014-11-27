@@ -12,6 +12,8 @@ namespace KwasantTest.Fixtures
                 Id = 1,
                 AnswerStatus=2,
                 QuestionID = 1,
+                EventID = 1,
+                Event = TestEvent5(),
                 Text = "Starbucks on Valencia",
             };
             return curAnswerDO;
@@ -25,6 +27,8 @@ namespace KwasantTest.Fixtures
                 Id = 2,
                 AnswerStatus = 2,
                 QuestionID=2,
+                EventID = 1,
+                Event = TestEvent5(),
                 Text = "Starbucks on Valencia 2",
             };
             return curAnswerDO;
@@ -35,9 +39,11 @@ namespace KwasantTest.Fixtures
             var curAnswerDO = new AnswerDO
 
             {
-                Id = 2,
+                Id = 0,
                 AnswerStatus = 2,
                 QuestionID = 1,
+                EventID = 1,
+                Event = TestEvent5(),
                 Text = "Starbucks on Valencia 2",
             };
             return curAnswerDO;
@@ -51,6 +57,8 @@ namespace KwasantTest.Fixtures
                 Id = 1,
                 AnswerStatus = 2,
                 QuestionID = 1,
+                EventID = 1,
+                Event = TestEvent5(),
                 Question=TestQuestion7(),
                 Text = "Starbucks on Valencia",
             };
@@ -65,6 +73,8 @@ namespace KwasantTest.Fixtures
                 Id = 1,
                 AnswerStatus = 2,
                 QuestionID = 1,
+                EventID=1,
+                Event = TestEvent5(),
                 Question = TestQuestion7(),
                 Text = "Starbucks on Valencia 2",
             };
