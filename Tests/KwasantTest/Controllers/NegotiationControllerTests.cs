@@ -54,7 +54,7 @@ namespace KwasantTest.Controllers
                 questionsListVM.Add(new NegotiationQuestionVM { 
                     Id=curNegotiationDO.Questions[0].Id,
                     Text = curNegotiationDO.Questions[0].Text,
-                    Type = curNegotiationDO.Questions[0].AnswerType,
+                    AnswerType = curNegotiationDO.Questions[0].AnswerType,
                     Answers=answersListVM
                 });
 
@@ -97,7 +97,7 @@ namespace KwasantTest.Controllers
                 {
                     Id = curNegotiationDO.Questions[0].Id,
                     Text = curNegotiationDO.Questions[0].Text,
-                    Type = curNegotiationDO.Questions[0].AnswerType,
+                    AnswerType = curNegotiationDO.Questions[0].AnswerType,
                     Answers = answersListVM
                 });
 

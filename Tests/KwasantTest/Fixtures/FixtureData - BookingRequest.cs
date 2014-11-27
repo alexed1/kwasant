@@ -28,7 +28,7 @@ namespace KwasantTest.Fixtures
             var curBookingRequestDO = new BookingRequestDO
             {
                 Id = 2,
-                DateCreated = DateTimeOffset.UtcNow,
+                CreateDate = DateTimeOffset.UtcNow,
                 From = TestEmailAddress1(),
                 Subject = "Booking request subject",
                 HTMLText = "Booking request text",
