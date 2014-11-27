@@ -168,7 +168,7 @@ namespace KwasantCore.Managers
 
                 int getMinutinQueue = _br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
 
-                curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1} No. Of Minuts In Queqe: {2}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address, getMinutinQueue);
+                curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
 
                 uow.IncidentRepository.Add(curAction);
                 uow.SaveChanges();
@@ -198,7 +198,7 @@ namespace KwasantCore.Managers
 
                 int getMinutinQueue = _br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
 
-                curAction.Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1} No. Of Minuts In Queqe: {2}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address, getMinutinQueue);
+                curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
 
                 uow.IncidentRepository.Add(curAction);
                 uow.SaveChanges();

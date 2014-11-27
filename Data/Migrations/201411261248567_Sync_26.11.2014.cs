@@ -3,16 +3,16 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Add_Data_To_IncidentDO : DbMigration
+    public partial class Sync_26112014 : DbMigration
     {
         public override void Up()
         {
-            //AddColumn("dbo.Incidents", "Data", c => c.String());
+            AddColumn("dbo.Incidents", "Data", c => c.String());
         }
         
         public override void Down()
         {
-            //DropColumn("dbo.Incidents", "Data");
+            DropColumn("dbo.Incidents", "Data");
         }
     }
 }

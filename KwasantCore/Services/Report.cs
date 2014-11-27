@@ -29,12 +29,15 @@ namespace KwasantCore.Services
                 case "fiveRecentIncident":
                     return ShowMostRecent5Incidents(uow, dateRange, start,
              length, out recordcount);
-                case "showbookerthroughput":
+                case "showBookerThroughput":
                     return ShowBookerThroughput(uow, dateRange, start,
+             length, out recordcount);
+                case "showBRResponsiveness":
+                    return ShowBRResponsiveness(uow, dateRange, start,
              length, out recordcount);
             }
             return this;
-        } 
+        }
 
         private List<object> ShowAllLogs(IUnitOfWork uow, DateRange dateRange, int start,
             int length, out int count)
@@ -157,7 +160,6 @@ namespace KwasantCore.Services
             int length, out int count)
         {
             Booker _booker = new Booker();
-
             var incidentDO = uow.IncidentRepository.GetAll().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime && e.PrimaryCategory ==
 "BookingRequest" && e.Activity == "MarkedProcessed").Skip(start).Take(length).GroupBy(e => e.BookerId);
 
@@ -169,8 +171,24 @@ namespace KwasantCore.Services
                                         BRNameAndCount = _booker.GetName(uow, e.FirstOrDefault().BookerId) + " marked as processed " + e.Count() + " distinct BRs",
                                     }).ToList();
 
-         }
+        }
 
-       
+        private object ShowBRResponsiveness(IUnitOfWork uow, DateRange dateRange, int start,
+            int length, out int count)
+        {
+            Booker _booker = new Booker();
+            var incidentDO = uow.IncidentRepository.GetAll().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime && e.PrimaryCategory ==
+ "BookingRequest" && e.Activity == "Checkout").Skip(start).Take(length);
+            count = incidentDO.Count();
+            return incidentDO.Select(
+            e => new
+            {
+                ObjectId = e.ObjectId,
+                TimeToProcess = e.Data.Substring(e.Data.LastIndexOf(':') + 1),
+            }
+
+            ).ToList();
+
+        }
     }
 }
