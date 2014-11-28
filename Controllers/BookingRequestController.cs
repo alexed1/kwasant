@@ -388,25 +388,43 @@ namespace KwasantWeb.Controllers
             return View();
         }
 
-        [HttpPost]
-        public ActionResult Search(string queryPeriod, bool includeInvalid, int id)
+        //[HttpPost]
+        //public ActionResult Search(string queryPeriod, bool includeInvalid, int id)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var jsonResult = Json(_jsonPackager.Pack(_br.Search(uow, queryPeriod, includeInvalid, id).Select(e => new
+        //        {
+        //            id = e.Id,
+        //            subject = e.Subject,
+        //            fromAddress = e.From.Address,
+        //            dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+        //            body =
+        //                e.HTMLText.Trim().Length > 400
+        //                    ? e.HTMLText.Trim().Substring(0, 400)
+        //                    : e.HTMLText.Trim()
+        //        })
+        //        ));
+        //        jsonResult.MaxJsonLength = int.MaxValue;
+        //        return jsonResult;
+        //    }
+        //}
+
+        public PartialViewResult Search(string queryPeriod, bool includeInvalid, int id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var jsonResult = Json(_jsonPackager.Pack(_br.Search(uow, queryPeriod, includeInvalid, id).Select(e => new
+                List<BRSearchResultVM> result = _br.Search(uow, queryPeriod, includeInvalid, id).Select(e => new
+                BRSearchResultVM
                 {
-                    id = e.Id,
-                    subject = e.Subject,
-                    fromAddress = e.From.Address,
-                    dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
-                    body =
-                        e.HTMLText.Trim().Length > 400
-                            ? e.HTMLText.Trim().Substring(0, 400)
-                            : e.HTMLText.Trim()
-                })
-                ));
-                jsonResult.MaxJsonLength = int.MaxValue;
-                return jsonResult;
+                    Id = e.Id,
+                    Subject = e.Subject,
+                    From = e.From.Address,
+                    DateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                    BookingRequestStatus = "Finished",
+                    EmailStatus = "Sent"
+                }).ToList();
+                return PartialView("SearchResult", result);
             }
         }
     }
