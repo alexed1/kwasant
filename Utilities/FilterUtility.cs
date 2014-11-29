@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using StructureMap;
 
-
 namespace Utilities
 {
     public static class FilterUtility

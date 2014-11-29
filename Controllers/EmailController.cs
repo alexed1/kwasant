@@ -116,7 +116,8 @@ namespace KwasantWeb.Controllers
                     EmailBCC = String.Join(", ", curEmail.BCC.Select(a => a.Address)),
                     EmailAttachments = attachmentInfo,
                     ReadOnly = readonlyView.HasValue && readonlyView.Value,
-                    Booker = booker
+                    Booker = booker,
+                    LastUpdated = curEmail.LastUpdated
                 };
 
                 return PartialView("Show", bookingInfo);
@@ -183,6 +184,32 @@ namespace KwasantWeb.Controllers
             }
 
             return Json(false);
+        }
+
+        [HttpGet]
+        public ActionResult Send()
+        {
+            return DisplayEmail(Session, new CreateEmailVM
+            {
+                ToAddresses = new List<string> { "rjrudman@gmail.com", "temp@gmail.com" },
+                CCAddresses = new List<string> { "alex@gmail.com" },
+                BCCAddresses = new List<string> { "max@gmail.com" },
+                AddressBook = new List<string> { "kate@gmail.com", "temp@gmail.com" },
+                RecipientsEditable = false,
+                BCCHidden = true,
+                CCHidden = true,
+                InsertLinks = new List<CreateEmailVM.InsertLink>
+                {
+                    new CreateEmailVM.InsertLink
+                    {
+                        Id = "negLink",
+                        DisplayName = "Insert Negotiation",
+                        TextToInsert = "<negotiationLink />"
+                    }
+                },
+                Subject = "New negotiation",
+                Body = "Some text..",
+            }, Send);
         }
         
         [HttpPost]

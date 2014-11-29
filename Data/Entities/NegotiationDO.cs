@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Entity.Infrastructure;
-using Data.Infrastructure;
-using Data.Interfaces;
-using Data.Repositories;
 using Data.States.Templates;
-using StructureMap;
-using Utilities;
 
 namespace Data.Entities
 {
-    public class NegotiationDO : BaseDO, ICreateHook
+    public class NegotiationDO : BaseDO
     {
         public NegotiationDO()
         {
@@ -43,10 +36,5 @@ namespace Data.Entities
         [InverseProperty("Negotiation")]
         public virtual IList<QuestionDO> Questions { get; set; }
 
-        public override void AfterCreate()
-        {
-            AlertManager.TrackablePropertyCreated("Negotiation Request created", "NegotiationRequest", Id, "Name: " + Name);
-            base.AfterCreate();
-        }
     }
 }

@@ -142,5 +142,13 @@ namespace KwasantCore.Services
             }
             uow.SaveChanges();
         }
+
+        public string GetUserId(string emailAddress) 
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.UserRepository.GetOrCreateUser(emailAddress).Id;
+            }
+        }
     }
 }

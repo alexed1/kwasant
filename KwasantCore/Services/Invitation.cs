@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Mime;
 using Data.Entities;
 using Data.Interfaces;
@@ -27,17 +28,7 @@ namespace KwasantCore.Services
             _emailAddress = emailAddress;
         }
 
-        public void Dispatch(IUnitOfWork uow, InvitationDO curInvitation)
-        {
-            if (uow == null)
-                throw new ArgumentNullException("uow");
-            if (curInvitation == null)
-                throw new ArgumentNullException("curInvitation");
-
-            uow.EnvelopeRepository.ConfigurePlainEmail(curInvitation);
-        }
-
-        public InvitationDO Generate(IUnitOfWork uow, int curType, AttendeeDO curAttendee, EventDO curEvent)
+        public InvitationDO Generate(IUnitOfWork uow, int curType, AttendeeDO curAttendee, EventDO curEvent, String extraBodyMessage)
         {
             if (uow == null)
                 throw new ArgumentNullException("uow");
@@ -67,22 +58,12 @@ namespace KwasantCore.Services
             var replyToAddress = emailAddressRepository.GetOrCreateEmailAddress(replyToEmail);
             curInvitation.ReplyToAddress = replyToAddress.Address;
             curInvitation.ReplyToName = replyToAddress.Name;
+            curInvitation.HTMLText = extraBodyMessage;
+            curInvitation.PlainText = extraBodyMessage;
 
             var userID = uow.UserRepository.GetOrCreateUser(curAttendee.EmailAddress).Id;
-
-            switch (curType)
-            {
-                case InvitationType.ChangeNotification:
-                    curInvitation = GenerateChangeNotification(uow, curInvitation, curEvent, userID);
-                    break;
-                case InvitationType.CancelNotification:
-                    curInvitation = GenerateCancelNotification(uow, curInvitation, curEvent, userID);
-                    break;
-                default:
-                    curInvitation = GenerateInitialInvite(uow, curInvitation, curEvent, userID);
-                    break;
-            }
-
+            ConfigureForType(curType, uow, curInvitation, curEvent, userID);
+            
             //prepare the outbound email
             curInvitation.EmailStatus = EmailState.Queued;
             if (curEvent.Emails == null)
@@ -106,39 +87,65 @@ namespace KwasantCore.Services
                 });
         }
 
-        private string GetSubjectDate(EventDO curEvent)
+        private void ConfigureForType(int type, IUnitOfWork uow, InvitationDO curInvitation, EventDO curEvent, String userID)
         {
+            String subject;
+            String templateName;
+
             string endtime = curEvent.EndDate.ToString("hh:mm tt");
-            var timezone = System.TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
-            string subjectDate = curEvent.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " +" + timezone.ToString();
-            return subjectDate;
-        }
+            var timezone = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
+            string subjectDate = curEvent.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " +" + timezone;
 
-        private InvitationDO GenerateInitialInvite(IUnitOfWork uow, InvitationDO curInvitation, EventDO curEvent, string userID)
-        {
-            curInvitation.InvitationType = InvitationType.InitialInvite;
-            curInvitation.Subject = String.Format(_configRepository.Get("emailSubject"), GetOriginatorName(curEvent), curEvent.Summary, GetSubjectDate(curEvent));
-            curInvitation.HTMLText = GetEmailHTMLTextForNew(uow, curEvent, userID);
-            curInvitation.PlainText = GetEmailPlainTextForNew(uow, curEvent, userID);
-            return curInvitation;
-        }
+            if (type == InvitationType.InitialInvite)
+            {
+                subject = String.Format(_configRepository.Get("emailSubject"), GetOriginatorName(curEvent), curEvent.Summary, subjectDate);
+                curInvitation.InvitationType = InvitationType.InitialInvite;
+                templateName = _configRepository.Get("InvitationInitial_template");
+            }
+            else
+            {
+                subject = String.Format(_configRepository.Get("emailSubjectUpdated"), GetOriginatorName(curEvent), curEvent.Summary, subjectDate);
+                curInvitation.InvitationType = InvitationType.ChangeNotification;
+                templateName = _configRepository.Get("InvitationUpdate_template");
+            }
 
-        private InvitationDO GenerateChangeNotification(IUnitOfWork uow, InvitationDO curInvitation, EventDO curEvent, string userID)
-        {
-            curInvitation.InvitationType = InvitationType.ChangeNotification;
-            curInvitation.Subject = String.Format(_configRepository.Get("emailSubjectUpdated"), GetOriginatorName(curEvent), curEvent.Summary, GetSubjectDate(curEvent));
-            curInvitation.HTMLText = GetEmailHTMLTextForUpdate(uow, curEvent, userID);
-            curInvitation.PlainText = GetEmailPlainTextForUpdate(uow, curEvent, userID);
-            return curInvitation;
-        }
+            const string whoWrapper = @"
+<table cellpadding=""0"" cellspacing=""0"">
+{0}
+</table>
+";
 
-        private InvitationDO GenerateCancelNotification(IUnitOfWork uow, InvitationDO curInvitation, EventDO curEvent, string userID)
-        {
-            curInvitation.InvitationType = InvitationType.CancelNotification;
-            curInvitation.Subject = String.Format(_configRepository.Get("emailSubjectCancelled"), GetOriginatorName(curEvent), curEvent.Summary, GetSubjectDate(curEvent));
-            curInvitation.HTMLText = GetEmailHTMLTextForCancel(uow, curEvent, userID);
-            curInvitation.PlainText = GetEmailPlainTextForCancel(uow, curEvent, userID);
-            return curInvitation;
+            const string whoFormat = @"
+<tr>
+    <td style=""color: rgb(34, 34, 34); font-family: Arial, sans-serif; font-size: 13px; padding-right: 10px;"">
+        <div>
+            <div style=""margin: 0px 0px 0.3em""><a href=""mailto:{0}"">{1}</a></div>
+        </div>
+    </td>
+</tr>";
+            var whoList = String.Join(Environment.NewLine, curEvent.Attendees.Select(a => String.Format(whoFormat, a.EmailAddress.Address, String.IsNullOrEmpty(a.Name) ? a.EmailAddress.Address : a.Name)));
+
+            var whoListPlainText = String.Join(Environment.NewLine, curEvent.Attendees.Select(a => a.Name + " - " + a.EmailAddress.Address));
+
+            curInvitation.Subject = subject;
+            uow.EnvelopeRepository.ConfigureTemplatedEmail(
+                curInvitation, templateName, new Dictionary<string, string>
+                {
+                    {"description", curEvent.Description},
+                    {
+                        "time", curEvent.IsAllDay
+                            ? "All day - " + curEvent.StartDate.ToString("ddd d MMM")
+                            : curEvent.StartDate.ToString("ddd MMM d, yyyy hh:mm tt") + " - " +
+                              curEvent.EndDate.ToString("hh:mm tt")
+                    },
+                    {"location", curEvent.Location},
+                    {"wholist", String.Format(whoWrapper, whoList)},
+                    {"linkto", GetAuthTokenForBaseURL(uow, userID)},
+                    {"summary", curEvent.Summary},
+                    {"timezone", TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now).ToString()},
+                    {"wholistplaintext", whoListPlainText},
+                }
+                );
         }
 
         private void AttachCalendarToEmail(iCalendar iCal, EmailDO emailDO)
@@ -170,37 +177,6 @@ namespace KwasantCore.Services
         {
             UserDO originator = curEventDO.CreatedBy;
             return User.GetDisplayName(originator);
-            }
-
-        private String GetEmailHTMLTextForUpdate(IUnitOfWork uow, EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.HTMLEventInvitation_Update, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
         }
-
-        private String GetEmailPlainTextForUpdate(IUnitOfWork uow, EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.PlainEventInvitation_Update, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
-        }
-
-        private String GetEmailHTMLTextForCancel(IUnitOfWork uow, EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.HTMLEventInvitation_Cancel, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
-        }
-
-        private String GetEmailPlainTextForCancel(IUnitOfWork uow, EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.PlainEventInvitation_Cancel, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
-        }
-
-        private String GetEmailHTMLTextForNew(IUnitOfWork uow, EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.HTMLEventInvitation, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
-        }
-
-        private String GetEmailPlainTextForNew(IUnitOfWork uow, EventDO eventDO, String userID)
-        {
-            return Razor.Parse(Properties.Resources.PlainEventInvitation, new RazorViewModel(eventDO, userID, GetAuthTokenForBaseURL(uow, userID)));
-        }
-
     }
 }

@@ -31,12 +31,6 @@ namespace Data.Entities
         public string UserID { get; set; }
         public virtual UserDO UserDO { get; set; }
 
-        public override void AfterCreate()
-        {
-            AlertManager.TrackablePropertyCreated("Answer added", "Answer", Id, "Name: " + Text);
-            base.AfterCreate();
-        }
-
         public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             var reflectionHelper = new ReflectionHelper<AnswerDO>();
@@ -48,10 +42,7 @@ namespace Data.Entities
 
         public void OnDelete(DbPropertyValues originalValues)
         {
-            var reflectionHelper = new ReflectionHelper<AnswerDO>();
 
-            var questionIDPropertyName = reflectionHelper.GetPropertyName(br => br.QuestionID);
-            AlertManager.TrackablePropertyDeleted("Question deleted", "Question", Id, (int) originalValues[questionIDPropertyName], "Name: " + Text);
         }
     }
 }
