@@ -214,7 +214,8 @@ namespace KwasantCore.Managers
                         Activity = "Created",
                         CustomerId = curUserId,
                         ObjectId = null,
-                        Data = string.Format("User with email {0} created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
+                        Data = string.Format("User with email :{0}, created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
+                        //Data = string.Format("User with email {0} created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
                     };
                 AddFact(uow, curAction);
                 uow.SaveChanges();
@@ -237,7 +238,8 @@ namespace KwasantCore.Managers
                         CustomerId = customerId,
                         ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
                     };
-                curAction.Data = string.Format("{0} {1} {2}: ObjectId: {3} EmailAddress: {4} Subject: {5}", curAction.PrimaryCategory, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address), emailSubject);
+                //curAction.Data = string.Format("{0} {1} {2}: ObjectId: {3} EmailAddress: {4} Subject: {5}", curAction.PrimaryCategory, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address), emailSubject);
+                curAction.Data = string.Format("{0} ID :{1}, {2} {3}: ObjectId: {4} EmailAddress: {5} Subject: {6}", curAction.PrimaryCategory, emailId, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address), emailSubject);
 
                 SaveFact(curAction);
             }
@@ -288,7 +290,8 @@ namespace KwasantCore.Managers
                         CustomerId = bookingRequestDO.CustomerID,
                         ObjectId = bookingRequestId.ToString(CultureInfo.InvariantCulture)
                     };
-                curAction.Data = curAction.Name + ": ID= " + curAction.ObjectId;
+                //curAction.Data = curAction.Name + ": ID= " + curAction.ObjectId;
+                curAction.Data = string.Format("{0} ID :{1},", curAction.PrimaryCategory, curAction.ObjectId);
                 AddFact(uow, curAction);
                 uow.SaveChanges();
             }
@@ -311,7 +314,7 @@ namespace KwasantCore.Managers
                     CustomerId = bookingRequestDO.Customer.Id,
                     ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
                     Status = status,
-                    Data = "BookingRequest ID= " + bookingRequestDO.Id,
+                    Data = string.Format("BookingRequest ID :{0},", bookingRequestDO.Id)
                 };
 
                 AddFact(uow, curAction);
@@ -333,7 +336,8 @@ namespace KwasantCore.Managers
             Debug.Assert(curAction != null);
             var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
             
-            curAction.Data += string.Format(" ObjectId: {0} EmailAddress: {1} ", curAction.ObjectId, uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
+            //curAction.Data += string.Format(" ObjectId: {0} EmailAddress: {1} ", curAction.ObjectId, uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
+            curAction.Data += string.Format("{0} ID :{1}, EmailAddress: {2} ", curAction.PrimaryCategory ,curAction.ObjectId, uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address);
 
             if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
                 Logger.GetLogger().Info(curAction.Data);
@@ -353,7 +357,8 @@ namespace KwasantCore.Managers
                         Activity = "Registered",
                         CustomerId = curUser.Id,
                         ObjectId = null,
-                        Data = "User registrated with " + curUser.EmailAddress.Address
+                        Data = string.Format("User registrated with :{0},", curUser.EmailAddress.Address)
+                        //Data = "User registrated with " + curUser.EmailAddress.Address
                     };
                 Logger.GetLogger().Info(curFactDO.Data);
                 uow.FactRepository.Add(curFactDO);
@@ -379,7 +384,7 @@ namespace KwasantCore.Managers
                     ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
                     BookerId = bookerId,
                     Status = status,
-                    Data = string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address),
+                    Data = string.Format("BookingRequest ID :{0}, Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address)
                 };
 
                 AddFact(uow, curAction);
@@ -405,9 +410,7 @@ namespace KwasantCore.Managers
                     ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
                     BookerId = bookerId,
                     Status = status,
-                    Data =
-                        string.Format("BookingRequest ID {0} Booker EmailAddress: {1}", bookingRequestDO.Id,
-                            uow.UserRepository.GetByKey(bookerId).EmailAddress.Address),
+                    Data = string.Format("BookingRequest ID :{0}, Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address)
                 };
 
                 AddFact(uow, curAction);

@@ -22,5 +22,23 @@ namespace KwasantTest.Fixtures
                                           };
             return curBookingRequestDO;
         }
+
+        public BookingRequestDO TestBookingRequest2()
+        {
+            var curBookingRequestDO = new BookingRequestDO
+            {
+                Id = 2,
+                CreateDate = DateTimeOffset.UtcNow,
+                From = TestEmailAddress1(),
+                Subject = "Booking request subject",
+                HTMLText = "Booking request text",
+                EmailStatus = EmailState.Unprocessed,
+                DateReceived = DateTimeOffset.UtcNow,
+                State = BookingRequestState.AwaitingClient,
+                Customer = TestUser1()
+            };
+            return curBookingRequestDO;
+        }
+
     }
 }

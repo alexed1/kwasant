@@ -23,7 +23,7 @@ namespace Data.Entities
         public string Notes { get; set; }
         public int ObjectId { get; set; }
         public string CustomerId { get; set; }
-        public string BookerId { get; set; }
+        public string BookerId { get; set; } 
 
         [NotMapped]
         public bool IsHighPriority { get { return Priority >= 5; } }

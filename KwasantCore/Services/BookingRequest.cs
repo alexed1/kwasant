@@ -70,7 +70,7 @@ namespace KwasantCore.Services
         {
             return
                 curBookingRequestRepository.GetAll()
-                    .Where(e => e.Customer.Id == userid)
+                    .Where(e => e.Customer.Id == userid).OrderByDescending(e => e.LastUpdated)
                     .Skip(start)
                     .Take(length)
                     .Select(e =>
