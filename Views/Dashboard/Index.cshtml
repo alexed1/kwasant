@@ -65,6 +65,40 @@
     var calendar;
     var dp_navigator, storedCalendar;
     var linkedNegotiationID = @Html.Raw(Model.CalendarVM.LinkedNegotiationID == null ? "null" : Model.CalendarVM.LinkedNegotiationID.ToString())
+    var pageCreateTime = new Date();
+    
+    function checkLastUpdatedTime()
+    {
+        var LastUpdated = Date.parse('@Model.BookingRequestVM.LastUpdated');
+        if(LastUpdated > pageCreateTime)
+        {
+            var confirmBox = confirm("do you want to Mark this BR as Processed?");
+            if (confirmBox == true) {
+              
+                $.ajax({
+                    type: "POST",
+                    async: false,
+                    url: "/BookingRequest/MarkAsProcessed?id=" + '@Model.BookingRequestVM.BookingRequestId',
+                    success:function(response){
+                        alert(response.Message);
+                        if(response.Name == 'Success')
+                            return true;
+                    }
+                })
+            } 
+            else
+                return true;
+        }
+    }
+
+    $("body").on('click', 'a', function() {
+        var location = $(this).attr('id');
+        if(location == 'btnDashBoard' || location == 'btnMyAccount' || location == 'btnBookingRequestGetAll' || location == 'btnUserGetAll')
+            return checkLastUpdatedTime();
+       
+    });
+    
+    
 </script>
 
 <div class="jumbotron calendar-section jumbotron_new">
@@ -84,13 +118,13 @@
                         <li class="dropdown">
                             <a id="btnBookingRequest">BookingRequest</a>
                             <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Get All", "Index", "BookingRequest")</li>
+                                <li>@Html.ActionLink("Get All", "Index", new { controller ="BookingRequest" }, new { id="btnBookingRequestGetAll" })</li>
                             </ul>
                         </li>
                         <li class="dropdown">
                             <a id="btnUser">User</a>
                             <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Get All", "Index", "User") </li>
+                                <li>@Html.ActionLink("Get All", "Index", new { controller = "User" }, new { id="btnUserGetAll" }) </li>
                                 <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestVM.BookingRequestId })');" href="#">Mark Processed</a></li>
                             </ul>
                         </li>

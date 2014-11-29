@@ -21,12 +21,6 @@ namespace Data.Infrastructure
         public delegate void TrackablePropertyUpdatedHandler(string name, string contextTable, object id, object status);
         public static event TrackablePropertyUpdatedHandler AlertTrackablePropertyUpdated;
 
-        public delegate void TrackablePropertyCreatedHandler(string name, string contextTable, int id, object status);
-        public static event TrackablePropertyCreatedHandler AlertTrackablePropertyCreated;
-
-        public delegate void TrackablePropertyDeletedHandler(string name, string contextTable, int id, int parentId, object status);
-        public static event TrackablePropertyDeletedHandler AlertTrackablePropertyDeleted;
-
         public delegate void ConversationMemberAddedHandler(int bookingRequestID);
         public static event ConversationMemberAddedHandler AlertConversationMemberAdded;
         
@@ -109,19 +103,7 @@ namespace Data.Infrastructure
             if (AlertTrackablePropertyUpdated != null)
                 AlertTrackablePropertyUpdated(entityName, propertyName, id, value);
         }
-
-        public static void TrackablePropertyCreated(string name, string contextTable, int id, object status)
-        {
-            if (AlertTrackablePropertyCreated != null)
-                AlertTrackablePropertyCreated(name, contextTable, id, status);
-        }
-
-        public static void TrackablePropertyDeleted(string name, string contextTable, int id, int parentID, object status)
-        {
-            if (AlertTrackablePropertyDeleted != null)
-                AlertTrackablePropertyDeleted(name, contextTable, id, parentID, status);
-        }
-
+        
         public static void ConversationMemberAdded(int bookingRequestID)
         {
             if (AlertConversationMemberAdded != null)
