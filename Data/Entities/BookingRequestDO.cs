@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
 using Data.Infrastructure;
-using Data.Interfaces;
 using Data.States;
 using Data.States.Templates;
-using StructureMap;
 using Utilities;
 
 namespace Data.Entities
 {
-    public class BookingRequestDO : EmailDO, ICreateHook
+    public class BookingRequestDO : EmailDO
     {
         public BookingRequestDO()
         {
@@ -65,9 +62,8 @@ namespace Data.Entities
             var reflectionHelper = new ReflectionHelper<BookingRequestDO>();
             var customerProperty = reflectionHelper.GetProperty(br => br.CustomerID);
             var bookerProperty = reflectionHelper.GetProperty(br => br.BookerID);
-            var stateProperty = reflectionHelper.GetProperty(br => br.State);
-
-            this.DetectUpdates(originalValues, currentValues, new[] { customerProperty, bookerProperty, stateProperty });
+            
+            this.DetectUpdates(originalValues, currentValues, new[] { customerProperty, bookerProperty });
 
             var statePropertyName = reflectionHelper.GetPropertyName(br => br.State);
             if (!MiscUtils.AreEqual(originalValues[statePropertyName], currentValues[statePropertyName]))
