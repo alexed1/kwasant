@@ -10,11 +10,16 @@ function EasyPeasyParallax() {
 			'margin-top': (scrollPos/4)+"px",
 			'opacity': 1-(scrollPos/250)
 		});
-		var opacityValue = $('.landing-welcome-area').css('opacity');
+		$('#about').css({
+		    'top': ($('#welcome').height - $('.navbar-fixed-top') - $(this).height) / 2,
+		    'margin-top': (scrollPos / 4) - 80 + "px",
+		    'opacity': 1 - (scrollPos / 250)
+		});
+		var opacityValue = $('.landing-welcome-area, #about').css('opacity');
 		if(opacityValue == 0){
-			$('.landing-welcome-area').hide();
+		    $('.landing-welcome-area, #about').hide();
 		}else{
-			$('.landing-welcome-area').show();
+		    $('.landing-welcome-area, #about').show();
 		}
 	}	
 }
@@ -67,6 +72,9 @@ $(document).ready(function () {
 		if ($('#welcome').length) {
 			links.push($('#welcome')[0]);
 		}
+		if ($('a.try-kwasant-lnk').length) {
+		    links.push($('a.try-kwasant-lnk'));
+		}
 	section.waypoint({
 		 handler: function (direction) {
 			var datasection = $(this).attr('data-section');
@@ -85,7 +93,7 @@ $(document).ready(function () {
 			$('.navbar li[data-section="1"]').removeClass('active');
 		}
 	});
-	function goToByScroll(datasection) {
+	function goToByScroll(datasection) {	    
 		htmlbody.animate({
 			scrollTop: $('.text-block[data-section="' + datasection + '"]').offset().top - offsetTop
 		}, 1000);
