@@ -395,6 +395,7 @@
     <Content Include="Content\css\jquery-ui.structure.css" />
     <Content Include="Content\css\jquery-ui.theme.css" />
     <Content Include="Content\css\NegotiationWidgets.css" />
+    <Content Include="Content\css\toolbar.min.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.min.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\images\filler.png" />
@@ -583,6 +584,7 @@
     <Content Include="Content\js\notify.js" />
     <Content Include="Content\js\placeholder.js" />
     <Content Include="Content\js\select2.js" />
+    <Content Include="Content\js\toolbar.min.js" />
     <Content Include="Content\js\tree.jquery.js" />
     <Content Include="Content\js\waypoints.js" />
     <Content Include="Content\templates\inline_html_template_v1.html" />
