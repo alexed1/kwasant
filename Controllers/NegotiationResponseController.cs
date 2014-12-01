@@ -29,7 +29,7 @@ namespace KwasantWeb.Controllers
 
 
         //The main NegotiationResponse view displays Question and Answer data to an attendee
-        [KwasantAuthorize(Roles = "Customer")]
+        [KwasantAuthorize]
         public ActionResult View(int negotiationID)
         {
             AuthenticateUser(negotiationID);
