@@ -40,7 +40,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var createdEvent = CreateNewEvent(bookingRequestID, calendarID, start, end);
+                var createdEvent = CreateNewEvent(uow, bookingRequestID, calendarID, start, end);
                 _event.Create(createdEvent, uow);
 
                 uow.EventRepository.Add(createdEvent);
@@ -59,7 +59,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var createdEvent = CreateNewEvent(null, calendarID, start, end);
+                var createdEvent = CreateNewEvent(uow, null, calendarID, start, end);
 
                 createdEvent.CreatedByID = uow.CalendarRepository.GetByKey(calendarID).OwnerID;
                 createdEvent.EventStatus = EventState.ProposedTimeSlot;
@@ -145,7 +145,7 @@ namespace KwasantWeb.Controllers
         }
 
         //Renders a form to accept a new event
-        private EventDO CreateNewEvent(int? bookingRequestID, int calendarID, string start, string end)
+        private EventDO CreateNewEvent(IUnitOfWork uow, int? bookingRequestID, int calendarID, string start, string end)
         {
             if (!start.EndsWith("z"))
                 throw new ApplicationException("Invalid date time");
@@ -153,12 +153,40 @@ namespace KwasantWeb.Controllers
                 throw new ApplicationException("Invalid date time");
 
             //unpack the form data into an EventDO 
-            EventDO createdEvent = new EventDO();
-            createdEvent.BookingRequestID = bookingRequestID;
-            createdEvent.CalendarID = calendarID;            
-            createdEvent.StartDate = DateTime.ParseExact(start, DateStandardFormat, CultureInfo.InvariantCulture);
-            createdEvent.EndDate = DateTime.ParseExact(end, DateStandardFormat, CultureInfo.InvariantCulture);
+            EventDO createdEvent = new EventDO {BookingRequestID = bookingRequestID, CalendarID = calendarID};
 
+            TimeSpan offset;
+            if (bookingRequestID.HasValue)
+            {
+                var bookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+                offset = bookingRequest.CreateDate.Offset;
+            }
+            else
+            {
+                offset = DateTimeOffset.Now.Offset; //Legacy for now. Time slots don't care about timezones for now, as it's presented to the booker
+            }
+
+            //First, we need to parse the time into UTC.
+            //UTC is the incorrect timezone (most likely), and we use it because our javascript library tries to use local time (the booker's local time)
+            //So, we are sent the date, and told it's in UTC.
+            //Then, we look at the headers of the original booking request
+            //From the headers, we adjust our time by the senders offset
+
+            //For example:
+            //Customer sends an email at 8:45pm +7UTC
+            //Customer asks for a meeting at '11am'
+            //Booker clicks the 11am time slot
+            //We recieve the date: 11am +0 UTC. However, the booker wants it to be 11am +7 UTC (We assume this based on the headers from their email)
+            //We then subtract the bookers offset (7 hours)
+            //We are then left with 4am +0 UTC, which is equivelant to 11am +7 UTC
+            //Finally, we want to set the offset to the bookers offset. This part is merely cosmetic.
+            //It allows us to show 11am +7:00, rather than 4am +0:00
+            //Even though they are equivelant, we want to be local to the customer
+            var startDateInitial = DateTimeOffset.ParseExact(start, DateStandardFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+            var endDateInitial = DateTimeOffset.ParseExact(end, DateStandardFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+            createdEvent.StartDate = startDateInitial.Subtract(offset).ToOffset(offset);
+            createdEvent.EndDate = endDateInitial.Subtract(offset).ToOffset(offset);
+            
             createdEvent.IsAllDay = createdEvent.StartDate.Equals(createdEvent.StartDate.Date) && createdEvent.StartDate.AddDays(1).Equals(createdEvent.EndDate);
 
             return createdEvent;
