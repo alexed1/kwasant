@@ -20,6 +20,7 @@ namespace KwasantCore.Services
             _email = new Email();
         }
 
+        public object Generate(IUnitOfWork uow, DateRange dateRange, string type)
         public object Generate(IUnitOfWork uow, DateRange dateRange, string type, int start,
             int length, out int recordcount)
         {
@@ -75,6 +76,9 @@ namespace KwasantCore.Services
             _dataUrlMappings.Add("Email", "/Dashboard/Index/");
             _dataUrlMappings.Add("User", "/User/Details?userID=");
 
+            return
+                uow.FactRepository.GetAll()
+                    .Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime)
             var factDO = uow.FactRepository.GetAll()
                     .Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime);
 
