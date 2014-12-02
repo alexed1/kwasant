@@ -25,7 +25,7 @@
 						<td>@Html.DisplayFor(modelItem => item.FirstName)</td>
 						<td>@Html.DisplayFor(modelItem => item.LastName)</td>
 						<td>@Html.DisplayFor(modelItem => item.EmailAddress)</td>
- 						<td>@Html.Raw(String.Join(", ", item.Roles))</td>
+ 						<td>@Html.Raw(String.Join(", ", item.Role))</td>
                         <td>@Html.ActionLink("Details", "Details", new { userId = item.Id }, new { @class = "custom-btn glyphicon glyphicon-user" })</td>
  					</tr>
                  }

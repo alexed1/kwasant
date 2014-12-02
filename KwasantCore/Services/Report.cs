@@ -10,7 +10,17 @@ namespace KwasantCore.Services
     public class Report
     {
         public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff"; //This allows javascript to parse the date properly
+        private readonly User _user;
+        private readonly Email _email;
+        private Dictionary<string, string> _dataUrlMappings;
 
+        public Report() 
+        {
+            _user = new User();
+            _email = new Email();
+        }
+
+        public object Generate(IUnitOfWork uow, DateRange dateRange, string type)
         public object Generate(IUnitOfWork uow, DateRange dateRange, string type, int start,
             int length, out int recordcount)
         {
@@ -61,22 +71,30 @@ namespace KwasantCore.Services
         private object GenerateUsageReport(IUnitOfWork uow, DateRange dateRange, int start,
             int length, out int count)
         {
+            _dataUrlMappings = new Dictionary<string, string>();
+            _dataUrlMappings.Add("BookingRequest", "/Dashboard/Index/");
+            _dataUrlMappings.Add("Email", "/Dashboard/Index/");
+            _dataUrlMappings.Add("User", "/User/Details?userID=");
+
+            return
+                uow.FactRepository.GetAll()
+                    .Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime)
             var factDO = uow.FactRepository.GetAll()
                     .Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime);
 
             count = factDO.Count();
 
             return factDO.Skip(start).Take(length)
-                   .Select(
-                       f => new
-                       {
-                           PrimaryCategory = f.PrimaryCategory,
-                           SecondaryCategory = f.SecondaryCategory,
-                           Activity = f.Activity,
-                           Status = f.Status,
-                           Data = f.Data,
-                           CreateDate = f.CreateDate.ToString(DateStandardFormat),
-                       }).ToList();
+                    .Select(
+                        f => new
+                        {
+                            PrimaryCategory = f.PrimaryCategory,
+                            SecondaryCategory = f.SecondaryCategory,
+                            Activity = f.Activity,
+                            Status = f.Status,
+                            Data = AddClickability(f.Data),
+                            CreateDate = f.CreateDate.ToString(DateStandardFormat),
+                        }).ToList();
 
         }
 
@@ -97,7 +115,7 @@ namespace KwasantCore.Services
                             Data = f.Notes,
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
                             ObjectId = f.ObjectId
-
+                            
                         }).ToList();
 
         }
@@ -120,7 +138,7 @@ namespace KwasantCore.Services
                         }).ToList();
 
         }
-
+        
         public object GenerateHistoryReport(IUnitOfWork uow, DateRange dateRange, string primaryCategory, string bookingRequestId)
         {
             return uow.FactRepository.GetAll()
@@ -152,8 +170,45 @@ namespace KwasantCore.Services
                                 Status = e.Status,
                                 Data = e.Data,
                                 CreateDate = e.CreateDate.ToString(DateStandardFormat),
+                                SecondaryCategory = e.SecondaryCategory
                             })
                     .ToList();
+        }
+
+        private string AddClickability(string originalData)
+        {
+            if (originalData != null)
+            {
+                //This try-catch is to move on, even if something generates error, this is because right now we don't have consistency in our "Data" field
+                //so in case of error it just return the original data.
+                try
+                {
+                    string objectType = originalData.Split(' ')[0].ToString();
+                    var splitedData = originalData.Split(':')[1];
+                    string objectId = splitedData.Substring(0, splitedData.IndexOf(","));
+                    string clickableLink = GetClickableLink(objectType, objectId);
+
+                    originalData = originalData.Replace(objectId, clickableLink);
+                }
+                catch { }
+            }
+            return originalData;
+        }
+
+        private string GetClickableLink(string objectType, string objectId)
+        {
+            if (objectType == "Email")
+            {
+                string bookingRequestId = _email.FindEmailParentage(Convert.ToInt32(objectId));
+                if (bookingRequestId != null)
+                    return string.Format("<a style='padding-left:3px' target='_blank' href='{0}{1}'>{2}</a>", _dataUrlMappings[objectType], bookingRequestId, objectId);
+            }
+            if (objectType == "User")
+            {
+                string userId = _user.GetUserId(objectId);
+                return string.Format("<a style='padding-left:3px' target='_blank' href='{0}{1}'>{2}</a>", _dataUrlMappings[objectType], userId, objectId);
+            }
+            return string.Format("<a style='padding-left:3px' target='_blank' href='{0}{1}'>{2}</a>", _dataUrlMappings[objectType], objectId, objectId);
         }
 
         private object ShowBookerThroughput(IUnitOfWork uow, DateRange dateRange, int start,

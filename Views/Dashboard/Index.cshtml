@@ -21,7 +21,6 @@
 @Scripts.Render("~/bundles/js/kwasantcalendar")
     <script src="~/Scripts/DataTables-1.10.0/media/js/jquery.dataTables.js"></script>
     <script src="/Content/js/humane.js"></script>
-    
     <script type="text/javascript">
         $(function() {
             var popupAlreadyShowing;
@@ -64,12 +63,46 @@
     document.body.style.overflowY = 'scroll';
     var calendar;
     var dp_navigator, storedCalendar;
-    var linkedNegotiationID = @Html.Raw(Model.CalendarVM.LinkedNegotiationID == null ? "null" : Model.CalendarVM.LinkedNegotiationID.ToString())
+    var linkedNegotiationID = @Html.Raw(Model.CalendarVM.LinkedNegotiationID == null ? "null" : Model.CalendarVM.LinkedNegotiationID.ToString());
+    var pageCreateTime = new Date();
+    
+    function checkLastUpdatedTime()
+    {
+        var LastUpdated = Date.parse('@Model.BookingRequestVM.LastUpdated');
+        if(LastUpdated > pageCreateTime)
+        {
+            var confirmBox = confirm("do you want to Mark this BR as Processed?");
+            if (confirmBox == true) {
+              
+                $.ajax({
+                    type: "POST",
+                    async: false,
+                    url: "/BookingRequest/MarkAsProcessed?id=" + '@Model.BookingRequestVM.BookingRequestId',
+                    success:function(response){
+                        alert(response.Message);
+                        if(response.Name == 'Success')
+                            return true;
+                    }
+                })
+            } 
+            else
+                return true;
+        }
+    }
+
+    $("body").on('click', 'a', function() {
+        var location = $(this).attr('id');
+        if(location == 'btnDashBoard' || location == 'btnMyAccount' || location == 'btnBookingRequestGetAll' || location == 'btnUserGetAll')
+            return checkLastUpdatedTime();
+       
+    });
+    
+    
 </script>
 
-<div class="jumbotron calendar-section jumbotron_new">
+<div class="jumbotron calendar-section jumbotron_new" style="padding: 0px 20px;">
     <div class="row">
-        <nav class="navbar navbar-default top-toolbar-section" role="navigation">
+        <nav class="navbar navbar-default top-toolbar-section innernav" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
@@ -84,13 +117,13 @@
                         <li class="dropdown">
                             <a id="btnBookingRequest">BookingRequest</a>
                             <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Get All", "Index", "BookingRequest")</li>
+                                <li>@Html.ActionLink("Get All", "Index", new { controller ="BookingRequest" }, new { id="btnBookingRequestGetAll" })</li>
                             </ul>
                         </li>
                         <li class="dropdown">
                             <a id="btnUser">User</a>
                             <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Get All", "Index", "User") </li>
+                                <li>@Html.ActionLink("Get All", "Index", new { controller = "User" }, new { id="btnUserGetAll" }) </li>
                                 <li><a id="btnProcessed" onclick="updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestVM.BookingRequestId })');" href="#">Mark Processed</a></li>
                             </ul>
                         </li>
@@ -128,7 +161,7 @@
                             if (Model.BookingRequestVM.VerbalisedHistory != null && Model.BookingRequestVM.VerbalisedHistory.Any())
                             {
                                 <li class="dropdown">
-                                    <a id="btnReport">History</a>
+                                    <a id="btnHistory">History</a>
                                     <ul class="dropdown-menu">
                                         @foreach (var historyItem in Model.BookingRequestVM.VerbalisedHistory)
                                         {
@@ -143,7 +176,7 @@
                 </div>
             </div>
         </nav>
-        
+        <div id="toolbar" style="margin: 0px 0px 0px 0px;"></div>
         <div id="notificationGroup">
             <div class="col-md-7" style="margin-top: -25px; margin-bottom: 5px; text-align: left; padding-left: 1px;">
                 <div id="notificationMessage" style="background: #f8f8f8 !important; color: #d85e17; font-size: 16px; padding-left: 15px; font-size: 16px; font-weight: bold;">
@@ -160,3 +193,25 @@
 
     </div>
 </div>
+<script src="~/Content/js/toolbar.min.js"></script>
+<link href="~/Content/css/toolbar.min.css" rel="stylesheet" />
+<script>
+    $(document).ready(function(){
+        $('#toolbar').w2toolbar({
+            name: 'toolbar',
+            items: [
+                { type: 'button',  id: 'markprocessed',  caption: 'Mark Processed', hint: 'Mark as processed'},
+                { type: 'button',  id: 'sendmessage',  caption: 'Send Message', hint: 'send message'},
+            ],
+            onClick: function (event) {
+                if(event.target == 'markprocessed')
+                {
+                    updateStatus('@Url.Action("MarkAsProcessed", "BookingRequest", new { id = Model.BookingRequestVM.BookingRequestId })');
+                }
+                else if(event.target == 'sendmessage'){
+                    sendAnEmail();
+                }
+            }
+        });
+    });
+</script>
