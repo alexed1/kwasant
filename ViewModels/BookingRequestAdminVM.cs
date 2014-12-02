@@ -21,7 +21,8 @@ namespace KwasantWeb.ViewModels
         public string EmailAttachments { get; set; }
         public string Booker { get; set; } 
         public bool ReadOnly { get; set; }
-        public List<String> VerbalisedHistory { get; set; } 
+        public List<String> VerbalisedHistory { get; set; }
+        public DateTimeOffset LastUpdated { get; set; }
     }
 
     public class ConversationVM

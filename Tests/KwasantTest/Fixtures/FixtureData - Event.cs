@@ -11,11 +11,11 @@ namespace KwasantTest.Fixtures
     partial class FixtureData
     {
 
-        public  DDayEvent TestEvent()
+        public DDayEvent TestEvent()
         {
             return new DDayEvent()
             {
-                
+
                 //DTStart = (iCalDateTime)DateTime.Parse("20040117"),
                 DTStart = new iCalDateTime("20140517"),
                 DTEnd = new iCalDateTime("20140610"),
@@ -23,9 +23,9 @@ namespace KwasantTest.Fixtures
                 Description = "First Ever Event",
                 Summary = "Here's a Summary",
                 WorkflowState = "Undispatched",
-                
-              //   DateTimeSerializer serializer = new DateTimeSerializer();
-            //CopyFrom(serializer.Deserialize(new StringReader(value)) as ICopyable);
+
+                //   DateTimeSerializer serializer = new DateTimeSerializer();
+                //CopyFrom(serializer.Deserialize(new StringReader(value)) as ICopyable);
 
             };
         }
@@ -64,7 +64,7 @@ namespace KwasantTest.Fixtures
                 Location = "Silicon Valley",
                 EventStatus = EventState.Booking,
                 Summary = "This is a test event summary.",
-                Transparency = "Opaque" ,
+                Transparency = "Opaque",
                 Attendees = TestAttendeeList1().ToList(),
                 CreatedBy = TestUser2()
             };
@@ -128,7 +128,24 @@ namespace KwasantTest.Fixtures
             return curEvent;
         }
 
-    
+        public EventDO TestEvent5()
+        {
+            var calendar = TestCalendar1();
+            return new EventDO()
+            {
+                CreatedByID = "1",
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddHours(1),
+                Calendar = calendar,
+                Description = "Description of  Event",
+                Priority = 1,
+                Sequence = 1,
+                IsAllDay = false,
+                Id=1,
+                CreatedBy = TestUser2()
+            };
+        }
+
 
 
     }

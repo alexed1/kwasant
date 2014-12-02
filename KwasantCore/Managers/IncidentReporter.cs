@@ -19,6 +19,8 @@ namespace KwasantCore.Managers
             AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
             AlertManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
             AlertManager.AlertAttendeeUnresponsivenessThresholdReached += ProcessAttendeeUnresponsivenessThresholdReached;
+            AlertManager.AlertBookingRequestCheckedOut += ProcessBRCheckedOut;
+            AlertManager.AlertBookingRequestMarkedProcessed += ProcessBRMarkedProcessed; 
         }
 
         private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)
@@ -50,6 +52,7 @@ namespace KwasantCore.Managers
                 incidentDO.BookerId = userID;
                 incidentDO.ObjectId = bookingRequestId;
                 incidentDO.Activity = "Response Recieved";
+                incidentDO.Notes = "No additional notes";
                 _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
             }
@@ -70,10 +73,10 @@ namespace KwasantCore.Managers
                 _uow.SaveChanges();
             }
         }
-        
-        public void ProcessTimeout(int bookingRequestId, string bookerId )
+
+        public void ProcessTimeout(int bookingRequestId, string bookerId)
         {
-            
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
@@ -143,7 +146,7 @@ namespace KwasantCore.Managers
             Email email = ObjectFactory.GetInstance<Email>();
             email.SendAlertEmail("CalendarSync failure", emailBodyBuilder.ToString());
         }
-
+        
         public void ProcessSubmittedNote(int bookingRequestId, string note)
         {
             if (String.IsNullOrEmpty(note))
@@ -166,5 +169,67 @@ namespace KwasantCore.Managers
                 uow.SaveChanges();
             }
         }
+        
+        public void ProcessBRCheckedOut(int bookingRequestId, string bookerId)
+        {
+            BookingRequest _br = new BookingRequest();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
+                IncidentDO curAction = new IncidentDO()
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Throughput",
+                    Activity = "Checkout",
+                    CustomerId = bookingRequestDO.Customer.Id,
+                    ObjectId = bookingRequestDO.Id,
+                    BookerId = bookerId,
+                    Notes = string.Format("ObjectId ID {0} Booker BookerId: {1} ", bookingRequestDO.Id, bookerId),
+                };
+
+                int getMinutinQueue = _br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
+
+                curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
+
+                uow.IncidentRepository.Add(curAction);
+                uow.SaveChanges();
+            }
+        }
+
+
+        public void ProcessBRMarkedProcessed(int bookingRequestId, string bookerId)
+        {
+            BookingRequest _br = new BookingRequest();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
+                IncidentDO curAction = new IncidentDO()
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "Throughput",
+                    Activity = "MarkedProcessed",
+                    CustomerId = bookingRequestDO.Customer.Id,
+                    ObjectId = bookingRequestDO.Id,
+                    BookerId = bookerId,
+                    Notes = string.Format("ObjectId ID {0} Booker BookerId: {1} ", bookingRequestDO.Id, bookerId),
+                };
+
+                int getMinutinQueue = _br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
+
+                curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
+
+                uow.IncidentRepository.Add(curAction);
+                uow.SaveChanges();
+            }
+        }
+
     }
+
+
 }

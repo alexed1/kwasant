@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Booker")]
+    [KwasantAuthorize]
     public class EmailController : Controller
     {
         private IUnitOfWork _uow;
@@ -116,7 +116,8 @@ namespace KwasantWeb.Controllers
                     EmailBCC = String.Join(", ", curEmail.BCC.Select(a => a.Address)),
                     EmailAttachments = attachmentInfo,
                     ReadOnly = readonlyView.HasValue && readonlyView.Value,
-                    Booker = booker
+                    Booker = booker,
+                    LastUpdated = curEmail.LastUpdated
                 };
 
                 return PartialView("Show", bookingInfo);

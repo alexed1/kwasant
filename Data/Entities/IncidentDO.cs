@@ -50,5 +50,6 @@ namespace Data.Entities
                 AlertManager.HighPriorityIncidentCreated(Id);
             }
         }
+        public string Data { get; set; }
     }
 }

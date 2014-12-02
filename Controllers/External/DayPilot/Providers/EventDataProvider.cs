@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using Data.Interfaces;
+using Data.States;
 using DayPilot.Web.Mvc.Events.Calendar;
 using StructureMap;
 
@@ -55,7 +56,7 @@ namespace KwasantWeb.Controllers.External.DayPilot.Providers
                     //providedCalendars = providedCalendars.Union(uow.CalendarRepository.GetQuery().Where(c => linkedUserIDs.Contains(c.OwnerID)));
                 }
 
-                return providedCalendars.SelectMany(c => c.Events).ToList().Select(e =>
+                return providedCalendars.SelectMany(c => c.Events.Where(e => e.EventStatus != EventState.Deleted)).ToList().Select(e =>
                 new DayPilotTimeslotInfo
                 {
                     StartDate = e.StartDate.ToString(@"yyyy-MM-ddTHH\:mm\:ss.fffffff"),

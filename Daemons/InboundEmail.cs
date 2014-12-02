@@ -81,7 +81,7 @@ namespace Daemons
         {
             get
             {
-                return (int)TimeSpan.FromSeconds(10).TotalMilliseconds;
+                return (int)TimeSpan.FromMinutes(2).TotalMilliseconds;
             }
         }
 
@@ -106,11 +106,10 @@ namespace Daemons
                     LogEvent("Waiting for messages at " + GetUserName() + "...");
                     _client.NewMessage += OnNewMessage;
                     _client.IdleError += OnIdleError;
-                    
-                    GetUnreadMessages(_client);
 
                     _alreadyListening = true;
                 }
+                GetUnreadMessages(_client);
             }
         }
 
