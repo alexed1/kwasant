@@ -148,3 +148,20 @@ function resetFields(fieldsToClear) {
         $(this).val("");
     });
 }
+
+function minutesToStr(minutes) {
+    var sign = '';
+    if (minutes < 0) {
+        sign = '-';
+    }
+
+    var hours = leftPad(Math.floor(Math.abs(minutes) / 60));
+    var minutes = leftPad(Math.abs(minutes) % 60);
+
+    return sign + hours + 'hrs ' + minutes + 'min';
+
+}
+
+function leftPad(number) {
+    return ((number < 10 && number >= 0) ? '0' : '') + number;
+}

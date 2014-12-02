@@ -456,6 +456,18 @@
     <Compile Include="Migrations\201411261106360_SeparateTableForInvitations.Designer.cs">
       <DependentUpon>201411261106360_SeparateTableForInvitations.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411210750329_Add_Data_To_IncidentDO.cs" />
+    <Compile Include="Migrations\201411210750329_Add_Data_To_IncidentDO.Designer.cs">
+      <DependentUpon>201411210750329_Add_Data_To_IncidentDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411261248567_Sync_26.11.2014.cs" />
+    <Compile Include="Migrations\201411261248567_Sync_26.11.2014.Designer.cs">
+      <DependentUpon>201411261248567_Sync_26.11.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412021050318_Sync-02.12.2014.cs" />
+    <Compile Include="Migrations\201412021050318_Sync-02.12.2014.Designer.cs">
+      <DependentUpon>201412021050318_Sync-02.12.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201412021407358_Sync.Rob.02.12.2014.cs" />
     <Compile Include="Migrations\201412021407358_Sync.Rob.02.12.2014.Designer.cs">
       <DependentUpon>201412021407358_Sync.Rob.02.12.2014.cs</DependentUpon>
@@ -1383,11 +1395,20 @@
     <EmbeddedResource Include="Migrations\201411200956181_UpdateReplyTo.resx">
       <DependentUpon>201411200956181_UpdateReplyTo.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411210750329_Add_Data_To_IncidentDO.resx">
+      <DependentUpon>201411210750329_Add_Data_To_IncidentDO.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411210850397_Sync.21.11.2014.resx">
       <DependentUpon>201411210850397_Sync.21.11.2014.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411261106360_SeparateTableForInvitations.resx">
       <DependentUpon>201411261106360_SeparateTableForInvitations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411261248567_Sync_26.11.2014.resx">
+      <DependentUpon>201411261248567_Sync_26.11.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412021050318_Sync-02.12.2014.resx">
+      <DependentUpon>201412021050318_Sync-02.12.2014.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412021407358_Sync.Rob.02.12.2014.resx">
       <DependentUpon>201412021407358_Sync.Rob.02.12.2014.cs</DependentUpon>
