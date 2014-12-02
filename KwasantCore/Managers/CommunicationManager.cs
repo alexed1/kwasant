@@ -157,6 +157,22 @@ namespace KwasantCore.Managers
                     });
             }
             negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
+
+            //Everyone who gets an email is now an attendee.
+            var currentAttendeeIDs = negotiationDO.Attendees.Select(a => a.EmailAddressID).ToList();
+            foreach (var recipient in generatedEmailDO.Recipients)
+            {
+                if (!currentAttendeeIDs.Contains(recipient.EmailAddressID))
+                {
+                    var newAttendee = new AttendeeDO
+                    {
+                        EmailAddressID = recipient.EmailAddressID,
+                        Name = recipient.EmailAddress.Name,
+                        NegotiationID = negotiationDO.Id
+                    };
+                    uow.AttendeeRepository.Add(newAttendee);
+                }
+            }
         }
 
 

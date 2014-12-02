@@ -46,8 +46,14 @@ function someResize(){
 }
 $(document).ready(function () {
 
-	var iframe = $('.video-frame')[0];
-	var player = $f(iframe);
+    $('body').bind('beforeunload', function () {
+        localStorage.setItem("navbarLnk", null);
+    });
+
+    if ($('.video-frame').length) {
+        var iframe = $('.video-frame')[0];
+        var player = $f(iframe);
+    }       
 
 	if($('input, textarea').length) {
 		$('input, textarea').placeholder();
@@ -69,12 +75,18 @@ $(document).ready(function () {
 		mywindow = $(window),
 		htmlbody = $('html,body'),
 		offsetTop = $('.navbar').height();
-		if ($('#welcome').length) {
-			links.push($('#welcome')[0]);
+		if ($('.home-welcome').length) {
+			links.push($('.home-welcome')[0]);
 		}
 		if ($('a.try-kwasant-lnk').length) {
 		    links.push($('a.try-kwasant-lnk'));
 		}
+
+		if (localStorage.getItem("navbarLnk") > 0) {
+		    goToByScroll(localStorage.getItem("navbarLnk"));
+		    localStorage.setItem("navbarLnk", null);
+		}
+
 	section.waypoint({
 		 handler: function (direction) {
 			var datasection = $(this).attr('data-section');
@@ -93,14 +105,14 @@ $(document).ready(function () {
 			$('.navbar li[data-section="1"]').removeClass('active');
 		}
 	});
-	function goToByScroll(datasection) {	    
+	function goToByScroll(datasection) {
 		htmlbody.animate({
 			scrollTop: $('.text-block[data-section="' + datasection + '"]').offset().top - offsetTop
 		}, 1000);
 	}
 	var	windowWidth = $(window).width();
 	if(windowWidth < 980){
-		function goToByScroll(datasection) {
+	    function goToByScroll(datasection) {
 			htmlbody.animate({
 				scrollTop: $('.text-block[data-section="' + datasection + '"]').offset().top - offsetTop
 			}, 1000);
@@ -108,8 +120,10 @@ $(document).ready(function () {
 	}
 
 	links.click(function (e) {
-		// alert('Hellolinks');
-		player.api('pause');
+	    // alert('Hellolinks');
+	    if (player) {
+	        player.api('pause');
+	    } 
 	    var datasection = $(this).attr('data-section');
 	    //if (datasection.get(0) === null)
 	    //    return;
@@ -136,8 +150,7 @@ $(document).ready(function () {
 	});
 	
 	$('.goTop').on('click', function(){
-		$('body,html').animate({scrollTop: 0}, 1000);
-		return false;
+		$('body,html').animate({scrollTop: 0}, 1000);  		
 	}); 	
 	
 	$('img.video-screen').click(function (e) {
