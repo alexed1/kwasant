@@ -41,6 +41,9 @@ namespace KwasantWeb.TempServicesHome
                 _negotiation.CreateQuasiEmailForBookingRequest(uow, curNegotiationDO, curUserDO, questionAnswer);
 
                 uow.SaveChanges();
+
+                ObjectFactory.GetInstance<ITracker>().Identify(curUserDO);
+                ObjectFactory.GetInstance<ITracker>().Track(curUserDO, "RespondedToClarificationRequest", "ClickedNegResponseLink", new Dictionary<string, object> { { "BookingRequestId", curNegotiationDO.BookingRequestID } });
             }
         }
 
