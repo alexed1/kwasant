@@ -35,15 +35,24 @@ namespace Data.Entities
 
         private void SetReplyTo(int bookingRequestID)
         {
+            var injectReplyTo = ObjectFactory.GetInstance<IConfigRepository>().Get("injectReplyTo", true);
+            
             ReplyToName = ObjectFactory.GetInstance<IConfigRepository>().Get("replyToName", String.Empty);
             string replyToEmail = ObjectFactory.GetInstance<IConfigRepository>().Get("replyToEmail", String.Empty);
             if (String.IsNullOrEmpty(replyToEmail))
                 return;
 
-            var originalAddress = replyToEmail;
-            var splitPoint = originalAddress.Split('@');
-            var replyToAddress = String.Format("{0}+{1}@{2}", splitPoint[0], bookingRequestID, splitPoint[1]);
-            ReplyToAddress = replyToAddress;
+            if (injectReplyTo)
+            {
+                var originalAddress = replyToEmail;
+                var splitPoint = originalAddress.Split('@');
+                var replyToAddress = String.Format("{0}+{1}@{2}", splitPoint[0], bookingRequestID, splitPoint[1]);
+                ReplyToAddress = replyToAddress;
+            }
+            else
+            {
+                ReplyToAddress = replyToEmail;
+            }
         }
 
         private void SetMessageID(String messageID)

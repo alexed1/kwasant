@@ -91,8 +91,8 @@ namespace KwasantCore.Services
             String templateName;
 
             string endtime = curEvent.EndDate.ToString("hh:mm tt");
-            var timezone = curEvent.StartDate.Offset;
-            string subjectDate = curEvent.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " +" + timezone;
+            var timezone = curEvent.StartDate.Offset.Ticks < 0 ? curEvent.StartDate.Offset.ToString() : "+" + curEvent.StartDate.Offset;
+            string subjectDate = curEvent.StartDate.ToString("ddd MMM dd, yyyy hh:mm tt - ") + endtime + " " + timezone;
             
             if (type == InvitationType.InitialInvite)
             {
@@ -140,7 +140,7 @@ namespace KwasantCore.Services
                     {"wholist", String.Format(whoWrapper, whoList)},
                     {"linkto", GetAuthTokenForBaseURL(uow, userID)},
                     {"summary", curEvent.Summary},
-                    {"timezone", timezone.ToString()},
+                    {"timezone", timezone},
                     {"wholistplaintext", whoListPlainText},
                 }
                 );

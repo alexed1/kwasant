@@ -34,7 +34,7 @@ namespace KwasantCore.Managers
             AlertManager.AlertExplicitCustomerCreated += ReportCustomerCreated;
 
             AlertManager.AlertUserRegistration += ReportUserRegistered;
-            AlertManager.AlertBookingRequestCheckedOut += ReportBookingRequestCheckedOut;
+
             AlertManager.AlertBookingRequestOwnershipChange += ReportBookingRequestOwnershipChanged;
             AlertManager.AlertBookingRequestReserved += ReportBookingRequestReserved;
             AlertManager.AlertBookingRequestReservationTimeout += ReportBookingRequestReservationTimeOut;
@@ -55,7 +55,7 @@ namespace KwasantCore.Managers
             AlertManager.AlertExplicitCustomerCreated -= ReportCustomerCreated;
 
             AlertManager.AlertUserRegistration -= ReportUserRegistered;
-            AlertManager.AlertBookingRequestCheckedOut -= ReportBookingRequestCheckedOut;
+
             AlertManager.AlertBookingRequestOwnershipChange -= ReportBookingRequestOwnershipChanged;
             AlertManager.AlertBookingRequestReserved -= ReportBookingRequestReserved;
             AlertManager.AlertBookingRequestReservationTimeout -= ReportBookingRequestReservationTimeOut;
@@ -307,17 +307,21 @@ namespace KwasantCore.Managers
 
                 string status = bookingRequestDO.BookingRequestStateTemplate.Name;
                 FactDO curAction = new FactDO
-                {
-                    PrimaryCategory = "BookingRequest",
+                    {
+                        PrimaryCategory = "BookingRequest",
                     SecondaryCategory = "BookingRequestState",
-                    Activity = "StateChange",
-                    CustomerId = bookingRequestDO.Customer.Id,
+                        Activity = "StateChange",
+                        CustomerId = bookingRequestDO.Customer.Id,
                     ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
-                    Status = status,
+                        Status = status,
                     Data = string.Format("BookingRequest ID :{0},", bookingRequestDO.Id)
-                };
+                    };
 
                 AddFact(uow, curAction);
+
+                if (status == "Resolved")
+                    AlertManager.BookingRequestMarkedProcessed(bookingRequestDO.Id, bookingRequestDO.BookerID);
+
                 uow.SaveChanges();
             }
         }
@@ -367,31 +371,6 @@ namespace KwasantCore.Managers
 
         }
 
-        public void ReportBookingRequestCheckedOut(int bookingRequestId, string bookerId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
-                FactDO curAction = new FactDO
-                {
-                    PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "Ownership",
-                    Activity = "Checkout",
-                    CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
-                    BookerId = bookerId,
-                    Status = status,
-                    Data = string.Format("BookingRequest ID :{0}, Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address)
-                };
-
-                AddFact(uow, curAction);
-                uow.SaveChanges();
-            }
-        }
-
         //Do we need/use both this and the immediately preceding event? 
         public void ReportBookingRequestOwnershipChanged(int bookingRequestId, string bookerId)
         {
@@ -402,16 +381,16 @@ namespace KwasantCore.Managers
                     throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
                 string status = bookingRequestDO.BookingRequestStateTemplate.Name;
                 FactDO curAction = new FactDO
-                {
-                    PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "Ownership",
-                    Activity = "Change",
-                    CustomerId = bookingRequestDO.Customer.Id,
+                    {
+                        PrimaryCategory = "BookingRequest",
+                        SecondaryCategory = "Ownership",
+                        Activity = "Change",
+                        CustomerId = bookingRequestDO.Customer.Id,
                     ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
-                    BookerId = bookerId,
-                    Status = status,
+                        BookerId = bookerId,
+                        Status = status,
                     Data = string.Format("BookingRequest ID :{0}, Booker EmailAddress: {1}", bookingRequestDO.Id, uow.UserRepository.GetByKey(bookerId).EmailAddress.Address)
-                };
+                    };
 
                 AddFact(uow, curAction);
                 uow.SaveChanges();
