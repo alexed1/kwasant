@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
-using System.Reflection;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.States.Templates;
@@ -11,7 +10,7 @@ using Utilities;
 namespace Data.Entities
 {
 
-    public class QuestionDO : BaseDO, IQuestionDO, ICreateHook, IDeleteHook
+    public class QuestionDO : BaseDO, IQuestionDO, IDeleteHook
     {
         public QuestionDO()
         {
@@ -40,13 +39,7 @@ namespace Data.Entities
 
         [InverseProperty("Question")]
         public virtual List<AnswerDO> Answers { get; set; }
-
-        public override void AfterCreate()
-        {
-            AlertManager.TrackablePropertyCreated("Question added", "Question", Id, "Name: " + Text);
-            base.AfterCreate();
-        }
-
+        
         public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             var reflectionHelper = new ReflectionHelper<QuestionDO>();
@@ -58,10 +51,6 @@ namespace Data.Entities
 
         public void OnDelete(DbPropertyValues originalValues)
         {
-            var reflectionHelper = new ReflectionHelper<QuestionDO>();
-
-            var negotiationIDPropertyName = reflectionHelper.GetPropertyName(br => br.NegotiationId);
-            AlertManager.TrackablePropertyDeleted("Question deleted", "Question", Id, (int)originalValues[negotiationIDPropertyName], "Name: " + Text);
         }
     }
 }

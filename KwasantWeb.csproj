@@ -396,6 +396,7 @@
     <Content Include="Content\css\jquery-ui.structure.css" />
     <Content Include="Content\css\jquery-ui.theme.css" />
     <Content Include="Content\css\NegotiationWidgets.css" />
+    <Content Include="Content\css\toolbar.min.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\css\dataTables.autoFill.min.css" />
     <Content Include="Content\DataTables-1.10.0\extensions\AutoFill\images\filler.png" />
@@ -551,6 +552,7 @@
     <Content Include="Content\img\temp\old\Workflowv2.png" />
     <Content Include="Content\img\temp\old\Workflow_v2.vsdx" />
     <Content Include="Content\img\temp\team.jpg" />
+    <Content Include="Content\js\about-page.js" />
     <Content Include="Content\js\bootstrap-datetimepicker.js" />
     <Content Include="Content\js\bootstrap-transition.js" />
     <Content Include="Content\js\bootstrap.3.1.1.min.js" />
@@ -583,6 +585,7 @@
     <Content Include="Content\js\notify.js" />
     <Content Include="Content\js\placeholder.js" />
     <Content Include="Content\js\select2.js" />
+    <Content Include="Content\js\toolbar.min.js" />
     <Content Include="Content\js\tree.jquery.js" />
     <Content Include="Content\js\waypoints.js" />
     <Content Include="Content\templates\inline_html_template_v1.html" />

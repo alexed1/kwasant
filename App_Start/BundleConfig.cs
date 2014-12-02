@@ -45,6 +45,10 @@ namespace KwasantWeb.App_Start
                 "~/Content/js/main.js"
                 ));
 
+            bundles.Add(new ScriptBundle("~/bundles/js/aboutpage").Include(
+                "~/Content/js/about-page.js"
+                ));
+
             bundles.Add(new ScriptBundle("~/bundles/js/common").Include(
                 "~/Content/js/KwasantCommon.js"
                 ));

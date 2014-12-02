@@ -6,8 +6,9 @@ namespace KwasantTest.Fixtures
     {
         public CalendarDO TestCalendar1()
         {
-            var calendarDO = new CalendarDO();
+            var calendarDO = new CalendarDO
             {
+                Name = "Default"
             };
             return calendarDO;
         }

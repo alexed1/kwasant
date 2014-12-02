@@ -38,7 +38,8 @@ Layout = "~/Views/Shared/_Blank.cshtml";
 		<thead>
 			<tr>
 				<th style="width: 15%">Date</th>
-				<th style="width: 15%">Category</th>
+                <th style="width: 15%">Category</th>
+                <th style="width:15%">Secondary Category</th>
 				<th style="width: 15%">Activity</th>
 				<th style="width: 10%">Status</th>
 			</tr>
@@ -65,7 +66,8 @@ Layout = "~/Views/Shared/_Blank.cshtml";
 						        return convertToDateString(data.create_date);
 						    }
 						},
-						{ data: 'primary_category' },
+                        { data: 'primary_category' },
+						{ data: 'secondary_category' },
 						{ data: 'activity' },
 						{ data: 'status' }
 					],

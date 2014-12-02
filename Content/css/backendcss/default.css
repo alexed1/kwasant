@@ -1549,6 +1549,20 @@ today-calendar-tbl .first-col {
         width: 600px !important;
     }
 
+    .innernav
+    {
+        margin: 0px 0px 0px 0px !important;
+        border-radius: 0;
+        width: 27%;
+        min-height: 40px;
+    }
+
+        .innernav a
+        {
+            padding-top: 10px !important;
+            padding-bottom: 12px !important;
+        }
+
     .col-md-7-fix {
         width: 52% !important;
     }
