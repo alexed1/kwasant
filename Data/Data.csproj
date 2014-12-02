@@ -472,6 +472,10 @@
     <Compile Include="Migrations\201412021407358_Sync.Rob.02.12.2014.Designer.cs">
       <DependentUpon>201412021407358_Sync.Rob.02.12.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201412021453055_Sync.Rob2.02.12.2014.cs" />
+    <Compile Include="Migrations\201412021453055_Sync.Rob2.02.12.2014.Designer.cs">
+      <DependentUpon>201412021453055_Sync.Rob2.02.12.2014.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
@@ -1412,6 +1416,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412021407358_Sync.Rob.02.12.2014.resx">
       <DependentUpon>201412021407358_Sync.Rob.02.12.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412021453055_Sync.Rob2.02.12.2014.resx">
+      <DependentUpon>201412021453055_Sync.Rob2.02.12.2014.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

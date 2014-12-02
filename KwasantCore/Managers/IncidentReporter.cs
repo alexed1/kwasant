@@ -52,6 +52,7 @@ namespace KwasantCore.Managers
                 incidentDO.BookerId = userID;
                 incidentDO.ObjectId = bookingRequestId;
                 incidentDO.Activity = "Response Recieved";
+                incidentDO.Notes = "No additional notes";
                 _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
             }
