@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
@@ -157,7 +158,9 @@ namespace KwasantCore.Services
 
         public object GenerateHistoryByBookingRequestId(IUnitOfWork uow, int bookingRequestId)
         {
-            return uow.FactRepository.GetAll().Where(e => e.ObjectId == bookingRequestId.ToString())
+            var strBookingRequestId = bookingRequestId.ToString(CultureInfo.InvariantCulture);
+            return uow.FactRepository.GetQuery().Where(e => e.ObjectId == strBookingRequestId).AsEnumerable()
+                .Union<IReportItemDO>(uow.IncidentRepository.GetQuery().Where(e => e.ObjectId == bookingRequestId).AsEnumerable())
                     .OrderByDescending(e => e.CreateDate)
                     .Select(
                         e =>
