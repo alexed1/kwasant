@@ -52,7 +52,6 @@ namespace KwasantCore.Managers
                 incidentDO.BookerId = userID;
                 incidentDO.ObjectId = bookingRequestId;
                 incidentDO.Activity = "Response Recieved";
-                incidentDO.Notes = "No additional notes";
                 _uow.IncidentRepository.Add(incidentDO);
                 _uow.SaveChanges();
             }
@@ -146,7 +145,30 @@ namespace KwasantCore.Managers
             Email email = ObjectFactory.GetInstance<Email>();
             email.SendAlertEmail("CalendarSync failure", emailBodyBuilder.ToString());
         }
-
+        
+        public void ProcessSubmittedNote(int bookingRequestId, string note)
+        {
+            if (String.IsNullOrEmpty(note))
+                throw new ArgumentException("Empty note.", "note");
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curBookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (curBookingRequest == null)
+                    throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
+                var incidentDO = new IncidentDO
+                    {
+                        PrimaryCategory = "BookingRequest",
+                        SecondaryCategory = "Note",
+                        Activity = "Created",
+                        BookerId = curBookingRequest.BookerID,
+                        ObjectId = bookingRequestId,
+                        Data = note
+                    };
+                uow.IncidentRepository.Add(incidentDO);
+                uow.SaveChanges();
+            }
+        }
+        
         public void ProcessBRCheckedOut(int bookingRequestId, string bookerId)
         {
             BookingRequest _br = new BookingRequest();
