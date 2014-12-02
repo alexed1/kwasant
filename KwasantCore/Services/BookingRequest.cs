@@ -529,23 +529,62 @@ namespace KwasantCore.Services
 
             return bookingRequest.CustomerID;
         }
-        public List<BookingRequestDO> Search(IUnitOfWork uow, string queryPeriod, bool includeInvalid, int Id)
+        public List<BookingRequestDO> Search(IUnitOfWork uow, int id, bool searchAllEmail, string subject, string body, int emailStatus, int bookingStatus)
         {
-            if (Id != 0)
+            if (id != 0)
             {
-                return new List<BookingRequestDO> { uow.BookingRequestRepository.GetByKey(Id) };
-            }
-            else 
-            {
-                var requestList = uow.BookingRequestRepository.GetQuery();
-                if (queryPeriod != "all")
+                List<BookingRequestDO> filteredBrList = new List<BookingRequestDO>();
+                if (!searchAllEmail)
                 {
-                    DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
-                    requestList = requestList.Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime);
+                    filteredBrList = uow.BookingRequestRepository.GetQuery().Where(e => e.Id == id).ToList();
                 }
-                if (!includeInvalid)
-                    requestList = requestList.Where(e => e.State != BookingRequestState.Invalid);
-                return requestList.OrderByDescending(e => e.DateReceived).ToList();
+                else 
+                {
+                    var email = uow.EmailRepository.GetByKey(id);
+                    if (email != null)
+                    {
+                        filteredBrList.Add(new BookingRequestDO
+                        {
+                            Attachments = email.Attachments,
+                            Id = email.Id,
+                            Subject = email.Subject,
+                            From = email.From,
+                            DateReceived = email.DateReceived,
+                            EmailStatus = email.EmailStatus
+                        });
+                    }
+                }
+                return filteredBrList;
+            }
+            else
+            {
+                var filteredBrList = uow.BookingRequestRepository.GetQuery().ToList();
+                if (bookingStatus != 0)
+                    filteredBrList = filteredBrList.Where(e => e.State == bookingStatus).ToList();
+                if (searchAllEmail)
+                {
+                    var emailList = uow.EmailRepository.GetQuery().Where(e => e.ConversationId != null);
+                    if (emailStatus != 0)
+                        emailList = emailList.Where(e => e.EmailStatus == emailStatus);
+                    if (emailList.Count() > 0)
+                    {
+                        emailList.ToList().ForEach(e => filteredBrList.Add(new BookingRequestDO
+                        {
+                            Attachments = e.Attachments,
+                            Id = e.Id,
+                            Subject = e.Subject,
+                            From = e.From,
+                            DateReceived = e.DateReceived,
+                            EmailStatus = e.EmailStatus,
+                            State = 0
+                        }));
+                    }
+                }
+                if (!subject.IsNullOrEmpty())
+                    filteredBrList = filteredBrList.Where(e => e.Subject.Contains(subject)).ToList();
+                if (!body.IsNullOrEmpty())
+                    filteredBrList = filteredBrList.Where(e => e.PlainText.Contains(body)).ToList();
+                return filteredBrList;
             }
         }
     }

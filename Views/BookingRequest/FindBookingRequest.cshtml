@@ -1,95 +1,137 @@
 ﻿<h2>Find Booking Request</h2>
 <div style="padding-right: 40px;">
     <form>
-        <table style="width: 100%">
-            <tr>
-                <td style="vertical-align:top;width:60%">
-                    <table>
-                        <thead>
+        <div class="jumbotron calendar-section jumbotron_new">
+            <div class="row">
+                <div class="col-md-6 col-md-7-fix">
+                    <div class="col-md-12">
+                        <table style="text-align: left;">
                             <tr>
-                                <th></th>
-                                <th></th>
+                                <td>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tr>
+                                            <td colspan="2">
+                                                <input id="rdoAllEmail" type="radio" name="searchType" />Search All Emails
+                                                <input id="rdoAllBr" type="radio" name="searchType" checked="checked" />Search BR's Only
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Id
+                                            </td>
+                                            <td>
+                                                <input id="txtId" type="text" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Subject : </td>
+                                            <td>
+                                                <input id="txtSubject" type="text" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Body :
+                                            </td>
+                                            <td>
+                                                <input type="text" id="txtBody" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Email Status :
+                                            </td>
+                                            <td>
+                                                @{
+                                                    using (var uow = StructureMap.ObjectFactory.GetInstance<Data.Interfaces.IUnitOfWork>())
+                                                    {
+                                                        var allEmailStatus = uow.EmailStatusRepository.GetAll();
+                                                    <select id="ddlEmailStatus">
+                                                        <option id="0">-- All --</option>
+                                                        @foreach (var status in allEmailStatus)
+                                                        {
+                                                            <option id="@status.Id" value="@status.Name">@status.Name</option>
+                                                        }
+                                                    </select>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Booking Request Status :
+                                            </td>
+                                            <td>
+                                                @{
+                                                    using (var uow = StructureMap.ObjectFactory.GetInstance<Data.Interfaces.IUnitOfWork>())
+                                                    {
+                                                        var allBookingStatus = uow.BookingRequestStatusRepository.GetAll();
+                                                    <select id="ddlBookingStatus">
+                                                        <option id="0">-- All --</option>
+                                                        @foreach (var status in allBookingStatus)
+                                                        {
+                                                            <option id="@status.Id" value="@status.Name">@status.Name</option>
+                                                        }
+                                                    </select>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>
+                                                <input type="button" id="btnFind" value="Find" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                        </tr>
+                                    </table>
+                                </td>
                             </tr>
-                        </thead>
-                        <tr>
-                            <td>Booking Request ID
-                            </td>
-                            <td>
-                                <input id="txtBrId" type="text" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Time Span :
-                            </td>
-                            <td>
-                                <ul id="ulQueryPeriod" style="list-style-type: none; padding: 0; margin: 0;">
-                                    <li>
-                                        <input type="radio" id="last5minutes" name="timespan" />Last 5 minutes</li>
-                                    <li>
-                                        <input type="radio" id="lasthour" name="timespan" />Last Hour</li>
-                                    <li>
-                                        <input type="radio" id="lastday" name="timespan" />Last Day</li>
-                                    <li>
-                                        <input type="radio" id="lastweek" name="timespan" />Last Week</li>
-                                    <li>
-                                        <input type="radio" id="all" name="timespan" checked="checked" />All</li>
-                                </ul>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Include Invalid Booking Requests
-                            </td>
-                            <td>
-                                <input type="checkbox" id="chkIncludeInvalid" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                        </tr>
-                        <tr>
-                            <td>&nbsp;</td>
-                            <td>
-                                <input type="button" id="btnFind" value="Find" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <div id="divResultViewer">
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-                <td style="vertical-align:top;width: 40%">
+                        </table>
+                    </div>
+                    <div class="col-md-12">
+                        <div id="divResultViewer">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-md-5-fix">
                     <div id="divEmailViewer">
                     </div>
-                </td>
-            </tr>
-        </table>
+                </div>
+            </div>
+        </div>
     </form>
 </div>
 
-
 <script type="text/javascript">
-    var table;
     $(document).ready(function () {
-        //$("#tblbookingrequest").hide();
         //Binding click event on "Find" button
         $("#btnFind").click(function () {
             $("#tblbookingrequest").show();
-            var queryPeriod;
-            var includeInvalid = $("#chkIncludeInvalid").prop("checked");
-            var id = $("#txtBrId").val() == "" ? 0 : $("#txtBrId").val();
-            $("#ulQueryPeriod input").each(function () {
-                if ($(this).prop("checked")) {
-                    queryPeriod = this.id;
+            var id = $("#txtId").val() == "" ? 0 : $("#txtId").val();
+            var searchAllEmail = $("#rdoAllEmail").prop("checked");
+            var subject = $("#txtSubject").val();
+            var body = $("#txtBody").val();
+            var emailStatus;
+            var bookingStatus;
+            $("#ddlEmailStatus option").each(function () {
+                if ($(this).prop("selected")) {
+                    emailStatus = this.id;
                 }
             });
+            $("#ddlBookingStatus option").each(function () {
+                if ($(this).prop("selected")) {
+                    bookingStatus = this.id;
+                }
+            });
+            var dataString = 'id=' + id + '&searchAllEmail=' + searchAllEmail + '&subject=' + subject + '&body=' + body + '&emailStatus=' + emailStatus + '&bookingStatus=' + bookingStatus;
             //Ajax call to get filtered booking request from server.
-            $("#divResultViewer").load('@Url.Action("Search", "BookingRequest")?queryPeriod=' + queryPeriod + '&includeInvalid=false' + '&id=0');
+            $("#divResultViewer").load('@Url.Action("Search", "BookingRequest")?' + dataString);
         });
-
-
     });
 </script>

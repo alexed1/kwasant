@@ -37,7 +37,7 @@
     //Function triggered on "Details" button click in table "tblbookingrequest"
     function getDetails(curElmt) {
         var data = table.row($(curElmt).parents('tr')).data();
-        //loading Email Details.
+        //loading Email Details
         $("#divEmailViewer").load('@Url.Action("GetInfo","Email")?emailId=' + data.Id);
     }
 </script>

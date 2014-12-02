@@ -140,6 +140,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private EmailStatusRepository _emailStatusRepository;
+
+        public EmailStatusRepository EmailStatusRepository
+        {
+            get
+            {
+                return _emailStatusRepository ?? (_emailStatusRepository = new EmailStatusRepository(this));
+            }
+        }
+
         private EnvelopeRepository _envelopeRepository;
 
         public EnvelopeRepository EnvelopeRepository
