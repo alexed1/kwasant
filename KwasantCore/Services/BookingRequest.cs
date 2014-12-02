@@ -552,17 +552,20 @@ namespace KwasantCore.Services
         public int GetTimeInQueue(IUnitOfWork uow, string objectId)
         {
             DateTimeOffset currTime = DateTimeOffset.Now;
-
+            int getMinutinQueue =0;
             var factDO = uow.FactRepository.GetAll()
                 .Where(x => x.ObjectId == objectId &&
                     (x.Activity == "StateChange") &&
                     (x.Status == "Unstarted" ||
                     x.Status == "NeedsBooking")).OrderByDescending(c => c.CreateDate).FirstOrDefault();
 
-            DateTimeOffset lastStateChangeTime = factDO.LastUpdated;
+            if (factDO != null)
+            {
+                DateTimeOffset lastStateChangeTime = factDO.LastUpdated;
 
-            TimeSpan getTimeinQueue = currTime.Subtract(lastStateChangeTime);
-            int getMinutinQueue = (int)getTimeinQueue.TotalMinutes;
+                TimeSpan getTimeinQueue = currTime.Subtract(lastStateChangeTime);
+                getMinutinQueue = (int)getTimeinQueue.TotalMinutes;
+            }
             return getMinutinQueue;
         }
     }
