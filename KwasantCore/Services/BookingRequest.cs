@@ -540,17 +540,18 @@ namespace KwasantCore.Services
                 }
                 else 
                 {
-                    var email = uow.EmailRepository.GetByKey(id);
-                    if (email != null)
+                    var filteredEmail = uow.EmailRepository.GetByKey(id);
+                    if (filteredEmail != null)
                     {
                         filteredBrList.Add(new BookingRequestDO
                         {
-                            Attachments = email.Attachments,
-                            Id = email.Id,
-                            Subject = email.Subject,
-                            From = email.From,
-                            DateReceived = email.DateReceived,
-                            EmailStatus = email.EmailStatus
+                            Attachments = filteredEmail.Attachments,
+                            Id = filteredEmail.Id,
+                            Subject = filteredEmail.Subject,
+                            From = filteredEmail.From,
+                            DateReceived = filteredEmail.DateReceived,
+                            EmailStatus = filteredEmail.EmailStatus,
+                            State = 0
                         });
                     }
                 }
@@ -563,12 +564,12 @@ namespace KwasantCore.Services
                     filteredBrList = filteredBrList.Where(e => e.State == bookingStatus).ToList();
                 if (searchAllEmail)
                 {
-                    var emailList = uow.EmailRepository.GetQuery().Where(e => e.ConversationId != null);
+                    var filteredEmailList = uow.EmailRepository.GetQuery().Where(e => e.ConversationId != null);
                     if (emailStatus != 0)
-                        emailList = emailList.Where(e => e.EmailStatus == emailStatus);
-                    if (emailList.Count() > 0)
+                        filteredEmailList = filteredEmailList.Where(e => e.EmailStatus == emailStatus);
+                    if (filteredEmailList.Any())
                     {
-                        emailList.ToList().ForEach(e => filteredBrList.Add(new BookingRequestDO
+                        filteredEmailList.ToList().ForEach(e => filteredBrList.Add(new BookingRequestDO
                         {
                             Attachments = e.Attachments,
                             Id = e.Id,
