@@ -54,7 +54,7 @@ namespace KwasantCore.Services
 
         public void Process(IUnitOfWork uow, BookingRequestDO bookingRequest)
         {
-            bookingRequest.State = BookingRequestState.Unstarted;
+            bookingRequest.State = BookingRequestState.NeedsBooking;
             UserDO curUser = uow.UserRepository.GetOrCreateUser(bookingRequest.From);
             bookingRequest.Customer = curUser;
             bookingRequest.CustomerID = curUser.Id;
@@ -99,7 +99,7 @@ namespace KwasantCore.Services
         {
             return
                 uow.BookingRequestRepository.GetAll()
-                    .Where(e => (e.State == BookingRequestState.Unstarted) || (e.State == BookingRequestState.NeedsBooking))
+                    .Where(e => (e.State == BookingRequestState.NeedsBooking))
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
                         e =>
@@ -193,7 +193,7 @@ namespace KwasantCore.Services
         public void Timeout(IUnitOfWork uow, BookingRequestDO bookingRequestDO)
         {
             string bookerId = bookingRequestDO.BookerID;
-            bookingRequestDO.State = BookingRequestState.Unstarted;
+            bookingRequestDO.State = BookingRequestState.NeedsBooking;
             bookingRequestDO.BookerID = null;
             bookingRequestDO.Booker = null;
             bookingRequestDO.Customer = bookingRequestDO.Customer;
@@ -456,7 +456,7 @@ namespace KwasantCore.Services
                 BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
                 if (bookingRequestDO == null)
                     throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
-                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.State = BookingRequestState.NeedsBooking;
                 bookingRequestDO.BookerID = null;
                 bookingRequestDO.Booker = null;
                 bookingRequestDO.PreferredBookerID = null;

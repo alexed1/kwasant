@@ -311,7 +311,7 @@ namespace Data.Migrations
                 HTMLText = htmlText,
                 EmailStatus = EmailState.Unprocessed,
                 DateReceived = DateTimeOffset.UtcNow,
-                State = BookingRequestState.Unstarted,
+                State = BookingRequestState.NeedsBooking,
                 Customer = userDO
             };
             userDO.UserBookingRequests.Add(curBookingRequestDO);
