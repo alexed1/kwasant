@@ -432,5 +432,28 @@ namespace KwasantWeb.Controllers
                 return jsonResult;
             }
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult CreateViaCustomer(string meetingInfo, string subject)
+        {
+            try
+            {
+                if (meetingInfo.Trim().Length < 30)
+                return Json(new { Message = "Meeting information must have at least 30 characters" });
+
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var currUserDO = uow.UserRepository.GetByKey(this.GetUserId());
+                    string userId = _br.Generate(uow, currUserDO.EmailAddress.Address, meetingInfo, "SubmitsViaCustomer", subject);
+                    return Json(new { Message = "A new booking requested created!", Result = "Success" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Error("Error processing a home page try it out form schedule me", ex);
+                return Json(new { Message = "Something went wrong. Sorry about that", Result = "Failure" });
+            }
+        }
     }
 }

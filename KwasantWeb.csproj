@@ -459,6 +459,7 @@
     <Content Include="Content\img\EmailLogo.png" />
     <Content Include="Content\img\favicon.ico" />
     <Content Include="Content\img\forms\try-kwasant-btn.png" />
+    <Content Include="Content\img\icloud-logo.png" />
     <Content Include="Content\img\icons\sort_asc.png" />
     <Content Include="Content\img\icons\sort_asc_disabled.png" />
     <Content Include="Content\img\icons\sort_both.png" />
@@ -466,6 +467,7 @@
     <Content Include="Content\img\icons\sort_desc_disabled.png" />
     <Content Include="Content\img\icons\watch-video-label.png" />
     <Content Include="Content\img\Management\alexhead.png" />
+    <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
     <Content Include="Content\img\site\alex-photo.png" />
@@ -846,6 +848,9 @@
     <Content Include="Views\User\UserRoles.cshtml" />
     <Content Include="Views\Shared\AccessDenied.cshtml" />
     <Content Include="Views\NegotiationResponse\ThankYouView.cshtml" />
+    <Content Include="Views\User\MakeNewBookingRequest.cshtml" />
+    <Content Include="Views\User\ShareCalendar.cshtml" />
+    <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
