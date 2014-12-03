@@ -80,6 +80,19 @@ namespace KwasantTest.Fixtures
             };
             return curAnswerDO;
         }
+
+        public AnswerDO TestAnswer6()
+        {
+            var curAnswerDO = new AnswerDO
+
+            {
+                Id = 0,
+                AnswerStatus = 2,
+                QuestionID = 1,
+                Text = "Starbucks on Valencia",
+            };
+            return curAnswerDO;
+        }
                 
     }
 }
