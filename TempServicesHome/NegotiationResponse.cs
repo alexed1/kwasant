@@ -14,10 +14,13 @@ namespace KwasantWeb.TempServicesHome
     public class NegotiationResponse
     {
         private INegotiation _negotiation;
+        private ITracker _tracker;
 
         public NegotiationResponse()
         {
             _negotiation = ObjectFactory.GetInstance<INegotiation>();
+            _tracker = ObjectFactory.GetInstance<ITracker>();
+
         }
 
         public void Process(NegotiationVM curNegotiationVM, string userID)
@@ -42,8 +45,8 @@ namespace KwasantWeb.TempServicesHome
 
                 uow.SaveChanges();
 
-                ObjectFactory.GetInstance<ITracker>().Identify(curUserDO);
-                ObjectFactory.GetInstance<ITracker>().Track(curUserDO, "RespondedToClarificationRequest", "ClickedNegResponseLink", new Dictionary<string, object> { { "BookingRequestId", curNegotiationDO.BookingRequestID } });
+                _tracker.Identify(curUserDO);
+                _tracker.Track(curUserDO, "RespondedToClarificationRequest", "ClickedNegResponseLink", new Dictionary<string, object> { { "BookingRequestId", curNegotiationDO.BookingRequestID } });
             }
         }
 
