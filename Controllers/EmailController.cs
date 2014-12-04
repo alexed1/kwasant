@@ -12,6 +12,7 @@ using KwasantWeb.ViewModels;
 using StructureMap;
 using Utilities;
 using System.Linq;
+using KwasantCore.Services;
 
 namespace KwasantWeb.Controllers
 {
@@ -21,13 +22,16 @@ namespace KwasantWeb.Controllers
         private IUnitOfWork _uow;
         private IBookingRequestDORepository curBookingRequestRepository;
         private KwasantPackager API;
-
+        private Email _email;
+        private JsonPackager _jsonPackager;
 
         public EmailController()
         {
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             curBookingRequestRepository = _uow.BookingRequestRepository;
             API = new KwasantPackager();
+            _email = new Email();
+            _jsonPackager = new JsonPackager();
         }
 
         // GET: /Email/
@@ -217,5 +221,32 @@ namespace KwasantWeb.Controllers
         {
             return Json(true);
         }
+
+        public ActionResult ShowReport()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult ShowEmails(string queryPeriod, int draw, int start, int length)
+        {
+            DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                int recordcount;
+                var emailDO = _email.GetEmails(uow, dateRange, start, length, out recordcount);
+                var jsonResult = Json(new
+                {
+                    draw = draw,
+                    recordsTotal = recordcount,
+                    recordsFiltered = recordcount,
+                    data = _jsonPackager.Pack(emailDO)
+                });
+
+                jsonResult.MaxJsonLength = int.MaxValue;
+                return jsonResult;
+            }
+        }
+        
     }
 }

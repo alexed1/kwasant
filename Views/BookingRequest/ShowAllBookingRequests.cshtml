@@ -26,6 +26,7 @@
             var table = $('#tblbookingrequest').DataTable({
                 data: JSON.parse(response),
                 order: [0, 'desc'],
+
                 columns: [
                     { data: 'date_received' },
                     { data: 'from_address' },
