@@ -691,7 +691,10 @@
             deleteButton.hide();
         
         if (answerInitValues.CanDelete || !canEditAnswer) {
-            suggestedBy.show();
+            if (suggestedByText == 'Suggested by undefined')
+                suggestedBy.hide();
+            else
+                suggestedBy.show();
         }
 
 

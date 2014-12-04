@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Web.Mvc;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
@@ -41,11 +43,77 @@ namespace KwasantTest.Controllers
                     Summary = String.Empty
                 };
                 curEventVM.Attendees = "newattendee@kwasant.net";
-                curEventController.ProcessChangedEvent(curEventVM, ConfirmationStatus.Confirmed);
+                curEventController.ProcessChangedEvent(curEventVM, ConfirmationStatus.Confirmed, false);
             }
 
         }
 
+        [Test]
+        public void TestTimezonesCorrect()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var br = fixture.TestBookingRequest1();
+                var cal = fixture.TestCalendar1();
+                br.Calendars.Add(cal);
+                cal.BookingRequests.Add(br);
+                uow.CalendarRepository.Add(cal);
 
+                const string createDateStr = @"Sat, 29 Nov 2014 07:00:00 +0700";
+                br.CreateDate = DateTimeOffset.Parse(createDateStr);
+                uow.BookingRequestRepository.Add(br);
+
+                uow.SaveChanges();
+                
+                var ec = new EventController();
+                ViewResult result = ec.New(br.Id, cal.Id, "2014-11-29T11:00:00z", "2014-11-29T11:30:00z") as ViewResult;
+                var model = result.Model as EventVM;
+
+                var createdEventID = model.Id;
+                var eventDO = uow.EventRepository.GetByKey(createdEventID);
+
+                Assert.AreEqual(new TimeSpan(7, 0, 0), eventDO.StartDate.Offset);
+                Assert.AreEqual(11, eventDO.StartDate.Hour);
+                Assert.AreEqual(0, eventDO.StartDate.Minute);
+                Assert.AreEqual(new TimeSpan(7, 0, 0), eventDO.EndDate.Offset);
+                Assert.AreEqual(11, eventDO.EndDate.Hour);
+                Assert.AreEqual(30, eventDO.EndDate.Minute);
+            }
+        }
+
+        [Test]
+        public void TestNegativeTimezonesCorrect()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fixture = new FixtureData(uow);
+                var br = fixture.TestBookingRequest1();
+                var cal = fixture.TestCalendar1();
+                br.Calendars.Add(cal);
+                cal.BookingRequests.Add(br);
+                uow.CalendarRepository.Add(cal);
+
+                const string createDateStr = @"Sat, 29 Nov 2014 07:00:00 -0300";
+                br.CreateDate = DateTimeOffset.Parse(createDateStr);
+                uow.BookingRequestRepository.Add(br);
+
+                uow.SaveChanges();
+
+                var ec = new EventController();
+                ViewResult result = ec.New(br.Id, cal.Id, "2014-11-29T11:00:00z", "2014-11-29T11:30:00z") as ViewResult;
+                var model = result.Model as EventVM;
+
+                var createdEventID = model.Id;
+                var eventDO = uow.EventRepository.GetByKey(createdEventID);
+
+                Assert.AreEqual(new TimeSpan(-3, 0, 0), eventDO.StartDate.Offset);
+                Assert.AreEqual(11, eventDO.StartDate.Hour);
+                Assert.AreEqual(0, eventDO.StartDate.Minute);
+                Assert.AreEqual(new TimeSpan(-3, 0, 0), eventDO.EndDate.Offset);
+                Assert.AreEqual(11, eventDO.EndDate.Hour);
+                Assert.AreEqual(30, eventDO.EndDate.Minute);
+            }
+        }
     }
 }

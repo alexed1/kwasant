@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity.Infrastructure;
 using Data.Infrastructure;
-using Data.Interfaces;
 using Data.States;
 using Data.States.Templates;
-using StructureMap;
 using Utilities;
 
 namespace Data.Entities
 {
-    public class BookingRequestDO : EmailDO, ICreateHook
+    public class BookingRequestDO : EmailDO
     {
         public BookingRequestDO()
         {
             Calendars = new List<CalendarDO>();
             Negotiations = new List<NegotiationDO>();
-            State = BookingRequestState.Unstarted;
+            State = BookingRequestState.NeedsBooking;
             ConversationMembers = new List<EmailDO>();
         }
 
@@ -65,14 +62,14 @@ namespace Data.Entities
             var reflectionHelper = new ReflectionHelper<BookingRequestDO>();
             var customerProperty = reflectionHelper.GetProperty(br => br.CustomerID);
             var bookerProperty = reflectionHelper.GetProperty(br => br.BookerID);
+            
             this.DetectUpdates(originalValues, currentValues, new[] { customerProperty, bookerProperty });
 
             var statePropertyName = reflectionHelper.GetPropertyName(br => br.State);
             if (!MiscUtils.AreEqual(originalValues[statePropertyName], currentValues[statePropertyName]))
             {
                 var state = (int) currentValues[statePropertyName];
-                if (state == BookingRequestState.Unstarted || 
-                    state == BookingRequestState.NeedsBooking)
+                if (state == BookingRequestState.NeedsBooking)
                 {
                     AlertManager.BookingRequestNeedsProcessing(Id);
                 }

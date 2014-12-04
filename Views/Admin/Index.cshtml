@@ -39,6 +39,8 @@
                         <li>@Html.ActionLink("Show Incidents", "Index", "Report", new { type = "incident" }, new { @class = "" }) </li>
                         <li>@Html.ActionLink("Show Usage", "Index", "Report", new { type = "usage" }, new { @class = "" }) </li>
                         <li>@Html.ActionLink("Show History", "History", "Report", new{area=""}, new { @class = "" }) </li>
+                        <li>@Html.ActionLink("Show Booker Throughput", "Index", "Report", new { type = "showBookerThroughput" }, new { @class = "" }) </li>
+                        <li>@Html.ActionLink("Show BR Responsiveness", "Index", "Report", new { type = "showBRResponsiveness" }, new { @class = "" }) </li>
                     </ul>
                 </li>
                 <li class="dropdown"><a id="btnUsers">Users</a>
@@ -73,34 +75,48 @@
 <a href="/">Go to kwasant.com</a>
 <script type="text/javascript">
     $(document).ready(function () {
-        
+
         $('.navbar .dropdown').hover(function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideDown(150);
         }, function () {
             $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
         });
-        $.post("/Report/ShowReport", { queryPeriod: "", type: "fiveRecentIncident" }, showIncident, 'json');
- });
+        //$.post("/Report/ShowReport", { queryPeriod: "", type: "fiveRecentIncident" }, showIncident, 'json');
+        showIncident();
+    });
     // show 5 most Recent Incident on datatable
-     function showIncident(response) {
-         var table = $('#tblIncident').DataTable({
-             order: [0, 'desc'],
-             paging: false,
-             searching: false,
-             bLengthChange: false,
-             data: JSON.parse(response),
-             columns: [
-                 {
+    function showIncident() {
+        var table = $('#tblIncident').DataTable({
+            destroy: true,
+            searching: false,
+            ordering: false,
+            bLengthChange: false,
+            processing: true,
+            serverSide: true, //Enabling server side processing
+            //data: JSON.parse(response),
+            order: [0, 'desc'],
+            columns: [
+                {
                     data: function (data) {
                         return convertToDateString(data.create_date);
                     }
-                 },
-                 { data: 'primary_category' },
-                 { data: 'secondary_category' },
-                 { data: 'activity' },
-                 { data: 'data' }
-             ],
-         });
-     }
-     
+                },
+                { data: 'primary_category' },
+                { data: 'secondary_category' },
+                { data: 'activity' },
+                { data: 'data' }
+            ],
+            ajax:
+                {
+                    url: "@Url.Action("ShowReport", "Report")" + "?queryPeriod=" + "" + "&type="+"fiveRecentIncident",
+            dataSrc: function (json) {
+                var orgdata = JSON.parse(json.data);
+                return orgdata;
+                alert(orgdata);
+            },
+            type: "POST"
+          }
+        });
+    }
+
 </script>

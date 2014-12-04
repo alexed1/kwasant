@@ -11,6 +11,7 @@ namespace Data.Entities
         public CalendarDO()
         {
             Events = new List<EventDO>();
+            BookingRequests = new List<BookingRequestDO>();
         }
 
         [Key]

@@ -37,10 +37,12 @@ Layout = "~/Views/Shared/_Blank.cshtml";
 	<table id="tblHistoryReport" class="table data-table">
 		<thead>
 			<tr>
-				<th style="width: 15%">Date</th>
-				<th style="width: 15%">Category</th>
+				<th style="width: 10%">Date</th>
+                <th style="width: 10%">Category</th>
+                <th style="width:15%">Secondary Category</th>
 				<th style="width: 15%">Activity</th>
 				<th style="width: 10%">Status</th>
+				<th style="width: 10%">Data</th>
 			</tr>
 		</thead>
 	</table>
@@ -57,12 +59,19 @@ Layout = "~/Views/Shared/_Blank.cshtml";
 					destroy: true,
 					"scrollY": "250px",
 					"scrollCollapse": true,
+					order: [0],
 					data: JSON.parse(response),
 					columns: [
-						{ data: 'create_date'},
-						{ data: 'primary_category' },
+						{
+						    data: function (data) {
+						        return convertToDateString(data.create_date);
+						    }
+						},
+                        { data: 'primary_category' },
+						{ data: 'secondary_category' },
 						{ data: 'activity' },
-						{ data: 'status' }
+						{ data: 'status' },
+						{ data: 'data' }
 					],
 				});
 			}

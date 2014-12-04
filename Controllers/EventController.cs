@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Web.Mvc;
 using AutoMapper;
 using Data.Entities;
@@ -12,7 +13,10 @@ using KwasantCore.Interfaces;
 using KwasantCore.Managers;
 using KwasantCore.Services;
 using KwasantWeb.ViewModels;
+using Segment;
 using StructureMap;
+using Utilities;
+using Logger = Utilities.Logging.Logger;
 
 namespace KwasantWeb.Controllers
 {
@@ -36,7 +40,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var createdEvent = CreateNewEvent(bookingRequestID, calendarID, start, end);
+                var createdEvent = CreateNewEvent(uow, bookingRequestID, calendarID, start, end);
                 _event.Create(createdEvent, uow);
 
                 uow.EventRepository.Add(createdEvent);
@@ -55,7 +59,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var createdEvent = CreateNewEvent(null, calendarID, start, end);
+                var createdEvent = CreateNewEvent(uow, null, calendarID, start, end);
 
                 createdEvent.CreatedByID = uow.CalendarRepository.GetByKey(calendarID).OwnerID;
                 createdEvent.EventStatus = EventState.ProposedTimeSlot;
@@ -141,7 +145,7 @@ namespace KwasantWeb.Controllers
         }
 
         //Renders a form to accept a new event
-        private EventDO CreateNewEvent(int? bookingRequestID, int calendarID, string start, string end)
+        private EventDO CreateNewEvent(IUnitOfWork uow, int? bookingRequestID, int calendarID, string start, string end)
         {
             if (!start.EndsWith("z"))
                 throw new ApplicationException("Invalid date time");
@@ -149,13 +153,40 @@ namespace KwasantWeb.Controllers
                 throw new ApplicationException("Invalid date time");
 
             //unpack the form data into an EventDO 
-            EventDO createdEvent = new EventDO();
-            createdEvent.BookingRequestID = bookingRequestID;
-            createdEvent.CalendarID = calendarID;            
-            createdEvent.StartDate = DateTime.ParseExact(start, DateStandardFormat, CultureInfo.InvariantCulture);
-            createdEvent.EndDate = DateTime.ParseExact(end, DateStandardFormat, CultureInfo.InvariantCulture);
-            createdEvent.CreatedByID = "Rob";
+            EventDO createdEvent = new EventDO {BookingRequestID = bookingRequestID, CalendarID = calendarID};
 
+            TimeSpan offset;
+            if (bookingRequestID.HasValue)
+            {
+                var bookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestID);
+                offset = bookingRequest.CreateDate.Offset;
+            }
+            else
+            {
+                offset = DateTimeOffset.Now.Offset; //Legacy for now. Time slots don't care about timezones for now, as it's presented to the booker
+            }
+
+            //First, we need to parse the time into UTC.
+            //UTC is the incorrect timezone (most likely), and we use it because our javascript library tries to use local time (the booker's local time)
+            //So, we are sent the date, and told it's in UTC.
+            //Then, we look at the headers of the original booking request
+            //From the headers, we adjust our time by the senders offset
+
+            //For example:
+            //Customer sends an email at 8:45pm +7UTC
+            //Customer asks for a meeting at '11am'
+            //Booker clicks the 11am time slot
+            //We recieve the date: 11am +0 UTC. However, the booker wants it to be 11am +7 UTC (We assume this based on the headers from their email)
+            //We then subtract the bookers offset (7 hours)
+            //We are then left with 4am +0 UTC, which is equivelant to 11am +7 UTC
+            //Finally, we want to set the offset to the bookers offset. This part is merely cosmetic.
+            //It allows us to show 11am +7:00, rather than 4am +0:00
+            //Even though they are equivelant, we want to be local to the customer
+            var startDateInitial = DateTimeOffset.ParseExact(start, DateStandardFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+            var endDateInitial = DateTimeOffset.ParseExact(end, DateStandardFormat, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
+            createdEvent.StartDate = startDateInitial.Subtract(offset).ToOffset(offset);
+            createdEvent.EndDate = endDateInitial.Subtract(offset).ToOffset(offset);
+            
             createdEvent.IsAllDay = createdEvent.StartDate.Equals(createdEvent.StartDate.Date) && createdEvent.StartDate.AddDays(1).Equals(createdEvent.EndDate);
 
             return createdEvent;
@@ -175,18 +206,8 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult ConfirmDelete(int eventID)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var eventDO = uow.EventRepository.GetQuery().FirstOrDefault(e => e.Id == eventID);
-                if (eventDO != null)
-                {
-                    uow.EventRepository.Remove(eventDO);
-                    uow.SaveChanges();
-                    return Json(true);
-                }
-
-                return Json(false);
-            }
+            _event.Delete(eventID);
+            return Json(true);
         }
 
         public ActionResult MoveEvent(int eventID, String newStart, String newEnd, bool requiresConfirmation = true, bool mergeEvents = false)
@@ -216,8 +237,17 @@ namespace KwasantWeb.Controllers
             return View("~/Views/Event/ConfirmChanges.cshtml", eventVM);
         }
 
-        [HttpPost]
-        public ActionResult ProcessChangedEvent(EventVM curEventVM, int confStatus = ConfirmationStatus.Unconfirmed, bool mergeEvents = false)
+        [HttpGet]
+        public ActionResult ProcessChangedEvent(EventVM curEventVM)
+        {
+            //Fix up serialization problem
+            curEventVM.StartDate = DateTime.Parse(Request.Params["StartDate"], CultureInfo.InvariantCulture, 0).ToUniversalTime();
+            curEventVM.EndDate = DateTime.Parse(Request.Params["EndDate"], CultureInfo.InvariantCulture, 0).ToUniversalTime();
+
+            return ProcessChangedEvent(curEventVM, ConfirmationStatus.Confirmed, false);
+        }
+
+        public ActionResult ProcessChangedEvent(EventVM curEventVM, int confStatus, bool mergeEvents)
         {
             try
             {
@@ -230,8 +260,7 @@ namespace KwasantWeb.Controllers
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     if (updatedEventInfo.Id == 0)
-                        throw new ApplicationException(
-                            "event should have been created and saved in #new, so Id should not be zero");
+                        throw new ApplicationException("event should have been created and saved in #new, so Id should not be zero");
                     var curEventDO = uow.EventRepository.GetByKey(updatedEventInfo.Id);
                     if (curEventDO == null)
                         throw new EntityNotFoundException<EventDO>();
@@ -240,11 +269,11 @@ namespace KwasantWeb.Controllers
                     if (updatedEventInfo.Summary == null)
                         updatedEventInfo.Summary = String.Empty;
 
+                    var newAttendees = _event.Update(uow, curEventDO, updatedEventInfo);
+
                     curEventDO.EventStatus = updatedEventInfo.Summary.Contains("DRAFT")
                         ? EventState.Draft
-                        : EventState.Booking;
-
-                    _event.Process(uow, curEventDO, updatedEventInfo);
+                        : EventState.ReadyForDispatch;
 
                     if (mergeEvents)
                         MergeTimeSlots(uow, curEventDO);
@@ -266,20 +295,39 @@ namespace KwasantWeb.Controllers
                                     });
                         }
                     }
-                }
-                return Json(new
-                {
-                    Success = true,
-                    Message = String.Empty
-                });
+                    
+                    var emailController = new EmailController();
+
+                    var currCreateEmailVM = new CreateEmailVM
+                    {
+                        ToAddresses = updatedEventInfo.Attendees.Select(a => a.EmailAddress.Address).ToList(),
+                        Subject = "*** Automatically Generated ***",
+                        RecipientsEditable = false,
+                        BCCHidden = true,
+                        CCHidden = true,
+                        SubjectEditable = false,
+                        HeaderText = String.Format("Your event has been created. Would you like to send the emails now?"),
+                        BodyPromptText = "Enter some additional text for your recipients",
+                        Body = "",
+                        BodyRequired = false,
+                    };
+
+                    return emailController.DisplayEmail(Session, currCreateEmailVM,
+                        (subUow, emailDO) =>
+                        {
+                            var subEventDO = subUow.EventRepository.GetByKey(curEventDO.Id);
+                            _event.GenerateInvitations(subUow, subEventDO, newAttendees, emailDO.HTMLText);
+                            subEventDO.EventStatus = EventState.DispatchCompleted;
+                            subUow.SaveChanges();
+                            return Json(true);
+                        }
+                    );
+                }   
             }
             catch (Exception e)
             {
-                return Json(new
-                {
-                    Success = false,
-                    Message = e.Message
-                });
+                Logger.GetLogger().Error("Error saving event", e);
+                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
             }
             
         }

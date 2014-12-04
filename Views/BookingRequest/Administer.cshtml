@@ -112,7 +112,8 @@
         Kwasant.IFrame.Display('/Report/HistoryByBookingRequestId?bookingRequestID=' + id,
             {
                 horizontalAlign: 'left',
-                width: 700,
+                width: 800,
+                height: 520,
                 callback: window.parent.calendar.refreshCalendars
             });
     }
@@ -359,4 +360,13 @@
                 $(this).find('.dropdown-menu').first().stop(true, true).slideUp(105);
             });
         });
+        
+        function getAddNoteWindow() {
+            Kwasant.IFrame.Display('@Url.Action("AddNote", "BookingRequest", new { bookingRequestID = Model.BookingRequestId })',
+                {
+                    horizontalAlign: 'right',
+                    minHeight: 200,
+                    minWidth: 200
+                });
+        }
 </script>

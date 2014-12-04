@@ -27,20 +27,35 @@
         if (validator)
             validator.form();
     }
-    $(function () {
-        var toAddressesDom = $('#toAddresses').get(0);
 
-        $(".draggable").sortable({
-            connectWith: ".draggable",
+    $(function() {
+        var toAddressesDom = $('#toAddresses').get(0);
+        var attendeesEditable = @(Model.RecipientsEditable ? "true" : "false");        
+        var bccVisible = @(!Model.BCCHidden ? "true" : "false");        
+        var ccVisible = @(!Model.CCHidden ? "true" : "false");        
+
+        if (attendeesEditable) {
+            $(".draggable").sortable({
+                connectWith: ".draggable",
             
-            //The below is to make jquery.validate work with our list
-            receive: function (event, ui) {
-                if (this == toAddressesDom ||
-                    ui.sender[0] == toAddressesDom) {
-                    updateHiddenField();
+                //The below is to make jquery.validate work with our list
+                receive: function(event, ui) {
+                    if (this == toAddressesDom ||
+                        ui.sender[0] == toAddressesDom) {
+                        updateHiddenField();
+                    }
                 }
-            }
-        }).disableSelection();
+            }).disableSelection();
+        } else {
+            $('#addressDiv').hide();
+            $('#displayDiv').width('100%');
+        }
+        if (!bccVisible) {
+            $('#bccRow').hide();
+        }
+        if (!ccVisible) {
+            $('#ccRow').hide();
+        }
 
         updateHiddenField();
         
@@ -76,6 +91,18 @@
         return false;
     }
 </script>
+@if (!Model.RecipientsEditable)
+{
+    <style type="text/css">
+        .draggable li {
+            cursor: default;
+        }
+        .addressField {
+            width: 650px;
+            max-width: 650px;
+        }
+</style>
+}
 
 <script type="text/javascript">
     function insertText(textToInsert) {
@@ -137,8 +164,7 @@
         @foreach (var link in Model.InsertLinks)
         {
             @:$('#@link.Id').click(function () { insertText('@Html.Raw(link.TextToInsert)') });
-                }
-
+        }
     });
 
     var validator;
@@ -151,6 +177,7 @@
                     required: true
                 },
                 subj: {
+                    required: true,
                     minlength: 5
                 }
             }
@@ -212,14 +239,14 @@
         {
             <h4 style="text-align: center; color: #D62C2C">@Model.HeaderText</h4>
         }
-        <div style="float:left; width:30%">
+        <div id="addressDiv" style="float:left; width:30%">
             <h4 style="width:200px; text-align:center">Address book</h4>
             <ul id="addressBook" class="draggable addressBook"></ul>
             <div style="width:200px; margin-top:5px;">
                 <input id="attendeeText" class="addAttendeeInput" type="text" placeholder="Enter a new recipient..." />
             </div>
         </div>
-        <div style="float:right; width:70%; margin-top:10px;">
+        <div id="displayDiv" style="float:right; width:70%; margin-top:10px;">
             <div class="info">
 
                 <div class="email-details with-border">
@@ -237,13 +264,13 @@
                                 <input id="toAddressesHidden" name="toAddressesHidden" type="hidden" required />
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="ccRow">
                             <td class="">CC:</td>
                             <td>
                                 <ul id="ccAddresses" class="addressField draggable"></ul>
                             </td>
                         </tr>
-                        <tr>
+                        <tr id="bccRow">
                             <td class="">BCC:</td>
                             <td>
                                 <ul id="bccAddresses" class="addressField draggable"></ul>

@@ -5,6 +5,7 @@ using Data.Validations;
 using Data.Entities;
 using Data.States;
 using StructureMap;
+using Data.Infrastructure;
 
 namespace KwasantCore.Services
 {
@@ -93,5 +94,61 @@ namespace KwasantCore.Services
             return curEmailAddress.Address.Split(new[] {'@'})[0];
         }
 
+        public void Create(IUnitOfWork uow, UserDO submittedUserData)
+        {
+            submittedUserData.State = UserState.Active;
+            submittedUserData.Id = Guid.NewGuid().ToString();
+            submittedUserData.UserName = submittedUserData.FirstName;
+            submittedUserData.EmailAddress = uow.EmailAddressRepository.GetOrCreateEmailAddress(submittedUserData.EmailAddress.Address);
+            submittedUserData.Roles.ToList().ForEach(e =>
+                uow.AspNetUserRolesRepository.Add(new AspNetUserRolesDO
+                {
+                    RoleId = e.RoleId,
+                    UserId = submittedUserData.Id
+                }));
+            submittedUserData.Roles.Clear();
+            uow.UserRepository.Add(submittedUserData);
+            uow.SaveChanges();
+            AlertManager.ExplicitCustomerCreated(submittedUserData.Id);
+        }
+
+        public UserDO GetExisting(IUnitOfWork uow, string emailAddress)
+        {
+            UserDO existingUser = uow.UserRepository.GetQuery().Where(e => e.EmailAddress.Address == emailAddress).FirstOrDefault();
+            return existingUser;
+        }
+
+        public void Update(IUnitOfWork uow, UserDO submittedUserData, UserDO existingUser)
+        {
+            existingUser.FirstName = submittedUserData.FirstName;
+            existingUser.LastName = submittedUserData.LastName;
+
+            //Remove old roles
+            foreach (var existingRole in existingUser.Roles.ToList())
+            {
+                if (!submittedUserData.Roles.Select(role => role.RoleId).Contains(existingRole.RoleId))
+                    uow.AspNetUserRolesRepository.Remove(uow.AspNetUserRolesRepository.FindOne(e => e.RoleId == existingRole.RoleId && e.UserId == existingUser.Id));
+            }
+
+            //Add new roles
+            foreach (var newRole in submittedUserData.Roles)
+            {
+                if (!existingUser.Roles.Select(role => role.RoleId).Contains(newRole.RoleId))
+                    uow.AspNetUserRolesRepository.Add(new AspNetUserRolesDO
+                    {
+                        RoleId = newRole.RoleId,
+                        UserId = submittedUserData.Id
+                    });
+            }
+            uow.SaveChanges();
+        }
+
+        public string GetUserId(string emailAddress) 
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.UserRepository.GetOrCreateUser(emailAddress).Id;
+            }
+        }
     }
 }

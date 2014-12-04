@@ -16,7 +16,7 @@ namespace KwasantWeb.App_Start
             Mapper.CreateMap<EventDO, EventVM>()
                 .ForMember(ev => ev.Attendees, opts => opts.ResolveUsing(ev => String.Join(",", ev.Attendees.Select(eea => eea.EmailAddress.Address).Distinct())))
                 .ForMember(ev => ev.CreatedByAddress, opts => opts.ResolveUsing(evdo => evdo.CreatedBy.EmailAddress.Address))
-                .ForMember(ev => ev.BookingRequestTimezoneOffsetInMinutes, opts => opts.ResolveUsing(evdo => evdo.CreateDate.Offset.TotalMinutes * - 1));
+                .ForMember(ev => ev.BookingRequestTimezoneOffsetInMinutes, opts => opts.ResolveUsing(evdo => evdo.StartDate.Offset.TotalMinutes * - 1));
 
             Mapper.CreateMap<EventVM, EventDO>()
                 .ForMember(eventDO => eventDO.Attendees, opts => opts.Ignore())
@@ -71,10 +71,20 @@ namespace KwasantWeb.App_Start
 
             Mapper.CreateMap<BookingRequestDO, BookingRequestVM>()
                 .ForMember(br => br.Id, opts => opts.ResolveUsing(e => e.Id))
+                .ForMember(br => br.BookerName, opts => opts.ResolveUsing(e => e.Booker != null ? e.Booker.EmailAddress.Address : ""))
                 .ForMember(br => br.Subject, opts => opts.ResolveUsing(e => e.Subject))
                 .ForMember(br => br.EmailAddress, opts => opts.ResolveUsing(e => e.From.Address))
                 .ForMember(br => br.DateReceived, opts => opts.ResolveUsing(e => e.DateReceived))
                 .ForMember(br => br.HTMLText, opts => opts.ResolveUsing(e => e.HTMLText));
+
+            Mapper.CreateMap<UserVM, UserDO>()
+                .ForMember(userDO => userDO.Id, opts => opts.ResolveUsing(e => e.Id))
+                .ForMember(userDO => userDO.FirstName, opts => opts.ResolveUsing(e => e.FirstName))
+                .ForMember(userDO => userDO.LastName, opts => opts.ResolveUsing(e => e.LastName))
+                .ForMember(userDO => userDO.UserName, opts => opts.ResolveUsing(e => e.UserName))
+                .ForMember(userDO => userDO.EmailAddress, opts => opts.ResolveUsing(e => new EmailAddressDO { Address = e.EmailAddress }))
+                .ForMember(userDO => userDO.Roles, opts => opts.Ignore())
+                .ForMember(userDO => userDO.Calendars, opts => opts.Ignore());
         }
     }
 }
