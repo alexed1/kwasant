@@ -15,7 +15,7 @@ namespace Data.Entities
         {
             Calendars = new List<CalendarDO>();
             Negotiations = new List<NegotiationDO>();
-            State = BookingRequestState.Unstarted;
+            State = BookingRequestState.NeedsBooking;
             ConversationMembers = new List<EmailDO>();
         }
 
@@ -69,8 +69,7 @@ namespace Data.Entities
             if (!MiscUtils.AreEqual(originalValues[statePropertyName], currentValues[statePropertyName]))
             {
                 var state = (int) currentValues[statePropertyName];
-                if (state == BookingRequestState.Unstarted || 
-                    state == BookingRequestState.NeedsBooking)
+                if (state == BookingRequestState.NeedsBooking)
                 {
                     AlertManager.BookingRequestNeedsProcessing(Id);
                 }

@@ -310,6 +310,7 @@
     <Compile Include="ViewModels\BookingRequestAdminVM.cs" />
     <Compile Include="ViewModels\BookingRequestNoteVM.cs" />
     <Compile Include="ViewModels\BookingRequestVM.cs" />
+    <Compile Include="ViewModels\BRSearchResultVM.cs" />
     <Compile Include="ViewModels\CalendarShowVM.cs" />
     <Compile Include="ViewModels\BookingRequestConversationVM.cs" />
     <Compile Include="ViewModels\DashboardShowVM.cs" />
@@ -848,6 +849,7 @@
     <Content Include="Views\Shared\AccessDenied.cshtml" />
     <Content Include="Views\NegotiationResponse\ThankYouView.cshtml" />
     <Content Include="Views\BookingRequest\AddNote.cshtml" />
+    <Content Include="Views\BookingRequest\SearchResult.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

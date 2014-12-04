@@ -1562,6 +1562,16 @@ today-calendar-tbl .first-col {
             padding-top: 10px !important;
             padding-bottom: 12px !important;
         }
+
+    .col-md-7-fix {
+        width: 52% !important;
+    }
+
+     .col-md-5-fix {
+        width: 48% !important;
+    }
+
+
 }
 
 @media screen and (max-width: 1023px) {

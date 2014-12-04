@@ -482,6 +482,7 @@
       <DependentUpon>201412022001255_AddIncidentStatus.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
+    <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
     <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
