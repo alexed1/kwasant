@@ -592,7 +592,7 @@ namespace KwasantCore.Services
         public int GetTimeInQueue(IUnitOfWork uow, string objectId)
         {
             DateTimeOffset currTime = DateTimeOffset.Now;
-            int getMinutinQueue =0;
+            int getMinutinQueue = 0;
             var factDO = uow.FactRepository.GetAll()
                 .Where(x => x.ObjectId == objectId &&
                     (x.Activity == "StateChange") &&

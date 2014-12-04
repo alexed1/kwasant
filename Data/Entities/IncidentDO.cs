@@ -13,7 +13,7 @@ namespace Data.Entities
         public IncidentDO()
         {
             Priority = 1;
-            Notes = "No additional notes";
+            //Notes = "No additional notes";
         }
 
         [Key]
@@ -22,7 +22,6 @@ namespace Data.Entities
         public String SecondaryCategory { get; set; }
         public String Activity { get; set; }
         public int Priority { get; set; }
-        public string Notes { get; set; }
         public int ObjectId { get; set; }
         public string CustomerId { get; set; }
         public string BookerId { get; set; }

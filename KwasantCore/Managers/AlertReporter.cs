@@ -155,7 +155,7 @@ namespace KwasantCore.Managers
                     ObjectId = emailID,
                     PrimaryCategory = "BookingRequest",
                     SecondaryCategory = "Conversation",
-                    Notes = logMessage
+                    Data = logMessage
                 };
                 uow.IncidentRepository.Add(incidentDO);
                 uow.SaveChanges();

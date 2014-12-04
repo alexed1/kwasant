@@ -133,7 +133,7 @@ namespace KwasantCore.Services
             incidentDO.PrimaryCategory = "Error";
             incidentDO.SecondaryCategory = "Processing";
             incidentDO.Activity = "Registration";
-            incidentDO.Notes = ex.Message;
+            incidentDO.Data = ex.Message;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.IncidentRepository.Add(incidentDO);
