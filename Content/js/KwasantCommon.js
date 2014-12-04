@@ -165,3 +165,16 @@ function minutesToStr(minutes) {
 function leftPad(number) {
     return ((number < 10 && number >= 0) ? '0' : '') + number;
 }
+
+function ShowFailedBookerVerification(bookingRequestBooker, Id) {
+    if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestBooker + " \n Take Ownership of This BookingRequest?")) {
+        $.ajax({
+            url: "/BookingRequest/ProcessBookerChange",
+            type: "GET",
+            data: { bookingRequestId: Id },
+            success: function (response) {
+                alert(response);
+            }
+        });
+    }
+}

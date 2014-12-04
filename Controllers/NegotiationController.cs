@@ -27,6 +27,7 @@ namespace KwasantWeb.Controllers
         private readonly INegotiation _negotiation;
         private readonly IAnswer _answer;
         private readonly IQuestion _question;
+        private readonly BookingRequest _br;
 
         public NegotiationController()
         {
@@ -36,32 +37,19 @@ namespace KwasantWeb.Controllers
             _negotiation = ObjectFactory.GetInstance<INegotiation>();
             _question = ObjectFactory.GetInstance<IQuestion>();
             _answer = ObjectFactory.GetInstance<IAnswer>();
+            _br = new BookingRequest();
         }
 
         [HttpPost]
-        public ActionResult CheckBooker(int negotiationID, int bookingRequestID)
+        public ActionResult CheckBooker(int bookingRequestID)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                _currBooker = this.GetUserId();
-                string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
-                return Json(new KwasantPackagedMessage
-                {
-                    Name = verifyOwnership != "valid" ? "DifferentBooker" : verifyOwnership,
-                    Message = verifyOwnership
-                });
-            }
+            return Json(_br.VerifyCheckOut(bookingRequestID, this.GetUserId()));
         }
 
         public ActionResult Edit(int negotiationID, int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                _currBooker = this.GetUserId();
-                string verifyOwnership = _booker.IsBookerValid(uow, bookingRequestID, _currBooker);
-                if (verifyOwnership != "valid")
-                    throw new ApplicationException("This negotiation is owned by another booker. Please try again to take ownership.");
-
                 //First - we order by start date
                 Func<NegotiationAnswerVM, DateTimeOffset?> firstSort = a => a.EventStartDate;
                 //Second - order by end date
@@ -164,17 +152,22 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult ProcessSubmittedForm(NegotiationVM curNegotiationVM)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(curNegotiationVM.BookingRequestID.Value, this.GetUserId());
+            if (verifyCheckoutMessage.Name == "valid")
             {
-                bool isNew = !curNegotiationVM.Id.HasValue;
-                var submittedNegotiation = AutoMapper.Mapper.Map<NegotiationVM, NegotiationDO>(curNegotiationVM);
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    bool isNew = !curNegotiationVM.Id.HasValue;
+                    var submittedNegotiation = AutoMapper.Mapper.Map<NegotiationVM, NegotiationDO>(curNegotiationVM);
 
-                var updatedNegotiationDO = _negotiation.Update(uow, submittedNegotiation);
+                    var updatedNegotiationDO = _negotiation.Update(uow, submittedNegotiation);
 
-                uow.SaveChanges();
+                    uow.SaveChanges();
 
-                return Json(new { negotiationID = updatedNegotiationDO.Id, isNew = isNew });
+                    return Json(new { Name = "valid", negotiationID = updatedNegotiationDO.Id, isNew = isNew });
+                }
             }
+            return Json(verifyCheckoutMessage);
         }
 
         public ActionResult DisplaySendEmailForm(int negotiationID, bool isNew)
@@ -200,6 +193,7 @@ namespace KwasantWeb.Controllers
                     BodyPromptText = "Enter some additional text for your recipients",
                     Body = "",
                     BodyRequired = false,
+                    BookingRequestId = negotiationDO.BookingRequestID.Value
                 };
                 return emailController.DisplayEmail(Session, currCreateEmailVM,
                     (subUow, emailDO) => DispatchNegotiationEmails(subUow, emailDO, negotiationID)

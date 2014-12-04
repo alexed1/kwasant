@@ -85,12 +85,15 @@
     //Mark processed function will execute on click to update the Request status to "Processed".
     function updateStatus(path) {
         $.post(path, function (response) {
-            var oldOwner = response.Message;
-            var Id = $("#hdnrequestid").val();
-            if (response.Name == "DifferentOwner")
-                ShowFailedOwnershipVerification(oldOwner, Id);
-            else
+            alert(response.Name);
+            if (response.Name == 'Success')
                 window.location.href = "@Url.Action("Index", "BookingRequest")";
+            else if (response.Name == 'DifferentBooker')
+                ShowFailedBookerVerification(response.Message, '@Model.BookingRequestId');
+            else if (response.Name == 'error')
+                alert(response.Message);
+            else
+                alert('An error occured on the server. Your changes have not been saved.');
         }, 'json');
     }
 
@@ -279,20 +282,16 @@
 
 
     function getNegotiationWindow() {
-        if (linkedNegotiationID != null) {
-            var bookingRequestId = $("#hdnrequestid").val();
-            var url = '/Negotiation/CheckBooker';
-            $.ajax({
-                url: url,
-                type: 'POST',
-                data: { negotiationID: linkedNegotiationID, bookingRequestID: bookingRequestId },
-                async: false,
-                success: function (response) {
-                    var oldOwner = response.Message;
-                    var Id = $("#hdnrequestid").val();
-                    if (response.Name == "DifferentOwner")
-                        ShowFailedOwnershipVerification(oldOwner, Id);
-                    else {
+        var bookingRequestId = $("#hdnrequestid").val();
+        var url = '/Negotiation/CheckBooker';
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: { bookingRequestID: bookingRequestId },
+            async: false,
+            success: function (result) {
+                if (result.Name == "valid") {
+                    if (linkedNegotiationID != null) {
                         Kwasant.IFrame.Display('/Negotiation/Edit?negotiationID=' + linkedNegotiationID + '&bookingRequestID=' + bookingRequestId,
                         {
                             horizontalAlign: 'right',
@@ -304,26 +303,32 @@
                             }
                         });
                     }
+                    else {
+                        Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestId',
+                                {
+                                    horizontalAlign: 'right',
+                                    minHeight: 700,
+                                    minWidth: 300,
+                                    callback: function (result) {
+                                        if (result) {
+                                            $('#liCreateOrEditNegotiation').html('Edit');
+                                            linkedNegotiationID = result.negotiationID;
+                                            updateCreateResolveButtons();
+                                            displayMessage(result.message);
+                                        }
+                                    }
+                                });
+                    }
                 }
-            });
-
-        } else {
-            Kwasant.IFrame.Display('/Negotiation/Create?bookingRequestID=@Model.BookingRequestId',
-                    {
-                        horizontalAlign: 'right',
-                        minHeight: 700,
-                        minWidth: 300,
-                            callback: function (result) {
-                            if (result) {
-                                $('#liCreateOrEditNegotiation').html('Edit');
-                                linkedNegotiationID = result.negotiationID;
-                                updateCreateResolveButtons();
-                                displayMessage(result.message);
-                            }
-                        }
-                    });
+                else if (result.Name == 'DifferentBooker')
+                    ShowFailedBookerVerification(result.Message, '@Model.BookingRequestId');
+                else if (result.Name == 'error')
+                    alert(result.Message);
+                else
+                    alert('An error occured on the server. Your changes have not been saved.');
             }
-        }
+        });
+    }
 
         function resolveActiveNegotiation(negotiationID) {
             if (confirm("Are you sure you want to resolve this negotiation?")) {

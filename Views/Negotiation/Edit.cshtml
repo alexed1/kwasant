@@ -92,25 +92,32 @@
                 data: JSON.stringify(negotiation)
             })
             .success(function(result) {
-                Kwasant.IFrame.Display('/Negotiation/DisplaySendEmailForm?negotiationID=' + result.negotiationID + '&isNew=' + result.isNew,
-                {
-                    horizontalAlign: 'middle',
-                    height: 815,
-                    width: 815,
-                    modal: true,
-                    callback: function (res) {
-                        var negotiationMessage = 'Your negotiation was successfully ' + (result.isNew ? 'created' : 'updated');
-                        if (res) {
-                            negotiationMessage += ' and emails have been dispatched';
-                        }
-                        Kwasant.IFrame.CloseMe({ 
-                            message: negotiationMessage,
-                            negotiationID: result.negotiationID
-                        });
+                if(result.Name == "valid"){
+                    Kwasant.IFrame.Display('/Negotiation/DisplaySendEmailForm?negotiationID=' + result.negotiationID + '&isNew=' + result.isNew,
+                    {
+                        horizontalAlign: 'middle',
+                        height: 815,
+                        width: 815,
+                        modal: true,
+                        callback: function (res) {
+                            var negotiationMessage = 'Your negotiation was successfully ' + (result.isNew ? 'created' : 'updated');
+                            if (res) {
+                                negotiationMessage += ' and emails have been dispatched';
+                            }
+                            Kwasant.IFrame.CloseMe({ 
+                                message: negotiationMessage,
+                                negotiationID: result.negotiationID
+                            });
                         
-                    }
-                });
-
+                        }
+                    });
+                }
+                else if(result.Name == 'DifferentBooker')
+                    ShowFailedBookerVerification(result.Message, '@Model.BookingRequestID');
+                else if(result.Name == 'error')
+                    alert(result.Message);
+                else
+                    alert('An error occured on the server. Your changes have not been saved.');
                 
             })
             .fail(function() {

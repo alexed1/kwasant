@@ -79,9 +79,16 @@
                     async: false,
                     url: "/BookingRequest/MarkAsProcessed?id=" + '@Model.BookingRequestVM.BookingRequestId',
                     success:function(response){
-                        alert(response.Message);
-                        if(response.Name == 'Success')
+                        if (response.Name == 'Success'){
+                            alert(response.Message);
                             return true;
+                        }
+                        else if (response.Name == 'DifferentBooker')
+                            ShowFailedBookerVerification(response.Message, '@Model.BookingRequestVM.BookingRequestId');
+                        else if (response.Name == 'error')
+                            alert(response.Message);
+                        else
+                            alert('An error occured on the server. Your changes have not been saved.');
                     }
                 })
             } 

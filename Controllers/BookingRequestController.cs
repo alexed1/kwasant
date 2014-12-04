@@ -96,40 +96,40 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult MarkAsProcessed(int id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //call to VerifyOwnership 
+            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(id, this.GetUserId());
+            if (verifyCheckoutMessage.Name == "valid")
             {
-                //call to VerifyOwnership 
-                var currBooker = this.GetUserId();
-                string verifyBooker = _booker.IsBookerValid(uow, id, currBooker);
-                if (verifyBooker != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentBooker", Message = verifyBooker });
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                    bookingRequestDO.State = BookingRequestState.Resolved;
+                    uow.SaveChanges();
+                    AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
 
-                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.State = BookingRequestState.Resolved;
-                uow.SaveChanges();
-                AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
-
-                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
+                    return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
+                }
             }
+            return Json(verifyCheckoutMessage);
         }
 
         [HttpPost]
         public ActionResult Invalidate(int id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //call to VerifyOwnership
+            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(id, this.GetUserId());
+            if (verifyCheckoutMessage.Name == "valid")
             {
-                //call to VerifyOwnership
-                var currBooker = this.GetUserId();
-                string verifyOwnership = _booker.IsBookerValid(uow, id, currBooker);
-                if (verifyOwnership != "valid")
-                    return Json(new KwasantPackagedMessage { Name = "DifferentBooker", Message = verifyOwnership });
-
-                BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
-                bookingRequestDO.State = BookingRequestState.Invalid;
-                uow.SaveChanges();
-                AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
-                return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                    bookingRequestDO.State = BookingRequestState.Invalid;
+                    uow.SaveChanges();
+                    AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
+                    return Json(new KwasantPackagedMessage { Name = "Success", Message = "Status changed successfully" });
+                }
             }
+            return Json(verifyCheckoutMessage);
         }
 
         [HttpPost]
@@ -334,6 +334,7 @@ namespace KwasantWeb.Controllers
                     HeaderText = "Send an email",
                     BodyPromptText = "Enter some text for your recipients",
                     Body = "",
+                    BookingRequestId = bookingRequestDO.Id
                 };
                 return emailController.DisplayEmail(Session, currCreateEmailVM,
                     (subUow, emailDO) =>

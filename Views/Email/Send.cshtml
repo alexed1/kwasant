@@ -205,7 +205,8 @@
             BCCAddresses: bccAddresses,
             Subject: subject,
             CallbackToken: '@Model.CallbackToken',
-            Body: body
+            Body: body,
+            BookingRequestId : '@Model.BookingRequestId'
         };
 
         var spinner = Kwasant.IFrame.DisplaySpinner();
@@ -217,7 +218,14 @@
             data: JSON.stringify(data)
         })
             .success(function (result) {
-                Kwasant.IFrame.CloseMe(result);
+                if(result.Name == 'valid')
+                    Kwasant.IFrame.CloseMe(true);
+                else if(result.Name == 'DifferentBooker')
+                    ShowFailedBookerVerification(result.Message, '@Model.BookingRequestId');
+                else if(result.Name == 'error')
+                    alert(result.Message);
+                else
+                    alert('An error occured on the server. Your changes have not been saved.');
             })
             .fail(function () {
                 alert('An error occured on the server. Your changes have not been saved.');
@@ -300,3 +308,4 @@
         </div>
     </div>
 </form>
+<script src="~/Content/js/KwasantCommon.js"></script>

@@ -51,12 +51,14 @@
                     case "invalid":
                         //setting status of booking request to "INVALID" and removing the row
                         $.post("/BookingRequest/Invalidate?id=" + data.id, function (response) {
-                            var oldBooker = response.Message;
-                            var Id = data.id;
-                            if (response.Name == "DifferentBooker")
-                                ShowFailedBookerVerification(oldBooker, Id);
-                            else
+                            if (response.Name == 'Success')
                                 $(parentcontrol).parents('tr').remove();
+                            else if (response.Name == 'DifferentBooker')
+                                ShowFailedBookerVerification(response.Message, data.id);
+                            else if (response.Name == 'error')
+                                alert(response.Message);
+                            else
+                                alert('An error occured on the server. Your changes have not been saved.');
                         }, 'json');
                         break;
                     default:
