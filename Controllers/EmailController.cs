@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace KwasantWeb.Controllers
 {
-    [KwasantAuthorize(Roles = "Booker")]
+    [KwasantAuthorize]
     public class EmailController : Controller
     {
         private IUnitOfWork _uow;

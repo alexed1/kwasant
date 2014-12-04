@@ -36,6 +36,7 @@
     <link rel='shortcut icon' type='image/x-icon' href='Content/img/favicon.ico' />
     @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/cookies")
+    @Scripts.Render("~/bundles/js/customjs")
     @Styles.Render("~/bundles/css/bootstrap23")
     @Styles.Render("~/bundles/css/bootstrap-responsive")
     @Styles.Render("~/bundles/css/colorbox")
@@ -138,9 +139,10 @@
 
                 function play() {
                     analytics.track('Played video', {});
-                };
+                };                 
             });
         });
+
     </script>
 </head>
 <body>
@@ -155,7 +157,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </a>
-                <a class="brand goTop" href="index.aspx">
+                <a class="brand goTop" href="/">
                     <img class="floating" src="Content/img/site/perfect-krawsant.png" alt="Kwasant" title="Kwasant">Kwasant</a>
                 <br />
                 <div class="nav-collapse">
@@ -165,34 +167,39 @@
         </div>
     </div>
 
-    <div id="welcome" class="parallax top-banner home-welcome" data-section="1">
-        <div class="landing-welcome-area">
-            <div class="landing-welcome-inner">
-                <div class="landing-video">
-                    <div class="video-inner">
-                        <img class="video-screen" src="Content/img/site/kwasant-video-screen.png" alt="Kwasant Video" />
-                        <iframe id="video" class="video-frame" src="//player.vimeo.com/video/111799451?api=1" width="500" height="297" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+    <div id="welcome" class="parallax top-banner home-welcome" data-section="2">
+        <div class="inner-bg">
+            <div class="landing-welcome-area">
+                <div class="landing-welcome-inner">
+                    <div class="landing-video">
+                        <div class="landing-video-wrap">
+                            <img src="Content/img/icons/watch-video-label.png" alt="Watch the video" title="Watch the video" class="watch-video-label" />
+                            <div class="video-inner">
+                                <img class="video-screen" src="Content/img/site/kwasant-video-screen-logo.png" alt="Kwasant Video" />
+                                <iframe id="video" class="video-frame" src="//player.vimeo.com/video/111799451?api=1" width="500" height="297" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+                            </div> 
+                        </div> 
+                        <div class="try-kwasant"><a href="#" title="Try Kwasant" class="try-kwasant-lnk" data-section="2">Try Kwasant</a></div>                       
+                    </div>                    
+                    <div id="logotext" class="text">
+                        <h1>Kwasant</h1>
+                        <p>Live. Personal. Assistants.</p>
                     </div>
-                </div>
-                <div id="logotext" class="text">
-                    <h1>Kwasant</h1>
-                    <p>We schedule your meetings for you</p>
-                </div>
+                    <div class="clearfix">&nbsp;</div>
+                </div>                
             </div>
+            
         </div>
-    </div>
-
-    <section id="about" class="row text-block" data-section="1">
-        <div class="features dark-bg">
+        <section id="about" class="row text-block" data-section="1">
             <div class="container">
                 <div class="row-fluid">
-                    <h2 class="text-center"><b>Wouldn't it be nice to have your own personal assistant?</b></h2>
-
+                    <h2 class="text-center"><b>Wouldn't it be nice to have your own personal assistant?</b></h2> 
                 </div>
-
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
+
+    
     <section id="how_to_works" class="row text-block" data-section="2">
         <div class="light-bg">
             <div class="container how-it-works-section">
@@ -370,10 +377,6 @@
                             <article class="clearfix">
                                 <i class="fa fa-globe"></i>
                                 <address>2200 Sacramento St. #1603 , San Francisco, CA 94115</address>
-                            </article>
-                            <article class="clearfix">
-                                <i class="fa fa-phone"></i>
-                                <p></p>
                             </article>
                             <article class="clearfix">
                                 <i class="fa fa-envelope"></i>

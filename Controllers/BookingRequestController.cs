@@ -28,7 +28,7 @@ namespace KwasantWeb.Controllers
     [KwasantAuthorize(Roles = "Booker")]
     public class BookingRequestController : Controller
     {
-       // private DataTablesPackager _datatables;
+        // private DataTablesPackager _datatables;
         private BookingRequest _br;
         private int recordcount;
         Booker _booker;
@@ -38,7 +38,7 @@ namespace KwasantWeb.Controllers
         public BookingRequestController()
         {
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
-           // _datatables = new DataTablesPackager();
+            // _datatables = new DataTablesPackager();
             _br = new BookingRequest();
             _booker = new Booker();
             _jsonPackager = new JsonPackager();
@@ -55,7 +55,7 @@ namespace KwasantWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-               // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
+                // var jsonResult = Json(_datatables.Pack(_br.GetUnprocessed(uow)), JsonRequestBehavior.AllowGet);
                 var unprocessedBRs = _br.GetUnprocessed(uow);
                 var jsonResult = Json(_jsonPackager.Pack(unprocessedBRs));
                 jsonResult.MaxJsonLength = int.MaxValue;
@@ -79,7 +79,7 @@ namespace KwasantWeb.Controllers
             catch (EntityNotFoundException)
             {
                 return HttpNotFound();
-        }
+            }
         }
 
         [HttpGet]
@@ -156,6 +156,7 @@ namespace KwasantWeb.Controllers
         {
             return View();
         }
+
         //Get all checkout BR's owned by the logged
         [HttpPost]
         public ActionResult ShowByBooker()
@@ -164,7 +165,29 @@ namespace KwasantWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var bookerOwnedRequests = _br.GetCheckedOut(uow, curBooker);
-                var jsonResult = Json(_jsonPackager.Pack(bookerOwnedRequests));
+
+                var jsonResult = Json(_jsonPackager.Pack(
+                    bookerOwnedRequests.Select(
+                        e =>
+                        {
+                            var text = e.PlainText ?? e.HTMLText;
+                            if (String.IsNullOrEmpty(text))
+                                text = String.Empty;
+                            text = text.Trim();
+                            if (text.Length > 400)
+                                text = text.Substring(0, 400);
+
+                            return new
+                            {
+                                id = e.Id,
+                                subject = String.IsNullOrEmpty(e.Subject) ? "[No Subject]" : e.Subject,
+                                fromAddress = e.From.Address,
+                                dateReceived = e.DateReceived.ToString("M-d-yy hh:mm tt"),
+                                body = String.IsNullOrEmpty(text) ? "[No Body]" : text
+                            };
+                        })
+                    .ToList()
+                    ));
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
@@ -190,9 +213,9 @@ namespace KwasantWeb.Controllers
                     return Json(new { Message = "Meeting information must have at least 30 characters" });
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                        {
+                {
                     string userId = _br.Generate(uow, emailAddress, meetingInfo, "SubmitsViaCreateManuallyBooker", subject);
-                    return Json(new { Message = "A new booking requested created!", Result = "Success"});
+                    return Json(new { Message = "A new booking requested created!", Result = "Success" });
                 }
             }
             catch (ValidationException ex)
@@ -225,7 +248,7 @@ namespace KwasantWeb.Controllers
             }
             catch (Exception e)
             {
-                return Json(new {Message = "Sorry! Something went wrong. Alpha software..."});
+                return Json(new { Message = "Sorry! Something went wrong. Alpha software..." });
             }
         }
 
@@ -271,7 +294,7 @@ namespace KwasantWeb.Controllers
             catch (EntityNotFoundException)
             {
                 return HttpNotFound();
-        }
+            }
         }
 
         public ActionResult ShowInProcessBRS()
@@ -289,7 +312,7 @@ namespace KwasantWeb.Controllers
                 return View("ShowInProcessBRs", curBookingRequestsVM);
             }
         }
-        
+
         public ActionResult DisplayOneOffEmailForm(int bookingRequestID)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -328,7 +351,7 @@ namespace KwasantWeb.Controllers
                         var fromEmailAddress = emailAddress.GetFromEmailAddress(subUow, emailDO.To.First(), sendingUser);
                         emailDO.FromName = fromEmailAddress.Name;
                         emailDO.From = fromEmailAddress;
-                        
+
                         subUow.SaveChanges();
                         return Json(true);
                     });
@@ -408,6 +431,19 @@ namespace KwasantWeb.Controllers
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }
+        }
+
+        public ActionResult AddNote(int bookingRequestId)
+        {
+            return View(new BookingRequestNoteVM() { BookingRequestId = bookingRequestId });
+        }
+
+        [HttpPost]
+        public ActionResult SubmitNote(BookingRequestNoteVM noteVm)
+        {
+            var communticationManager = ObjectFactory.GetInstance<CommunicationManager>();
+            communticationManager.ProcessSubmittedNote(noteVm.BookingRequestId, noteVm.Note);
+            return Json(true);
         }
     }
 }

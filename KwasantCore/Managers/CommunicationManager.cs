@@ -6,6 +6,7 @@ using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using KwasantCore.Exceptions;
 using KwasantCore.Interfaces;
 using KwasantCore.Managers.APIManagers.Packagers;
 using StructureMap;
@@ -157,6 +158,22 @@ namespace KwasantCore.Managers
                     });
             }
             negotiationDO.NegotiationState = NegotiationState.AwaitingClient;
+
+            //Everyone who gets an email is now an attendee.
+            var currentAttendeeIDs = negotiationDO.Attendees.Select(a => a.EmailAddressID).ToList();
+            foreach (var recipient in generatedEmailDO.Recipients)
+            {
+                if (!currentAttendeeIDs.Contains(recipient.EmailAddressID))
+                {
+                    var newAttendee = new AttendeeDO
+                    {
+                        EmailAddressID = recipient.EmailAddressID,
+                        Name = recipient.EmailAddress.Name,
+                        NegotiationID = negotiationDO.Id
+                    };
+                    uow.AttendeeRepository.Add(newAttendee);
+                }
+            }
         }
 
 
@@ -241,6 +258,12 @@ namespace KwasantCore.Managers
                 uow.EnvelopeRepository.ConfigurePlainEmail(outboundEmail);
                 emailRepo.Add(outboundEmail);
             }
+        }
+
+        public void ProcessSubmittedNote(int bookingRequestId, string note)
+        {
+            var incidentReporter = ObjectFactory.GetInstance<IncidentReporter>();
+            incidentReporter.ProcessSubmittedNote(bookingRequestId, note);
         }
     }
 

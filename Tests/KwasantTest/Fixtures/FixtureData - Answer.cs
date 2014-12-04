@@ -80,7 +80,7 @@ namespace KwasantTest.Fixtures
             };
             return curAnswerDO;
         }
-
+                
         public AnswerDO TestAnswer6()
         {
             var curAnswerDO = new AnswerDO

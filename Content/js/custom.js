@@ -1,6 +1,12 @@
 $(document).ready(function () {          
     var containerHeight, loginFormTop 
     getLogiTop();
+    landingWelcomeWidth();
+
+    $(window).resize(function () {
+        landingWelcomeWidth()
+	});  
+
     if ($('#loginform, .registration-section, .login-section.status-message').length > 0) {
 	    $('#main-container').addClass('login-page');
 		$(window).resize(function () {
@@ -17,7 +23,6 @@ $(document).ready(function () {
     if ($('#emailInfoBox').length > 0) {
         $("body").removeClass('view-popup-window');
     }
-	
 });
 
 function getLogiTop() {
@@ -26,4 +31,9 @@ function getLogiTop() {
     if (loginFormTop > 0) {
         $('.login-section').css('margin-top', loginFormTop)
     }
+}
+
+function landingWelcomeWidth() {
+    containerWidth = $("#welcome .inner-bg").width();
+    $(".landing-welcome-area").width(containerWidth);
 }
