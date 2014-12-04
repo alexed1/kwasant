@@ -101,7 +101,7 @@ namespace KwasantTest.Daemons
                 BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
                 var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
-                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.State = BookingRequestState.NeedsBooking;
                 bookingRequestDO.Customer = new FixtureData(uow).TestUser1();
                 bookingRequestDO.CreateDate = DateTime.Now.Subtract(new TimeSpan(0, 1, 0, 0));
                 bookingRequestRepo.Add(bookingRequestDO);
@@ -125,7 +125,7 @@ namespace KwasantTest.Daemons
                 BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
                 var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
-                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.State = BookingRequestState.NeedsBooking;
                 bookingRequestDO.Customer = new FixtureData(uow).TestUser1();
                 bookingRequestDO.CreateDate = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
                 bookingRequestRepo.Add(bookingRequestDO);
@@ -151,7 +151,7 @@ namespace KwasantTest.Daemons
                 BookingRequestRepository bookingRequestRepo = uow.BookingRequestRepository;
 
                 var bookingRequestDO = new FixtureData(uow).TestBookingRequest1();
-                bookingRequestDO.State = BookingRequestState.Unstarted;
+                bookingRequestDO.State = BookingRequestState.NeedsBooking;
                 bookingRequestDO.Customer = new FixtureData(uow).TestUser1();
                 bookingRequestDO.CreateDate = DateTime.Now.Subtract(new TimeSpan(0, 0, 20, 0));
                 bookingRequestRepo.Add(bookingRequestDO);

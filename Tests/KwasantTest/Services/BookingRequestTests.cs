@@ -292,7 +292,7 @@ namespace KwasantTest.Services
                 object requests = (new BookingRequest()).GetUnprocessed(uow);
                 object requestNow =
                     uow.BookingRequestRepository.GetAll()
-                        .Where(e => e.State == BookingRequestState.Unstarted)
+                        .Where(e => e.State == BookingRequestState.NeedsBooking)
                         .OrderByDescending(e => e.Id)
                         .Select(
                             e =>
@@ -375,14 +375,14 @@ namespace KwasantTest.Services
                     requestNow =
                         uow.BookingRequestRepository.GetAll()
                             .ToList()
-                            .Where(e => e.State == BookingRequestState.Unstarted);
+                            .Where(e => e.State == BookingRequestState.NeedsBooking);
 
                 } while (!requestNow.Any() || staleBRDuration.Elapsed > timeOut);
                 staleBRDuration.Stop();
 
                 uow.SaveChanges();
 
-                requestNow = uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.Unstarted);
+                requestNow = uow.BookingRequestRepository.GetAll().ToList().Where(e => e.State == BookingRequestState.NeedsBooking);
                 Assert.AreEqual(1, requestNow.Count());
             }
         }
