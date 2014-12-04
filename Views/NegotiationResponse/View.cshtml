@@ -59,14 +59,17 @@
                 url: '@Url.Action("ProcessResponse", "NegotiationResponse")',
                 data: JSON.stringify(negotiation)
             })
-                .always(function(result) {
+            .always(function(result) {
+
                     if (spinner !== null) {
                         spinner.hide();
                     }
-
-                    if (result === undefined || result === null || result.responseText === undefined || result.responseText === null) {
-                        alert('An error occured on the server. Your changes have not been saved.');
-                    } else {
+                    if(result.Name == 'Error')
+                    {
+                        alert("the server returned an error: " + result.Message);
+                    }
+                    else
+                    {
                         $(function () {
                             Kwasant.IFrame.Display('ThankYouView',
                             {
