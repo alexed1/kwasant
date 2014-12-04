@@ -38,13 +38,21 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult ShowReport(string queryPeriod, string type)
+        public ActionResult ShowReport(string queryPeriod, string type, int draw, int start, int length)
         {
             DateRange dateRange = DateUtility.GenerateDateRange(queryPeriod);
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var report = _report.Generate(uow, dateRange, type);
-                var jsonResult = Json(_jsonPackager.Pack(report));
+                int recordcount;
+                var report = _report.Generate(uow, dateRange, type, start, length, out recordcount);
+                var jsonResult = Json(new
+                {
+                    draw = draw,
+                    recordsTotal = recordcount,
+                    recordsFiltered = recordcount,
+                    data = _jsonPackager.Pack(report)
+                });
+
                 jsonResult.MaxJsonLength = int.MaxValue;
                 return jsonResult;
             }

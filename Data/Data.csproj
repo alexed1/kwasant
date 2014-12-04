@@ -124,6 +124,7 @@
     <Compile Include="Interfaces\IBookingRequestDO.cs" />
     <Compile Include="Interfaces\IEmailDO.cs" />
     <Compile Include="Interfaces\IInvitationResponseDO.cs" />
+    <Compile Include="Interfaces\IReportItemDO.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.cs" />
     <Compile Include="Migrations\201408051146274_OrganizeStates.Designer.cs">
       <DependentUpon>201408051146274_OrganizeStates.cs</DependentUpon>
@@ -455,6 +456,30 @@
     <Compile Include="Migrations\201411261106360_SeparateTableForInvitations.cs" />
     <Compile Include="Migrations\201411261106360_SeparateTableForInvitations.Designer.cs">
       <DependentUpon>201411261106360_SeparateTableForInvitations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411210750329_Add_Data_To_IncidentDO.cs" />
+    <Compile Include="Migrations\201411210750329_Add_Data_To_IncidentDO.Designer.cs">
+      <DependentUpon>201411210750329_Add_Data_To_IncidentDO.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411261248567_Sync_26.11.2014.cs" />
+    <Compile Include="Migrations\201411261248567_Sync_26.11.2014.Designer.cs">
+      <DependentUpon>201411261248567_Sync_26.11.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412021050318_Sync-02.12.2014.cs" />
+    <Compile Include="Migrations\201412021050318_Sync-02.12.2014.Designer.cs">
+      <DependentUpon>201412021050318_Sync-02.12.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412021407358_Sync.Rob.02.12.2014.cs" />
+    <Compile Include="Migrations\201412021407358_Sync.Rob.02.12.2014.Designer.cs">
+      <DependentUpon>201412021407358_Sync.Rob.02.12.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412021453055_Sync.Rob2.02.12.2014.cs" />
+    <Compile Include="Migrations\201412021453055_Sync.Rob2.02.12.2014.Designer.cs">
+      <DependentUpon>201412021453055_Sync.Rob2.02.12.2014.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412022001255_AddIncidentStatus.cs" />
+    <Compile Include="Migrations\201412022001255_AddIncidentStatus.Designer.cs">
+      <DependentUpon>201412022001255_AddIncidentStatus.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
@@ -1380,11 +1405,29 @@
     <EmbeddedResource Include="Migrations\201411200956181_UpdateReplyTo.resx">
       <DependentUpon>201411200956181_UpdateReplyTo.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411210750329_Add_Data_To_IncidentDO.resx">
+      <DependentUpon>201411210750329_Add_Data_To_IncidentDO.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411210850397_Sync.21.11.2014.resx">
       <DependentUpon>201411210850397_Sync.21.11.2014.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201411261106360_SeparateTableForInvitations.resx">
       <DependentUpon>201411261106360_SeparateTableForInvitations.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411261248567_Sync_26.11.2014.resx">
+      <DependentUpon>201411261248567_Sync_26.11.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412021050318_Sync-02.12.2014.resx">
+      <DependentUpon>201412021050318_Sync-02.12.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412021407358_Sync.Rob.02.12.2014.resx">
+      <DependentUpon>201412021407358_Sync.Rob.02.12.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412021453055_Sync.Rob2.02.12.2014.resx">
+      <DependentUpon>201412021453055_Sync.Rob2.02.12.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412022001255_AddIncidentStatus.resx">
+      <DependentUpon>201412022001255_AddIncidentStatus.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
