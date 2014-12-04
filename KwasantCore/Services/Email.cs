@@ -316,7 +316,7 @@ namespace KwasantCore.Services
                     From = uow.EmailAddressRepository.GetByKey(e.FromID).Address, 
                     Subject = e.Subject,
                     Date = e.CreateDate.ToString(DateStandardFormat),
-                    EmailStatus = e.EmailStatus,
+                    EmailStatus = FilterUtility.GetState(new EmailState().GetType(),e.EmailStatus.Value),
                     ConversationId = e.ConversationId
                 }).ToList();
 
