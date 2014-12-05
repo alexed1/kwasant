@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using StructureMap;
 
 namespace Utilities
@@ -27,6 +28,18 @@ namespace Utilities
         public static IEnumerable<string> StripReservedEmailAddresses(IEnumerable<string> attendees, IConfigRepository configRepository)
         {
             return attendees.Where(a => !_IgnoreEmails.Contains(a));
+        }
+
+        public static string GetState(Type containingType, int value)
+        {
+            foreach (FieldInfo field in containingType.GetFields(BindingFlags.Static | BindingFlags.Public))
+            {
+                if ((int)field.GetValue(field) == value)
+                {
+                    return field.Name;
+                }
+            }
+            return "";
         }
     }
 }
