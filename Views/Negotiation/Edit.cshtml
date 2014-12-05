@@ -113,7 +113,7 @@
                     });
                 }
                 else if(result.Name == 'DifferentBooker')
-                    ShowFailedBookerVerification(result.Message, '@Model.BookingRequestID');
+                    ShowBookerOwnershipAlert(result.Message, '@Model.BookingRequestID');
                 else if(result.Name == 'error')
                     alert(result.Message);
                 else

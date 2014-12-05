@@ -166,7 +166,7 @@ function leftPad(number) {
     return ((number < 10 && number >= 0) ? '0' : '') + number;
 }
 
-function ShowFailedBookerVerification(bookingRequestBooker, Id) {
+function ShowBookerOwnershipAlert(bookingRequestBooker, Id) {
     if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestBooker + " \n Take Ownership of This BookingRequest?")) {
         $.ajax({
             url: "/BookingRequest/ProcessBookerChange",

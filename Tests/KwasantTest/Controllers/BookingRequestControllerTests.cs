@@ -11,6 +11,7 @@ using System.Web.Mvc;
 using System.Net.Mail;
 using System.Linq;
 using Utilities;
+using Data.Infrastructure.StructureMap;
 namespace KwasantTest.Controllers
 {
     public class BookingRequestControllerTests : BaseTest
@@ -58,6 +59,12 @@ namespace KwasantTest.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var userDO = uow.UserRepository.GetOrCreateUser("testemail@gmail.com");
+                uow.UserRepository.Add(userDO);
+                uow.SaveChanges();
+
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, userDO);
+
                 BookingRequestController controller = new BookingRequestController();
                 int id = uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
                 JsonResult jsonResultActual = controller.MarkAsProcessed(id) as JsonResult;
@@ -73,6 +80,12 @@ namespace KwasantTest.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var userDO = uow.UserRepository.GetOrCreateUser("testemail@gmail.com");
+                uow.UserRepository.Add(userDO);
+                uow.SaveChanges();
+
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, userDO);
+
                 BookingRequestController controller = new BookingRequestController();
                 int id = uow.BookingRequestRepository.GetAll().FirstOrDefault().Id;
                 JsonResult jsonResultActual = controller.Invalidate(id) as JsonResult;

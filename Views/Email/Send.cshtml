@@ -221,7 +221,7 @@
                 if(result.Name == 'valid')
                     Kwasant.IFrame.CloseMe(true);
                 else if(result.Name == 'DifferentBooker')
-                    ShowFailedBookerVerification(result.Message, '@Model.BookingRequestId');
+                    ShowBookerOwnershipAlert(result.Message, '@Model.BookingRequestId');
                 else if(result.Name == 'error')
                     alert(result.Message);
                 else

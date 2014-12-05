@@ -94,15 +94,15 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult MarkAsProcessed(int id)
+        public ActionResult MarkAsProcessed(int curBRId)
         {
             //call to VerifyOwnership 
-            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(id, this.GetUserId());
+            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(curBRId, this.GetUserId());
             if (verifyCheckoutMessage.Name == "valid")
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
                     bookingRequestDO.State = BookingRequestState.Resolved;
                     uow.SaveChanges();
                     AlertManager.BookingRequestStateChange(bookingRequestDO.Id);
@@ -114,15 +114,15 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult Invalidate(int id)
+        public ActionResult Invalidate(int curBRId)
         {
             //call to VerifyOwnership
-            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(id, this.GetUserId());
+            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(curBRId, this.GetUserId());
             if (verifyCheckoutMessage.Name == "valid")
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(id);
+                    BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(curBRId);
                     bookingRequestDO.State = BookingRequestState.Invalid;
                     uow.SaveChanges();
                     AlertManager.BookingRequestStateChange(bookingRequestDO.Id);

@@ -54,11 +54,11 @@
                         break;
                     case "invalid":
                         //setting status of booking request to "INVALID" and removing the row
-                        $.post("/BookingRequest/Invalidate?id=" + data.id, function (response) {
+                        $.post("/BookingRequest/Invalidate?curBRId=" + data.id, function (response) {
                             if (response.Name == 'Success')
                                 $(parentcontrol).parents('tr').remove();
                             else if (response.Name == 'DifferentBooker')
-                                ShowFailedBookerVerification(response.Message, data.id);
+                                ShowBookerOwnershipAlert(response.Message, data.id);
                             else if (response.Name == 'error')
                                 alert(response.Message);
                             else
@@ -72,17 +72,4 @@
             });
         }
     });
-
-    function ShowFailedBookerVerification(bookingRequestBooker, Id) {
-        if (confirm("This BookingRequest is Owned by Booker: " + bookingRequestBooker + " \n Take Ownership of This BookingRequest?")) {
-            $.ajax({
-                url: "/BookingRequest/ProcessBookerChange",
-                type: "GET",
-                data: { bookingRequestId: Id },
-                success: function (response) {
-                    alert(response);
-                }
-            });
-        }
-    }
 </script>
