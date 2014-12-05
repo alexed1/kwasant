@@ -86,7 +86,7 @@ namespace Daemons
             double maxBRIdleMinutes = Convert.ToDouble(_configRepository.Get<string>("MaxBRIdle"));
 
             DateTimeOffset idleTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(maxBRIdleMinutes));
-            List<BookingRequestDO> staleBRList = uow.BookingRequestRepository.GetAll().Where(x => x.State == BookingRequestState.Booking && x.LastUpdated.DateTime < idleTimeLimit.DateTime).ToList();
+            List<BookingRequestDO> staleBRList = uow.BookingRequestRepository.GetQuery().Where(x => x.State == BookingRequestState.Booking && x.LastUpdated.DateTime < idleTimeLimit.DateTime).ToList();
             foreach (var br in staleBRList)
             {
                 _br.Timeout(uow, br);
@@ -134,7 +134,7 @@ namespace Daemons
             double expectedResponseActiveDurationMinutes = Convert.ToDouble(_configRepository.Get<string>("ExpectedResponseActiveDuration"));
 
             DateTimeOffset responseTimeLimit = DateTimeOffset.Now.Subtract(TimeSpan.FromMinutes(expectedResponseActiveDurationMinutes));
-            List<ExpectedResponseDO> staleResponseList = uow.ExpectedResponseRepository.GetAll()
+            List<ExpectedResponseDO> staleResponseList = uow.ExpectedResponseRepository.GetQuery()
                 .Where(x => x.Status == ExpectedResponseStatus.Active && x.LastUpdated < responseTimeLimit).ToList();
             foreach (var er in staleResponseList)
             {

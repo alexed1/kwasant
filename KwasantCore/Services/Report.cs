@@ -100,12 +100,15 @@ namespace KwasantCore.Services
         private object ShowAllIncidents(IUnitOfWork uow, DateRange dateRange, int start,
             int length, out int count)
         {
-            var incidentDO = uow.IncidentRepository.GetAll().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime);
+            var incidentDO = uow.IncidentRepository.GetQuery().Where(e => e.CreateDate > dateRange.StartTime && e.CreateDate < dateRange.EndTime);
 
             count = incidentDO.Count();
 
-            return incidentDO.Skip(start)
-                    .Take(length).Select(
+            return incidentDO.OrderByDescending(e => e.CreateDate)
+                    .Skip(start)
+                    .Take(length)
+                    .AsEnumerable()
+                    .Select(
                         f => new
                         {
                             PrimaryCategory = f.PrimaryCategory,
@@ -114,8 +117,9 @@ namespace KwasantCore.Services
                             Data = f.Notes,
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
                             ObjectId = f.ObjectId
-                            
-                        }).ToList();
+
+                        });
+
 
         }
 

@@ -125,7 +125,7 @@ namespace Data.Infrastructure
         public void SetStatus(IUnitOfWork uow,BookingRequestDO bookingRequestDO)
         {
             TrackingStatusDO trackingStatusDO = new TrackingStatusDO();
-            trackingStatusDO = uow.TrackingStatusRepository.GetAll().Where(ts => ts.Id == bookingRequestDO.Id).FirstOrDefault();
+            trackingStatusDO = uow.TrackingStatusRepository.GetQuery().Where(ts => ts.Id == bookingRequestDO.Id).FirstOrDefault();
                 if (trackingStatusDO == null)
                 {
                     trackingStatusDO = new TrackingStatusDO();

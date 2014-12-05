@@ -85,12 +85,12 @@ namespace KwasantCore.Services
 
         public int GetBookingRequestsCount(IBookingRequestDORepository curBookingRequestRepository, string userid)
         {
-            return curBookingRequestRepository.GetAll().Where(e => e.Customer.Id == userid).Count();
+            return curBookingRequestRepository.GetQuery().Where(e => e.Customer.Id == userid).Count();
         }
 
         public string GetUserId(IBookingRequestDORepository curBookingRequestRepository, int bookingRequestId)
         {
-            return (from requests in curBookingRequestRepository.GetAll()
+            return (from requests in curBookingRequestRepository.GetQuery()
                     where requests.Id == bookingRequestId
                     select requests.Customer.Id).FirstOrDefault();
         }
@@ -98,7 +98,7 @@ namespace KwasantCore.Services
         public object GetUnprocessed(IUnitOfWork uow)
         {
             return
-                uow.BookingRequestRepository.GetAll()
+                uow.BookingRequestRepository.GetQuery()
                     .Where(e => (e.State == BookingRequestState.NeedsBooking))
                     .OrderByDescending(e => e.DateReceived)
                     .Select(
@@ -180,7 +180,7 @@ namespace KwasantCore.Services
         public IEnumerable<object> GetRelatedItems(IUnitOfWork uow, int bookingRequestId)
         {
             var events = uow.EventRepository
-                .GetAll()
+                .GetQuery()
                 .Where(e => e.BookingRequestID == bookingRequestId);
             //removed clarification requests, as there is no longer a direct connection. we'll need to collect them for this json via negotiation objects
             var invitationResponses = uow.InvitationResponseRepository
