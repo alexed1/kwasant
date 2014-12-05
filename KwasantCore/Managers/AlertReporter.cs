@@ -10,6 +10,7 @@ using Data.States;
 using KwasantCore.Exceptions;
 using KwasantCore.Managers.APIManagers.Packagers;
 using KwasantCore.Interfaces;
+using KwasantCore.Services;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
@@ -25,12 +26,12 @@ namespace KwasantCore.Managers
         public void SubscribeToAlerts()
         {
             AlertManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
+            AlertManager.AlertEntityStateChanged += EntityStateChanged;
             AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
             AlertManager.AlertEmailReceived += ReportEmailReceived;
             AlertManager.AlertEventBooked += ReportEventBooked;
             AlertManager.AlertEmailSent += ReportEmailSent;
             AlertManager.AlertBookingRequestCreated += ReportBookingRequestCreated;
-            AlertManager.AlertBookingRequestStateChange += ReportBookingRequestStateChanged;
             AlertManager.AlertExplicitCustomerCreated += ReportCustomerCreated;
 
             AlertManager.AlertUserRegistration += ReportUserRegistered;
@@ -38,6 +39,7 @@ namespace KwasantCore.Managers
             AlertManager.AlertBookingRequestOwnershipChange += ReportBookingRequestOwnershipChanged;
             AlertManager.AlertBookingRequestReserved += ReportBookingRequestReserved;
             AlertManager.AlertBookingRequestReservationTimeout += ReportBookingRequestReservationTimeOut;
+            AlertManager.AlertBookingRequestMarkedProcessed += ProcessBRMarkedProcessed;
             AlertManager.AlertStaleBookingRequestsDetected += ReportStaleBookingRequestsDetected;
 
             AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
@@ -46,12 +48,12 @@ namespace KwasantCore.Managers
         public void UnsubscribeFromAlerts()
         {
             AlertManager.AlertTrackablePropertyUpdated -= TrackablePropertyUpdated;
+            AlertManager.AlertEntityStateChanged -= EntityStateChanged;
             AlertManager.AlertConversationMatched -= AlertManagerOnAlertConversationMatched;
             AlertManager.AlertEmailReceived -= ReportEmailReceived;
             AlertManager.AlertEventBooked -= ReportEventBooked;
             AlertManager.AlertEmailSent -= ReportEmailSent;
             AlertManager.AlertBookingRequestCreated -= ReportBookingRequestCreated;
-            AlertManager.AlertBookingRequestStateChange -= ReportBookingRequestStateChanged;
             AlertManager.AlertExplicitCustomerCreated -= ReportCustomerCreated;
 
             AlertManager.AlertUserRegistration -= ReportUserRegistered;
@@ -59,6 +61,7 @@ namespace KwasantCore.Managers
             AlertManager.AlertBookingRequestOwnershipChange -= ReportBookingRequestOwnershipChanged;
             AlertManager.AlertBookingRequestReserved -= ReportBookingRequestReserved;
             AlertManager.AlertBookingRequestReservationTimeout -= ReportBookingRequestReservationTimeOut;
+            AlertManager.AlertBookingRequestMarkedProcessed -= ProcessBRMarkedProcessed;
             AlertManager.AlertStaleBookingRequestsDetected -= ReportStaleBookingRequestsDetected;
 
             AlertManager.AlertPostResolutionNegotiationResponseReceived -= OnPostResolutionNegotiationResponseReceived;
@@ -133,10 +136,28 @@ namespace KwasantCore.Managers
                 {
                     PrimaryCategory = entityName,
                     SecondaryCategory = propertyName,
-                    Activity = "RowUpdated",
+                    Activity = "PropertyUpdated",
                     ObjectId = id != null ? id.ToString() : null,
                     CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
                     Status = value != null ? value.ToString() : null,
+                };
+                uow.FactRepository.Add(newFactDO);
+                uow.SaveChanges();
+            }
+        }
+
+        private static void EntityStateChanged(string entityName, object id, string stateName, string stateValue)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var newFactDO = new FactDO
+                {
+                    PrimaryCategory = entityName,
+                    SecondaryCategory = stateName,
+                    Activity = "StateChanged",
+                    ObjectId = id != null ? id.ToString() : null,
+                    CreatedByID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser(),
+                    Status = stateValue,
                 };
                 uow.FactRepository.Add(newFactDO);
                 uow.SaveChanges();
@@ -297,35 +318,6 @@ namespace KwasantCore.Managers
             }
         }
 
-        public void ReportBookingRequestStateChanged(int bookingRequestId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-                if (bookingRequestDO == null)
-                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-
-                string status = bookingRequestDO.BookingRequestStateTemplate.Name;
-                FactDO curAction = new FactDO
-                    {
-                        PrimaryCategory = "BookingRequest",
-                    SecondaryCategory = "BookingRequestState",
-                        Activity = "StateChange",
-                        CustomerId = bookingRequestDO.Customer.Id,
-                    ObjectId = bookingRequestDO.Id.ToString(CultureInfo.InvariantCulture),
-                        Status = status,
-                    Data = string.Format("BookingRequest ID :{0},", bookingRequestDO.Id)
-                    };
-
-                AddFact(uow, curAction);
-
-                if (status == "Resolved")
-                    AlertManager.BookingRequestMarkedProcessed(bookingRequestDO.Id, bookingRequestDO.BookerID);
-
-                uow.SaveChanges();
-            }
-        }
-
         private void SaveFact(FactDO curAction)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -395,6 +387,33 @@ namespace KwasantCore.Managers
                 AddFact(uow, curAction);
                 uow.SaveChanges();
 
+            }
+        }
+
+        public void ProcessBRMarkedProcessed(int bookingRequestId, string bookerId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
+                if (bookingRequestDO == null)
+                    throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
+                FactDO curAction = new FactDO()
+                {
+                    PrimaryCategory = "BookingRequest",
+                    SecondaryCategory = "BookerAction",
+                    Activity = "MarkedAsProcessed",
+                    CustomerId = bookingRequestDO.Customer.Id,
+                    ObjectId = bookingRequestDO.Id.ToString(),
+                    BookerId = bookerId,
+                };
+
+                var br = ObjectFactory.GetInstance<BookingRequest>();
+                int getMinutinQueue = br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
+
+                curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
+
+                uow.FactRepository.Add(curAction);
+                uow.SaveChanges();
             }
         }
     }

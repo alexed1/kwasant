@@ -21,6 +21,9 @@ namespace Data.Infrastructure
         public delegate void TrackablePropertyUpdatedHandler(string name, string contextTable, object id, object status);
         public static event TrackablePropertyUpdatedHandler AlertTrackablePropertyUpdated;
 
+        public delegate void EntityStateChangedHandler(string entityName, object id, string stateName, string stateValue);
+        public static event EntityStateChangedHandler AlertEntityStateChanged;
+
         public delegate void ConversationMemberAddedHandler(int bookingRequestID);
         public static event ConversationMemberAddedHandler AlertConversationMemberAdded;
         
@@ -50,9 +53,6 @@ namespace Data.Infrastructure
 
         public delegate void EmailProcessingHandler(string dateReceived, string errorMessage);
         public static event EmailProcessingHandler AlertEmailProcessingFailure;
-
-        public delegate void BookingRequestStateChangeHandler(int bookingRequestId);
-        public static event BookingRequestStateChangeHandler AlertBookingRequestStateChange;
 
         public delegate void BookingRequestTimeoutStateChangeHandler(int bookingRequestId, string bookerId);
         public static event BookingRequestTimeoutStateChangeHandler AlertBookingRequestProcessingTimeout;
@@ -99,6 +99,12 @@ namespace Data.Infrastructure
         {
             if (AlertResponseReceived != null)
                 AlertResponseReceived(bookingRequestId, bookerID, customerID);
+        }
+
+        public static void EntityStateChanged(string entityName, object id, string stateName, string stateValue)
+        {
+            if (AlertEntityStateChanged != null)
+                AlertEntityStateChanged(entityName, id, stateName, stateValue);
         }
 
         public static void TrackablePropertyUpdated(string entityName, string propertyName, object id, object value)
@@ -168,11 +174,6 @@ namespace Data.Infrastructure
                 AlertEmailProcessingFailure(dateReceived, errorMessage);
         }
 
-        public static void BookingRequestStateChange(int bookingRequestId)
-        {
-            if (AlertBookingRequestStateChange != null)
-                AlertBookingRequestStateChange(bookingRequestId);
-        }
         public static void BookingRequestProcessingTimeout(int bookingRequestId, string bookerId)
         {
             if (AlertBookingRequestProcessingTimeout != null)
@@ -205,19 +206,19 @@ namespace Data.Infrastructure
 
         public static void BookingRequestCheckedOut(int bookingRequestId, string bookerId)
         {
-            if (AlertBookingRequestStateChange != null)
+            if (AlertBookingRequestCheckedOut != null)
                 AlertBookingRequestCheckedOut(bookingRequestId, bookerId);
         }
 
         public static void BookingRequestMarkedProcessed(int bookingRequestId, string bookerId)
         {
-            if (AlertBookingRequestStateChange != null)
+            if (AlertBookingRequestMarkedProcessed != null)
                 AlertBookingRequestMarkedProcessed(bookingRequestId, bookerId);
         }
 
         public static void BookingRequestBookerChange(int bookingRequestId, string bookerId)
         {
-            if (AlertBookingRequestStateChange != null)
+            if (AlertBookingRequestOwnershipChange != null)
                 AlertBookingRequestOwnershipChange(bookingRequestId, bookerId);
         }
 
