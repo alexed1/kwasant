@@ -459,6 +459,7 @@
     <Content Include="Content\img\EmailLogo.png" />
     <Content Include="Content\img\favicon.ico" />
     <Content Include="Content\img\forms\try-kwasant-btn.png" />
+    <Content Include="Content\img\googleCalendar.png" />
     <Content Include="Content\img\icloud-logo.png" />
     <Content Include="Content\img\icons\sort_asc.png" />
     <Content Include="Content\img\icons\sort_asc_disabled.png" />

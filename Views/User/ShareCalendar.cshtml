@@ -14,21 +14,21 @@
                         {
                             if (!remoteCalendar.AccessGranted)
                             {
-                                @Html.ActionLink(
-                                    string.Format("Grant Access to {0} Calendar", remoteCalendar.Provider), 
+                                 @Html.ActionLink(
+                                    string.Format("Grant Access ", remoteCalendar.Provider), 
                                     "GrantRemoteCalendarAccess", 
                                     new { providerName = remoteCalendar.Provider },
-					                new { @class = "custom-btn glyphicon glyphicon-user" })
+					                new { style = "background: url('/Content/img/googleCalendar.png') no-repeat;display:block; height:53px; width:280px; text-align:right;color: #333333;font-weight:bold;padding: 20px 0;" })
                             }
                             else
                             {
                                 @Html.ActionLink(
-                                    string.Format("Revoke Access to {0} Calendar", remoteCalendar.Provider),
+                                    string.Format("Revoke Access ", remoteCalendar.Provider),
                                     "RevokeRemoteCalendarAccess",
                                     new {providerName = remoteCalendar.Provider},
-					                new { @class = "custom-btn glyphicon glyphicon-user" })
+					                new { style = "background: url('/Content/img/googleCalendar.png') no-repeat;display:block; height:53px; width:280px; text-align:right;color: #333333;font-weight:bold;padding: 20px 0;" })
                             }
-                            <br />
+                          
                         }
                     </div>
                 </div>
