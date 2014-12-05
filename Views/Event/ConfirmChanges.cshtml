@@ -9,6 +9,7 @@
     @Scripts.Render("~/bundles/js/moment")
     @Scripts.Render("~/bundles/js/bootstrap-datetimepicker")
     @Scripts.Render("~/bundles/js/jqueryvalidate")
+    @Scripts.Render("~/bundles/js/daypilot")
 
 <script src="/Content/js/Kwasant/Popup.js"></script>
 
@@ -75,6 +76,11 @@
                         });
                     }
                 });
+			    var dp_day = window.parent.storedCalendar[0];
+			    dp_day.startDate = '@Model.StartDate';
+			    window.parent.calendar.refreshCalendars();
+			    var datevalue = new Date('@Model.StartDate');
+			    window.parent.dp_navigator.select(new DayPilot.Date(datevalue));
 			    return false;
 			});
 		});
