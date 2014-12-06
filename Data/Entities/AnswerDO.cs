@@ -31,15 +31,6 @@ namespace Data.Entities
         public string UserID { get; set; }
         public virtual UserDO UserDO { get; set; }
 
-        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
-        {
-            var reflectionHelper = new ReflectionHelper<AnswerDO>();
-            var textProperty = reflectionHelper.GetProperty(br => br.Text);
-            this.DetectUpdates(originalValues, currentValues, new[] { textProperty });
-
-            base.OnModify(originalValues, currentValues);
-        }
-
         public void OnDelete(DbPropertyValues originalValues)
         {
 

@@ -39,15 +39,6 @@ namespace Data.Entities
 
         [InverseProperty("Question")]
         public virtual List<AnswerDO> Answers { get; set; }
-        
-        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
-        {
-            var reflectionHelper = new ReflectionHelper<QuestionDO>();
-            var textProperty = reflectionHelper.GetProperty(br => br.Text);
-            this.DetectUpdates(originalValues, currentValues, new[] {textProperty});
-
-            base.OnModify(originalValues, currentValues);
-        }
 
         public void OnDelete(DbPropertyValues originalValues)
         {

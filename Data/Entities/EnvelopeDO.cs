@@ -159,7 +159,6 @@ namespace Data.Entities
         public int Id { get; set; }
         public string Handler { get; set; }
         public string TemplateName { get; set; }
-        public string TemplateDescription { get; set; }
 
         [ForeignKey("Email"), Required]
         public int? EmailID { get; set; }

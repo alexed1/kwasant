@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace Utilities
 {
@@ -72,6 +74,33 @@ namespace Utilities
     {
         public DateTimeOffset StartTime { get; set; }
         public DateTimeOffset EndTime { get; set; }
+    }
+
+    public static class DateRangeExtensions
+    {
+        public static IQueryable<T> WhereInDateRange<T>(this IQueryable<T> query, Expression<Func<T, DateTimeOffset>> expression, DateRange range, bool inclusive = false)
+        {
+            var memberExpression = expression.Body as MemberExpression;
+            if (memberExpression == null)
+                throw new ArgumentException("Expression should point a member", "expression");
+            var memberName = memberExpression.Member.Name;
+            var entityExpression = Expression.Parameter(typeof(T));
+            Expression whereExpression;
+            if (inclusive)
+            {
+                whereExpression = Expression.And(
+                        Expression.GreaterThanOrEqual(Expression.PropertyOrField(entityExpression, memberName), Expression.Constant(range.StartTime)),
+                        Expression.LessThanOrEqual(Expression.PropertyOrField(entityExpression, memberName), Expression.Constant(range.EndTime)));
+            }
+            else
+            {
+                whereExpression = Expression.And(
+                        Expression.GreaterThan(Expression.PropertyOrField(entityExpression, memberName), Expression.Constant(range.StartTime)),
+                        Expression.LessThan(Expression.PropertyOrField(entityExpression, memberName), Expression.Constant(range.EndTime)));
+            }
+            Expression<Func<T, bool>> whereLambdaExpression = Expression.Lambda<Func<T, bool>>(whereExpression, entityExpression);
+            return query.Where(whereLambdaExpression);
+        }
     }
 
 }

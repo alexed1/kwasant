@@ -59,23 +59,23 @@ namespace Data.Entities
 
         public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
-            var reflectionHelper = new ReflectionHelper<BookingRequestDO>();
-            var customerProperty = reflectionHelper.GetProperty(br => br.CustomerID);
-            var bookerProperty = reflectionHelper.GetProperty(br => br.BookerID);
-            
-            this.DetectUpdates(originalValues, currentValues, new[] { customerProperty, bookerProperty });
+            base.OnModify(currentValues, originalValues);
 
+            var reflectionHelper = new ReflectionHelper<BookingRequestDO>();
             var statePropertyName = reflectionHelper.GetPropertyName(br => br.State);
             if (!MiscUtils.AreEqual(originalValues[statePropertyName], currentValues[statePropertyName]))
             {
                 var state = (int) currentValues[statePropertyName];
-                if (state == BookingRequestState.NeedsBooking)
+                switch (state)
                 {
-                    AlertManager.BookingRequestNeedsProcessing(Id);
+                    case BookingRequestState.NeedsBooking:
+                        AlertManager.BookingRequestNeedsProcessing(Id);
+                        break;
+                    case BookingRequestState.Resolved:
+                        AlertManager.BookingRequestMarkedProcessed(Id, BookerID);
+                        break;
                 }
             }
-
-            base.OnModify(currentValues, originalValues);
         }
 
        
