@@ -12,6 +12,7 @@ using Data.Repositories;
 using Data.States;
 using KwasantCore.Exceptions;
 using KwasantCore.Interfaces;
+using KwasantCore.Managers.APIManagers.Packagers.Kwasant;
 using StructureMap;
 using Utilities;
 using Utilities.Logging;
@@ -607,6 +608,39 @@ namespace KwasantCore.Services
                 getMinutinQueue = (int)getTimeinQueue.TotalMinutes;
             }
             return getMinutinQueue;
+        }
+
+        public KwasantPackagedMessage VerifyCheckOut(int curBRId, string curBookerId) 
+        {
+            KwasantPackagedMessage response = new KwasantPackagedMessage();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                BookingRequestDO curBookingRequest = uow.BookingRequestRepository.GetByKey(curBRId);
+
+                if (curBookingRequest.BookerID == curBookerId) 
+                {
+                    response.Name = "valid";
+                }
+                else if (curBookingRequest.BookerID == null && curBookingRequest.State == BookingRequestState.NeedsBooking)
+                {
+                    if (curBookerId != null)
+                    {
+                        CheckOut(curBRId, curBookerId);
+                        response.Name = "valid";
+                    }
+                    else
+                    {
+                        response.Name = "error";
+                        response.Message = "Failed to Checkout a BookingRequest that NeededBooking but had no Booker. BR ID = " + curBRId;
+                    }
+                }
+                else 
+                {
+                    response.Name = "DifferentBooker";
+                    response.Message = curBookingRequest.Booker.FirstName == null ? curBookingRequest.Booker.EmailAddress.Address : curBookingRequest.Booker.FirstName;
+                }
+            }
+            return response;
         }
     }
 }

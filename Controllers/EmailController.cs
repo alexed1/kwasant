@@ -12,6 +12,7 @@ using KwasantWeb.ViewModels;
 using StructureMap;
 using Utilities;
 using System.Linq;
+using KwasantCore.Services;
 
 namespace KwasantWeb.Controllers
 {
@@ -21,6 +22,7 @@ namespace KwasantWeb.Controllers
         private IUnitOfWork _uow;
         private IBookingRequestDORepository curBookingRequestRepository;
         private KwasantPackager API;
+        private readonly BookingRequest _br;
 
 
         public EmailController()
@@ -28,6 +30,7 @@ namespace KwasantWeb.Controllers
             _uow = ObjectFactory.GetInstance<IUnitOfWork>();
             curBookingRequestRepository = _uow.BookingRequestRepository;
             API = new KwasantPackager();
+            _br = new BookingRequest();
         }
 
         // GET: /Email/
@@ -47,7 +50,7 @@ namespace KwasantWeb.Controllers
                 EmailDO curEmail;
 
                 List<EmailDO> conversationEmails = new List<EmailDO>();
-
+                
                 var emailDO = uow.EmailRepository.GetByKey(emailId);
 
                 var bookingRequestDO = emailDO as BookingRequestDO;
@@ -91,7 +94,7 @@ namespace KwasantWeb.Controllers
                             booker = bookingRequestDO.Booker.FirstName;
                     }
                 }
-
+                
                 BookingRequestAdminVM bookingInfo = new BookingRequestAdminVM
                 {
                     Conversations = conversationEmails.OrderBy(c => c.DateReceived).Select(e =>
@@ -156,45 +159,52 @@ namespace KwasantWeb.Controllers
         [HttpPost]
         public ActionResult ProcessSend(SendEmailVM vm)
         {
-            var cachedCallback = GetCachedCallback(vm.CallbackToken);
-            if (cachedCallback != null)
+            KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(vm.BookingRequestId, this.GetUserId());
+            if (verifyCheckoutMessage.Name == "valid")
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                var cachedCallback = GetCachedCallback(vm.CallbackToken);
+                if (cachedCallback != null)
                 {
-                    try
+                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var emailDO = new EmailDO();
-
-                        var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                        string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
-
-                        emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
-                        foreach (var to in vm.ToAddresses)
-                            emailDO.AddEmailRecipient(EmailParticipantType.To, uow.EmailAddressRepository.GetOrCreateEmailAddress(to));
-                        foreach (var cc in vm.CCAddresses)
-                            emailDO.AddEmailRecipient(EmailParticipantType.Cc, uow.EmailAddressRepository.GetOrCreateEmailAddress(cc));
-                        foreach (var bcc in vm.BCCAddresses)
-                            emailDO.AddEmailRecipient(EmailParticipantType.Bcc, uow.EmailAddressRepository.GetOrCreateEmailAddress(bcc));
-
-                        emailDO.HTMLText = vm.Body;
-                        emailDO.PlainText = vm.Body;
-                        emailDO.Subject = vm.Subject;
-
-                        uow.EmailRepository.Add(emailDO);
-                        return cachedCallback(uow, emailDO);
-                    }
-                    catch (Exception ex)
-                    {
-                        return Json(new KwasantPackagedMessage
+                        try
                         {
-                            Name = "Error",
-                            Message = " Time: " + DateTime.UtcNow 
-                        });
+                            var emailDO = new EmailDO();
+
+                            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                            string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+
+                            emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+                            foreach (var to in vm.ToAddresses)
+                                emailDO.AddEmailRecipient(EmailParticipantType.To,
+                                    uow.EmailAddressRepository.GetOrCreateEmailAddress(to));
+                            foreach (var cc in vm.CCAddresses)
+                                emailDO.AddEmailRecipient(EmailParticipantType.Cc,
+                                    uow.EmailAddressRepository.GetOrCreateEmailAddress(cc));
+                            foreach (var bcc in vm.BCCAddresses)
+                                emailDO.AddEmailRecipient(EmailParticipantType.Bcc,
+                                    uow.EmailAddressRepository.GetOrCreateEmailAddress(bcc));
+
+                            emailDO.HTMLText = vm.Body;
+                            emailDO.PlainText = vm.Body;
+                            emailDO.Subject = vm.Subject;
+
+                            uow.EmailRepository.Add(emailDO);
+                            cachedCallback(uow, emailDO);
+                            return Json(verifyCheckoutMessage);
+                        }
+                        catch (Exception ex)
+                        {
+                            return Json(new KwasantPackagedMessage
+                            {
+                                Name = "Error",
+                                Message = " Time: " + DateTime.UtcNow
+                            });
+                        }
                     }
                 }
             }
-
-            return Json(false);
+            return Json(verifyCheckoutMessage);
         }
 
         [HttpGet]
@@ -222,7 +232,7 @@ namespace KwasantWeb.Controllers
                 Body = "Some text..",
             }, Send);
         }
-
+        
         [HttpPost]
         public ActionResult Send(IUnitOfWork uow, EmailDO emailDO)
         {
