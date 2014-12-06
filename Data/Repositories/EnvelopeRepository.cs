@@ -40,17 +40,17 @@ namespace Data.Repositories
             base.Add(entity);
         }
 
-        public EnvelopeDO ConfigurePlainEmail(IEmailDO email)
+        public EnvelopeDO ConfigurePlainEmail(EmailDO email)
         {
             if (email == null)
                 throw new ArgumentNullException("email");
             return ConfigureEnvelope(email, EnvelopeDO.SendGridHander);
         }
 
-        public EnvelopeDO ConfigureTemplatedEmail(IEmailDO email, string templateName, IDictionary<string, string> mergeData = null)
+        public EnvelopeDO ConfigureTemplatedEmail(EmailDO email, string templateName, IDictionary<string, object> mergeData = null)
         {
             if (mergeData == null)
-                mergeData = new Dictionary<string, string>();
+                mergeData = new Dictionary<string, object>();
             if (email == null)
                 throw new ArgumentNullException("email");
             if (string.IsNullOrEmpty(templateName))
@@ -59,7 +59,7 @@ namespace Data.Repositories
             return ConfigureEnvelope(email, EnvelopeDO.SendGridHander, templateName, mergeData);
         }
 
-        private EnvelopeDO ConfigureEnvelope(IEmailDO email, string handler, string templateName = null, IDictionary<string, string> mergeData = null)
+        private EnvelopeDO ConfigureEnvelope(EmailDO email, string handler, string templateName = null, IDictionary<string, object> mergeData = null)
         {
             var envelope = new EnvelopeDO
             {
@@ -69,25 +69,35 @@ namespace Data.Repositories
 
             if (!String.IsNullOrEmpty(templateName) && TemplateDescriptionMapping.ContainsKey(templateName))
                 envelope.TemplateDescription = TemplateDescriptionMapping[templateName];
-           
-            if (mergeData != null)
-            {
-                if (!mergeData.ContainsKey("kwasantBaseURL"))
-                {
-                    var firstTo = email.To.SingleOrDefault();
-                    if (firstTo != null)
-                    {
-                        var userDO =  UnitOfWork.UserRepository.GetOrCreateUser(firstTo);
 
-                        var tokenURL = UnitOfWork.AuthorizationTokenRepository.GetAuthorizationTokenURL(Server.ServerUrl, userDO);
-                        mergeData["kwasantBaseURL"] = tokenURL;
-                    }
-                }
-                foreach (var pair in mergeData)
-                {
-                    envelope.MergeData.Add(pair);
-                }
+            if (mergeData == null)
+                mergeData = new Dictionary<string, object>();
+            
+            var baseUrls = new List<String>();
+            const string baseUrlKey = "kwasantBaseURL";
+            if (mergeData.ContainsKey(baseUrlKey))
+            {
+                var currentBaseURL = mergeData[baseUrlKey];
+                var baseUrlList = currentBaseURL as List<String>;
+                if (baseUrlList == null)
+                    baseUrls = new List<string> {currentBaseURL as String};
+                else
+                    baseUrls = baseUrlList;
             }
+            foreach(var recipient in email.Recipients)
+            {
+                var userDO = UnitOfWork.UserRepository.GetOrCreateUser(recipient.EmailAddress);
+
+                var tokenURL = UnitOfWork.AuthorizationTokenRepository.GetAuthorizationTokenURL(Server.ServerUrl, userDO);
+                baseUrls.Add(tokenURL);
+            }
+            mergeData[baseUrlKey] = baseUrls;
+
+            foreach (var pair in mergeData)
+            {
+                envelope.MergeData.Add(pair);
+            }
+
             email.EmailStatus = EmailState.Queued;
             ((IEnvelopeDO)envelope).Email = email;
             envelope.EmailID = email.Id;
