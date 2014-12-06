@@ -19,6 +19,7 @@ namespace Data.Entities
             Attachments = new List<AttachmentDO>();
             Events = new List<EventDO>();
             DateReceived = DateTimeOffset.UtcNow;
+            Envelopes = new List<EnvelopeDO>();
 
             //By default, the MessageID is a random GUID. This is so we can match our sent emails to replies
             SetMessageID(Guid.NewGuid().ToString());
@@ -120,6 +121,13 @@ namespace Data.Entities
         /// </summary>
         public String ReplyToName { get; set; }
         public String ReplyToAddress { get; set; }
+
+
+        /// <summary>
+        /// This is guaranteed to contain 0..1 envelopes, never many. 
+        /// </summary>
+        [InverseProperty("Email")]
+        public virtual List<EnvelopeDO> Envelopes { get; set; }
 
         [InverseProperty("Email")]
         public virtual List<RecipientDO> Recipients { get; set; }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Entities;
+using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using KwasantTest.Fixtures;
@@ -66,10 +67,14 @@ namespace KwasantTest.Controllers
                     Questions = questionsListVM     
 
                 };
-                curNegotiationController.ProcessSubmittedForm(curNegotiationVM); 
-
+                var userDO = uow.UserRepository.GetOrCreateUser("testemail@gmail.com");
+                uow.UserRepository.Add(userDO);
+                curNegotiationDO.BookingRequest.Booker = userDO;
+                curNegotiationDO.BookingRequest.BookerID = userDO.Id;
+                uow.SaveChanges();
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, userDO);
+                curNegotiationController.ProcessSubmittedForm(curNegotiationVM);
             }
-
         }
 
         [Test]
@@ -90,8 +95,7 @@ namespace KwasantTest.Controllers
                     Id = curNegotiationDO.Questions[0].Answers[0].Id,
                     Text = curNegotiationDO.Questions[0].Answers[0].Text,
                     AnswerState = curNegotiationDO.Questions[0].Answers[0].AnswerStatus
-                }
-                );
+                });
 
                 questionsListVM.Add(new NegotiationQuestionVM
                 {
@@ -110,10 +114,14 @@ namespace KwasantTest.Controllers
                     Questions = questionsListVM
 
                 };
+                var userDO = uow.UserRepository.GetOrCreateUser("testemail@gmail.com");
+                uow.UserRepository.Add(userDO);
+                curNegotiationDO.BookingRequest.Booker = userDO;
+                curNegotiationDO.BookingRequest.BookerID = userDO.Id;
+                uow.SaveChanges();
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, userDO);
                 curNegotiationController.ProcessSubmittedForm(curNegotiationVM);
-
             }
-
         }
        
     }

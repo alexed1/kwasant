@@ -205,7 +205,8 @@
             BCCAddresses: bccAddresses,
             Subject: subject,
             CallbackToken: '@Model.CallbackToken',
-            Body: body
+            Body: body,
+            BookingRequestId : '@Model.BookingRequestId'
         };
 
         var spinner = Kwasant.IFrame.DisplaySpinner();
@@ -304,3 +305,4 @@
         </div>
     </div>
 </form>
+<script src="~/Content/js/KwasantCommon.js"></script>
