@@ -157,7 +157,7 @@ namespace KwasantWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult HandleSend(SendEmailVM vm)
+        public ActionResult ProcessSend(SendEmailVM vm)
         {
             KwasantPackagedMessage verifyCheckoutMessage = _br.VerifyCheckOut(vm.BookingRequestId, this.GetUserId());
             if (verifyCheckoutMessage.Name == "valid")
@@ -167,26 +167,40 @@ namespace KwasantWeb.Controllers
                 {
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var emailDO = new EmailDO();
+                        try
+                        {
+                            var emailDO = new EmailDO();
 
-                        var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-                        string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
+                            var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
+                            string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
 
-                        emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
-                        foreach (var to in vm.ToAddresses)
-                            emailDO.AddEmailRecipient(EmailParticipantType.To, uow.EmailAddressRepository.GetOrCreateEmailAddress(to));
-                        foreach (var cc in vm.CCAddresses)
-                            emailDO.AddEmailRecipient(EmailParticipantType.Cc, uow.EmailAddressRepository.GetOrCreateEmailAddress(cc));
-                        foreach (var bcc in vm.BCCAddresses)
-                            emailDO.AddEmailRecipient(EmailParticipantType.Bcc, uow.EmailAddressRepository.GetOrCreateEmailAddress(bcc));
+                            emailDO.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress);
+                            foreach (var to in vm.ToAddresses)
+                                emailDO.AddEmailRecipient(EmailParticipantType.To,
+                                    uow.EmailAddressRepository.GetOrCreateEmailAddress(to));
+                            foreach (var cc in vm.CCAddresses)
+                                emailDO.AddEmailRecipient(EmailParticipantType.Cc,
+                                    uow.EmailAddressRepository.GetOrCreateEmailAddress(cc));
+                            foreach (var bcc in vm.BCCAddresses)
+                                emailDO.AddEmailRecipient(EmailParticipantType.Bcc,
+                                    uow.EmailAddressRepository.GetOrCreateEmailAddress(bcc));
 
-                        emailDO.HTMLText = vm.Body;
-                        emailDO.PlainText = vm.Body;
-                        emailDO.Subject = vm.Subject;
+                            emailDO.HTMLText = vm.Body;
+                            emailDO.PlainText = vm.Body;
+                            emailDO.Subject = vm.Subject;
 
-                        uow.EmailRepository.Add(emailDO);
-                        cachedCallback(uow, emailDO);
-                        return Json(verifyCheckoutMessage);
+                            uow.EmailRepository.Add(emailDO);
+                            cachedCallback(uow, emailDO);
+                            return Json(verifyCheckoutMessage);
+                        }
+                        catch (Exception ex)
+                        {
+                            return Json(new KwasantPackagedMessage
+                            {
+                                Name = "Error",
+                                Message = " Time: " + DateTime.UtcNow
+                            });
+                        }
                     }
                 }
             }

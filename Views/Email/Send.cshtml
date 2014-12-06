@@ -214,21 +214,18 @@
             type: "POST",
             dataType: 'json',
             contentType: 'application/json',
-            url: '/Email/HandleSend',
+            url: '/Email/ProcessSend',
             data: JSON.stringify(data)
         })
             .success(function (result) {
-                if(result.Name == 'valid')
-                    Kwasant.IFrame.CloseMe(true);
-                else if(result.Name == 'DifferentBooker')
-                    ShowBookerOwnershipAlert(result.Message, '@Model.BookingRequestId');
-                else if(result.Name == 'error')
-                    alert(result.Message);
+                if(result.Name == 'Error')
+                {
+                    alert("the server returned an error: " + result.Message);
+                }
                 else
-                    alert('An error occured on the server. Your changes have not been saved.');
-            })
-            .fail(function () {
-                alert('An error occured on the server. Your changes have not been saved.');
+                {
+                    Kwasant.IFrame.CloseMe(result);
+                }
             })
             .always(function () {
                 if (spinner !== null) {

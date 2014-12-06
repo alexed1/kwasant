@@ -120,20 +120,21 @@ namespace KwasantCore.Services
         }
 
         private object ShowMostRecent5Incidents(IUnitOfWork uow, DateRange dateRange, int start,
-            int length, out int count)
+           int length, out int count)
         {
-            var incidentDO = uow.IncidentRepository.GetAll().Skip(start)
-                    .Take(length).OrderByDescending(x => x.CreateDate).Take(5);
+            var incidentDO = uow.IncidentRepository.GetAll().OrderByDescending(x => x.CreateDate).Take(5);
 
             count = incidentDO.Count();
             return incidentDO.Select(
                         f => new
                         {
+                            Id = f.Id,
                             PrimaryCategory = f.PrimaryCategory,
                             SecondaryCategory = f.SecondaryCategory,
                             Activity = f.Activity,
                             Data = f.Notes,
                             CreateDate = f.CreateDate.ToString(DateStandardFormat),
+
                         }).ToList();
 
         }

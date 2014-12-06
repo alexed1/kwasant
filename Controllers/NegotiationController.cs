@@ -157,14 +157,30 @@ namespace KwasantWeb.Controllers
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    bool isNew = !curNegotiationVM.Id.HasValue;
-                    var submittedNegotiation = AutoMapper.Mapper.Map<NegotiationVM, NegotiationDO>(curNegotiationVM);
+                    string _currBookerName = "";
+                    try
+                    {
+                        _currBookerName = _booker.GetName(uow,
+                            uow.BookingRequestRepository.GetByKey(curNegotiationVM.BookingRequestID).BookerID);
 
-                    var updatedNegotiationDO = _negotiation.Update(uow, submittedNegotiation);
+                        bool isNew = !curNegotiationVM.Id.HasValue;
+                        var submittedNegotiation = AutoMapper.Mapper.Map<NegotiationVM, NegotiationDO>(curNegotiationVM);
+                        var updatedNegotiationDO = _negotiation.Update(uow, submittedNegotiation);
+                        uow.SaveChanges();
 
-                    uow.SaveChanges();
-
-                    return Json(new { Name = "valid", negotiationID = updatedNegotiationDO.Id, isNew = isNew });
+                        return Json(new {Name = "Success", negotiationID = updatedNegotiationDO.Id, isNew = isNew});
+                    }
+                    catch (Exception ex)
+                    {
+                        return Json(new KwasantPackagedMessage
+                        {
+                            Name = "Error",
+                            Message =
+                                " Time: " + DateTime.UtcNow + " BRId:" + curNegotiationVM.BookingRequestID +
+                                " Current BR Owner Name: " + _currBookerName + " Current BR STatus: " +
+                                uow.BookingRequestRepository.GetByKey(curNegotiationVM.BookingRequestID).State
+                        });
+                    }
                 }
             }
             return Json(verifyCheckoutMessage);
