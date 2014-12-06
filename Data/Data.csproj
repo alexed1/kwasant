@@ -476,6 +476,14 @@
     <Compile Include="Migrations\201412021453055_Sync.Rob2.02.12.2014.Designer.cs">
       <DependentUpon>201412021453055_Sync.Rob2.02.12.2014.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201412050848278_LinkEmailBackToEnvelope.cs" />
+    <Compile Include="Migrations\201412050848278_LinkEmailBackToEnvelope.Designer.cs">
+      <DependentUpon>201412050848278_LinkEmailBackToEnvelope.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412061340546_AddTemplateDescriptions.cs" />
+    <Compile Include="Migrations\201412061340546_AddTemplateDescriptions.Designer.cs">
+      <DependentUpon>201412061340546_AddTemplateDescriptions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\KwasantDbMigration.cs" />
     <Compile Include="Repositories\NegotiationAnswerEmailRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
@@ -1419,6 +1427,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412021453055_Sync.Rob2.02.12.2014.resx">
       <DependentUpon>201412021453055_Sync.Rob2.02.12.2014.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412050848278_LinkEmailBackToEnvelope.resx">
+      <DependentUpon>201412050848278_LinkEmailBackToEnvelope.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412061340546_AddTemplateDescriptions.resx">
+      <DependentUpon>201412061340546_AddTemplateDescriptions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

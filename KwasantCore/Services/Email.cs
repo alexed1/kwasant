@@ -43,17 +43,6 @@ namespace KwasantCore.Services
 
         #region Method
 
-        /// <summary>
-        /// This implementation of Send uses the SendGrid API
-        /// </summary>
-        public void SendTemplate(IUnitOfWork uow, string templateName, IEmailDO message, Dictionary<string, string> mergeFields)
-        {
-            if (uow == null)
-                throw new ArgumentNullException("uow");
-            uow.EnvelopeRepository.ConfigureTemplatedEmail(message, templateName, mergeFields);
-            uow.SaveChanges();
-        }
-
         public void Send(IUnitOfWork uow, IEmailDO emailDO)
         {
             if (uow == null)
@@ -285,7 +274,7 @@ namespace KwasantCore.Services
             string credentials = "<br/> Email : " + toRecipient + "<br/> Password : " + newPassword;
             string fromAddress = ObjectFactory.GetInstance<IConfigRepository>().Get("EmailFromAddress_DirectMode");
             EmailDO emailDO = GenerateBasicMessage(uow, "Kwasant Credentials", null, fromAddress, toRecipient);
-            uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, "e4da63fd-2459-4caf-8e4f-b4d6f457e95a",
+            uow.EnvelopeRepository.ConfigureTemplatedEmail(emailDO, ObjectFactory.GetInstance<IConfigRepository>().Get("user_credentials"),
                     new Dictionary<string, string>
                     {
                         {"credentials_string", credentials}

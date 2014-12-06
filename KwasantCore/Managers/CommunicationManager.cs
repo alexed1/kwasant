@@ -83,8 +83,8 @@ namespace KwasantCore.Managers
                 curEmail.From = uow.EmailAddressRepository.GetOrCreateEmailAddress(_configRepository.Get("EmailFromAddress_DirectMode"), _configRepository.Get("EmailFromName_DirectMode"));
                 curEmail.AddEmailRecipient(EmailParticipantType.To, curUser.EmailAddress);
                 curEmail.Subject = "Welcome to Kwasant";
-               
-                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, "2e411208-7a0d-4a72-a005-e39ae018d708", null); //welcome to kwasant v2 template
+
+                uow.EnvelopeRepository.ConfigureTemplatedEmail(curEmail, _configRepository.Get("welcome_to_kwasant_template"), null); //welcome to kwasant v2 template
                 uow.SaveChanges();
             }
         }

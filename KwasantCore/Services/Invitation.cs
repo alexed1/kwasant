@@ -51,7 +51,9 @@ namespace KwasantCore.Services
             curInvitation.AddEmailRecipient(EmailParticipantType.To, toEmailAddress);
 
             //configure the sender information
-            curInvitation.From = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, curEvent.CreatedBy);
+            var from = _emailAddress.GetFromEmailAddress(uow, toEmailAddress, curEvent.CreatedBy);
+            curInvitation.From = from;
+            curInvitation.FromName = from.ToDisplayName();
 
             var replyToAddress = emailAddressRepository.GetOrCreateEmailAddress(replyToEmail);
             curInvitation.ReplyToAddress = replyToAddress.Address;
@@ -126,6 +128,9 @@ namespace KwasantCore.Services
             var whoListPlainText = String.Join(Environment.NewLine, curEvent.Attendees.Select(a => a.Name + " - " + a.EmailAddress.Address));
 
             curInvitation.Subject = subject;
+
+            curInvitation.TagEmailToBookingRequest(curEvent.BookingRequest);
+            
             uow.EnvelopeRepository.ConfigureTemplatedEmail(
                 curInvitation, templateName, new Dictionary<string, string>
                 {
